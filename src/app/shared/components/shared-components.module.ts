@@ -6,13 +6,16 @@ import { CommonModule } from '@angular/common';
 import { ComposerModule } from '@acaprojects/ngx-composer';
 import { WidgetsModule } from '@acaprojects/ngx-widgets';
 
-import { LOGIN_COMPONENTS } from './login';
 import { BaseComponent } from './base.component';
+import { LOGIN_COMPONENTS } from './login';
+
+import { ItemListComponent } from './item-list/item-list.component';
 
 @NgModule({
     declarations: [
         ...LOGIN_COMPONENTS,
-        BaseComponent
+        BaseComponent,
+        ItemListComponent
     ],
     imports: [
         CommonModule,
@@ -22,7 +25,8 @@ import { BaseComponent } from './base.component';
     ],
     exports: [
         ...LOGIN_COMPONENTS,
-        BaseComponent
+        BaseComponent,
+        ItemListComponent
     ]
 })
 export class SharedComponentsModule { }

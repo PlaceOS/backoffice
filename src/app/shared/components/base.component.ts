@@ -17,16 +17,14 @@ export class BaseComponent implements OnDestroy {
     public ngOnDestroy() {
             // Cleanup timers
         for (const k in this.subs.timers) {
-            if (this.subs.timers.hasOwnProperty(k) && this.subs.timers[k]) {
-                clearTimeout(this.subs.timers[k]);
-                this.subs.timers[k] = null;
+            if (this.subs.timers.hasOwnProperty(k)) {
+                this.clearTimer(this.subs.timers[k]);
             }
         }
             // Cleanup intervals
-        for (const k in this.subs.timers) {
-            if (this.subs.timers.hasOwnProperty(k) && this.subs.timers[k]) {
-                clearTimeout(this.subs.timers[k]);
-                this.subs.timers[k] = null;
+        for (const k in this.subs.intervals) {
+            if (this.subs.intervals.hasOwnProperty(k)) {
+                this.clearInterval(this.subs.intervals[k]);
             }
         }
             // Cleanup observables
@@ -44,6 +42,7 @@ export class BaseComponent implements OnDestroy {
 
     public timeout(name: string, fn: () => void, delay: number = 300) {
         this.clearTimer(name);
+        if (!(fn instanceof Function)) { return; }
         this.subs.timers[name] = setTimeout(() => fn(), delay);
     }
 
@@ -51,6 +50,19 @@ export class BaseComponent implements OnDestroy {
         if (this.subs.timers[name]) {
             clearTimeout(this.subs.timers[name]);
             this.subs.timers[name] = null;
+        }
+    }
+
+    public interval(name: string, fn: () => void, delay: number = 300) {
+        this.clearInterval(name);
+        if (!(fn instanceof Function)) { return; }
+        this.subs.intervals[name] = setInterval(() => fn(), delay);
+    }
+
+    public clearInterval(name: string) {
+        if (this.subs.intervals[name]) {
+            clearInterval(this.subs.intervals[name]);
+            this.subs.intervals[name] = null;
         }
     }
 }

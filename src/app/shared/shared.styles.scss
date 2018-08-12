@@ -2,6 +2,10 @@
 || Shared Global SASS Variables ||
 \*==============================*/
 
+/*====================*\
+||  Colour Variables  ||
+\*====================*/
+
 $success: #309b40;
 $success-alt: #4285f4;
 $error: #db291d;
@@ -10,25 +14,20 @@ $neutral: #797979;
 
 $background: #f0f0f0;
 
-$header-height: 4em;
-$header-bg: #fff;
-$header-color: rgba(#000, .87);
-
-$tile-color: #fff;
-$tile-border: #fff;
-
-$help-border: rgba(#000, .2);
-
-$color-primary: #d9005a;
-$color-secondary: #40485a;
-$color-ternary: #c79961;
-$color-quaternary: #7dd6d6;
+$color-primary: #B71C1C;
+$color-secondary: #263238;
+$color-ternary: #37474F;
+$color-quaternary: #26A69A;
 $color-quinternary: #4c5c6c;
 $color-sexternary: #7fe43b;
 
-$timeline-bg: linear-gradient(-180deg, #4F5F70 0%, #0F1215 100%);
-$timeline-event: $error;
-$timeline-booking: $color-quaternary;
+/*====================*\
+||  Sizing Variables  ||
+\*====================*/
+
+$header-height: 3em;
+$header-bg: $color-primary;
+$header-color: #fff;
 
 /*====================*\
 ||   Font Variables   ||

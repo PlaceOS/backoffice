@@ -49,7 +49,7 @@ export class AppService {
         private users: UsersService
     ) {
             // Set parent service on child services
-        this.analytics.parent = this.comments.parent = this;
+        this.analytics.parent = this.comments.parent = this.users.parent = this;
             // Create subjects
         this.subjects.system = new BehaviorSubject('');
         this.observers.system = this.subjects.system.asObservable();

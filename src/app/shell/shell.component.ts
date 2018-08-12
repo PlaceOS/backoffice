@@ -47,6 +47,7 @@ export class AppShellComponent implements OnInit {
             return setTimeout(() => this.init(), 200);
         }
         this.model.loading = false;
+        this.model.user = this.service.Users.current();
         this.model.tiles = this.service.Settings.get('app.tiles');
         this.checkRoute();
     }

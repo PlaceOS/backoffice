@@ -24,4 +24,4 @@ import { UsersComponent } from './users.component';
         RouterModule.forChild(ROUTES)
     ]
 })
-export class AppZonesModule { }
+export class AppUsersModule { }

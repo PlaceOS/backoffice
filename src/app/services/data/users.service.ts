@@ -15,24 +15,12 @@ export interface IUser {
     type?: 'partner' | 'internal' | 'external';
     role?: string;
     state?: string;
-    location?: ILocation | string | {};
     image: string;
     phone?: string;
     staff_code?: string;
     organisation_id?: string;
     organisation_name?: string;
     b_unit?: string;
-}
-
-export interface ILocation {
-    x?: number;
-    y?: number;
-    map_id?: string;
-    building: string | any;
-    level: string | any;
-    fixed: boolean;
-    loc_id?: string;
-    display?: any;
 }
 
 @Injectable({
@@ -64,9 +52,6 @@ export class UsersService {
             return setTimeout(() => this.init(), 500);
         }
         this.loadActiveUser();
-        if (!this.parent.Settings.get('app.people_min_char')) {
-            this.loadUsers();
-        }
     }
 
     /**
@@ -230,80 +215,6 @@ export class UsersService {
     }
 
     /**
-     * Get location data for user
-     * @param id ID of user to find
-     * @param email Email of user to find
-     */
-    public location(id: string, email: string = id) {
-        const key = `location|${id}`;
-        if (!this.promises[key]) {
-            this.promises[key] = new Promise((resolve, reject) => {
-                const url = `${this.parent.api_endpoint}/people/${id}?desk=${email}`;
-                let place: any = null;
-                this.http.get(url).subscribe((data) => place = data ? data[0] : {},
-                    (err) => {
-                        reject(err);
-                        this.promises[key] = null;
-                    },
-                    () => {
-                        if (!place || Object.keys(place).length <= 0) {
-                            this.updateUserLocation(id, {});
-                            reject('User not found');
-                        } else {
-                            const location: any = {
-                                level: place.level,
-                                building: place.building,
-                                display: {},
-                                fixed: true,
-                            };
-                            const bld = this.parent.Buildings.get(location.building);
-                            if (bld) {
-                                location.display.building = bld.name;
-                                for (const level of bld.levels) {
-                                    if (level.id === location.level) {
-                                        location.display.level = level.name;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (place.x && place.y) {
-                                location.fixed = false;
-                                location.x = (10000 / place.x_max) * place.x;
-                                location.y = (10000 / place.x_max) * place.y;
-                            } else if (place.at_desk) {
-                                location.map_id = `${place.desk_id}`;
-                                const is_room = place.desk_id && place.desk_id.indexOf('area-') >= 0;
-                                location.display.name = `${place.desk_id && !is_room ? 'Desk ' + place.desk_id.split('-')[1] : 'In their office'}`;
-                                location.map_id = place.desk_id;
-                            }
-                            this.updateUserLocation(id, location);
-                            if (this.current().id === id) {
-                                this.parent.Analytics.event('Users', 'located_user');
-                            }
-                            resolve(location);
-                        }
-                        this.promises[key] = null;
-                    });
-            });
-        }
-        return this.promises[key];
-    }
-
-    /**
-     * Store new location data for user
-     * @param id ID of user
-     * @param data New location data
-     */
-    public updateUserLocation(id, data) {
-        const list = this.subjects.user_list.getValue();
-        for (const user of list) {
-            if (user.id === id) {
-                user.location = data;
-            }
-        }
-    }
-
-    /**
      * Get a filtered list of users
      * @param filter Value to filter on
      * @param items List of users to filter. If not set it will user the global list
@@ -400,26 +311,13 @@ export class UsersService {
     }
 
     /**
-     * Update location of the logged in user
-     */
-    public updateActiveUserLocation() {
-        const person = this.current();
-        if (person) {
-            this.location(person.id, person.win_id).then(
-                (loc) => this.subjects.user.next(this.get(person.id)),
-                (err) => console.error(err)
-            );
-        }
-    }
-
-    /**
      * Search for user
      * @param fields Key, value pairs for query parameters
      * @param tries Retry value. DON'T USE
      */
     public query(fields?: any, tries: number = 0) {
         if (tries > 4) { return new Promise((rs, rj) => rj('Too many tries')); }
-        if (!this.parent || !this.parent.Buildings.current()) {
+        if (!this.parent) {
             return new Promise((rs, rj) =>
                 setTimeout(() => this.query(fields, tries).then((v) => rs(v), (e) => rj(e)), 300 * ++tries)
             );
@@ -547,20 +445,12 @@ export class UsersService {
                     this.query({ q: user.email, limit: 1 }).then((list: IUser[]) => {
                         if (list && list.length) {
                             const person = list[0];
-                            this.location(person.id, person.win_id).then(
-                                (loc) => this.model.active_user = this.get(person.id),
-                                (err) => console.error(err)
-                            );
                             this.subjects.user.next(person);
                         }
                     }, (err) => {
                         console.error(err);
                     });
                 } else {
-                    this.location(user_data.id, user_data.win_id).then(
-                        () => this.model.active_user = this.get(user_data.id),
-                        (err) => console.error(err)
-                    );
                     this.subjects.user.next(user_data);
                 }
             },
@@ -609,7 +499,6 @@ export class UsersService {
                 type: user.title ? (user.title.toLowerCase() === 'partner' ? 'partner' : 'internal') : 'external',
                 image: null,
                 email: user.email,
-                location: null,
                 phone: user.phone,
                 b_unit: user.department,
                 organisation_id: org.id,

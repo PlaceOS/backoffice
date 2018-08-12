@@ -1,0 +1,10 @@
+<div class="container" *ngIf="model.menu" [class.show]="model.show" (window:tap)="close()" (tap)="cancelClose()">
+    <div class="item" *ngFor="let item of model.menu.list" [class.active]="model.active === item.id || item.active" (tap)="goto(item)">
+        <div class="icon">
+            <i *ngIf="item.icon" [class]="item.icon.class">{{item.icon.value}}</i>
+            <img *ngIf="item.img || item.image || item.src" [src]="item.img || item.image || item.src">
+        </div>
+        <div class="text" *ngIf="!item.hide_name">{{item.name}}</div>
+        <div class="bar"></div>
+    </div>
+</div>

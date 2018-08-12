@@ -1,33 +1,17 @@
 
-<div class="container" [class.shadow]="model.banner && model.banner.full && !model.is_home">
-    <div class="top-section" [style.background]="(model.banner && model.banner.full && !model.is_home ? 'url(' + (model.banner.page ? model.banner.page.background || model.banner.background : model.banner.background) + ')' : '') | safestyle">
-        <div class="overlay" *ngIf="model.banner && model.banner.full && !model.is_home" [style.background-color]="model.banner.page ? model.banner.page.color : model.banner.color"></div>
-        <div class="topbar" [class.reverse]="model.menu.reverse" [class.full]="model.banner && model.banner.full && !model.is_home">
-            <div class="block">
-                <div *ngIf="!model.menu.home" class="logo" (tap)="logo()" [style.background]="(model.logo ? model.logo.background : '') | safestyle">
-                    <img *ngIf="model.logo.type==='image' || model.logo.type==='img'" [src]="model.banner && model.banner.full && !model.is_home ? model.logo.inverse || model.logo.src : model.logo.src">
-                    <i *ngIf="model.logo.type!=='image' && model.logo.type!=='img'" [class]="model.banner && model.banner.full && !model.is_home ? model.logo.inverse || model.logo.src : model.logo.src"></i>
-                </div>
-                <div class="icon" *ngIf="model.menu.home" (tap)="home()">
-                    <i class="material-icons">home</i>
-                </div>
+<div class="container">
+    <div class="topbar">
+        <div class="menu" (tap)="toggleMenu()">
+            <i class="material-icons">{{model.show_menu ? 'close' : 'menu'}}</i>
+        </div>
+        <div class="block">
+            <div *ngIf="model.logo" class="logo" (tap)="logo()">
+                <img *ngIf="model.logo.type==='image' || model.logo.type==='img'" [src]="model.logo.src">
+                <i *ngIf="model.logo.type !== 'image' && model.logo.type!=='img'" [class]="model.logo.class">{{model.logo.value}}</i>
             </div>
-            <div class="heading" *ngIf="((!model.banner || !model.banner.header) && !model.hide_heading) || model.menu.home">
-                <div *ngIf="!model.menu.home && !model.hide_heading && (!model.banner || !model.banner.header)">{{model.heading}}</div>
-                <div *ngIf="model.menu.home" class="logo" (tap)="logo()" [style.background]="(model.logo ? model.logo.background : '') | safestyle">
-                    <img *ngIf="model.logo.type==='image' || model.logo.type==='img'" [src]="model.banner && model.banner.full && !model.is_home ? model.logo.inverse || model.logo.src : model.logo.src">
-                    <i *ngIf="model.logo.type!=='image' && model.logo.type!=='img'" [class]="model.banner && model.banner.full && !model.is_home ? model.logo.inverse || model.logo.src : model.logo.src"></i>
-                </div>
-            </div>
-            <div class="block menu">
-                <div [class]="'menu-icon ' + model.menu.type" *ngIf="model.menu" [class.show]="model.menu.show" (tap)="model.menu.show = !model.menu.show">
-                    <div class="bar one"></div>
-                    <div class="bar two"></div>
-                    <div class="bar three"></div>
-                </div>
-                <i class="material-icons" *ngIf="!model.menu && model.bld_count > 1" (tap)="model.show_building = true">location_city</i>
-                <i class="material-icons" *ngIf="!model.menu" (tap)="home()">home</i>
-            </div>
+        </div>
+        <div class="block">
+            <!-- TODO Add user details display -->
         </div>
     </div>
 </div>

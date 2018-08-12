@@ -29,12 +29,8 @@ export class TopbarHeaderComponent extends BaseComponent implements OnInit {
             return setTimeout(() => this.init(), 500);
         }
         this.model.logo = this.service.Settings.get('app.logo') || {};
-        this.model.menu = this.service.Settings.get('app.menu') || {};
-        this.model.banner = this.service.Settings.get('app.banner');
-        this.model.page = this.service.Settings.get('app.page') || { titles: {}, info: {} };
-        this.model.hide_heading = this.service.Settings.get('app.hide.heading');
-        this.model.route_settings = this.service.Settings.get('app.route_settings') || {};
         this.model.user = this.service.Users.current();
+        this.subs.obs.show_menu = this.service.listen('APP.show_menu', (state) => this.model.show_menu = state);
         this.checkRoute();
     }
 
@@ -68,6 +64,11 @@ export class TopbarHeaderComponent extends BaseComponent implements OnInit {
 
     public home() {
         this.service.navigate('');
+    }
+
+    public toggleMenu() {
+        this.model.show_menu = !this.model.show_menu;
+        this.service.set('APP.show_menu', this.model.show_menu);
     }
 
     private getRouteDetails(map: any, route: string) {

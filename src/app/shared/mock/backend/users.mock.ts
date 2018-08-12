@@ -2,11 +2,10 @@
  * @Author: alex.sorafumo
  * @Date:   2017-04-03 15:50:46
  * @Last Modified by: Alex Sorafumo
- * @Last Modified time: 2018-06-18 15:57:30
+ * @Last Modified time: 2018-08-12 21:12:49
  */
 
 import { MOCK_REQ_HANDLER } from '@acaprojects/ngx-composer';
-import { BehaviorSubject } from 'rxjs';
 
 import { BaseMockBackend } from './base.mock';
 
@@ -21,7 +20,7 @@ export class MockUsersBackend extends BaseMockBackend {
     }
 
     protected load() {
-        this.loadVisitors();
+        this.model.log('USERS', 'Loading mock data for users...');
         this.loadUsers();
         this.loadUser().then(() => {
             this.state.next(true);
@@ -90,9 +89,6 @@ export class MockUsersBackend extends BaseMockBackend {
                 organisation_name: 'ACA'
             });
         }
-        for (const user of this.model.users) {
-            this.generateLocationFor(user);
-        }
         MOCK_REQ_HANDLER.register(`/${this.model.api_route}/users`, this.model.users, (e) => {
             if (e.fragment.q) {
                 const q = e.fragment.q.toLowerCase();
@@ -148,7 +144,6 @@ export class MockUsersBackend extends BaseMockBackend {
                     email: user.StaffEmailID || user.email,
                     image: `/assets/users/${user.StaffGUID || user.id}.png`,
                 };
-                this.generateLocationFor(data, true);
                 this.model.user = data;
                 setTimeout(() => {
                     MOCK_REQ_HANDLER.register('/control/api/users/current', data);
@@ -159,66 +154,4 @@ export class MockUsersBackend extends BaseMockBackend {
         return this.model.user_promise;
     }
 
-    public loadVisitors() {
-        this.model.visitors = [];
-        const count = Math.floor(Math.random() * 10 + 2);
-        const time = moment().seconds(0).milliseconds(0).add(10, 'm');
-        for (let i = 0; i < count; i++) {
-            const peeps = Math.floor(Math.random() * 3 + 1);
-            const people = [];
-            for (let k = 0; k < peeps; k++) {
-                const name = faker.name.firstName() + ' ' + faker.name.lastName();
-                people.push({
-                    name,
-                    organisation: {
-                        id: 12,
-                        name: 'ACA'
-                    },
-                    email: `${name.split(' ').join('.').toLowerCase()}@${this.model.domain}`
-                });
-            }
-            const visitor = {
-                name: `Group ${'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i]}`,
-                group: peeps > 1,
-                visitors: people,
-                date: time.valueOf()
-            };
-            this.model.visitors.push(visitor);
-            time.add(Math.floor(Math.random() * 5) * 15 + 15, 'm');
-        }
-        MOCK_REQ_HANDLER.register(`/${this.model.api_route}/visitors`, this.model.visitors);
-    }
-
-    private generateLocationFor(user: any, force: boolean = false) {
-        if (!this.model.user_loc) { this.model.user_loc = {}; }
-        const id = user.id || user.StaffGUID || user.email;
-        if (!(window as any).mock) { (window as any).mock = {}; }
-        if (!(window as any).mock.located) { (window as any).mock.located = { wireless: [], fixed: [] }; }
-        if (user && id) {
-            if ((Math.floor(Math.random() * 289346923)) % 5 === 0 || force) {
-                const fixed = (Math.floor(Math.random() * 289346923) % 4) === 0;
-                const loc: any = {};
-                loc.building = 'zone_bld-01';
-                if (fixed) {
-                    loc.at_desk = true;
-                    if (this.model.desk_id_pool) {
-                        const desk = this.model.desk_id_pool[Math.floor(Math.random() * this.model.desk_id_pool.length)];
-                        loc.level = desk.level;
-                        loc.desk_id = desk.id;
-                        loc.building = desk.building;
-                    }
-                    (window as any).mock.located.fixed.push(user.name);
-                } else {
-                    loc.x = Math.floor(Math.random() * 6000 + 2000);
-                    loc.x_max = 10000;
-                    loc.y = Math.floor(Math.random() * 4000 + 3000);
-                    loc.y_max = 10000;
-                    const level = this.model.bld_data['zone_bld-01'].levels[Math.floor(Math.random() * this.model.bld_data['zone_bld-01'].levels.length)];
-                    loc.level = level.level_id;
-                    (window as any).mock.located.wireless.push(user.name);
-                }
-                this.model.user_loc[id] = loc;
-            }
-        }
-    }
 }
