@@ -1,0 +1,14 @@
+<div class="container">
+    <form name="login">
+        <div class="field">
+            <input-field [(model)]="form.user" [placeholder]="model.user_field || 'Email'"></input-field>
+        </div>
+        <div class="field">
+            <input-field [type]="model.show_pass ? 'text' : 'password'" [(model)]="form.pass" [placeholder]="model.user_field || 'Password'"></input-field>
+        </div>
+        <div class="forgot" *ngIf="!model.settings || model.settings.forgot !== false" (tap)="forgot()">Forgot?</div>
+        <div class="options">
+            <btn type="submit" (tapped)="login()">Login</btn>
+        </div>
+    </form>
+</div>

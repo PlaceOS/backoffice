@@ -1,0 +1,128 @@
+/*==============================*\
+|| Shared Global SASS Variables ||
+\*==============================*/
+
+$success: #309b40;
+$success-alt: #4285f4;
+$error: #db291d;
+$pending: #FF9800;
+$neutral: #797979;
+
+$background: #f0f0f0;
+
+$header-height: 4em;
+$header-bg: #fff;
+$header-color: rgba(#000, .87);
+
+$tile-color: #fff;
+$tile-border: #fff;
+
+$help-border: rgba(#000, .2);
+
+$color-primary: #d9005a;
+$color-secondary: #40485a;
+$color-ternary: #c79961;
+$color-quaternary: #7dd6d6;
+$color-quinternary: #4c5c6c;
+$color-sexternary: #7fe43b;
+
+$timeline-bg: linear-gradient(-180deg, #4F5F70 0%, #0F1215 100%);
+$timeline-event: $error;
+$timeline-booking: $color-quaternary;
+
+/*====================*\
+||   Font Variables   ||
+\*====================*/
+
+$base-size: 2.5vmin;
+$tablet-size: 3vmin;
+$mobile-size: 4vmin;
+
+$font-stack: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
+
+$heading-font: $font-stack;
+$main-font: $font-stack;
+
+/*===================*\
+||   Media Queries   ||
+\*===================*/
+
+$break-mobile: 450px;
+$break-tablet: 800px;
+
+$break-landscape-mobile: 800px;
+$break-landscape-tablet: 1048px;
+
+@mixin respond-to($media) {
+    @if $media == mobile {
+        @media only screen and (orientation: portrait) and (max-width: $break-mobile) {
+            @content;
+        }
+        @media only screen and (orientation: landscape) and (max-width: $break-landscape-mobile) {
+            @content;
+        }
+    } @else if $media == mobile-landscape {
+        @media only screen and (orientation: landscape) and (max-width: $break-landscape-mobile) {
+            @content;
+        }
+    } @else if $media == mobile-portrait {
+        @media only screen and (orientation: portrait) and (max-width: $break-mobile) {
+            @content;
+        }
+    } @else if $media == not-mobile {
+        @media only screen and (orientation: portrait) and (min-width: $break-mobile + 1) {
+            @content;
+        }
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-mobile + 1) {
+            @content;
+        }
+    } @else if $media == tablet {
+        @media only screen and (orientation: portrait) and (min-width: $break-mobile + 1) and (max-width: $break-tablet) {
+            @content;
+        }
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-mobile + 1) and (max-width: $break-landscape-tablet) {
+            @content;
+        }
+    } @else if $media == tablet-landscape {
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-mobile + 1) and (max-width: $break-landscape-tablet) {
+            @content;
+        }
+    } @else if $media == tablet-portrait {
+        @media only screen and (orientation: portrait) and (min-width: $break-mobile + 1) and (max-width: $break-tablet) {
+            @content;
+        }
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-mobile + 1) and (max-width: $break-landscape-tablet) {
+            @content;
+        }
+    } @else if ($media == tablet-mobile or $media == not-desktop) {
+        @media only screen and (orientation: portrait) and (max-width: $break-tablet) {
+            @content;
+        }
+        @media only screen and (orientation: landscape) and (max-width: $break-landscape-tablet) {
+            @content;
+        }
+    } @else if $media == desktop {
+        @media only screen and (orientation: portrait) and (min-width: $break-tablet) {
+            @content;
+        }
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-tablet) {
+            @content;
+        }
+    } @else if $media == desktop-landscape {
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-tablet) {
+            @content;
+        }
+    } @else if $media == desktop-portrait {
+        @media only screen and (orientation: portrait) and (min-width: $break-tablet) {
+            @content;
+        }
+    } @else if $media == landscape {
+        @media only screen and (orientation: landscape) {
+            @content;
+        }
+    } @else if $media == portrait {
+        @media only screen and (orientation: portrait) {
+            @content;
+        }
+    }
+}

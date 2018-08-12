@@ -1,0 +1,135 @@
+// @Author: Alex Sorafumo <alex.sorafumo>
+// @Date:   12/10/2016 2:02 PM
+// @Email:  alex@yuion.net
+// @Filename: simple.style.scss
+// @Last modified by:   Alex Sorafumo
+// @Last modified time: 03/02/2017 1:58 PM
+
+@import 'shared.styles';
+
+.container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    background-color: $background;
+    font-size: 1em;
+    display: flex;
+    flex-direction: column;
+    &.loader {
+        z-index: 998;
+        align-items: center;
+        justify-content: center;
+        background-color: $color-primary;
+        .text {
+            color: #fff;
+        }
+
+        .icon {
+            margin: .5em;
+        }
+    }
+    &.login {
+        z-index: 999;
+    }
+}
+
+.route {
+    display: flex;
+    @include respond-to(mobile) {
+        font-size: .8em;
+    }
+}
+
+.routing-block {
+    display: flex;
+    align-items: center;
+    color: $color-primary;
+    background-color: rgba(#000, .1);
+    clip-path: polygon(100% 0%, calc(100% - 1.2em) 50%, 100% 100%, 0 100%, 0 0);
+    .main {
+        display: flex;
+        align-items: center;
+        color: #fff;
+        background-color: $color-primary;
+        cursor: pointer;
+        clip-path: polygon(100% 0%, calc(100% - 1.2em) 50%, 100% 100%, 0 100%, 0 0);
+        &:hover {
+            background-color: darken($color-primary, 5);
+        }
+    }
+
+    .icon {
+        font-size: 1.5em;
+        height: 1em;
+        width: 1em;
+        margin: .5em;
+        margin-right: 0;
+    }
+
+    .name {
+        padding: .5em .75em;
+        padding-right: 2em;
+        font-size: 1.5em;
+    }
+}
+
+.copyright {
+    color: #ccc;
+    padding: .5em;
+}
+
+.banner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 6em;
+    padding: 1em;
+    background-position: center;
+    background-size: cover;
+    color: #fff;
+    .overlay {
+        background-color: rgba(#000, .54);
+        z-index: 100;
+    }
+    .heading {
+        flex: 0;
+        z-index: 101;
+    }
+    &.color {
+        min-height: 3em;
+        padding: 0;
+        background-image: none !important;
+        .overlay {
+            display: none;
+        }
+    }
+
+    .options {
+        z-index: 102;
+    }
+}
+
+.content {
+    position: relative;
+    font-size: 1em;
+    width: 100%;
+    flex: 1;
+}
+
+.block {
+    flex: 1;
+    height: 100%;
+}
+
+.time {
+    text-align: right;
+    flex: 1;
+    padding: 0 2em;
+    font-size: .6em;
+    font-weight: bold;
+}

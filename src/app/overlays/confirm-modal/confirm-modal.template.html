@@ -1,0 +1,29 @@
+<div class="container" *ngIf="!model.loading && !model.error && !model.success">
+    <div class="body">
+        <div class="icon">
+            <i center class="material-icons">{{model.icon}}</i>
+        </div>
+        <div class="details">
+            <div class="heading" [innerHTML]="model.title | safe"  *ngIf="model.title" ></div>
+            <div class="info" [innerHTML]="model.message | safe"></div>
+            <div class="link" *ngIf="model.link">
+                <a (mousedown)="fn.event('Link')" (touchstart)="fn.event('Link')">{{model.link.text}}</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <btn name="full-width" (tapped)="event('Cancel')">Cancel</btn>
+        <btn name="full-width normal" (tapped)="event('Accept')">Ok</btn>
+    </div>
+</div>
+<div class="container" *ngIf="model.loading || model.error || model.success">
+    <div class="no-item">
+        <div class="icon">
+            <i class="material-icons" [class.error]="model.error" *ngIf="!model.loading">{{model.error ? 'close' : 'done'}}</i>
+            <spinner type="circle-ring" *ngIf="model.loading"></spinner>
+        </div>
+        <div class="text">
+            {{model.loading ? 'Processing request...' : (model.error ? 'Request failed' : 'Success')}}
+        </div>
+    </div>
+</div>

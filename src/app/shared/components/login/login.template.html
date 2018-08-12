@@ -1,0 +1,21 @@
+<div class="container">
+    <div class="login-container">
+        <div class="logo" [style.background]="(model.logo ? model.logo.background : '') | safestyle">
+            <img *ngIf="model.logo && (model.logo.type==='image' || model.logo.type==='img')" [src]="model.logo.src">
+            <i *ngIf="model.logo && (model.logo.type!=='image' && model.logo.type!=='img')" [class]="model.logo.src"></i>
+        </div>
+        <div class="form" *ngIf="!model.loading">
+            <login-form *ngIf="model.show === 'login'" (event)="processLogin($event)"></login-form>
+            <register-form *ngIf="model.show === 'register'"></register-form>
+            <forgot-pass-form *ngIf="model.show === 'forgot'"></forgot-pass-form>
+        </div>
+        <div class="loader" *ngIf="model.loading">
+            <div class="icon">
+                <spinner type="circle-ring" color="rgba(0,0,0, .54)"></spinner>
+            </div>
+            <div class="text">
+                Loading user data...
+            </div>
+        </div>
+    </div>
+</div>

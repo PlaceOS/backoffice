@@ -1,0 +1,22 @@
+<div class="container" *ngIf="model.user && !model.loading">
+    <div class="header">
+        <topbar-header></topbar-header>
+    </div>
+    <div class="content">
+        <router-outlet></router-outlet>
+    </div>
+    <div class="footer">
+        <!-- <footer-menu></footer-menu> -->
+    </div>
+</div>
+<div class="container loader" *ngIf="model.loading">
+    <div class="no-item">
+        <div class="icon">
+            <spinner type="circle-ring" color="#fff"></spinner>
+        </div>
+        <div class="text">Loading application data...</div>
+    </div>
+</div>
+<div class="container login" *ngIf="!model.user">
+    <login-display></login-display>
+</div>

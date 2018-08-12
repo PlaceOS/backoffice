@@ -1,0 +1,460 @@
+{
+    "version": "0.15.0",
+    "build": "local-dev",
+    "env": "dev",
+    "debug": true,
+    "composer": {
+        "domain": "localhost:4200",
+        "route": "",
+        "protocol": "http:",
+        "use_domain": true,
+        "local_login": false
+    },
+    "app": {
+        "title": "ACA Projects",
+        "name": "ACA Projects",
+        "description": "ACA Projects Staff Application made in Angular 5+",
+        "short_name": "ACA",
+        "code": "ACA",
+        "login": {
+            "forgot": false
+        },
+        "analytics": {
+            "enabled": false,
+            "tracking_id": ""
+        },
+        "logo": {
+            "type": "img",
+            "src": "assets/img/logo.svg",
+            "inverse": "assets/img/logo-inverse.svg",
+            "background": ""
+        },
+        "banner": {
+            "enabled": true,
+            "header": true,
+            "home": false,
+            "type": "color",
+            "full": true,
+            "background": "assets/img/caterer-03.jpg"
+        },
+        "copyright": "Copyright 2018 ACA Projects",
+        "routing": false,
+        "style": {
+            "popout": true
+        },
+        "users": {
+            "visitors": true,
+            "external": true,
+            "can_add": false,
+            "custom_orgs": true
+        },
+        "schedule": {
+            "enabled": true,
+            "visitors": true,
+            "popout": false
+        },
+        "route_settings": {
+            "book": "booking"
+        },
+        "menu": {
+            "type": "sidebar",
+            "footer": "circles",
+            "named": false,
+            "home": true,
+            "reverse": true,
+            "list": [
+                {
+                    "id": "home",
+                    "name": "Home",
+                    "items": []
+                },
+                {
+                    "id": "book",
+                    "name": "Book",
+                    "items": []
+                },
+                {
+                    "id": "explore",
+                    "name": "Explore",
+                    "items": [
+                        {
+                            "id": "explore/spaces",
+                            "name": "Spaces"
+                        },
+                        {
+                            "id": "explore/people",
+                            "name": "People"
+                        }
+                    ]
+                },
+                {
+                    "id": "schedule",
+                    "name": "My Bookings",
+                    "items": []
+                },
+                {
+                    "id": "help",
+                    "name": "Help",
+                    "items": []
+                },
+                {
+                    "id": "control",
+                    "name": "Control",
+                    "items": []
+                }
+            ]
+        },
+        "hide": {
+            "heading": false
+        },
+        "page": {
+            "titles": {
+                "": "Home",
+                "home": "Home",
+                "book": "Book Space",
+                "book/room": "Find Space",
+                "book/attendees": "Manage Attendees",
+                "book/results": "Booking Results",
+                "explore": "Explore",
+                "explore/spaces": "Spaces",
+                "explore/people": "People",
+                "visitor": "Book Visitor",
+                "control": "Control"
+            },
+            "info": {
+                "profile": "Welcome to your profile",
+                "schedule": "Hello {{user}}, here is your schedule for today"
+            }
+        },
+        "home": {
+            "background": "assets/img/skyline.jpg",
+            "disclaimer": ""
+        },
+        "wifi": {
+            "background": "assets/img/skyline.jpg"
+        },
+        "tiles": [
+            {
+                "id": "book",
+                "name": "Book",
+                "color": "",
+                "icon": {
+                    "class": "material-icons",
+                    "value": "add"
+                }
+            },
+            {
+                "id": "explore/spaces",
+                "name": "Spaces",
+                "color": "",
+                "icon": {
+                    "class": "material-icons",
+                    "value": "desktop_windows"
+                }
+            },
+            {
+                "id": "explore/people",
+                "name": "People",
+                "color": "",
+                "icon": {
+                    "class": "material-icons",
+                    "value": "people"
+                }
+            },
+            {
+                "id": "schedule",
+                "name": "My Bookings",
+                "color": "",
+                "icon": {
+                    "class": "material-icons",
+                    "value": "schedule"
+                }
+            },
+            {
+                "id": "help",
+                "name": "Help",
+                "color": "",
+                "icon": {
+                    "class": "material-icons",
+                    "value": "help_outline"
+                }
+            },
+            {
+                "id": "control",
+                "name": "Control",
+                "color": "",
+                "icon": {
+                    "class": "material-icons",
+                    "value": "settings_remote"
+                }
+            }
+        ],
+        "zones": {
+            "enabled": false,
+            "toggle": "room"
+        },
+        "booking": {
+            "min_attendees": 1,
+            "recurrence": true,
+            "limit": 12,
+            "max_length": 480,
+            "min_length": 15,
+            "room_select": false,
+            "title_prefix": "",
+            "charge": false,
+            "terms": true,
+            "old_filters": false,
+            "privacy": true,
+            "control": false,
+            "fields": [
+                {
+                    "id": "room",
+                    "name": "Space",
+                    "icon": {
+                        "class": "material-icons",
+                        "value": "room"
+                    },
+                    "description": "",
+                    "type": "select",
+                    "edit": false,
+                    "required": true
+                },
+                {
+                    "id": "attendees",
+                    "name": "Attendees",
+                    "icon": {
+                        "class": "material-icons",
+                        "value": "people"
+                    },
+                    "description": "",
+                    "type": "select"
+                },
+                {
+                    "id": "date",
+                    "name": "Date",
+                    "icon": {
+                        "class": "material-icons",
+                        "value": "event"
+                    },
+                    "description": "",
+                    "type": "select",
+                    "required": true
+                },
+                {
+                    "id": "duration",
+                    "name": "Time",
+                    "icon": {
+                        "class": "material-icons",
+                        "value": "access_time"
+                    },
+                    "description": "",
+                    "type": "select",
+                    "required": true
+                },
+                {
+                    "id": "title",
+                    "name": "Subject",
+                    "icon": {
+                        "class": "material-icons",
+                        "value": "local_offer"
+                    },
+                    "description": "",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "id": "description",
+                    "name": "Description",
+                    "icon": {
+                        "class": "material-icons",
+                        "value": "description"
+                    },
+                    "description": "",
+                    "type": "text"
+                },
+                {
+                    "id": "catering",
+                    "name": "Catering",
+                    "icon": {
+                        "class": "material-icons",
+                        "value": "room_service"
+                    },
+                    "description": "",
+                    "type": "select"
+                }
+            ],
+            "banner": {
+                "enabled": true,
+                "src": "assets/img/banner2.jpg",
+                "links": [
+                    {
+                        "id": "book",
+                        "name": "Book Space"
+                    },
+                    {
+                        "id": "book/visitor",
+                        "name": "Book Visitor"
+                    }
+                ]
+            }
+        },
+        "explore": {
+            "old_overlay": false,
+            "control": false,
+            "banner": {
+                "search": true,
+                "roles": true,
+                "src": "assets/img/banner.jpg"
+            }
+        },
+        "control": {
+            "banner": {
+                "search": true,
+                "src": "assets/img/banner.jpg"
+            }
+        },
+        "people_min_char": 0,
+        "catering": {
+            "enabled": true
+        },
+        "colors": {
+            "rooms": {
+                "available": "#317c36",
+                "unavailable": "#cd212e",
+                "not-bookable": "#e6e6e6",
+                "pin": "#ff5252"
+            },
+            "desks": {
+                "available-fill": "#8cd4da",
+                "available-stroke": "#6ab2af",
+                "unavailable-fill": "#ec9d99",
+                "unavailable-stroke": "#ca7b77",
+                "not-bookable-fill": "#e6e6e6",
+                "not-bookable-stroke": "#c4c4c4"
+            }
+        },
+        "help": {
+            "type": "",
+            "banner": {
+                "enabled": false
+            },
+            "disclaimer": "",
+            "tiles": [
+                {
+                    "name": "AV Support",
+                    "description": "",
+                    "src": "",
+                    "color": "",
+                    "link": "https://www.google.com"
+                },
+                {
+                    "name": "IT Help",
+                    "description": "",
+                    "src": "",
+                    "color": "",
+                    "link": "https://www.acaprojects.com"
+                },
+                {
+                    "name": "Emergency Contact",
+                    "description": "",
+                    "src": "",
+                    "color": "",
+                    "link": "https://www.ses.nsw.gov.au"
+                },
+                {
+                    "name": "Website",
+                    "description": "",
+                    "src": "",
+                    "color": "",
+                    "link": "https://www.acaprojects.com"
+                }
+            ]
+        },
+        "map": {
+            "simple": true,
+            "info": true,
+            "settings": true,
+            "bookings": true,
+            "keys": {
+                "general": [
+                    {
+                        "id": "lifts",
+                        "name": "Lifts",
+                        "icon": {
+                            "class": "material-icons",
+                            "value": "location_city"
+                        }
+                    },
+                    {
+                        "id": "toilets",
+                        "name": "Toilets",
+                        "icon": {
+                            "class": "material-icons",
+                            "value": "accessibility"
+                        }
+                    },
+                    {
+                        "id": "stairs",
+                        "name": "Stairs",
+                        "icon": {
+                            "class": "material-icons",
+                            "value": "trending_up"
+                        }
+                    }
+                ],
+                "room": [
+                    {
+                        "id": "bookable",
+                        "name": "Bookable",
+                        "color": "#317c36"
+                    },
+                    {
+                        "id": "in-use",
+                        "name": "In use",
+                        "color": "#cd212e"
+                    },
+                    {
+                        "id": "no-book",
+                        "name": "Not bookable",
+                        "color": "#545654"
+                    }
+                ],
+                "desk": [
+                    {
+                        "id": "bookable",
+                        "name": "Bookable",
+                        "color": "#317c36"
+                    },
+                    {
+                        "id": "in-use",
+                        "name": "In use",
+                        "color": "#cd212e"
+                    },
+                    {
+                        "id": "no-book",
+                        "name": "Not bookable",
+                        "color": "#545654"
+                    }
+                ],
+                "zone": [
+                    {
+                        "id": "low",
+                        "name": "Low Usage",
+                        "color": "#317c36"
+                    },
+                    {
+                        "id": "medium",
+                        "name": "Medium Usage",
+                        "color": "#f4a81d"
+                    },
+                    {
+                        "id": "high",
+                        "name": "High Usage",
+                        "color": "#cd212e"
+                    }
+                ]
+            }
+        }
+    },
+    "mock": false
+}
