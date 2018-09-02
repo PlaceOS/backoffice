@@ -1,0 +1,17 @@
+
+.container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+section {
+    height: 100%;
+    width: 20em;
+}
+
+main {
+    height: 100%;
+    flex: 1;
+}

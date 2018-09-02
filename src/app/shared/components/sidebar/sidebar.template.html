@@ -1,0 +1,30 @@
+<div class="container">
+    <header>
+        <div class="heading">{{heading}}</div>
+        <div class="search">
+            <i class="material-icons">search</i>
+        </div>
+    </header>
+    <section class="search">
+        <div class="input">
+            <input [(ngModel)]="search" [placeholder]="'Filter ' + model.lowercase_header">
+        </div>
+        <div class="add">
+
+        </div>
+    </section>
+    <section class="list">
+        <div class="item" *ngFor="let item of list">
+            {{item?.name || item}}
+        </div>
+        <div class="loading" *ngIf="loading">
+            <spinner type="dot-bounce"></spinner>
+        </div>
+        <div class="no-item" *ngIf="!loading && (!list || list.length <= 0)">
+            <div class="icon">
+                <i class="material-icons">close</i>
+            </div>
+            <div class="text">No matches found</div>
+        </div>
+    </section>
+</div>

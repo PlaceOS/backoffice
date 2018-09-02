@@ -10,12 +10,14 @@ import { BaseComponent } from './base.component';
 import { LOGIN_COMPONENTS } from './login';
 
 import { ItemListComponent } from './item-list/item-list.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 @NgModule({
     declarations: [
         ...LOGIN_COMPONENTS,
         BaseComponent,
-        ItemListComponent
+        ItemListComponent,
+        SidebarComponent
     ],
     imports: [
         CommonModule,
@@ -26,7 +28,8 @@ import { ItemListComponent } from './item-list/item-list.component';
     exports: [
         ...LOGIN_COMPONENTS,
         BaseComponent,
-        ItemListComponent
+        ItemListComponent,
+        SidebarComponent
     ]
 })
 export class SharedComponentsModule { }

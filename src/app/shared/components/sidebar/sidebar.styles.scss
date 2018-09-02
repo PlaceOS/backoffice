@@ -1,0 +1,58 @@
+
+@import 'shared.styles';
+
+.container {
+    background-color: $color-ternary;
+    height: 100%;
+    width: 100;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    color: #fff;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 1em 1em .5em;
+
+    .heading {
+        flex: 1;
+        font-size: 1.5em;
+    }
+
+    .search {
+        display: none;
+        @include respond-to(mobile) {
+            display: initial;
+        }
+    }
+}
+
+section.search {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: .5em 1em 1em;
+    border-bottom: 1px solid rgba(#fff, .2);
+    .input {
+        flex: 1;
+    }
+}
+
+input {
+    background-color: rgba(#fff, .1);
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 1em;
+    font-size: 1em;
+    width: 100%;
+    padding: .25em 1em;
+    outline: none;
+}
+
+.list {
+    flex: 1;
+    width: 100%;
+}

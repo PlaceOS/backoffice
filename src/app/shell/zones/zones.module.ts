@@ -9,17 +9,21 @@ import { WidgetsModule } from '@acaprojects/ngx-widgets';
 import { ROUTES } from './zones.routes';
 
 import { ZonesComponent } from './zones.component';
+import { SharedComponentsModule } from '../../shared/components/shared-components.module';
+import { ZoneDisplayComponent } from './zone-display/zone-display.component';
 
 
 @NgModule({
     declarations: [
-        ZonesComponent
+        ZonesComponent,
+        ZoneDisplayComponent
     ],
     imports: [
         FormsModule,
         ComposerModule,
         WidgetsModule,
-        RouterModule.forChild(ROUTES)
+        RouterModule.forChild(ROUTES),
+        SharedComponentsModule
     ]
 })
 export class AppZonesModule { }
