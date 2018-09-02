@@ -11,13 +11,15 @@ import { LOGIN_COMPONENTS } from './login';
 
 import { ItemListComponent } from './item-list/item-list.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { SettingsDisplayComponent } from './settings-display/settings-display.component';
 
 @NgModule({
     declarations: [
         ...LOGIN_COMPONENTS,
         BaseComponent,
         ItemListComponent,
-        SidebarComponent
+        SidebarComponent,
+        SettingsDisplayComponent
     ],
     imports: [
         CommonModule,
@@ -29,7 +31,8 @@ import { SidebarComponent } from './sidebar/sidebar.component';
         ...LOGIN_COMPONENTS,
         BaseComponent,
         ItemListComponent,
-        SidebarComponent
+        SidebarComponent,
+        SettingsDisplayComponent
     ]
 })
 export class SharedComponentsModule { }

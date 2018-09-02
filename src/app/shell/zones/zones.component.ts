@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { BaseComponent } from '../../shared/components/base.component';
+import { AppService } from '../../services/app.service';
 
 @Component({
     selector: 'app-zones',
@@ -12,11 +13,12 @@ import { BaseComponent } from '../../shared/components/base.component';
 export class ZonesComponent extends BaseComponent implements OnInit {
     public model: any = {};
 
-    constructor(private route: ActivatedRoute) {
+    constructor(private service: AppService, private route: ActivatedRoute) {
         super();
     }
 
     public ngOnInit() {
+        this.model.list = [];
         this.subs.obs.route = this.route.paramMap.subscribe((params) => {
             this.model.id = '';
             if (params.has('id')) {
@@ -24,11 +26,21 @@ export class ZonesComponent extends BaseComponent implements OnInit {
             }
             this.model.show_sidebar = !this.model.id;
         });
+        this.subs.obs.list = this.service.Zones.listen('list', () => {
+            this.model.list = this.service.Zones.list();
+            this.model.loading = false;
+        });
     }
 
     public sidebarEvent(event: any) {
-        this.clearTimer('sidebar');
-        this.model.show_sidebar = false;
+        if (event && event.type === 'more') {
+            this.model.loading = true;
+            this.service.Zones.query({ offset: this.model.list.length || 0 });
+        } else if (event && event.type === 'select') {
+            this.service.navigate(`zones/${event.item.id}`);
+        } else {
+            this.showSidebar(false);
+        }
     }
 
     public showSidebar(state: boolean = true) {

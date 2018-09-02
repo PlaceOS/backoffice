@@ -30,7 +30,7 @@ export class MockZonesBackend extends BaseMockBackend {
                 created_at: moment().add(-Math.floor(Math.random() * 10000), 'm').unix(),
                 triggers: [],
                 trigger_data: [],
-                setting: this.generateSettings()
+                settings: this.generateSettings()
             });
         }
         this.model.zones = zone_list;

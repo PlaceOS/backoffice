@@ -14,11 +14,11 @@
 .sidebar {
     height: 100%;
     width: 20em;
-    transition: height 300ms;
     @include respond-to(mobile) {
         height: 3em;
         min-height: 3em;
         width: 100%;
+        transition: height 300ms;
     }
 
     &.show {

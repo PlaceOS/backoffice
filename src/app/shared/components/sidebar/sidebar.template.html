@@ -13,9 +13,12 @@
             <i class="material-icons">add</i>
         </div>
     </section>
-    <section class="list">
+    <section class="list" #item_list (scroll)="atBottom()">
         <div class="item" *ngFor="let item of list" (touchrelease)="select(item)">
-            {{item?.name || item}}
+            <div class="text">{{item?.name || item}}</div>
+            <div class="icon" *ngIf="active === item.id">
+                <i class="material-icons">done</i>
+            </div>
         </div>
         <div class="loading" *ngIf="loading">
             <spinner type="bounce" color="rgba(255, 255, 255, .2)"></spinner>

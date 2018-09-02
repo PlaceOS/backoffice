@@ -21,6 +21,13 @@ export class ZoneDisplayComponent extends BaseComponent implements OnInit {
         this.subs.obs.route = this.route.paramMap.subscribe((params) => {
             if (params.has('id')) {
                 this.model.id = params.get('id');
+                console.log('ID:', this.model.id);
+                this.service.Zones.show(this.model.id).then((item) => {
+                    this.timeout('item', () => this.model.item = item);
+                }, () => {
+                    this.service.error(`Failed to load data for zone "${this.model.id}"`);
+                    this.service.navigate('zones');
+                });
             }
         });
     }

@@ -1,0 +1,87 @@
+
+@import 'shared.styles';
+
+.pair {
+    display: flex;
+    padding: .25em .5em;
+    .label {
+        flex: 1;
+    }
+
+    .value {
+        padding-left: 1em;
+    }
+}
+
+.details {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: .25em .5em;
+    .label {
+        padding-left: .25em;
+    }
+}
+
+.line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 2em;
+    min-width: 2em;
+    .bar {
+        height: calc(100% - 1.1em);
+        width: 1px;
+        background-color: rgba(#000, .1);
+        margin: auto;
+    }
+}
+
+.sub-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-right: .25em;
+
+    .content {
+        flex: 1;
+        margin-left: 2em;
+    }
+}
+
+.object {
+    .icon i {
+        transition: transform 300ms;
+        transform: rotate(0deg);
+    }
+
+    &.show {
+        .icon i {
+            transform: rotate(90deg);
+        }
+    }
+}
+
+.item {
+    position: relative;
+    margin: .25em 0;
+    &:nth-child(2n) {
+        background-color: rgba($color-secondary, .1);
+        border-radius: 6px;
+    }
+    &:nth-child(2n - 1) {
+        background-color: rgba($color-ternary, .1);
+        border-radius: 6px;
+    }
+}
+
+.connect {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 1em;
+    height: 1px;
+    transform: translateX(-100%);
+    background-color: rgba(#000, .1);
+}
