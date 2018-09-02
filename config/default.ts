@@ -13,7 +13,7 @@ const settings = require('../src/assets/settings.json');
 
 const argv = yargs.argv;
 
-export let baseHref = '/staff';
+export let baseHref = '/backoffice';
 
 const prod_settings = {
     composer: {
