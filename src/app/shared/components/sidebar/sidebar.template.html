@@ -10,7 +10,7 @@
             <input [(ngModel)]="search" [placeholder]="'Filter ' + model.lowercase_header">
         </div>
         <div class="add">
-
+            <i class="material-icons">add</i>
         </div>
     </section>
     <section class="list">
@@ -18,7 +18,7 @@
             {{item?.name || item}}
         </div>
         <div class="loading" *ngIf="loading">
-            <spinner type="dot-bounce"></spinner>
+            <spinner type="bounce" color="rgba(255, 255, 255, .2)"></spinner>
         </div>
         <div class="no-item" *ngIf="!loading && (!list || list.length <= 0)">
             <div class="icon">
