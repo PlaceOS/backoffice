@@ -12,7 +12,7 @@ let credentials;
 try {
     credentials = require('./credentials.json');
 } catch (e) {
-    console.log('Error loading upload credentials:', e);
+    console.log('Error loading upload credentials:', e ? e.code || '' : '');
 }
 
 const ssh_creds = credentials ? credentials.ssh || {} : {};
@@ -29,7 +29,7 @@ const s3 = aws_s3({
     secretAccessKey: aws_creds.secret_access_key
 });
 
-gulp.task('upload', (next) => runSequence('upload:sftp', 'upload:aws-s3', next));
+gulp.task('upload', (next) => runSequence(/*'upload:sftp',*/ 'upload:aws-s3', next));
 
 gulp.task('upload:sftp', () => {
     if (!ssh_creds || !ssh_creds.host) { return; }

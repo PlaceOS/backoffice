@@ -1,3 +1,8 @@
+
+const domain = 'localhost:8888';
+const secure = false;
+const valid_ssl = false;
+
 const PROXY_CONFIG = [
     {
         context: [
@@ -9,16 +14,16 @@ const PROXY_CONFIG = [
             "/login",
             "/backoffice"
         ],
-        target: "http://localhost:8888",
-        secure: false,
+        target: `http${secure ? 's' : ''}://${domain}`,
+        secure: valid_ssl,
         changeOrigin: true
     },
     {
         context: [
             "/control/websocket",
         ],
-        target: "ws://localhost:8888",
-        secure: false,
+        target: `ws${secure ? 's' : ''}://${domain}`,
+        secure: valid_ssl,
         changeOrigin: true,
         ws: true
     }
