@@ -139,6 +139,103 @@ export class Utils {
         return items;
     }
 
+    /**
+     * Get a filtered list of items
+     * @param filter Value to filter on
+     * @param items List of results to filter
+     * @param fields Fields to check for matches on each item
+     */
+    public static filter(filter: string, items?: any[], fields: string[] = ['name', 'email']) {
+        let results: any[];
+            // Tokenise filter string
+        const filters = filter.toLowerCase().split(' ');
+        const list = {};
+        for (const f of filters) {
+            if (f) {
+                if (!list[f]) { list[f] = 0; }
+                list[f]++;
+            }
+        }
+            // Group similar tokens
+        const parts = [];
+        for (const f in list) {
+            if (list.hasOwnProperty(f)) {
+                parts.push({ word: f, count: list[f], regex: new RegExp(f, 'gi') });
+            }
+        }
+        parts.sort((a, b) => b.word.length - a.word.length || a.word.localeCompare(b.word));
+        const item_list = JSON.parse(JSON.stringify(items || []));
+        if (filter) {
+            results = item_list.filter(
+                (item) => {
+                    let match_count = 0;
+                    item.match_index = 65535;
+                    item.match = '';
+                    const field_list = {};
+                        // Initialise field match variables
+                    for (const f of fields) {
+                        field_list[f] = {
+                            value: (item[f] || '').toLowerCase(),
+                            index: 65536,
+                            matched: 0
+                        };
+                    }
+                        // Search for matches with the tokenised filter string
+                    for (const i of parts) {
+                        if (i.word) {
+                            // Check fields for matches
+                            for (const f of fields) {
+                                const field = field_list[f];
+                                const index = field.value.indexOf(i.word);
+                                field.index = index < field.index ? index : field.index;
+                                field.matches = (field.value.match(i.regex) || []).length;
+                                field.value = field.value.replace(i.regex, ' ');
+                            }
+                            // Update token match count
+                            for (const f of fields) {
+                                const field = field_list[f];
+                                if (field.matches >= i.count) {
+                                    match_count++;
+                                        // Update field matches
+                                    let changed = 0;
+                                    const tokens = (item[`match_${f}`] || item[f] || '').split(' ');
+                                    for (const k of tokens) {
+                                        if (changed >= i.count) {
+                                            break;
+                                        }
+                                        if (k.toLowerCase().indexOf(i.word) >= 0 && k.indexOf('`') < 0) {
+                                            tokens[tokens.indexOf(k)] = k.replace(i.regex, '`$&`');
+                                            changed++;
+                                        }
+                                    }
+                                    item[`match_${f}`] = tokens.join(' ');
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    // Get field with the most relevent match
+                    for (const f of fields) {
+                        const field = field_list[f];
+                        if (field.index < item.match_index && field.index >= 0) {
+                            item.match_index = field.index;
+                            item.match = f;
+                        }
+                    }
+                    return item.match_index >= 0 && item.match && (match_count >= parts.length);
+                });
+        } else {
+            results = item_list;
+        }
+        // Sort by order of relevence then name
+        results.sort((a, b) => {
+            const diff = a.match_index - b.match_index;
+            return diff === 0 ? a.name.localeCompare(b.name) : diff;
+        });
+        return results;
+    }
+
+
     constructor() {
         throw new Error('This is a static class');
     }

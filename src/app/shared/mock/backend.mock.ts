@@ -1,17 +1,18 @@
 /*
 * @Author: alex.sorafumo
 * @Date:   2017-04-03 15:50:46
- * @Last Modified by: Alex Sorafumo
- * @Last Modified time: 2018-08-12 21:44:32
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-09-02 20:25:40
 */
 
 import * as faker from 'faker';
 
 import { MockUsersBackend } from './backend/users.mock';
+import { MockZonesBackend } from './backend/zones.mock';
 
 export class MockBackend {
     public model: any = {
-        api_route: 'api/staff',
+        api_route: 'control/api',
         domain: 'acaprojects.com',
         DESK_OFFSET: 0,
         city: 'Sydney',
@@ -37,7 +38,12 @@ export class MockBackend {
         this.model.backend.users.listen((ustate) => {
             if (!ustate) { return; }
             this.update(this.model.backend.users.data);
-            this.model.loaded = true;
+            this.model.backend.zones = new MockZonesBackend(this.model);
+            this.model.backend.zones.listen((zstate) => {
+                if (!zstate) { return; }
+                this.update(this.model.backend.users.data);
+                this.model.loaded = true;
+            });
         });
     }
 

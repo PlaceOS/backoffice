@@ -20,6 +20,7 @@ import { SettingsService } from './settings.service';
 import { AnalyticsService } from './data/analytics.service';
 import { CommentsService } from './data/comments.service';
 import { UsersService } from './data/users.service';
+import { ZoneService } from './data/zone.service';
 
 import { Utils } from '../shared/utility.class';
 
@@ -29,7 +30,7 @@ import { ConfirmModalComponent } from '../overlays/confirm-modal/confirm-modal.c
     providedIn: 'root'
 })
 export class AppService {
-    private api_base = 'api/staff';
+    private api_base = 'control/api';
 
     private subjects: any = {};
     private observers: any = {};
@@ -46,10 +47,12 @@ export class AppService {
         private settings: SettingsService,
         private systems: SystemsService,
         private comments: CommentsService,
-        private users: UsersService
+        private users: UsersService,
+        private zones: ZoneService
     ) {
             // Set parent service on child services
         this.analytics.parent = this.comments.parent = this.users.parent = this;
+        this.zones.parent = this;
             // Create subjects
         this.subjects.system = new BehaviorSubject('');
         this.observers.system = this.subjects.system.asObservable();
@@ -202,6 +205,7 @@ export class AppService {
     set system(value: string) { this.subjects.system.next(value); }
         // Getters for data/API services
     get Users() { return this.users; }
+    get Zones() { return this.zones; }
     /**
      * Set the page title
      * @param str New value to set the page title

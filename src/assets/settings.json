@@ -13,7 +13,7 @@
     "app": {
         "title": "ACA Engine",
         "name": "ACA Engin",
-        "description": "ACA Engine Application made in Angular 6+",
+        "description": "ACA Engine Frontend made in Angular 6+",
         "short_name": "Engine",
         "code": "ENGINE",
         "login": {

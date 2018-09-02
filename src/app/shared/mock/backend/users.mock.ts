@@ -1,8 +1,8 @@
 /*
  * @Author: alex.sorafumo
  * @Date:   2017-04-03 15:50:46
- * @Last Modified by: Alex Sorafumo
- * @Last Modified time: 2018-08-12 21:12:49
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-09-02 20:25:07
  */
 
 import { MOCK_REQ_HANDLER } from '@acaprojects/ngx-composer';
@@ -16,49 +16,11 @@ export class MockUsersBackend extends BaseMockBackend {
 
     constructor(protected model) {
         super(model);
-        MOCK_REQ_HANDLER.unregister('/control/api/users/current');
     }
 
     protected load() {
         this.model.log('USERS', 'Loading mock data for users...');
         this.loadUsers();
-        this.loadUser().then(() => {
-            this.state.next(true);
-            MOCK_REQ_HANDLER.register(`/${this.model.api_route}/people/:user`, this.model.user_loc, (event) => {
-                if (event.params.user) {
-                    const id = event.params.user;
-                    if (event.data && event.data[id]) {
-                        return [event.data[id]];
-                    }
-                }
-                return null;
-            });
-        });
-    }
-
-    private loadUser(tries: number = 0) {
-        return new Promise((resolve) => {
-            if (tries > 10) {
-                return resolve();
-            }
-            if (localStorage) {
-                let user: any = null;
-                const email = localStorage.getItem('STAFF.user_email');
-                if (email && this.model.users) {
-                    for (const usr of this.model.users) {
-                        if (email === usr.email) { user = usr; }
-                    }
-                    if (!user) {
-                        return this.loadBasicUser().then(() => resolve());
-                    }
-                } else {
-                    setTimeout(() => this.loadUser(++tries).then(() => resolve()), 300);
-                }
-            }
-            this.loadBasicUser().then(() => {
-                resolve();
-            });
-        });
     }
 
     private loadUsers() {
@@ -118,6 +80,7 @@ export class MockUsersBackend extends BaseMockBackend {
             }
             return null;
         });
+        this.state.next(true);
     }
 
     private loadBasicUser(user?: any, tries: number = 0) {

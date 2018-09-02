@@ -1,7 +1,6 @@
 import { CommsService } from '@acaprojects/ngx-composer';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 
 import * as moment from 'moment';
@@ -10,6 +9,8 @@ import { Utils } from '../../shared/utility.class';
 export interface IUser {
     id: string;
     name: string;
+    first_name?: string;
+    last_name?: string;
     email: string;
     win_id?: string;
     type?: 'partner' | 'internal' | 'external';
@@ -17,9 +18,11 @@ export interface IUser {
     state?: string;
     image: string;
     phone?: string;
+    external?: boolean;
     staff_code?: string;
     organisation_id?: string;
     organisation_name?: string;
+    organisation?: { id: string, name: string } | string;
     b_unit?: string;
 }
 
@@ -30,12 +33,12 @@ export class UsersService {
     public parent: any = null;
 
     private model: any = {};
-    // private timers: any = {};
+    private timers: any = {};
     private promises: any = {};
     private subjects: any = {};
     private observers: any = {};
 
-    constructor(private http: CommsService, private http_unauth: HttpClient, private router: Router) {
+    constructor(private http: CommsService, private http_unauth: HttpClient) {
         this.subjects.user_list = new BehaviorSubject<IUser[]>([]);
         this.observers.user_list = this.subjects.user_list.asObservable();
         this.subjects.user = new BehaviorSubject<IUser>(null);
@@ -52,6 +55,9 @@ export class UsersService {
             return setTimeout(() => this.init(), 500);
         }
         this.loadActiveUser();
+        if (!this.parent.Settings.get('app.people_min_char')) {
+            this.loadUsers();
+        }
     }
 
     /**
@@ -99,6 +105,18 @@ export class UsersService {
         this.subjects.state.next(value);
     }
 
+    public setToken(token: string, expiry: number) {
+        if (!expiry) { expiry = moment().add(7, 'd').valueOf(); }
+        const path = `${location.origin}${this.parent.Settings.get('composer.route') || ''}/oauth-resp.html`;
+        if (localStorage) {
+            const client_id = this.http.hash(path);
+            localStorage.setItem(`${client_id}_access_token`, token);
+            localStorage.setItem(`${client_id}_expires_at`, `${expiry}`);
+            location.reload();
+        }
+        return path;
+    }
+
     /**
      * Login with given credentials
      * @param fields Key value pairs of post parameters
@@ -132,6 +150,10 @@ export class UsersService {
         }, () => this.loadActiveUser());
     }
 
+    public logout() {
+        this.http.logout();
+    }
+
 
     /**
      * Get list of users in alphabetical order
@@ -150,7 +172,7 @@ export class UsersService {
     public get(id: string, mutable: boolean = false) {
         const list = this.subjects.user_list.getValue();
         for (const usr of list) {
-            if (usr.email === id || usr.id === id || usr.staff_code === id || usr.win_id === id) {
+            if (usr.email.toLowerCase() === id.toLowerCase() || usr.id === id || usr.staff_code === id || usr.win_id === id) {
                 return mutable ? usr : JSON.parse(JSON.stringify(usr));
             }
         }
@@ -215,113 +237,12 @@ export class UsersService {
     }
 
     /**
-     * Get a filtered list of users
-     * @param filter Value to filter on
-     * @param items List of users to filter. If not set it will user the global list
-     * @param fields Fields to check for matches on each item
-     */
-    public getFilteredUsers(filter: string, items?: any[], fields: string[] = ['name', 'email']) {
-        let users: any[];
-            // Tokenise filter string
-        const filters = filter.toLowerCase().split(' ');
-        const list = {};
-        for (const f of filters) {
-            if (f) {
-                if (!list[f]) { list[f] = 0; }
-                list[f]++;
-            }
-        }
-            // Group similar tokens
-        const parts = [];
-        for (const f in list) {
-            if (list.hasOwnProperty(f)) {
-                parts.push({ word: f, count: list[f], regex: new RegExp(f, 'gi') });
-            }
-        }
-        parts.sort((a, b) => b.word.length - a.word.length || a.word.localeCompare(b.word));
-        const user_list = JSON.parse(JSON.stringify(items || this.getUsers() || []));
-        if (filter) {
-            users = user_list.filter(
-                (user) => {
-                    let match_count = 0;
-                    user.match_index = 65535;
-                    user.match = '';
-                    const field_list = {};
-                        // Initialise field match variables
-                    for (const f of fields) {
-                        field_list[f] = {
-                            value: (user[f] || '').toLowerCase(),
-                            index: 65536,
-                            matched: 0
-                        };
-                    }
-                        // Search for matches with the tokenised filter string
-                    for (const i of parts) {
-                        if (i.word) {
-                            // Check fields for matches
-                            for (const f of fields) {
-                                const field = field_list[f];
-                                const index = field.value.indexOf(i.word);
-                                field.index = index < field.index ? index : field.index;
-                                field.matches = (field.value.match(i.regex) || []).length;
-                                field.value = field.value.replace(i.regex, ' ');
-                            }
-                            // Update token match count
-                            for (const f of fields) {
-                                const field = field_list[f];
-                                if (field.matches >= i.count) {
-                                    match_count++;
-                                        // Update field matches
-                                    let changed = 0;
-                                    const tokens = (user[`match_${f}`] || user[f] || '').split(' ');
-                                    for (const k of tokens) {
-                                        if (changed >= i.count) {
-                                            break;
-                                        }
-                                        if (k.toLowerCase().indexOf(i.word) >= 0 && k.indexOf('`') < 0) {
-                                            tokens[tokens.indexOf(k)] = k.replace(i.regex, '`$&`');
-                                            changed++;
-                                        }
-                                    }
-                                    user[`match_${f}`] = tokens.join(' ');
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    // Get field with the most relevent match
-                    for (const f of fields) {
-                        const field = field_list[f];
-                        if (field.index < user.match_index && field.index >= 0) {
-                            user.match_index = field.index;
-                            user.match = f;
-                        }
-                    }
-                    return user.match_index >= 0 && user.match && (match_count >= parts.length);
-                });
-        } else {
-            users = user_list;
-        }
-        // Sort by order of relevence then name
-        users.sort((a, b) => {
-            const diff = a.match_index - b.match_index;
-            return diff === 0 ? a.name.localeCompare(b.name) : diff;
-        });
-        return users;
-    }
-
-    /**
      * Search for user
      * @param fields Key, value pairs for query parameters
      * @param tries Retry value. DON'T USE
      */
     public query(fields?: any, tries: number = 0) {
         if (tries > 4) { return new Promise((rs, rj) => rj('Too many tries')); }
-        if (!this.parent) {
-            return new Promise((rs, rj) =>
-                setTimeout(() => this.query(fields, tries).then((v) => rs(v), (e) => rj(e)), 300 * ++tries)
-            );
-        }
         const query = Utils.generateQueryString(fields);
         const key = `query|${query}`;
         if (!this.promises[key]) {
@@ -496,10 +417,12 @@ export class UsersService {
                 id: user.id || user.email,
                 win_id: user.email,
                 name: user.name || `${user.first_name} ${user.last_name}`,
+                first_name: user.first_name,
+                last_name: user.last_name,
                 type: user.title ? (user.title.toLowerCase() === 'partner' ? 'partner' : 'internal') : 'external',
                 image: null,
                 email: user.email,
-                phone: user.phone,
+                phone: user.phone || user.mobile,
                 b_unit: user.department,
                 organisation_id: org.id,
                 organisation_name: org.name,
