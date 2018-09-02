@@ -33,6 +33,7 @@ export class SidebarMenuComponent extends BaseComponent implements OnInit {
             this.model.show = state;
             this.timeout('cancel_close', () => this.clearTimer('close'), 50);
         });
+        this.checkRoute();
     }
 
     public checkRoute() {

@@ -1,8 +1,8 @@
 <div class="container">
     <header>
         <div class="heading">{{heading}}</div>
-        <div class="search">
-            <i class="material-icons">search</i>
+        <div class="search" (touchrelease)="close ? event.emit({ type: 'close' }) : ''">
+            <i class="material-icons">{{ close ? 'close' : 'search'}}</i>
         </div>
     </header>
     <section class="search">
@@ -14,7 +14,7 @@
         </div>
     </section>
     <section class="list">
-        <div class="item" *ngFor="let item of list">
+        <div class="item" *ngFor="let item of list" (touchrelease)="select(item)">
             {{item?.name || item}}
         </div>
         <div class="loading" *ngIf="loading">
@@ -24,7 +24,7 @@
             <div class="icon">
                 <i class="material-icons">close</i>
             </div>
-            <div class="text">No matches found</div>
+            <div class="text">{{ !search ? 'No ' + model.lowercase_header : 'No matches found'}}</div>
         </div>
     </section>
 </div>

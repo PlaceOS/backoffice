@@ -1,0 +1,53 @@
+
+<div class="container">
+    <div class="item">
+        <header>
+            <div class="heading"></div>
+            <div class="options">
+                <div class="option" click-responder (touchrelease)="edit()">
+                    <i class="material-icons">edit</i>
+                </div>
+                <div class="option" click-responder (touchrelease)="delete()">
+                    <i class="material-icons">delete</i>
+                </div>
+            </div>
+        </header>
+        <section>
+            <tab-group state="about">
+                <tab id="about" [template]="about">
+                    <div class="tab">
+                        <i class="material-icons">info</i>
+                        <div>About</div>
+                    </div>
+                    <ng-template #about></ng-template>
+                </tab>
+                <tab id="systems" [template]="systems">
+                    <div class="tab">
+                        <i class="material-icons">account_balance</i>
+                        <div>Systems</div>
+                    </div>
+                    <ng-template #systems></ng-template>
+                </tab>
+                <tab id="triggers" [template]="triggers">
+                    <div class="tab">
+                        <i class="material-icons">timer</i>
+                        <div>Triggers</div>
+                    </div>
+                    <ng-template #triggers></ng-template>
+                </tab>
+            </tab-group>
+        </section>
+    </div>
+    <div class="no-item not-mobile center" *ngIf="!model.id">
+        <div class="icon">
+            <i class="material-icons">arrow_back</i>
+        </div>
+        <div class="text">Select a zone from the sidebar</div>
+    </div>
+    <div class="no-item mobile center" *ngIf="!model.id">
+        <div class="icon">
+            <i class="material-icons">arrow_upward</i>
+        </div>
+        <div class="text">Select a zone from the search bar</div>
+    </div>
+</div>

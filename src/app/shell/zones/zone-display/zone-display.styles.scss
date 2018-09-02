@@ -1,0 +1,67 @@
+
+@import 'shared.styles';
+
+.container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow: auto;
+}
+
+.item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: #fff;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    padding: 1em 1.5em;
+    .heading {
+        flex: 1;
+        font-size: 2em;
+    }
+
+    .options {
+        display: flex;
+    }
+
+    .option {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 1.5em;
+        width: 1.5em;
+        font-size: 1.5em;
+        border-radius: 100%;
+        overflow: hidden;
+        &:hover {
+            background-color: #f0f0f0;
+        }
+
+        i {
+            margin: .25em;
+        }
+    }
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(30vw - 9.3em);
+    @include respond-to(mobile) {
+        width: calc(30vw - 3.2em);
+    }
+}
+
+.no-item {
+    color: rgba(#000, .54);
+}

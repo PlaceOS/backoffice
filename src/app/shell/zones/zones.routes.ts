@@ -4,5 +4,6 @@ import { ZonesComponent } from './zones.component';
 
 export const ROUTES: Routes = [
     { path: '', component: ZonesComponent, children: [] },
+    { path: ':id', component: ZonesComponent, children: [] },
     { path: '**',      redirectTo: '' },
 ];

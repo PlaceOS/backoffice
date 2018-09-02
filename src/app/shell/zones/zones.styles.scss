@@ -1,17 +1,37 @@
 
+@import 'shared.styles';
+
 .container {
     display: flex;
     align-items: center;
     height: 100%;
     width: 100%;
+    @include respond-to(mobile) {
+        flex-direction: column;
+    }
 }
 
-section {
+.sidebar {
     height: 100%;
     width: 20em;
+    transition: height 300ms;
+    @include respond-to(mobile) {
+        height: 3em;
+        min-height: 3em;
+        width: 100%;
+    }
+
+    &.show {
+        height: 100%;
+    }
 }
 
 main {
+    position: relative;
     height: 100%;
     flex: 1;
+    @include respond-to(mobile) {
+        height: auto;
+        width: 100%;
+    }
 }

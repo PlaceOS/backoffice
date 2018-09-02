@@ -1,8 +1,8 @@
 <div class="container">
-    <section>
-        <sidebar heading="Zones"></sidebar>
-    </section>
-    <main>
+    <div class="sidebar" [class.show]="model.show_sidebar" (tap)="showSidebar()">
+        <sidebar heading="Zones" [close]="model.show_sidebar" (event)="sidebarEvent($event)"></sidebar>
+    </div>
+    <main (touchrelease)="showSidebar(false)">
         <zone-display></zone-display>
     </main>
 </div>

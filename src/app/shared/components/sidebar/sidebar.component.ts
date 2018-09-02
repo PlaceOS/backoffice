@@ -10,8 +10,10 @@ export class SidebarComponent implements OnChanges {
     @Input() public heading = '';
     @Input() public list: any[] = [];
     @Input() public loading = false;
+    @Input() public close = false;
     @Input() public search = '';
     @Output() public searchChange = new EventEmitter();
+    @Output() public event = new EventEmitter();
 
     public model: any = {};
 
@@ -19,5 +21,9 @@ export class SidebarComponent implements OnChanges {
         if (changes.heading) {
             this.model.lowercase_header = (this.heading || '').toLowerCase();
         }
+    }
+
+    public select(item) {
+        this.event.emit({ type: 'select', item });
     }
 }

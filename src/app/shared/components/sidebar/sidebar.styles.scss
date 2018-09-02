@@ -10,13 +10,15 @@
     flex-direction: column;
     color: #fff;
     box-shadow: 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12);
+    overflow: hidden;
 }
 
 header {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 1em 1em .5em;
+    padding: .5em 1em;
+    min-height: 3em;
 
     .heading {
         flex: 1;
@@ -25,6 +27,7 @@ header {
 
     .search {
         display: none;
+        font-size: 1.5em;
         @include respond-to(mobile) {
             display: initial;
         }
@@ -34,9 +37,10 @@ header {
 section.search {
     display: flex;
     align-items: center;
-    width: 100%;
     padding: .5em 1em 1em;
-    border-bottom: 1px solid rgba(#fff, .2);
+    width: 100%;
+    border-bottom: 1px solid rgba(#fff, .2);    
+    min-height: 3em;
     .input {
         flex: 1;
     }
@@ -69,6 +73,9 @@ input {
     border: 1px solid #fff;
     border-radius: 1em;
     margin-left: .5em;
+    i {
+        font-size: 1.2em;
+    }
 }
 
 .no-item {
