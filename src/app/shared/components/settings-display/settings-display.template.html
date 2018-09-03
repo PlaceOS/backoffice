@@ -8,7 +8,7 @@
         <div class="object" *ngIf="item.type === 'object'" [class.show]="item.show">
             <div class="details">
                 <div class="connect" *ngIf="sub"></div>
-                <div class="icon" (touchrelease)="item.show = !item.show">
+                <div class="icon" [style.transform]="item.show ? 'rotate(90deg)' : ''" (touchrelease)="item.show = !item.show">
                     <i class="material-icons">keyboard_arrow_right</i>
                 </div>
                 <div class="label">{{item.key}}</div>

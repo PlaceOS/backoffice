@@ -28,8 +28,8 @@
     top: 0;
     left: 0;
     bottom: 0;
-    width: 2em;
-    min-width: 2em;
+    width: 1.5em;
+    min-width: 1.5em;
     .bar {
         height: calc(100% - 1.1em);
         width: 1px;
@@ -46,7 +46,7 @@
 
     .content {
         flex: 1;
-        margin-left: 2em;
+        margin-left: 1.5em;
     }
 }
 
@@ -54,12 +54,6 @@
     .icon i {
         transition: transform 300ms;
         transform: rotate(0deg);
-    }
-
-    &.show {
-        .icon i {
-            transform: rotate(90deg);
-        }
     }
 }
 
@@ -80,7 +74,7 @@
     position: absolute;
     top: 50%;
     left: 0;
-    width: 1em;
+    width: .75em;
     height: 1px;
     transform: translateX(-100%);
     background-color: rgba(#000, .1);
