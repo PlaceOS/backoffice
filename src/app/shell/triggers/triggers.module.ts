@@ -1,5 +1,6 @@
 
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
@@ -9,6 +10,7 @@ import { WidgetsModule } from '@acaprojects/ngx-widgets';
 import { ROUTES } from './triggers.routes';
 
 import { TriggersComponent } from './triggers.component';
+import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 
 
 @NgModule({
@@ -16,10 +18,12 @@ import { TriggersComponent } from './triggers.component';
         TriggersComponent
     ],
     imports: [
+        CommonModule,
         FormsModule,
         ComposerModule,
         WidgetsModule,
-        RouterModule.forChild(ROUTES)
+        RouterModule.forChild(ROUTES),
+        SharedComponentsModule
     ]
 })
 export class AppTriggersModule { }

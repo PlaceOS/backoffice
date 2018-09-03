@@ -1,0 +1,8 @@
+<div class="container">
+    <div class="sidebar" [class.show]="model.show_sidebar" (tap)="showSidebar()">
+        <sidebar heading="Drivers" [list]="model.list" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
+    </div>
+    <main (touchrelease)="showSidebar(false)">
+        <driver-display></driver-display>
+    </main>
+</div>

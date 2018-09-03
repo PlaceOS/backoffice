@@ -18,7 +18,7 @@ export interface IEngineZone {
 @Injectable({
     providedIn: 'root'
 })
-export class ZoneService {
+export class ZonesService {
     public parent: any = null;
 
     private model: any = {};
@@ -72,6 +72,13 @@ export class ZoneService {
     public query(fields?: any, tries: number = 0) {
         if (tries > 4) { return new Promise((rs, rj) => rj('Too many tries')); }
         const query = Utils.generateQueryString(fields);
+        let update = true;
+        for (const f in fields) {
+            if (fields.hasOwnProperty(f) && f !== 'offset' && f !== 'limit') {
+                update = false;
+                break;
+            }
+        }
         const key = `query|${query}`;
         if (!this.promises[key]) {
             this.promises[key] = new Promise((resolve, reject) => {
@@ -79,7 +86,7 @@ export class ZoneService {
                 this.http.get(url).subscribe(
                     (resp: any) => {
                         const item_list = this.processList(resp.results);
-                        this.updateList(item_list);
+                        if (update) { this.updateList(item_list); }
                         resolve(item_list);
                         setTimeout(() => this.promises[key] = null, 5 * 1000);
                     }, (err) => {
@@ -151,15 +158,15 @@ export class ZoneService {
         return output_list;
     }
 
-    private processItem(item: any) {
-        const zone: IEngineZone = {
-            id: item.id,
-            name: item.name,
-            description: item.description,
-            settings: item.settings,
-            created: item.created_at * 1000
+    private processItem(raw_item: any) {
+        const item: IEngineZone = {
+            id: raw_item.id,
+            name: raw_item.name,
+            description: raw_item.description,
+            settings: raw_item.settings,
+            created: raw_item.created_at * 1000
         };
-        return zone;
+        return item;
     }
 
 }

@@ -42,12 +42,12 @@ export class SidebarMenuComponent extends BaseComponent implements OnInit {
             if (this.model.menu && this.model.menu.list) {
                 let found = false;
                 for (const i of this.model.menu.list) {
-                    i.active = route === `/${i.id}` && !found;
-                    if (!found) { found = route === `/${i.id}`; }
+                    i.active = route.indexOf(`/${i.id}`) === 0 && !found;
+                    if (!found) { found = route.indexOf(`/${i.id}`) === 0; }
                     if (i.items) {
                         for (const itm of i.items) {
-                            itm.active = route === `/${itm.id}` && !found;
-                            if (!found) { found = route === `/${itm.id}`; }
+                            itm.active = route.indexOf(`/${itm.id}`) === 0 && !found;
+                            if (!found) { found = route.indexOf(`/${itm.id}`) === 0; }
                         }
                     }
                 }

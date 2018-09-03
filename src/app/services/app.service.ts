@@ -20,7 +20,8 @@ import { SettingsService } from './settings.service';
 import { AnalyticsService } from './data/analytics.service';
 import { CommentsService } from './data/comments.service';
 import { UsersService } from './data/users.service';
-import { ZoneService } from './data/zone.service';
+import { ZonesService } from './data/zones.service';
+import { DriversService } from './data/drivers.service';
 
 import { Utils } from '../shared/utility.class';
 
@@ -48,11 +49,12 @@ export class AppService {
         private systems: SystemsService,
         private comments: CommentsService,
         private users: UsersService,
-        private zones: ZoneService
+        private zones: ZonesService,
+        private drivers: DriversService
     ) {
             // Set parent service on child services
         this.analytics.parent = this.comments.parent = this.users.parent = this;
-        this.zones.parent = this;
+        this.zones.parent = this.drivers.parent = this;
             // Create subjects
         this.subjects.system = new BehaviorSubject('');
         this.observers.system = this.subjects.system.asObservable();
@@ -206,6 +208,7 @@ export class AppService {
         // Getters for data/API services
     get Users() { return this.users; }
     get Zones() { return this.zones; }
+    get Drivers() { return this.drivers; }
     /**
      * Set the page title
      * @param str New value to set the page title

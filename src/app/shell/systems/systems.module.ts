@@ -10,6 +10,7 @@ import { WidgetsModule } from '@acaprojects/ngx-widgets';
 import { ROUTES } from './systems.routes';
 
 import { SystemsComponent } from './systems.component';
+import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { SystemsComponent } from './systems.component';
         FormsModule,
         ComposerModule,
         WidgetsModule,
-        RouterModule.forChild(ROUTES)
+        RouterModule.forChild(ROUTES),
+        SharedComponentsModule
     ]
 })
 export class AppSystemsModule { }
