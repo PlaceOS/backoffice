@@ -83,7 +83,7 @@ export class DriversService {
         const key = `query|${query}`;
         if (!this.promises[key]) {
             this.promises[key] = new Promise((resolve, reject) => {
-                const url = `${this.parent.api_endpoint}/zones${query ? '?' + query : ''}`;
+                const url = `${this.parent.api_endpoint}/dependencies${query ? '?' + query : ''}`;
                 this.http.get(url).subscribe(
                     (resp: any) => {
                         const item_list = this.processList(resp.results);
@@ -104,7 +104,7 @@ export class DriversService {
         if (!this.promises[key]) {
             this.promises[key] = new Promise((resolve, reject) => {
                 const query = complete ? 'complete=true' : '';
-                const url = `${this.parent.api_endpoint}/zones/${id}${query ? '?' + query : ''}`;
+                const url = `${this.parent.api_endpoint}/dependencies/${id}${query ? '?' + query : ''}`;
                 this.http.get(url).subscribe(
                     (resp: any) => {
                         const item = this.processItem(resp);

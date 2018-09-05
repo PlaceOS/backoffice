@@ -26,18 +26,18 @@ export class DriversComponent extends BaseComponent implements OnInit {
             }
             this.model.show_sidebar = !this.model.id;
         });
-        this.subs.obs.list = this.service.Zones.listen('list', () => {
-            this.model.list = this.service.Zones.list();
-            this.model.loading = false;
+        this.subs.obs.list = this.service.Drivers.listen('list', () => {
+            this.model.list = this.service.Drivers.list();
+            this.timeout('loading', () => this.model.loading = false, 10);
         });
     }
 
     public sidebarEvent(event: any) {
         if (event && event.type === 'more') {
-            this.model.loading = true;
+            this.timeout('loading', () => this.model.loading = true, 10);
             this.service.Drivers.query({ offset: this.model.list.length || 0 });
         } else if (event && event.type === 'select') {
-            this.service.navigate(`zones/${event.item.id}`);
+            this.service.navigate(`drivers/${event.item.id}`);
         } else {
             this.showSidebar(false);
         }

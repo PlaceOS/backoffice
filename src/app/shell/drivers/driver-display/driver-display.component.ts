@@ -22,7 +22,7 @@ export class DriverDisplayComponent extends BaseComponent implements OnInit {
             if (params.has('id')) {
                 this.model.id = params.get('id');
                 console.log('ID:', this.model.id);
-                this.service.Zones.show(this.model.id).then((item) => {
+                this.service.Drivers.show(this.model.id).then((item) => {
                     this.timeout('item', () => this.model.item = item);
                 }, () => {
                     this.service.error(`Failed to load data for driver "${this.model.id}"`);

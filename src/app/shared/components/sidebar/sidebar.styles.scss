@@ -78,6 +78,7 @@ input {
 }
 
 .add {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -89,8 +90,20 @@ input {
     border-radius: 1em;
     cursor: pointer;
     margin-left: .5em;
+    transition: color 300ms, background-color 300ms;
+    overflow: hidden;
+    
     i {
         font-size: 1.2em;
+    }
+
+    &:hover {
+        background-color: #fff;
+        color: $color-ternary;
+    }
+    &:active {
+        background-color: #ccc;
+        border-color: #ccc;
     }
 }
 

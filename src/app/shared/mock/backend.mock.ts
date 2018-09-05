@@ -9,6 +9,7 @@ import * as faker from 'faker';
 
 import { MockUsersBackend } from './backend/users.mock';
 import { MockZonesBackend } from './backend/zones.mock';
+import { MockDriversBackend } from './backend/driver.mock';
 
 export class MockBackend {
     public model: any = {
@@ -41,8 +42,13 @@ export class MockBackend {
             this.model.backend.zones = new MockZonesBackend(this.model);
             this.model.backend.zones.listen((zstate) => {
                 if (!zstate) { return; }
-                this.update(this.model.backend.users.data);
-                this.model.loaded = true;
+                this.update(this.model.backend.zones.data);
+                this.model.backend.drivers = new MockDriversBackend(this.model);
+                this.model.backend.drivers.listen((depstate) => {
+                    if (!depstate) { return; }
+                    this.update(this.model.backend.drivers.data);
+                    this.model.loaded = true;
+                });
             });
         });
     }

@@ -9,7 +9,7 @@
         <div class="input">
             <input [(ngModel)]="search" [placeholder]="'Filter ' + model.lowercase_header">
         </div>
-        <div class="add">
+        <div class="add" (touchrelease)="event.emit({ type: 'new' })" click-responder>
             <i class="material-icons">add</i>
         </div>
     </section>
