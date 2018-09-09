@@ -23,8 +23,15 @@ export class ZonesComponent extends BaseComponent implements OnInit {
             this.model.id = '';
             if (params.has('id')) {
                 this.model.id = params.get('id');
+                console.log('ID:', this.model.id);
+                this.service.Zones.show(this.model.id).then((item) => {
+                    this.timeout('item', () => this.model.item = item);
+                }, () => {
+                    this.service.error(`Failed to load data for zone "${this.model.id}"`);
+                    this.service.navigate('zones');
+                });
             }
-            this.model.show_sidebar = !this.model.id;
+            this.showSidebar(!this.model.id);
         });
         this.subs.obs.list = this.service.Zones.listen('list', () => {
             this.model.list = this.service.Zones.list();
@@ -38,6 +45,7 @@ export class ZonesComponent extends BaseComponent implements OnInit {
             this.service.Zones.query({ offset: this.model.list.length || 0 });
         } else if (event && event.type === 'select') {
             this.service.navigate(`zones/${event.item.id}`);
+            this.showSidebar(false);
         } else {
             this.showSidebar(false);
         }

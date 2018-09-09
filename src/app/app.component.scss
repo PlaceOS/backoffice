@@ -414,6 +414,12 @@ input {
     }
 }
 
+.tabs[widget] {
+    .empty {
+        display: none;
+    }
+}
+
 .map[widget] {
     svg {
         text {

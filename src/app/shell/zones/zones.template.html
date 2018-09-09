@@ -1,8 +1,23 @@
-<div class="container">
-    <div class="sidebar" [class.show]="model.show_sidebar" (tap)="showSidebar()">
+<div class="container" [class.show]="model.show_sidebar">
+    <div class="sidebar" (tap)="showSidebar()">
         <sidebar heading="Zones" [list]="model.list" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
-        <zone-display></zone-display>
+        <item-display [item]="model.item" name="zone"
+            [tabs]="[
+                { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }, 
+                { id: 'systems', name: 'Systems', template: systems, icon: { class: 'material-icons', value: 'account_balance' } },
+                { id: 'triggers', name: 'Triggers', template: trig, icon: { class: 'material-icons', value: 'timer' } }
+            ]">
+            <ng-template #about>
+                <zone-about [item]="model.item"></zone-about>
+            </ng-template>
+            <ng-template #systems>
+                <zone-systems [item]="model.item"></zone-systems>
+            </ng-template>
+            <ng-template #triggers>
+                <zone-triggers [item]="model.item"></zone-triggers>
+            </ng-template>
+        </item-display>
     </main>
 </div>

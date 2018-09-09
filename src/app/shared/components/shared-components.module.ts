@@ -12,14 +12,20 @@ import { LOGIN_COMPONENTS } from './login';
 import { ItemListComponent } from './item-list/item-list.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { SettingsDisplayComponent } from './settings-display/settings-display.component';
+import { ItemDisplayComponent } from './item-display/item-display.component';
+
+const COMPONENTS: any[] = [
+    ...LOGIN_COMPONENTS,
+    BaseComponent,
+    ItemListComponent,
+    SidebarComponent,
+    SettingsDisplayComponent,
+    ItemDisplayComponent
+]
 
 @NgModule({
     declarations: [
-        ...LOGIN_COMPONENTS,
-        BaseComponent,
-        ItemListComponent,
-        SidebarComponent,
-        SettingsDisplayComponent
+        ...COMPONENTS
     ],
     imports: [
         CommonModule,
@@ -28,11 +34,7 @@ import { SettingsDisplayComponent } from './settings-display/settings-display.co
         WidgetsModule
     ],
     exports: [
-        ...LOGIN_COMPONENTS,
-        BaseComponent,
-        ItemListComponent,
-        SidebarComponent,
-        SettingsDisplayComponent
+        ...COMPONENTS
     ]
 })
 export class SharedComponentsModule { }

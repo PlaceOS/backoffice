@@ -10,16 +10,14 @@ import { WidgetsModule } from '@acaprojects/ngx-widgets';
 import { ROUTES } from './drivers.routes';
 
 import { DriversComponent } from './drivers.component';
-import { DriverDisplayComponent } from './driver-display/driver-display.component';
-import { DriverAboutComponent } from './driver-display/driver-about/driver-about.component';
-import { DriverDevicesComponent } from './driver-display/driver-devices/driver-devices.component';
+import { DriverAboutComponent } from './driver-about/driver-about.component';
+import { DriverDevicesComponent } from './driver-devices/driver-devices.component';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 
 
 @NgModule({
     declarations: [
         DriversComponent,
-        DriverDisplayComponent,
         DriverAboutComponent,
         DriverDevicesComponent
     ],

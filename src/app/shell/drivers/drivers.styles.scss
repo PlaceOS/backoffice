@@ -9,6 +9,19 @@
     @include respond-to(mobile) {
         flex-direction: column;
     }
+
+    &.show {
+        .sidebar {
+            @include respond-to(mobile) {
+                height: 100%;
+            }
+        }
+        main {
+            @include respond-to(mobile) {
+                height: 0%;
+            }
+        }
+    }
 }
 
 .sidebar {
@@ -20,18 +33,15 @@
         width: 100%;
         transition: height 300ms;
     }
-
-    &.show {
-        height: 100%;
-    }
 }
 
 main {
     position: relative;
     height: 100%;
+    overflow: hidden;
     flex: 1;
     @include respond-to(mobile) {
-        height: auto;
+        transition: height 300ms;
         width: 100%;
     }
 }

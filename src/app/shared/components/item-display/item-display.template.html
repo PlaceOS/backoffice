@@ -1,0 +1,46 @@
+
+<div class="container" *ngIf="item">
+    <header>
+        <div class="heading">{{item.name}}</div>
+        <div class="id" *ngIf="item.id">(<span>{{item.id}}</span>)</div>
+        <div class="options">
+            <div class="option" click-responder (touchrelease)="event.emit({ type: 'edit' })">
+                <i class="material-icons">edit</i>
+            </div>
+            <div class="option" click-responder (touchrelease)="event.emit({ type: 'edit' })">
+                <i class="material-icons">delete</i>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="tabs" *ngIf="tabs && tabs.length > 0">
+            <tab-group [(state)]="model.tab">
+                <tab *ngFor="let tab of tabs" [id]="tab.id" [style.width]="(100 / tabs.length) + '%'">
+                    <div class="tab">
+                        <i [class]="tab.icon?.class">{{tab.icon?.value}}</i>
+                        <div class="name">{{tab.name}}</div>
+                    </div>
+                </tab>
+            </tab-group>
+        </div>
+        <div class="content">
+            <ng-container *ngFor="let tab of tabs">
+                <ng-container *ngIf="model.tab === tab.id">
+                    <ng-container *ngTemplateOutlet="tab.template"></ng-container>
+                </ng-container>
+            </ng-container>
+        </div>
+    </main>
+</div>
+<div class="no-item not-mobile center" *ngIf="!item">
+    <div class="icon">
+        <i class="material-icons">arrow_back</i>
+    </div>
+    <div class="text">Select a {{name}} from the sidebar</div>
+</div>
+<div class="no-item mobile center" *ngIf="!item">
+    <div class="icon">
+        <i class="material-icons">arrow_upward</i>
+    </div>
+    <div class="text">Select a {{name}} from the search bar</div>
+</div>

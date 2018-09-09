@@ -1,8 +1,8 @@
 
 import { Component, Input } from '@angular/core';
 
-import { BaseComponent } from '../../../../shared/components/base.component';
-import { IEngineZone } from '../../../../services/data/zones.service';
+import { BaseComponent } from '../../../shared/components/base.component';
+import { IEngineZone } from '../../../services/data/zones.service';
 
 @Component({
     selector: 'zone-about',
