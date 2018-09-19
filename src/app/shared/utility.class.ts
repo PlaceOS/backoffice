@@ -140,6 +140,67 @@ export class Utils {
     }
 
     /**
+     * Converts a list of objects into a CSV string
+     * @param list List of objects
+     */
+    public static generateCSV(list: any[]) {
+            // Get all the available fields from the list
+        const field_list: string[] = [];
+        for (const item of list) {
+            for (const key in item) {
+                if (key && item.hasOwnProperty(key) && field_list.indexOf(key) < 0) {
+                    field_list.push(key);
+                }
+            }
+        }
+        field_list.sort((a, b) => a.localeCompare(b));
+            // Create CSV of fields
+        let fields = '';
+        for (const field of field_list) {
+            if (fields) { fields += ','; }
+            fields += field;
+        }
+            // Create CSV for each item in the list
+        let csv = '';
+        for (const item of list) {
+            if (csv) { csv += '\n'; }
+            let line = '';
+            for (const f of field_list) {
+                if (line) { line += ','; }
+                line += item[f] ? (typeof item[f] === 'object' ? JSON.stringify(item[f]) : item[f]) : '';
+            }
+            csv += line;
+        }
+        return `${fields}\n${csv}`;
+    }
+
+    /**
+     * Get list of objects based off passed in CSV
+     * @static
+     * @param csv CSV to parse
+     */
+    public static loadCSV(csv: string) {
+        const lines = csv.split('\n');
+        const fields = lines.splice(0, 1)[0].split(',');
+        const list: any[] = [];
+        for (const line of lines) {
+            const parts = line.split(',');
+            const item: any = {};
+            for (let i = 0; i < parts.length; i++) {
+                let part = null;
+                try {
+                    part = JSON.stringify(parts[i]);
+                } catch (e) {
+                    part = parts[i]
+                }
+                if (part !== undefined) { item[fields[i]] = part; }
+            }
+            list.push(item);
+        }
+        return list;
+    }
+
+    /**
      * Get a filtered list of items
      * @param filter Value to filter on
      * @param items List of results to filter
