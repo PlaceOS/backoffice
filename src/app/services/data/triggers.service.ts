@@ -5,41 +5,39 @@ import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
 
-export interface IEngineDriver {
+export interface IEngineTrigger {
     id: string;
     name: string;
-    class_name: string;
-    module_name: string;
-    role: string;
-    created: number;
     description?: string;
-    default?: number;
-    settings?: any;
+    conditions: string[][];
+    actions: string[];
+    important?: boolean;
+    debounce_period?: number;
+    created: number;
 }
 
 @Injectable({
     providedIn: 'root'
 })
-export class DriversService extends BaseService {
+export class TriggersService extends BaseService {
 
     constructor(protected http: CommsService) {
         super();
-        this.model.name = 'driver'
-        this.model.route = '/dependencies';
-        this.subjects.list = new BehaviorSubject<IEngineDriver[]>([]);
+        this.model.name = 'trigger'
+        this.model.route = '/triggers';
+        this.subjects.list = new BehaviorSubject<IEngineTrigger[]>([]);
         this.observers.list = this.subjects.list.asObservable();
     }
 
     protected processItem(raw_item: any) {
-        const item: IEngineDriver = {
+        const item: IEngineTrigger = {
             id: raw_item.id,
             name: raw_item.name,
-            class_name: raw_item.class_name,
-            module_name: raw_item.module_name,
-            role: raw_item.role,
             description: raw_item.description,
-            settings: raw_item.settings,
-            default: raw_item.default,
+            conditions: raw_item.conditions,
+            actions: raw_item.actions,
+            debounce_period: raw_item.debounce_period,
+            important: raw_item.important,
             created: raw_item.created_at * 1000
         };
         return item;
