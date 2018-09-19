@@ -47,7 +47,7 @@ gulp.task('upload:sftp', () => {
 
 gulp.task('upload:aws-s3', () => {
     if (!aws_creds || !aws_creds.secret_access_key) { return; }
-    let remote_path = `${(argv.route ? argv.route || baseHref : baseHref) || 'staff'}`;
+    let remote_path = `${(argv.route ? argv.route || baseHref : baseHref) || 'backoffice'}`;
     if (remote_path && remote_path[0] === '/') {
         remote_path = remote_path.substr(1);
     }

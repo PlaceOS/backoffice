@@ -1,5 +1,5 @@
 {
-    "version": "0.15.0",
+    "version": "0.1.0",
     "build": "local-dev",
     "env": "dev",
     "debug": true,
@@ -12,7 +12,7 @@
     },
     "app": {
         "title": "ACA Engine",
-        "name": "ACA Engin",
+        "name": "ACA Engine",
         "description": "ACA Engine Frontend made in Angular 6+",
         "short_name": "Engine",
         "code": "ENGINE",

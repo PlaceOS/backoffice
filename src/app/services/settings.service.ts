@@ -276,8 +276,8 @@ export class SettingsService {
                 let key = this.store.key(i);
                 const item = this.store.getItem(key);
                 if (item !== undefined && item !== null && item !== '') {
-                    if (key.indexOf(`STAFF.`) === 0) {
-                        key = key.replace(`STAFF.`, '');
+                    if (key.indexOf(`BACKOFFICE.`) === 0) {
+                        key = key.replace(`BACKOFFICE.`, '');
                     }
                     if (!this.model.settings.store) {
                         this.model.settings.store = {};

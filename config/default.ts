@@ -68,8 +68,8 @@ gulp.task('post-build', (next) => {
 gulp.task('build:manifest', (next) => {
     const app = settings.app || {};
     const manifest: any = {
-        short_name: app.short_name || 'ACA Staff Application',
-        name: app.name || 'ACA Staff Application',
+        short_name: app.short_name || 'ACA Engine',
+        name: app.name || 'ACA Engine',
         icons: [
             {
                 src: 'assets/icon/launch.png',

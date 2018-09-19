@@ -90,7 +90,10 @@ export class AppService {
                 location.reload();
             });
         });
-        if (this.settings.get('debug')) { (window as any).application = this; }
+        if (this.settings.get('debug')) { 
+            (window as any).application = this; 
+            (window as any).utility = Utils; 
+        }
         this.model.title = this.settings.get('app.title') || 'Angular Application';
         this.initialiseComposer();
         if (this.users) {
