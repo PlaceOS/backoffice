@@ -12,6 +12,7 @@ import { MockZonesBackend } from './backend/zones.mock';
 import { MockDriversBackend } from './backend/driver.mock';
 import { MockTriggersBackend } from './backend/triggers.mock';
 import { MockModulesBackend } from './backend/modules.mock';
+import { MockSystemsBackend } from './backend/systems.mock';
 
 export class MockBackend {
     public model: any = {
@@ -45,21 +46,28 @@ export class MockBackend {
             this.model.backend.zones.listen((zstate) => {
                 if (!zstate) { return; }
                 this.update(this.model.backend.zones.data);
-                this.model.backend.drivers = new MockDriversBackend(this.model);
-                this.model.backend.drivers.listen((depstate) => {
-                    if (!depstate) { return; }
-                    this.update(this.model.backend.drivers.data);
-                });
-                this.model.backend.triggers = new MockTriggersBackend(this.model);
-                this.model.backend.triggers.listen((tstate) => {
-                    if (!tstate) { return; }
-                    this.update(this.model.backend.triggers.data);
-                });
-                this.model.backend.modules = new MockModulesBackend(this.model);
-                this.model.backend.modules.listen((mstate) => {
-                    if (!mstate) { return; }
-                    this.update(this.model.backend.modules.data);
-                    this.model.loaded = true;
+                
+                this.model.backend.systems = new MockSystemsBackend(this.model);
+                this.model.backend.systems.listen((sysstate) => {
+                    if (!sysstate) { return; }
+                    this.update(this.model.backend.systems.data);
+
+                    this.model.backend.drivers = new MockDriversBackend(this.model);
+                    this.model.backend.drivers.listen((depstate) => {
+                        if (!depstate) { return; }
+                        this.update(this.model.backend.drivers.data);
+                    });
+                    this.model.backend.triggers = new MockTriggersBackend(this.model);
+                    this.model.backend.triggers.listen((tstate) => {
+                        if (!tstate) { return; }
+                        this.update(this.model.backend.triggers.data);
+                    });
+                    this.model.backend.modules = new MockModulesBackend(this.model);
+                    this.model.backend.modules.listen((mstate) => {
+                        if (!mstate) { return; }
+                        this.update(this.model.backend.modules.data);
+                        this.model.loaded = true;
+                    });
                 });
             });
         });

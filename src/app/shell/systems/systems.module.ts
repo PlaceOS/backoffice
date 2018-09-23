@@ -11,11 +11,18 @@ import { ROUTES } from './systems.routes';
 
 import { SystemsComponent } from './systems.component';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
-
+import { SystemAboutComponent } from './system-about/system-about.component';
+import { SystemDevicesComponent } from './system-devices/system-devices.component';
+import { SystemTriggersComponent } from './system-triggers/system-triggers.component';
+import { SystemZonesComponent } from './system-zones/system-zones.component';
 
 @NgModule({
     declarations: [
-        SystemsComponent
+        SystemsComponent,
+        SystemAboutComponent,
+        SystemDevicesComponent,
+        SystemTriggersComponent,
+        SystemZonesComponent
     ],
     imports: [
         CommonModule,

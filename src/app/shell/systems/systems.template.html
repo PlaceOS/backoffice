@@ -1,0 +1,27 @@
+<div class="container" [class.show]="model.show_sidebar">
+    <div class="sidebar" (tap)="showSidebar()">
+        <sidebar heading="Systems" [list]="model.list" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id"
+            (event)="sidebarEvent($event)"></sidebar>
+    </div>
+    <main (touchrelease)="showSidebar(false)">
+        <item-display [item]="model.item" [loading]="model.loading_item" name="system" [tabs]="[
+                    { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }, 
+                    { id: 'devices', name: 'Devices', template: systems, icon: { class: 'material-icons', value: 'devices_other' } },
+                    { id: 'zones', name: 'Zones', template: zones, icon: { class: 'material-icons', value: 'device_hub' } },
+                    { id: 'triggers', name: 'Triggers', template: systems, icon: { class: 'material-icons', value: 'timer' } }
+                ]">
+            <ng-template #about>
+                <system-about [item]="model.item"></system-about>
+            </ng-template>
+            <ng-template #devices>
+                <system-devices [item]="model.item"></system-devices>
+            </ng-template>
+            <ng-template #zones>
+                <system-zones [item]="model.item"></system-zones>
+            </ng-template>
+            <ng-template #triggers>
+                <system-triggers [item]="model.item"></system-triggers>
+            </ng-template>
+        </item-display>
+    </main>
+</div>

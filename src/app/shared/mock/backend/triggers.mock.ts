@@ -14,7 +14,7 @@ export class MockTriggersBackend extends BaseMockBackend {
     }
 
     protected load() {
-        this.model.log('DRIVERS', 'Loading mock data for dependencies...');
+        this.model.log('TRIGGERS', 'Loading mock data for triggers...');
         this.loadList();
     }
 
