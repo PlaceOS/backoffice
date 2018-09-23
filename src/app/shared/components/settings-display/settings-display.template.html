@@ -1,26 +1,14 @@
 <div class="container">
-    <div class="item" *ngFor="let item of settings">
-        <div [class]="'pair ' + item.type" *ngIf="item.type !== 'object'">
-            <div class="connect" *ngIf="sub"></div>
-            <div class="label">{{item.key}}</div>
-            <div class="value">{{item.value}}</div>
+    <div class="line-numbers">
+        <div class="item" *ngFor="let item of settings; let i = index" 
+            [class.hover]="hover[i]" (mouseenter)="hover[i]=true" (mouseleave)="hover[i]=false">
+            {{i + 1}}
         </div>
-        <div class="object" *ngIf="item.type === 'object'" [class.show]="item.show">
-            <div class="details">
-                <div class="connect" *ngIf="sub"></div>
-                <div class="icon" [style.transform]="item.show ? 'rotate(90deg)' : ''" (touchrelease)="item.show = !item.show">
-                    <i class="material-icons">keyboard_arrow_right</i>
-                </div>
-                <div class="label">{{item.key}}</div>
-            </div>
-            <div class="sub-item" *ngIf="item.show">
-                <div class="line">
-                    <div class="bar"></div>
-                </div>
-                <div class="content">
-                    <settings-display [model]="item.value" [sub]="true"></settings-display>
-                </div>
-            </div>
+    </div>
+    <div class="list">
+        <div class="item" *ngFor="let item of settings; let i = index" [class.hover]="hover[i]" [style.width]="(length * .625) + 'em'" 
+            (mouseenter)="hover[i]=true" (mouseleave)="hover[i]=false">
+            <code [innerHTML]="item.value | safe"></code>
         </div>
     </div>
 </div>

@@ -1,81 +1,54 @@
 
 @import 'shared.styles';
 
-.pair {
+.container {
     display: flex;
-    padding: .25em .5em;
-    .label {
-        flex: 1;
-    }
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+}
 
-    .value {
-        padding-left: 1em;
+.list {
+    flex: 1;
+}
+
+.line-numbers {
+    min-width: 2.5em;
+    background-color: rgba(#000, .1);
+    .item {
+        text-align: right;
+        min-width: 2.5em;
+        width: 100%;
     }
 }
 
-.details {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: .25em .5em;
-    .label {
-        padding-left: .25em;
+.list {
+    overflow-x: auto;
+    .item {
+        padding: .25em .5em;
     }
 }
 
-.line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 1.5em;
-    min-width: 1.5em;
-    .bar {
-        height: calc(100% - 1.1em);
-        width: 1px;
-        background-color: rgba(#000, .1);
-        margin: auto;
-    }
-}
-
-.sub-item {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding-right: .25em;
-
-    .content {
-        flex: 1;
-        margin-left: 1.5em;
-    }
-}
-
-.object {
-    .icon i {
-        transition: transform 300ms;
-        transform: rotate(0deg);
-    }
-}
 
 .item {
-    position: relative;
-    margin: .25em 0;
+    background-color: rgba(#000, .05);
+    height: 1.5em;
+    font-family: $mono-font;
+    white-space: nowrap;
+    padding: .25em;
+    min-width: 100%;
+
     &:nth-child(2n) {
-        background-color: rgba($color-secondary, .1);
-        border-radius: 6px;
+        background-color: rgba(#000, .1);
     }
-    &:nth-child(2n - 1) {
-        background-color: rgba($color-ternary, .1);
-        border-radius: 6px;
+
+    &:hover,
+    &.hover {
+        background-color: rgba($color-primary, .2);
     }
 }
 
-.connect {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: .75em;
-    height: 1px;
-    transform: translateX(-100%);
-    background-color: rgba(#000, .1);
+code {
+    font-family: $mono-font;
+    white-space: pre;
 }
