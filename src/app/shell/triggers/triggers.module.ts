@@ -11,11 +11,15 @@ import { ROUTES } from './triggers.routes';
 
 import { TriggersComponent } from './triggers.component';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
+import { TriggerAboutComponent } from './trigger-about/trigger-about.component';
+import { TriggerSystemsComponent } from './trigger-systems/trigger-systems.component';
 
 
 @NgModule({
     declarations: [
-        TriggersComponent
+        TriggersComponent,
+        TriggerAboutComponent,
+        TriggerSystemsComponent
     ],
     imports: [
         CommonModule,

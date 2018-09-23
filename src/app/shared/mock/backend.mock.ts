@@ -10,6 +10,7 @@ import * as faker from 'faker';
 import { MockUsersBackend } from './backend/users.mock';
 import { MockZonesBackend } from './backend/zones.mock';
 import { MockDriversBackend } from './backend/driver.mock';
+import { MockTriggersBackend } from './backend/triggers.mock';
 
 export class MockBackend {
     public model: any = {
@@ -47,6 +48,11 @@ export class MockBackend {
                 this.model.backend.drivers.listen((depstate) => {
                     if (!depstate) { return; }
                     this.update(this.model.backend.drivers.data);
+                });
+                this.model.backend.triggers = new MockTriggersBackend(this.model);
+                this.model.backend.triggers.listen((tstate) => {
+                    if (!tstate) { return; }
+                    this.update(this.model.backend.triggers.data);
                     this.model.loaded = true;
                 });
             });

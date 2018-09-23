@@ -39,11 +39,15 @@ section.search {
     align-items: center;
     padding: .5em 1em 1em;
     width: 100%;
-    border-bottom: 1px solid rgba(#fff, .2);    
     min-height: 3em;
     .input {
         flex: 1;
     }
+}
+
+section.content {
+    width: 100%;
+    border-bottom: 1px solid rgba(#fff, .2);    
 }
 
 input {

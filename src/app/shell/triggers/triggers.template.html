@@ -1,0 +1,19 @@
+<div class="container" [class.show]="model.show_sidebar">
+        <div class="sidebar" (tap)="showSidebar()">
+            <sidebar heading="Triggers" [list]="model.list" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
+        </div>
+        <main (touchrelease)="showSidebar(false)">
+            <item-display [item]="model.item" [loading]="model.loading_item" name="trigger"
+                [tabs]="[
+                    { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }, 
+                    { id: 'systems', name: 'Systems', template: systems, icon: { class: 'material-icons', value: 'account_balance' } }
+                ]">
+                <ng-template #about>
+                    <trigger-about [item]="model.item"></trigger-about>
+                </ng-template>
+                <ng-template #systems>
+                    <trigger-systems [item]="model.item"></trigger-systems>
+                </ng-template>
+            </item-display>
+        </main>
+    </div>
