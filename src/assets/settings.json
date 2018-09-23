@@ -30,11 +30,6 @@
         },
         "copyright": "Copyright 2018 ACA Projects",
         "menu": {
-            "type": "sidebar",
-            "footer": "circles",
-            "named": false,
-            "home": true,
-            "reverse": true,
             "list": [
                 {
                     "id": "systems",

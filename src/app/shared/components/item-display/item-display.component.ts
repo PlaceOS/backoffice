@@ -11,6 +11,7 @@ import { BaseComponent } from '../base.component';
 export class ItemDisplayComponent extends BaseComponent {
     @Input() public name: string;
     @Input() public item: any;
+    @Input() public loading: boolean;
     @Input() public tabs: { id: string, name: string, icon: { class: string, value: string }, template: TemplateRef<any> }[] = [];
     @Output() public event = new EventEmitter();
 

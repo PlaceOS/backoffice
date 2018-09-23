@@ -130,6 +130,30 @@ input {
         display: none !important;
     }
 }
+
+table {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+    thead {
+        font-weight: bold;
+    }
+
+    tr {
+        &:nth-child(2n) {
+            background-color: rgba(#000, .05);
+        }
+    }
+
+    td {
+        padding: .4em .5em;
+        border-right: 1px solid #ccc;
+        &:last-child {
+            border: none;
+        }
+    }
+}
+
 /*===========================*\
 ||  Widget Overrides Styles  ||
 \*===========================*/

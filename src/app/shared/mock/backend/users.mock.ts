@@ -51,30 +51,27 @@ export class MockUsersBackend extends BaseMockBackend {
                 organisation_name: 'ACA'
             });
         }
-        MOCK_REQ_HANDLER.register(`/${this.model.api_route}/users`, this.model.users, (e) => {
-            if (e.fragment.q) {
-                const q = e.fragment.q.toLowerCase();
-                const list = [];
-                for (const u of e.data) {
-                    if (u.email.toLowerCase().indexOf(q) >= 0 || u.name.toLowerCase().indexOf(q) >= 0) {
-                        list.push(u);
-                        if (e.fragment.limit && list.length >= +e.fragment.limit) {
-                            break;
-                        }
-                    }
-                }
-                return list;
+        this.model.users.sort((a, b) => a.name.localeCompare(b.name));
+        MOCK_REQ_HANDLER.register(`/${this.model.api_route}/users`, this.model.users, (event) => {
+            if (event.fragment && event.fragment.offset) {
+                const start = Math.min(event.data.length, +(event.fragment.offset));
+                const end = Math.min(event.data.length, +(event.fragment.offset) + 20);
+                return { results: event.data.slice(start, end), total: event.data.length };
             } else {
-                return e.data;
+                return { results: event.data.slice(0, 20), total: event.data.length };
             }
         });
 
-        MOCK_REQ_HANDLER.register(`/${this.model.api_route}/users/:email`, this.model.users, (e) => {
-            if (e.params.email) {
-                for (const user of e.data) {
-                    if (user.email.toLowerCase().indexOf(e.params.email.toLowerCase())) {
-                        user.phone = Math.floor(Math.random() * 8999 + 1000).toString();
-                        return user;
+        const user_index = Math.floor(Math.random() * this.model.users.length);
+
+        MOCK_REQ_HANDLER.register(`/${this.model.api_route}/users/:id`, this.model.users, (event) => {
+            if (event && event.params && event.params.id) {
+                if (event.params.id === 'current') {
+                    return event.data[user_index];
+                }
+                for (const item of event.data) {
+                    if (item.id === event.params.id) {
+                        return item;
                     }
                 }
             }

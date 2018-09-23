@@ -11,11 +11,15 @@ import { ROUTES } from './users.routes';
 
 import { UsersComponent } from './users.component';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
+import { UserAboutComponent } from './user-about/user-about.component';
+import { UserHistoryComponent } from './user-history/user-history.component';
 
 
 @NgModule({
     declarations: [
-        UsersComponent
+        UsersComponent,
+        UserAboutComponent,
+        UserHistoryComponent
     ],
     imports: [
         CommonModule,

@@ -35,14 +35,17 @@ export class ZonesComponent extends BaseComponent implements OnInit {
         });
         this.subs.obs.list = this.service.Zones.listen('list', () => {
             this.model.list = this.service.Zones.list();
+            this.model.total = this.service.Zones.get('total');
             this.timeout('loading', () => this.model.loading = false, 10);
         });
     }
 
     public sidebarEvent(event: any) {
         if (event && event.type === 'more') {
-            this.timeout('loading', () => this.model.loading = true, 10);
-            this.service.Zones.query({ offset: this.model.list.length || 0 });
+            if (!this.model.total || this.model.list.length < this.model.total) {
+                this.timeout('loading', () => this.model.loading = true, 10);
+                this.service.Zones.query({ offset: this.model.list.length || 0 });
+            }
         } else if (event && event.type === 'select') {
             this.service.navigate(`zones/${event.item.id}`);
             this.showSidebar(false);
