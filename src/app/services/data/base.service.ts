@@ -118,13 +118,19 @@ export class BaseService {
             }
         }
         const key = `query|${query}`;
+        if (update && this.get('total') === this.list().length) {
+            return new Promise((rs) => rs([]));
+        }
         if (!this.promises[key]) {
             this.promises[key] = new Promise((resolve, reject) => {
                 const url = `${this.endpoint}${query ? '?' + query : ''}`;
                 this.http.get(url).subscribe(
                     (resp: any) => {
-                        const item_list = this.processList(resp.results);
-                        if (update) { this.updateList(item_list); }
+                        const item_list = this.processList(resp.results || resp);
+                        if (update) { 
+                            this.updateList(item_list); 
+                            this.set('total', resp.total || this.list().length);
+                        }
                         resolve(item_list);
                         setTimeout(() => this.promises[key] = null, 5 * 1000);
                     }, (err) => {
@@ -314,7 +320,7 @@ export class BaseService {
 
     protected processList(input_list: any[]) {
         const output_list: any[] = [];
-        for (const item of input_list) {
+        for (const item of (input_list || [])) {
             const out = this.processItem(item);
             if (out) { output_list.push(out); }
         }

@@ -19,9 +19,15 @@ import { OverlayService, NotificationComponent } from '@acaprojects/ngx-widgets'
 import { SettingsService } from './settings.service';
 import { AnalyticsService } from './data/analytics.service';
 import { CommentsService } from './data/comments.service';
+
+import { DriversService } from './data/drivers.service';
+import { LogsService } from './data/logs.service';
+import { ModulesService } from './data/modules.service';
+import { SystemTriggersService } from './data/system_triggers.service';
+import { TriggersService } from './data/triggers.service';
+import { EngineSystemsService } from './data/systems.service';
 import { UsersService } from './data/users.service';
 import { ZonesService } from './data/zones.service';
-import { DriversService } from './data/drivers.service';
 
 import { Utils } from '../shared/utility.class';
 
@@ -46,15 +52,21 @@ export class AppService {
         private overlay: OverlayService,
         private analytics: AnalyticsService,
         private settings: SettingsService,
-        private systems: SystemsService,
+        private composer_systems: SystemsService,
         private comments: CommentsService,
+        private drivers: DriversService,
+        private logs: LogsService,
+        private modules: ModulesService,
+        private system_triggers: SystemTriggersService,
+        private systems: EngineSystemsService,
+        private triggers: TriggersService,
         private users: UsersService,
-        private zones: ZonesService,
-        private drivers: DriversService
+        private zones: ZonesService
     ) {
             // Set parent service on child services
-        this.analytics.parent = this.comments.parent = this.users.parent = this;
-        this.zones.parent = this.drivers.parent = this;
+        this.analytics.parent = this.comments.parent = this.users.parent = this.logs.parent = this;
+        this.drivers.parent = this.modules.parent = this.zones.parent = this.system_triggers.parent = this;
+        this.systems.parent = this.triggers.parent = this;
             // Create subjects
         this.subjects.system = new BehaviorSubject('');
         this.observers.system = this.subjects.system.asObservable();
@@ -147,7 +159,7 @@ export class AppService {
             config.http = false;
         }
             // Setup/Initialise composer
-        this.systems.setup(config);
+        this.composer_systems.setup(config);
     }
     /**
      * Listen to changes of given property
@@ -209,9 +221,13 @@ export class AppService {
     get system() { return this.subjects.system.getValue(); }
     set system(value: string) { this.subjects.system.next(value); }
         // Getters for data/API services
+    get Drivers() { return this.drivers; }
+    get Logs() { return this.logs; }
+    get Modules() { return this.modules; }
+    get SystemTriggers() { return this.system_triggers; }
+    get Triggers() { return this.triggers; }
     get Users() { return this.users; }
     get Zones() { return this.zones; }
-    get Drivers() { return this.drivers; }
     /**
      * Set the page title
      * @param str New value to set the page title
@@ -244,7 +260,7 @@ export class AppService {
             path_list.push(path);
         }
         this.prev_route.push(this.router.url);
-        // if (!this.systems.resources.authLoaded) {
+        // if (!this.composer_systems.resources.authLoaded) {
         this.router.navigate(path_list, { queryParams: query });
         // } else {
         // this.router.navigate([path]);
@@ -358,7 +374,7 @@ export class AppService {
             this.timers.system = null;
         }
         if (tries > 20) { return; }
-        const systems = this.systems.resources.get('System');
+        const systems = this.composer_systems.resources.get('System');
         if (systems) {
             tries = 0;
             systems.get({ offset: '0', limit: 500 }).then((sys_list: any) => {
