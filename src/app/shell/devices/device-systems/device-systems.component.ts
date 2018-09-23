@@ -3,15 +3,15 @@ import { Component, Input } from '@angular/core';
 
 import { BaseComponent } from '../../../shared/components/base.component';
 import { AppService } from '../../../services/app.service';
-import { IEngineTrigger } from '../../../services/data/triggers.service';
+import { IEngineModule } from '../../../services/data/modules.service';
 
 @Component({
-    selector: 'trigger-systems',
-    templateUrl: './trigger-systems.template.html',
-    styleUrls: ['./trigger-systems.styles.scss']
+    selector: 'device-systems',
+    templateUrl: './device-systems.template.html',
+    styleUrls: ['./device-systems.styles.scss']
 })
-export class TriggerSystemsComponent extends BaseComponent {
-    @Input() public item: IEngineTrigger;
+export class DeviceSystemsComponent extends BaseComponent {
+    @Input() public item: IEngineModule;
 
     public model: any = {};
 

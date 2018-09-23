@@ -1,0 +1,19 @@
+<div class="container" [class.show]="model.show_sidebar">
+        <div class="sidebar" (tap)="showSidebar()">
+            <sidebar heading="Devices" [list]="model.list" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
+        </div>
+        <main (touchrelease)="showSidebar(false)">
+            <item-display [item]="model.item" name="device"
+                [tabs]="[
+                    { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }, 
+                    { id: 'systems', name: 'Systems', template: systems, icon: { class: 'material-icons', value: 'account_balance' } }
+                ]">
+                <ng-template #about>
+                    <device-about [item]="model.item"></device-about>
+                </ng-template>
+                <ng-template #systems>
+                    <device-systems [item]="model.item"></device-systems>
+                </ng-template>
+            </item-display>
+        </main>
+    </div>

@@ -11,11 +11,15 @@ import { ROUTES } from './devices.routes';
 
 import { DevicesComponent } from './devices.component';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
+import { DeviceAboutComponent } from './device-about/device-about.component';
+import { DeviceSystemsComponent } from './device-systems/device-systems.component';
 
 
 @NgModule({
     declarations: [
-        DevicesComponent
+        DevicesComponent,
+        DeviceAboutComponent,
+        DeviceSystemsComponent
     ],
     imports: [
         CommonModule,

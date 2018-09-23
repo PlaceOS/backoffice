@@ -11,6 +11,7 @@ import { MockUsersBackend } from './backend/users.mock';
 import { MockZonesBackend } from './backend/zones.mock';
 import { MockDriversBackend } from './backend/driver.mock';
 import { MockTriggersBackend } from './backend/triggers.mock';
+import { MockModulesBackend } from './backend/modules.mock';
 
 export class MockBackend {
     public model: any = {
@@ -53,6 +54,11 @@ export class MockBackend {
                 this.model.backend.triggers.listen((tstate) => {
                     if (!tstate) { return; }
                     this.update(this.model.backend.triggers.data);
+                });
+                this.model.backend.modules = new MockModulesBackend(this.model);
+                this.model.backend.modules.listen((mstate) => {
+                    if (!mstate) { return; }
+                    this.update(this.model.backend.modules.data);
                     this.model.loaded = true;
                 });
             });
