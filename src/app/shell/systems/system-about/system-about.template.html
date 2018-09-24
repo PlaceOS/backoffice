@@ -1,17 +1,16 @@
 <div class="container">
     <div class="settings">
-        <header>Permissions</header>
+            <section>
+                <btn>Start System</btn>
+                <btn>Stop System</btn>
+                <btn>Access Logs</btn>
+            </section>
+        <header>Execute command</header>
         <section>
-            <table>
-                <tr>
-                    <td>Tech Support</td>
-                    <td>false</td>
-                </tr>
-                <tr>
-                    <td>System Admin</td>
-                    <td>false</td>
-                </tr>
-            </table>
+        </section>
+        <header>Settings</header>
+        <section>
+            <settings-display [model]="item?.settings || {}"></settings-display>
         </section>
     </div>
 </div>

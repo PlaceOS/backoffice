@@ -6,7 +6,7 @@
         </div>
     </div>
     <div class="list">
-        <div class="item" *ngFor="let item of settings; let i = index" [class.hover]="hover[i]" [style.width]="(length * .625) + 'em'" 
+        <div class="item" *ngFor="let item of settings; let i = index" [class.hover]="hover[i]" [style.width]="(length * .62) + 'em'" 
             (mouseenter)="hover[i]=true" (mouseleave)="hover[i]=false">
             <code [innerHTML]="item.value | safe"></code>
         </div>

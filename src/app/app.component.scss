@@ -138,6 +138,8 @@ table {
     border-collapse: collapse;
     thead {
         font-weight: bold;
+        border-bottom: 1px solid #ccc;
+        background-color: rgba(#000, .1);
     }
 
     tr {
@@ -153,6 +155,10 @@ table {
             border: none;
         }
     }
+}
+
+.mono {
+    font-family: $mono-font;
 }
 
 /*===========================*\

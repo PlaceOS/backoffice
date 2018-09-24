@@ -1,17 +1,25 @@
 <div class="container">
     <div class="settings">
-        <header>Permissions</header>
         <section>
-            <table>
-                <tr>
-                    <td>Tech Support</td>
-                    <td>false</td>
-                </tr>
-                <tr>
-                    <td>System Admin</td>
-                    <td>false</td>
-                </tr>
-            </table>
+            <dropdown></dropdown>
+        </section>
+        <header>Conditions</header>
+        <section>
+            <div class="list" *ngIf="model.condtions">
+
+            </div>
+            <div class="no-item" *ngIf="!model.condtions">
+                <div class="text">No condtions for trigger</div>
+            </div>
+        </section>
+        <header>Actions</header>
+        <section>
+            <div class="list" *ngIf="model.actions">
+
+            </div>
+            <div class="no-item" *ngIf="!model.actions">
+                <div class="text">No actions for trigger</div>
+            </div>
         </section>
     </div>
 </div>

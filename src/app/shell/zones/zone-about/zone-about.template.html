@@ -1,12 +1,14 @@
 <div class="container">
-    <div class="exec">
-        <header>Execute Command</header>
-        <section>{{item?.name}}</section>
-    </div>
-    <div class="settings">
-        <header>Settings</header>
-        <section>
-            <settings-display [model]="item?.settings"></settings-display>
-        </section>
-    </div>
+    <header>Execute Command</header>
+    <section>{{item?.name}}</section>
+    <section class="tags" *ngIf="item && item.tag_list">
+        <div class="label">Tags:</div>
+        <div class="value">
+            <div class="tag" *ngFor="let item of item.tag_list">{{item}}</div>
+        </div>
+    </section>
+    <header>Settings</header>
+    <section>
+        <settings-display [model]="item?.settings"></settings-display>
+    </section>
 </div>

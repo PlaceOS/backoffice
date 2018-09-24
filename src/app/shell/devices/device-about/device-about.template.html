@@ -1,17 +1,12 @@
 <div class="container">
     <div class="settings">
-        <header>Permissions</header>
+        <header>Logic for system:&nbsp;<span>{{item?.system?.name}}</span></header>
         <section>
-            <table>
-                <tr>
-                    <td>Tech Support</td>
-                    <td>false</td>
-                </tr>
-                <tr>
-                    <td>System Admin</td>
-                    <td>false</td>
-                </tr>
-            </table>
+            <btn>Stop Device</btn>
+        </section>
+        <header>Settings</header>
+        <section>
+            <settings-display [model]="item?.settings || {}"></settings-display>
         </section>
     </div>
 </div>

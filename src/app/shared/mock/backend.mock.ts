@@ -52,21 +52,22 @@ export class MockBackend {
                     if (!sysstate) { return; }
                     this.update(this.model.backend.systems.data);
 
-                    this.model.backend.drivers = new MockDriversBackend(this.model);
-                    this.model.backend.drivers.listen((depstate) => {
-                        if (!depstate) { return; }
-                        this.update(this.model.backend.drivers.data);
-                    });
                     this.model.backend.triggers = new MockTriggersBackend(this.model);
                     this.model.backend.triggers.listen((tstate) => {
                         if (!tstate) { return; }
                         this.update(this.model.backend.triggers.data);
                     });
-                    this.model.backend.modules = new MockModulesBackend(this.model);
-                    this.model.backend.modules.listen((mstate) => {
-                        if (!mstate) { return; }
-                        this.update(this.model.backend.modules.data);
-                        this.model.loaded = true;
+                    
+                    this.model.backend.drivers = new MockDriversBackend(this.model);
+                    this.model.backend.drivers.listen((depstate) => {
+                        if (!depstate) { return; }
+                        this.update(this.model.backend.drivers.data);
+                        this.model.backend.modules = new MockModulesBackend(this.model);
+                        this.model.backend.modules.listen((mstate) => {
+                            if (!mstate) { return; }
+                            this.update(this.model.backend.modules.data);
+                            this.model.loaded = true;
+                        });
                     });
                 });
             });

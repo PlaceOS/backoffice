@@ -22,17 +22,20 @@ export class MockModulesBackend extends BaseMockBackend {
         const item_list = [];
         const count = Math.floor(Math.random() * 60 + 20);
         const systems = this.model.systems || [];
+        const drivers = this.model.drivers || [];
         for (let i = 0; i < count; i++) {
-            const sys = systems.length > 0 ? systems[Math.floor(Math.random() * systems.length)] : { id: 'sys-test' };
+            const sys = systems.length > 0 ? systems[Math.floor(Math.random() * systems.length)] : { id: 'sys-test', name: 'sys' };
+            const driver = drivers.length > 0 ? drivers[Math.floor(Math.random() * drivers.length)] : { id: 'dep-test', name: 'dep' };
             const ip = Math.floor(Math.random() * 999) % 2 ? this.generateIP() : '';
             item_list.push({
                 id: `mod-${Utils.padZero(i, 4)}`,
-                name: `Test Device ${i + 1}`,
                 custom_name: Math.floor(Math.random() * 999) % 2 ? faker.name.firstName() : '',
                 connected: Math.floor(Math.random() * 1234321) % 2,
                 running: Math.floor(Math.random() * 1234321) % 2,
                 control_system_id: sys.id,
                 control_system: sys,
+                dependency_id: driver.id,
+                dependency: driver,
                 edge_id: 'edge-0001',
                 edge: { id: 'edge-0001' },
                 ip, port: ip ? Math.floor(Math.random() * 32_767) + 32_768 : '',

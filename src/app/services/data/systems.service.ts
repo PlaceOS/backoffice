@@ -15,7 +15,7 @@ export interface IEngineSystem {
     feature?: string;
     modules?: string[];
     zones?: string[];
-    settings?: any;
+    settings: any;
     bookable?: boolean;
     support_url?: string;
     installed_ui_devices?: number;
@@ -49,6 +49,7 @@ export class EngineSystemsService extends BaseService {
             bookable: raw_item.bookable,
             support_url: raw_item.support_url,
             installed_ui_devices: raw_item.installed_ui_devices,
+            settings: raw_item.settings,
             created: raw_item.created_at * 1000
         };
         return item;

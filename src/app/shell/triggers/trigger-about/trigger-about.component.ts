@@ -12,4 +12,6 @@ import { IEngineTrigger } from '../../../services/data/triggers.service';
 export class TriggerAboutComponent extends BaseComponent {
     @Input() public item: IEngineTrigger;
 
+    public model: any = {};
+
 }

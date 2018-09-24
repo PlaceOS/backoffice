@@ -1,12 +1,25 @@
 <div class="container">
-    <div class="exec">
-        <header>Execute Command</header>
-        <section>{{item?.name}}</section>
-    </div>
-    <div class="settings">
-        <header>Settings</header>
-        <section>
-            <settings-display [model]="item?.settings"></settings-display>
-        </section>
-    </div>
+    <section>
+        <table>
+            <thead>
+                <tr>
+                    <td>Module Name</td>
+                    <td>Class</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{item?.module_name}}</td>
+                    <td class="mono">{{item?.class_name}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+    <section>
+        <btn>Reload Modules</btn>
+    </section>
+    <header>Settings</header>
+    <section>
+        <settings-display [model]="item?.settings"></settings-display>
+    </section>
 </div>
