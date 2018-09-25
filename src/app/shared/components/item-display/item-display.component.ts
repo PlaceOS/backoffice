@@ -13,6 +13,7 @@ export class ItemDisplayComponent extends BaseComponent {
     @Input() public item: any;
     @Input() public loading: boolean;
     @Input() public tabs: { id: string, name: string, icon: { class: string, value: string }, template: TemplateRef<any> }[] = [];
+    @Input() public active = 'about';
     @Output() public event = new EventEmitter();
 
     public model: any = {};
@@ -22,12 +23,25 @@ export class ItemDisplayComponent extends BaseComponent {
     }
 
     public ngOnInit() {
-
+        if (this.active) {
+            for (const tab of (this.tabs || [])) {
+                if (tab.id === this.active) {
+                    this.model.tab = this.active;
+                }
+            }
+        }
     }
 
     public ngOnChanges(changes: any) {
         if (changes.tabs && this.tabs && this.tabs.length > 0) {
             this.model.tab = this.tabs[0].id;
+        }
+        if (changes.active) {
+            for (const tab of this.tabs) {
+                if (tab.id === this.active) {
+                    this.model.tab = this.active;
+                }
+            }
         }
     }
 }

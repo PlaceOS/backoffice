@@ -21,7 +21,24 @@ export class SystemDevicesComponent extends BaseComponent {
     
     public ngOnChanges(changes: any) {
         if (changes.item) {
-            
+            this.load();
+        }
+    }
+
+    public load(offset: number = 0) {
+        this.service.Modules.query({ sys_id: this.item.id, offset: 0 }).then((list) => {
+            this.model.devices = list;
+        }, () => null);
+    }
+
+    public goto(item, link?: string) {
+        if (link) {
+            if (link.indexOf('http://') < 0 && link.indexOf('https://') < 0) {
+                link = `http${item.tls}://${link}${item.port ? ':' + item.port : ''}`;
+            }
+            window.open(item, '_blank');
+        } else {
+            this.service.navigate(['devices', item.id]);
         }
     }
 }

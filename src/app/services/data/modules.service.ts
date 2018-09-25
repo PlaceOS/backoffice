@@ -52,7 +52,7 @@ export class ModulesService extends BaseService {
             dependency_id: raw_item.dependency_id,
             system_id: raw_item.control_system_id,
             edge_id: raw_item.edge_id,
-            name: `${raw_item.dependency.module || raw_item.dependency.module_name} - ${raw_item.dependency.name}`,
+            name: raw_item.name,
             custom_name: raw_item.custom_name,
             notes: raw_item.notes,
             ip: raw_item.ip,

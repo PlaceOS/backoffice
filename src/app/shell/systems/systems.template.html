@@ -6,10 +6,10 @@
     <main (touchrelease)="showSidebar(false)">
         <item-display [item]="model.item" [loading]="model.loading_item" name="system" [tabs]="[
                     { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }, 
-                    { id: 'devices', name: 'Devices', template: systems, icon: { class: 'material-icons', value: 'devices_other' } },
-                    { id: 'zones', name: 'Zones', template: zones, icon: { class: 'material-icons', value: 'device_hub' } },
-                    { id: 'triggers', name: 'Triggers', template: systems, icon: { class: 'material-icons', value: 'timer' } }
-                ]">
+                    { id: 'devices', name: 'Devices' + ( model.item && model.item.modules.length ? '('+model.item.modules.length+')' : '' ), template: devices, icon: { class: 'material-icons', value: 'devices_other' } },
+                    { id: 'zones', name: 'Zones' + ( model.item && model.item.zones.length ? '('+model.item.zones.length+')' : '' ), template: zones, icon: { class: 'material-icons', value: 'device_hub' } },
+                    { id: 'triggers', name: 'Triggers' + ( model.triggers ? '(' + model.triggers + ')' : '' ), template: triggers, icon: { class: 'material-icons', value: 'timer' } }
+                ]" [active]="model.tab">
             <ng-template #about>
                 <system-about [item]="model.item"></system-about>
             </ng-template>
@@ -20,7 +20,7 @@
                 <system-zones [item]="model.item"></system-zones>
             </ng-template>
             <ng-template #triggers>
-                <system-triggers [item]="model.item"></system-triggers>
+                <system-triggers [item]="model.item" (count)="model.triggers = $event"></system-triggers>
             </ng-template>
         </item-display>
     </main>

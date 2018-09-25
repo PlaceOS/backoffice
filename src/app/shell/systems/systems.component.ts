@@ -36,6 +36,9 @@ export class SystemsComponent extends BaseComponent {
                     this.service.navigate('systems');
                 });
             }
+            if (params.has('tab')) {
+                this.model.tab = params.get('tab');
+            }
             this.showSidebar(!this.model.id);
         });
         this.subs.obs.list = this.service.Systems.listen('list', () => {
