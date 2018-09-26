@@ -24,15 +24,20 @@ export class MockSystemsBackend extends BaseMockBackend {
         const zones = this.model.zones || [];
         for (let i = 0; i < count; i++) {
             const zone_list = [];
+            const id = `sys-${Utils.padZero(i, 4)}`;
             if (zones) {
                 const count = Math.floor(Math.random() * 3);
                 for (let i = 0; i < count; i++) {
                     const zone = zones[Math.floor(Math.random() * zones.length)];
-                    if (zone_list.indexOf(zone) < 0) { zone_list.push(zone); }
+                    if (zone_list.indexOf(zone) < 0) { 
+                        if (!zone.systems) { zone.systems = []; }
+                        zone.systems.push(id);
+                        zone_list.push(zone); 
+                    }
                 }
             }
             item_list.push({
-                id: `sys-${Utils.padZero(i, 4)}`,
+                id,
                 edge_id: 'edge-0001',
                 name: `Test System ${i + 1}`,
                 description: faker.lorem.paragraph(),

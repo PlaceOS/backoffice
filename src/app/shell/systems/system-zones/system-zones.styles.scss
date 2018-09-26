@@ -11,9 +11,15 @@ header {
 }
 
 section {
-    padding: 1em;
+    padding: 1em .25em;
 }
 
-.settings section {
-    font-size: .8em;
+.select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.name {
+    min-width: 10em;
 }

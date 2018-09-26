@@ -1,5 +1,5 @@
 <div class="container">
-    <section>
+    <section class="select">
         <btn>Add new</btn>
         <btn>Add existing</btn>
     </section>
@@ -15,17 +15,20 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let item of (model.devices || [])">
-                    <td class="small"><div class="state" [class.active]="item.connected"></div></td>
-                    <td class="name"><a (touchrelease)="goto(item)">{{item.name}}</a></td>
+                <tr *ngFor="let device of (model.devices || [])">
+                    <td class="small">
+                        <i binding [(value)]="device.connected" [sys]="item.id" [mod]="(device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)" bind="connected"></i>
+                        <div class="state" [class.active]="device.connected"></div>
+                    </td>
+                    <td class="name"><a (touchrelease)="goto(device)">{{item.name}}</a></td>
                     <td class="module">
-                        <checkbox [label]="(item.dependency?.module_name || item.dependency?.module) + '_' + (item.role + 1)"></checkbox>
+                        <checkbox [label]="(device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)"></checkbox>
                     </td>
                     <td class="ip">
-                        <div class="lock"><i class="material-icons" *ngIf="item.tls">lock</i></div>
-                        <a (touchrelease)="goto(item, item.ip)">{{item.ip}}</a></td>
+                        <div class="lock"><i class="material-icons" *ngIf="device.tls">lock</i></div>
+                        <a (touchrelease)="goto(device, item.ip)">{{device.ip}}</a></td>
                     <td class="options">
-                        <div class="action"><i class="material-icons">{{item.running ? 'play_arrow' : 'stop'}}</i></div>
+                        <div class="action"><i class="material-icons">{{device.running ? 'play_arrow' : 'stop'}}</i></div>
                         <div class="action"><i class="material-icons">visibility</i></div>
                         <div class="action"><i class="material-icons">edit</i></div>
                         <div class="action"><i class="material-icons">refresh</i></div>

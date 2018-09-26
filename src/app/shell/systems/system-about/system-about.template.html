@@ -1,16 +1,14 @@
 <div class="container">
-    <div class="settings">
-            <section>
-                <btn>Start System</btn>
-                <btn>Stop System</btn>
-                <btn>Access Logs</btn>
-            </section>
-        <header>Execute command</header>
-        <section>
-        </section>
-        <header>Settings</header>
-        <section>
-            <settings-display [model]="item?.settings || {}"></settings-display>
-        </section>
-    </div>
+    <section class="select">
+        <btn>Start System</btn>
+        <btn>Stop System</btn>
+        <btn>Access Logs</btn>
+    </section>
+    <header>Execute command</header>
+    <section>
+    </section>
+    <header>Settings</header>
+    <section>
+        <settings-display [model]="item?.settings || {}"></settings-display>
+    </section>
 </div>

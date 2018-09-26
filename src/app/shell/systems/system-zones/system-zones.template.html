@@ -1,17 +1,29 @@
 <div class="container">
     <div class="settings">
-        <header>Permissions</header>
+        <section class="select">
+            <div class=""><dropdown placeholder="Select zone"></dropdown></div>
+            <div class="btn"><btn>Join zone</btn></div>
+        </section>
         <section>
-            <table>
-                <tr>
-                    <td>Tech Support</td>
-                    <td>false</td>
-                </tr>
-                <tr>
-                    <td>System Admin</td>
-                    <td>false</td>
-                </tr>
+            <table *ngIf="model.zones && model.zones.length > 0">
+                <thead>
+                    <tr>
+                        <td></td>
+                        <td>Name</td>
+                        <td>Description</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let zone of model.zones">
+                        <td></td>
+                        <td class="name">{{zone.name}}</td>
+                        <td>{{zone.description}}</td>
+                    </tr>
+                </tbody>
             </table>
+            <div class="no-item" *ngIf="!model.zones || model.zones.length <= 0">
+                <div class="text">No zones for system</div>
+            </div>
         </section>
     </div>
 </div>
