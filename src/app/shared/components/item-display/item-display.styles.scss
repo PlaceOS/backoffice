@@ -12,10 +12,10 @@
 header {
     display: flex;
     align-items: center;
-    padding: 1em 1.5em;
+    padding: 1em 1.5em .25em;
     width: 100%;
     @include respond-to(mobile) {
-        padding: .75em 1em;
+        padding: .75em 1em .25em;
     }
 
     .heading {
