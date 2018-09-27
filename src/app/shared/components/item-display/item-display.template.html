@@ -1,9 +1,19 @@
 
 <div class="container" *ngIf="item && !loading">
     <header>
-        <div class="connect" *ngIf="item.connected !== null && item.connected !== undefined" [class.active]="item.connected"></div>
-        <div class="heading">{{item.name}}</div>
-        <div class="id" *ngIf="item.id">(<span>{{item.id}}</span>)</div>
+        <div class="heading-group">
+            <div class="heading">{{item.name}}</div>
+            <div class="info">
+                <div class="id" *ngIf="item.id"><span>{{item.id}}</span></div>
+                <div class="chip connect" *ngIf="item.connected !== null && item.connected !== undefined" [class.active]="item.connected">
+                    {{item.connected ? 'Online' : 'Offline'}}
+                </div>
+                <div class="chip secure" *ngIf="item.tls">
+                    <div class="icon"><i class="material-icons">lock</i></div>
+                    <div class="text">Secure</div>
+                </div>
+            </div>
+        </div>
         <div class="options">
             <div class="option" click-responder (touchrelease)="event.emit({ type: 'edit' })">
                 <i class="material-icons">edit</i>
