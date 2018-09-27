@@ -101,6 +101,9 @@ main {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        @include respond-to(mobile) {
+            display: none;
+        }
     }
 }
 

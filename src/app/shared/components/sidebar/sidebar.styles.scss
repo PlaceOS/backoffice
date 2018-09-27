@@ -37,7 +37,7 @@ header {
 section.search {
     display: flex;
     align-items: center;
-    padding: .5em 1em 1em;
+    padding: .5em 1em;
     width: 100%;
     min-height: 3em;
     .input {
@@ -47,7 +47,8 @@ section.search {
 
 section.content {
     width: 100%;
-    border-bottom: 1px solid rgba(#fff, .2);    
+    border-bottom: 2px solid rgba(#fff, .54);    
+    padding-bottom: .5em;
 }
 
 input {

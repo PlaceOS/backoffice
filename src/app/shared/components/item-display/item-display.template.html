@@ -19,7 +19,8 @@
                 <tab *ngFor="let tab of tabs" [id]="tab.id" [style.width]="(100 / tabs.length) + '%'">
                     <div class="tab">
                         <i [class]="tab.icon?.class">{{tab.icon?.value}}</i>
-                        <div class="name">{{tab.name}}</div>
+                        <div class="name">{{tab.name}}&nbsp;</div>
+                        <div class="count" *ngIf="tab.count || tab.count === 0">({{tab.count || '0'}})</div>
                     </div>
                 </tab>
             </tab-group>

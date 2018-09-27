@@ -82,9 +82,12 @@ a {
     }
 }
 
+section {
+    padding: .5em .25em;
+}
+
 .select {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: .25em;
 }

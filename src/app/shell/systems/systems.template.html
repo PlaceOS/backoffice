@@ -6,9 +6,9 @@
     <main (touchrelease)="showSidebar(false)">
         <item-display [item]="model.item" [loading]="model.loading_item" name="system" [tabs]="[
                     { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }, 
-                    { id: 'devices', name: 'Devices' + ( model.item && model.item.modules.length ? ' ('+model.item.modules.length+')' : ' (0)' ), template: devices, icon: { class: 'material-icons', value: 'devices_other' } },
-                    { id: 'zones', name: 'Zones' + ( model.item && model.item.zones.length ? ' ('+model.item.zones.length+')' : ' (0)' ), template: zones, icon: { class: 'material-icons', value: 'device_hub' } },
-                    { id: 'triggers', name: 'Triggers' + ( model.triggers ? ' (' + model.triggers + ')' : ' (0)' ), template: triggers, icon: { class: 'material-icons', value: 'timer' } }
+                    { id: 'devices', name: 'Devices', count: ((model.item || {}).modules || []).length, template: devices, icon: { class: 'material-icons', value: 'devices_other' } },
+                    { id: 'zones', name: 'Zones', count: ((model.item || {}).zones || []).length, template: zones, icon: { class: 'material-icons', value: 'device_hub' } },
+                    { id: 'triggers', name: 'Triggers', count: (model.triggers || []).length, template: triggers, icon: { class: 'material-icons', value: 'timer' } }
                 ]" [active]="model.tab">
             <ng-template #about>
                 <system-about [item]="model.item"></system-about>
