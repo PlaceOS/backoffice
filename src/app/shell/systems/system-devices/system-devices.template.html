@@ -8,6 +8,7 @@
             <thead>
                 <tr>
                     <td></td>
+                    <td></td>
                     <td>Name</td>
                     <td>Class</td>
                     <td>IP</td>
@@ -15,7 +16,18 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let device of (model.devices || [])">
+                <tr *ngFor="let device of (model.devices || [])" context-item [cmp]="context_menu" (event)="event($event, device)" [data]="[
+                    { id: 'power', name: device.running ? 'Turn Off' : 'Power On', icon: { class: 'material-icons', value: device.running ? 'stop': 'play_arrow' } },
+                    { id: 'state', name: 'View State', icon: { class: 'material-icons', value: 'visibility' } },
+                    { id: 'reload', name: 'Reload Module', icon: { class: 'material-icons', value: 'refresh' } },
+                    { id: 'edit', name: 'Edit Device', icon: { class: 'material-icons', value: 'edit' } },
+                    { id: 'remove', name: 'Remove Device', icon: { class: 'material-icons', value: 'delete' } },
+                    { id: 'up', name: 'Move Up', icon: { class: 'material-icons', value: 'arrow_upward' } },
+                    { id: 'down', name: 'Move Down', icon: { class: 'material-icons', value: 'arrow_downward' } }
+                ]">
+                    <td class="small">
+                        <div class="action grab"><i class="material-icons">reorder</i></div>
+                    </td>
                     <td class="small">
                         <i binding [(value)]="device.connected" [sys]="item.id" [mod]="(device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)" bind="connected"></i>
                         <div class="state" [class.active]="device.connected"></div>
@@ -27,13 +39,8 @@
                     <td class="ip">
                         <div class="lock"><i class="material-icons" *ngIf="device.tls">lock</i></div>
                         <a (touchrelease)="goto(device, item.ip)">{{device.ip}}</a></td>
-                    <td class="options">
-                        <div class="action"><i class="material-icons">{{device.running ? 'play_arrow' : 'stop'}}</i></div>
-                        <div class="action"><i class="material-icons">visibility</i></div>
-                        <div class="action"><i class="material-icons">edit</i></div>
-                        <div class="action"><i class="material-icons">refresh</i></div>
-                        <div class="action"><i class="material-icons">delete</i></div>
-                        <div class="action"><i class="material-icons">reorder</i></div>
+                    <td class="small">
+                        <div class="action"><i class="material-icons">more_vert</i></div>
                     </td>
                 </tr>
             </tbody>

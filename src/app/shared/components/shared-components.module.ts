@@ -13,6 +13,7 @@ import { ItemListComponent } from './item-list/item-list.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { SettingsDisplayComponent } from './settings-display/settings-display.component';
 import { ItemDisplayComponent } from './item-display/item-display.component';
+import { ContextMenuComponent } from './context-menu/context-menu.component';
 
 const COMPONENTS: any[] = [
     ...LOGIN_COMPONENTS,
@@ -20,8 +21,9 @@ const COMPONENTS: any[] = [
     ItemListComponent,
     SidebarComponent,
     SettingsDisplayComponent,
-    ItemDisplayComponent
-]
+    ItemDisplayComponent,
+    ContextMenuComponent
+];
 
 @NgModule({
     declarations: [
@@ -35,6 +37,9 @@ const COMPONENTS: any[] = [
     ],
     exports: [
         ...COMPONENTS
+    ],
+    entryComponents: [
+        ContextMenuComponent
     ]
 })
 export class SharedComponentsModule { }

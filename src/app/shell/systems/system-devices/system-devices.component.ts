@@ -1,24 +1,27 @@
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 
 import { BaseComponent } from '../../../shared/components/base.component';
 import { AppService } from '../../../services/app.service';
 import { IEngineSystem } from '../../../services/data/systems.service';
+import { ContextMenuComponent } from '../../../shared/components/context-menu/context-menu.component';
 
 @Component({
     selector: 'system-devices',
     templateUrl: './system-devices.template.html',
     styleUrls: ['./system-devices.styles.scss']
 })
-export class SystemDevicesComponent extends BaseComponent {
+export class SystemDevicesComponent extends BaseComponent implements OnChanges {
     @Input() public item: IEngineSystem;
 
     public model: any = {};
 
+    public context_menu = ContextMenuComponent;
+
     constructor(private service: AppService) {
         super();
     }
-    
+
     public ngOnChanges(changes: any) {
         if (changes.item) {
             this.load();

@@ -8,7 +8,8 @@
 .options {
     display: flex;
     font-size: 1.2em;
-    width: 7em;
+    max-width: 5em;
+    margin: 0;
 }
 
 .action {
@@ -90,4 +91,8 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.grab {
+    cursor: grab;
 }

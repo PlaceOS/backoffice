@@ -15,7 +15,9 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let zone of model.zones">
-                        <td></td>
+                        <td class="small">
+                            <div class="action grab"><i class="material-icons">reorder</i></div>
+                        </td>
                         <td class="name">{{zone.name}}</td>
                         <td>{{zone.description}}</td>
                     </tr>
