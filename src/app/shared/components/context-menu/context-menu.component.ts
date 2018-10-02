@@ -30,14 +30,12 @@ export class ContextMenuComponent extends OverlayContentComponent implements Aft
     }
 
     public updatePosition() {
-        console.log('Context Menu:', this);
         if (!this.container || !this.container.nativeElement) {
             return setTimeout(() => this.updatePosition(), 50);
         }
         const box = this.container.nativeElement.getBoundingClientRect();
         this.model.right = false;
         this.model.top = 0;
-        console.log('Model:', box, this.model.offset);
         if (this.model.offset) {
             if (window.innerHeight < box.bottom) {
                 this.model.top = window.innerHeight - (box.bottom + 5);

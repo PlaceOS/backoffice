@@ -24,10 +24,8 @@ export class UsersComponent extends BaseComponent {
             this.model.id = '';
             if (params.has('id')) {
                 this.model.id = params.get('id');
-                console.log('ID:', this.model.id);
                 this.timeout('loading', () => this.model.loading_item = true, 10);
                 this.service.Users.show(this.model.id).then((item) => {
-                    console.log('Loading:', this.model.loading_item);
                     this.timeout('item', () => {
                         this.model.item = item;
                         this.model.loading_item = false;
@@ -43,7 +41,6 @@ export class UsersComponent extends BaseComponent {
         this.subs.obs.list = this.service.Users.listen('list', () => {
             this.model.list = this.service.Users.list();
             this.model.total = this.service.Users.get('total');
-            console.log('Total:', this.model.total);
             this.timeout('loading', () => {
                 this.model.loading = false;
                 this.model.loading_item = false;

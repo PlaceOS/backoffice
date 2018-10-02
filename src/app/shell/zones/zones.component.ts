@@ -23,7 +23,6 @@ export class ZonesComponent extends BaseComponent implements OnInit {
             this.model.id = '';
             if (params.has('id')) {
                 this.model.id = params.get('id');
-                console.log('ID:', this.model.id);
                 this.service.Zones.show(this.model.id).then((item) => {
                     this.timeout('item', () => this.model.item = item);
                 }, () => {
