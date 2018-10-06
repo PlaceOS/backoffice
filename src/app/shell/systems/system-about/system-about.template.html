@@ -11,7 +11,7 @@
                 placeholder="Select a device"></dropdown>
         </div>
         <div class="row">
-            <dropdown *ngIf="model.fn_list" [list]="model.fn_names" [(model)]="model.exec_index" (modelChange)="selectFunction(model.fn_list[model.fn_names[$event]])"
+            <dropdown *ngIf="model.fn_list" [list]="model.fn_names" [(model)]="model.exec_index" (modelChange)="selectFunction(model.fn_list[model.fn_names[$event]], model.fn_names[$event])"
                 placeholder="Select a function"></dropdown>
             <div class="fn-input" *ngIf="model.fn">
                 <div class="bracket">(</div>
@@ -28,7 +28,7 @@
                 <div class="bracket">)</div>
             </div>
             <div class="send" *ngIf="model.fn">
-                <btn [disabled]="!model.fields_valid">Send</btn>
+                <btn [disabled]="!model.fields_valid" (tapped)="execute()">Send</btn>
             </div>
         </div>
     </section>

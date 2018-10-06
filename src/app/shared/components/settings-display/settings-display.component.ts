@@ -51,7 +51,6 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
 
     public hovering(i) {
         this.hover = i;
-        console.log('Depth:', this.settings[i]);
         this.depth = this.settings[i].depth || 0;
     }
 

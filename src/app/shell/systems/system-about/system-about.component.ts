@@ -43,6 +43,7 @@ export class SystemAboutComponent extends BaseComponent implements OnChanges {
 
     public loadFunctions(item) {
         this.model.fn = null;
+        this.model.active_module = item;
         this.model.exec_index = -1;
         this.service.Systems.funcs(this.item.id, { index: item.index, module: item.module }).then((list) => {
             this.model.fn_list = list || {};
@@ -50,9 +51,11 @@ export class SystemAboutComponent extends BaseComponent implements OnChanges {
         }, () => null);
     }
 
-    public selectFunction(fn: any) {
+    public selectFunction(fn: any, name?: string) {
+        fn.name = name;
         this.model.fields = {};
         this.model.fn = fn;
+        this.checkFields();
     }
 
     public checkFields() {
@@ -77,9 +80,11 @@ export class SystemAboutComponent extends BaseComponent implements OnChanges {
         }
         // Update field state
         const args = this.arg_list.toArray();
-        const current = args[this.model.active_field];
-        this.model.field_pos = current.nativeElement.selectionEnd;
-        this.timeout('field', () => this.model.field_value = current.nativeElement.value);
+        if (args && args.length > 0) {
+            const current = args[this.model.active_field];
+            this.model.field_pos = current.nativeElement.selectionEnd;
+            this.timeout('field', () => this.model.field_value = current.nativeElement.value);
+        }
     }
 
     public nextField(e) {
@@ -119,6 +124,55 @@ export class SystemAboutComponent extends BaseComponent implements OnChanges {
                 el.selectionStart = el.selectionEnd = (el.value || '').length;
             }
             this.model.last_location = current.nativeElement.selectionEnd;
+        }
+    }
+
+    public execute() {
+        this.checkFields();
+        if (this.model.fields_valid) {
+            // Check if any optional arguments have a value
+            const arg_list = [];
+            for (const arg of this.model.fn.args) {
+                arg_list.push(this.model.fields[arg[1]] || null);
+            }
+            console.log('Arguments:', arg_list);
+            if (this.model.fn.arity < 0) {
+                const len = arg_list.length;
+                console.log('Arity:', this.model.fn.arity, len - (Math.abs(this.model.fn.arity)));
+                for (let i = len - 1; i >= Math.abs(this.model.fn.arity) - 1; i--) {
+                    if (arg_list[i]) { break; }
+                    arg_list.pop();
+                }
+            }
+            // Format arguments
+            let args = `[`;
+            for (const arg of arg_list) {
+                if (args !== '[') { args += ','; }
+                args += `${arg}`;
+            }
+            args += ']';
+            console.log('Arguments:', args);
+            // Execute function
+            const details = {
+                method: this.model.fn.name,
+                module: this.model.active_module.module,
+                index: this.model.active_module.index,
+                args: JSON.parse(args)
+            };
+            this.service.Systems.execute(this.item.id, details).then((result) => {
+                this.service.success('Command successful executed.<br>View Response?', 'View', () => {
+                    console.log('View response:', result);
+                });
+            }, (err) => {
+                if (typeof err === 'string' && err.length < 64) {
+                    this.service.error(err);
+                } else {
+                    this.service.error(`Executing '${this.model.fn.name}' failed.<br>View Error?`, 'View', () => {
+                        console.log('View error:', err);
+                    });
+                }
+            });
+
         }
     }
 }

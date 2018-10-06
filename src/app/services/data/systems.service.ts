@@ -62,6 +62,34 @@ export class EngineSystemsService extends BaseService {
         return this.promises[key];
     }
 
+    public execute(id: string, details: any) {
+        const key = `exec|${id}|${details}`;
+        if (!this.promises[key]) {
+            this.promises[key] = new Promise((resolve, reject) => {
+                const url = `${this.endpoint}/${id}/exec`;
+                if (!details || !details.method || !details.module) {
+                    return reject(!details ? 'Invalid details passed to execute method' : (!details.method ? 'No method passed to execute' :  'No module passed to execute'));
+                }
+                const body = {
+                    id,
+                    index: details.index || 1,
+                    method: details.method,
+                    module: details.module,
+                    args: details.args || []
+                };
+                this.http.post(url, body).subscribe(
+                    (resp: any) => {
+                        resolve(resp instanceof Array ? resp[0] : resp);
+                        setTimeout(() => this.promises[key] = null, 200);
+                    }, (err) => {
+                        this.promises[key] = null;
+                        reject(err instanceof Array ? err[0] : err);
+                    });
+            });
+        }
+        return this.promises[key];
+    }
+
     protected processItem(raw_item: any) {
         const item: IEngineSystem = {
             id: raw_item.id,

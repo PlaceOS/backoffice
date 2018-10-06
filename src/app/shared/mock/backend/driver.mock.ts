@@ -31,14 +31,15 @@ export class MockDriversBackend extends BaseMockBackend {
                 const args = [];
                 for (let j = 0; j < acount; j++) {
                     const arg = [];
-                    arg.push(acount - j < optional ? 'opt' : 'req');
+                    arg.push(acount - j <= optional ? 'opt' : 'req');
                     arg.push(`arg${j + 1}`);
                     args.push(arg);
                 }
                 funcs[`exec${k}`] = {
-                    arity: optional ? -(acount - (optional - 1)) - 1 : acount,
+                    arity: optional ? -(acount - (optional)) - 1 : acount,
                     args
                 };
+                console.log(`exec${k}:`,, optional, funcs[`exec${k}`]);
             }
             driver_list.push({
                 id: `dep-${Utils.padZero(i, 4)}`,
