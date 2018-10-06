@@ -23,6 +23,23 @@ export class MockDriversBackend extends BaseMockBackend {
         const count = Math.floor(Math.random() * 10 + 5);
         for (let i = 0; i < count; i++) {
             const department = faker.commerce.department();
+            const funcs = {};
+            const fcount = Math.floor(Math.random() * 10 + 2);
+            for (let k = 0; k < fcount; k++) {
+                const acount = Math.floor(Math.random() * 5);
+                const optional = Math.floor(Math.random() * acount);
+                const args = [];
+                for (let j = 0; j < acount; j++) {
+                    const arg = [];
+                    arg.push(acount - j < optional ? 'opt' : 'req');
+                    arg.push(`arg${j + 1}`);
+                    args.push(arg);
+                }
+                funcs[`exec${k}`] = {
+                    arity: optional ? -(acount - (optional - 1)) - 1 : acount,
+                    args
+                };
+            }
             driver_list.push({
                 id: `dep-${Utils.padZero(i, 4)}`,
                 name: `Test Driver ${i + 1}`,
@@ -33,7 +50,8 @@ export class MockDriversBackend extends BaseMockBackend {
                 ignore_connected: Math.floor(Math.random() * 324662871) % 2 === 0,
                 role: 'logic',
                 created_at: moment().add(-Math.floor(Math.random() * 10000), 'm').unix(),
-                settings: this.generateSettings()
+                settings: this.generateSettings(),
+                funcs
             });
         }
         this.model.drivers = driver_list;

@@ -556,9 +556,9 @@ table {
 
 .dropdown[widget] {
     max-width: 100%;
-    font-size: 1.2em;
+    font-size: 1em;
     width: 100%;
-    min-width: 10em;
+    margin: 0;
     &.blend {
         background-color: #f0f0f0;
         box-shadow: none;

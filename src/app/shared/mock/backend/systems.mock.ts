@@ -29,10 +29,10 @@ export class MockSystemsBackend extends BaseMockBackend {
                 const count = Math.floor(Math.random() * 3);
                 for (let i = 0; i < count; i++) {
                     const zone = zones[Math.floor(Math.random() * zones.length)];
-                    if (zone_list.indexOf(zone) < 0) { 
+                    if (zone_list.indexOf(zone) < 0) {
                         if (!zone.systems) { zone.systems = []; }
                         zone.systems.push(id);
-                        zone_list.push(zone); 
+                        zone_list.push(zone);
                     }
                 }
             }
@@ -48,6 +48,7 @@ export class MockSystemsBackend extends BaseMockBackend {
                 installed_ui_devices: 0,
                 support_url: '',
                 modules: [],
+                funcs: {},
                 zones: zone_list,
                 settings: this.generateSettings(),
                 created_at: moment().add(-Math.floor(Math.random() * 10000), 'm').unix()
@@ -63,11 +64,21 @@ export class MockSystemsBackend extends BaseMockBackend {
                 return { results: event.data.slice(0, 20), total: event.data.length };
             }
         });
-        MOCK_REQ_HANDLER.register('/control/api/systems/:id', this.model.systems, (event) => {
+        MOCK_REQ_HANDLER.register('/control/api/systems/:id/:opt', this.model.systems, (event) => {
             if (event && event.params && event.params.id) {
-                for (const item of event.data) {
-                    if (item.id === event.params.id) {
-                        return item;
+                if (!event.params.opt) {
+                    for (const item of event.data) {
+                        if (item.id === event.params.id) {
+                            return item;
+                        }
+                    }
+                } else if (event.params.opt === 'funcs') {
+                    for (const item of event.data) {
+                        if (item.id === event.params.id) {
+                            console.log('Functions:', item.funcs, event.fragment.index, item.modules[+event.fragment.index - 1]);
+                            console.log('List:', item.funcs[item.modules[+event.fragment.index - 1]]);
+                            return item.funcs[item.modules[+event.fragment.index - 1]];
+                        }
                     }
                 }
             }

@@ -4,6 +4,7 @@ import { CommsService } from '@acaprojects/ngx-composer';
 import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
+import { Utils } from '../../shared/utility.class';
 
 export interface IEngineSystem {
     id: string;
@@ -33,6 +34,32 @@ export class EngineSystemsService extends BaseService {
         this.model.route = '/systems';
         this.subjects.list = new BehaviorSubject<IEngineSystem[]>([]);
         this.observers.list = this.subjects.list.asObservable();
+    }
+
+    /**
+     * Get function listing for system with the given query params
+     * @param id ID of the system
+     * @param fields Key, value pairs for query parameters
+     * @param tries Retry value. DON'T USE
+     */
+    public funcs(id: string, fields?: any, tries: number = 0) {
+        if (tries > 4) { return new Promise((rs, rj) => rj('Too many tries')); }
+        const query = Utils.generateQueryString(fields);
+        const key = `funcs|${query}`;
+        if (!this.promises[key]) {
+            this.promises[key] = new Promise((resolve, reject) => {
+                const url = `${this.endpoint}/${id}/funcs${query ? '?' + query : ''}`;
+                this.http.get(url).subscribe(
+                    (resp: any) => {
+                        resolve(resp);
+                        setTimeout(() => this.promises[key] = null, 5 * 1000);
+                    }, (err) => {
+                        this.promises[key] = null;
+                        reject(err);
+                    });
+            });
+        }
+        return this.promises[key];
     }
 
     protected processItem(raw_item: any) {

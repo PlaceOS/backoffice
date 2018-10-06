@@ -4,6 +4,7 @@ import { CommsService } from '@acaprojects/ngx-composer';
 import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
+import { Utils } from '../../shared/utility.class';
 
 export interface IEngineZone {
     id: string;

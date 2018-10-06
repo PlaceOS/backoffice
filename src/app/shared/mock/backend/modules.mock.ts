@@ -29,9 +29,7 @@ export class MockModulesBackend extends BaseMockBackend {
             const ip = Math.floor(Math.random() * 999) % 2 === 0 ? this.generateIP() : '';
             const id = `mod-${Utils.padZero(i, 4)}`;
             sys.modules.push(id);
-            if (ip) {
-                console.log('System:', sys.name);
-            }
+            sys.funcs[id] = driver.funcs || {};
             item_list.push({
                 id,
                 name: `Test Module ${i + 1}`,
