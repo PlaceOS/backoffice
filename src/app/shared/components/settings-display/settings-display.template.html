@@ -1,14 +1,14 @@
 <div class="container">
     <div class="line-numbers">
-        <div class="item" *ngFor="let item of settings; let i = index" 
+        <div class="item" *ngFor="let item of settings; let i = index"
             [class.hover]="hover[i]" (mouseenter)="hover[i]=true" (mouseleave)="hover[i]=false">
             {{i + 1}}
         </div>
     </div>
     <div class="list">
-        <div class="item" *ngFor="let item of settings; let i = index" [class.hover]="hover[i]" [style.width]="(length * .62) + 'em'" 
+        <div class="item" *ngFor="let item of settings; let i = index" [class.hover]="hover[i]" [style.width]="(length * .62) + 'em'"
             (mouseenter)="hover[i]=true" (mouseleave)="hover[i]=false">
-            <code [innerHTML]="item.value | safe"></code>
+            <code [innerHTML]="item.formatted | safe"></code>
         </div>
     </div>
 </div>

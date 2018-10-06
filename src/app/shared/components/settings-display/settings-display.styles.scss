@@ -52,4 +52,28 @@
 code {
     font-family: $mono-font;
     white-space: pre;
+    span {
+        font-family: $mono-font;
+        white-space: pre;
+
+        .key {
+            color: #2E7D32;
+        }
+
+        .string {
+            color: #D32F2F;
+        }
+
+        .number {
+            color: #1565C0;
+        }
+
+        .boolean {
+            color: #F4511E;
+        }
+
+        .null {
+            color: rgba(#000, .54);
+        }
+    }
 }
