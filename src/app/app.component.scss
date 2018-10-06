@@ -788,6 +788,45 @@ code {
         }
     }
 
+    &.level1 {
+        .depth {
+            &:nth-child(2) {
+                border-left-color: rgba(#000, .54);
+            }
+        }
+    }
+
+    &.level2 {
+        .depth {
+            &:nth-child(3) {
+                border-left-color: rgba(#000, .54);
+            }
+        }
+    }
+
+    &.level3 {
+        .depth {
+            &:nth-child(4) {
+                border-left-color: rgba(#000, .54);
+            }
+        }
+    }
+
+    &.level4 {
+        .depth {
+            &:nth-child(5) {
+                border-left-color: rgba(#000, .54);
+            }
+        }
+    }
+
+    .depth {
+        border-left: 1px solid rgba(#000, .1);
+        &:first-child {
+            border: none;
+        }
+    }
+
     .string {
         color: #D32F2F;
     }

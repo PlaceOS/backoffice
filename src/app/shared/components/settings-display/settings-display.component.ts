@@ -17,7 +17,8 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
     public settings = [];
 
     public length = 0;
-    public hover: any = {};
+    public hover = -1;
+    public depth = 0;
 
     public ngOnChanges(changes: any) {
         if (changes.model) {
@@ -34,6 +35,7 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
             this.settings.push({
                 index: lines.indexOf(line),
                 value: line,
+                depth: (line.match(/ {4}/g) || []).length - 1,
                 formatted: line.replace(/"[^:]*"/g, '<span class="string">$&</span>')
                     .replace(/\<span class="string"\>".*"\<\/span\> *:/g, '<span class="key">$&</span>')
                     .replace(/[0-9]*.?[0-9]+ *,?/g, '<span class="number">$&</span>')
@@ -45,5 +47,16 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
             });
             this.length = line.length > this.length ? line.length : this.length;
         }
+    }
+
+    public hovering(i) {
+        this.hover = i;
+        console.log('Depth:', this.settings[i]);
+        this.depth = this.settings[i].depth || 0;
+    }
+
+    public leave(i) {
+        this.hover = -1;
+        this.depth = 0;
     }
 }
