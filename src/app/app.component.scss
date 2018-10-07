@@ -26,6 +26,13 @@ input {
 }
 
 input {
+    font-size: 1em;
+    width: 100%;
+    padding: .5em 1em;
+    border-radius: 1.2em;
+    border: 1px solid rgba(#000, .2);
+    outline: none;
+
     &::-ms-clear {
         display: none;
     }

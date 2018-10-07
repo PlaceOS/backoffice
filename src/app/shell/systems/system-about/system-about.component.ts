@@ -144,7 +144,7 @@ export class SystemAboutComponent extends BaseComponent implements OnChanges {
                     arg_list.pop();
                 }
             }
-            // Format arguments
+                // Format arguments
             let args = `[`;
             for (const arg of arg_list) {
                 if (args !== '[') { args += ','; }
@@ -152,7 +152,7 @@ export class SystemAboutComponent extends BaseComponent implements OnChanges {
             }
             args += ']';
             console.log('Arguments:', args);
-            // Execute function
+                // Execute function
             const details = {
                 method: this.model.fn.name,
                 module: this.model.active_module.module,

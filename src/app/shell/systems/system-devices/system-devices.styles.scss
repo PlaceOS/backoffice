@@ -30,6 +30,7 @@ tbody {
     font-size: .9em;
     td {
         text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 
@@ -48,11 +49,11 @@ div {
 }
 
 .name {
-    
+
 }
 
 .lock {
-    
+
     height: 1.2em;
     width: 1.2em;
     display: inline-flex;

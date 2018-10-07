@@ -1,26 +1,42 @@
 <div class="container">
-    <div class="list" *ngIf="model.logs && model.logs.length > 0">
-        <table>
-            <thead>
-                <tr>
-                    <td>Session Start</td>
-                    <td>Ended</td>
-                    <td>Systems Accessed</td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of model.logs">
-                    <td>{{item.display?.started}}</td>
-                    <td>{{item.display?.ended}}</td>
-                    <td>
-                        <div>{{item.systems.length}}</div>
-                        <div>View</div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="no-item" *ngIf="!model.logs || model.logs.length <= 0">
-        <div class="text">No logs found</div>
+    <div class="settings">
+        <section class="select">
+            <div class="dropdown">
+                <btn>Add trigger</btn>
+            </div>
+            <div class="btn">
+                <input placeholder="Filter triggers">
+            </div>
+        </section>
+        <section>
+            <table *ngIf="model.triggers && model.triggers.length > 0">
+                <thead>
+                    <tr>
+                        <td></td>
+                        <td>Name</td>
+                        <td>Count</td>
+                        <td>Added</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let trigger of model.triggers">
+                        <td class="small">
+                            <div class="state" [class.active]="trigger.enabled"></div>
+                        </td>
+                        <td class="name">{{trigger.name}}</td>
+                        <td>{{trigger.count}}</td>
+                        <td>{{trigger.added}}</td>
+                        <td class="small">
+                            <div class="action"><i class="material-icons">edit</i></div>
+                            <div class="action"><i class="material-icons">delete</i></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="no-item" *ngIf="!model.triggers || model.triggers.length <= 0">
+                <div class="text">No triggers for system</div>
+            </div>
+        </section>
     </div>
 </div>

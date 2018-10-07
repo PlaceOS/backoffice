@@ -39,7 +39,6 @@ export class MockDriversBackend extends BaseMockBackend {
                     arity: optional ? -(acount - (optional)) - 1 : acount,
                     args
                 };
-                console.log(`exec${k}:`,, optional, funcs[`exec${k}`]);
             }
             driver_list.push({
                 id: `dep-${Utils.padZero(i, 4)}`,

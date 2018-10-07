@@ -5,6 +5,7 @@ import { BaseComponent } from '../../../shared/components/base.component';
 import { AppService } from '../../../services/app.service';
 import { IEngineSystem } from '../../../services/data/systems.service';
 import { ContextMenuComponent } from '../../../shared/components/context-menu/context-menu.component';
+import { IEngineModule } from '../../../services/data/modules.service';
 
 @Component({
     selector: 'system-devices',
@@ -44,4 +45,106 @@ export class SystemDevicesComponent extends BaseComponent implements OnChanges {
             this.service.navigate(['devices', item.id]);
         }
     }
+
+    public event(e, device) {
+        console.log('Event:', e);
+        if (e.value) {
+            switch (e.value.id) {
+                case 'power':
+                    this.power(device);
+                    break;
+                case 'state':
+                    this.viewState(device);
+                    break;
+                case 'reload':
+                    this.reloadModule(device);
+                    break;
+                case 'remove':
+                    this.remove(device);
+                    break;
+            }
+        }
+    }
+
+    public power(device: IEngineModule) {
+        if (device.running) {
+            this.service.Modules.stop(device.id).then(() => {
+                this.service.success('Module successfully stopped');
+                this.reload(device);
+            }, (err) => {
+                if (typeof err === 'string' && err.length < 64) {
+                    this.service.error(err);
+                } else {
+                    this.service.error(`Failed to stop device '${device.id}'.<br>View Error?`, 'View', () => {
+                        console.log('View error:', err);
+                    });
+                }
+            });
+        } else {
+            this.service.Modules.start(device.id).then(() => {
+                this.service.success('Module successfully stopped');
+                this.reload(device);
+            }, (err) => {
+                if (typeof err === 'string' && err.length < 64) {
+                    this.service.error(err);
+                } else {
+                    this.service.error(`Failed to stop device '${device.id}'.<br>View Error?`, 'View', () => {
+                        console.log('View error:', err);
+                    });
+                }
+            });
+        }
+    }
+
+    public reload(device: IEngineModule) {
+        this.service.Modules.show(device.id).then((item) => {
+            for (const k in item) {
+                if (item.hasOwnProperty(k)) {
+                    device[k] = item[k];
+                }
+            }
+        }, () => null);
+    }
+
+    public viewState(device: IEngineModule) {
+        this.service.Overlay.openModal('view-module-state', { data: { system: this.item, module: device } }, (e) => {
+            e.close();
+        });
+    }
+
+    public reloadModule(device: IEngineModule) {
+        this.service.confirm({
+            icon: 'refresh',
+            title: 'Reload module?',
+            message: 'New driver code will be loaded and the device settings will be reloaded.',
+            accept: 'Ok',
+            cancel: true
+        }, (e) => {
+            if (e.type === 'Accept') {
+                this.service.Drivers.reload(device.dependency.id)
+                    .then(
+                        (result) => this.service.success(result.message || result),
+                        (err) => this.service.error(err.message || err)
+                    );
+            }
+            e.close();
+        });
+    }
+
+    public remove(device: IEngineModule) {
+        this.service.confirm({
+            icon: 'delete',
+            title: 'Remove module?',
+            message: `Remove ${device.dependency.module_name} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
+            accept: 'Ok',
+            cancel: true
+        }, (e) => {
+            if (e.type === 'Accept') {
+
+            }
+            e.close();
+        });
+    }
+
+
 }

@@ -4,3 +4,39 @@
 .container {
     padding: 1em;
 }
+
+tbody {
+    font-size: .9em;
+    td {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+div {
+    .small {
+        width: 2em;
+    }
+}
+
+.action {
+    height: 1.5em;
+    width: 1.5em;
+    min-width: 1.5em;
+    border-radius: .65em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3em;
+    &:hover {
+        background-color: rgba(#000, .1);
+    }
+}
+
+.select {
+    display: flex;
+    align-items: center;
+    .btn {
+        flex: 1;
+    }
+}

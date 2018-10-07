@@ -39,7 +39,15 @@
                     <td class="ip">
                         <div class="lock"><i class="material-icons" *ngIf="device.tls">lock</i></div>
                         <a (touchrelease)="goto(device, item.ip)">{{device.ip}}</a></td>
-                    <td class="small">
+                    <td class="small" context-item [cmp]="context_menu" [touch]="true" (event)="event($event, device)" [data]="[
+                    { id: 'power', name: device.running ? 'Turn Off' : 'Power On', icon: { class: 'material-icons', value: device.running ? 'stop': 'play_arrow' } },
+                    { id: 'state', name: 'View State', icon: { class: 'material-icons', value: 'visibility' } },
+                    { id: 'reload', name: 'Reload Module', icon: { class: 'material-icons', value: 'refresh' } },
+                    { id: 'edit', name: 'Edit Device', icon: { class: 'material-icons', value: 'edit' } },
+                    { id: 'remove', name: 'Remove Device', icon: { class: 'material-icons', value: 'delete' } },
+                    { id: 'up', name: 'Move Up', icon: { class: 'material-icons', value: 'arrow_upward' } },
+                    { id: 'down', name: 'Move Down', icon: { class: 'material-icons', value: 'arrow_downward' } }
+                ]" touchrelease>
                         <div class="action"><i class="material-icons">more_vert</i></div>
                     </td>
                 </tr>

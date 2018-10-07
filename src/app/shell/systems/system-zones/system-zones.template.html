@@ -11,6 +11,7 @@
                         <td></td>
                         <td>Name</td>
                         <td>Description</td>
+                        <td *ngIf="model.zones.length > 1"></td>
                     </tr>
                 </thead>
                 <tbody>
@@ -20,6 +21,9 @@
                         </td>
                         <td class="name">{{zone.name}}</td>
                         <td>{{zone.description}}</td>
+                        <td *ngIf="model.zones.length > 1" class="small">
+                            <div class="action"><i class="material-icons">exit_to_app</i></div>
+                        </td>
                     </tr>
                 </tbody>
             </table>

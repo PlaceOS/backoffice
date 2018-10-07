@@ -80,6 +80,8 @@ export class MockSystemsBackend extends BaseMockBackend {
                             return item.funcs[item.modules[+event.fragment.index - 1]];
                         }
                     }
+                } else if (event.params.opt === 'state') {
+                    return this.generateSettings();
                 }
             }
             return null;
