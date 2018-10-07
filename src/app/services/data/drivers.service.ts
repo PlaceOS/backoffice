@@ -30,6 +30,14 @@ export class DriversService extends BaseService {
         this.observers.list = this.subjects.list.asObservable();
     }
 
+    /**
+     * Perform reload task on the given driver
+     * @param id Module ID
+     */
+    public reload(id: string) {
+        return this.task(id, 'reload');
+    }
+
     protected processItem(raw_item: any) {
         const item: IEngineDriver = {
             id: raw_item.id,

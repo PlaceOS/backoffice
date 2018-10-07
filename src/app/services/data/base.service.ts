@@ -127,8 +127,8 @@ export class BaseService {
                 this.http.get(url).subscribe(
                     (resp: any) => {
                         const item_list = this.processList(resp.results || resp);
-                        if (update) { 
-                            this.updateList(item_list); 
+                        if (update) {
+                            this.updateList(item_list);
                             this.set('total', resp.total || this.list().length);
                         }
                         resolve(item_list);
@@ -168,7 +168,7 @@ export class BaseService {
 
     /**
      * Add new item with the given parameters
-     * @param data 
+     * @param data
      */
     public add(data: any) {
         const key = `add|${data.id || moment().seconds(0).unix()}`;
@@ -194,7 +194,7 @@ export class BaseService {
 
     /**
      * Alias for add method
-     * @param data 
+     * @param data
      */
     public new(data: any) {
         return this.add(data);
@@ -265,10 +265,44 @@ export class BaseService {
 
     /**
      * Alias for the remove method
-     * @param id 
+     * @param id
      */
     public delete(id: string) {
         return this.remove(id);
+    }
+
+    /**
+     * Execute task on the the given module
+     * @param id Module ID
+     * @param task Name of the task to execute
+     */
+    public task(id: string, task: string, fields?: any) {
+        const key = `task|${id}|${task}`;
+        if (!this.promises[key]) {
+            this.promises[key] = new Promise((resolve, reject) => {
+                const url = `${this.endpoint}/${id}/${task}`;
+                const body: any = {
+                    id,
+                    _task: task
+                };
+                if (fields) {
+                    for (const k in fields) {
+                        if (fields.hasOwnProperty(k)) {
+                            body[k] = fields[k];
+                        }
+                    }
+                }
+                this.http.post(url, body).subscribe(
+                    (resp: any) => {
+                        resolve(resp || {});
+                        setTimeout(() => this.promises[key] = null, 200);
+                    }, (err) => {
+                        this.promises[key] = null;
+                        reject(err instanceof Array ? err[0] : err);
+                    });
+            });
+        }
+        return this.promises[key];
     }
 
     protected deleteItem(id: string) {
@@ -358,11 +392,11 @@ export class BaseService {
             }
         }
     }
-    
+
     /**
      * Generate settings for confirm modal
-     * @param key 
-     * @param fields 
+     * @param key
+     * @param fields
      */
     protected confirmSettings(key: string, fields?: any) {
         const settings: any = {
@@ -374,17 +408,17 @@ export class BaseService {
             cancel: true
         }
         switch(key) {
-            case 'delete': 
+            case 'delete':
                 settings.title = `Delete ${this.model.name}`;
                 settings.message = `Are you sure you wish to delete ${this.model.name} '${fields.name ? fields.name : ''}'?`;
                 settings.icon = 'delete';
                 break;
-            case 'update': 
+            case 'update':
                 settings.title = `Update ${this.model.name}`;
                 settings.message = `Update ${this.model.name} '${fields.name ? fields.name : ''}'?`;
                 settings.icon = 'cloud_upload';
                 break;
-            case 'add': 
+            case 'add':
                 settings.title = `New ${this.model.name}`;
                 settings.message = `Create new ${this.model.name} '${fields.name ? fields.name : ''}'?`;
                 settings.icon = 'add';

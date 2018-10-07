@@ -45,7 +45,7 @@ export class EngineSystemsService extends BaseService {
     public funcs(id: string, fields?: any, tries: number = 0) {
         if (tries > 4) { return new Promise((rs, rj) => rj('Too many tries')); }
         const query = Utils.generateQueryString(fields);
-        const key = `funcs|${query}`;
+        const key = `funcs|${id}|${query}`;
         if (!this.promises[key]) {
             this.promises[key] = new Promise((resolve, reject) => {
                 const url = `${this.endpoint}/${id}/funcs${query ? '?' + query : ''}`;
@@ -61,7 +61,11 @@ export class EngineSystemsService extends BaseService {
         }
         return this.promises[key];
     }
-
+    /**
+     * Execute method of the given module of the system
+     * @param id System ID
+     * @param details Module and method details
+     */
     public execute(id: string, details: any) {
         const key = `exec|${id}|${details}`;
         if (!this.promises[key]) {
@@ -88,6 +92,40 @@ export class EngineSystemsService extends BaseService {
             });
         }
         return this.promises[key];
+    }
+
+    /**
+     * Get state of the given system module
+     * @param id System ID
+     * @param module Module name
+     * @param index Module index
+     */
+    public state(id: string, module: string, index: number) {
+        const query = Utils.generateQueryString({ module, index });
+        const key = `state|${id}|${query}`;
+        if (!this.promises[key]) {
+            this.promises[key] = new Promise((resolve, reject) => {
+                const url = `${this.endpoint}/${id}/state${query ? '?' + query : ''}`;
+                this.http.get(url).subscribe(
+                    (resp: any) => {
+                        resolve(resp);
+                        setTimeout(() => this.promises[key] = null, 5 * 1000);
+                    }, (err) => {
+                        this.promises[key] = null;
+                        reject(err);
+                    });
+            });
+        }
+        return this.promises[key];
+    }
+
+    /**
+     * Remove module from given system
+     * @param id System ID
+     * @param module_id Module ID
+     */
+    public removeModule(id: string, module_id: string) {
+        return this.task(id, 'remove', { module_id });
     }
 
     protected processItem(raw_item: any) {

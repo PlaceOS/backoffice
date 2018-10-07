@@ -46,6 +46,22 @@ export class ModulesService extends BaseService {
         this.observers.list = this.subjects.list.asObservable();
     }
 
+    /**
+     * Perform start task on the given module
+     * @param id Module ID
+     */
+    public start(id: string) {
+        return this.task(id, 'start');
+    }
+
+    /**
+     * Perform stop task on the given module
+     * @param id Module ID
+     */
+    public stop(id: string) {
+        return this.task(id, 'stop');
+    }
+
     protected processItem(raw_item: any) {
         const item: IEngineModule = {
             id: raw_item.id,

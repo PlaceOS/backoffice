@@ -32,6 +32,7 @@ import { ZonesService } from './data/zones.service';
 import { Utils } from '../shared/utility.class';
 
 import { ConfirmModalComponent } from '../overlays/confirm-modal/confirm-modal.component';
+import { ViewModuleStateModalComponent } from '../overlays/view-module-state/view-module-state.component';
 
 @Injectable({
     providedIn: 'root'
@@ -75,6 +76,7 @@ export class AppService {
             // Register modals/overlay components
         this.overlay.registerService(this);
         this.overlay.setupModal('confirm', { cmp: ConfirmModalComponent });
+        this.overlay.setupModal('view-module-state', { cmp: ViewModuleStateModalComponent });
         this.init();
     }
 
@@ -102,9 +104,9 @@ export class AppService {
                 location.reload();
             });
         });
-        if (this.settings.get('debug')) { 
-            (window as any).application = this; 
-            (window as any).utility = Utils; 
+        if (this.settings.get('debug')) {
+            (window as any).application = this;
+            (window as any).utility = Utils;
         }
         this.model.title = this.settings.get('app.title') || 'Angular Application';
         this.initialiseComposer();
