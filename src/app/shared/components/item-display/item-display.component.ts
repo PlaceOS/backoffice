@@ -1,14 +1,15 @@
 
-import { Component, Input, TemplateRef, Output, EventEmitter } from '@angular/core';
+import { Component, Input, TemplateRef, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
 
 import { BaseComponent } from '../base.component';
+import { AppService } from '../../../services/app.service';
 
 @Component({
     selector: 'item-display',
     templateUrl: './item-display.template.html',
     styleUrls: ['./item-display.styles.scss']
 })
-export class ItemDisplayComponent extends BaseComponent {
+export class ItemDisplayComponent extends BaseComponent implements OnInit, OnChanges {
     @Input() public name: string;
     @Input() public item: any;
     @Input() public loading: boolean;
@@ -18,7 +19,7 @@ export class ItemDisplayComponent extends BaseComponent {
 
     public model: any = {};
 
-    constructor() {
+    constructor(private service: AppService) {
         super();
     }
 
@@ -30,6 +31,8 @@ export class ItemDisplayComponent extends BaseComponent {
                 }
             }
         }
+        this.subs.obs.right = this.service.Hotkey.listen(['ArrowRight'], () => this.changeTab(1));
+        this.subs.obs.left = this.service.Hotkey.listen(['ArrowLeft'], () => this.changeTab(-1));
     }
 
     public ngOnChanges(changes: any) {
@@ -43,5 +46,19 @@ export class ItemDisplayComponent extends BaseComponent {
                 }
             }
         }
+    }
+
+    public changeTab(offset: number) {
+        if (!this.tabs || this.tabs.length === 0) { return; }
+        let index = 0;
+        for (const tab of this.tabs) {
+            if (tab.id === this.model.tab) {
+                index = this.tabs.indexOf(tab);
+            }
+        }
+        index += offset;
+        if (index >= this.tabs.length) { index = this.tabs.length - 1; }
+        if (index < 0) { index = 0; }
+        this.model.tab = this.tabs[index].id;
     }
 }

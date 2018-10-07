@@ -17,7 +17,7 @@
         <ng-content></ng-content>
     </section>
     <section class="list" #item_list (scroll)="atBottom()">
-        <div class="item" *ngFor="let item of list" (touchrelease)="select(item)">
+        <div #list_item class="item" *ngFor="let item of list" (touchrelease)="select(item)">
             <div class="text">{{item?.custom_name || item?.name || item}}</div>
             <div class="icon" *ngIf="active === item.id">
                 <i class="material-icons">done</i>

@@ -33,6 +33,7 @@ import { Utils } from '../shared/utility.class';
 
 import { ConfirmModalComponent } from '../overlays/confirm-modal/confirm-modal.component';
 import { ViewModuleStateModalComponent } from '../overlays/view-module-state/view-module-state.component';
+import { HotkeyService } from './hotkey.service';
 
 @Injectable({
     providedIn: 'root'
@@ -62,7 +63,8 @@ export class AppService {
         private systems: EngineSystemsService,
         private triggers: TriggersService,
         private users: UsersService,
-        private zones: ZonesService
+        private zones: ZonesService,
+        private hotkey: HotkeyService
     ) {
             // Set parent service on child services
         this.analytics.parent = this.comments.parent = this.users.parent = this.logs.parent = this;
@@ -222,6 +224,7 @@ export class AppService {
     get Systems() { return this.systems; }
     get system() { return this.subjects.system.getValue(); }
     set system(value: string) { this.subjects.system.next(value); }
+    get Hotkey() { return this.hotkey; }
         // Getters for data/API services
     get Drivers() { return this.drivers; }
     get Logs() { return this.logs; }
