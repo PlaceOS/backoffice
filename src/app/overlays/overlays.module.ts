@@ -7,10 +7,13 @@ import { ComposerModule } from '@acaprojects/ngx-composer';
 import { WidgetsModule } from '@acaprojects/ngx-widgets';
 
 import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
+import { ViewModuleStateModalComponent } from './view-module-state/view-module-state.component';
+import { SharedComponentsModule } from '../shared/components/shared-components.module';
 
 const OVERLAYS: any[] = [
-    ConfirmModalComponent
-]
+    ConfirmModalComponent,
+    ViewModuleStateModalComponent
+];
 
 @NgModule({
     declarations: [
@@ -20,7 +23,8 @@ const OVERLAYS: any[] = [
         CommonModule,
         FormsModule,
         ComposerModule,
-        WidgetsModule
+        WidgetsModule,
+        SharedComponentsModule
     ],
     exports: [
         ...OVERLAYS

@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="header">
+        <div class="text">Module State - {{model.module?.custom_name || model.module?.name}}</div>
+        <div class="close" (tap)="fn.close()">
+            <i class="material-icons">close</i>
+        </div>
+    </div>
+    <div class="body">
+            <div class="system">
+                <div class="label">System:</div>
+                <div class="value">{{model.system?.name}}</div>
+            </div>
+            <div class="system">
+                <div class="label">Module:</div>
+                <div class="value">{{model.module?.dependency.module_name}} {{model.module?.role + 1}}</div>
+                <btn (tapped)="updateState()">Update state</btn>
+            </div>
+        <div class="settings">
+            <settings-display [model]="model?.state || {}"></settings-display>
+        </div>
+    </div>
+</div>
