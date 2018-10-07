@@ -72,3 +72,17 @@ section {
         }
     }
 }
+
+.field {
+    display: flex;
+    align-items: center;
+    margin: .25em 0;
+
+    .label {
+        font-weight: 500;
+    }
+
+    .value {
+        padding: 0 .5em;
+    }
+}

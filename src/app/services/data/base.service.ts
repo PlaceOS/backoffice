@@ -347,7 +347,7 @@ export class BaseService {
             }
         }
             // Sort list
-        item_list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        // item_list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
             // Store changes to the list
         this.set('list', item_list);
     }
@@ -358,7 +358,7 @@ export class BaseService {
             const out = this.processItem(item);
             if (out) { output_list.push(out); }
         }
-        output_list.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
+        // output_list.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
         return output_list;
     }
 
@@ -406,8 +406,8 @@ export class BaseService {
             link: fields.link,
             accept: 'Ok',
             cancel: true
-        }
-        switch(key) {
+        };
+        switch (key) {
             case 'delete':
                 settings.title = `Delete ${this.model.name}`;
                 settings.message = `Are you sure you wish to delete ${this.model.name} '${fields.name ? fields.name : ''}'?`;

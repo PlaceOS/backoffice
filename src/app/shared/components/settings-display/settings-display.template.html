@@ -1,12 +1,12 @@
 <div class="container">
     <div class="line-numbers">
         <div class="item" *ngFor="let item of settings; let i = index"
-            [class.hover]="model.hover === i" (mouseenter)="hovering(i)" (mouseleave)="leave(i)">
+            [class.hover]="hover === i" (mouseenter)="hovering(i)" (mouseleave)="leave(i)">
             {{i + 1}}
         </div>
     </div>
     <div class="list">
-        <div class="item" *ngFor="let item of settings; let i = index" [class.hover]="model.hover === i" [style.width]="(length * .62) + 'em'"
+        <div class="item" *ngFor="let item of settings; let i = index" [class.hover]="hover === i" [style.width]="(length * .62) + 'em'"
             (mouseenter)="hovering(i)" (mouseleave)="leave(i)">
             <code [class]="'level' + depth" [innerHTML]="item.formatted | safe"></code>
         </div>

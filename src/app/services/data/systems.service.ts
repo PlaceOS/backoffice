@@ -128,6 +128,24 @@ export class EngineSystemsService extends BaseService {
         return this.task(id, 'remove', { module_id });
     }
 
+    /**
+     * Start all module from given system
+     * @param id System ID
+     * @param module_id Module ID
+     */
+    public start(id: string) {
+        return this.task(id, 'start');
+    }
+
+    /**
+     * Stop all module from given system
+     * @param id System ID
+     * @param module_id Module ID
+     */
+    public stop(id: string) {
+        return this.task(id, 'stop');
+    }
+
     protected processItem(raw_item: any) {
         const item: IEngineSystem = {
             id: raw_item.id,

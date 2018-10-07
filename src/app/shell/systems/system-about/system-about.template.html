@@ -1,8 +1,26 @@
 <div class="container">
     <section class="select">
-        <btn>Start System</btn>
-        <btn>Stop System</btn>
-        <btn>Access Logs</btn>
+        <btn (tapped)="start()">Start System</btn>
+        <btn (tapped)="stop()">Stop System</btn>
+        <btn (tapped)="logs()">Access Logs</btn>
+    </section>
+    <section class="details">
+        <div class="field" *ngIf="item.support_url">
+            <div class="label">Support URL:</div>
+            <div class="value">{{item.support_url}}</div>
+        </div>
+        <div class="field" *ngIf="item.bookable">
+            <div class="label">Bookable Room:</div>
+            <div class="value">{{item.bookable ? 'Yes' : 'No'}} {{item.email ? '(' + item.email + ')' : ''}}</div>
+        </div>
+        <div class="field" *ngIf="item.capacity">
+            <div class="label">Capacity:</div>
+            <div class="value">{{item.capacity}}</div>
+        </div>
+        <div class="field" *ngIf="item.installed_ui_devices">
+            <div class="label">Installed Touch Panels:</div>
+            <div class="value">{{item.installed_ui_devices}}</div>
+        </div>
     </section>
     <header *ngIf="model.modules && model.modules.length > 0">Execute command</header>
     <section class="execute" *ngIf="model.modules && model.modules.length > 0">
