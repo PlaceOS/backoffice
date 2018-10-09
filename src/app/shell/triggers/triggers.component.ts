@@ -27,7 +27,7 @@ export class TriggersComponent extends BaseComponent {
                 this.model.id = params.get('id');
                 this.timeout('loading', () => this.model.loading_item = true, 10);
                 this.service.Triggers.show(this.model.id).then((item) => {
-                    const query: any = { offset: 0, limit: 1, sys_id: item.id };
+                    const query: any = { offset: 0, limit: 1, trigger_id: item.id };
                     const q = `total_${Utils.generateQueryString(query)}`;
                         // Get trigger count
                     this.service.SystemTriggers.query(query)

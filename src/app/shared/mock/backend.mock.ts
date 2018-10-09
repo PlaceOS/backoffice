@@ -16,6 +16,7 @@ import { MockSystemsBackend } from './backend/systems.mock';
 import { MockDomainsBackend } from './backend/domains.mock';
 import { MockApplicationsBackend } from './backend/applications.mock';
 import { MockAuthSourcesBackend } from './backend/auth-sources.mock';
+import { MockSystemTriggersBackend } from './backend/systems-triggers.mock';
 
 export class MockBackend {
     public model: any = {
@@ -76,6 +77,12 @@ export class MockBackend {
                         this.model.backend.triggers.listen((tstate) => {
                             if (!tstate) { return; }
                             this.update(this.model.backend.triggers.data);
+                                // Load system triggers
+                            this.model.backend.system_triggers = new MockSystemTriggersBackend(this.model);
+                            this.model.backend.system_triggers.listen((astate) => {
+                                if (!astate) { return; }
+                                this.update(this.model.backend.system_triggers.data);
+                            });
                         });
 
                         this.model.backend.drivers = new MockDriversBackend(this.model);
