@@ -1,0 +1,31 @@
+<div class="container">
+    <section class="select">
+        <btn>Add new</btn>
+    </section>
+    <section>
+        <div class="list" *ngIf="model.list && model.list.length > 0">
+            <table>
+                <thead>
+                    <tr>
+                        <td>Name</td>
+                        <td>URL</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of model.list">
+                        <td>{{item.name}}</td>
+                        <td>{{item.redirect}}</td>
+                        <td class="small">
+                            <div class="action"><i class="material-icons">edit</i></div>
+                            <div class="action"><i class="material-icons">delete</i></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="no-item" *ngIf="!model.list || model.list.length <= 0">
+            <div class="text">No authentication sources found</div>
+        </div>
+    </section>
+</div>

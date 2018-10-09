@@ -4,5 +4,7 @@ import { DomainsComponent } from './domains.component';
 
 export const ROUTES: Routes = [
     { path: '', component: DomainsComponent, children: [] },
+    { path: ':id', component: DomainsComponent, children: [] },
+    { path: ':id/:tab', component: DomainsComponent, children: [] },
     { path: '**',      redirectTo: '' },
 ];

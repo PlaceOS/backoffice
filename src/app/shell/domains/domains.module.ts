@@ -11,11 +11,17 @@ import { ROUTES } from './domains.routes';
 
 import { DomainsComponent } from './domains.component';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
+import { DomainApplicationsComponent } from './domain-applications/domain-applications.component';
+import { DomainAuthenticationComponent } from './domain-authentication/domain-authentication.component';
+import { DomainUsersComponent } from './domain-users/domain-users.component';
 
 
 @NgModule({
     declarations: [
-        DomainsComponent
+        DomainsComponent,
+        DomainApplicationsComponent,
+        DomainAuthenticationComponent,
+        DomainUsersComponent
     ],
     imports: [
         CommonModule,
