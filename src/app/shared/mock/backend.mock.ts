@@ -13,6 +13,9 @@ import { MockDriversBackend } from './backend/driver.mock';
 import { MockTriggersBackend } from './backend/triggers.mock';
 import { MockModulesBackend } from './backend/modules.mock';
 import { MockSystemsBackend } from './backend/systems.mock';
+import { MockDomainsBackend } from './backend/domains.mock';
+import { MockApplicationsBackend } from './backend/applications.mock';
+import { MockAuthSourcesBackend } from './backend/auth-sources.mock';
 
 export class MockBackend {
     public model: any = {
@@ -37,36 +40,54 @@ export class MockBackend {
             this.log(type, msg, args, out, color);
         };
         faker.seed(999);
+            // Load engine domain
+        this.model.backend.domains = new MockDomainsBackend(this.model);
+        this.model.backend.domains.listen((dstate) => {
+            if (!dstate) { return; }
+            this.update(this.model.backend.domains.data);
+                // Load applications
+            this.model.backend.applications = new MockApplicationsBackend(this.model);
+            this.model.backend.applications.listen((astate) => {
+                if (!astate) { return; }
+                this.update(this.model.backend.applications.data);
+            });
+                // Load auth sources
+            this.model.backend.authsources = new MockAuthSourcesBackend(this.model);
+            this.model.backend.authsources.listen((asstate) => {
+                if (!asstate) { return; }
+                this.update(this.model.backend.authsources.data);
+            });
+                // Load users
+            this.model.backend.users = new MockUsersBackend(this.model);
+            this.model.backend.users.listen((ustate) => {
+                if (!ustate) { return; }
+                this.update(this.model.backend.users.data);
+                this.model.backend.zones = new MockZonesBackend(this.model);
+                this.model.backend.zones.listen((zstate) => {
+                    if (!zstate) { return; }
+                    this.update(this.model.backend.zones.data);
 
-        this.model.backend.users = new MockUsersBackend(this.model);
-        this.model.backend.users.listen((ustate) => {
-            if (!ustate) { return; }
-            this.update(this.model.backend.users.data);
-            this.model.backend.zones = new MockZonesBackend(this.model);
-            this.model.backend.zones.listen((zstate) => {
-                if (!zstate) { return; }
-                this.update(this.model.backend.zones.data);
-                
-                this.model.backend.systems = new MockSystemsBackend(this.model);
-                this.model.backend.systems.listen((sysstate) => {
-                    if (!sysstate) { return; }
-                    this.update(this.model.backend.systems.data);
+                    this.model.backend.systems = new MockSystemsBackend(this.model);
+                    this.model.backend.systems.listen((sysstate) => {
+                        if (!sysstate) { return; }
+                        this.update(this.model.backend.systems.data);
 
-                    this.model.backend.triggers = new MockTriggersBackend(this.model);
-                    this.model.backend.triggers.listen((tstate) => {
-                        if (!tstate) { return; }
-                        this.update(this.model.backend.triggers.data);
-                    });
-                    
-                    this.model.backend.drivers = new MockDriversBackend(this.model);
-                    this.model.backend.drivers.listen((depstate) => {
-                        if (!depstate) { return; }
-                        this.update(this.model.backend.drivers.data);
-                        this.model.backend.modules = new MockModulesBackend(this.model);
-                        this.model.backend.modules.listen((mstate) => {
-                            if (!mstate) { return; }
-                            this.update(this.model.backend.modules.data);
-                            this.model.loaded = true;
+                        this.model.backend.triggers = new MockTriggersBackend(this.model);
+                        this.model.backend.triggers.listen((tstate) => {
+                            if (!tstate) { return; }
+                            this.update(this.model.backend.triggers.data);
+                        });
+
+                        this.model.backend.drivers = new MockDriversBackend(this.model);
+                        this.model.backend.drivers.listen((depstate) => {
+                            if (!depstate) { return; }
+                            this.update(this.model.backend.drivers.data);
+                            this.model.backend.modules = new MockModulesBackend(this.model);
+                            this.model.backend.modules.listen((mstate) => {
+                                if (!mstate) { return; }
+                                this.update(this.model.backend.modules.data);
+                                this.model.loaded = true;
+                            });
                         });
                     });
                 });
