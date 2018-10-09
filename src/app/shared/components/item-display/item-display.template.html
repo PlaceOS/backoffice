@@ -2,7 +2,7 @@
 <div class="container" *ngIf="item && !loading">
     <header>
         <div class="heading-group">
-            <div class="heading">{{item.name}}</div>
+            <div class="heading">{{item.display_name || item.name}}</div>
             <div class="info">
                 <div class="id" *ngIf="item.id"><span>{{item.id}}</span></div>
                 <div class="chip connect" *ngIf="item.connected !== null && item.connected !== undefined" [class.active]="item.connected">

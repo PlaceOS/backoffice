@@ -47,7 +47,7 @@ section.search {
 
 section.content {
     width: 100%;
-    border-bottom: 2px solid rgba(#fff, .54);    
+    border-bottom: 2px solid rgba(#fff, .54);
     padding-bottom: .5em;
 }
 
@@ -60,6 +60,15 @@ input {
     width: 100%;
     padding: .25em 1em;
     outline: none;
+    &::placeholder {
+        color: rgba(#fff, .54);
+        transition: color 200ms;
+    }
+    &:focus {
+        &::placeholder {
+            color: rgba(#fff, .2);
+        }
+    }
 }
 
 .list {
@@ -70,7 +79,7 @@ input {
 
 .item {
     padding: .5em 1em;
-    border-bottom: 1px solid rgba(#fff, .2);  
+    border-bottom: 1px solid rgba(#fff, .2);
     display: flex;
     align-items: center;
     cursor: pointer;
@@ -79,7 +88,7 @@ input {
     }
     .text {
         flex: 1;
-    }  
+    }
 }
 
 .add {
@@ -97,7 +106,7 @@ input {
     margin-left: .5em;
     transition: color 300ms, background-color 300ms;
     overflow: hidden;
-    
+
     i {
         font-size: 1.2em;
     }
