@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { BaseComponent } from '../../shared/components/base.component';
 import { AppService } from '../../services/app.service';
+import { Utils } from '../../shared/utility.class';
 
 @Component({
     selector: 'app-domains',
@@ -26,6 +27,18 @@ export class DomainsComponent extends BaseComponent implements OnInit {
                 this.model.id = params.get('id');
                 this.timeout('loading', () => this.model.loading_item = true, 10);
                 this.service.Domains.show(this.model.id).then((item) => {
+                    let query: any = { offset: 0, limit: 1, owner: item.id };
+                    const q = `total_${Utils.generateQueryString(query)}`;
+                        // Get application count
+                    this.service.Applications.query(query)
+                        .then(() => this.model.applications = this.service.Applications.get(q));
+                    query = { offset: 0, limit: 1, authority_id: item.id };
+                        // Get auth source count
+                    this.service.AuthSources.query(query)
+                        .then(() => this.model.auth_sources = this.service.AuthSources.get(`total_${Utils.generateQueryString(query)}`));
+                        // Get users count
+                    this.service.Users.query(query)
+                        .then(() => this.model.users = this.service.Users.get(`total_${Utils.generateQueryString(query)}`));
                     this.timeout('item', () => {
                         this.model.item = item;
                         this.model.loading_item = false;
