@@ -130,6 +130,8 @@ export class BaseService {
                         if (update) {
                             this.updateList(item_list);
                             this.set('total', resp.total || this.list().length);
+                        } else {
+                            this.set(`total_${query}`, resp.total || item_list.length || 0);
                         }
                         resolve(item_list);
                         setTimeout(() => this.promises[key] = null, 5 * 1000);
