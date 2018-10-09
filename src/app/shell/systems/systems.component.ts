@@ -1,16 +1,17 @@
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { BaseComponent } from '../../shared/components/base.component';
 import { AppService } from '../../services/app.service';
+import { Utils } from '../../shared/utility.class';
 
 @Component({
     selector: 'app-systems',
     templateUrl: './systems.template.html',
     styleUrls: ['./systems.styles.scss']
 })
-export class SystemsComponent extends BaseComponent {
+export class SystemsComponent extends BaseComponent implements OnInit {
     public model: any = {};
 
     constructor(private service: AppService, private route: ActivatedRoute) {
@@ -26,6 +27,15 @@ export class SystemsComponent extends BaseComponent {
                 this.model.id = params.get('id');
                 this.timeout('loading', () => this.model.loading_item = true, 10);
                 this.service.Systems.show(this.model.id).then((item) => {
+                    const query: any = { offset: 0, limit: 1, sys_id: item.id };
+                    const q = `total_${Utils.generateQueryString(query)}`;
+                        // Get trigger count
+                    this.service.SystemTriggers.query(query)
+                        .then(() => this.model.triggers = this.service.SystemTriggers.get(q));
+                        // Get device count
+                    this.model.devices = (item.modules || []).length;
+                        // Get zone count
+                    this.model.zones = (item.zones || []).length;
                     this.timeout('item', () => {
                         this.model.item = item;
                         this.model.loading_item = false;
@@ -58,7 +68,11 @@ export class SystemsComponent extends BaseComponent {
                 this.service.Systems.query({ offset: this.model.list.length || 0 });
             }
         } else if (event && event.type === 'select') {
-            this.service.navigate(`systems/${event.item.id}`);
+            const route = ['systems', event.item.id];
+            if (this.model.tab) {
+                route.push(this.model.tab);
+            }
+            this.service.navigate(route);
             this.showSidebar(false);
         } else {
             this.showSidebar(false);

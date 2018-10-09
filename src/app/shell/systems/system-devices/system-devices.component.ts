@@ -30,7 +30,7 @@ export class SystemDevicesComponent extends BaseComponent implements OnChanges {
     }
 
     public load(offset: number = 0) {
-        this.service.Modules.query({ sys_id: this.item.id, offset: 0 }).then((list) => {
+        this.service.Modules.query({ sys_id: this.item.id, offset }).then((list) => {
             this.model.devices = list;
         }, () => null);
     }

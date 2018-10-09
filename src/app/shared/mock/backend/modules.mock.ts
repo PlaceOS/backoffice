@@ -61,6 +61,9 @@ export class MockModulesBackend extends BaseMockBackend {
             if (event.fragment.sys_id) {
                 data = event.data.filter((a) => a.control_system_id === event.fragment.sys_id);
             }
+            if (event.fragment.dependency_id) {
+                data = event.data.filter((a) => a.dependency_id === event.fragment.dependency_id);
+            }
             if (event.fragment && event.fragment.offset) {
                 const start = Math.min(data.length, +(event.fragment.offset));
                 const end = Math.min(data.length, +(event.fragment.offset) + 20);

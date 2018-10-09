@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { BaseComponent } from '../../shared/components/base.component';
 import { AppService } from '../../services/app.service';
+import { Utils } from '../../shared/utility.class';
 
 @Component({
     selector: 'app-triggers',
@@ -26,6 +27,11 @@ export class TriggersComponent extends BaseComponent {
                 this.model.id = params.get('id');
                 this.timeout('loading', () => this.model.loading_item = true, 10);
                 this.service.Triggers.show(this.model.id).then((item) => {
+                    const query: any = { offset: 0, limit: 1, sys_id: item.id };
+                    const q = `total_${Utils.generateQueryString(query)}`;
+                        // Get trigger count
+                    this.service.SystemTriggers.query(query)
+                        .then(() => this.model.systems = this.service.SystemTriggers.get(q));
                     this.timeout('item', () => {
                         this.model.item = item;
                         this.model.loading_item = false;

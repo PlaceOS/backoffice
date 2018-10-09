@@ -28,9 +28,9 @@ export class SystemAboutComponent extends BaseComponent implements OnChanges {
     }
 
     public load(offset: number = 0) {
-        this.service.Modules.query({ sys_id: this.item.id, offset: 0 }).then((list) => {
+        this.service.Modules.query({ sys_id: this.item.id, offset }).then((list) => {
             this.model.devices = list;
-            this.model.modules = [];
+            if (!offset) { this.model.modules = []; }
             for (const mod of this.model.devices) {
                 this.model.modules.push({
                     name: `${mod.dependency.module_name} ${mod.role + 1}`,
@@ -212,5 +212,9 @@ export class SystemAboutComponent extends BaseComponent implements OnChanges {
             }
             e.close();
         });
+    }
+
+    public logs() {
+
     }
 }

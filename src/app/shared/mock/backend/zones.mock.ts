@@ -20,7 +20,7 @@ export class MockZonesBackend extends BaseMockBackend {
 
     private loadZones() {
         const zone_list = [];
-        const count = Math.floor(Math.random() * 50 + 25);
+        const count = Math.floor(Math.random() * 10 + 5);
         for (let i = 0; i < count; i++) {
             zone_list.push({
                 id: `zone-${Utils.padZero(i, 4)}`,
@@ -35,7 +35,7 @@ export class MockZonesBackend extends BaseMockBackend {
         }
         this.model.zones = zone_list;
         MOCK_REQ_HANDLER.register('/control/api/zones', this.model.zones, (event) => {
-            let data = event.data
+            let data = event.data;
             if (event.fragment.sys_id) {
                 data = event.data.filter((a) => (a.systems || []).indexOf(event.fragment.sys_id) >= 0);
             }

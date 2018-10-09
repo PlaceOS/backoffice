@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { BaseComponent } from '../../shared/components/base.component';
 import { AppService } from '../../services/app.service';
+import { Utils } from '../../shared/utility.class';
 
 @Component({
     selector: 'app-drivers',
@@ -24,6 +25,11 @@ export class DriversComponent extends BaseComponent implements OnInit {
             if (params.has('id')) {
                 this.model.id = params.get('id');
                 this.service.Drivers.show(this.model.id).then((item) => {
+                    const query: any = { offset: 0, limit: 1, dependency_id: item.id };
+                    const q = `total_${Utils.generateQueryString(query)}`;
+                        // Get system count
+                    this.service.Modules.query(query)
+                        .then(() => this.model.devices = this.service.Modules.get(q));
                     this.timeout('item', () => this.model.item = item);
                 }, () => {
                     this.service.error(`Failed to load data for driver "${this.model.id}"`);

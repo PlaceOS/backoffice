@@ -5,9 +5,9 @@
     <main (touchrelease)="showSidebar(false)">
         <item-display [item]="model.item" name="zone"
             [tabs]="[
-                { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }, 
-                { id: 'systems', name: 'Systems', template: systems, icon: { class: 'material-icons', value: 'account_balance' } },
-                { id: 'triggers', name: 'Triggers', template: trig, icon: { class: 'material-icons', value: 'timer' } }
+                { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
+                { id: 'systems', name: 'Systems', template: systems, count: model.systems, icon: { class: 'material-icons', value: 'account_balance' } },
+                { id: 'triggers', name: 'Triggers', template: triggers, count: model.triggers, icon: { class: 'material-icons', value: 'timer' } }
             ]">
             <ng-template #about>
                 <zone-about [item]="model.item"></zone-about>

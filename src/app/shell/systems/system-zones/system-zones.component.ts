@@ -18,7 +18,7 @@ export class SystemZonesComponent extends BaseComponent {
     constructor(private service: AppService) {
         super();
     }
-    
+
     public ngOnChanges(changes: any) {
         if (changes.item) {
             this.load();
@@ -26,7 +26,7 @@ export class SystemZonesComponent extends BaseComponent {
     }
 
     public load(offset: number = 0) {
-        this.service.Zones.query({ sys_id: this.item.id, offset: 0 }).then((list) => {
+        this.service.Zones.query({ sys_id: this.item.id, offset }).then((list) => {
             this.model.zones = list;
         }, () => null);
     }

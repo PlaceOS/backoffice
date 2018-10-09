@@ -26,13 +26,13 @@ export class MockSystemsBackend extends BaseMockBackend {
             const zone_list = [];
             const id = `sys-${Utils.padZero(i, 4)}`;
             if (zones) {
-                const count = Math.floor(Math.random() * 3);
-                for (let i = 0; i < count; i++) {
+                const c = Math.floor(Math.random() * 3 + 1);
+                for (let j = 0; j < c; j++) {
                     const zone = zones[Math.floor(Math.random() * zones.length)];
                     if (zone_list.indexOf(zone) < 0) {
                         if (!zone.systems) { zone.systems = []; }
                         zone.systems.push(id);
-                        zone_list.push(zone);
+                        zone_list.push(zone.id);
                     }
                 }
             }
@@ -56,12 +56,19 @@ export class MockSystemsBackend extends BaseMockBackend {
         }
         this.model.systems = item_list;
         MOCK_REQ_HANDLER.register('/control/api/systems', this.model.systems, (event) => {
+            let data = event.data;
+            if (event.fragment.module_id) {
+                data = event.data.filter((a) => a.modules.indexOf(event.fragment.module_id) >= 0);
+            } else if (event.fragment.zone_id) {
+                console.log('Zone ID:', event.fragment.zone_id, event.data);
+                data = event.data.filter((a) => a.zones.indexOf(event.fragment.zone_id) >= 0);
+            }
             if (event.fragment && event.fragment.offset) {
-                const start = Math.min(event.data.length, +(event.fragment.offset));
-                const end = Math.min(event.data.length, +(event.fragment.offset) + 20);
-                return { results: event.data.slice(start, end), total: event.data.length };
+                const start = Math.min(data.length, +(event.fragment.offset));
+                const end = Math.min(data.length, +(event.fragment.offset) + 20);
+                return { results: data.slice(start, end), total: data.length };
             } else {
-                return { results: event.data.slice(0, 20), total: event.data.length };
+                return { results: data.slice(0, 20), total: data.length };
             }
         });
         MOCK_REQ_HANDLER.register('/control/api/systems/:id/:opt', this.model.systems, (event) => {

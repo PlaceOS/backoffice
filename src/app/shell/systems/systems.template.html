@@ -5,10 +5,10 @@
     </div>
     <main (touchrelease)="showSidebar(false)">
         <item-display [item]="model.item" [loading]="model.loading_item" name="system" [tabs]="[
-                    { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }, 
-                    { id: 'devices', name: 'Devices', count: ((model.item || {}).modules || []).length, template: devices, icon: { class: 'material-icons', value: 'devices_other' } },
-                    { id: 'zones', name: 'Zones', count: ((model.item || {}).zones || []).length, template: zones, icon: { class: 'material-icons', value: 'device_hub' } },
-                    { id: 'triggers', name: 'Triggers', count: (model.triggers || []).length, template: triggers, icon: { class: 'material-icons', value: 'timer' } }
+                    { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
+                    { id: 'devices', name: 'Devices', count: model.devices, template: devices, icon: { class: 'material-icons', value: 'devices_other' } },
+                    { id: 'zones', name: 'Zones', count: model.zones, template: zones, icon: { class: 'material-icons', value: 'device_hub' } },
+                    { id: 'triggers', name: 'Triggers', count: model.triggers, template: triggers, icon: { class: 'material-icons', value: 'timer' } }
                 ]" [active]="model.tab">
             <ng-template #about>
                 <system-about [item]="model.item"></system-about>
@@ -20,7 +20,7 @@
                 <system-zones [item]="model.item"></system-zones>
             </ng-template>
             <ng-template #triggers>
-                <system-triggers [item]="model.item" (count)="model.triggers = $event"></system-triggers>
+                <system-triggers [item]="model.item"></system-triggers>
             </ng-template>
         </item-display>
     </main>
