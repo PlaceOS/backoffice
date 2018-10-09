@@ -24,7 +24,7 @@ export class DriversService extends BaseService {
 
     constructor(protected http: CommsService) {
         super();
-        this.model.name = 'driver'
+        this.model.name = 'driver';
         this.model.route = '/dependencies';
         this.subjects.list = new BehaviorSubject<IEngineDriver[]>([]);
         this.observers.list = this.subjects.list.asObservable();

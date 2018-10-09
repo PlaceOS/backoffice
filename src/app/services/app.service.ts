@@ -34,6 +34,9 @@ import { Utils } from '../shared/utility.class';
 import { ConfirmModalComponent } from '../overlays/confirm-modal/confirm-modal.component';
 import { ViewModuleStateModalComponent } from '../overlays/view-module-state/view-module-state.component';
 import { HotkeyService } from './hotkey.service';
+import { ApplicationService } from './data/application.service';
+import { AuthSourcesService } from './data/authsources.service';
+import { DomainsService } from './data/domains.service';
 
 @Injectable({
     providedIn: 'root'
@@ -64,6 +67,9 @@ export class AppService {
         private triggers: TriggersService,
         private users: UsersService,
         private zones: ZonesService,
+        private applications: ApplicationService,
+        private auth_sources: AuthSourcesService,
+        private domains: DomainsService,
         private hotkey: HotkeyService
     ) {
             // Set parent service on child services
@@ -226,6 +232,9 @@ export class AppService {
     set system(value: string) { this.subjects.system.next(value); }
     get Hotkey() { return this.hotkey; }
         // Getters for data/API services
+    get Applications() { return this.applications; }
+    get AuthSources() { return this.auth_sources; }
+    get Domains() { return this.domains; }
     get Drivers() { return this.drivers; }
     get Logs() { return this.logs; }
     get Modules() { return this.modules; }
