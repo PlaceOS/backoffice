@@ -42,7 +42,7 @@ export class SystemDevicesComponent extends BaseComponent implements OnChanges {
             }
             window.open(item, '_blank');
         } else {
-            this.service.navigate(['devices', item.id]);
+            this.service.navigate(['devices', item.id, 'systems']);
         }
     }
 

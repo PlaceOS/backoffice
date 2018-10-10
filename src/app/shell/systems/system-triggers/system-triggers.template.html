@@ -8,8 +8,8 @@
                 <input placeholder="Filter triggers">
             </div>
         </section>
-        <section>
-            <table *ngIf="model.triggers && model.triggers.length > 0">
+        <section class="list">
+            <table *ngIf="model.list && model.list.length > 0">
                 <thead>
                     <tr>
                         <td></td>
@@ -20,21 +20,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let trigger of model.triggers">
+                    <tr *ngFor="let item of model.list">
                         <td class="small">
-                            <div class="state" [class.active]="trigger.enabled"></div>
+                            <div class="state" [class.active]="item.enabled"></div>
                         </td>
-                        <td class="name">{{trigger.name}}</td>
-                        <td>{{trigger.count}}</td>
-                        <td>{{trigger.added}}</td>
-                        <td class="small">
+                        <td class="name"><a (touchrelease)="goto(item)">{{item.name}}</a></td>
+                        <td>{{item.trigger_count}}</td>
+                        <td>{{item.display?.created}}</td>
+                        <td class="duo">
                             <div class="action"><i class="material-icons">edit</i></div>
                             <div class="action"><i class="material-icons">delete</i></div>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <div class="no-item" *ngIf="!model.triggers || model.triggers.length <= 0">
+            <div class="no-item" *ngIf="!model.list || model.list.length <= 0">
                 <div class="text">No triggers for system</div>
             </div>
         </section>

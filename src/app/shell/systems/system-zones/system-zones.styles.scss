@@ -28,4 +28,10 @@ div {
     .small {
         width: 2em;
     }
+    .duo {
+        width: 4em;
+        * {
+            display: inline-block;
+        }
+    }
 }

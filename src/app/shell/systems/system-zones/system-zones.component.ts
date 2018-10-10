@@ -1,5 +1,5 @@
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 
 import { BaseComponent } from '../../../shared/components/base.component';
 import { IEngineSystem } from '../../../services/data/systems.service';
@@ -10,7 +10,7 @@ import { AppService } from '../../../services/app.service';
     templateUrl: './system-zones.template.html',
     styleUrls: ['./system-zones.styles.scss']
 })
-export class SystemZonesComponent extends BaseComponent {
+export class SystemZonesComponent extends BaseComponent implements OnChanges {
     @Input() public item: IEngineSystem;
 
     public model: any = {};

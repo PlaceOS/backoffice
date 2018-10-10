@@ -5,6 +5,8 @@ import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
 
+import * as moment from 'moment';
+
 export interface IEngineSystemTrigger {
     id: string;
     system_id: string;
@@ -22,6 +24,7 @@ export interface IEngineSystemTrigger {
     webhook_secret?: string;
     binding?: string;
     system: { id: string, name: string };
+    display?: any;
     created: number;
     updated: number;
 }
@@ -59,6 +62,9 @@ export class SystemTriggersService extends BaseService {
             system: raw_item.control_system,
             created: raw_item.created_at * 1000,
             updated: raw_item.updated_at * 1000
+        };
+        item.display = {
+            created: moment(item.created).format('ddd Do MMM YYYY, h:mm A');
         };
         return item;
     }

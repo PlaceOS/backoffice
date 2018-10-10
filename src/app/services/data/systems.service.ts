@@ -6,6 +6,8 @@ import { BehaviorSubject } from 'rxjs';
 import { BaseService } from './base.service';
 import { Utils } from '../../shared/utility.class';
 
+import * as moment from 'moment';
+
 export interface IEngineSystem {
     id: string;
     edge_id: string;
@@ -20,6 +22,7 @@ export interface IEngineSystem {
     bookable?: boolean;
     support_url?: string;
     installed_ui_devices?: number;
+    display?: any;
     created: number;
 }
 
@@ -162,6 +165,9 @@ export class EngineSystemsService extends BaseService {
             installed_ui_devices: raw_item.installed_ui_devices,
             settings: raw_item.settings,
             created: raw_item.created_at * 1000
+        };
+        item.display = {
+            created: moment(item.created).fromNow()
         };
         return item;
     }

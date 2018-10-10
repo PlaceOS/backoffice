@@ -5,6 +5,10 @@
     padding: 1em;
 }
 
+.list {
+    margin-top: .5em;
+}
+
 tbody {
     font-size: .9em;
     td {
@@ -16,6 +20,12 @@ tbody {
 div {
     .small {
         width: 2em;
+    }
+    .duo {
+        width: 4em;
+        * {
+            display: inline-flex;
+        }
     }
 }
 
@@ -32,6 +42,22 @@ div {
         background-color: rgba(#000, .1);
     }
 }
+
+.state {
+    height: 1.5em;
+    width: 1.5em;
+    margin: .25em;
+    background-color: #000;
+    border-radius: .8em;
+    transition: margin 250ms, height 250ms, width 250ms, background-color 300ms;
+    &.active {
+        background-color: $success;
+        height: .75em;
+        width: .75em;
+        margin: .625em;
+    }
+}
+
 
 .select {
     display: flex;
