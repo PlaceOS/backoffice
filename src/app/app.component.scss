@@ -87,10 +87,15 @@ input {
     transition: visibility 0s 0.5s, opacity 0.5s linear;
 }
 
+.align-right {
+    text-align: right;
+}
+
 .noselect, .no-select { user-select: none; }
 .no-padding { padding: 0; }
 
 .align-center { text-align: center; }
+
 @include respond-to(not-mobile) {
     .mobile-only,
     .mobile {
@@ -141,28 +146,43 @@ input {
 
 table {
     width: 100%;
-    border: 1px solid #ccc;
     border-collapse: collapse;
     border-spacing: 0;
+    border-radius: 8px;
+    overflow: hidden;
     thead {
         font-weight: bold;
-        border-bottom: 1px solid #ccc;
-        background-color: rgba(#000, .1);
+        background-color: rgba(#000, .15);
     }
 
     tr {
+        background-color: rgba(#000, .05);
         &:nth-child(2n) {
-            background-color: rgba(#000, .05);
+            background-color: rgba(#000, .1);
         }
     }
 
     td {
-        padding: .4em .5em;
-        border-right: 1px solid #ccc;
+        padding: .75em .5em;
+        border-right: 1px solid #999;
         &:last-child {
             border: none;
         }
     }
+}
+
+a {
+    color: #039BE5;
+    text-decoration: underline;
+    cursor: pointer;
+    &:hover {
+        color: #40C4FF;
+    }
+}
+
+span.id {
+    cursor: cell;
+    user-select: all;
 }
 
 .mono {
