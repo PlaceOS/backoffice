@@ -30,6 +30,11 @@ export class ZonesComponent extends BaseComponent implements OnInit {
                         // Get system count
                     this.service.Systems.query(query)
                         .then(() => this.model.systems = this.service.Systems.get(q));
+                    const tquery: any = { offset: 0, limit: 1, zone_id: item.id };
+                    const tq = `total_${Utils.generateQueryString(tquery)}`;
+                        // Get trigger count
+                    this.service.SystemTriggers.query(tquery)
+                        .then(() => this.model.triggers = this.service.SystemTriggers.get(tq));
                     this.timeout('item', () => this.model.item = item);
                 }, () => {
                     this.service.error(`Failed to load data for zone "${this.model.id}"`);

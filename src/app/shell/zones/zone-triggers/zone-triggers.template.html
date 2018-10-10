@@ -1,3 +1,35 @@
 <div class="container">
-    
-</div>
+        <div class="settings">
+            <section class="select">
+                <div class="dropdown">
+                    <btn>Add trigger</btn>
+                </div>
+                <div class="btn">
+                    <input placeholder="Filter triggers">
+                </div>
+            </section>
+            <section class="list">
+                <table *ngIf="model.triggers && model.triggers.length > 0">
+                    <thead>
+                        <tr>
+                            <td>Name</td>
+                            <td>Description</td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let trigger of model.triggers">
+                            <td class="name"><a (touchrelease)="goto(trigger)">{{trigger.name}}</a></td>
+                            <td>{{trigger.description}}</td>
+                            <td class="small">
+                                <div class="action"><i class="material-icons">delete</i></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="no-item" *ngIf="!model.triggers || model.triggers.length <= 0">
+                    <div class="text">No triggers for system</div>
+                </div>
+            </section>
+        </div>
+    </div>
