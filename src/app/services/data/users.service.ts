@@ -25,6 +25,7 @@ export interface IUser {
     organisation_name?: string;
     organisation?: { id: string, name: string } | string;
     b_unit?: string;
+    gravatar_hash?: string;
 }
 
 @Injectable({
@@ -168,10 +169,11 @@ export class UsersService extends BaseService {
                 b_unit: user.department,
                 organisation_id: org.id,
                 organisation_name: org.name,
-                staff_code: user.staff_code
+                staff_code: user.staff_code,
+                gravatar_hash: this.http.hash(user.email)
             };
             if (member.id) {
-                member.image = user.image || `${this.parent.endpoint}/assets/users/${member.id}.png`;
+                member.image = user.image || null;
             }
             return member;
         } else {

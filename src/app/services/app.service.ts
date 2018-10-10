@@ -141,6 +141,10 @@ export class AppService {
         return app_ready && (!mock || mock.is_loaded);
     }
 
+    public logout() {
+        this.users.logout();
+    }
+
     public initialiseComposer(tries: number = 0) {
         this.settings.log('SYSTEM', 'Initialising Composer...');
             // Get domain information for configuring composer

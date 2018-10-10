@@ -19,6 +19,10 @@ export class TopbarHeaderComponent extends BaseComponent implements OnInit {
 
     public ngOnInit() {
         this.init();
+        this.model.options = [
+            { id: 'profile', name: 'Profile', icon: { class: 'material-icons', value: 'account_circle' } },
+            { id: 'logout', name: 'Logout', icon: { class: 'material-icons', value: 'exit_to_app' } }
+        ];
         this.subs.obs.router_events = this.router.events.subscribe((e) => {
             if (e instanceof NavigationEnd) { this.checkRoute(); }
         });
@@ -64,6 +68,15 @@ export class TopbarHeaderComponent extends BaseComponent implements OnInit {
 
     public home() {
         this.service.navigate('');
+    }
+
+    public select(item) {
+        if (item.id === 'logout') {
+            this.service.logout();
+        } else if (item.id === 'profile') {
+            this.service.navigate('profile');
+        }
+        this.model.show = false;
     }
 
     public toggleMenu() {
