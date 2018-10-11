@@ -3,7 +3,7 @@
         <sidebar heading="Domains" [list]="model.list" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
-        <item-display [item]="model.item" name="zone"
+        <item-display [item]="model.item" name="zone" [active]="model.tab"
             [tabs]="[
                 { id: 'applications', name: 'Applications', count: model.applications || 0, template: apps, icon: { class: 'material-icons', value: 'apps' } },
                 { id: 'authentication', name: 'Authentication', count: model.auth_sources || 0, template: auth, icon: { class: 'material-icons', value: 'lock_open' } },

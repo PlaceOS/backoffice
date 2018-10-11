@@ -38,6 +38,13 @@ export class ItemDisplayComponent extends BaseComponent implements OnInit, OnCha
     public ngOnChanges(changes: any) {
         if (changes.tabs && this.tabs && this.tabs.length > 0) {
             this.model.tab = this.tabs[0].id;
+            if (this.active) {
+                for (const tab of this.tabs) {
+                    if (tab.id === this.active) {
+                        this.model.tab = this.active;
+                    }
+                }
+            }
         }
         if (changes.active) {
             for (const tab of this.tabs) {

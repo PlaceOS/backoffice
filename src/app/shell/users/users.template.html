@@ -3,9 +3,9 @@
         <sidebar heading="Users" [list]="model.list" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
-        <item-display [item]="model.item" [loading]="model.loading_item" name="user"
+        <item-display [item]="model.item" [loading]="model.loading_item" name="user" [active]="model.tab"
             [tabs]="[
-                { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }, 
+                { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
                 { id: 'history', name: 'History', template: history, icon: { class: 'material-icons', value: 'list' } }
             ]">
             <ng-template #about>

@@ -42,6 +42,9 @@ export class TriggersComponent extends BaseComponent {
                     this.service.navigate('triggers');
                 });
             }
+            if (params.has('tab')) {
+                this.model.tab = params.get('tab');
+            }
             this.showSidebar(!this.model.id);
         });
         this.subs.obs.list = this.service.Triggers.listen('list', () => {

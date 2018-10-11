@@ -36,6 +36,9 @@ export class DriversComponent extends BaseComponent implements OnInit {
                     this.service.navigate('drivers');
                 });
             }
+            if (params.has('tab')) {
+                this.model.tab = params.get('tab');
+            }
             this.showSidebar(!this.model.id);
         });
         this.subs.obs.list = this.service.Drivers.listen('list', () => {

@@ -42,6 +42,9 @@ export class DevicesComponent extends BaseComponent {
                     this.service.navigate('devices');
                 });
             }
+            if (params.has('tab')) {
+                this.model.tab = params.get('tab');
+            }
             this.showSidebar(!this.model.id);
         });
         this.subs.obs.list = this.service.Modules.listen('list', () => {

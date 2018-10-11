@@ -8,7 +8,7 @@
             </sidebar>
         </div>
         <main (touchrelease)="showSidebar(false)">
-            <item-display [item]="model.item" name="device"
+            <item-display [item]="model.item" name="device" [active]="model.tab"
                 [tabs]="[
                     { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
                     { id: 'systems', name: 'Systems', template: systems, count: model.systems, icon: { class: 'material-icons', value: 'account_balance' } }
