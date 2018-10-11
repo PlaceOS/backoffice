@@ -36,7 +36,7 @@ export class SystemTriggersService extends BaseService {
 
     constructor(protected http: CommsService) {
         super();
-        this.model.name = 'system_trigger'
+        this.model.name = 'system_trigger';
         this.model.route = '/system_triggers';
         this.subjects.list = new BehaviorSubject<IEngineSystemTrigger[]>([]);
         this.observers.list = this.subjects.list.asObservable();
@@ -64,7 +64,7 @@ export class SystemTriggersService extends BaseService {
             updated: raw_item.updated_at * 1000
         };
         item.display = {
-            created: moment(item.created).format('ddd Do MMM YYYY, h:mm A');
+            created: moment(item.created).fromNow()
         };
         return item;
     }
