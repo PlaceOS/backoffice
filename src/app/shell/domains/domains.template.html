@@ -8,7 +8,7 @@
                 { id: 'applications', name: 'Applications', count: model.applications || 0, template: apps, icon: { class: 'material-icons', value: 'apps' } },
                 { id: 'authentication', name: 'Authentication', count: model.auth_sources || 0, template: auth, icon: { class: 'material-icons', value: 'lock_open' } },
                 { id: 'users', name: 'Users', count: model.users || 0, template: users, icon: { class: 'material-icons', value: 'person' } }
-            ]">
+            ]" (event)="itemEvent($event)">
             <ng-template #apps>
                 <domain-applications [item]="model.item"></domain-applications>
             </ng-template>

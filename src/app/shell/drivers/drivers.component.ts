@@ -55,8 +55,12 @@ export class DriversComponent extends BaseComponent implements OnInit {
                 this.service.Drivers.query({ offset: this.model.list.length || 0 });
             }
         } else if (event && event.type === 'select') {
-            this.service.navigate(`drivers/${event.item.id}`);
-            this.showSidebar(false);
+            this.timeout('navigate', () => {
+                const route = ['drivers', event.item.id];
+                if (this.model.tab) { route.push(this.model.tab); }
+                this.service.navigate(route);
+                this.showSidebar(false);
+            });
         } else {
             this.showSidebar(false);
         }
@@ -64,5 +68,13 @@ export class DriversComponent extends BaseComponent implements OnInit {
 
     public showSidebar(state: boolean = true) {
         this.timeout('sidebar', () => this.model.show_sidebar = state);
+    }
+
+    public itemEvent(event: any) {
+        if (!event) { return; }
+        if (event.type === 'tab' && this.model.item && event.value) {
+            if (this.subs.timers.navigate) { return; }
+            this.service.navigate(['drivers', this.model.item.id, event.value ]);
+        }
     }
 }

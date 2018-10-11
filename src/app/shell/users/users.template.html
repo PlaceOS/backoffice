@@ -7,7 +7,7 @@
             [tabs]="[
                 { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
                 { id: 'history', name: 'History', template: history, icon: { class: 'material-icons', value: 'list' } }
-            ]">
+            ]" (event)="itemEvent($event)">
             <ng-template #about>
                 <user-about [item]="model.item"></user-about>
             </ng-template>

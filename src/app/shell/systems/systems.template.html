@@ -9,7 +9,7 @@
                     { id: 'devices', name: 'Devices', count: model.devices, template: devices, icon: { class: 'material-icons', value: 'devices_other' } },
                     { id: 'zones', name: 'Zones', count: model.zones, template: zones, icon: { class: 'material-icons', value: 'device_hub' } },
                     { id: 'triggers', name: 'Triggers', count: model.triggers, template: triggers, icon: { class: 'material-icons', value: 'timer' } }
-                ]" [active]="model.tab">
+                ]" [active]="model.tab" (event)="itemEvent($event)">
             <ng-template #about>
                 <system-about [item]="model.item"></system-about>
             </ng-template>

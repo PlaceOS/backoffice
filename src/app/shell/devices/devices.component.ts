@@ -64,8 +64,12 @@ export class DevicesComponent extends BaseComponent {
                 this.service.Modules.query({ offset: this.model.list.length || 0 });
             }
         } else if (event && event.type === 'select') {
-            this.service.navigate(`devices/${event.item.id}`);
-            this.showSidebar(false);
+            this.timeout('navigate', () => {
+                const route = ['devices', event.item.id];
+                if (this.model.tab) { route.push(this.model.tab); }
+                this.service.navigate(route);
+                this.showSidebar(false);
+            });
         } else {
             this.showSidebar(false);
         }
@@ -73,5 +77,13 @@ export class DevicesComponent extends BaseComponent {
 
     public showSidebar(state: boolean = true) {
         this.timeout('sidebar', () => this.model.show_sidebar = state);
+    }
+
+    public itemEvent(event: any) {
+        if (!event) { return; }
+        if (event.type === 'tab' && this.model.item && event.value) {
+            if (this.subs.timers.navigate) { return; }
+            this.service.navigate(['devices', this.model.item.id, event.value ]);
+        }
     }
 }
