@@ -71,7 +71,6 @@ export class SystemAboutComponent extends BaseComponent implements OnChanges {
                     try {
                         JSON.parse(`[${this.model.fields[arg[1]] || '""'}]`);
                     } catch (e) {
-                        console.log('Error:', arg[1], this.model.fields[arg[1]]);
                         this.model.error[arg[1]] = true;
                         this.model.fields_valid = false;
                     }
@@ -135,10 +134,8 @@ export class SystemAboutComponent extends BaseComponent implements OnChanges {
             for (const arg of this.model.fn.args) {
                 arg_list.push(this.model.fields[arg[1]] || null);
             }
-            console.log('Arguments:', arg_list);
             if (this.model.fn.arity < 0) {
                 const len = arg_list.length;
-                console.log('Arity:', this.model.fn.arity, len - (Math.abs(this.model.fn.arity)));
                 for (let i = len - 1; i >= Math.abs(this.model.fn.arity) - 1; i--) {
                     if (arg_list[i]) { break; }
                     arg_list.pop();
@@ -151,7 +148,6 @@ export class SystemAboutComponent extends BaseComponent implements OnChanges {
                 args += `${arg}`;
             }
             args += ']';
-            console.log('Arguments:', args);
                 // Execute function
             const details = {
                 method: this.model.fn.name,

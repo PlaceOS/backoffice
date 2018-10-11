@@ -60,7 +60,6 @@ export class MockSystemsBackend extends BaseMockBackend {
             if (event.fragment.module_id) {
                 data = event.data.filter((a) => a.modules.indexOf(event.fragment.module_id) >= 0);
             } else if (event.fragment.zone_id) {
-                console.log('Zone ID:', event.fragment.zone_id, event.data);
                 data = event.data.filter((a) => a.zones.indexOf(event.fragment.zone_id) >= 0);
             }
             if (event.fragment && event.fragment.offset) {
@@ -82,8 +81,6 @@ export class MockSystemsBackend extends BaseMockBackend {
                 } else if (event.params.opt === 'funcs') {
                     for (const item of event.data) {
                         if (item.id === event.params.id) {
-                            console.log('Functions:', item.funcs, event.fragment.index, item.modules[+event.fragment.index - 1]);
-                            console.log('List:', item.funcs[item.modules[+event.fragment.index - 1]]);
                             return item.funcs[item.modules[+event.fragment.index - 1]];
                         }
                     }

@@ -28,7 +28,6 @@ export class DriverDevicesComponent extends BaseComponent implements OnChanges {
     public load(offset: number = 0) {
         this.service.Modules.query({ dependency_id: this.item.id, offset }).then((list) => {
             this.model.list = list;
-            console.log('List:', list);
         }, () => null);
     }
 

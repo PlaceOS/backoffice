@@ -47,7 +47,6 @@ export class SystemDevicesComponent extends BaseComponent implements OnChanges {
     }
 
     public event(e, device) {
-        console.log('Event:', e);
         if (e.value) {
             switch (e.value.id) {
                 case 'power':
