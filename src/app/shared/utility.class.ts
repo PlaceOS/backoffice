@@ -144,7 +144,7 @@ export class Utils {
      * @param list List of objects
      */
     public static generateCSV(list: any[]) {
-            // Get all the available fields from the list
+        // Get all the available fields from the list
         const field_list: string[] = [];
         for (const item of list) {
             for (const key in item) {
@@ -154,13 +154,13 @@ export class Utils {
             }
         }
         field_list.sort((a, b) => a.localeCompare(b));
-            // Create CSV of fields
+        // Create CSV of fields
         let fields = '';
         for (const field of field_list) {
             if (fields) { fields += ','; }
             fields += field;
         }
-            // Create CSV for each item in the list
+        // Create CSV for each item in the list
         let csv = '';
         for (const item of list) {
             if (csv) { csv += '\n'; }
@@ -208,7 +208,7 @@ export class Utils {
      */
     public static filter(filter: string, items?: any[], fields: string[] = ['name', 'email']) {
         let results: any[];
-            // Tokenise filter string
+        // Tokenise filter string
         const filters = filter.toLowerCase().split(' ');
         const list = {};
         for (const f of filters) {
@@ -217,7 +217,7 @@ export class Utils {
                 list[f]++;
             }
         }
-            // Group similar tokens
+        // Group similar tokens
         const parts = [];
         for (const f in list) {
             if (list.hasOwnProperty(f)) {
@@ -233,7 +233,7 @@ export class Utils {
                     item.match_index = 65535;
                     item.match = '';
                     const field_list = {};
-                        // Initialise field match variables
+                    // Initialise field match variables
                     for (const f of fields) {
                         field_list[f] = {
                             value: (item[f] || '').toLowerCase(),
@@ -241,7 +241,7 @@ export class Utils {
                             matched: 0
                         };
                     }
-                        // Search for matches with the tokenised filter string
+                    // Search for matches with the tokenised filter string
                     for (const i of parts) {
                         if (i.word) {
                             // Check fields for matches
@@ -257,7 +257,7 @@ export class Utils {
                                 const field = field_list[f];
                                 if (field.matches >= i.count) {
                                     match_count++;
-                                        // Update field matches
+                                    // Update field matches
                                     let changed = 0;
                                     const tokens = (item[`match_${f}`] || item[f] || '').split(' ');
                                     for (const k of tokens) {
@@ -294,6 +294,26 @@ export class Utils {
             return diff === 0 ? a.name.localeCompare(b.name) : diff;
         });
         return results;
+    }
+
+    public static copyToClipboard(value: string) {
+        const el = document.createElement('textarea');  // Create a <textarea> element
+        el.value = value;                               // Set its value to the string that you want copied
+        el.setAttribute('readonly', '');                // Make it readonly to be tamper-proof
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';                      // Move outside the screen to make it invisible
+        document.body.appendChild(el);                  // Append the <textarea> element to the HTML document
+        const selected =
+            document.getSelection().rangeCount > 0        // Check if there is any content selected previously
+                ? document.getSelection().getRangeAt(0)     // Store selection if found
+                : false;                                    // Mark as false to know no selection existed before
+        el.select();                                    // Select the <textarea> content
+        document.execCommand('copy');                   // Copy - only works as a result of a user action (e.g. click events)
+        document.body.removeChild(el);                  // Remove the <textarea> element
+        if (selected) {                                 // If a selection existed before copying
+            document.getSelection().removeAllRanges();    // Unselect everything on the HTML document
+            document.getSelection().addRange(selected);   // Restore the original selection
+        }
     }
 
 
