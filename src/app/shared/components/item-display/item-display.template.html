@@ -25,7 +25,7 @@
     </header>
     <main>
         <div class="tabs" *ngIf="tabs && tabs.length > 0">
-            <tab-group [(state)]="model.tab">
+            <tab-group [(state)]="model.tab" (stateChange)="event.emit({ type: 'tab', value: $event })">
                 <tab *ngFor="let tab of tabs" [id]="tab.id" [style.width]="(100 / tabs.length) + '%'">
                     <div class="tab">
                         <i [class]="tab.icon?.class">{{tab.icon?.value}}</i>
