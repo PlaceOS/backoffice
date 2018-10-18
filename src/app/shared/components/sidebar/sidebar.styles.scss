@@ -2,6 +2,7 @@
 @import 'shared.styles';
 
 .container {
+    position: relative;
     background-color: $color-ternary;
     height: 100%;
     width: 100;
@@ -72,9 +73,11 @@ input {
 }
 
 .list {
+    position: relative;
     flex: 1;
     width: 100%;
     overflow: auto;
+    font-size: .9em;
 }
 
 .item {
@@ -126,8 +129,11 @@ input {
 }
 
 .loading {
+    position: absolute;
+    bottom: .5em;
+    right: .5em;
     text-align: center;
     margin: auto;
-    font-size: 1.2em;
-    width: 100%;
+    font-size: .8em;
+    padding: .5em;
 }

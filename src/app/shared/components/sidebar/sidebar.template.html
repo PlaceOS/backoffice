@@ -17,14 +17,11 @@
         <ng-content></ng-content>
     </section>
     <section class="list" #item_list (scroll)="atBottom()">
-        <div #list_item class="item" *ngFor="let item of list" (touchrelease)="select(item)">
+        <div #list_item class="item" *ngFor="let item of list" [title]="item?.custom_name || item?.name || item" (touchrelease)="select(item)">
             <div class="text">{{item?.custom_name || item?.name || item}}</div>
             <div class="icon" *ngIf="active === item.id">
                 <i class="material-icons">done</i>
             </div>
-        </div>
-        <div class="loading" *ngIf="loading">
-            <spinner type="bounce" color="rgb(183, 27, 28)"></spinner>
         </div>
         <div class="no-item" *ngIf="!loading && (!list || list.length <= 0)">
             <div class="icon">
@@ -33,4 +30,7 @@
             <div class="text">{{ !search ? 'No ' + model.lowercase_header : 'No matches found'}}</div>
         </div>
     </section>
+    <div class="loading" *ngIf="loading">
+        <spinner type="bounce" color="#F44336"></spinner>
+    </div>
 </div>
