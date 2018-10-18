@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { BaseComponent } from '../../shared/components/base.component';
 import { AppService } from '../../services/app.service';
 import { Utils } from '../../shared/utility.class';
+import { SystemModalComponent } from '../../overlays/system-modal/system-modal.component';
 
 @Component({
     selector: 'app-systems',
@@ -16,6 +17,7 @@ export class SystemsComponent extends BaseComponent implements OnInit {
 
     constructor(private service: AppService, private route: ActivatedRoute) {
         super();
+        this.service.Overlay.setupModal('system-view', { cmp: SystemModalComponent });
     }
 
     public ngOnInit() {
@@ -62,6 +64,7 @@ export class SystemsComponent extends BaseComponent implements OnInit {
     }
 
     public sidebarEvent(event: any) {
+        console.log('Event:', event);
         if (event && event.type === 'more') {
             if (!this.model.total || this.model.list.length < this.model.total) {
                 this.timeout('loading', () => this.model.loading = true, 10);
@@ -74,6 +77,8 @@ export class SystemsComponent extends BaseComponent implements OnInit {
                 this.service.navigate(route);
                 this.showSidebar(false);
             });
+        } else if (event && event.type === 'new') {
+            this.service.Overlay.openModal('system-view', { data: {} }).then((e) => e.close());
         } else {
             this.showSidebar(false);
         }

@@ -1,0 +1,76 @@
+<div class="container">
+    <div class="header">
+        <div class="text">{{model.item ? 'Edit' : 'New'}} System</div>
+        <div class="close" (tap)="fn.close()">
+            <i class="material-icons">close</i>
+        </div>
+    </div>
+    <div class="body">
+        <div class="form">
+            <div class="field">
+                <div class="label">Name:</div>
+                <div class="value">
+                    <input [(ngModel)]="model.form.name" placeholder="System name">
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">Email:</div>
+                <div class="value">
+                    <input [(ngModel)]="model.form.email" placeholder="System email">
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">Support URL:</div>
+                <div class="value">
+                    <input [(ngModel)]="model.form.support_url" placeholder="Support URL">
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">No. Touch Panels:</div>
+                <div class="value">
+                    <input [(ngModel)]="model.form.installed_ui_devices" type="tel" placeholder="Number of touch panels">
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">Capacity:</div>
+                <div class="value">
+                    <input [(ngModel)]="model.form.capacity" type="tel" placeholder="Space capacity">
+                </div>
+            </div>
+            <div class="field">
+                <div class="label"></div>
+                <div class="value">
+                    <checkbox [(model)]="model.form.bookable" label="Bookable Room"></checkbox>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">Description:</div>
+                <div class="value full">
+                    <textarea [(ngModel)]="model.form.description" placeholder="Description of the system"></textarea>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">Settings:</div>
+                <div class="value full">
+                    <settings-display [(model)]="model.form.settings" [input]="true"></settings-display>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">Zone:</div>
+                <div class="value">
+                    <dropdown [filter]="true" placeholder="Select a Zone"></dropdown>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">Edge:</div>
+                <div class="value">
+                    <dropdown [filter]="true" placeholder="Select an Edge node"></dropdown>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <btn (tapped)="event('Cancel')">Cancel</btn>
+            <btn (tapped)="event('Accept')">Ok</btn>
+        </div>
+    </div>
+</div>
