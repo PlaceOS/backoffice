@@ -32,7 +32,7 @@ export class LogsService extends BaseService {
 
     constructor(protected http: CommsService) {
         super();
-        this.model.name = 'log'
+        this.model.name = 'log';
         this.model.route = '/logs';
         this.subjects.list = new BehaviorSubject<IEngineLogEntry[]>([]);
         this.observers.list = this.subjects.list.asObservable();

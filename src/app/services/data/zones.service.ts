@@ -25,7 +25,7 @@ export class ZonesService extends BaseService {
 
     constructor(protected http: CommsService) {
         super();
-        this.model.name = 'zone'
+        this.model.name = 'zone';
         this.model.route = '/zones';
         this.subjects.list = new BehaviorSubject<IEngineZone[]>([]);
         this.observers.list = this.subjects.list.asObservable();

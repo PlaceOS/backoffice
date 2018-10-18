@@ -34,8 +34,8 @@ export interface IUser {
 export class UsersService extends BaseService {
 
     constructor(protected http: CommsService, private http_unauth: HttpClient) {
-        super()
-        this.model.name = 'user'
+        super();
+        this.model.name = 'user';
         this.model.route = '/users';
         this.subjects.list = new BehaviorSubject<IUser[]>([]);
         this.observers.list = this.subjects.list.asObservable();
@@ -44,7 +44,7 @@ export class UsersService extends BaseService {
     }
 
     protected load(tries: number = 0) {
-        if (tries > 3) { return this.set('state', 'invalid') }
+        if (tries > 3) { return this.set('state', 'invalid'); }
         this.set('state', 'loading');
         this.show('current').then((user) => {
             if (user) {

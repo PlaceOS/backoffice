@@ -23,7 +23,7 @@ export class TriggersService extends BaseService {
 
     constructor(protected http: CommsService) {
         super();
-        this.model.name = 'trigger'
+        this.model.name = 'trigger';
         this.model.route = '/triggers';
         this.subjects.list = new BehaviorSubject<IEngineTrigger[]>([]);
         this.observers.list = this.subjects.list.asObservable();
