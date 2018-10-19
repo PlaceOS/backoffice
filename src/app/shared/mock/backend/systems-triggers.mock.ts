@@ -60,6 +60,9 @@ export class MockSystemTriggersBackend extends BaseMockBackend {
             } else if (event.fragment.sys_id) {
                 data = event.data.filter((a) => a.control_system_id === event.fragment.sys_id);
             }
+            if (event.fragment.q) {
+                data = data.filter((a) => (a.name || '').indexOf(event.fragment.q) >= 0);
+            }
             if (event.fragment && event.fragment.offset) {
                 const start = Math.min(data.length, +(event.fragment.offset));
                 const end = Math.min(data.length, +(event.fragment.offset) + 20);

@@ -37,7 +37,10 @@ export class MockZonesBackend extends BaseMockBackend {
         MOCK_REQ_HANDLER.register('/control/api/zones', this.model.zones, (event) => {
             let data = event.data;
             if (event.fragment.sys_id) {
-                data = event.data.filter((a) => (a.systems || []).indexOf(event.fragment.sys_id) >= 0);
+                data = data.filter((a) => (a.systems || []).indexOf(event.fragment.sys_id) >= 0);
+            }
+            if (event.fragment.q) {
+                data = data.filter((a) => (a.name || '').indexOf(event.fragment.q) >= 0);
             }
             if (event.fragment && event.fragment.offset) {
                 const start = Math.min(data.length, +(event.fragment.offset));

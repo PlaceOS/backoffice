@@ -35,12 +35,16 @@ export class MockTriggersBackend extends BaseMockBackend {
         }
         this.model.triggers = item_list;
         MOCK_REQ_HANDLER.register('/control/api/triggers', this.model.triggers, (event) => {
+            let data = event.data;
+            if (event.fragment.q) {
+                data = data.filter((a) => (a.name || '').indexOf(event.fragment.q) >= 0);
+            }
             if (event.fragment && event.fragment.offset) {
-                const start = Math.min(event.data.length, +(event.fragment.offset));
-                const end = Math.min(event.data.length, +(event.fragment.offset) + 20);
-                return { results: event.data.slice(start, end), total: event.data.length };
+                const start = Math.min(data.length, +(event.fragment.offset));
+                const end = Math.min(data.length, +(event.fragment.offset) + 20);
+                return { results: data.slice(start, end), total: data.length };
             } else {
-                return { results: event.data.slice(0, 20), total: event.data.length };
+                return { results: data.slice(0, 20), total: data.length };
             }
         });
         MOCK_REQ_HANDLER.register('/control/api/triggers/:id', this.model.triggers, (event) => {
