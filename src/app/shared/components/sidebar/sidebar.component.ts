@@ -57,6 +57,12 @@ export class SidebarComponent extends BaseComponent implements OnChanges, OnInit
         }
     }
 
+    public searching() {
+        this.timeout('searching', () => {
+            this.searchChange.emit(this.search);
+        });
+    }
+
     public changeSelected(offset: number) {
         const list = this.item_list.toArray();
         if (list && list.length > 0) {
