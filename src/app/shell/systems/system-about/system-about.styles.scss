@@ -64,6 +64,7 @@ section {
         outline: none;
         font-size: 1em;
         color: rgba(#000, .87);
+        padding: 0;
         &.error {
             border-bottom-color: $error;
         }
