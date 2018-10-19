@@ -1,7 +1,7 @@
 <div class="container">
     <div class="header">
         <div class="text">{{model.item ? 'Edit' : 'New'}} System</div>
-        <div class="close" (tap)="fn.close()">
+        <div class="close" (touchrelease)="fn.close()">
             <i class="material-icons">close</i>
         </div>
     </div>
@@ -52,25 +52,30 @@
             <div class="field">
                 <div class="label">Settings:</div>
                 <div class="value full">
-                    <settings-display [(model)]="model.form.settings" [input]="true"></settings-display>
+                    <settings-display [(model)]="model.form.settings" (valid)="model.settings_valid = $event" [input]="true"></settings-display>
                 </div>
             </div>
-            <div class="field">
+            <div class="field new-only">
                 <div class="label">Zone:</div>
                 <div class="value">
-                    <dropdown [filter]="true" placeholder="Select a Zone"></dropdown>
+                    <dropdown [filter]="true" [list]="model.zones" [model]="-1" (modelChange)="model.form.zone = model.zones[$event]"
+                        (filterValue)="loadZones($event)" placeholder="Select a Zone"></dropdown>
                 </div>
             </div>
-            <div class="field">
+            <div class="field new-only">
                 <div class="label">Edge:</div>
                 <div class="value">
-                    <dropdown [filter]="true" placeholder="Select an Edge node"></dropdown>
+                    <dropdown [filter]="true" [list]="model.nodes" [model]="-1" (modelChange)="model.form.edge = model.nodes[$event]"
+                        (filterValue)="loadNodes($event)" placeholder="Select an Edge node"></dropdown>
                 </div>
             </div>
         </div>
         <div class="footer">
             <btn (tapped)="event('Cancel')">Cancel</btn>
-            <btn (tapped)="event('Accept')">Ok</btn>
+            <btn [disabled]="model.settings_valid === false || (!model.item && (!model.form.zone || model.form.node))"
+                (tapped)="model.item ? edit() : new()">
+                Ok
+            </btn>
         </div>
     </div>
 </div>
