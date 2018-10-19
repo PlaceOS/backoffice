@@ -1,5 +1,5 @@
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { BaseComponent } from '../../shared/components/base.component';
@@ -11,11 +11,12 @@ import { Utils } from '../../shared/utility.class';
     templateUrl: './triggers.template.html',
     styleUrls: ['./triggers.styles.scss']
 })
-export class TriggersComponent extends BaseComponent {
+export class TriggersComponent extends BaseComponent implements OnInit {
     public model: any = {};
 
     constructor(private service: AppService, private route: ActivatedRoute) {
         super();
+        this.model.service = 'Triggers';
     }
 
     public ngOnInit() {
@@ -26,7 +27,7 @@ export class TriggersComponent extends BaseComponent {
             if (params.has('id')) {
                 this.model.id = params.get('id');
                 this.timeout('loading', () => this.model.loading_item = true, 10);
-                this.service.Triggers.show(this.model.id).then((item) => {
+                this.service[this.model.service].show(this.model.id).then((item) => {
                     const query: any = { offset: 0, limit: 1, trigger_id: item.id };
                     const q = `total_${Utils.generateQueryString(query)}`;
                         // Get trigger count
@@ -47,9 +48,12 @@ export class TriggersComponent extends BaseComponent {
             }
             this.showSidebar(!this.model.id);
         });
-        this.subs.obs.list = this.service.Triggers.listen('list', () => {
-            this.model.list = this.service.Triggers.list();
-            this.model.total = this.service.Triggers.get('total');
+        this.subs.obs.list = this.service[this.model.service].listen('list', () => {
+            this.model.pure_list = this.service[this.model.service].list();
+            this.model.total = this.service[this.model.service].get('total');
+            if (!this.model.search) {
+                this.model.list = this.service[this.model.service].list();
+            }
             this.timeout('loading', () => {
                 this.model.loading = false;
                 this.model.loading_item = false;
@@ -58,10 +62,15 @@ export class TriggersComponent extends BaseComponent {
     }
 
     public sidebarEvent(event: any) {
+        console.log('Event:', event);
         if (event && event.type === 'more') {
             if (!this.model.total || this.model.list.length < this.model.total) {
-                this.timeout('loading', () => this.model.loading = true, 10);
-                this.service.Triggers.query({ offset: this.model.list.length || 0 });
+                if (this.model.search) {
+                    this.loadQuery();
+                } else {
+                    this.timeout('loading', () => this.model.loading = true, 10);
+                    this.service[this.model.service].query({ offset: this.model.pure_list.length || 0 });
+                }
             }
         } else if (event && event.type === 'select') {
             this.timeout('navigate', () => {
@@ -73,6 +82,40 @@ export class TriggersComponent extends BaseComponent {
         } else {
             this.showSidebar(false);
         }
+    }
+
+    public loadQuery() {
+        if (this.model.search) {
+            if (this.model.filtered_count === this.model.filtered_list.length) { return; }
+            this.model.loading = true;
+            const query = { offset: this.model.filtered_list.length || 0, q: this.model.search };
+            const q = `total_${Utils.generateQueryString(query)}`;
+            this.service[this.model.service].query(query).then((list) => {
+                if (this.model.filtered_list) { this.model.filtered_list = []; }
+                for (const i of list) {
+                    let found = false;
+                    for (const l of this.model.filtered_list) {
+                        if (l.id === i.id) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) { this.model.filtered_list.push(i); }
+                }
+                this.model.filtered_count =  this.service[this.model.service].get(q);
+                this.model.list = this.model.filtered_list;
+                this.model.loading = false;
+            });
+        } else {
+            this.model.list = this.model.pure_list;
+        }
+    }
+
+    public search(str: string) {
+        this.model.filtered_list = [];
+        this.model.filtered_count = -1;
+        this.model.search = str;
+        this.loadQuery();
     }
 
     public showSidebar(state: boolean = true) {

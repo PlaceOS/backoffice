@@ -1,6 +1,6 @@
 <div class="container" [class.show]="model.show_sidebar">
         <div class="sidebar" (tap)="showSidebar()">
-            <sidebar heading="Devices" [list]="model.list" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)">
+            <sidebar heading="Devices" [list]="model.list" (searchChange)="search($event)" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)">
                 <div class="toggle">
                     <div class="text">Only disconnected:</div>
                     <toggle type="ios"></toggle>

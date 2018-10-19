@@ -1,6 +1,6 @@
 <div class="container" [class.show]="model.show_sidebar">
     <div class="sidebar" (tap)="showSidebar()">
-        <sidebar heading="Zones" [list]="model.list" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
+        <sidebar heading="Zones" [list]="model.list" (searchChange)="search($event)" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
         <item-display [item]="model.item" name="zone" [active]="model.tab"
