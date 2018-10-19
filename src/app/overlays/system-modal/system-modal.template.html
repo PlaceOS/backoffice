@@ -72,7 +72,7 @@
         </div>
         <div class="footer">
             <btn (tapped)="event('Cancel')">Cancel</btn>
-            <btn [disabled]="model.settings_valid === false || (!model.item && (!model.form.zone || model.form.node))"
+            <btn name="inverse" [disabled]="model.settings_valid === false || (!model.item && (!model.form.zone || model.form.node))"
                 (tapped)="model.item ? edit() : new()">
                 Ok
             </btn>

@@ -209,10 +209,11 @@ span.id {
     button {
         margin: .25em .5em;
         font-size: .9em;
-        background-color: $color-primary;
-        border-color: $color-primary;
-        color: #fff;
+        background-color: #fff;
+        border: 2px solid $color-secondary;
+        color: $color-secondary;
         border-radius: 4px;
+        text-transform: uppercase;
         &.mini-action {
             margin: .25em;
         }
@@ -224,8 +225,8 @@ span.id {
             }
         }
         &:hover {
-            background-color: darken($color-primary, 10);
-            color: #fff;
+            background-color: darken(#fff, 10);
+            color: $color-secondary;
         }
         &[disabled] {
             pointer-events: none;
@@ -233,6 +234,18 @@ span.id {
             border-color: #ccc !important;
             background-color: #f0f0f0 !important;
             color: #ccc !important;
+        }
+    }
+
+    &.inverse {
+        button {
+            background-color: $color-secondary;
+            color: #fff;
+            border-color: $color-secondary;
+            &:hover {
+                background-color: lighten($color-secondary, 10);
+                color: #fff;
+            }
         }
     }
 
@@ -433,18 +446,6 @@ span.id {
                     background-color: darken(#fff, 10);
                     color: $success;
                 }
-            }
-        }
-    }
-
-    &.inverse {
-        button {
-            background-color: #fff;
-            color: $color-primary;
-            border-color: $color-primary;
-            &:hover {
-                background-color: darken(#fff, 10);
-                color: $color-primary;
             }
         }
     }
