@@ -18,6 +18,7 @@ export class SystemsComponent extends BaseComponent implements OnInit {
     constructor(private service: AppService, private route: ActivatedRoute) {
         super();
         this.model.service = 'Systems';
+        this.model.route = 'systems';
         this.service.Overlay.setupModal('system-view', { cmp: SystemModalComponent });
     }
 
@@ -28,8 +29,11 @@ export class SystemsComponent extends BaseComponent implements OnInit {
             this.model.id = '';
             if (params.has('id')) {
                 this.model.id = params.get('id');
-                this.timeout('loading', () => this.model.loading_item = true, 10);
+                this.timeout('loading', () => {
+                    if (this.service.get('BACKOFFICE.active_item') !== this.model.id) { this.model.loading_item = true; };
+                }, 10);
                 this.service[this.model.service].show(this.model.id).then((item) => {
+                    this.service.set('BACKOFFICE.active_item', this.model.id);
                     const query: any = { offset: 0, limit: 1, sys_id: item.id };
                     const q = `total_${Utils.generateQueryString(query)}`;
                         // Get trigger count
@@ -68,30 +72,32 @@ export class SystemsComponent extends BaseComponent implements OnInit {
     }
 
     public sidebarEvent(event: any) {
-        console.log('Event:', event);
-        if (event && event.type === 'more') {
-            if (!this.model.total || this.model.list.length < this.model.total) {
+        this.timeout('sidebar', () => {
+            if (event && event.type === 'more') {
                 if (this.model.search) {
                     this.loadQuery();
+                } else if (!this.model.total || this.model.list.length < this.model.total) {
+                    this.model.loading = true;
+                    this.service[this.model.service].query({ offset: this.model.pure_list.length || 0 })
+                        .then(() => this.model.loading = false, () => this.model.loading = false);
                 } else {
-                    this.timeout('loading', () => this.model.loading = true, 10);
-                    this.service[this.model.service].query({ offset: this.model.pure_list.length || 0 });
+                    this.model.loading = false;
                 }
-            }
-        } else if (event && event.type === 'select') {
-            this.timeout('navigate', () => {
-                const route = ['systems', event.item.id];
-                if (this.model.tab) { route.push(this.model.tab); }
-                this.service.navigate(route);
+            } else if (event && event.type === 'select') {
+                this.timeout('navigate', () => {
+                    const route = [this.model.route, event.item.id];
+                    if (this.model.tab) { route.push(this.model.tab); }
+                    this.service.navigate(route);
+                    this.showSidebar(false);
+                });
+            } else if (event && event.type === 'new') {
+                this.service.Overlay.openModal('system-view', { data: {} }, (e) => {
+                    e.close();
+                });
+            } else {
                 this.showSidebar(false);
-            });
-        } else if (event && event.type === 'new') {
-            this.service.Overlay.openModal('system-view', { data: {} }, (e) => {
-                e.close();
-            });
-        } else {
-            this.showSidebar(false);
-        }
+            }
+        }, 20);
     }
 
     public loadQuery() {

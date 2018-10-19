@@ -17,6 +17,7 @@ export class DevicesComponent extends BaseComponent implements OnInit {
     constructor(private service: AppService, private route: ActivatedRoute) {
         super();
         this.model.service = 'Modules';
+        this.model.route = 'devices';
     }
 
     public ngOnInit() {
@@ -62,26 +63,28 @@ export class DevicesComponent extends BaseComponent implements OnInit {
     }
 
     public sidebarEvent(event: any) {
-        console.log('Event:', event);
-        if (event && event.type === 'more') {
-            if (!this.model.total || this.model.list.length < this.model.total) {
+        this.timeout('sidebar', () => {
+            if (event && event.type === 'more') {
                 if (this.model.search) {
                     this.loadQuery();
+                } else if (!this.model.total || this.model.list.length < this.model.total) {
+                    this.model.loading = true;
+                    this.service[this.model.service].query({ offset: this.model.pure_list.length || 0 })
+                        .then(() => this.model.loading = false, () => this.model.loading = false);
                 } else {
-                    this.timeout('loading', () => this.model.loading = true, 10);
-                    this.service[this.model.service].query({ offset: this.model.pure_list.length || 0 });
+                    this.model.loading = false;
                 }
-            }
-        } else if (event && event.type === 'select') {
-            this.timeout('navigate', () => {
-                const route = ['devices', event.item.id];
-                if (this.model.tab) { route.push(this.model.tab); }
-                this.service.navigate(route);
+            } else if (event && event.type === 'select') {
+                this.timeout('navigate', () => {
+                    const route = [this.model.route, event.item.id];
+                    if (this.model.tab) { route.push(this.model.tab); }
+                    this.service.navigate(route);
+                    this.showSidebar(false);
+                });
+            } else {
                 this.showSidebar(false);
-            });
-        } else {
-            this.showSidebar(false);
-        }
+            }
+        }, 20);
     }
 
     public loadQuery() {

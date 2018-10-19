@@ -28,9 +28,12 @@
                 <i class="material-icons">close</i>
             </div>
             <div class="text">{{ !search ? 'No ' + model.lowercase_header : 'No matches found'}}</div>
+            <div class="btn">
+                <btn (tapped)="event.emit({ type: 'new' })">Add new {{model.lowercase_header}}</btn>
+            </div>
         </div>
     </section>
     <div class="loading" *ngIf="loading">
-        <spinner type="bounce" color="#F44336"></spinner>
+        <spinner type="double-circle-ring" color="#F44336"></spinner>
     </div>
 </div>

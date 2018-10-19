@@ -12,7 +12,7 @@ import { AppService } from '../../../services/app.service';
 export class SidebarComponent extends BaseComponent implements OnChanges, OnInit {
     @Input() public heading = '';
     @Input() public list: any[] = [];
-    @Input() public loading = false;
+    @Input() public loading;
     @Input() public close = false;
     @Input() public active = '';
     @Input() public search = '';

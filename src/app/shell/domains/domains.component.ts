@@ -17,6 +17,7 @@ export class DomainsComponent extends BaseComponent implements OnInit {
     constructor(private service: AppService, private route: ActivatedRoute) {
         super();
         this.model.service = 'Domains';
+        this.model.route = 'domains';
     }
 
     public ngOnInit() {
@@ -30,14 +31,14 @@ export class DomainsComponent extends BaseComponent implements OnInit {
                 this.service[this.model.service].show(this.model.id).then((item) => {
                     let query: any = { offset: 0, limit: 1, owner: item.id };
                     const q = `total_${Utils.generateQueryString(query)}`;
-                        // Get application count
+                    // Get application count
                     this.service.Applications.query(query)
                         .then(() => this.model.applications = this.service.Applications.get(q));
                     query = { offset: 0, limit: 1, authority_id: item.id };
-                        // Get auth source count
+                    // Get auth source count
                     this.service.AuthSources.query(query)
                         .then(() => this.model.auth_sources = this.service.AuthSources.get(`total_${Utils.generateQueryString(query)}`));
-                        // Get users count
+                    // Get users count
                     this.service.Users.query(query)
                         .then(() => this.model.users = this.service.Users.get(`total_${Utils.generateQueryString(query)}`));
                     this.timeout('item', () => {
@@ -69,26 +70,28 @@ export class DomainsComponent extends BaseComponent implements OnInit {
     }
 
     public sidebarEvent(event: any) {
-        console.log('Event:', event);
-        if (event && event.type === 'more') {
-            if (!this.model.total || this.model.list.length < this.model.total) {
+        this.timeout('sidebar', () => {
+            if (event && event.type === 'more') {
                 if (this.model.search) {
                     this.loadQuery();
+                } else if (!this.model.total || this.model.list.length < this.model.total) {
+                    this.model.loading = true;
+                    this.service[this.model.service].query({ offset: this.model.pure_list.length || 0 })
+                        .then(() => this.model.loading = false, () => this.model.loading = false);
                 } else {
-                    this.timeout('loading', () => this.model.loading = true, 10);
-                    this.service[this.model.service].query({ offset: this.model.pure_list.length || 0 });
+                    this.model.loading = false;
                 }
-            }
-        } else if (event && event.type === 'select') {
-            this.timeout('navigate', () => {
-                const route = ['domains', event.item.id];
-                if (this.model.tab) { route.push(this.model.tab); }
-                this.service.navigate(route);
+            } else if (event && event.type === 'select') {
+                this.timeout('navigate', () => {
+                    const route = [this.model.route, event.item.id];
+                    if (this.model.tab) { route.push(this.model.tab); }
+                    this.service.navigate(route);
+                    this.showSidebar(false);
+                });
+            } else {
                 this.showSidebar(false);
-            });
-        } else {
-            this.showSidebar(false);
-        }
+            }
+        }, 20);
     }
 
     public loadQuery() {
@@ -109,7 +112,7 @@ export class DomainsComponent extends BaseComponent implements OnInit {
                     }
                     if (!found) { this.model.filtered_list.push(i); }
                 }
-                this.model.filtered_count =  this.service[this.model.service].get(q);
+                this.model.filtered_count = this.service[this.model.service].get(q);
                 this.model.list = this.model.filtered_list;
                 this.model.loading = false;
             });
@@ -133,7 +136,7 @@ export class DomainsComponent extends BaseComponent implements OnInit {
         if (!event) { return; }
         if (event.type === 'tab' && this.model.item && event.value) {
             if (this.subs.timers.navigate) { return; }
-            this.service.navigate(['domains', this.model.item.id, event.value ]);
+            this.service.navigate(['domains', this.model.item.id, event.value]);
         }
     }
 }

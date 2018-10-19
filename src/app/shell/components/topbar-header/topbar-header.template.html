@@ -12,7 +12,7 @@
         </div>
         <div class="block end">
             <!-- TODO Add user details display -->
-            <div class="avatar" tooltip position="bottom" offset="end" [template]="options" [(show)]="model.show" [triangle]="false" (touchrelease)="model.show = true">
+            <div class="avatar" [title]="model.user?.name" tooltip position="bottom" offset="end" [template]="options" [(show)]="model.show" [triangle]="false" (touchrelease)="model.show = true">
                 <div class="img" [style.background-image]="('url(' + (model.user?.image || 'https://www.gravatar.com/avatar/' + model.user?.gravatar_hash) + ')') | safestyle"></div>
             </div>
             <ng-template #options>
