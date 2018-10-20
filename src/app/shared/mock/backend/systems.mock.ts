@@ -22,6 +22,7 @@ export class MockSystemsBackend extends BaseMockBackend {
         const item_list = [];
         const count = Math.floor(Math.random() * 100 + 25);
         const zones = this.model.zones || [];
+        const nodes = this.model.nodes || [];
         for (let i = 0; i < count; i++) {
             const zone_list = [];
             const id = `sys-${Utils.padZero(i, 4)}`;
@@ -73,6 +74,13 @@ export class MockSystemsBackend extends BaseMockBackend {
                 return { results: data.slice(0, 20), total: data.length };
             }
         });
+
+        MOCK_REQ_HANDLER.register('/control/api/systems', this.model.systems, (event) => {
+            event.body.id = `sys-${Utils.padZero(this.model.systems.length, 4)}`;
+            this.model.systems.push(event.body);
+            return event.body;
+        }, 'POST');
+
         MOCK_REQ_HANDLER.register('/control/api/systems/:id/:opt', this.model.systems, (event) => {
             if (event && event.params && event.params.id) {
                 if (!event.params.opt) {
