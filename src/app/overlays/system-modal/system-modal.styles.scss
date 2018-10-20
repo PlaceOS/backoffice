@@ -5,8 +5,27 @@
     max-width: 95vw;
     font-size: 1.25em;
     overflow: hidden;
+    transition: height 200ms, width 200ms;
 
-    @include respond-to(mobile){
+    .no-item {
+        display: none;
+    }
+
+    &.loader {
+
+        width: 20em;
+
+        .close,
+        .body {
+            display: none !important;
+        }
+
+        .no-item {
+            display: flex;
+        }
+    }
+
+    @include respond-to(mobile) {
         width: 20em;
     }
 }
@@ -19,6 +38,14 @@
 
 .form {
     padding: .5em;
+    font-size: .8em;
+    & > .error {
+        font-size: .8em;
+        text-align: right;
+        color: $error;
+        margin-bottom: .5em;
+        padding-right: 1em;
+    }
 }
 
 .field {
@@ -27,7 +54,6 @@
     flex-wrap: wrap;
     width: 100%;
     padding: 0 .5em .5em;
-
     .label {
         min-width: 8em;
         margin: .5em 0;
@@ -36,9 +62,17 @@
     .value {
         width: 18em;
         flex-grow: 1;
+
         &.full {
             width: 100%;
         }
+        &.error {
+            input {
+                border-color: $error;
+                background-color: rgba($error, .2);
+            }
+        }
+
     }
 }
 
@@ -56,6 +90,16 @@ input {
     align-items: center;
     justify-content: flex-end;
     width: 100%;
-
 }
 
+
+
+.no-item {
+    min-height: 15em;
+    font-size: .7em;
+    &.success {
+        .icon {
+            color: $success;
+        }
+    }
+}

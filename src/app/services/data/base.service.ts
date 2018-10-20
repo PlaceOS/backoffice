@@ -181,6 +181,7 @@ export class BaseService {
                 this.http.post(url, formatted_data).subscribe(
                     (resp: any) => {
                         const item = this.processItem(resp);
+                        this.updateList([item]);
                         resolve(item);
                         this.parent.Analytics.event((this.model.name || '').toUpperCase(), `created_${this.model.name}`);
                         setTimeout(() => this.promises[key] = null, 2 * 1000);

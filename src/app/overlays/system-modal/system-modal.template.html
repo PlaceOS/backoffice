@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" [class.loader]="model.loading">
     <div class="header">
         <div class="text">{{model.item ? 'Edit' : 'New'}} System</div>
         <div class="close" (touchrelease)="fn.close()">
@@ -8,35 +8,40 @@
     <div class="body">
         <div class="form">
             <div class="field">
-                <div class="label">Name:</div>
-                <div class="value">
+                <div class="label">Name<span class="orange">*</span>:</div>
+                <div class="value" [class.error]="model.errors?.name">
                     <input [(ngModel)]="model.form.name" placeholder="System name">
                 </div>
             </div>
+            <div class="error" *ngIf="model.errors?.name">{{model.errors?.name}}</div>
             <div class="field">
                 <div class="label">Email:</div>
-                <div class="value">
-                    <input [(ngModel)]="model.form.email" placeholder="System email">
+                <div class="value" [class.error]="model.errors?.email">
+                    <input [(ngModel)]="model.form.email" (ngModelChange)="validate()" placeholder="System email">
                 </div>
             </div>
+            <div class="error" *ngIf="model.errors?.email">{{model.errors?.email}}</div>
             <div class="field">
                 <div class="label">Support URL:</div>
-                <div class="value">
-                    <input [(ngModel)]="model.form.support_url" placeholder="Support URL">
+                <div class="value" [class.error]="model.errors?.support_url">
+                    <input [(ngModel)]="model.form.support_url" (ngModelChange)="validate()" placeholder="Support URL">
                 </div>
             </div>
+            <div class="error" *ngIf="model.errors?.support_url">{{model.errors?.support_url}}</div>
             <div class="field">
                 <div class="label">No. Touch Panels:</div>
-                <div class="value">
-                    <input [(ngModel)]="model.form.installed_ui_devices" type="tel" placeholder="Number of touch panels">
+                <div class="value" [class.error]="model.errors?.installed_ui_devices">
+                    <input [(ngModel)]="model.form.installed_ui_devices" (ngModelChange)="validate()" type="tel" placeholder="Number of touch panels">
                 </div>
             </div>
+            <div class="error" *ngIf="model.errors?.installed_ui_devices">{{model.errors?.installed_ui_devices}}</div>
             <div class="field">
                 <div class="label">Capacity:</div>
-                <div class="value">
-                    <input [(ngModel)]="model.form.capacity" type="tel" placeholder="Space capacity">
+                <div class="value" [class.error]="model.errors?.capacity">
+                    <input [(ngModel)]="model.form.capacity" (ngModelChange)="validate()" type="tel" placeholder="Space capacity">
                 </div>
             </div>
+            <div class="error" *ngIf="model.errors?.capacity">{{model.errors?.capacity}}</div>
             <div class="field">
                 <div class="label"></div>
                 <div class="value">
@@ -56,26 +61,32 @@
                 </div>
             </div>
             <div class="field new-only">
-                <div class="label">Zone:</div>
+                <div class="label">Zone<span class="orange">*</span>:</div>
                 <div class="value">
-                    <dropdown [filter]="true" [list]="model.zones" [model]="-1" (modelChange)="model.form.zone = model.zones[$event]"
+                    <dropdown [filter]="true" [list]="model.zones" [model]="-1" (modelChange)="model.form.zones = [model.zones[$event].id]"
                         (filterValue)="loadZones($event)" placeholder="Select a Zone"></dropdown>
                 </div>
             </div>
             <div class="field new-only">
-                <div class="label">Edge:</div>
+                <div class="label">Edge<span class="orange">*</span>:</div>
                 <div class="value">
-                    <dropdown [filter]="true" [list]="model.nodes" [model]="-1" (modelChange)="model.form.edge = model.nodes[$event]"
+                    <dropdown [filter]="true" [list]="model.nodes" [model]="-1" (modelChange)="model.form.edge_id = model.nodes[$event].id"
                         (filterValue)="loadNodes($event)" placeholder="Select an Edge node"></dropdown>
                 </div>
             </div>
         </div>
         <div class="footer">
             <btn (tapped)="event('Cancel')">Cancel</btn>
-            <btn name="inverse" [disabled]="model.settings_valid === false || (!model.item && (!model.form.zone || model.form.node))"
+            <btn name="inverse" [disabled]="model.has_errors || model.settings_valid === false || !model.form.name || !model.form.edge_id || !model.form.zones || model.form.zones.length <= 0"
                 (tapped)="model.item ? edit() : new()">
                 Ok
             </btn>
         </div>
+    </div>
+    <div class="no-item">
+        <div class="icon">
+            <spinner type="circle-ring" color="rgba(0,0,0, .54)"></spinner>
+        </div>
+        <div class="text">Processing request...</div>
     </div>
 </div>

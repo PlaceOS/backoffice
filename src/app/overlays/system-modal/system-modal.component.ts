@@ -1,6 +1,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { OverlayContentComponent } from '@acaprojects/ngx-widgets';
+import { Utils } from '../../shared/utility.class';
 
 @Component({
     selector: 'system-modal',
@@ -13,6 +14,7 @@ export class SystemModalComponent extends OverlayContentComponent implements OnI
 
     public ngOnInit() {
         this.model.form = {};
+        this.model.errors = {};
         this.model.zones = [];
         this.model.nodes = [];
     }
@@ -36,8 +38,35 @@ export class SystemModalComponent extends OverlayContentComponent implements OnI
         }
     }
 
-    public new() {
+    public validate() {
+        this.model.errors = {};
+        const form = this.model.form || {};
+        if (form.email && !Utils.validate('email', form.email)) {
+            this.model.errors.email = 'System\'s email must be a valid email address';
+        }
+        if (form.support_url && !Utils.validate('url', form.support_url)) {
+            this.model.errors.support_url = 'Support URL must contain a valid URL';
+        }
+        if (form.capacity && !Utils.validate('integer', form.capacity)) {
+            this.model.errors.capacity = 'Capacity must be a valid integer';
+        }
+        if (form.installed_ui_devices && !Utils.validate('integer', form.installed_ui_devices)) {
+            this.model.errors.installed_ui_devices = 'Number of touch panels must be a valid integer';
+        }
+        console.log('Errors:', this.model.errors);
+        this.model.has_errors = Object.keys(this.model.errors).length > 0;
+    }
 
+    public new() {
+        this.model.loading = true;
+        this.service.Systems.add(this.model.form).then((item) => {
+            this.service.success('Successfully added new system');
+            this.model.id = item.id;
+            this.event('Success');
+        }, () => {
+            this.service.error('Failed to add new system');
+            this.model.loading = false;
+        });
     }
 
     public edit() {
@@ -64,7 +93,7 @@ export class SystemModalComponent extends OverlayContentComponent implements OnI
     }
 
     public loadNodes(query: string = '') {
-        // this.load(query, 'Nodes');
+        this.load(query, 'Nodes');
     }
 
 }

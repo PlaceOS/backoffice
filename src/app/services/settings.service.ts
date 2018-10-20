@@ -11,8 +11,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 
-import { Observable, BehaviorSubject } from 'rxjs';
-import { Utils } from '../shared/utility.class';
+import { BehaviorSubject } from 'rxjs';
 
 import * as moment from 'moment';
 
@@ -74,12 +73,7 @@ export class SettingsService {
                     win.debug_module.push(this.model.app.name);
                 }
             }
-            if (s.version) { this.log('SYSTEM', `Version: ${s.version}`); }
-            if (s.build) {
-                const now = moment();
-                const build_time = s.build === 'local-dev' ? moment() : moment(s.build);
-                this.log('SYSTEM', `Build: ${now.isSame(build_time, 'd') ? `Today at ${build_time.format('h:mma')}` : build_time.format('MMM Do, YYYY | h:mma')}`);
-            }
+            this.printVersion();
             this.setup = true;
         }, (err: any) => setTimeout(() => this.init(), 500));
     }
@@ -90,9 +84,9 @@ export class SettingsService {
      * @param  {string} msg    Message to print to the console
      * @param  {string} stream IO Stream to print message to.
      */
-    public log(type: string, msg: string, args?: any, stream: string = 'debug') {
+    public log(type: string, msg: string, args?: any, stream: string = 'debug', force: boolean = false) {
         const win = window as any;
-        if (win.debug) {
+        if (win.debug || force) {
             const colors: string[] = ['color: #E91E63', 'color: #3F51B5', 'color: rgba(#000, 0.87'];
             if (args) {
                 console[stream](`%c[${this.model.app.name}]%c[${type}] %c${msg}`, ...colors, args);
@@ -158,18 +152,22 @@ export class SettingsService {
      * @return Returns the value stored in the settings or null
      */
     public get(key: string) {
+        return this.getSetting(key);
+    }
+
+    public getSetting(key: string) {
         const keys = key.split('.');
         if (keys.length === 1) {
             return this.model.settings[key];
         } else {
             const use_keys = keys.splice(1, keys.length - 1);
             let item = this.getItemFromKeys(use_keys, this.model.settings[keys[0]]);
-            // Check that item exists under the reserved keys
-            if (!item && item !== 0) {
+                // Check that item exists under the reserved keys
+            if (item === undefined || item === null) {
                 for (const r of RESERVED_KEYS) {
-                    if (this.model.settings.hasOwnProperty(r) && this.model.settings[r]) {
+                    if (this.model.settings.hasOwnProperty(r) && this.model.settings[r] !== undefined && this.model.settings[r] !== null) {
                         item = this.getItemFromKeys(use_keys, this.model.settings[r]);
-                        if (!item && item !== 0) {
+                        if (item === undefined && item === null) {
                             break;
                         }
                     }
@@ -265,6 +263,14 @@ export class SettingsService {
         return this.listen('loading_text', next);
     }
 
+    private printVersion() {
+        const now = moment();
+        const built = moment();
+        const build =  now.isSame(built, 'd') ? `Today at ${built.format('h:mma')}` : built.format('MMM Do, YYYY | h:mma');
+        this.log('SYSTEM', 'Version: local-dev', null, 'debug', true);
+        this.log('SYSTEM', `Build: ${build}`, null, 'debug', true);
+    }
+
     /**
      * Loads all the keys from local storage into the settings.
      * @return none
@@ -276,8 +282,8 @@ export class SettingsService {
                 let key = this.store.key(i);
                 const item = this.store.getItem(key);
                 if (item !== undefined && item !== null && item !== '') {
-                    if (key.indexOf(`BACKOFFICE.`) === 0) {
-                        key = key.replace(`BACKOFFICE.`, '');
+                    if (key.indexOf(`STAFF.`) === 0) {
+                        key = key.replace(`STAFF.`, '');
                     }
                     if (!this.model.settings.store) {
                         this.model.settings.store = {};

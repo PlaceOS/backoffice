@@ -76,7 +76,7 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
                     this.service.navigate(route);
                     this.showSidebar(false);
                 });
-            } else if (event && event.type === 'select') {
+            } else if (event && event.type === 'new') {
                 this.new();
             } else {
                 this.showSidebar(false);

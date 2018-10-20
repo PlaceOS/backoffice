@@ -820,6 +820,12 @@ div.time-picker[widget] {
     background-color: rgba(#000, .54);
 }
 
+span {
+    &.orange {
+        color: $pending;
+    }
+}
+
 code {
     font-family: $mono-font;
     white-space: pre;

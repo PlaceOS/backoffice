@@ -32,4 +32,13 @@ export class SystemsComponent extends BaseRootComponent {
             // Get zone count
         this.model.zones = (this.model.item.zones || []).length;
     }
+
+    protected new() {
+        this.service.Overlay.openModal('system-view', { data: {} }, (e) => {
+            if (e.type === 'Success') {
+                this.sidebarEvent({ type: 'select', item: { id: e.data.id } });
+            }
+            e.close();
+        });
+    }
 }
