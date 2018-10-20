@@ -14,6 +14,7 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
 
     constructor(protected service: AppService, protected route: ActivatedRoute) {
         super();
+        this.model.type = 'system';
         this.model.route = 'systems';
         this.model.service = 'Systems';
     }
@@ -127,6 +128,10 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
         if (event.type === 'tab' && this.model.item && event.value) {
             if (this.subs.timers.navigate) { return; }
             this.service.navigate([this.model.route, this.model.item.id, event.value ]);
+        } else if (event.type === 'edit') {
+            this.edit();
+        } else if (event.type === 'delete') {
+            this.delete();
         }
     }
 
@@ -139,7 +144,14 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
     }
 
     protected delete() {
-
+        if (!this.model.item) { return; }
+        this.service[this.model.service].remove(this.model.item.id).then(
+            () => {
+                this.service.success(`Successfully deleted ${this.model.type} ${this.model.item.id}`);
+                this.service.navigate([this.model.route]);
+            },
+            () => this.service.error(`Failed to delete ${this.model.type} ${this.model.item.id}`)
+        );
     }
 
     protected loadValues() {

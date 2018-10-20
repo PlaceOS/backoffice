@@ -15,6 +15,7 @@ export class DomainsComponent extends BaseRootComponent {
 
     constructor(protected service: AppService, protected route: ActivatedRoute) {
         super(service, route);
+        this.model.type = 'domain';
         this.model.service = 'Domains';
         this.model.route = 'domains';
     }

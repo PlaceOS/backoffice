@@ -16,7 +16,9 @@ export class ZonesComponent extends BaseRootComponent {
 
     constructor(protected service: AppService, protected route: ActivatedRoute) {
         super(service, route);
+        this.model.type = 'zone';
         this.model.service = 'Zones';
+        this.model.route = 'zones';
     }
 
     protected loadValues() {

@@ -15,6 +15,7 @@ export class DriversComponent extends BaseRootComponent {
 
     constructor(protected service: AppService, protected route: ActivatedRoute) {
         super(service, route);
+        this.model.type = 'driver';
         this.model.service = 'Drivers';
         this.model.route = 'drivers';
     }

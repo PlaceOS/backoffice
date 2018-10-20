@@ -15,6 +15,7 @@ export class TriggersComponent extends BaseRootComponent {
 
     constructor(protected service: AppService, protected route: ActivatedRoute) {
         super(service, route);
+        this.model.type = 'trigger';
         this.model.service = 'Triggers';
         this.model.route = 'triggers';
     }

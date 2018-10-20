@@ -15,6 +15,7 @@ export class DevicesComponent extends BaseRootComponent {
 
     constructor(protected service: AppService, protected route: ActivatedRoute) {
         super(service, route);
+        this.model.type = 'device';
         this.model.service = 'Modules';
         this.model.route = 'devices';
     }

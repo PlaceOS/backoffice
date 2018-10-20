@@ -16,6 +16,7 @@ export class SystemsComponent extends BaseRootComponent {
 
     constructor(protected service: AppService, protected route: ActivatedRoute) {
         super(service, route);
+        this.model.type = 'system';
         this.model.service = 'Systems';
         this.model.route = 'systems';
         this.service.Overlay.setupModal('system-view', { cmp: SystemModalComponent });
@@ -35,6 +36,16 @@ export class SystemsComponent extends BaseRootComponent {
 
     protected new() {
         this.service.Overlay.openModal('system-view', { data: {} }, (e) => {
+            if (e.type === 'Success') {
+                this.sidebarEvent({ type: 'select', item: { id: e.data.id } });
+            }
+            e.close();
+        });
+    }
+
+    protected edit() {
+        if (!this.model.item) { return; }
+        this.service.Overlay.openModal('system-view', { data: { item: this.model.item } }, (e) => {
             if (e.type === 'Success') {
                 this.sidebarEvent({ type: 'select', item: { id: e.data.id } });
             }

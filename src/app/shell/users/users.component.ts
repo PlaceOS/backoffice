@@ -14,6 +14,7 @@ export class UsersComponent extends BaseRootComponent {
 
     constructor(protected service: AppService, protected route: ActivatedRoute) {
         super(service, route);
+        this.model.type = 'user';
         this.model.service = 'Users';
         this.model.route = 'users';
     }

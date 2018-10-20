@@ -1,8 +1,8 @@
 
-import { CommsService } from "@acaprojects/ngx-composer";
-import { BehaviorSubject } from "rxjs";
+import { CommsService } from '@acaprojects/ngx-composer';
+import { BehaviorSubject } from 'rxjs';
 
-import { Utils } from "../../shared/utility.class";
+import { Utils } from '../../shared/utility.class';
 
 import * as moment from 'moment';
 
@@ -22,7 +22,9 @@ export class BaseService {
 
     protected http: CommsService;
 
-    constructor() { }
+    constructor() {
+        this.set('map', {});
+    }
 
     public init() {
         if (!this.parent || !this.parent.Settings.setup || (this.parent.Settings.get('mock') && !(window as any).backend.is_loaded)) {
@@ -41,7 +43,7 @@ export class BaseService {
         return this.get('list') || [];
     }
 
-    public filter(filter: string, items: any[] = this.list(), fields: string[] = ['id', 'name']) {
+    public filter(filter: string, fields: string[] = ['id', 'name'], items: any[] = this.list()) {
         return Utils.filter(filter, items, fields);
     }
 
@@ -58,10 +60,10 @@ export class BaseService {
         if (this.subjects[name]) {
             return this.observers[name].subscribe(next);
         } else {
-                // Create new variable to store property's value
+            // Create new variable to store property's value
             this.subjects[name] = new BehaviorSubject<any>(this[name] instanceof Function ? null : this[name]);
             this.observers[name] = this.subjects[name].asObservable();
-                // Create raw getter and setter for property
+            // Create raw getter and setter for property
             if (!(this[name] instanceof Function)) {
                 Object.defineProperty(this, name, {
                     get: () => this.get(name),
@@ -111,28 +113,22 @@ export class BaseService {
         if (tries > 4) { return new Promise((rs, rj) => rj('Too many tries')); }
         const query = Utils.generateQueryString(fields);
         let update = true;
-        for (const f in fields) {
-            if (fields.hasOwnProperty(f) && f !== 'offset' && f !== 'limit') {
-                update = false;
-                break;
+        if (fields && !fields.update) {
+            for (const f in fields) {
+                if (fields.hasOwnProperty(f) && f !== 'offset' && f !== 'limit') {
+                    update = false;
+                    break;
+                }
             }
         }
         const key = `query|${query}`;
-        if (update && this.get('total') === this.list().length) {
-            return new Promise((rs) => rs([]));
-        }
         if (!this.promises[key]) {
             this.promises[key] = new Promise((resolve, reject) => {
                 const url = `${this.endpoint}${query ? '?' + query : ''}`;
                 this.http.get(url).subscribe(
                     (resp: any) => {
-                        const item_list = this.processList(resp.results || resp);
-                        if (update) {
-                            this.updateList(item_list);
-                            this.set('total', resp.total || this.list().length);
-                        } else {
-                            this.set(`total_${query}`, resp.total || item_list.length || 0);
-                        }
+                        const item_list = this.processList(resp.results ? resp.results || resp : resp);
+                        if (update) { this.updateList(item_list); }
                         resolve(item_list);
                         setTimeout(() => this.promises[key] = null, 5 * 1000);
                     }, (err) => {
@@ -152,8 +148,10 @@ export class BaseService {
         const key = `show|${id}`;
         if (!this.promises[key]) {
             this.promises[key] = new Promise((resolve, reject) => {
+                const control = fields && fields.control;
+                if (control) { delete fields.control; }
                 const query = Utils.generateQueryString(fields) || (fields ? 'complete=true' : '');
-                const url = `${this.endpoint}/${id}${query ? '?' + query : ''}`;
+                const url = `${control ? ('/control/api' + this.model.route) : this.endpoint}/${id}${query ? '?' + query : ''}`;
                 this.http.get(url).subscribe(
                     (resp: any) => {
                         const item = this.processItem(resp);
@@ -253,15 +251,15 @@ export class BaseService {
     public remove(id: string, link?: any) {
         return new Promise((resolve, reject) => {
             if (!id) { return reject('Invalid ID given'); }
-            const item = this.item(id) || {};
+            const item = this.item(id) || { id, name: id };
             item.link = link;
-            this.parent.confirm(this.confirmSettings(id, item), (event) => {
+            this.parent.confirm(this.confirmSettings('delete', item), (event) => {
                 if (event.type === 'Accept') {
                     this.deleteItem(id).then((d) => resolve(d), (e) => reject(e));
                 } else {
-                    event.close();
                     reject('User cancelled');
                 }
+                event.close();
             });
         });
     }
@@ -272,6 +270,27 @@ export class BaseService {
      */
     public delete(id: string) {
         return this.remove(id);
+    }
+
+    protected deleteItem(id: string) {
+        const key = `delete|${id || moment().seconds(0).unix()}`;
+        if (!this.promises[key]) {
+            this.promises[key] = new Promise((resolve, reject) => {
+                const url = `${this.endpoint}/${id}`;
+                this.http.delete(url).subscribe(
+                    (resp: any) => {
+                        this.removeListItem(id);
+                        resolve();
+                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `removed_${this.model.name}`);
+                        setTimeout(() => this.promises[key] = null, 2 * 1000);
+                    }, (err) => {
+                        this.promises[key] = null;
+                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `remove_${this.model.name}_fail`);
+                        reject(err);
+                    });
+            });
+        }
+        return this.promises[key];
     }
 
     /**
@@ -308,35 +327,14 @@ export class BaseService {
         return this.promises[key];
     }
 
-    protected deleteItem(id: string) {
-        const key = `delete|${id || moment().seconds(0).unix()}`;
-        if (!this.promises[key]) {
-            this.promises[key] = new Promise((resolve, reject) => {
-                const url = `${this.endpoint}/${id}`;
-                this.http.delete(url).subscribe(
-                    (resp: any) => {
-                        const item = this.processItem(resp);
-                        resolve(item);
-                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `removed_${this.model.name}`);
-                        setTimeout(() => this.promises[key] = null, 2 * 1000);
-                    }, (err) => {
-                        this.promises[key] = null;
-                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `remove_${this.model.name}_fail`);
-                        reject(err);
-                    });
-            });
-        }
-        return this.promises[key];
-    }
-
     /**
      * Adds new items and updates existing items in the item list store
      * @param input_list List of new/updated items
      */
     protected updateList(input_list: any[]) {
-            // Get current list
+        // Get current list
         const item_list = this.list();
-            // Add any new items to the list
+        // Add any new items to the list
         for (const input of input_list) {
             let found = false;
             for (const item of item_list) {
@@ -349,23 +347,34 @@ export class BaseService {
                 item_list.push(input);
             }
         }
-            // Sort list
-        // item_list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-            // Store changes to the list
+        // Sort list
+        item_list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        // Store changes to the list
+        this.updateHashMap(item_list);
         this.set('list', item_list);
+    }
+
+    protected updateHashMap(list: any[]) {
+        const map: any = {};
+        for (const item of list) {
+            map[item.id] = item;
+        }
+        this.set('map', map);
     }
 
     protected processList(input_list: any[]) {
         const output_list: any[] = [];
-        for (const item of (input_list || [])) {
-            const out = this.processItem(item);
-            if (out) { output_list.push(out); }
+        for (const key in (input_list || [])) {
+            if (input_list.hasOwnProperty(key) && input_list[key]) {
+                const out = this.processItem(input_list[key], key);
+                if (out) { output_list.push(out); }
+            }
         }
-        // output_list.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
+        output_list.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
         return output_list;
     }
 
-    protected processItem(raw_item: any) {
+    protected processItem(raw_item: any, id?: string) {
         return raw_item;
     }
 
@@ -383,10 +392,10 @@ export class BaseService {
         if (this.subjects[name]) {
             this.subjects[name].next(value);
         } else {
-                // Create new variable to store property's value
+            // Create new variable to store property's value
             this.subjects[name] = new BehaviorSubject<any>(value);
             this.observers[name] = this.subjects[name].asObservable();
-                // Create raw getter and setter for property
+            // Create raw getter and setter for property
             if (!(this[name] instanceof Function)) {
                 Object.defineProperty(this, name, {
                     get: () => this.get(name),
@@ -401,7 +410,8 @@ export class BaseService {
      * @param key
      * @param fields
      */
-    protected confirmSettings(key: string, fields?: any) {
+    protected confirmSettings(key: string, fields: any = {}) {
+        console.log('Fields:', fields);
         const settings: any = {
             title: '',
             message: '',
@@ -413,21 +423,38 @@ export class BaseService {
         switch (key) {
             case 'delete':
                 settings.title = `Delete ${this.model.name}`;
-                settings.message = `Are you sure you wish to delete ${this.model.name} '${fields.name ? fields.name : ''}'?`;
+                settings.message = `Are you sure you wish to delete ${this.model.name} '${fields.name || fields.title || ''}'?`;
                 settings.icon = 'delete';
                 break;
             case 'update':
                 settings.title = `Update ${this.model.name}`;
-                settings.message = `Update ${this.model.name} '${fields.name ? fields.name : ''}'?`;
+                settings.message = `Update ${this.model.name} '${fields.name || fields.title || ''}'?`;
                 settings.icon = 'cloud_upload';
                 break;
             case 'add':
                 settings.title = `New ${this.model.name}`;
-                settings.message = `Create new ${this.model.name} '${fields.name ? fields.name : ''}'?`;
+                settings.message = `Create new ${this.model.name} '${fields.name || fields.title || ''}'?`;
                 settings.icon = 'add';
                 break;
         }
         return settings;
+    }
+
+    protected removeListItem(id: string) {
+        // Get current list
+        const item_list = this.list();
+        // Remove matching item from the list
+        for (const item of item_list) {
+            if (item.id === id) {
+                item_list.splice(item_list.indexOf(item), 1);
+                break;
+            }
+        }
+        this.set('list', item_list);
+        // Remove matching item from map
+        const map = this.get('map');
+        if (map[id]) { delete map[id]; }
+        this.set('map', map);
     }
 
     public timeout(name: string, fn: () => void, delay: number = 300) {
