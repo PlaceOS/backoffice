@@ -23,33 +23,7 @@
         </div>
     </section>
     <header *ngIf="model.modules && model.modules.length > 0">Execute command</header>
-    <section class="execute" *ngIf="model.modules && model.modules.length > 0">
-        <div class="row">
-            <dropdown [list]="model.modules" [model]="-1" (modelChange)="loadFunctions(model.modules[$event])"
-                placeholder="Select a device"></dropdown>
-        </div>
-        <div class="row">
-            <dropdown *ngIf="model.fn_list" [list]="model.fn_names" [(model)]="model.exec_index" (modelChange)="selectFunction(model.fn_list[model.fn_names[$event]], model.fn_names[$event])"
-                placeholder="Select a function"></dropdown>
-            <div class="fn-input" *ngIf="model.fn">
-                <div class="bracket">(</div>
-                <div class="arg" *ngFor="let arg of model.fn.args; let i = index">
-                    <span class="seperator" [class.solid]="arg[0] === 'req' || model.fields[arg[1]]">{{(i > 0 ?
-                        ',&nbsp;' : '')}}</span>
-                    <input #argument [(ngModel)]="model.fields[arg[1]]" (ngModelChange)="checkFields()" [class.error]="model.error && model.error[arg[1]]"
-                        [style.width]="(.6 * (model.fields[arg[1]] || (arg[0] === 'opt' ? '[' + arg[1] + ']' : arg[1])).length + .3) + 'em'"
-                        [placeholder]="arg[0] === 'opt' ? '[' + arg[1] + ']' : arg[1]"
-                        (keyup.enter)="nextField($event)" (keydown.,)="nextField($event)"  (keyup.arrowright)="nextField($event)"
-                        (keyup.backspace)="previousField($event)" (keyup.arrowleft)="previousField($event)"
-                        (focus)="focused(i)">
-                </div>
-                <div class="bracket">)</div>
-            </div>
-            <div class="send" *ngIf="model.fn">
-                <btn [disabled]="!model.fields_valid" (tapped)="execute()">Send</btn>
-            </div>
-        </div>
-    </section>
+    <system-exec [system_id]="item?.id"></system-exec>
     <header>Settings</header>
     <section>
         <settings-display [model]="item?.settings || {}"></settings-display>

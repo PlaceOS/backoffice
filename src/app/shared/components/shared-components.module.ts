@@ -15,6 +15,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { SettingsDisplayComponent } from './settings-display/settings-display.component';
 import { ItemDisplayComponent } from './item-display/item-display.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
+import { SystemExecComponent } from './system-exec/system-exec.component';
 
 const COMPONENTS: any[] = [
     ...LOGIN_COMPONENTS,
@@ -24,7 +25,8 @@ const COMPONENTS: any[] = [
     SidebarComponent,
     SettingsDisplayComponent,
     ItemDisplayComponent,
-    ContextMenuComponent
+    ContextMenuComponent,
+    SystemExecComponent
 ];
 
 @NgModule({
