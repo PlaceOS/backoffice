@@ -7,6 +7,7 @@ import { ComposerModule } from '@acaprojects/ngx-composer';
 import { WidgetsModule } from '@acaprojects/ngx-widgets';
 
 import { BaseComponent } from './base.component';
+import { BaseRootComponent } from './base-root.component';
 import { LOGIN_COMPONENTS } from './login';
 
 import { ItemListComponent } from './item-list/item-list.component';
@@ -18,6 +19,7 @@ import { ContextMenuComponent } from './context-menu/context-menu.component';
 const COMPONENTS: any[] = [
     ...LOGIN_COMPONENTS,
     BaseComponent,
+    BaseRootComponent,
     ItemListComponent,
     SidebarComponent,
     SettingsDisplayComponent,

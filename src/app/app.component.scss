@@ -210,8 +210,8 @@ span.id {
         margin: .25em .5em;
         font-size: .9em;
         background-color: #fff;
-        border: 2px solid $color-secondary;
-        color: $color-secondary;
+        border: 2px solid $color-ternary;
+        color: $color-ternary;
         border-radius: 4px;
         text-transform: uppercase;
         &.mini-action {
@@ -226,7 +226,7 @@ span.id {
         }
         &:hover {
             background-color: darken(#fff, 10);
-            color: $color-secondary;
+            color: $color-ternary;
         }
         &[disabled] {
             pointer-events: none;
@@ -239,11 +239,11 @@ span.id {
 
     &.inverse {
         button {
-            background-color: $color-secondary;
+            background-color: $color-ternary;
             color: #fff;
-            border-color: $color-secondary;
+            border-color: $color-ternary;
             &:hover {
-                background-color: lighten($color-secondary, 10);
+                background-color: lighten($color-ternary, 10);
                 color: #fff;
             }
         }
