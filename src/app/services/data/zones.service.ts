@@ -4,7 +4,7 @@ import { CommsService } from '@acaprojects/ngx-composer';
 import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
-import { Utils } from '../../shared/utility.class';
+import { ZoneModalComponent } from '../../overlays/zone-modal/zone-modal.component';
 
 export interface IEngineZone {
     id: string;
@@ -29,6 +29,10 @@ export class ZonesService extends BaseService {
         this.model.route = '/zones';
         this.subjects.list = new BehaviorSubject<IEngineZone[]>([]);
         this.observers.list = this.subjects.list.asObservable();
+    }
+
+    public load() {
+        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: ZoneModalComponent });
     }
 
     protected processItem(raw_item: any) {
