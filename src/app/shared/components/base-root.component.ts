@@ -5,7 +5,7 @@ import { Utils } from '../utility.class';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-    selector: 'base-root-component',
+    selector: 'app-base-root-component',
     template: '',
     styles: []
 })

@@ -477,12 +477,19 @@ span.id {
 
 .notification[widget] {
     .msg {
-        font-size: .8em;
+        font-size: .9em;
+    }
+    .item {
+        flex: 1;
     }
     .details > div {
         display: flex;
         align-items: center;
-        font-size: .8em;
+        font-size: .9em;
+    }
+
+    .details {
+        flex: 1;
     }
 }
 

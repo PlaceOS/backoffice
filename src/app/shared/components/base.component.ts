@@ -43,7 +43,10 @@ export class BaseComponent implements OnDestroy {
     public timeout(name: string, fn: () => void, delay: number = 300) {
         this.clearTimer(name);
         if (!(fn instanceof Function)) { return; }
-        this.subs.timers[name] = setTimeout(() => fn(), delay);
+        this.subs.timers[name] = setTimeout(() => {
+            fn();
+            this.subs.timers[name] = null;
+        }, delay);
     }
 
     public clearTimer(name: string) {
