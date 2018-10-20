@@ -762,19 +762,21 @@ div.time-picker[widget] {
 
 .display-icon {
     flex-grow: 0 !important;
-    height: 1.0em;
-    width: 1.0em;
+    height: 1em;
+    width: 1em;
+    min-width: 1em;
     margin: .2em .2em .2em .1em;
     font-size: 2em;
     font-family: 'Material Icons';
 
     &.info:before { content: 'info' }
     &.error:before { content: 'error' }
-    &.success { content: 'done' }
-    &.success-tick { content: 'done' }
-    &.error-cross { content: 'close' }
-    &.close-cross { content: 'close' }
-    &.edit { content: 'edit' }
+    &.warning:before { content: 'warning' }
+    &.success:before { content: 'done' }
+    &.success-tick:before { content: 'done' }
+    &.error-cross:before { content: 'close' }
+    &.close-cross:before { content: 'close' }
+    &.edit:before { content: 'edit' }
 }
 
 .no-item {

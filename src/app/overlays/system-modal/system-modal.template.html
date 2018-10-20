@@ -1,4 +1,4 @@
-<div class="container" [class.loader]="model.loading">
+<div class="container" [class.loader]="model.loading" [class.edit]="model.item">
     <div class="header">
         <div class="text">{{model.item ? 'Edit' : 'New'}} System</div>
         <div class="close" (touchrelease)="fn.close()">

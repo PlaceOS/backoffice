@@ -10,6 +10,11 @@
     .no-item {
         display: none;
     }
+    &.edit {
+        .new-only {
+            display: none;
+        }
+    }
 
     &.loader {
 

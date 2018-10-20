@@ -30,7 +30,8 @@ export class SystemModalComponent extends OverlayContentComponent implements OnI
                 capacity: this.model.item.capacity,
                 description: this.model.item.description,
                 settings: JSON.parse(JSON.stringify(this.model.item.settings || {})),
-                edge_id: this.model.item.edge_id
+                edge_id: this.model.item.edge_id,
+                zones: this.model.item.zones
             };
         } else {
             this.loadZones();
@@ -53,24 +54,50 @@ export class SystemModalComponent extends OverlayContentComponent implements OnI
         if (form.installed_ui_devices && !Utils.validate('integer', form.installed_ui_devices)) {
             this.model.errors.installed_ui_devices = 'Number of touch panels must be a valid integer';
         }
-        console.log('Errors:', this.model.errors);
         this.model.has_errors = Object.keys(this.model.errors).length > 0;
     }
 
     public new() {
-        this.model.loading = true;
-        this.service.Systems.add(this.model.form).then((item) => {
-            this.service.success('Successfully added new system');
-            this.model.id = item.id;
-            this.event('Success');
-        }, () => {
-            this.service.error('Failed to add new system');
-            this.model.loading = false;
-        });
+        if (this.model.loading) { return; }
+        setTimeout(() => {
+            this.model.loading = true;
+            this.service.Systems.add(this.model.form).then((item) => {
+                this.service.success('Successfully added new system');
+                this.model.id = item.id;
+                this.event('Success');
+            }, () => {
+                this.service.error('Failed to add new system');
+                this.model.loading = false;
+            });
+        }, 300);
     }
 
     public edit() {
+        if (!this.model.item || this.model.loading) { return; }
+        setTimeout(() => {
+            const form = {};
+            for (const k in this.model.form) {
+                if (k === 'settings' && JSON.stringify(this.model.form[k] || {}) !== JSON.stringify(this.model.item[k] || {})) {
+                    form[k] = this.model.form[k];
+                } else if (this.model.form.hasOwnProperty(k) && this.model.form[k] !== this.model.item[k]) {
+                    form[k] = this.model.form[k];
+                }
+            }
+            if (Object.keys(form).length <= 0) {
+                this.service.warning('No changes have been made');
+            } else {
+                this.model.loading = true;
+                this.service.Systems.update(this.model.item.id, form).then((item) => {
+                    this.service.success(`Successfully updated system "${this.model.item.id}"`);
+                    this.model.id = item.id;
+                    this.event('Success');
+                }, () => {
+                    this.service.error(`Failed to update system "${this.model.item.id}"`);
+                    this.model.loading = false;
+                });
+            }
 
+        }, 300);
     }
 
     public load(query: string = '', type: string = 'Zones') {
@@ -95,5 +122,4 @@ export class SystemModalComponent extends OverlayContentComponent implements OnI
     public loadNodes(query: string = '') {
         this.load(query, 'Nodes');
     }
-
 }

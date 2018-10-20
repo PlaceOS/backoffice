@@ -213,10 +213,8 @@ export class BaseService {
             this.parent.confirm(this.confirmSettings('update', data), (event) => {
                 if (event.type === 'Accept') {
                     this.updateItem(id, data).then((d) => resolve(d), (e) => reject(e));
-                } else {
-                    event.close();
-                    reject('User cancelled');
-                }
+                } else { reject('User cancelled'); }
+                event.close();
             });
         });
     }
@@ -347,8 +345,6 @@ export class BaseService {
                 item_list.push(input);
             }
         }
-        // Sort list
-        item_list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
         // Store changes to the list
         this.updateHashMap(item_list);
         this.set('list', item_list);
@@ -370,7 +366,6 @@ export class BaseService {
                 if (out) { output_list.push(out); }
             }
         }
-        output_list.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
         return output_list;
     }
 
@@ -411,7 +406,6 @@ export class BaseService {
      * @param fields
      */
     protected confirmSettings(key: string, fields: any = {}) {
-        console.log('Fields:', fields);
         const settings: any = {
             title: '',
             message: '',

@@ -39,7 +39,7 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
             this.timeout('change', () => {
                 if (!this.model) { this.model = {}; }
                 if (this.input && this.text_string === '{}') {
-                    JSON.stringify(this.model || '{}', null, 4);
+                    this.text_string = JSON.stringify(this.model || '{}', null, 4);
                 }
                 this.updateSettings();
             }, 100);
@@ -111,14 +111,12 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
             this.valid.emit(false);
         }
         this.inputToSettings();
-        console.log('Lint results:', this.error_list);
     }
 
     public inputToSettings() {
         this.length = 0;
         this.settings = [];
         const lines = (this.text_string || '{}').split('\n');
-        console.log('Lines:', lines);
         for (const line of lines) {
             const line_data: any = {
                 index: lines.indexOf(line),
@@ -128,9 +126,8 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
             };
             if (this.error_list) {
                 for (const error of (this.error_list.errors || [])) {
-                    console.log('Line:', line_data.index, error.lineNumber);
                     if (line_data.index + 1 === error.lineNumber) {
-                        line_data.error = error.description;
+                        line_data.error = error.description || error.message;
                         break;
                     }
                 }
@@ -142,12 +139,10 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
 
     public getPosition(position: number): { line: number, column: number } {
         const lines = (this.text_string || '').split('\n');
-        console.log('Position:', lines, position);
         let remainder = position;
         for (const line of lines) {
             if (line.length + 1 < remainder) {
                 remainder -= line.length + 1;
-                console.log('Remainder:', remainder);
             } else {
                 return { line: lines.indexOf(line) + 1, column: remainder };
             }

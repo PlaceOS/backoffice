@@ -353,6 +353,21 @@ export class AppService {
     }
 
     /**
+     * Create a new success notification
+     * @param msg Message to display
+     * @param action User action to display
+     * @param event Callback for user action
+     */
+    public warning(msg: string, action?: string, event?: () => void) {
+        const message = msg ? msg : `Warning`;
+        this.overlay.notify('success', {
+            html: `<div class="display-icon warning" style="font-size:2.0em"></div><div class="msg">${message}</div>`,
+            name: 'ntfy warning',
+            action
+        }, event);
+    }
+
+    /**
      * Create a new informational notification
      * @param msg Message to display
      * @param action User action to display

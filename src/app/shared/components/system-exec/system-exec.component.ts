@@ -32,7 +32,6 @@ export class SystemExecComponent extends BaseComponent implements OnInit, OnChan
 
     public loadModules(offset: number = 0) {
         if (this.system_id) {
-            console.log('Load modules', this.system_id);
             this.service.Modules.query({ sys_id: this.system_id, offset }).then((list) => {
                 this.model.devices = list;
                 if (!offset) { this.model.modules = []; }
@@ -43,7 +42,6 @@ export class SystemExecComponent extends BaseComponent implements OnInit, OnChan
                         index: mod.role + 1
                     });
                 }
-                console.log('Modules:', this.model.modules);
             }, () => null);
         }
     }
