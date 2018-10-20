@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
 import { Utils } from '../../shared/utility.class';
+import { SystemModalComponent } from '../../overlays/system-modal/system-modal.component';
 
 import * as moment from 'moment';
 
@@ -39,6 +40,10 @@ export class EngineSystemsService extends BaseService {
         this.observers.list = this.subjects.list.asObservable();
     }
 
+    public load() {
+        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: SystemModalComponent });
+    }
+
     /**
      * Get function listing for system with the given query params
      * @param id ID of the system
@@ -64,6 +69,7 @@ export class EngineSystemsService extends BaseService {
         }
         return this.promises[key];
     }
+
     /**
      * Execute method of the given module of the system
      * @param id System ID

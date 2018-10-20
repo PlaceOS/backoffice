@@ -19,7 +19,6 @@ export class SystemsComponent extends BaseRootComponent {
         this.model.type = 'system';
         this.model.service = 'Systems';
         this.model.route = 'systems';
-        this.service.Overlay.setupModal('system-view', { cmp: SystemModalComponent });
     }
 
     protected loadValues() {
@@ -32,24 +31,5 @@ export class SystemsComponent extends BaseRootComponent {
         this.model.devices = (this.model.item.modules || []).length;
             // Get zone count
         this.model.zones = (this.model.item.zones || []).length;
-    }
-
-    protected new() {
-        this.service.Overlay.openModal('system-view', { data: {} }, (e) => {
-            if (e.type === 'Success') {
-                this.sidebarEvent({ type: 'select', item: { id: e.data.id } });
-            }
-            e.close();
-        });
-    }
-
-    protected edit() {
-        if (!this.model.item) { return; }
-        this.service.Overlay.openModal('system-view', { data: { item: this.model.item } }, (e) => {
-            if (e.type === 'Success') {
-                this.sidebarEvent({ type: 'select', item: { id: e.data.id } });
-            }
-            e.close();
-        });
     }
 }

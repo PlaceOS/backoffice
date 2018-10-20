@@ -24,6 +24,7 @@ export class BaseService {
 
     constructor() {
         this.set('map', {});
+        this.init();
     }
 
     public init() {
@@ -194,11 +195,37 @@ export class BaseService {
     }
 
     /**
-     * Alias for add method
+     * Open modal for new item
      * @param data
      */
-    public new(data: any) {
-        return this.add(data);
+    public new() {
+        return new Promise((resolve, reject) => {
+            this.parent.Overlay.openModal(`${this.model.name}-view`, { data: {} }, (e) => {
+                if (e.type === 'Success') {
+                    return resolve();
+                }
+                reject();
+                e.close();
+            });
+        });
+    }
+
+    /**
+     * Open modal for edit item
+     * @param data
+     */
+    public edit(id: string) {
+        return new Promise((resolve, reject) => {
+            const item = this.item(id);
+            if (!item) { return; }
+            this.parent.Overlay.openModal(`${this.model.name}-view`, { data: { item } }, (e) => {
+                if (e.type === 'Success') {
+                    return resolve(e.data.id);
+                }
+                reject();
+                e.close();
+            });
+        });
     }
 
     /**
