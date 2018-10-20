@@ -316,6 +316,40 @@ export class Utils {
         }
     }
 
+    public static validate(type: string, value: any) {
+        switch (type) {
+            case 'email':
+            case 'Email':
+            case 'e-mail':
+            case 'E-mail':
+                return this.validateEmail(value);
+            case 'Number':
+            case 'number':
+                try {
+                    JSON.parse(`[${value}]`);
+                    return /^[0-9.-]*$/g.test(`${value}`);
+                } catch (e) {
+                    return false;
+                }
+            case 'integer':
+            case 'Integer':
+            case 'int':
+            case 'Int':
+                try {
+                    JSON.parse(`[${value}]`);
+                    return /^[0-9-]*$/g.test(`${value}`);
+                } catch (e) {
+                    return false;
+                }
+            case 'url':
+            case 'URL':
+                return /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/g.test(`${value}`);
+            case 'ip':
+            case 'ipv4':
+            case 'IP':
+                return /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/g.test(`${value}`);
+        }
+    }
 
     constructor() {
         throw new Error('This is a static class');
