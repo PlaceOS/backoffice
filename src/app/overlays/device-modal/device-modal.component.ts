@@ -4,11 +4,11 @@ import { OverlayContentComponent } from '@acaprojects/ngx-widgets';
 import { Utils } from '../../shared/utility.class';
 
 @Component({
-    selector: 'system-modal',
-    templateUrl: './system-modal.template.html',
-    styleUrls: ['./system-modal.styles.scss']
+    selector: 'device-modal',
+    templateUrl: './device-modal.template.html',
+    styleUrls: ['./device-modal.styles.scss']
 })
-export class SystemModalComponent extends OverlayContentComponent implements OnInit {
+export class DeviceModalComponent extends OverlayContentComponent implements OnInit {
 
     private timers: any = {};
 
@@ -23,36 +23,35 @@ export class SystemModalComponent extends OverlayContentComponent implements OnI
         if (this.model.item) {
             this.model.form = {
                 name: this.model.item.name,
-                email: this.model.item.email,
-                support_url: this.model.item.support_url,
-                installed_ui_devices: this.model.item.installed_ui_devices,
-                bookable: this.model.item.bookable,
-                capacity: this.model.item.capacity,
-                description: this.model.item.description,
-                settings: JSON.parse(JSON.stringify(this.model.item.settings || {})),
+                dependency_id: this.model.item.dependency_id,
+                control_system_id: this.model.item.system_id,
                 edge_id: this.model.item.edge_id,
-                zones: this.model.item.zones
+                custom_name: this.model.item.custom_name,
+                notes: this.model.item.notes,
+                ip: this.model.item.ip,
+                port: this.model.item.port,
+                settings: JSON.parse(JSON.stringify(this.model.item.settings || {})),
+                tls: this.model.item.tls,
+                udp: this.model.item.udp,
+                uri: this.model.item.uri,
+                makebreak: this.model.item.makebreak,
+                ignore_connected: this.model.ignore_connected
             };
         } else {
-            this.loadZones();
+            this.loadDrivers();
             this.loadNodes();
+            this.loadSystems();
         }
     }
 
     public validate() {
         this.model.errors = {};
         const form = this.model.form || {};
-        if (form.email && !Utils.validate('email', form.email)) {
-            this.model.errors.email = 'System\'s email must be a valid email address';
+        if (form.ip && !Utils.validate('ip', form.ip)) {
+            this.model.errors.ip = 'Device\'s IP must be a valid IP address';
         }
-        if (form.support_url && !Utils.validate('url', form.support_url)) {
-            this.model.errors.support_url = 'Support URL must contain a valid URL';
-        }
-        if (form.capacity && !Utils.validate('integer', form.capacity)) {
-            this.model.errors.capacity = 'Capacity must be a valid integer';
-        }
-        if (form.installed_ui_devices && !Utils.validate('integer', form.installed_ui_devices)) {
-            this.model.errors.installed_ui_devices = 'Number of touch panels must be a valid integer';
+        if (form.port && (!Utils.validate('number', form.port) || !(+form.port >= 1 && +form.port <= 65535))) {
+            this.model.errors.port = 'Device\'s port must be a valid number from 1 - 65535';
         }
         this.model.has_errors = Object.keys(this.model.errors).length > 0;
     }
@@ -61,12 +60,12 @@ export class SystemModalComponent extends OverlayContentComponent implements OnI
         if (this.model.loading) { return; }
         setTimeout(() => {
             this.model.loading = true;
-            this.service.Systems.add(this.model.form).then((item) => {
-                this.service.success('Successfully added new system');
+            this.service.Modules.add(this.model.form).then((item) => {
+                this.service.success('Successfully added new device');
                 this.model.id = item.id;
                 this.event('Success');
             }, () => {
-                this.service.error('Failed to add new system');
+                this.service.error('Failed to add new device');
                 this.model.loading = false;
             });
         }, 300);
@@ -87,12 +86,12 @@ export class SystemModalComponent extends OverlayContentComponent implements OnI
                 this.service.warning('No changes have been made');
             } else {
                 this.model.loading = true;
-                this.service.Systems.update(this.model.item.id, form).then((item) => {
-                    this.service.success(`Successfully updated system "${this.model.item.id}"`);
+                this.service.Modules.update(this.model.item.id, form).then((item) => {
+                    this.service.success(`Successfully updated device "${this.model.item.id}"`);
                     this.model.id = item.id;
                     this.event('Success');
                 }, () => {
-                    this.service.error(`Failed to update system "${this.model.item.id}"`);
+                    this.service.error(`Failed to update device "${this.model.item.id}"`);
                     this.model.loading = false;
                 });
             }
@@ -115,8 +114,12 @@ export class SystemModalComponent extends OverlayContentComponent implements OnI
         }, () => this.model[`loading_${type}`] = false);
     }
 
-    public loadZones(query: string = '') {
-        this.load(query, 'Zones');
+    public loadSystems(query: string = '') {
+        this.load(query, 'Systems');
+    }
+
+    public loadDrivers(query: string = '') {
+        this.load(query, 'Drivers');
     }
 
     public loadNodes(query: string = '') {

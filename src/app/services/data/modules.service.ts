@@ -7,6 +7,8 @@ import { BaseService } from './base.service';
 import { IEngineDriver } from './drivers.service';
 import { IEngineSystem } from './systems.service';
 
+import { DeviceModalComponent } from '../../overlays/device-modal/device-modal.component';
+
 export interface IEngineModule {
     id: string;
     dependency_id: string;
@@ -44,6 +46,10 @@ export class ModulesService extends BaseService {
         this.model.route = '/modules';
         this.subjects.list = new BehaviorSubject<IEngineModule[]>([]);
         this.observers.list = this.subjects.list.asObservable();
+    }
+
+    public load() {
+        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: DeviceModalComponent });
     }
 
     /**

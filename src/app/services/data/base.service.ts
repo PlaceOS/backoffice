@@ -204,8 +204,8 @@ export class BaseService {
                 if (e.type === 'Success') {
                     return resolve();
                 }
-                reject();
                 e.close();
+                reject();
             });
         });
     }
@@ -222,8 +222,8 @@ export class BaseService {
                 if (e.type === 'Success') {
                     return resolve(e.data.id);
                 }
-                reject();
                 e.close();
+                reject();
             });
         });
     }
@@ -236,7 +236,6 @@ export class BaseService {
     public update(id: string, data: any, link?: any) {
         return new Promise((resolve, reject) => {
             if (!id) { return reject('Invalid ID given'); }
-            data.link = link;
             this.parent.confirm(this.confirmSettings('update', data), (event) => {
                 if (event.type === 'Accept') {
                     this.updateItem(id, data).then((d) => resolve(d), (e) => reject(e));
@@ -277,7 +276,6 @@ export class BaseService {
         return new Promise((resolve, reject) => {
             if (!id) { return reject('Invalid ID given'); }
             const item = this.item(id) || { id, name: id };
-            item.link = link;
             this.parent.confirm(this.confirmSettings('delete', item), (event) => {
                 if (event.type === 'Accept') {
                     this.deleteItem(id).then((d) => resolve(d), (e) => reject(e));
