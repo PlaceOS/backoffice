@@ -3,9 +3,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 
-import * as moment from 'moment';
 import { Utils } from '../../shared/utility.class';
 import { BaseService } from './base.service';
+import { UserModalComponent } from '../../overlays/user-modal/user-modal.component';
+
+import * as moment from 'moment';
 
 export interface IUser {
     id: string;
@@ -54,6 +56,7 @@ export class UsersService extends BaseService {
                 this.timeout('load', () => this.load(tries), 300 * ++tries);
             }
         }, () => this.timeout('load', () => this.load(tries), 300 * ++tries));
+        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: UserModalComponent });
     }
 
     /**

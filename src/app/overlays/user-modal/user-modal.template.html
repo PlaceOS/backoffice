@@ -1,0 +1,72 @@
+<div class="container" [class.loader]="model.loading" [class.edit]="model.item">
+    <div class="header">
+        <div class="text">{{model.item ? 'Edit' : 'New'}} Zone</div>
+        <div class="close" (touchrelease)="fn.close()">
+            <i class="material-icons">close</i>
+        </div>
+    </div>
+    <div class="body">
+        <div class="form">
+            <div class="field">
+                <div class="label">Name<span class="orange">*</span>:</div>
+                <div class="value" [class.error]="model.errors?.name">
+                    <input [(ngModel)]="model.form.name" placeholder="Zone name">
+                </div>
+            </div>
+            <div class="error" *ngIf="model.errors?.name">{{model.errors?.name}}</div>
+            <div class="field">
+                <div class="label">Email:</div>
+                <div class="value" [class.error]="model.errors?.email">
+                    <input [(ngModel)]="model.form.email" placeholder="Email address">
+                </div>
+            </div>
+            <div class="error" *ngIf="model.errors?.email">{{model.errors?.email}}</div>
+            <div class="field">
+                <div class="label">Card Number:</div>
+                <div class="value" [class.error]="model.errors?.card_number">
+                    <input [(ngModel)]="model.form.card_number" placeholder="Card Number">
+                </div>
+            </div>
+            <div class="error" *ngIf="model.errors?.card_number">{{model.errors?.card_number}}</div>
+            <div class="field">
+                <div class="label"></div>
+                <div class="value">
+                    <checkbox [(model)]="model.form.support" label="Support"></checkbox>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label"></div>
+                <div class="value">
+                    <checkbox [(model)]="model.form.sys_admin" label="System Administrator"></checkbox>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">Password:</div>
+                <div class="value" [class.error]="model.errors?.password">
+                    <input [(ngModel)]="model.form.password" type="password" placeholder="Password">
+                </div>
+            </div>
+            <div class="error" *ngIf="model.errors?.password">{{model.errors?.password}}</div>
+            <div class="field">
+                <div class="label">Confirm Password:</div>
+                <div class="value" [class.error]="model.errors?.password_confirm">
+                    <input [(ngModel)]="model.form.password_confirm" placeholder="Confirm password">
+                </div>
+            </div>
+            <div class="error" *ngIf="model.errors?.password_confirm">{{model.errors?.password_confirm}}</div>
+        </div>
+        <div class="footer">
+            <btn (tapped)="event('Cancel')">Cancel</btn>
+            <btn name="inverse" [disabled]="model.has_errors || model.settings_valid === false || !model.form.name"
+                (tapped)="model.item ? edit() : new()">
+                Ok
+            </btn>
+        </div>
+    </div>
+    <div class="no-item">
+        <div class="icon">
+            <spinner type="circle-ring" color="rgba(0,0,0, .54)"></spinner>
+        </div>
+        <div class="text">Processing request...</div>
+    </div>
+</div>
