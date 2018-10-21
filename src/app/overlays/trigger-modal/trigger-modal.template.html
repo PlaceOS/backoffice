@@ -1,6 +1,6 @@
 <div class="container" [class.loader]="model.loading" [class.edit]="model.item">
     <div class="header">
-        <div class="text">{{model.item ? 'Edit' : 'New'}} Zone</div>
+        <div class="text">{{model.item ? 'Edit' : 'New'}} Trigger</div>
         <div class="close" (touchrelease)="fn.close()">
             <i class="material-icons">close</i>
         </div>
@@ -10,26 +10,14 @@
             <div class="field">
                 <div class="label">Name<span class="orange">*</span>:</div>
                 <div class="value" [class.error]="model.errors?.name">
-                    <input [(ngModel)]="model.form.name" placeholder="Zone name">
+                    <input [(ngModel)]="model.form.name" placeholder="Trigger name">
                 </div>
             </div>
             <div class="error" *ngIf="model.errors?.name">{{model.errors?.name}}</div>
             <div class="field">
-                <div class="label">Tags:</div>
-                <div class="value" [class.error]="model.errors?.tags">
-                    <input [(ngModel)]="model.form.tags" (ngModelChange)="validate()" placeholder="Tags">
-                </div>
-            </div>
-            <div class="field">
                 <div class="label">Description:</div>
                 <div class="value full">
                     <textarea [(ngModel)]="model.form.description" placeholder="Description of the system"></textarea>
-                </div>
-            </div>
-            <div class="field">
-                <div class="label">Settings:</div>
-                <div class="value full">
-                    <settings-display [(model)]="model.form.settings" (valid)="model.settings_valid = $event" [input]="true"></settings-display>
                 </div>
             </div>
         </div>

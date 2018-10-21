@@ -13,13 +13,15 @@ import { ViewModuleStateModalComponent } from './view-module-state/view-module-s
 import { SystemModalComponent } from './system-modal/system-modal.component';
 import { DeviceModalComponent } from './device-modal/device-modal.component';
 import { ZoneModalComponent } from './zone-modal/zone-modal.component';
+import { TriggerModalComponent } from './trigger-modal/trigger-modal.component';
 
 const OVERLAYS: any[] = [
     ConfirmModalComponent,
     ViewModuleStateModalComponent,
     SystemModalComponent,
     DeviceModalComponent,
-    ZoneModalComponent
+    ZoneModalComponent,
+    TriggerModalComponent
 ];
 
 @NgModule({

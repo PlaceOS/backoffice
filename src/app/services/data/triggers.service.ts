@@ -4,6 +4,7 @@ import { CommsService } from '@acaprojects/ngx-composer';
 import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
+import { TriggerModalComponent } from '../../overlays/trigger-modal/trigger-modal.component';
 
 export interface IEngineTrigger {
     id: string;
@@ -27,6 +28,10 @@ export class TriggersService extends BaseService {
         this.model.route = '/triggers';
         this.subjects.list = new BehaviorSubject<IEngineTrigger[]>([]);
         this.observers.list = this.subjects.list.asObservable();
+    }
+
+    public load() {
+        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: TriggerModalComponent });
     }
 
     protected processItem(raw_item: any) {
