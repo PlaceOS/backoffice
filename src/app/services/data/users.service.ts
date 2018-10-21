@@ -79,7 +79,7 @@ export class UsersService extends BaseService {
     }
 
     public getFilteredUsers(filter: string, items: IUser[] = this.list(), fields: string[] = ['name', 'email']) {
-        return this.filter(filter, items, fields);
+        return this.filter(filter, fields, items);
     }
 
     /**
@@ -117,35 +117,6 @@ export class UsersService extends BaseService {
 
     public logout() {
         this.http.logout();
-    }
-
-    /**
-     * Open modal to view user details
-     * @param item User to view
-     */
-    public view(item: IUser) {
-        if (this.parent) {
-            this.parent.Overlay.openModal('user-details', { data: { user: item } })
-                .then((inst: any) => inst.subscribe((event) => {
-                    if (event.type === 'close') { event.close(); }
-                }));
-        }
-    }
-
-    /**
-     * Open modal to create new user
-     * @param next Callback for events on the modal
-     */
-    public new(next?: (event: any) => void) {
-        if (this.parent) {
-            this.parent.Overlay.openModal('user-details', { data: {} })
-                .then((inst: any) => inst.subscribe((event) => {
-                    if (event.type === 'close') { event.close(); }
-                    if (next && next instanceof Function) {
-                        next(event);
-                    }
-                }));
-        }
     }
 
     /**

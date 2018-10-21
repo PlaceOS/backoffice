@@ -1,6 +1,6 @@
 <div class="container" [class.loader]="model.loading" [class.edit]="model.item">
     <div class="header">
-        <div class="text">{{model.item ? 'Edit' : 'New'}} Zone</div>
+        <div class="text">{{model.item ? 'Edit' : 'New'}} User</div>
         <div class="close" (touchrelease)="fn.close()">
             <i class="material-icons">close</i>
         </div>
@@ -10,21 +10,21 @@
             <div class="field">
                 <div class="label">Name<span class="orange">*</span>:</div>
                 <div class="value" [class.error]="model.errors?.name">
-                    <input [(ngModel)]="model.form.name" placeholder="Zone name">
+                    <input [(ngModel)]="model.form.name" placeholder="Name">
                 </div>
             </div>
             <div class="error" *ngIf="model.errors?.name">{{model.errors?.name}}</div>
             <div class="field">
                 <div class="label">Email:</div>
                 <div class="value" [class.error]="model.errors?.email">
-                    <input [(ngModel)]="model.form.email" placeholder="Email address">
+                    <input [(ngModel)]="model.form.email" (ngModelChange)="validate()" placeholder="Email address">
                 </div>
             </div>
             <div class="error" *ngIf="model.errors?.email">{{model.errors?.email}}</div>
             <div class="field">
                 <div class="label">Card Number:</div>
                 <div class="value" [class.error]="model.errors?.card_number">
-                    <input [(ngModel)]="model.form.card_number" placeholder="Card Number">
+                    <input [(ngModel)]="model.form.card_number" (ngModelChange)="validate()" placeholder="Card Number">
                 </div>
             </div>
             <div class="error" *ngIf="model.errors?.card_number">{{model.errors?.card_number}}</div>
@@ -43,14 +43,14 @@
             <div class="field">
                 <div class="label">Password:</div>
                 <div class="value" [class.error]="model.errors?.password">
-                    <input [(ngModel)]="model.form.password" type="password" placeholder="Password">
+                    <input [(ngModel)]="model.form.password" type="password" (ngModelChange)="validate()" placeholder="Password">
                 </div>
             </div>
             <div class="error" *ngIf="model.errors?.password">{{model.errors?.password}}</div>
             <div class="field">
                 <div class="label">Confirm Password:</div>
                 <div class="value" [class.error]="model.errors?.password_confirm">
-                    <input [(ngModel)]="model.form.password_confirm" placeholder="Confirm password">
+                    <input [(ngModel)]="model.form.password_confirm" type="password" (ngModelChange)="validate()" placeholder="Confirm password">
                 </div>
             </div>
             <div class="error" *ngIf="model.errors?.password_confirm">{{model.errors?.password_confirm}}</div>
