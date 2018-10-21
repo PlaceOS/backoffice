@@ -15,6 +15,7 @@ import { DeviceModalComponent } from './device-modal/device-modal.component';
 import { ZoneModalComponent } from './zone-modal/zone-modal.component';
 import { TriggerModalComponent } from './trigger-modal/trigger-modal.component';
 import { UserModalComponent } from './user-modal/user-modal.component';
+import { DomainModalComponent } from './domain-modal/domain-modal.component';
 
 const OVERLAYS: any[] = [
     ConfirmModalComponent,
@@ -23,7 +24,8 @@ const OVERLAYS: any[] = [
     DeviceModalComponent,
     ZoneModalComponent,
     TriggerModalComponent,
-    UserModalComponent
+    UserModalComponent,
+    DomainModalComponent
 ];
 
 @NgModule({

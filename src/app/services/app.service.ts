@@ -77,7 +77,7 @@ export class AppService {
             // Set parent service on child services
         this.analytics.parent = this.comments.parent = this.users.parent = this.logs.parent = this;
         this.drivers.parent = this.modules.parent = this.zones.parent = this.system_triggers.parent = this;
-        this.systems.parent = this.triggers.parent = this;
+        this.systems.parent = this.triggers.parent = this.domains.parent = this;
             // Create subjects
         this.subjects.system = new BehaviorSubject('');
         this.observers.system = this.subjects.system.asObservable();

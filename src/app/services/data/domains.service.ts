@@ -4,6 +4,7 @@ import { CommsService } from '@acaprojects/ngx-composer';
 import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
+import { DomainModalComponent } from '../../overlays/domain-modal/domain-modal.component';
 
 export interface IEngineDomain {
     id: string;
@@ -33,6 +34,10 @@ export class DomainsService extends BaseService {
 
     get endpoint() {
         return `/auth/api${this.model.route}`;
+    }
+
+    public load() {
+        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: DomainModalComponent });
     }
 
     protected processItem(raw_item: any) {
