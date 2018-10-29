@@ -191,7 +191,7 @@ export class Utils {
                 try {
                     part = JSON.stringify(parts[i]);
                 } catch (e) {
-                    part = parts[i]
+                    part = parts[i];
                 }
                 if (part !== undefined) { item[fields[i]] = part; }
             }

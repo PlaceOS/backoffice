@@ -139,14 +139,14 @@ gulp.task('update:version', (next) => {
     const v = npmconfig.version;
     const b = moment().seconds(0).milliseconds(0).valueOf();
     return gulp.src(['./src/app/services/settings.service.ts']) // Any file globs are supported
-        .pipe(replace(/this.log\('SYSTEM', 'Version: [0-9a-zA-Z.-]*'\);/g, `this.log('SYSTEM', 'Version: ${v}');`, { logs: { enabled: true } }))
+        .pipe(replace(/this.log\('SYSTEM', 'Version: [0-9a-zA-Z.-]*'/g, `this.log('SYSTEM', 'Version: ${v}'`, { logs: { enabled: true } }))
         .pipe(replace(/const built = moment\([0-9]*\);/g, `const built = moment(${b});`, { logs: { enabled: true } }))
         .pipe(gulp.dest('./src/app/services'));
 });
 
 gulp.task('clean:version', (next) => {
     return gulp.src(['./src/app/services/settings.service.ts']) // Any file globs are supported
-        .pipe(replace(/this.log\('SYSTEM', 'Version: [0-9a-zA-Z.-]*'\);/g, `this.log('SYSTEM', 'Version: local-dev');`, { logs: { enabled: true } }))
+        .pipe(replace(/this.log\('SYSTEM', 'Version: [0-9a-zA-Z.-]*'/g, `this.log('SYSTEM', 'Version: local-dev'`, { logs: { enabled: true } }))
         .pipe(replace(/const built = moment\([0-9]*\);/g, `const built = moment();`, { logs: { enabled: true } }))
         .pipe(gulp.dest('./src/app/services'));
 });
