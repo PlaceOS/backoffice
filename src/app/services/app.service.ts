@@ -38,6 +38,7 @@ import { ApplicationService } from './data/application.service';
 import { AuthSourcesService } from './data/authsources.service';
 import { DomainsService } from './data/domains.service';
 import { NodesService } from './data/nodes.service';
+import { EngineSearchService } from './data/search.service';
 
 @Injectable({
     providedIn: 'root'
@@ -72,6 +73,7 @@ export class AppService {
         private auth_sources: AuthSourcesService,
         private domains: DomainsService,
         private nodes: NodesService,
+        private search: EngineSearchService,
         private hotkey: HotkeyService
     ) {
             // Set parent service on child services
@@ -249,6 +251,7 @@ export class AppService {
     get Users() { return this.users; }
     get Zones() { return this.zones; }
     get Nodes() { return this.nodes; }
+    get Search() { return this.search; }
     /**
      * Set the page title
      * @param str New value to set the page title

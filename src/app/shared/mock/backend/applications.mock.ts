@@ -40,18 +40,15 @@ export class MockApplicationsBackend extends BaseMockBackend {
         this.model.applications = item_list;
         MOCK_REQ_HANDLER.register('/auth/api/applications', this.model.applications, (event) => {
             if (!event.data) { event.data = []; }
-            let data = event.data;
-            if (event.fragment.owner) {
-                data = event.data.filter((a) => a.owner_id === event.fragment.owner);
-            }
-            if (event.fragment && event.fragment.offset) {
-                const start = Math.min(data.length, +(event.fragment.offset));
-                const end = Math.min(data.length, +(event.fragment.offset) + 20);
-                return { results: data.slice(start, end), total: data.length };
-            } else {
-                return { results: data.slice(0, 20), total: data.length };
-            }
+            return this.search(event.data, event.fragment);
         });
         this.state.next(true);
+    }
+
+    public search(data, fragment) {
+        if (fragment.owner) {
+            data = data.filter((a) => a.owner_id === fragment.owner);
+        }
+        return super.search(data, fragment);
     }
 }

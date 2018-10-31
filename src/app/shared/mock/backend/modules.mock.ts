@@ -57,22 +57,7 @@ export class MockModulesBackend extends BaseMockBackend {
         this.model.modules = item_list;
         MOCK_REQ_HANDLER.register('/control/api/modules', this.model.modules, (event) => {
             if (!event.data) { event.data = []; }
-            let data = event.data;
-            if (event.fragment.sys_id) {
-                data = event.data.filter((a) => a.control_system_id === event.fragment.sys_id);
-            } else if (event.fragment.dependency_id) {
-                data = event.data.filter((a) => a.dependency_id === event.fragment.dependency_id);
-            }
-            if (event.fragment.q) {
-                data = data.filter((a) => (a.name || '').indexOf(event.fragment.q) >= 0);
-            }
-            if (event.fragment && event.fragment.offset) {
-                const start = Math.min(data.length, +(event.fragment.offset));
-                const end = Math.min(data.length, +(event.fragment.offset) + 20);
-                return { results: data.slice(start, end), total: data.length };
-            } else {
-                return { results: data.slice(0, 20), total: data.length };
-            }
+            return this.search(event.data, event.fragment);
         });
         MOCK_REQ_HANDLER.register('/control/api/modules/:id', this.model.modules, (event) => {
             if (event && event.params && event.params.id) {
@@ -85,6 +70,18 @@ export class MockModulesBackend extends BaseMockBackend {
             return null;
         });
         this.state.next(true);
+    }
+
+    public search(data, fragment) {
+        if (fragment.sys_id) {
+            data = data.filter((a) => a.control_system_id === fragment.sys_id);
+        } else if (fragment.dependency_id) {
+            data = data.filter((a) => a.dependency_id === fragment.dependency_id);
+        }
+        if (fragment.q) {
+            data = data.filter((a) => (a.name || '').indexOf(fragment.q) >= 0);
+        }
+        return super.search(data, fragment);
     }
 
     public generateSettings(level: number = 1) {

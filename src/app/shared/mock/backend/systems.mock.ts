@@ -57,22 +57,7 @@ export class MockSystemsBackend extends BaseMockBackend {
         }
         this.model.systems = item_list;
         MOCK_REQ_HANDLER.register('/control/api/systems', this.model.systems, (event) => {
-            let data = event.data;
-            if (event.fragment.module_id) {
-                data = event.data.filter((a) => a.modules.indexOf(event.fragment.module_id) >= 0);
-            } else if (event.fragment.zone_id) {
-                data = event.data.filter((a) => a.zones.indexOf(event.fragment.zone_id) >= 0);
-            }
-            if (event.fragment.q) {
-                data = data.filter((a) => (a.name || '').indexOf(event.fragment.q) >= 0);
-            }
-            if (event.fragment && event.fragment.offset) {
-                const start = Math.min(data.length, +(event.fragment.offset));
-                const end = Math.min(data.length, +(event.fragment.offset) + 20);
-                return { results: data.slice(start, end), total: data.length };
-            } else {
-                return { results: data.slice(0, 20), total: data.length };
-            }
+            return this.search(event.data, event.fragment);
         });
 
         MOCK_REQ_HANDLER.register('/control/api/systems', this.model.systems, (event) => {
@@ -102,6 +87,15 @@ export class MockSystemsBackend extends BaseMockBackend {
             return null;
         });
         this.state.next(true);
+    }
+
+    public search(data, fragment) {
+        if (fragment.module_id) {
+            data = data.filter((a) => a.modules.indexOf(fragment.module_id) >= 0);
+        } else if (fragment.zone_id) {
+            data = data.filter((a) => a.zones.indexOf(fragment.zone_id) >= 0);
+        }
+        return super.search(data, fragment);
     }
 
     public generateSettings(level: number = 1) {

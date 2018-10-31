@@ -52,25 +52,19 @@ export class MockSystemTriggersBackend extends BaseMockBackend {
         }
         this.model.system_triggers = item_list;
         MOCK_REQ_HANDLER.register('/control/api/system_triggers', this.model.system_triggers, (event) => {
-            let data = event.data;
-            if (event.fragment.trigger_id) {
-                data = event.data.filter((a) => a.trigger_id === event.fragment.trigger_id);
-            } else if (event.fragment.zone_id) {
-                data = event.data.filter((a) => a.zone_id === event.fragment.zone_id);
-            } else if (event.fragment.sys_id) {
-                data = event.data.filter((a) => a.control_system_id === event.fragment.sys_id);
-            }
-            if (event.fragment.q) {
-                data = data.filter((a) => (a.name || '').indexOf(event.fragment.q) >= 0);
-            }
-            if (event.fragment && event.fragment.offset) {
-                const start = Math.min(data.length, +(event.fragment.offset));
-                const end = Math.min(data.length, +(event.fragment.offset) + 20);
-                return { results: data.slice(start, end), total: data.length };
-            } else {
-                return { results: data.slice(0, 20), total: data.length };
-            }
+            return this.search(event.data, event.fragment);
         });
         this.state.next(true);
+    }
+
+    public search(data, fragment) {
+        if (fragment.trigger_id) {
+            data = data.filter((a) => a.trigger_id === fragment.trigger_id);
+        } else if (fragment.zone_id) {
+            data = data.filter((a) => a.zone_id === fragment.zone_id);
+        } else if (fragment.sys_id) {
+            data = data.filter((a) => a.control_system_id === fragment.sys_id);
+        }
+        return super.search(data, fragment);
     }
 }

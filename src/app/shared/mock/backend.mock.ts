@@ -18,6 +18,7 @@ import { MockApplicationsBackend } from './backend/applications.mock';
 import { MockAuthSourcesBackend } from './backend/auth-sources.mock';
 import { MockSystemTriggersBackend } from './backend/systems-triggers.mock';
 import { MockNodesBackend } from './backend/nodes.mock';
+import { MOCK_REQ_HANDLER } from '@acaprojects/ngx-composer';
 
 export class MockBackend {
     public model: any = {
@@ -99,6 +100,7 @@ export class MockBackend {
                                     if (!mstate) { return; }
                                     this.update(this.model.backend.modules.data);
                                     this.model.loaded = true;
+                                    this.loadSearch();
                                 });
                             });
                         });
@@ -133,6 +135,20 @@ export class MockBackend {
     private hasColours() {
         const doc = document as any;
         return !(doc.documentMode || /Edge/.test(navigator.userAgent));
+    }
+
+    private loadSearch() {
+        MOCK_REQ_HANDLER.register(`/${this.model.api_route}/search`, null, (event) => {
+            if (event.fragment.q) {
+                return {
+                    systems: this.model.backend.systems.search(this.model.systems, event.fragment),
+                    triggers: this.model.backend.triggers.search(this.model.triggers, event.fragment),
+                    modules: this.model.backend.modules.search(this.model.modules, event.fragment),
+                    zones: this.model.backend.zones.search(this.model.zones, event.fragment),
+                    users: this.model.backend.users.search(this.model.users, event.fragment)
+                };
+            }
+        });
     }
 
     private update(model: any) {

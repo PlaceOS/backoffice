@@ -46,18 +46,15 @@ export class MockAuthSourcesBackend extends BaseMockBackend {
         this.model.auth_sources = item_list;
         MOCK_REQ_HANDLER.register('/auth/api/authsources', this.model.auth_sources, (event) => {
             if (!event.data) { event.data = []; }
-            let data = event.data;
-            if (event.fragment.authority_id) {
-                data = event.data.filter((a) => a.authority_id === event.fragment.authority_id);
-            }
-            if (event.fragment && event.fragment.offset) {
-                const start = Math.min(data.length, +(event.fragment.offset));
-                const end = Math.min(data.length, +(event.fragment.offset) + 20);
-                return { results: data.slice(start, end), total: data.length };
-            } else {
-                return { results: data.slice(0, 20), total: data.length };
-            }
+            return this.search(event.data, event.fragment);
         });
         this.state.next(true);
+    }
+
+    public search(data, fragment) {
+        if (fragment.authority_id) {
+            data = data.filter((a) => a.authority_id === fragment.authority_id);
+        }
+        return super.search(data, fragment);
     }
 }

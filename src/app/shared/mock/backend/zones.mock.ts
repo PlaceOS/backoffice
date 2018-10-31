@@ -35,20 +35,7 @@ export class MockZonesBackend extends BaseMockBackend {
         }
         this.model.zones = zone_list;
         MOCK_REQ_HANDLER.register('/control/api/zones', this.model.zones, (event) => {
-            let data = event.data;
-            if (event.fragment.sys_id) {
-                data = data.filter((a) => (a.systems || []).indexOf(event.fragment.sys_id) >= 0);
-            }
-            if (event.fragment.q) {
-                data = data.filter((a) => (a.name || '').indexOf(event.fragment.q) >= 0);
-            }
-            if (event.fragment && event.fragment.offset) {
-                const start = Math.min(data.length, +(event.fragment.offset));
-                const end = Math.min(data.length, +(event.fragment.offset) + 20);
-                return { results: data.slice(start, end), total: data.length };
-            } else {
-                return { results: data.slice(0, 20), total: data.length };
-            }
+            return this.search(event.data, event.fragment);
         });
         MOCK_REQ_HANDLER.register('/control/api/zones/:id', this.model.zones, (event) => {
             if (event && event.params && event.params.id) {
@@ -61,6 +48,13 @@ export class MockZonesBackend extends BaseMockBackend {
             return null;
         });
         this.state.next(true);
+    }
+
+    public search(data, fragment) {
+        if (fragment.sys_id) {
+            data = data.filter((a) => (a.systems || []).indexOf(fragment.sys_id) >= 0);
+        }
+        return super.search(data, fragment);
     }
 
     public generateSettings(level: number = 1) {

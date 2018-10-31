@@ -31,6 +31,22 @@ export class BaseMockBackend {
         return this.model;
     }
 
+    public search(data, fragment) {
+        if (fragment.id) {
+            data = data.filter((a) => a.id === fragment.id);
+        }
+        if (fragment.q) {
+            data = data.filter((a) => (a.name || '').indexOf(fragment.q) >= 0);
+        }
+        if (fragment && fragment.offset) {
+            const start = Math.min(data.length, +(fragment.offset));
+            const end = Math.min(data.length, +(fragment.offset) + 20);
+            return { results: data.slice(start, end), total: data.length };
+        } else {
+            return { results: data.slice(0, 20), total: data.length };
+        }
+    }
+
     protected request(method, url) {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();

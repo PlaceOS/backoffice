@@ -38,17 +38,7 @@ export class MockDomainsBackend extends BaseMockBackend {
         }
         this.model.domains = item_list;
         MOCK_REQ_HANDLER.register('/auth/api/domains', this.model.domains, (event) => {
-            let data = event.data;
-            if (event.fragment.q) {
-                data = data.filter((a) => (a.name || '').indexOf(event.fragment.q) >= 0);
-            }
-            if (event.fragment && event.fragment.offset) {
-                const start = Math.min(data.length, +(event.fragment.offset));
-                const end = Math.min(data.length, +(event.fragment.offset) + 20);
-                return { results: data.slice(start, end), total: data.length };
-            } else {
-                return { results: data.slice(0, 20), total: data.length };
-            }
+            return this.search(event.data, event.fragment);
         });
         MOCK_REQ_HANDLER.register('/auth/api/domains/:id', this.model.domains, (event) => {
             if (event && event.params && event.params.id) {
