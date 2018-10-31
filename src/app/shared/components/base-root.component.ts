@@ -23,8 +23,7 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
         this.model.loading_item = true;
         this.model.list = [];
         this.subs.obs.route = this.route.paramMap.subscribe((params) => {
-            this.model.id = '';
-            if (params.has('id')) {
+            if (params.has('id') && this.service.get('BACKOFFICE.active_item') !== params.get('id')) {
                 this.model.id = params.get('id');
                 this.timeout('loading', () => this.model.loading_item = true, 10);
                 this.service[this.model.service].show(this.model.id).then((item) => {
