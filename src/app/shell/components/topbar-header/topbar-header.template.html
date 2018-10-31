@@ -10,6 +10,9 @@
                 <i *ngIf="model.logo.type !== 'image' && model.logo.type!=='img'" [class]="model.logo.class">{{model.logo.value}}</i>
             </div>
         </div>
+        <div class="search">
+            <searchbar [(filter)]="model.filter" (filterChange)="postFilter()"></searchbar>
+        </div>
         <div class="block end">
             <!-- TODO Add user details display -->
             <div class="avatar" [title]="model.user?.name" tooltip position="bottom" offset="end" [template]="options" [(show)]="model.show" [triangle]="false" (touchrelease)="model.show = true">

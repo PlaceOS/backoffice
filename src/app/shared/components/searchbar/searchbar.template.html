@@ -1,0 +1,20 @@
+<div class="searchbar" widget>
+    <div class="field" [class.focus]="model.focus || filter">
+        <div class="icon">
+            <i class="material-icons">search</i>
+        </div>
+        <div class="input">
+            <input #input [(ngModel)]="filter" (ngModelChange)="post()"
+                (focus)="model.focus = true; focus.emit($event)"
+                (blur)="model.focus = false; blur.emit($event)"
+                [placeholder]="placeholder">
+        </div>
+        <div class="icon" *ngIf="model.speech && dictation" [class.active]="model.dictate" (tap)="startDictation()">
+            <i class="material-icons">mic</i>
+        </div>
+        <div class="icon close" *ngIf="filter && clearable" (tap)="clear()">
+            <i class="material-icons">close</i>
+        </div>
+        <ng-content></ng-content>
+    </div>
+</div>

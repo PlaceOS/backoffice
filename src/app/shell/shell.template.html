@@ -1,14 +1,17 @@
 <div class="container" *ngIf="model.user && !model.loading">
     <div class="header">
-        <topbar-header></topbar-header>
+        <topbar-header (filter)="model.filter = $event"></topbar-header>
     </div>
-    <div class="body">
+    <div class="body" [class.filtered]="model.filter">
         <div class="sidebar-menu">
             <sidebar-menu></sidebar-menu>
         </div>
         <div class="content">
             <router-outlet></router-outlet>
         </div>
+    </div>
+    <div class="search-results" *ngIf="model.filter">
+
     </div>
 </div>
 <div class="container loader" *ngIf="model.loading">

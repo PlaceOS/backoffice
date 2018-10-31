@@ -1,5 +1,5 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
 import { BaseComponent } from '../../../shared/components/base.component';
@@ -11,6 +11,7 @@ import { AppService } from '../../../services/app.service';
     styleUrls: ['./topbar-header.styles.scss']
 })
 export class TopbarHeaderComponent extends BaseComponent implements OnInit {
+    @Output() public filter = new EventEmitter();
     public model: any = {};
 
     constructor(private service: AppService, private router: Router) {
@@ -35,6 +36,7 @@ export class TopbarHeaderComponent extends BaseComponent implements OnInit {
         this.model.logo = this.service.Settings.get('app.logo') || {};
         this.model.user = this.service.Users.current();
         this.subs.obs.show_menu = this.service.listen('APP.show_menu', (state) => this.model.show_menu = state);
+        this.subs.obs.filter = this.service.listen('APP.global_filter', (filter) => this.model.filter = filter);
         this.checkRoute();
     }
 
@@ -82,6 +84,12 @@ export class TopbarHeaderComponent extends BaseComponent implements OnInit {
     public toggleMenu() {
         this.model.show_menu = !this.model.show_menu;
         this.service.set('APP.show_menu', this.model.show_menu);
+    }
+
+    public postFilter() {
+        console.log('Filter:', this.model.filter);
+        this.service.set('APP.global_filter', this.model.filter);
+        this.filter.emit(this.model.filter);
     }
 
     private getRouteDetails(map: any, route: string) {

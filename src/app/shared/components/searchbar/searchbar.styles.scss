@@ -1,0 +1,97 @@
+
+@import 'shared.styles';
+
+$height: 3em;
+
+searchbar:host {
+    width: 100%;
+}
+
+.searchbar {
+    position: relative;
+    width: 100%;
+    min-height: $height + .5em;
+    display: flex;
+    align-items: center;
+    font-size: .9em;
+}
+
+.field {
+    width: calc(100% - 1em);
+    display: flex;
+    align-items: center;
+    padding: .1em .75em;
+    background-color: rgba(#000, .2);
+    caret-color: $color-primary;
+    color: #fff;
+    min-height: $height;
+    height: $height;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px 0 rgba(#000, 0), 0 1px 1px 0 rgba(#000, 0), 0 2px 1px -1px rgba(#000, 0);
+    transition: width 300ms, color 300ms, background-color 300ms, box-shadow 300ms;
+    max-width: 768px;
+    input {
+        &::placeholder {
+            transition: color 300ms;
+            color: rgba(#fff, .2);
+        }
+    }
+    &.focus {
+        color: rgba(#000, .87);
+        background-color: #fff;
+        box-shadow: 0 1px 3px 0 rgba(#000, .2), 0 1px 1px 0 rgba(#000, .14), 0 2px 1px -1px rgba(#000, .12);
+        input {
+            &::placeholder {
+                color: rgba(#000, .54);
+            }
+        }
+    }
+}
+
+.input {
+    flex: 1;
+}
+
+input {
+    font-size: 1em;
+    background: none;
+    outline: none;
+    color: rgba(#000, .87);
+    border: none;
+    width: 100%;
+    padding: .5em;
+}
+
+img {
+    position: absolute;
+    top: .4em;
+    left: .4em;
+    height: 1.5em;
+    width: 1.5em;
+}
+
+.icon {
+    height: 1.2em;
+    width: 1.2em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+
+    &.close {
+        color: rgba(#000, .54);
+
+        &:hover {
+            color: rgba(#000, .87);
+        }
+    }
+
+    .active {
+        color: $color-primary;
+    }
+
+    &.active {
+        color: $color-secondary;
+    }
+}
