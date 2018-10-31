@@ -38,17 +38,11 @@ export class EngineSearchService extends BaseService {
     public add() { }
     public show() { }
 
-    protected processList(raw_list: any) {
-        const list: IEngineSearchResult[] = [];
-        console.log('List:', raw_list);
-        return list;
-    }
-
-    protected processItem(raw_item: any, type: string = 'system') {
+    protected processItem(raw_item: any) {
         const item: IEngineSearchResult = {
             id: raw_item.id,
             name: raw_item.name,
-            type,
+            type: raw_item.type,
             created: raw_item.created_at * 1000
         };
         item.display = {

@@ -140,13 +140,49 @@ export class MockBackend {
     private loadSearch() {
         MOCK_REQ_HANDLER.register(`/${this.model.api_route}/search`, null, (event) => {
             if (event.fragment.q) {
-                return {
-                    systems: this.model.backend.systems.search(this.model.systems, event.fragment),
-                    triggers: this.model.backend.triggers.search(this.model.triggers, event.fragment),
-                    modules: this.model.backend.modules.search(this.model.modules, event.fragment),
-                    zones: this.model.backend.zones.search(this.model.zones, event.fragment),
-                    users: this.model.backend.users.search(this.model.users, event.fragment)
-                };
+                let limit = 20;
+                if (event.fragment.offset) { limit += +event.fragment.offset; }
+                event.fragment.limit = limit;
+                let total = 0;
+                const results: any[] = [];
+                let data = [];
+                if (this.model.backend.systems) {
+                    const list = this.model.backend.systems.search(this.model.systems, event.fragment);
+                    list.results.forEach(element => element.type = 'system');
+                    total += list.total;
+                    data = data.concat(list.results);
+                }
+                if (this.model.backend.triggers) {
+                    const list = this.model.backend.triggers.search(this.model.triggers, event.fragment);
+                    list.results.forEach(element => element.type = 'trigger');
+                    total += list.total;
+                    data = data.concat(list.results);
+                }
+                if (this.model.backend.modules) {
+                    const list = this.model.backend.modules.search(this.model.modules, event.fragment);
+                    list.results.forEach(element => element.type = 'device');
+                    total += list.total;
+                    data = data.concat(list.results);
+                }
+                if (this.model.backend.zones) {
+                    const list = this.model.backend.zones.search(this.model.zones, event.fragment);
+                    list.results.forEach(element => element.type = 'zone');
+                    total += list.total;
+                    data = data.concat(list.results);
+                }
+                if (this.model.backend.users) {
+                    const list = this.model.backend.users.search(this.model.users, event.fragment);
+                    list.results.forEach(element => element.type = 'user');
+                    total += list.total;
+                    data = data.concat(list.results);
+                }
+                if (event.fragment && event.fragment.offset) {
+                    const start = Math.min(data.length, +(event.fragment.offset));
+                    const end = Math.min(data.length, +(event.fragment.offset) + 20);
+                    return { results: data.slice(start, end), total };
+                } else {
+                    return { results: data.slice(0, 20), total};
+                }
             }
         });
     }
