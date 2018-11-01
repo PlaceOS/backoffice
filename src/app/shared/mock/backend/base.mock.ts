@@ -36,7 +36,7 @@ export class BaseMockBackend {
             data = data.filter((a) => a.id === fragment.id);
         }
         if (fragment.q) {
-            data = data.filter((a) => (a.name || '').indexOf(fragment.q) >= 0);
+            data = data.filter((a) => (a.name || '').toLowerCase().indexOf(fragment.q.toLowerCase()) >= 0);
         }
         if (fragment && fragment.offset) {
             const start = Math.min(data.length, +(fragment.offset));

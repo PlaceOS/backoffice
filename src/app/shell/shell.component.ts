@@ -13,30 +13,30 @@ import { Router, NavigationEnd } from '@angular/router';
 import { AppService } from '../services/app.service';
 
 import * as moment from 'moment';
+import { BaseComponent } from '../shared/components/base.component';
 
 @Component({
     selector: 'app-shell',
     styleUrls: ['./shell.styles.scss'],
     templateUrl: './shell.template.html'
 })
-export class AppShellComponent implements OnInit {
+export class AppShellComponent extends BaseComponent implements OnInit {
 
     public model: any = {};
     public timers: any = {};
 
     constructor(private service: AppService, private router: Router) {
+        super();
         this.model.routing = {};
-        this.router.events.subscribe((e) => {
-            if (e instanceof NavigationEnd) {
-                this.checkRoute();
-            }
-        });
     }
 
     public ngOnInit() {
         this.model.year = moment().format('YYYY');
-        this.service.Users.listen('user', (user) => {
-            this.model.user = user;
+        this.subs.obs.user = this.service.Users.listen('user', (user) => this.model.user = user);
+        this.subs.obs.router = this.router.events.subscribe((e) => {
+            if (e instanceof NavigationEnd) {
+                this.checkRoute();
+            }
         });
         this.init();
     }
@@ -49,6 +49,7 @@ export class AppShellComponent implements OnInit {
         this.model.loading = false;
         this.model.user = this.service.Users.current();
         this.model.tiles = this.service.Settings.get('app.tiles');
+        this.subs.obs.filter = this.service.listen('APP.global_filter', (filter) => this.model.filter = filter);
         this.checkRoute();
     }
 

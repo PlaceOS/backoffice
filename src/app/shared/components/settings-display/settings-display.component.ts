@@ -55,6 +55,7 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
             formatted = (this.text_string || '{}');
         }
         const lines = formatted.split('\n');
+        while (lines.length < 4) { lines.push(''); }
         for (const line of lines) {
             const line_data: any = {
                 index: lines.indexOf(line),
@@ -117,6 +118,7 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
         this.length = 0;
         this.settings = [];
         const lines = (this.text_string || '{}').split('\n');
+        while (lines.length < 4) { lines.push(''); }
         for (const line of lines) {
             const line_data: any = {
                 index: lines.indexOf(line),

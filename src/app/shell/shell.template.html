@@ -11,7 +11,7 @@
         </div>
     </div>
     <div class="search-results" *ngIf="model.filter">
-
+        <global-search [search]="model.filter"></global-search>
     </div>
 </div>
 <div class="container loader" *ngIf="model.loading">

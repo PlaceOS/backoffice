@@ -1,0 +1,9 @@
+<div class="container">
+    <div class="item" *ngFor="let item of (model.list || [])" (touchrelease)="goto(item)">
+        <div class="name" [title]="item.name">{{item.name}}</div>
+        <div class="details">
+            <div [class]="'chip ' + item.type">{{item.type}}</div>
+            <div class="id">{{item.id}}</div>
+        </div>
+    </div>
+</div>
