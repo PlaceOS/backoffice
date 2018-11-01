@@ -1,9 +1,23 @@
 <div class="container">
-    <div class="item" *ngFor="let item of (model.list || [])" (touchrelease)="goto(item)">
-        <div class="name" [title]="item.name">{{item.name}}</div>
-        <div class="details">
-            <div [class]="'chip ' + item.type">{{item.type}}</div>
-            <div class="id">{{item.id}}</div>
+    <ng-container *ngIf="!model.searching">
+        <div class="item" *ngFor="let item of (model.list || [])" (touchrelease)="goto(item)">
+            <div class="name" [title]="item.name">{{item.name}}</div>
+            <div class="details">
+                <div [class]="'chip ' + item.type">{{item.type}}</div>
+                <div class="id">{{item.id}}</div>
+            </div>
         </div>
+    </ng-container>
+    <div class="no-item" center *ngIf="model.searching">
+        <div class="icon">
+            <spinner type="circle-ring" color="#F44336"></spinner>
+        </div>
+        <div class="text">Searching...</div>
+    </div>
+    <div class="no-item" center *ngIf="!model.searching && (!model.list || model.list.length <= 0)">
+        <div class="icon">
+            <i class="material-icons">close</i>
+        </div>
+        <div class="text">No matches found</div>
     </div>
 </div>

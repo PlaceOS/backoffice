@@ -54,7 +54,7 @@ export class SearchbarComponent extends BaseComponent {
             this.model.recognition.onresult = (e: any) => {
                     // Update search field with dictation result
                 this.input.nativeElement.value = e.results[0][0].transcript;
-                this.model.search = e.results[0][0].transcript;
+                this.filter = e.results[0][0].transcript;
                 this.model.recognition.stop();
                 this.post();
                 this.model.dictate = false;
