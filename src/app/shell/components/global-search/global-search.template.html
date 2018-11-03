@@ -1,10 +1,18 @@
-<div class="container">
-    <ng-container *ngIf="!model.searching">
-        <div class="item" *ngFor="let item of (model.list || [])" (touchrelease)="goto(item)">
-            <div class="name" [title]="item.name">{{item.name}}</div>
+<div class="container" #item_list [@listAnimation]="model.list ? model.list.length : 0" (scroll)="atBottom()">
+    <ng-container *ngIf="!model.searching" >
+        <div class="item" #list_item *ngFor="let item of (model.list || [])" [title]="item.name">
+            <div class="name" (touchrelease)="goto(item)">{{item.name}}</div>
             <div class="details">
-                <div [class]="'chip ' + item.type">{{item.type}}</div>
-                <div class="id">{{item.id}}</div>
+                <div [class]="'chip ' + item.type" (touchrelease)="goto(item)">{{item.type}}</div>
+                <div class="id" (touchrelease)="goto(item)">{{item.id}}</div>
+            </div>
+            <div class="options">
+                <div class="icon" (touchrelease)="edit(item)">
+                    <i class="material-icons">edit</i>
+                </div>
+                <div class="icon" (touchrelease)="goto(item)">
+                    <i class="material-icons">visibility</i>
+                </div>
             </div>
         </div>
     </ng-container>
@@ -19,5 +27,8 @@
             <i class="material-icons">close</i>
         </div>
         <div class="text">No matches found</div>
+    </div>
+    <div class="more" *ngIf="model.getting_more">
+        <spinner type="double-circle-ring" color="#F44336"></spinner>
     </div>
 </div>

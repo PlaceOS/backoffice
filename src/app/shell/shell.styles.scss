@@ -77,4 +77,7 @@
     bottom: 0;
     z-index: 1;
     background-color: rgba(#fff, .54);
+    @include respond-to(mobile) {
+        top: 3em;
+    }
 }

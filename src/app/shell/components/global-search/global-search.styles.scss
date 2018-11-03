@@ -11,49 +11,89 @@
     display: flex;
     align-items: center;
     align-content: flex-start;
-    flex-wrap: wrap;
+    flex-direction: column;
     padding: .5em;
 }
 
 .item {
-    flex: 1;
-    min-width: 15em;
-    max-width: 15em;
-    height: 3.75em;
+    width: calc(100% - 2em);
+    min-height: 2em;
+    height: 2em;
     background-color: #fff;
-    border-radius: 6px;
     border: 1px solid #ccc;
-    margin: .5em;
+    margin: 1px auto;
     padding: .5em;
     box-shadow: 0 1px 3px 0 rgba(#000,0), 0 1px 1px 0 rgba(#000,0), 0 2px 1px -1px rgba(#000,0);
-    transition: box-shadow 200ms, border 200ms;
+    transition: box-shadow 200ms, border 200ms, background-color 200ms, border-radius 200ms;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
     @include respond-to(mobile) {
         min-width: 90%;
-        max-width: none;
     }
     &:hover {
-        border-color: #FFF;
+        border-color: #f0f0f0;
+        background-color: #f0f0f0;
         box-shadow: 0 1px 3px 0 rgba(#000,.2), 0 1px 1px 0 rgba(#000,.14), 0 2px 1px -1px rgba(#000,.12);
+        .options {
+            display: flex;
+            @include respond-to(mobile) {
+                display: none;
+            }
+        }
     }
 
 }
 
 .name {
-    font-size: 1.1em;
+    font-size: 1em;
     font-weight: 400;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    flex: 2;
+    @include respond-to(mobile) {
+        flex: 3;
+    }
 }
 
 .id {
     user-select: all;
+    @include respond-to(mobile) {
+        display: none;
+    }
 }
 
 .details {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     font-size: .8em;
+    flex: 1;
+}
+
+.options {
+    display: none;
+    align-items: center;
+    margin-left: .25em;
+
+    .icon {
+        height: 1.2em;
+        width: 1.2em;
+        margin: 0 .25em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(#000, .54);
+        cursor: pointer;
+        &:hover {
+            color: rgba(#000, .87);
+        }
+
+        i {
+            font-size: 1.2em;
+        }
+    }
 }
 
 .chip {
@@ -124,4 +164,11 @@
     .text {
         color: rgba(#000, .54);
     }
+}
+
+.more {
+    position: fixed;
+    bottom: 1em;
+    right: 1em;
+    font-size: .5em;
 }

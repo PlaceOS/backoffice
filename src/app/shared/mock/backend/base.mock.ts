@@ -40,10 +40,10 @@ export class BaseMockBackend {
         }
         if (fragment && fragment.offset) {
             const start = Math.min(data.length, +(fragment.offset));
-            const end = Math.min(data.length, +(fragment.offset) + 20);
+            const end = Math.min(data.length, +(fragment.offset) + (+fragment.limit || 20));
             return { results: data.slice(start, end), total: data.length };
         } else {
-            return { results: data.slice(0, 20), total: data.length };
+            return { results: data.slice(0, +fragment.limit || 20), total: data.length };
         }
     }
 

@@ -110,8 +110,7 @@ export class BaseService {
      * @param fields Key, value pairs for query parameters
      * @param tries Retry value. DON'T USE
      */
-    public query(fields?: any, tries: number = 0) {
-        if (tries > 4) { return new Promise((rs, rj) => rj('Too many tries')); }
+    public query(fields?: any) {
         const query = Utils.generateQueryString(fields);
         let update = true;
         if (fields && !fields.update) {
@@ -129,7 +128,11 @@ export class BaseService {
                 this.http.get(url).subscribe(
                     (resp: any) => {
                         const item_list = this.processList(resp.results ? resp.results || resp : resp);
-                        if (update) { this.updateList(item_list); }
+                        if (update) {
+                            this.updateList(item_list);
+                        } else {
+                            this.set(`total_${query}`, resp.total || item_list.length);
+                        }
                         resolve(item_list);
                         setTimeout(() => this.promises[key] = null, 5 * 1000);
                     }, (err) => {

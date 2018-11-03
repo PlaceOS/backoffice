@@ -84,7 +84,7 @@ export class Utils {
         let query = '';
         if (fields) {
             for (const f in fields) {
-                if (fields[f] && fields[f] !== '') {
+                if (fields[f] !== undefined && fields[f] !== null && fields[f] !== '') {
                     if (query !== '') {
                         query += '&';
                     }

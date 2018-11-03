@@ -143,39 +143,47 @@ export class MockBackend {
                 let limit = 20;
                 if (event.fragment.offset) { limit += +event.fragment.offset; }
                 event.fragment.limit = limit;
+                const fragment = JSON.parse(JSON.stringify(event.fragment));
+                fragment.offset = 0;
                 let total = 0;
                 const results: any[] = [];
                 let data = [];
                 if (this.model.backend.systems) {
-                    const list = this.model.backend.systems.search(this.model.systems, event.fragment);
+                    const list = this.model.backend.systems.search(this.model.systems, fragment);
                     list.results.forEach(element => element.type = 'system');
+                    console.log('System data:', list);
                     total += list.total;
                     data = data.concat(list.results);
                 }
                 if (this.model.backend.triggers) {
-                    const list = this.model.backend.triggers.search(this.model.triggers, event.fragment);
+                    const list = this.model.backend.triggers.search(this.model.triggers, fragment);
                     list.results.forEach(element => element.type = 'trigger');
+                    console.log('Trigger data:', list);
                     total += list.total;
                     data = data.concat(list.results);
                 }
                 if (this.model.backend.modules) {
-                    const list = this.model.backend.modules.search(this.model.modules, event.fragment);
+                    const list = this.model.backend.modules.search(this.model.modules, fragment);
                     list.results.forEach(element => element.type = 'device');
+                    console.log('Device data:', list);
                     total += list.total;
                     data = data.concat(list.results);
                 }
                 if (this.model.backend.zones) {
-                    const list = this.model.backend.zones.search(this.model.zones, event.fragment);
+                    const list = this.model.backend.zones.search(this.model.zones, fragment);
                     list.results.forEach(element => element.type = 'zone');
+                    console.log('Zone data:', list);
                     total += list.total;
                     data = data.concat(list.results);
                 }
                 if (this.model.backend.users) {
-                    const list = this.model.backend.users.search(this.model.users, event.fragment);
+                    const list = this.model.backend.users.search(this.model.users, fragment);
                     list.results.forEach(element => element.type = 'user');
+                    console.log('User data:', list);
                     total += list.total;
                     data = data.concat(list.results);
                 }
+                console.log('Search data:', data);
                 if (event.fragment && event.fragment.offset) {
                     const start = Math.min(data.length, +(event.fragment.offset));
                     const end = Math.min(data.length, +(event.fragment.offset) + 20);
