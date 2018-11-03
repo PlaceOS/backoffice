@@ -1,6 +1,6 @@
 <div class="searchbar" widget>
     <div class="field" [class.focus]="model.focus || filter || model.dictate">
-        <div class="icon">
+        <div class="icon" (touchrelease)="focusInput()">
             <i class="material-icons">search</i>
         </div>
         <div class="input">
@@ -12,7 +12,10 @@
         <div class="icon" *ngIf="model.speech && dictation" [class.active]="model.dictate" (tap)="startDictation()">
             <i class="material-icons">mic</i>
         </div>
-        <div class="icon close" *ngIf="filter && clearable" (tap)="clear()">
+        <div class="icon close not-mobile" *ngIf="filter && clearable" (tap)="clear()">
+            <i class="material-icons">close</i>
+        </div>
+        <div class="icon close mobile-only" (tap)="clear()">
             <i class="material-icons">close</i>
         </div>
         <ng-content></ng-content>

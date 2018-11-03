@@ -1,4 +1,3 @@
-
 @import 'shared.styles';
 
 $height: 3em;
@@ -17,9 +16,10 @@ searchbar:host {
 }
 
 .field {
-    width: calc(100% - 2em);
+    width: 100%;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     padding: .1em .75em;
     background-color: rgba(#000, .2);
     caret-color: $color-primary;
@@ -29,19 +29,55 @@ searchbar:host {
     border-radius: 4px;
     box-shadow: 0 1px 3px 0 rgba(#000, 0), 0 1px 1px 0 rgba(#000, 0), 0 2px 1px -1px rgba(#000, 0);
     transition: width 300ms, color 300ms, background-color 300ms, box-shadow 300ms;
+
+    @include respond-to(mobile) {
+        background: none;
+    }
+
+    .input {
+        @include respond-to(mobile) {
+            display: none;
+        }
+    }
+
     input {
+
         &::placeholder {
             transition: color 300ms;
             color: rgba(#fff, .2);
         }
     }
+
     &.focus {
         color: rgba(#000, .87);
         background-color: #fff;
         box-shadow: 0 1px 3px 0 rgba(#000, .2), 0 1px 1px 0 rgba(#000, .14), 0 2px 1px -1px rgba(#000, .12);
+
+        @include respond-to(mobile) {
+            position: absolute;
+            right: 0;
+            width: calc(100vw - 5em);
+            min-height: $height - .5em;
+            height: $height - .5em;
+        }
+        .input {
+            @include respond-to(mobile) {
+                display: initial;
+            }
+        }
+
         input {
+
             &::placeholder {
                 color: rgba(#000, .54);
+            }
+        }
+
+        .icon {
+            &:not(&:first-child) {
+                @include respond-to(mobile) {
+                    display: flex;
+                }
             }
         }
     }
@@ -77,6 +113,12 @@ img {
     align-items: center;
     justify-content: center;
     font-size: 1.5em;
+
+    &:not(:first-child) {
+        @include respond-to(mobile) {
+            display: none;
+        }
+    }
 
     &.close {
         color: rgba(#000, .54);

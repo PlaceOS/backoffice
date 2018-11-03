@@ -67,6 +67,16 @@ export class SearchbarComponent extends BaseComponent {
         }
     }
 
+    public focusInput() {
+        this.model.focus = true;
+        this.timeout('focus', () => {
+            if (this.input && this.input.nativeElement) {
+                this.input.nativeElement.focus();
+                this.focus.emit();
+            }
+        }, 50);
+    }
+
     public clear() {
         this.filter = '';
         this.post();

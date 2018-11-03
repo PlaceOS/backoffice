@@ -85,7 +85,6 @@
 
 .search {
     flex: 1;
-    padding: 0 1em;
 }
 
 .block {
@@ -100,7 +99,7 @@
 .avatar {
     height: $header-height - 1em;
     width: $header-height - 1em;
-    margin: 0 1em;
+    margin: 0 1em 0 .5em;
     border-radius: 100%;
     border: 2px solid #f8f8f8;
     box-shadow: 0 1px 3px 0 rgba(#000,.0), 0 1px 1px 0 rgba(#000,.0), 0 2px 1px -1px rgba(#000,.0);
