@@ -58,7 +58,6 @@ export class GlobalSearchComponent extends BaseComponent implements OnChanges {
                 this.model.list = list || [];
                 this.model.searching = false;
                 this.model.total = this.service.Search.get(q) || this.model.list.length;
-                console.log('Total:', this.model.total, q);
                 this.timeout('bottom', () => this.atBottom(), 2000);
             });
         });

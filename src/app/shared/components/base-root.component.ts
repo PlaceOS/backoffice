@@ -23,26 +23,16 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
         this.model.loading_item = true;
         this.model.list = [];
         this.subs.obs.route = this.route.paramMap.subscribe((params) => {
-            if (params.has('id') && this.service.get('BACKOFFICE.active_item') !== params.get('id')) {
+            if (params.has('id') && this.service.get('BACKOFFICE.active_item_id') !== params.get('id')) {
                 this.model.id = params.get('id');
-                this.timeout('loading', () => this.model.loading_item = true, 10);
-                this.service[this.model.service].show(this.model.id).then((item) => {
-                    this.model.item = item;
-                    this.service.set('BACKOFFICE.active_item', this.model.id);
-                    this.loadValues();
-                    this.timeout('item', () => {
-                        this.model.loading_item = false;
-                    });
-                }, () => {
-                    this.service.error(`Failed to load data for device "${this.model.id}"`);
-                    this.model.loading_item = false;
-                    this.service.navigate('devices');
-                });
+                this.loadItem();
+            } else if (params.has('id')) {
+                this.model.item = this.service.get('BACKOFFICE.active_item');
             }
             if (params.has('tab')) {
                 this.model.tab = params.get('tab');
             }
-            this.showSidebar(!this.model.id);
+            this.timeout('sidebar', () => this.showSidebar(!this.model.id));
         });
         this.subs.obs.list = this.service[this.model.service].listen('list', () => {
             this.model.pure_list = this.service[this.model.service].list();
@@ -152,13 +142,30 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
         if (!this.model.item) { return; }
         this.service[this.model.service].remove(this.model.item.id).then(
             () => {
-                this.service.success(`Successfully deleted ${this.model.type} ${this.model.item.id}`);
+                this.service.success(`Successfully deleted ${this.model.type} "${this.model.item.id}"`);
                 this.service.navigate([this.model.route]);
             },
-            () => this.service.error(`Failed to delete ${this.model.type} ${this.model.item.id}`)
+            () => this.service.error(`Failed to delete ${this.model.type} "${this.model.item.id}"`)
         );
     }
 
     protected loadValues() {
+    }
+
+    protected loadItem() {
+        this.timeout('loading', () => this.model.loading_item = true, 10);
+        this.service[this.model.service].show(this.model.id).then((item) => {
+            this.timeout('set_item', () => {
+                this.model.item = item;
+                this.service.set('BACKOFFICE.active_item_id', this.model.id);
+                this.service.set('BACKOFFICE.active_item', this.model.item);
+                this.loadValues();
+                this.timeout('item', () => this.model.loading_item = false);
+            }, 50);
+        }, () => {
+            this.service.error(`Failed to load data for ${this.model.type} "${this.model.id}"`);
+            this.model.loading_item = false;
+            this.service.navigate([this.model.route]);
+        });
     }
 }

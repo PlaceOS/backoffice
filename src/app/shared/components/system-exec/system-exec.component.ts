@@ -162,14 +162,14 @@ export class SystemExecComponent extends BaseComponent implements OnInit, OnChan
             };
             this.service.Systems.execute(this.system_id, details).then((result) => {
                 this.service.success('Command successful executed.<br>View Response?', 'View', () => {
-                    console.log('View response:', result);
+                    // console.log('View response:', result);
                 });
             }, (err) => {
                 if (typeof err === 'string' && err.length < 64) {
                     this.service.error(err);
                 } else {
                     this.service.error(`Executing '${this.model.fn.name}' failed.<br>View Error?`, 'View', () => {
-                        console.log('View error:', err);
+                        // console.log('View error:', err);
                     });
                 }
             });

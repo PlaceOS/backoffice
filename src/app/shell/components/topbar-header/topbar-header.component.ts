@@ -87,7 +87,6 @@ export class TopbarHeaderComponent extends BaseComponent implements OnInit {
     }
 
     public postFilter() {
-        console.log('Filter:', this.model.filter);
         this.service.set('APP.global_filter', this.model.filter);
         this.filter.emit(this.model.filter);
     }
