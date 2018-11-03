@@ -3,6 +3,7 @@ import { Component, Input, TemplateRef, Output, EventEmitter, OnInit, OnChanges 
 
 import { BaseComponent } from '../base.component';
 import { AppService } from '../../../services/app.service';
+import { Utils } from '../../utility.class';
 
 @Component({
     selector: 'item-display',
@@ -67,5 +68,12 @@ export class ItemDisplayComponent extends BaseComponent implements OnInit, OnCha
         if (index >= this.tabs.length) { index = this.tabs.length - 1; }
         if (index < 0) { index = 0; }
         this.model.tab = this.tabs[index].id;
+    }
+
+    public copy() {
+        if (this.item && this.item.id) {
+            Utils.copyToClipboard(this.item.id);
+            this.service.info('ID copied to clipboard');
+        }
     }
 }
