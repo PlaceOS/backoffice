@@ -1,0 +1,59 @@
+<div class="container">
+    <div class="header">
+        <div class="heading">Metrics</div>
+        <div class="options"></div>
+        <div class="time-display">
+            <div class="clock">
+                <div class="hand hour" [style.transform]="'translateX(-50%) rotate(' + model.hour_angle + 'deg)' | safestyle"></div>
+                <div class="hand minute" [style.transform]="'translateX(-50%) rotate(' + model.minute_angle + 'deg)' | safestyle"></div>
+                <div class="hand second" [style.transform]="'translateX(-50%) rotate(' + model.second_angle + 'deg)' | safestyle"></div>
+                <div class="center"></div>
+            </div>
+            <div class="display">
+                <div class="time">{{model.time}}</div>
+                <div class="day">{{model.date}}</div>
+            </div>
+        </div>
+    </div>
+    <div class="body">
+        <div class="count" *ngIf="model.offline_devices && model.offline_devices.length > 0">
+            There are {{model.offline_devices.length}} devices offline
+        </div>
+        <div class="issues">
+            <div class="item" *ngFor="let system of (model.systems || [])">
+                <div class="system">
+                    <div class="name">{{system.name}}</div>
+                    <div class="id" *ngIf="system.id">({{system.id}})</div>
+                </div>
+                <div class="modules" *ngIf="model.system_map && model.system_map[system.id]">
+                    <div class="device" *ngFor="let item of (model.system_map[system.id] || [])" [class.connected]="item.connected">
+                        <div class="module-class">{{item.dependency?.module_name}}</div>
+                        <div class="name">{{item.name}}</div>
+                        <div class="ip">{{item.ip}}</div>
+                        <div class="created">{{item.display?.created}}</div>
+                        <div class="action">
+                            <i class="material-icons">done</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="no-item" center *ngIf="!model.systems || model.systems.length <= 0">
+                <div class="icon">
+                    <i class="material-icons">close</i>
+                </div>
+                <div class="text">No connection issues</div>
+            </div>
+        </div>
+        <div class="graphs">
+            <div class="connected">
+                <canvas #connected_graph></canvas>
+            </div>
+            <div class="offline">
+                <canvas #offline_graph></canvas>
+            </div>
+            <div class="triggers">
+                <canvas #triggers_graph></canvas>
+            </div>
+        </div>
+    </div>
+</div>

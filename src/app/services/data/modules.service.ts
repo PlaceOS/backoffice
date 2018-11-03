@@ -9,6 +9,8 @@ import { IEngineSystem } from './systems.service';
 
 import { DeviceModalComponent } from '../../overlays/device-modal/device-modal.component';
 
+import * as moment from 'moment';
+
 export interface IEngineModule {
     id: string;
     dependency_id: string;
@@ -31,6 +33,7 @@ export interface IEngineModule {
     connected?: boolean;
     ignore_connected?: boolean;
     settings?: any;
+    display?: any;
     created: number;
     updated: number;
 }
@@ -97,6 +100,9 @@ export class ModulesService extends BaseService {
         if (!item.custom_name) {
             item.custom_name = `${item.dependency ? item.dependency.name : 'Blank'} - ${item.system ? item.system.name : 'Blank'}`;
         }
+        item.display = {
+            created: moment(item.created).fromNow()
+        };
         return item;
     }
 
