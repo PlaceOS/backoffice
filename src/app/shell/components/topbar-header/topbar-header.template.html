@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="search">
-            <searchbar [(filter)]="model.filter" (filterChange)="postFilter()"></searchbar>
+            <searchbar *ngIf="model.has_search" [(filter)]="model.filter" (filterChange)="postFilter()"></searchbar>
         </div>
         <div class="block end">
             <!-- TODO Add user details display -->

@@ -34,6 +34,7 @@ export class TopbarHeaderComponent extends BaseComponent implements OnInit {
             return setTimeout(() => this.init(), 500);
         }
         this.model.logo = this.service.Settings.get('app.logo') || {};
+        this.model.has_search = this.service.Settings.get('app.global_search') || false;
         this.model.user = this.service.Users.current();
         this.subs.obs.show_menu = this.service.listen('APP.show_menu', (state) => this.model.show_menu = state);
         this.subs.obs.filter = this.service.listen('APP.global_filter', (filter) => this.model.filter = filter);
