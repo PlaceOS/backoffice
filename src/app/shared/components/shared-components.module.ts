@@ -10,7 +10,6 @@ import { BaseComponent } from './base.component';
 import { BaseRootComponent } from './base-root.component';
 import { LOGIN_COMPONENTS } from './login';
 
-import { ItemListComponent } from './item-list/item-list.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { SettingsDisplayComponent } from './settings-display/settings-display.component';
 import { ItemDisplayComponent } from './item-display/item-display.component';
@@ -22,7 +21,6 @@ const COMPONENTS: any[] = [
     ...LOGIN_COMPONENTS,
     BaseComponent,
     BaseRootComponent,
-    ItemListComponent,
     SidebarComponent,
     SettingsDisplayComponent,
     ItemDisplayComponent,
