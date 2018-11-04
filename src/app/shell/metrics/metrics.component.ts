@@ -1,6 +1,6 @@
 
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { BaseComponent } from '../../shared/components/base.component';
 import { AppService } from '../../services/app.service';
@@ -23,7 +23,7 @@ export class MetricsComponent extends BaseComponent implements OnInit {
     @ViewChild('offline_graph') public offline: ElementRef;
     @ViewChild('triggers_graph') public triggers: ElementRef;
 
-    constructor(private service: AppService, private route: ActivatedRoute) {
+    constructor(private service: AppService, private route: ActivatedRoute, private router: Router) {
         super();
         Chart.defaults.global.defaultFontColor = 'white';
         Chart.defaults.global.legend.display = false;
@@ -69,6 +69,7 @@ export class MetricsComponent extends BaseComponent implements OnInit {
                 break;
             }
         }
+        this.model.fullscreen = this.router.url.indexOf('dashboard') >= 0;
         if (!this.model.index || this.model.index < 0) { this.model.index = 1; }
         console.log('Index:', this.model.index);
         this.loadOfflineDevices();
@@ -185,9 +186,9 @@ export class MetricsComponent extends BaseComponent implements OnInit {
         console.log('Event:', e);
         if (e.data) {
             if (e.data.id === 'open') {
-                window.open(`#/dashboard/${this.model.period || 'day'}?trust=true`, '_blank');
+                window.open(`#/metrics/dashboard/${this.model.period || 'day'}?trust=true`, '_blank');
             } else if (e.data.id === 'copy') {
-                Utils.copyToClipboard(`#/dashboard/${this.model.period || 'day'}?trust=true`);
+                Utils.copyToClipboard(`#/metrics/dashboard/${this.model.period || 'day'}?trust=true`);
                 this.service.info('Copied Fullscreen URL to clipboard');
             } else if (e.data.id === 'hour') {
                 this.changePeriod(0);

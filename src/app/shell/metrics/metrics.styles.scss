@@ -9,6 +9,19 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    &.fullscreen {
+        position: fixed;
+        z-index: 999;
+        top: -3.5em;
+        @include respond-to(mobile) {
+            top: -3em;
+        }
+
+        .type,
+        .menu {
+            display: none;
+        }
+    }
 }
 
 .header {

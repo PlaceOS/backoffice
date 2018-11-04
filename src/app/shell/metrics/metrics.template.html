@@ -1,4 +1,4 @@
-<div class="container" (window:resize)="updateContextList()">
+<div class="container" [class.fullscreen]="model.fullscreen" (window:resize)="updateContextList()">
     <div class="header">
         <div class="heading">Metrics</div>
         <div class="options">
