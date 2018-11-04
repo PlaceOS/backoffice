@@ -52,7 +52,6 @@ export class StatsService extends BaseService {
     }
 
     protected processItem(raw_item: any) {
-        console.log('Raw Item:', raw_item);
         const item: IEngineStats = {
             period: raw_item.period_name,
             interval: raw_item.interval,

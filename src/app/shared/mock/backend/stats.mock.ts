@@ -37,7 +37,6 @@ export class MockStatsBackend extends BaseMockBackend {
         this.model[name].histogram.push({ avg: value, min: value, max: value, sum: value, count: 1 });
         this.model[name].histogram.push({ avg: value + 2, min: value + 2, max: value + 2, sum: value + 2, count: 1 });
         setInterval(() => {
-            console.log('Name:', name, this.model[name].histogram);
             const old_value = this.model[name].histogram[this.model[name].histogram.length - 1].max;
             let new_value = old_value + Math.floor(Math.random() * 10) - 5;
             if (new_value < 0) { new_value = 0; }

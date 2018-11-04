@@ -71,7 +71,6 @@ export class MetricsComponent extends BaseComponent implements OnInit {
         }
         this.model.fullscreen = this.router.url.indexOf('dashboard') >= 0;
         if (!this.model.index || this.model.index < 0) { this.model.index = 1; }
-        console.log('Index:', this.model.index);
         this.loadOfflineDevices();
         this.loadHistograms();
     }
@@ -120,7 +119,6 @@ export class MetricsComponent extends BaseComponent implements OnInit {
 
     public loadHistograms() {
         this.service.Stats.connections({ period: this.model.period || 'day' }).then((details) => {
-            console.log('Details:', details);
             const start = moment(details.start).add(-details.interval, 's');
             const labels = [];
             const data = [];
@@ -128,12 +126,9 @@ export class MetricsComponent extends BaseComponent implements OnInit {
                 labels.push(start.add(details.interval, 's').toDate());
                 data.push(point.max);
             }
-            console.log('Connected Labels:', labels);
-            console.log('Connected Data:', data);
             this.updateChart('connected', 'Connected Devices', labels, data);
         });
         this.service.Stats.offline({ period: this.model.period || 'day' }).then((details) => {
-            console.log('Details:', details);
             const start = moment(details.start).add(-details.interval, 's');
             const labels = [];
             const data = [];
@@ -144,7 +139,6 @@ export class MetricsComponent extends BaseComponent implements OnInit {
             this.updateChart('offline', 'Offline Devices', labels, data);
         });
         this.service.Stats.triggers({ period: this.model.period || 'day' }).then((details) => {
-            console.log('Details:', details);
             const start = moment(details.start).add(-details.interval, 's');
             const labels = [];
             const data = [];
@@ -183,7 +177,6 @@ export class MetricsComponent extends BaseComponent implements OnInit {
     }
 
     public event(e) {
-        console.log('Event:', e);
         if (e.data) {
             if (e.data.id === 'open') {
                 window.open(`#/metrics/dashboard/${this.model.period || 'day'}?trust=true`, '_blank');

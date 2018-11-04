@@ -75,7 +75,7 @@ export class SystemDevicesComponent extends BaseComponent implements OnChanges {
                     this.service.error(err);
                 } else {
                     this.service.error(`Failed to stop device '${device.id}'.<br>View Error?`, 'View', () => {
-                        console.log('View error:', err);
+                        // console.log('View error:', err);
                     });
                 }
             });
