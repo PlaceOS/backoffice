@@ -22,14 +22,14 @@
         <div class="issues">
             <div class="item" *ngFor="let system of (model.systems || [])">
                 <div class="system">
-                    <div class="name">{{system.name}}</div>
-                    <div class="id" *ngIf="system.id">({{system.id}})</div>
+                    <div class="name hover" (touchrelease)="goto(system, 'systems')">{{system.name}}</div>
+                    <div class="id hover" *ngIf="system.id" (touchrelease)="goto(system, 'systems')">({{system.id}})</div>
                 </div>
                 <div class="modules" *ngIf="model.system_map && model.system_map[system.id]">
                     <div class="device" *ngFor="let item of (model.system_map[system.id] || [])" [class.connected]="item.connected">
-                        <div class="module-class">{{item.dependency?.module_name}}</div>
-                        <div class="name">{{item.name}}</div>
-                        <div class="ip">{{item.ip}}</div>
+                        <div class="module-class hover" (touchrelease)="goto(item, 'devices')">{{item.dependency?.module_name}}</div>
+                        <div class="name hover" (touchrelease)="goto(item, 'devices')">{{item.name}}</div>
+                        <div class="ip hover" (touchrelease)="goto({ link: 'http://' + item.ip })">{{item.ip}}</div>
                         <div class="created">{{item.display?.created}}</div>
                         <div class="action">
                             <i class="material-icons">done</i>

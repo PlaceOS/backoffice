@@ -28,17 +28,18 @@ import { TriggersService } from './data/triggers.service';
 import { EngineSystemsService } from './data/systems.service';
 import { UsersService } from './data/users.service';
 import { ZonesService } from './data/zones.service';
-
-import { Utils } from '../shared/utility.class';
-
-import { ConfirmModalComponent } from '../overlays/confirm-modal/confirm-modal.component';
-import { ViewModuleStateModalComponent } from '../overlays/view-module-state/view-module-state.component';
 import { HotkeyService } from './hotkey.service';
 import { ApplicationService } from './data/application.service';
 import { AuthSourcesService } from './data/authsources.service';
 import { DomainsService } from './data/domains.service';
 import { NodesService } from './data/nodes.service';
 import { EngineSearchService } from './data/search.service';
+import { StatsService } from './data/stats.service';
+
+import { Utils } from '../shared/utility.class';
+
+import { ConfirmModalComponent } from '../overlays/confirm-modal/confirm-modal.component';
+import { ViewModuleStateModalComponent } from '../overlays/view-module-state/view-module-state.component';
 
 @Injectable({
     providedIn: 'root'
@@ -74,6 +75,7 @@ export class AppService {
         private domains: DomainsService,
         private nodes: NodesService,
         private search: EngineSearchService,
+        private stats: StatsService,
         private hotkey: HotkeyService
     ) {
             // Set parent service on child services
@@ -252,6 +254,8 @@ export class AppService {
     get Zones() { return this.zones; }
     get Nodes() { return this.nodes; }
     get Search() { return this.search; }
+    get Stats() { return this.stats; }
+
     /**
      * Set the page title
      * @param str New value to set the page title

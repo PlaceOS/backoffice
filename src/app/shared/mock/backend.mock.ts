@@ -19,6 +19,7 @@ import { MockAuthSourcesBackend } from './backend/auth-sources.mock';
 import { MockSystemTriggersBackend } from './backend/systems-triggers.mock';
 import { MockNodesBackend } from './backend/nodes.mock';
 import { MOCK_REQ_HANDLER } from '@acaprojects/ngx-composer';
+import { MockStatsBackend } from './backend/stats.mock';
 
 export class MockBackend {
     public model: any = {
@@ -101,6 +102,12 @@ export class MockBackend {
                                     this.update(this.model.backend.modules.data);
                                     this.model.loaded = true;
                                     this.loadSearch();
+                                });
+                                this.model.backend.stats = new MockStatsBackend(this.model);
+                                this.model.backend.stats.listen((stat_state) => {
+                                    if (!stat_state) { return; }
+                                    this.update(this.model.backend.stats.data);
+                                    this.model.loaded = true;
                                 });
                             });
                         });

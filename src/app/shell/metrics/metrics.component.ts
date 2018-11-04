@@ -33,7 +33,7 @@ export class MetricsComponent extends BaseComponent implements OnInit {
 
     public ngOnInit() {
         this.interval('time', () => this.updateTime(), 1000);
-        this.interval('histograms', () => this.updateTime(), 5 * 60 * 1000);
+        this.interval('histograms', () => this.loadHistograms(), 5 * 60 * 1000);
         this.subs.obs.route = this.route.paramMap.subscribe((params) => {
             if (params.has('period')) {
                 this.model.period = params.get('period');
@@ -53,12 +53,20 @@ export class MetricsComponent extends BaseComponent implements OnInit {
         this.loadHistograms();
     }
 
+    public goto(item, route?) {
+        if (item.id) {
+            this.service.navigate([(route || 'systems').toLowerCase(), item.id]);
+        } else if (item.link) {
+            window.open(item.link, '_blank');
+        }
+    }
+
     public updateTime() {
         const now = moment();
         this.model.time = now.format('hh:mm A');
         this.model.date = now.format('ddd, MMM D');
-        this.model.hour_angle = now.hour() % 12 / 12 * 360;
-        this.model.minute_angle = now.minute() / 60 * 360;
+        this.model.hour_angle = (now.hour() % 12 + now.minute() / 60) / 12 * 360;
+        this.model.minute_angle = (now.minute() + now.second() / 60) / 60 * 360;
         this.model.second_angle = now.second() / 60 * 360;
     }
 
@@ -88,23 +96,41 @@ export class MetricsComponent extends BaseComponent implements OnInit {
     }
 
     public loadHistograms() {
-        const now = moment();
-        const labels = [now.toDate(), now.add(1, 'd').toDate(), now.add(1, 'd').toDate(), now.add(1, 'd').toDate(), now.add(1, 'd').toDate(), now.add(1, 'd').toDate()];
-        if (this.connected && this.connected.nativeElement) {
+        this.service.Stats.connections({ period: this.model.period || 'day' }).then((details) => {
+            console.log('Details:', details);
+            const start = moment(details.start).add(-details.interval, 's');
+            const labels = [];
             const data = [];
-            for (let i = 0; i < 6; i++) { data.push(Math.floor(Math.random() * 20)); }
+            for (const point of details.histogram) {
+                labels.push(start.add(details.interval, 's').toDate());
+                data.push(point.max);
+            }
+            console.log('Connected Labels:', labels);
+            console.log('Connected Data:', data);
             this.updateChart('connected', 'Connected Devices', labels, data);
-        }
-        if (this.offline && this.offline.nativeElement) {
+        });
+        this.service.Stats.offline({ period: this.model.period || 'day' }).then((details) => {
+            console.log('Details:', details);
+            const start = moment(details.start).add(-details.interval, 's');
+            const labels = [];
             const data = [];
-            for (let i = 0; i < 6; i++) { data.push(Math.floor(Math.random() * 20)); }
+            for (const point of details.histogram) {
+                labels.push(start.add(details.interval, 's').toDate());
+                data.push(point.max);
+            }
             this.updateChart('offline', 'Offline Devices', labels, data);
-        }
-        if (this.triggers && this.triggers.nativeElement) {
+        });
+        this.service.Stats.triggers({ period: this.model.period || 'day' }).then((details) => {
+            console.log('Details:', details);
+            const start = moment(details.start).add(-details.interval, 's');
+            const labels = [];
             const data = [];
-            for (let i = 0; i < 6; i++) { data.push(Math.floor(Math.random() * 100)); }
+            for (const point of details.histogram) {
+                labels.push(start.add(details.interval, 's').toDate());
+                data.push(point.max);
+            }
             this.updateChart('triggers', 'Active Triggers', labels, data);
-        }
+        });
     }
 
     public updateChart(name, title, labels, data) {
