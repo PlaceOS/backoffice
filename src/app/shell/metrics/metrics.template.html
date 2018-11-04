@@ -1,7 +1,14 @@
-<div class="container">
+<div class="container" (window:resize)="updateContextList()">
     <div class="header">
         <div class="heading">Metrics</div>
-        <div class="options"></div>
+        <div class="options">
+            <div class="type not-mobile">
+                <dropdown [list]="model.options" [(model)]="model.index" (modelChange)="changePeriod($event)"></dropdown>
+            </div>
+            <div class="menu"context-item [cmp]="context_menu" [touch]="true" (event)="event($event)" [data]="model.context_list" touchrelease>
+                <i class="material-icons">more_vert</i>
+            </div>
+        </div>
         <div class="time-display">
             <div class="clock">
                 <div class="hand hour" [style.transform]="'translateX(-50%) rotate(' + model.hour_angle + 'deg)' | safestyle"></div>

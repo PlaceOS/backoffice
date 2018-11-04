@@ -4,9 +4,11 @@ import { ActivatedRoute } from '@angular/router';
 
 import { BaseComponent } from '../../shared/components/base.component';
 import { AppService } from '../../services/app.service';
+import { ContextMenuComponent } from '../../shared/components/context-menu/context-menu.component';
 
 import * as moment from 'moment';
 import * as Chart from 'chart.js';
+import { Utils } from '../../shared/utility.class';
 
 @Component({
     selector: 'app-metrics',
@@ -15,6 +17,7 @@ import * as Chart from 'chart.js';
 })
 export class MetricsComponent extends BaseComponent implements OnInit {
     public model: any = {};
+    public context_menu = ContextMenuComponent;
 
     @ViewChild('connected_graph') public connected: ElementRef;
     @ViewChild('offline_graph') public offline: ElementRef;
@@ -32,6 +35,7 @@ export class MetricsComponent extends BaseComponent implements OnInit {
     }
 
     public ngOnInit() {
+        this.model.options = ['Last Hour', 'Last Day', 'Last Week', 'Last Month'];
         this.interval('time', () => this.updateTime(), 1000);
         this.interval('histograms', () => this.loadHistograms(), 5 * 60 * 1000);
         this.subs.obs.route = this.route.paramMap.subscribe((params) => {
@@ -39,6 +43,14 @@ export class MetricsComponent extends BaseComponent implements OnInit {
                 this.model.period = params.get('period');
                 this.loadHistograms();
             }
+            for (const opt of this.model.options) {
+                const index = opt.toLowerCase().indexOf(this.model.period.toLowerCase());
+                if (index >= 0) {
+                    this.model.index = this.model.options.indexOf(opt);
+                    break;
+                }
+            }
+            if (!this.model.index || this.model.index < 0) { this.model.index = 1; }
         });
         this.updateTime();
         this.init();
@@ -48,7 +60,17 @@ export class MetricsComponent extends BaseComponent implements OnInit {
         if (!this.service.ready()) {
             return this.timeout('init', () => this.init());
         }
+        this.updateContextList();
         if (!this.model.period) { this.model.period = 'day'; }
+        for (const opt of this.model.options) {
+            const index = opt.toLowerCase().indexOf(this.model.period.toLowerCase());
+            if (index >= 0) {
+                this.model.index = this.model.options.indexOf(opt);
+                break;
+            }
+        }
+        if (!this.model.index || this.model.index < 0) { this.model.index = 1; }
+        console.log('Index:', this.model.index);
         this.loadOfflineDevices();
         this.loadHistograms();
     }
@@ -151,5 +173,48 @@ export class MetricsComponent extends BaseComponent implements OnInit {
                 }
             }
         });
+    }
+
+    public changePeriod(index) {
+        this.model.period = this.model.options[index].split(' ')[1].toLowerCase();
+        this.model.index = index;
+        this.loadHistograms();
+    }
+
+    public event(e) {
+        console.log('Event:', e);
+        if (e.data) {
+            if (e.data.id === 'open') {
+                window.open(`#/dashboard/${this.model.period || 'day'}?trust=true`, '_blank');
+            } else if (e.data.id === 'copy') {
+                Utils.copyToClipboard(`#/dashboard/${this.model.period || 'day'}?trust=true`);
+                this.service.info('Copied Fullscreen URL to clipboard');
+            } else if (e.data.id === 'hour') {
+                this.changePeriod(0);
+            } else if (e.data.id === 'day') {
+                this.changePeriod(1);
+            } else if (e.data.id === 'week') {
+                this.changePeriod(2);
+            } else if (e.data.id === 'month') {
+                this.changePeriod(3);
+            }
+        }
+    }
+
+    public updateContextList() {
+        this.model.context_list = [
+            { id: 'open', name: 'Open Fullscreen URL', icon: { class: 'material-icons', value: 'open_in_new' } },
+            { id: 'copy', name: 'Copy Fullscreen URL', icon: { class: 'material-icons', value: 'http' } },
+            { id: 'hidden', name: 'Hidden Issues', icon: { class: 'material-icons', value: 'visibility' } }
+        ];
+        const mobile = Utils.isMobileDevice();
+        if (mobile || true) {
+            this.model.context_list = this.model.context_list.concat([
+                { id: 'hour', name: 'Set period to hour', icon: { class: 'material-icons', value: 'timeline' } },
+                { id: 'day', name: 'Set period to day', icon: { class: 'material-icons', value: 'access_time' } },
+                { id: 'week', name: 'Set period to week', icon: { class: 'material-icons', value: 'event' } },
+                { id: 'month', name: 'Set period to month', icon: { class: 'material-icons', value: 'date_range' } }
+            ]);
+        }
     }
 }

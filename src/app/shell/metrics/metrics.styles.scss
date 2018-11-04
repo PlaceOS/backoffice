@@ -144,7 +144,7 @@
     width: 20em;
     border-left: 1px solid rgba(#000, .54);
 
-    & > div {
+    &>div {
         flex: 1;
         width: 18em;
         padding: .5em;
@@ -185,6 +185,27 @@
     }
 }
 
+.options {
+    display: flex;
+    align-items: center;
+
+    .menu {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 1.5em;
+        width: 1.5em;
+        font-size: 1.2em;
+        cursor: pointer;
+        margin-left: .5em;
+    }
+
+    dropdown {
+        padding: 0;
+        color: rgba(#000, .87);
+    }
+}
+
 .action {
     border: 1px solid #fff;
     border-radius: 100%;
@@ -193,6 +214,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
     &:hover {
         background-color: #fff;
         color: rgba(#000, .87);
