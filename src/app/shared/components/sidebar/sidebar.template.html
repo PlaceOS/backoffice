@@ -1,6 +1,9 @@
 <div class="container">
     <header>
         <div class="heading">{{heading}}</div>
+        <div class="add" *ngIf="new" (touchrelease)="event.emit({ type: 'new' })" click-responder>
+            <i class="material-icons">add</i>
+        </div>
         <div class="search" (touchrelease)="close ? event.emit({ type: 'close' }) : ''">
             <i class="material-icons">{{ close ? 'close' : 'list'}}</i>
         </div>
@@ -8,9 +11,6 @@
     <section class="search">
         <div class="input">
             <input [(ngModel)]="search" (ngModelChange)="searching()" [placeholder]="'Filter ' + model.lowercase_header">
-        </div>
-        <div class="add" (touchrelease)="event.emit({ type: 'new' })" click-responder>
-            <i class="material-icons">add</i>
         </div>
     </section>
     <section class="content">
@@ -28,7 +28,7 @@
                 <i class="material-icons">close</i>
             </div>
             <div class="text">{{ !search ? 'No ' + model.lowercase_header : 'No matches found'}}</div>
-            <div class="btn">
+            <div class="btn" *ngIf="new">
                 <btn (tapped)="event.emit({ type: 'new' })">Add new {{model.lowercase_header}}</btn>
             </div>
         </div>

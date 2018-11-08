@@ -12,6 +12,7 @@ export const ROUTES: Routes = [
         { path: 'triggers', loadChildren: './shell/triggers/triggers.module#AppTriggersModule' },
         { path: 'users', loadChildren: './shell/users/users.module#AppUsersModule' },
         { path: 'zones', loadChildren: './shell/zones/zones.module#AppZonesModule' },
+        { path: 'tests', loadChildren: './shell/tests/tests.module#AppTestsModule' },
         { path: '**',      redirectTo: 'systems' }
     ] },
     { path: '**',      redirectTo: 'systems' },

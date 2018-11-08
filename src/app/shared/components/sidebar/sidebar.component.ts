@@ -13,6 +13,7 @@ export class SidebarComponent extends BaseComponent implements OnChanges, OnInit
     @Input() public heading = '';
     @Input() public list: any[] = [];
     @Input() public loading;
+    @Input() public new = true;
     @Input() public close = false;
     @Input() public active = '';
     @Input() public search = '';

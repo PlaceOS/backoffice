@@ -95,6 +95,14 @@
                         "class": "material-icons",
                         "value": "web_asset"
                     }
+                },
+                {
+                    "id": "tests",
+                    "name": "Testing",
+                    "icon": {
+                        "class": "material-icons",
+                        "value": "developer_board"
+                    }
                 }
             ]
         }

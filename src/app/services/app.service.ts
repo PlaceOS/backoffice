@@ -35,6 +35,7 @@ import { DomainsService } from './data/domains.service';
 import { NodesService } from './data/nodes.service';
 import { EngineSearchService } from './data/search.service';
 import { StatsService } from './data/stats.service';
+import { TestsService } from './data/tests.service';
 
 import { Utils } from '../shared/utility.class';
 
@@ -76,12 +77,13 @@ export class AppService {
         private nodes: NodesService,
         private search: EngineSearchService,
         private stats: StatsService,
+        private tests: TestsService,
         private hotkey: HotkeyService
     ) {
             // Set parent service on child services
         this.analytics.parent = this.comments.parent = this.users.parent = this.logs.parent = this;
         this.drivers.parent = this.modules.parent = this.zones.parent = this.system_triggers.parent = this;
-        this.systems.parent = this.triggers.parent = this.domains.parent = this;
+        this.systems.parent = this.triggers.parent = this.domains.parent = this.tests.parent = this;
             // Create subjects
         this.subjects.system = new BehaviorSubject('');
         this.observers.system = this.subjects.system.asObservable();
@@ -255,6 +257,7 @@ export class AppService {
     get Nodes() { return this.nodes; }
     get Search() { return this.search; }
     get Stats() { return this.stats; }
+    get Tests() { return this.tests; }
 
     /**
      * Set the page title
