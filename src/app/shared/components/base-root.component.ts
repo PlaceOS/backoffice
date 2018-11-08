@@ -28,6 +28,7 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
                 this.loadItem();
             } else if (params.has('id')) {
                 this.model.item = this.service.get('BACKOFFICE.active_item');
+                this.loadValues();
             }
             if (params.has('tab')) {
                 this.model.tab = params.get('tab');

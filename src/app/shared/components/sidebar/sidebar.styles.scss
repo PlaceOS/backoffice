@@ -18,8 +18,12 @@ header {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: .5em .5em .5em 1em;
+    padding: .5em 1em;
     min-height: 3em;
+
+    @include respond-to(mobile) {
+        padding: .5em .5em .5em 1em;
+    }
 
     .heading {
         flex: 1;
