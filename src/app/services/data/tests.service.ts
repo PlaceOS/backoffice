@@ -26,8 +26,8 @@ export class TestsService extends BaseService {
 
     constructor(protected http: CommsService) {
         super();
-        this.model.name = 'search';
-        this.model.route = '/search';
+        this.model.name = 'test';
+        this.model.route = '/tests';
         this.subjects.list = new BehaviorSubject<IEngineTest[]>([]);
         this.observers.list = this.subjects.list.asObservable();
     }
@@ -40,7 +40,7 @@ export class TestsService extends BaseService {
     public updateItem() { }
     public add() { }
 
-    protected processItem(raw_item: any) {
+    protected processItem(raw_item: any, id?: string) {
         let item: IEngineTest = null;
         if (typeof raw_item === 'string') {
             const route = raw_item.split('/modules/')[1];
@@ -51,7 +51,7 @@ export class TestsService extends BaseService {
             };
         } else {
             item = {
-                id: raw_item.id,
+                id: raw_item.id || id,
                 name: raw_item.name || raw_item.details.name,
                 url: raw_item.path,
                 module_class: raw_item.klass,

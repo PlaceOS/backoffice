@@ -20,6 +20,7 @@ import { MockSystemTriggersBackend } from './backend/systems-triggers.mock';
 import { MockNodesBackend } from './backend/nodes.mock';
 import { MOCK_REQ_HANDLER } from '@acaprojects/ngx-composer';
 import { MockStatsBackend } from './backend/stats.mock';
+import { MockTestsBackend } from './backend/tests.mock';
 
 export class MockBackend {
     public model: any = {
@@ -107,6 +108,12 @@ export class MockBackend {
                                 this.model.backend.stats.listen((stat_state) => {
                                     if (!stat_state) { return; }
                                     this.update(this.model.backend.stats.data);
+                                    this.model.loaded = true;
+                                });
+                                this.model.backend.tests = new MockTestsBackend(this.model);
+                                this.model.backend.tests.listen((tests_state) => {
+                                    if (!tests_state) { return; }
+                                    this.update(this.model.backend.tests.data);
                                     this.model.loaded = true;
                                 });
                             });

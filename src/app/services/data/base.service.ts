@@ -155,10 +155,10 @@ export class BaseService {
                 const control = fields && fields.control;
                 if (control) { delete fields.control; }
                 const query = Utils.generateQueryString(fields) || (fields ? 'complete=true' : '');
-                const url = `${control ? ('/control/api' + this.model.route) : this.endpoint}/${id}${query ? '?' + query : ''}`;
+                const url = `${control ? ('/control/api' + this.model.route) : this.endpoint}/${encodeURIComponent(id)}${query ? '?' + query : ''}`;
                 this.http.get(url).subscribe(
                     (resp: any) => {
-                        const item = this.processItem(resp);
+                        const item = this.processItem(resp, id);
                         resolve(item);
                         setTimeout(() => this.promises[key] = null, 2 * 1000);
                     }, (err) => {
