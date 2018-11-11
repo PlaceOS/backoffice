@@ -1,6 +1,8 @@
 
 import { Routes } from '@angular/router';
+
 import { AppShellComponent } from './shell/shell.component';
+import { AppAboutComponent } from './shell/about/about.component';
 
 export const ROUTES: Routes = [
     { path: '', component: AppShellComponent, children: [
@@ -13,6 +15,7 @@ export const ROUTES: Routes = [
         { path: 'users', loadChildren: './shell/users/users.module#AppUsersModule' },
         { path: 'zones', loadChildren: './shell/zones/zones.module#AppZonesModule' },
         { path: 'tests', loadChildren: './shell/tests/tests.module#AppTestsModule' },
+        { path: 'about', component: AppAboutComponent },
         { path: '**',      redirectTo: 'systems' }
     ] },
     { path: '**',      redirectTo: 'systems' },

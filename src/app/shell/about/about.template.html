@@ -1,0 +1,32 @@
+<div class="container">
+    <main>
+        <item-display [item]="{ name: 'About' }" [has_change]="false" name="test" [active]="model.tab" [tabs]="[
+                { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }
+                ]">
+            <ng-template #about>
+                <div class="about">
+                    <div class="user" *ngIf="model.user">
+                        <div class="avatar" [style.background-image]="model.user.image ? 'url(' + model.user.image + ')' : ''"></div>
+                        <div class="details">
+                            <div class="name">{{model.user.name}}</div>
+                            <div class="email">{{model.user.email}}</div>
+                            <div class="phone">{{model.user.phone}}</div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="label">Backoffice Version</div>
+                        <div class="value">{{model.backoffice_version || '0.0.0'}}</div>
+                    </div>
+                    <div class="field">
+                        <div class="label">Backoffice Build Date</div>
+                        <div class="value">{{model.backoffice_build || 'Today'}}</div>
+                    </div>
+                    <div class="field">
+                        <div class="label">Engine Version</div>
+                        <div class="value">{{model.engine_version || '0.0.0'}}</div>
+                    </div>
+                </div>
+            </ng-template>
+        </item-display>
+    </main>
+</div>

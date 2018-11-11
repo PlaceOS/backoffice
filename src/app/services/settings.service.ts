@@ -263,12 +263,18 @@ export class SettingsService {
         return this.listen('loading_text', next);
     }
 
-    private printVersion() {
+    get version() { return 'local-dev'; }
+
+    get build() {
         const now = moment();
         const built = moment();
         const build =  now.isSame(built, 'd') ? `Today at ${built.format('h:mma')}` : built.format('MMM Do, YYYY | h:mma');
-        this.log('SYSTEM', 'Version: local-dev', null, 'debug', true);
-        this.log('SYSTEM', `Build: ${build}`, null, 'debug', true);
+        return build;
+    }
+
+    private printVersion() {
+        this.log('SYSTEM', `Version: ${this.version}`, null, 'debug', true);
+        this.log('SYSTEM', `Build: ${this.build}`, null, 'debug', true);
     }
 
     /**
