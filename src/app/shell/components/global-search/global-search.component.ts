@@ -73,7 +73,7 @@ export class GlobalSearchComponent extends BaseComponent implements OnChanges {
 
     public goto(item) {
         if (item.id) {
-            this.service.navigate([(this.route_map[item.type] || 'systems').toLowerCase(), item.id]);
+            this.service.navigate([(this.route_map[item.type] || 'systems').toLowerCase(), encodeURIComponent(item.id)]);
         }
         this.service.set('APP.global_filter', '');
     }

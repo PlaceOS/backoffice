@@ -23,8 +23,8 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
         this.model.loading_item = true;
         this.model.list = [];
         this.subs.obs.route = this.route.paramMap.subscribe((params) => {
-            if (params.has('id') && this.service.get('BACKOFFICE.active_item_id') !== params.get('id')) {
-                this.model.id = params.get('id');
+            if (params.has('id') && this.service.get('BACKOFFICE.active_item_id') !== decodeURIComponent(params.get('id'))) {
+                this.model.id = decodeURIComponent(params.get('id'));
                 this.loadItem();
             } else if (params.has('id')) {
                 this.model.item = this.service.get('BACKOFFICE.active_item');
@@ -62,7 +62,7 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
                 }
             } else if (event && event.type === 'select') {
                 this.timeout('navigate', () => {
-                    const route = [this.model.route, event.item.id];
+                    const route = [this.model.route, encodeURIComponent(event.item.id)];
                     if (this.model.tab) { route.push(this.model.tab); }
                     this.service.navigate(route);
                     this.showSidebar(false);
@@ -117,7 +117,7 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
         if (!event) { return; }
         if (event.type === 'tab' && this.model.item && event.value) {
             if (this.subs.timers.navigate) { return; }
-            this.service.navigate([this.model.route, this.model.item.id, event.value ]);
+            this.service.navigate([this.model.route, encodeURIComponent(this.model.item.id), event.value ]);
         } else if (event.type === 'edit') {
             this.edit();
         } else if (event.type === 'delete') {

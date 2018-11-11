@@ -88,7 +88,7 @@ export class Utils {
                     if (query !== '') {
                         query += '&';
                     }
-                    query += `${f}=${fields[f]}`;
+                    query += `${f}=${encodeURIComponent(fields[f])}`;
                 }
             }
         }

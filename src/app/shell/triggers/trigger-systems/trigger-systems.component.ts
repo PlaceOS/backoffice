@@ -38,7 +38,7 @@ export class TriggerSystemsComponent extends BaseComponent implements OnChanges 
             }
             window.open(item, '_blank');
         } else {
-            this.service.navigate(['trigger', item.trigger_id, 'triggers']);
+            this.service.navigate(['trigger', encodeURIComponent(item.trigger_id), 'triggers']);
         }
     }
 }

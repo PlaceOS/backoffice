@@ -38,7 +38,7 @@ export class SystemZonesComponent extends BaseComponent implements OnChanges {
             }
             window.open(item, '_blank');
         } else {
-            this.service.navigate(['zones', item.id]);
+            this.service.navigate(['zones', encodeURIComponent(item.id)]);
         }
     }
 }
