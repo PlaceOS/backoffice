@@ -114,6 +114,10 @@ main {
     }
 }
 
+.border-top {
+    border-top: 1px solid #ccc;
+}
+
 .content {
     display: flex;
     flex-direction: column;
