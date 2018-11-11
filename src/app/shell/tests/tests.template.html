@@ -1,14 +1,59 @@
-<div class="container" [class.show]="model.show_sidebar">
+<div class="container tests" [class.show]="model.show_sidebar">
     <div class="sidebar" (tap)="showSidebar()">
         <sidebar heading="Tests" [new]="false" [list]="model.list" (searchChange)="search($event)" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
-        <item-display [item]="model.item" name="zone" [active]="model.tab"
+        <item-display [item]="model.item" [has_change]="false" name="test" [active]="model.tab"
             [tabs]="[
-                { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }
+            { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }
             ]" (event)="itemEvent($event)">
             <ng-template #about>
-
+                <div class="about">
+                    <div class="module-details">
+                        <div class="module">{{model.item?.module_class}}</div>
+                        <div class="details">
+                            <table>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>{{model.item?.id || model.item?.name}}</td>
+                                </tr>
+                                <tr *ngIf="model.item && model.item.documentation">
+                                    <td>Reference Documentation</td>
+                                    <td>
+                                        <ng-container *ngFor="let doc of model.item.documentation">
+                                            <a [href]="doc | safeurl">{{doc}}</a><br>
+                                        </ng-container>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Settings</td>
+                                    <td>
+                                        <settings-display [model]="model.item?.settings || {}"></settings-display>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Module name</td>
+                                    <td>{{model.item?.module_name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Role</td>
+                                    <td>{{model.item?.role}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="terminal" #cmd_line>
+                        <div class="output">
+                            <div class="line" *ngFor="let line of (model.display_lines || [])">{{line}}</div>
+                        </div>
+                        <div class="input">
+                            <div class="feed">></div>
+                            <div class="field">
+                                <input #cmd_input [(ngModel)]="model.input" (keyup.enter)="send()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </ng-template>
         </item-display>
     </main>

@@ -14,7 +14,7 @@
                 </div>
             </div>
         </div>
-        <div class="options">
+        <div class="options" *ngIf="has_change">
             <div class="option" click-responder (touchrelease)="event.emit({ type: 'edit' })">
                 <i class="material-icons">edit</i>
             </div>

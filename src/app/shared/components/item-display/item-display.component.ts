@@ -14,6 +14,7 @@ export class ItemDisplayComponent extends BaseComponent implements OnInit, OnCha
     @Input() public name: string;
     @Input() public item: any;
     @Input() public loading: boolean;
+    @Input() public has_change = true;
     @Input() public tabs: { id: string, name: string, icon: { class: string, value: string }, template: TemplateRef<any> }[] = [];
     @Input() public active = 'about';
     @Output() public event = new EventEmitter();
