@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 
 import { ComposerModule } from '@acaprojects/ngx-composer';
 import { WidgetsModule } from '@acaprojects/ngx-widgets';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { ROUTES } from './systems.routes';
 
@@ -30,7 +31,8 @@ import { SystemZonesComponent } from './system-zones/system-zones.component';
         ComposerModule,
         WidgetsModule,
         RouterModule.forChild(ROUTES),
-        SharedComponentsModule
+        SharedComponentsModule,
+        DragDropModule
     ]
 })
 export class AppSystemsModule { }

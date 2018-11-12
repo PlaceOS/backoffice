@@ -1,24 +1,22 @@
 <div class="container">
     <div class="list" *ngIf="model.logs && model.logs.length > 0">
-        <table>
-            <thead>
-                <tr>
-                    <td>Session Start</td>
-                    <td>Ended</td>
-                    <td>Systems Accessed</td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of model.logs">
-                    <td>{{item.display?.started}}</td>
-                    <td>{{item.display?.ended}}</td>
-                    <td>
+        <div class="table">
+            <div class="table-head table-row">
+                <div class="start">Session Start</div>
+                <div class="end">Ended</div>
+                <div class="flex">Systems Accessed</div>
+            </div>
+            <div class="table-body">
+                <div class="table-row" *ngFor="let item of model.logs">
+                    <div class="start">{{item.display?.started}}</div>
+                    <div class="end">{{item.display?.ended}}</div>
+                    <div class="flex">
                         <div>{{item.systems.length}}</div>
                         <div>View</div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="no-item" *ngIf="!model.logs || model.logs.length <= 0">
         <div class="text">No logs found</div>

@@ -185,43 +185,103 @@ textarea {
     }
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    border-spacing: 0;
-    border-radius: 8px;
-    overflow: hidden;
 
-    thead {
-        font-weight: bold;
-        background-color: rgba(#000, .15);
+
+.table {
+    overflow: hidden;
+    border-radius: 4px;
+    min-width: 36em;
+}
+
+.table-row {
+    height: 2.5em;
+    display: flex;
+    align-items: center;
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+
+    &:nth-child(2n + 1) {
+        background-color: rgba(#000, .05);
+    }
+    &:nth-child(2n) {
+        background-color: rgba(#000, .1);
     }
 
-    tr {
-        background-color: rgba(#000, .05);
+    .action {
+        height: 1.5em;
+        width: 1.5em;
+        min-width: 1.5em;
+        border-radius: .65em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3em;
 
-        &:nth-child(2n) {
+        &:hover {
             background-color: rgba(#000, .1);
         }
     }
 
-    td {
-        padding: .75em .5em;
-        border-right: 1px solid #999;
-
+    & > * {
+        display: flex;
+        align-items: center;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        font-size: .9em;
+        border-right: 1px solid rgba(#000, .2);
+        min-height: 100%;
+        padding: .5em;
         &:last-child {
             border: none;
         }
     }
+
+    .small {
+        justify-content: center;
+        width: 2.5em;
+        min-width: 2.5em;
+        padding: .5em .25em;
+    }
+
+    .flex {
+        flex: 1;
+    }
+
+    .ip {
+        min-width: 12em;
+        width: 12em;
+
+        a {
+            font-family: $mono-font;
+        }
+    }
+
+    .duo {
+        justify-content: center;
+        width: 5em;
+        min-width: 5em;
+        padding: .5em .25em;
+    }
+
+    &.cdk-drag-preview {
+        background-color: #fff;
+        box-shadow: 0 1px 3px 0 rgba(#000, .2), 0 1px 1px 0 rgba(#000, .14), 0 2px 1px -1px rgba(#000, .12);
+    }
+
+    &.cdk-drag-placeholder {
+        background: #ccc;
+        border: dotted 3px #999;
+        min-height: 2.5em;
+        transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+        & > * {
+            display: none;
+        }
+    }
 }
 
-a {
-    color: #039BE5;
-    text-decoration: underline;
-    cursor: pointer;
-
-    &:hover {
-        color: #40C4FF;
+.table-head {
+    &.table-row {
+        background-color: rgba(#000, .3);
     }
 }
 

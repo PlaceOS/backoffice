@@ -20,18 +20,15 @@ section {
     justify-content: center;
 }
 
-.name {
-    min-width: 10em;
-}
+.table-row {
 
-div {
-    .small {
-        width: 2em;
+    .name {
+        min-width: 10em;
     }
-    .duo {
-        width: 4em;
-        * {
-            display: inline-block;
-        }
+
+    .description {
+        flex: 1;
+        width: 5em;
+        white-space: wrap;
     }
 }

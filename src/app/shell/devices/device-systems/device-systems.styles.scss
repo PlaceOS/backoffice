@@ -5,26 +5,14 @@
     padding: 1em;
 }
 
-tbody {
-    font-size: .9em;
-    td {
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-}
-
 .list {
     margin-top: .5em;
 }
 
-div {
-    .small {
-        width: 2em;
-    }
-    .duo {
-        width: 4em;
-        * {
-            display: inline-flex;
-        }
+.table-row {
+    .devices,
+    .created {
+        width: 8em;
+        min-width: 8em;
     }
 }

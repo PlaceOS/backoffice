@@ -12,34 +12,36 @@
                     <div class="module-details">
                         <div class="module">{{model.item?.module_class}}</div>
                         <div class="details">
-                            <table>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>{{model.item?.id || model.item?.name}}</td>
-                                </tr>
-                                <tr *ngIf="model.item && model.item.documentation">
-                                    <td>Reference Documentation</td>
-                                    <td>
+                            <div class="table">
+                                <div class="table-row">
+                                    <div class="field">Name</div>
+                                    <div class="flex">{{model.item?.id || model.item?.name}}</div>
+                                </div>
+                                <div class="table-row" *ngIf="model.item && model.item.documentation">
+                                    <div class="field">Reference Documentation</div>
+                                    <div class="flex">
+                                        <div>
                                         <ng-container *ngFor="let doc of model.item.documentation">
                                             <a [href]="doc | safeurl">{{doc}}</a><br>
                                         </ng-container>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Settings</td>
-                                    <td>
-                                        <settings-display [model]="model.item?.settings || {}"></settings-display>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Module name</td>
-                                    <td>{{model.item?.module_name}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Role</td>
-                                    <td>{{model.item?.role}}</td>
-                                </tr>
-                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="field">Module name</div>
+                                    <div class="flex">{{model.item?.module_name}}</div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="field">Role</div>
+                                    <div class="flex">{{model.item?.role}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="details">
+                            <div class="name">Settings</div>
+                            <div class="data">
+                                <settings-display [model]="model.item?.settings || {}"></settings-display>
+                            </div>
                         </div>
                     </div>
                     <div class="terminal" #cmd_line>

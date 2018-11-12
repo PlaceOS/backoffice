@@ -1,22 +1,20 @@
 <div class="container">
     <section>
         <div class="list" *ngIf="model.list && model.list.length > 0">
-            <table>
-                <thead>
-                    <tr>
-                        <td>Name</td>
-                        <td>Email</td>
-                        <td>Role</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let item of model.list">
-                        <td>{{item.name}}</td>
-                        <td>{{item.email}}</td>
-                        <td>{{item.role}}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table">
+                <div class="table-head table-row">
+                    <div class="name">Name</div>
+                    <div class="flex">Email</div>
+                    <div class="role">Role</div>
+                </div>
+                <div class="table-body">
+                    <div class="table-row" *ngFor="let item of model.list">
+                        <div class="name">{{item.name}}</div>
+                        <div class="flex">{{item.email}}</div>
+                        <div class="role">{{item.role}}</div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="no-item" *ngIf="!model.list || model.list.length <= 0">
             <div class="text">No users found</div>

@@ -9,23 +9,10 @@
     margin-top: .5em;
 }
 
-tbody {
-    font-size: .9em;
-    td {
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-}
-
-div {
-    .small {
-        width: 2em;
-    }
-    .duo {
-        width: 4em;
-        * {
-            display: inline-flex;
-        }
+.table-row {
+    .system {
+        width: 12em;
+        min-width: 12em;
     }
 }
 

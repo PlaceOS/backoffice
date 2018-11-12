@@ -31,6 +31,10 @@ export class SystemZonesComponent extends BaseComponent implements OnChanges {
         }, () => null);
     }
 
+    public drop(event) {
+        console.log('Drop event:', event);
+    }
+
     public goto(item, link?: string) {
         if (link) {
             if (link.indexOf('http://') < 0 && link.indexOf('https://') < 0) {

@@ -10,6 +10,13 @@ header {
     font-size: 1.1em;
 }
 
+.table-row {
+    .class {
+        width: 12em;
+        min-width: 12em;
+    }
+}
+
 section {
     padding: .5em .25em;
 }

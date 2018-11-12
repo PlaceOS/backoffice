@@ -5,28 +5,26 @@
             <div class="btn"><btn>Join zone</btn></div>
         </section>
         <section>
-            <table *ngIf="model.zones && model.zones.length > 0">
-                <thead>
-                    <tr>
-                        <td></td>
-                        <td>Name</td>
-                        <td>Description</td>
-                        <td *ngIf="model.zones.length > 1"></td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let zone of model.zones">
-                        <td class="small">
-                            <div class="action grab"><i class="material-icons">reorder</i></div>
-                        </td>
-                        <td class="name"><a (touchrelease)="goto(zone)">{{zone.name}}</a></td>
-                        <td>{{zone.description}}</td>
-                        <td *ngIf="model.zones.length > 1" class="small">
+            <div class="table" *ngIf="model.zones && model.zones.length > 0">
+                <div class="table-head table-row">
+                    <div class="small"></div>
+                    <div class="name">Name</div>
+                    <div class="description">Description</div>
+                    <div *ngIf="model.zones.length > 1" class="small"></div>
+                </div>
+                <div class="table-body" cdkDropList (cdkDropLisdivropped)="drop($event)">
+                    <div class="table-row" *ngFor="let zone of model.zones" cdkDrag>
+                        <div class="small">
+                            <div class="action grab" cdkDragHandle><i class="material-icons">reorder</i></div>
+                        </div>
+                        <div class="name"><a (touchrelease)="goto(zone)">{{zone.name}}</a></div>
+                        <div class="description">{{zone.description}}</div>
+                        <div *ngIf="model.zones.length > 1" class="small">
                             <div class="action"><i class="material-icons">exit_to_app</i></div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="no-item" *ngIf="!model.zones || model.zones.length <= 0">
                 <div class="text">No zones for system</div>
             </div>

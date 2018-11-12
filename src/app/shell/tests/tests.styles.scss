@@ -49,6 +49,20 @@ main {
     }
 }
 
+.table-row {
+    .field {
+        width: 12em;
+    }
+}
+
+.details {
+    .name {
+        font-size: .8em;
+        font-weight: 400;
+        margin: .5em 0;
+    }
+}
+
 .about {
     display: flex;
     align-items: center;

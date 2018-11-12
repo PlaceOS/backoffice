@@ -26,25 +26,10 @@
     }
 }
 
-tbody {
-    font-size: .9em;
-    td {
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-}
-
-div {
-    .small {
-        width: 2em;
-    }
-}
-
-.ip {
-    min-width: 3em;
-    width: 12em;
-    a {
-        font-family: $mono-font;
+.table-row {
+    .name {
+        width: 8em;
+        min-width: 8em;
     }
 }
 

@@ -130,6 +130,10 @@ export class SystemDevicesComponent extends BaseComponent implements OnChanges {
         });
     }
 
+    public drop(event) {
+        console.log('Drop event:', event);
+    }
+
     public remove(device: IEngineModule) {
         this.service.confirm({
             icon: 'delete',
