@@ -21,7 +21,8 @@
             "resources": {
                 "files": [
                     "/assets/**",
-                    "!/assets/settings.json"
+                    "!/assets/settings.json",
+                    "!/assets/changelog.md"
                 ],
                 "urls": [
                     "https://fonts.googleapis.com/**",
@@ -34,7 +35,8 @@
         {
             "name": "settings",
             "urls": [
-                "/assets/settings.json"
+                "/assets/settings.json",
+                "/assets/changelog.md"
             ],
             "cacheConfig": {
                 "strategy": "freshness",
@@ -47,7 +49,8 @@
             "name": "control-api",
             "urls": [
                 "/control",
-                "/api"
+                "/api",
+                "/auth"
             ],
             "cacheConfig": {
                 "strategy": "freshness",

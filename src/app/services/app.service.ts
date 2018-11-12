@@ -41,6 +41,7 @@ import { Utils } from '../shared/utility.class';
 
 import { ConfirmModalComponent } from '../overlays/confirm-modal/confirm-modal.component';
 import { ViewModuleStateModalComponent } from '../overlays/view-module-state/view-module-state.component';
+import { ChangelogModalComponent } from '../overlays/changelog-modal/changelog-modal.component';
 
 @Injectable({
     providedIn: 'root'
@@ -93,6 +94,7 @@ export class AppService {
         this.overlay.registerService(this);
         this.overlay.setupModal('confirm', { cmp: ConfirmModalComponent });
         this.overlay.setupModal('view-module-state', { cmp: ViewModuleStateModalComponent });
+        this.overlay.setupModal('changelog', { cmp: ChangelogModalComponent });
         this.init();
     }
 

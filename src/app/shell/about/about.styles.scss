@@ -98,7 +98,12 @@ main {
     }
 
     .value {
-        flex: 1;
+        flex: 3;
         min-width: 16em;
+    }
+
+    .button {
+        flex: 1;
+        margin: .5em 0;
     }
 }

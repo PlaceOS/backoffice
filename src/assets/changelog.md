@@ -4,7 +4,7 @@
 
 ### Release Highlights
 
-* Rewrite interface using [Angular 7]{https://angular.io}
+* Rewrite interface using [Angular 7](https://angular.io)
 
 ### Features
 

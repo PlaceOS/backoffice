@@ -26,6 +26,12 @@ export class AppAboutComponent extends BaseComponent implements OnInit {
         this.model.user = this.service.Users.current();
         this.model.backoffice_version = this.service.Settings.version;
         this.model.backoffice_build = this.service.Settings.build;
+        this.model.changelog = this.service.Settings.markdown();
         console.log('Model:', this.model);
+    }
+
+    public changelog(log: string) {
+        console.log('Log:', log);
+        this.service.Overlay.openModal('changelog', { data: { changelog: log } }, (e) => e.close());
     }
 }

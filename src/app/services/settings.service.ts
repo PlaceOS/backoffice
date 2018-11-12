@@ -14,6 +14,7 @@ import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 
 import * as moment from 'moment';
+import * as showdown from 'showdown';
 
 const APP_NAME = 'ACA_APP';
 const RESERVED_KEYS = ['route', 'query', 'store'];
@@ -76,6 +77,7 @@ export class SettingsService {
             this.printVersion();
             this.setup = true;
         }, (err: any) => setTimeout(() => this.init(), 500));
+        this.loadMarkdown();
     }
 
     /**
@@ -130,6 +132,41 @@ export class SettingsService {
     }
 
     /**
+     * Loads markdown from a given file
+     * @param file Name of a markdown file to load settings from
+     * @return Returns a promise which returns the html equivilent of the markdown from the given file
+     */
+    public loadMarkdown(file: string = 'assets/changelog.md') {
+        if (!this.promises[`md(${file})`]) {
+            this.promises[`md(${file})`] = new Promise((resolve, reject) => {
+                this.http.get(file, { responseType: 'text' })
+                    .subscribe(
+                        (data) => {
+                            if (!this.model.markdown) { this.model.markdown = {}; }
+                            const converter = new showdown.Converter();
+                            const html = converter.makeHtml(data);
+                            this.model.markdown[file] = html;
+                        }, (err) => {
+                            reject(err);
+                            this.promises[`md(${file})`] = null;
+                        }, () => {
+                            resolve(this.model.markdown[file]);
+                            this.promises[`md(${file})`] = null;
+                        }
+                    );
+            });
+        }
+        return this.promises[`setting(${file})`];
+    }
+
+    public markdown(file: string = 'assets/changelog.md') {
+        if (this.model.markdown) {
+            return this.model.markdown[file];
+        }
+        return null;
+    }
+
+    /**
      * Saves the given value in local storage and add it to the settings.
      * @param  {string} key   Reference to store the item as
      * @param  {string} value Value to store in the give key
@@ -162,7 +199,7 @@ export class SettingsService {
         } else {
             const use_keys = keys.splice(1, keys.length - 1);
             let item = this.getItemFromKeys(use_keys, this.model.settings[keys[0]]);
-                // Check that item exists under the reserved keys
+            // Check that item exists under the reserved keys
             if (item === undefined || item === null) {
                 for (const r of RESERVED_KEYS) {
                     if (this.model.settings.hasOwnProperty(r) && this.model.settings[r] !== undefined && this.model.settings[r] !== null) {
@@ -268,7 +305,7 @@ export class SettingsService {
     get build() {
         const now = moment();
         const built = moment();
-        const build =  now.isSame(built, 'd') ? `Today at ${built.format('h:mma')}` : built.format('MMM Do, YYYY | h:mma');
+        const build = now.isSame(built, 'd') ? `Today at ${built.format('h:mma')}` : built.format('MMM Do, YYYY | h:mma');
         return build;
     }
 

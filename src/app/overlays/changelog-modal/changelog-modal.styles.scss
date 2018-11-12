@@ -1,0 +1,27 @@
+@import 'shared.styles';
+
+.container {
+    width: 1280px;
+    max-width: 95vw;
+    font-size: 1.25em;
+    overflow: hidden;
+    transition: height 200ms, width 200ms;
+
+    @include respond-to(mobile) {
+        width: 20em;
+    }
+}
+
+.body {
+    font-size: .8em;
+    width: 100%;
+    overflow: auto;
+    padding: .5em 1em;
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+}
