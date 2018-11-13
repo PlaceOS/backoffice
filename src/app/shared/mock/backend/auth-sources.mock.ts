@@ -21,7 +21,7 @@ export class MockAuthSourcesBackend extends BaseMockBackend {
     private loadList() {
         const types = ['ldap', 'ldaps', 'adfs', 'oauth2', 'saml2'];
         const item_list = [];
-        const count = Math.floor(Math.random() * 24 + 5);
+        const count = Math.ceil(Math.floor(Math.random() * 24 + 5) * this.model.scale);
         const domains = this.model.domains || [];
         for (let i = 0; i < count; i++) {
             const domain = domains.length > 0 ? domains[Math.floor(Math.random() * domains.length)] : { id: 'sgrp-test', name: 'Domain Test' };

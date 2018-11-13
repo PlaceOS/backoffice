@@ -59,8 +59,8 @@ export class MockStatsBackend extends BaseMockBackend {
                 created_at: moment().add(-Math.floor(Math.random() * 10000), 'm').unix()
             });
         }
-        this.model.triggers = item_list;
-        MOCK_REQ_HANDLER.register('/control/api/stats/:id', this.model.triggers, (event) => {
+        this.model.states = item_list;
+        MOCK_REQ_HANDLER.register('/control/api/stats/:id', this.model.stats, (event) => {
             const period = event.fragment.period || 'day';
             const interval = period === 'hour' ? 5 * 60 : (period === 'week' ? 6 * 60 * 60 : (period === 'month' ? 24 * 60 * 60 : 30 * 60));
             if (event.params.id && this.model[`graph_${event.params.id}`] && this.model[`graph_${event.params.id}`].histogram) {

@@ -20,7 +20,7 @@ export class MockNodesBackend extends BaseMockBackend {
 
     private loadList() {
         const item_list = [];
-        const count = Math.floor(Math.random() * 0 + 1);
+        const count = Math.ceil(Math.floor(Math.random() * 0 + 1) * this.model.scale);
         for (let i = 0; i < count; i++) {
             const id = `edge-${Utils.padZero(i, 4)}`;
             item_list.push({

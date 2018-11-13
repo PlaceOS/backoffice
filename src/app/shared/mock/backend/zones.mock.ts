@@ -20,7 +20,7 @@ export class MockZonesBackend extends BaseMockBackend {
 
     private loadZones() {
         const zone_list = [];
-        const count = Math.floor(Math.random() * 10 + 5);
+        const count = Math.ceil(Math.floor(Math.random() * 10 + 5) * this.model.scale);
         for (let i = 0; i < count; i++) {
             zone_list.push({
                 id: `zone-${Utils.padZero(i, 4)}`,

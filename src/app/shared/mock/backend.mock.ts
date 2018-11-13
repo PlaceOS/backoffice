@@ -27,6 +27,7 @@ export class MockBackend {
         api_route: 'control/api',
         domain: 'acaprojects.com',
         DESK_OFFSET: 0,
+        scale: 1,
         city: 'Sydney',
         predefined_users: [
             'Alex Sorafumo', 'Ben Hoad', 'Jonathan McFarlane',

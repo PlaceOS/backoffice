@@ -20,7 +20,7 @@ export class MockModulesBackend extends BaseMockBackend {
 
     private loadList() {
         const item_list = [];
-        const count = Math.floor(Math.random() * 240 + 120);
+        const count = Math.ceil(Math.floor(Math.random() * 500 + 120) * this.model.scale);
         const systems = this.model.systems || [];
         const drivers = this.model.drivers || [];
         for (let i = 0; i < count; i++) {

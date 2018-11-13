@@ -20,7 +20,7 @@ export class MockDomainsBackend extends BaseMockBackend {
 
     private loadList() {
         const item_list = [];
-        const count = Math.floor(Math.random() * 5 + 2);
+        const count = Math.ceil(Math.floor(Math.random() * 5 + 2) * this.model.scale);
         const zones = this.model.zones || [];
         for (let i = 0; i < count; i++) {
             const id = `sgrp-${Utils.padZero(i, 4)}`;

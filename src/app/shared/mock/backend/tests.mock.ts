@@ -20,7 +20,7 @@ export class MockTestsBackend extends BaseMockBackend {
 
     private loadTests() {
         const zone_list = [];
-        const count = Math.floor(Math.random() * 10 + 5);
+        const count = Math.ceil(Math.floor(Math.random() * 10 + 5) * this.model.scale);
         for (let i = 0; i < count; i++) {
             const company = faker.company.companyName().toLowerCase().split(' ').join('_');
             zone_list.push(`/home/aca-apps/aca-device-modules/modules/${company}/module_${i + 1}`);

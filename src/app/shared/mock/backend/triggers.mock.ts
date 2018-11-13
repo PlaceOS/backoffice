@@ -20,7 +20,7 @@ export class MockTriggersBackend extends BaseMockBackend {
 
     private loadList() {
         const item_list = [];
-        const count = Math.floor(Math.random() * 10 + 5);
+        const count = Math.ceil(Math.floor(Math.random() * 10 + 5) * this.model.scale);
         for (let i = 0; i < count; i++) {
             item_list.push({
                 id: `trigger-${Utils.padZero(i, 4)}`,

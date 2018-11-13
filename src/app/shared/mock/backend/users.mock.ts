@@ -25,7 +25,8 @@ export class MockUsersBackend extends BaseMockBackend {
 
     private loadUsers() {
         this.model.users = [];
-        for (let i = 0; i < 200; i++) {
+        const count = Math.ceil(Math.floor(Math.random() * 200 + 50) * this.model.scale);
+        for (let i = 0; i < count; i++) {
             const firstName: string = faker.name.firstName();
             const lastName: string = faker.name.lastName();
             this.model.users.push({

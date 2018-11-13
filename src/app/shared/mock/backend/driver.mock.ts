@@ -20,7 +20,7 @@ export class MockDriversBackend extends BaseMockBackend {
 
     private loadDrivers() {
         const driver_list = [];
-        const count = Math.floor(Math.random() * 10 + 5);
+        const count = Math.ceil(Math.floor(Math.random() * 10 + 5) * this.model.scale);
         for (let i = 0; i < count; i++) {
             const department = faker.commerce.department();
             const funcs = {};

@@ -20,7 +20,7 @@ export class MockSystemTriggersBackend extends BaseMockBackend {
 
     private loadList() {
         const item_list = [];
-        const count = Math.floor(Math.random() * 100 + 25);
+        const count = Math.ceil(Math.floor(Math.random() * 100 + 25) * this.model.scale);
         const systems = this.model.systems || [];
         const triggers = this.model.triggers || [];
         const zones = this.model.zones || [];
