@@ -1,5 +1,6 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 import { BaseComponent } from '../../../shared/components/base.component';
 import { AppService } from '../../../services/app.service';
@@ -130,8 +131,27 @@ export class SystemDevicesComponent extends BaseComponent implements OnChanges {
         });
     }
 
-    public drop(event) {
-        console.log('Drop event:', event);
+    public drop(event: CdkDragDrop<any[]>) {
+        this.service.confirm({
+            icon: 'autorenew',
+            title: 'Change order?',
+            message: 'Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.',
+            accept: 'Ok',
+            cancel: true
+        }, (e) => {
+            if (e.type === 'Accept') {
+                const list = JSON.parse(JSON.stringify(this.item.modules));
+                moveItemInArray(list, event.previousIndex, event.currentIndex);
+                e.data.loading = true;
+                this.service.Systems.updateItem(this.item.id, { modules: list })
+                    .then(() => {
+                        moveItemInArray(this.model.devices, event.previousIndex, event.currentIndex);
+                        e.close();
+                    }, () => e.data.loading = false);
+            } else {
+                e.close();
+            }
+        });
     }
 
     public remove(device: IEngineModule) {

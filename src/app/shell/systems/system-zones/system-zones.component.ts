@@ -1,5 +1,6 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
+import { moveItemInArray } from '@angular/cdk/drag-drop';
 
 import { BaseComponent } from '../../../shared/components/base.component';
 import { IEngineSystem } from '../../../services/data/systems.service';
@@ -32,7 +33,27 @@ export class SystemZonesComponent extends BaseComponent implements OnChanges {
     }
 
     public drop(event) {
-        console.log('Drop event:', event);
+        console.log('Drop:', event);
+        this.service.confirm({
+            icon: 'autorenew',
+            title: 'Change order?',
+            message: 'Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.',
+            accept: 'Ok',
+            cancel: true
+        }, (e) => {
+            if (e.type === 'Accept') {
+                const list = JSON.parse(JSON.stringify(this.item.zones));
+                moveItemInArray(list, event.previousIndex, event.currentIndex);
+                e.data.loading = true;
+                this.service.Systems.updateItem(this.item.id, { zones: list })
+                    .then(() => {
+                        moveItemInArray(this.model.zones, event.previousIndex, event.currentIndex);
+                        e.close();
+                    }, () => e.data.loading = false);
+            } else {
+                e.close();
+            }
+        });
     }
 
     public goto(item, link?: string) {

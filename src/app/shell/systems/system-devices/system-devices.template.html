@@ -13,7 +13,7 @@
                 <div class="ip">IP</div>
                 <div class="small"></div>
             </div>
-            <div class="table-body" cdkDropList (cdkDropLisdivropped)="drop($event)">
+            <div class="table-body" cdkDropList (cdkDropListDropped)="drop($event)">
                 <div class="table-row" *ngFor="let device of (model.devices || [])" context-item [cmp]="context_menu" (event)="event($event, device)" [data]="[
                     { id: 'power', name: device.running ? 'Turn Off' : 'Power On', icon: { class: 'material-icons', value: device.running ? 'stop': 'play_arrow' } },
                     { id: 'state', name: 'View State', icon: { class: 'material-icons', value: 'visibility' } },

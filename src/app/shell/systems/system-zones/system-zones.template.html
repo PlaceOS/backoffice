@@ -12,7 +12,7 @@
                     <div class="description">Description</div>
                     <div *ngIf="model.zones.length > 1" class="small"></div>
                 </div>
-                <div class="table-body" cdkDropList (cdkDropLisdivropped)="drop($event)">
+                <div class="table-body" cdkDropList (cdkDropListDropped)="drop($event)">
                     <div class="table-row" *ngFor="let zone of model.zones" cdkDrag>
                         <div class="small">
                             <div class="action grab" cdkDragHandle><i class="material-icons">reorder</i></div>
