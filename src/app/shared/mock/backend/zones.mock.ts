@@ -34,19 +34,7 @@ export class MockZonesBackend extends BaseMockBackend {
             });
         }
         this.model.zones = zone_list;
-        MOCK_REQ_HANDLER.register('/control/api/zones', this.model.zones, (event) => {
-            return this.search(event.data, event.fragment);
-        });
-        MOCK_REQ_HANDLER.register('/control/api/zones/:id', this.model.zones, (event) => {
-            if (event && event.params && event.params.id) {
-                for (const item of event.data) {
-                    if (item.id === event.params.id) {
-                        return item;
-                    }
-                }
-            }
-            return null;
-        });
+        this.setupBasicHandlers('/control/api/zones', this.model.zones, 'zone');
         this.state.next(true);
     }
 

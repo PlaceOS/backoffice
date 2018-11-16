@@ -37,21 +37,7 @@ export class MockDomainsBackend extends BaseMockBackend {
             });
         }
         this.model.domains = item_list;
-        MOCK_REQ_HANDLER.register('/auth/api/domains', this.model.domains, (event) => {
-            return this.search(event.data, event.fragment);
-        });
-        MOCK_REQ_HANDLER.register('/auth/api/domains/:id', this.model.domains, (event) => {
-            if (event && event.params && event.params.id) {
-                if (!event.params.opt) {
-                    for (const item of event.data) {
-                        if (item.id === event.params.id) {
-                            return item;
-                        }
-                    }
-                }
-            }
-            return null;
-        });
+        this.setupBasicHandlers('/auth/api/domains', this.model.domains, 'sgrp');
         this.state.next(true);
     }
 }

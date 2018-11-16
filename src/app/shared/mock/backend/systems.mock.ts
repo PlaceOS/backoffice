@@ -56,16 +56,7 @@ export class MockSystemsBackend extends BaseMockBackend {
             });
         }
         this.model.systems = item_list;
-        MOCK_REQ_HANDLER.register('/control/api/systems', this.model.systems, (event) => {
-            return this.search(event.data, event.fragment);
-        });
-
-        MOCK_REQ_HANDLER.register('/control/api/systems', this.model.systems, (event) => {
-            event.body.id = `sys-${Utils.padZero(this.model.systems.length, 4)}`;
-            this.model.systems.push(event.body);
-            return event.body;
-        }, 'POST');
-
+        this.setupBasicHandlers('/control/api/systems', this.model.systems, 'sys');
         MOCK_REQ_HANDLER.register('/control/api/systems/:id/:opt', this.model.systems, (event) => {
             if (event && event.params && event.params.id) {
                 if (!event.params.opt) {

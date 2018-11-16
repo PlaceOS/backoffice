@@ -51,9 +51,7 @@ export class MockSystemTriggersBackend extends BaseMockBackend {
             });
         }
         this.model.system_triggers = item_list;
-        MOCK_REQ_HANDLER.register('/control/api/system_triggers', this.model.system_triggers, (event) => {
-            return this.search(event.data, event.fragment);
-        });
+        this.setupBasicHandlers('/control/api/system_triggers', this.model.system_triggers, 'sys');
         this.state.next(true);
     }
 

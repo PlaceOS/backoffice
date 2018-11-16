@@ -55,20 +55,7 @@ export class MockModulesBackend extends BaseMockBackend {
             });
         }
         this.model.modules = item_list;
-        MOCK_REQ_HANDLER.register('/control/api/modules', this.model.modules, (event) => {
-            if (!event.data) { event.data = []; }
-            return this.search(event.data, event.fragment);
-        });
-        MOCK_REQ_HANDLER.register('/control/api/modules/:id', this.model.modules, (event) => {
-            if (event && event.params && event.params.id) {
-                for (const item of event.data) {
-                    if (item.id === event.params.id) {
-                        return item;
-                    }
-                }
-            }
-            return null;
-        });
+        this.setupBasicHandlers('/control/api/modules', this.model.modules, 'mod');
         this.state.next(true);
     }
 

@@ -34,19 +34,7 @@ export class MockTriggersBackend extends BaseMockBackend {
             });
         }
         this.model.triggers = item_list;
-        MOCK_REQ_HANDLER.register('/control/api/triggers', this.model.triggers, (event) => {
-            return this.search(event.data, event.fragment);
-        });
-        MOCK_REQ_HANDLER.register('/control/api/triggers/:id', this.model.triggers, (event) => {
-            if (event && event.params && event.params.id) {
-                for (const item of event.data) {
-                    if (item.id === event.params.id) {
-                        return item;
-                    }
-                }
-            }
-            return null;
-        });
+        this.setupBasicHandlers('/control/api/triggers', this.model.triggers, 'trigger');
         this.state.next(true);
     }
 }

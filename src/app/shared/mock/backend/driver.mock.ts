@@ -55,19 +55,7 @@ export class MockDriversBackend extends BaseMockBackend {
             });
         }
         this.model.drivers = driver_list;
-        MOCK_REQ_HANDLER.register('/control/api/dependencies', this.model.drivers, (event) => {
-            return this.search(event.data, event.fragment);
-        });
-        MOCK_REQ_HANDLER.register('/control/api/dependencies/:id', this.model.drivers, (event) => {
-            if (event && event.params && event.params.id) {
-                for (const item of event.data) {
-                    if (item.id === event.params.id) {
-                        return item;
-                    }
-                }
-            }
-            return null;
-        });
+        this.setupBasicHandlers('/control/api/dependencies', this.model.drivers, 'dep');
         this.state.next(true);
     }
 

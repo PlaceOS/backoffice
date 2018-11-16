@@ -53,12 +53,8 @@ export class MockUsersBackend extends BaseMockBackend {
             });
         }
         this.model.users.sort((a, b) => a.name.localeCompare(b.name));
-        MOCK_REQ_HANDLER.register(`/${this.model.api_route}/users`, this.model.users, (event) => {
-            return this.search(event.data, event.fragment);
-        });
-
+        this.setupBasicHandlers('/control/api/users', this.model.users, 'user');
         const user_index = Math.floor(Math.random() * this.model.users.length);
-
         MOCK_REQ_HANDLER.register(`/${this.model.api_route}/users/:id`, this.model.users, (event) => {
             if (event && event.params && event.params.id) {
                 if (event.params.id === 'current') {

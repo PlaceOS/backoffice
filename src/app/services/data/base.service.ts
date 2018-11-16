@@ -205,10 +205,11 @@ export class BaseService {
         return new Promise((resolve, reject) => {
             this.parent.Overlay.openModal(`${this.model.name}-view`, { data: {} }, (e) => {
                 if (e.type === 'Success') {
-                    return resolve();
+                    resolve(e.data.id);
+                } else {
+                    reject();
                 }
                 e.close();
-                reject();
             });
         });
     }

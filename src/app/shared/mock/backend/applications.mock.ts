@@ -38,10 +38,7 @@ export class MockApplicationsBackend extends BaseMockBackend {
             });
         }
         this.model.applications = item_list;
-        MOCK_REQ_HANDLER.register('/auth/api/applications', this.model.applications, (event) => {
-            if (!event.data) { event.data = []; }
-            return this.search(event.data, event.fragment);
-        });
+        this.setupBasicHandlers('/auth/api/applications', this.model.applications, 'app');
         this.state.next(true);
     }
 

@@ -20,7 +20,7 @@ export class MockNodesBackend extends BaseMockBackend {
 
     private loadList() {
         const item_list = [];
-        const count = Math.ceil(Math.floor(Math.random() * 0 + 1) * this.model.scale);
+        const count = Math.ceil(Math.floor(Math.random() * 4 + 2) * this.model.scale);
         for (let i = 0; i < count; i++) {
             const id = `edge-${Utils.padZero(i, 4)}`;
             item_list.push({
@@ -45,21 +45,7 @@ export class MockNodesBackend extends BaseMockBackend {
             });
         }
         this.model.nodes = item_list;
-        MOCK_REQ_HANDLER.register('/control/api/nodes', this.model.nodes, (event) => {
-            return this.search(event.data, event.fragment);
-        });
-        MOCK_REQ_HANDLER.register('/control/api/nodes/:id', this.model.nodes, (event) => {
-            if (event && event.params && event.params.id) {
-                if (!event.params.opt) {
-                    for (const item of event.data) {
-                        if (item.id === event.params.id) {
-                            return item;
-                        }
-                    }
-                }
-            }
-            return null;
-        });
+        this.setupBasicHandlers('/control/api/nodes', this.model.nodes, 'edge');
         this.state.next(true);
     }
 }

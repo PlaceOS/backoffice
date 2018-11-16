@@ -47,6 +47,43 @@ export class BaseMockBackend {
         }
     }
 
+    public setupBasicHandlers(base_url: string, list: any[], id_prefix: string) {
+        if (!list) { list = []; }
+        // Mock for index GET
+        MOCK_REQ_HANDLER.register(`${base_url}`, list, (event) => {
+            return this.search(event.data, event.fragment);
+        });
+        // Mock for index POST
+        MOCK_REQ_HANDLER.register(`${base_url}`, list, (event) => {
+            list.push({ id: `${id_prefix}-${Utils.padZero(list.length, 4)}`, ...(event.body || {}) });
+            console.log(base_url, list[list.length - 1]);
+            return list[list.length - 1];
+        }, 'POST');
+        // Mock for show GET
+        MOCK_REQ_HANDLER.register(`${base_url}/:id`, list, (event) => {
+            if (event && event.params && event.params.id) {
+                for (const item of event.data) {
+                    if (item.id === event.params.id) {
+                        return item;
+                    }
+                }
+            }
+            return null;
+        });
+        // Mock for show PUT
+        MOCK_REQ_HANDLER.register(`${base_url}/:id`, list, (event) => {
+            if (event && event.params && event.params.id) {
+                for (let item of event.data) {
+                    if (item.id === event.params.id) {
+                        item = { ...item, ...event.body };
+                        return item;
+                    }
+                }
+            }
+            return null;
+        }, 'PUT');
+    }
+
     protected request(method, url) {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
