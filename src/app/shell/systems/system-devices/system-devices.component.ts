@@ -140,12 +140,14 @@ export class SystemDevicesComponent extends BaseComponent implements OnChanges {
             cancel: true
         }, (e) => {
             if (e.type === 'Accept') {
-                const list = JSON.parse(JSON.stringify(this.item.modules));
+                const list: string[] = [];
+                for (const item of this.model.devices) { list.push(item.id); }
                 moveItemInArray(list, event.previousIndex, event.currentIndex);
                 e.data.loading = true;
                 this.service.Systems.updateItem(this.item.id, { modules: list })
                     .then(() => {
                         moveItemInArray(this.model.devices, event.previousIndex, event.currentIndex);
+                        moveItemInArray(this.item.modules, event.previousIndex, event.currentIndex);
                         e.close();
                     }, () => e.data.loading = false);
             } else {

@@ -42,12 +42,14 @@ export class SystemZonesComponent extends BaseComponent implements OnChanges {
             cancel: true
         }, (e) => {
             if (e.type === 'Accept') {
-                const list = JSON.parse(JSON.stringify(this.item.zones));
+                const list: string[] = [];
+                for (const item of this.model.zones) { list.push(item.id); }
                 moveItemInArray(list, event.previousIndex, event.currentIndex);
                 e.data.loading = true;
                 this.service.Systems.updateItem(this.item.id, { zones: list })
                     .then(() => {
                         moveItemInArray(this.model.zones, event.previousIndex, event.currentIndex);
+                        moveItemInArray(this.item.zones, event.previousIndex, event.currentIndex);
                         e.close();
                     }, () => e.data.loading = false);
             } else {

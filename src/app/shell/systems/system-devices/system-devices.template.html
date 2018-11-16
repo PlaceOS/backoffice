@@ -27,10 +27,10 @@
                         <div class="action grab" cdkDragHandle><i class="material-icons">reorder</i></div>
                     </div>
                     <div class="small">
-                        <i binding [(value)]="device.connected" [sys]="item.id" [mod]="(device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)" bind="connected"></i>
+                        <i binding [(value)]="device.connected" [sys]="item.id" [mod]="(device.custom_name || device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)" bind="connected"></i>
                         <div class="state" [class.active]="device.connected"></div>
                     </div>
-                    <div class="name"><a (touchrelease)="goto(device)">{{item.name}}</a></div>
+                    <div class="name"><a (touchrelease)="goto(device)">{{device.name}}</a></div>
                     <div class="module">
                         <checkbox [label]="(device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)"></checkbox>
                     </div>
