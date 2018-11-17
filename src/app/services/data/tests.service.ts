@@ -40,6 +40,61 @@ export class TestsService extends BaseService {
     public updateItem() { }
     public add() { }
 
+    /**
+     * Connect websocket and run test on the server
+     * @param item Test to run
+     * @param next Callback for server test events
+     */
+    public run(item: IEngineTest, next: (d) => void) {
+        const key = `websocket_${item.id}`;
+        this.stop(item);
+        this.http.token.then((t) => {
+            const url = `${this.endpoint.replace('http', 'ws')}/${encodeURIComponent(item.id)}/websocket?bearer_token=${t}`;
+            this.model[key].ws = new WebSocket(url);
+            this.set(key, []);
+            this.listen(key, next);
+            this.model[key].ws.onmessage = (event) => this.post(item, event.data);
+            this.model[key].ws.onerror = (event) => {
+                this.post(item, event);
+                this.stop(item);
+            };
+        });
+        this.model[key] = {
+            ws: null,
+            stop: () => this.stop(item),
+            post: (msg, send = false) => this.post(item, msg, send)
+        };
+        return this.model[key];
+    }
+
+    /**
+     * Stop test and disconnect websocket
+     * @param item Test to stop
+     */
+    public stop(item: IEngineTest) {
+        const key = `websocket_${item.id}`;
+        if (this.model[key]) {
+            if (this.model[key].ws) {
+                this.model[key].ws.close();
+            }
+            this.subjects[key].complete();
+            this.subjects[key] = null;
+        }
+    }
+
+    /**
+     * Post message to server regarding the test
+     * @param item Test to send message about
+     * @param message Message to send
+     * @param send Send message to server
+     */
+    private post(item: IEngineTest, message: string, send: boolean = false) {
+        const key = `websocket_${item.id}`;
+        const list = this.get(key) || [];
+        list.push(message);
+        this.set(key, list);
+    }
+
     protected processItem(raw_item: any, id?: string) {
         let item: IEngineTest = null;
         if (typeof raw_item === 'string') {

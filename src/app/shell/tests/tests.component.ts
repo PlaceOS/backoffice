@@ -24,17 +24,23 @@ export class TestsComponent extends BaseRootComponent {
     }
 
     protected loadValues() {
-
+        if (this.model.item) {
+            this.model.connection = this.service[this.model.service].run(this.model.item, (lines) => {
+                this.model.display_lines = lines;
+                this.scroll();
+            });
+        }
     }
 
     public send() {
-        if (!this.model.display_lines) {
-            this.model.display_lines = [];
-        }
-        if (this.model.input) {
-            this.model.display_lines.push(this.model.input);
+        if (this.model.connection && this.model.input) {
+            this.model.connection.post(this.model.input);
             this.model.input = '';
+            this.scroll();
         }
+    }
+
+    public scroll() {
         this.timeout('scroll', () => {
             console.log('CMD LINE:', this.cmd_line);
             if (this.cmd_line) {
