@@ -13,7 +13,7 @@ export class AnalyticsService {
     constructor(private router: Router) { }
 
     public init() {
-        if (!this.parent || !this.parent.Settings.setup) {
+        if (!this.parent || !this.parent.ready()) {
             return setTimeout(() => this.init(), 500);
         }
         this.model.settings = this.parent.Settings.get('app.analytics') || {};

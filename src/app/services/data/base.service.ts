@@ -343,10 +343,12 @@ export class BaseService {
                 }
                 this.http.post(url, body).subscribe(
                     (resp: any) => {
+                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `${this.model.name}_task_${task}`);
                         resolve(resp || {});
                         setTimeout(() => this.promises[key] = null, 200);
                     }, (err) => {
                         this.promises[key] = null;
+                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `${this.model.name}_task_${task}_failed`);
                         reject(err instanceof Array ? err[0] : err);
                     });
             });
