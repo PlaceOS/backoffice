@@ -4,43 +4,27 @@ import { CommsService } from '@acaprojects/ngx-composer';
 import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
-import { DriverModalComponent } from '../../overlays/driver-modal/driver-modal.component';
-
-export interface IEngineDriver {
-    id: string;
-    name: string;
-    class_name: string;
-    module_name: string;
-    role: string;
-    created: number;
-    description?: string;
-    default?: number;
-    settings?: any;
-}
+import { IEngineDriver } from './drivers.service';
 
 @Injectable({
     providedIn: 'root'
 })
-export class DriversService extends BaseService {
+export class DiscoveryService extends BaseService {
 
     constructor(protected http: CommsService) {
         super();
         this.model.name = 'driver';
-        this.model.route = '/dependencies';
+        this.model.route = '/discovery';
         this.subjects.list = new BehaviorSubject<IEngineDriver[]>([]);
         this.observers.list = this.subjects.list.asObservable();
-    }
-
-    public load() {
-        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: DriverModalComponent });
     }
 
     /**
      * Perform reload task on the given driver
      * @param id Module ID
      */
-    public reload(id: string) {
-        return this.task(id, 'reload');
+    public scan() {
+        return this.show('scan');
     }
 
     protected processItem(raw_item: any) {

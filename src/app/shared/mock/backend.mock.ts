@@ -21,6 +21,7 @@ import { MockNodesBackend } from './backend/nodes.mock';
 import { MOCK_REQ_HANDLER } from '@acaprojects/ngx-composer';
 import { MockStatsBackend } from './backend/stats.mock';
 import { MockTestsBackend } from './backend/tests.mock';
+import { MockDiscoveryBackend } from './backend/discovery.mock';
 
 export class MockBackend {
     public model: any = {
@@ -115,6 +116,12 @@ export class MockBackend {
                                 this.model.backend.tests.listen((tests_state) => {
                                     if (!tests_state) { return; }
                                     this.update(this.model.backend.tests.data);
+                                    this.model.loaded = true;
+                                });
+                                this.model.backend.discovery = new MockDiscoveryBackend(this.model);
+                                this.model.backend.discovery.listen((discovery_state) => {
+                                    if (!discovery_state) { return; }
+                                    this.update(this.model.backend.discovery.data);
                                     this.model.loaded = true;
                                 });
                             });

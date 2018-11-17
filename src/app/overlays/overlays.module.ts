@@ -17,6 +17,7 @@ import { TriggerModalComponent } from './trigger-modal/trigger-modal.component';
 import { UserModalComponent } from './user-modal/user-modal.component';
 import { DomainModalComponent } from './domain-modal/domain-modal.component';
 import { ChangelogModalComponent } from './changelog-modal/changelog-modal.component';
+import { DriverModalComponent } from './driver-modal/driver-modal.component';
 
 const OVERLAYS: any[] = [
     ConfirmModalComponent,
@@ -27,7 +28,8 @@ const OVERLAYS: any[] = [
     TriggerModalComponent,
     UserModalComponent,
     DomainModalComponent,
-    ChangelogModalComponent
+    ChangelogModalComponent,
+    DriverModalComponent
 ];
 
 @NgModule({

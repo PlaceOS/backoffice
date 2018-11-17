@@ -1,0 +1,83 @@
+<div class="container" [class.loader]="model.loading || model.scanning" [class.edit]="model.item" [class.small]="!model.form.discovery && !model.form.id">
+    <div class="header">
+        <div class="text">{{model.item ? 'Edit' : 'New'}} Driver</div>
+        <div class="close" (touchrelease)="fn.close()">
+            <i class="material-icons">close</i>
+        </div>
+    </div>
+    <div class="body">
+        <div class="form">
+            <div class="field new-only">
+                <div class="label">Driver<span class="orange">*</span>:</div>
+                <div class="value">
+                    <dropdown [filter]="true" [list]="model.discovery" [model]="model.role"
+                        (modelChange)="selectDiscovery(model.discovery[$event])"
+                        (filterValue)="loadDrivers($event)" placeholder="Available Drivers"></dropdown>
+                </div>
+                <div class="value">
+                    <btn (tapped)="scan()">Scan for drivers</btn>
+                </div>
+            </div>
+        </div>
+        <div class="form" *ngIf="(model.form.discovery || model.form.id) && !model.scanning">
+            <div class="field">
+                <div class="label">Name<span class="orange">*</span>:</div>
+                <div class="value" [class.error]="model.errors?.name">
+                    <input [(ngModel)]="model.form.name" placeholder="Driver name">
+                </div>
+            </div>
+            <div class="error" *ngIf="model.errors?.name">{{model.errors?.name}}</div>
+            <div class="field">
+                <div class="label">Role:</div>
+                <div class="value">
+                    <dropdown [list]="model.roles" [model]="0"
+                        (modelChange)="model.form.role = model.roles[$event].toLowerCase()">
+                    </dropdown>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">Description:</div>
+                <div class="value full">
+                    <textarea [(ngModel)]="model.form.description" placeholder="Description"></textarea>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">Module Name:</div>
+                <div class="value" [class.error]="model.errors?.module_name">
+                    <input [(ngModel)]="model.form.module_name" placeholder="Module name">
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">Default:</div>
+                <div class="value" [class.error]="model.errors?.default">
+                    <input [(ngModel)]="model.form.default" placeholder="Default">
+                </div>
+            </div>
+            <div class="field new-only">
+                <div class="label"></div>
+                <div class="value">
+                    <checkbox [(model)]="model.form.ignore_connected" label="Ignore connected"></checkbox>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">Settings:</div>
+                <div class="value full">
+                    <settings-display [(model)]="model.form.settings" (valid)="model.settings_valid = $event" [input]="true"></settings-display>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <btn (tapped)="event('Cancel')">Cancel</btn>
+            <btn name="inverse" [disabled]="model.has_errors || model.settings_valid === false || (!model.item && (!model.form.edge_id || !model.form.dependency_id))"
+                (tapped)="model.item ? edit() : new()">
+                Ok
+            </btn>
+        </div>
+    </div>
+    <div class="no-item">
+        <div class="icon">
+            <spinner type="circle-ring" color="rgba(0,0,0, .54)"></spinner>
+        </div>
+        <div class="text">{{model.scanning ? 'Scanning for drivers...' : 'Processing request...'}}</div>
+    </div>
+</div>

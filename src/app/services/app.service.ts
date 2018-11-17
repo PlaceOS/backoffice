@@ -42,6 +42,7 @@ import { Utils } from '../shared/utility.class';
 import { ConfirmModalComponent } from '../overlays/confirm-modal/confirm-modal.component';
 import { ViewModuleStateModalComponent } from '../overlays/view-module-state/view-module-state.component';
 import { ChangelogModalComponent } from '../overlays/changelog-modal/changelog-modal.component';
+import { DiscoveryService } from './data/discovery.service';
 
 @Injectable({
     providedIn: 'root'
@@ -79,12 +80,14 @@ export class AppService {
         private search: EngineSearchService,
         private stats: StatsService,
         private tests: TestsService,
+        private discovery: DiscoveryService,
         private hotkey: HotkeyService
     ) {
             // Set parent service on child services
         this.analytics.parent = this.comments.parent = this.users.parent = this.logs.parent = this;
         this.drivers.parent = this.modules.parent = this.zones.parent = this.system_triggers.parent = this;
         this.systems.parent = this.triggers.parent = this.domains.parent = this.tests.parent = this;
+        this.discovery.parent = this;
             // Create subjects
         this.subjects.system = new BehaviorSubject('');
         this.observers.system = this.subjects.system.asObservable();
@@ -260,6 +263,7 @@ export class AppService {
     get Search() { return this.search; }
     get Stats() { return this.stats; }
     get Tests() { return this.tests; }
+    get Discovery() { return this.discovery; }
 
     /**
      * Set the page title
