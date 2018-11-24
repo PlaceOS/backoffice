@@ -35,11 +35,17 @@ export class TriggerAboutComponent extends BaseComponent implements OnInit {
     }
 
     public addCondition() {
-        this.service.Overlay.openModal('trigger-condition', { data: { trigger: this.item } }, (e) => e.close());
+        this.service.Overlay.openModal('trigger-condition', { data: { 
+            trigger: this.item, 
+            system: this.model.selected_system
+        } }, (e) => e.close());
     }
 
     public addAction() {
-        this.service.Overlay.openModal('trigger-action', { data: { trigger: this.item } }, (e) => e.close());
+        this.service.Overlay.openModal('trigger-action', { data: { 
+            trigger: this.item, 
+            system: this.model.selected_system 
+        } }, (e) => e.close());
     }
 
     public loadSystems(query: string = '') {

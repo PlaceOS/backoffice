@@ -4,8 +4,10 @@ import { CommsService } from '@acaprojects/ngx-composer';
 import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
+
 import { TriggerModalComponent } from '../../overlays/trigger-modal/trigger-modal.component';
 import { TriggerConditionModalComponent } from '../../overlays/trigger-condition-modal/trigger-condition-modal.component';
+import { TriggerActionModalComponent } from '../../overlays/trigger-action-modal/trigger-action-modal.component';
 
 export interface IEngineTrigger {
     id: string;
@@ -34,6 +36,7 @@ export class TriggersService extends BaseService {
     public load() {
         this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: TriggerModalComponent });
         this.parent.Overlay.setupModal(`${this.model.name}-condition`, { cmp: TriggerConditionModalComponent });
+        this.parent.Overlay.setupModal(`${this.model.name}-action`, { cmp: TriggerActionModalComponent });
     }
 
     protected processItem(raw_item: any) {
