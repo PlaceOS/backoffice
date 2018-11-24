@@ -35,6 +35,7 @@ import { DomainsService } from './data/domains.service';
 import { NodesService } from './data/nodes.service';
 import { EngineSearchService } from './data/search.service';
 import { StatsService } from './data/stats.service';
+import { DiscoveryService } from './data/discovery.service';
 import { TestsService } from './data/tests.service';
 
 import { Utils } from '../shared/utility.class';
@@ -42,7 +43,6 @@ import { Utils } from '../shared/utility.class';
 import { ConfirmModalComponent } from '../overlays/confirm-modal/confirm-modal.component';
 import { ViewModuleStateModalComponent } from '../overlays/view-module-state/view-module-state.component';
 import { ChangelogModalComponent } from '../overlays/changelog-modal/changelog-modal.component';
-import { DiscoveryService } from './data/discovery.service';
 
 @Injectable({
     providedIn: 'root'

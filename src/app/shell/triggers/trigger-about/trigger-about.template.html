@@ -1,9 +1,17 @@
 <div class="container">
     <div class="settings">
         <section>
-            <dropdown></dropdown>
+            <dropdown [filter]="true" [list]="model.systems" [model]="-1" (modelChange)="select(model.systems[$event])"
+                (filterValue)="loadSystems($event)" placeholder="Select a System"></dropdown>
         </section>
-        <header>Conditions</header>
+        <header>
+            <div class="action" *ngIf="model.selected_system">
+                <btn format="mini-action" (tapped)="addCondition()">
+                    <i class="material-icons">add</i>
+                </btn>
+            </div>
+            <div class="text">Conditions</div>
+        </header>
         <section>
             <div class="list" *ngIf="model.condtions">
 
@@ -12,7 +20,14 @@
                 <div class="text">No conditions for trigger</div>
             </div>
         </section>
-        <header>Actions</header>
+        <header>
+            <div class="action" *ngIf="model.selected_system">
+                <btn format="mini-action" (tapped)="addAction()">
+                    <i class="material-icons">add</i>
+                </btn>
+            </div>
+            <div class="text">Actions</div>
+        </header>
         <section>
             <div class="list" *ngIf="model.actions">
 

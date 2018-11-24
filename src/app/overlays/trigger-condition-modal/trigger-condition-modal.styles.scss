@@ -1,7 +1,7 @@
 @import 'shared.styles';
 
 .container {
-    width: 1280px;
+    width: 20em;
     max-width: 95vw;
     font-size: 1.25em;
     overflow: hidden;
@@ -85,6 +85,12 @@ settings-display {
     font-size: .8em;
 }
 
+.info {
+    font-size: .8em;
+    text-align: center;
+    color: rgba(#000, .54);
+}
+
 input {
     border-radius: 4px;
     padding: .5em;
@@ -96,8 +102,6 @@ input {
     justify-content: flex-end;
     width: 100%;
 }
-
-
 
 .no-item {
     min-height: 15em;

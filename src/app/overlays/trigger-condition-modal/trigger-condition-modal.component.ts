@@ -1,12 +1,15 @@
 
 import { Component, OnInit } from '@angular/core';
 import { OverlayContentComponent } from '@acaprojects/ngx-widgets';
+
 import { Utils } from '../../shared/utility.class';
+
+import * as moment from 'moment';
 
 @Component({
     selector: 'trigger-condition-modal',
-    templateUrl: './zone-modal.template.html',
-    styleUrls: ['./zone-modal.styles.scss']
+    templateUrl: './trigger-condition-modal.template.html',
+    styleUrls: ['./trigger-condition-modal.styles.scss']
 })
 export class TriggerConditionModalComponent extends OverlayContentComponent implements OnInit {
 
@@ -27,6 +30,18 @@ export class TriggerConditionModalComponent extends OverlayContentComponent impl
             { id: 'payload_only', name: 'Execute payload only(actions never run)' },
         ];
         this.model.time_types = ['minute', 'hour', 'day', 'week', 'month', 'year'];
+        const date = moment().month(0).date(1);
+        const end = moment(date).add(1, 'M');
+        this.model.days_of_month = [];
+        for (; date.isBefore(end, 'd'); date.add(1, 'd')) {
+            this.model.days_of_month.push(date.format('Do'));
+        }
+        date.month(0).date(1);
+        end.month(0).date(1).add(1, 'y');
+        this.model.months = [];
+        for (; date.isBefore(end, 'd'); date.add(1, 'M')) {
+            this.model.months.push(date.format('MMMM'));
+        }
         this.model.compare_types = [
             { id: 'equal', name: 'equal to' },
             { id: 'not_equal', name: 'not equal to' },

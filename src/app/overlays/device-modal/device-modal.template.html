@@ -10,7 +10,7 @@
             <div class="field new-only">
                 <div class="label">Dependency<span class="orange">*</span>:</div>
                 <div class="value">
-                    <dropdown [filter]="true" [list]="model.nodes" [model]="-1"
+                    <dropdown [filter]="true" [list]="model.drivers" [model]="-1"
                         (modelChange)="model.form.dependency_id = model.drivers[$event].id; model.form.dependency = model.drivers[$event]"
                         (filterValue)="loadDrivers($event)" placeholder="Select an Dependency"></dropdown>
                 </div>
