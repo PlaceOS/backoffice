@@ -150,7 +150,7 @@ textarea {
 
     html,
     body {
-        font-size: 2.0vmin;
+        font-size: $base-size;
     }
 }
 
@@ -166,7 +166,7 @@ textarea {
 
     html,
     body {
-        font-size: 2.5vmin;
+        font-size: $tablet-size;
     }
 }
 
@@ -174,7 +174,7 @@ textarea {
 
     html,
     body {
-        font-size: 4vmin;
+        font-size: $mobile-size;
     }
 
     .desktop-only,
