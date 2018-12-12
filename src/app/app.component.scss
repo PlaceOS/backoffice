@@ -832,6 +832,16 @@ span.id {
     }
 }
 
+.tooltip[widget] {
+    &.dark {
+        .content {
+            color: #fff;
+            background-color: #000;
+            opacity: .87;
+        }
+    }
+}
+
 div.calendar[widget] {
     &.modal {
         border: none;

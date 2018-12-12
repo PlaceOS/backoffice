@@ -1,9 +1,29 @@
 <div class="container">
     <header>
         <div class="heading">{{heading}}</div>
-        <div class="count">{{total || 0}}<span *ngIf="licenses"> of {{licenses || '∞'}}</span></div>
-        <div class="add" *ngIf="new" (touchrelease)="event.emit({ type: 'new' })" click-responder>
+        <div class="count">
+            <div *ngIf="new">
+                <span tooltip name="dark" [template]="info" [hover]="true" [triangle]="false">
+                    {{total || 0}}<span *ngIf="licenses"> of {{licenses || '∞'}}</span>
+                </span>
+            </div>
+            <ng-template #info>
+                <div class="tooltip">
+                    {{heading}} count / License count
+                </div>
+            </ng-template>
+        </div>
+        <div class="add" *ngIf="new && (total < licenses || !licenses)" (touchrelease)="event.emit({ type: 'new' })" click-responder>
             <i class="material-icons">add</i>
+        </div>
+        <div class="error" *ngIf="new && (total >= licenses && licenses)" tooltip name="dark" [template]="error" [hover]="true" [triangle]="false">
+            <i class="material-icons">error</i>
+            <ng-template #error>
+                <div class="tooltip">
+                    Exceeded quota! No new item can be created<br>
+                    until the total is below you license count.
+                </div>
+            </ng-template>
         </div>
         <div class="search" (touchrelease)="close ? event.emit({ type: 'close' }) : ''">
             <i class="material-icons">{{ close ? 'close' : 'list'}}</i>
