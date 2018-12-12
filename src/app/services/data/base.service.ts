@@ -130,6 +130,7 @@ export class BaseService {
                         const item_list = this.processList(resp.results ? resp.results || resp : resp);
                         if (update) {
                             this.updateList(item_list);
+                            this.set('total', resp.total || item_list.length);
                         } else {
                             this.set(`total_${query}`, resp.total || item_list.length);
                         }

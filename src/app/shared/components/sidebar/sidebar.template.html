@@ -1,6 +1,7 @@
 <div class="container">
     <header>
         <div class="heading">{{heading}}</div>
+        <div class="count">{{total || 0}}<span *ngIf="licenses"> of {{licenses || '∞'}}</span></div>
         <div class="add" *ngIf="new" (touchrelease)="event.emit({ type: 'new' })" click-responder>
             <i class="material-icons">add</i>
         </div>

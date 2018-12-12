@@ -37,7 +37,6 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
         });
         this.subs.obs.list = this.service[this.model.service].listen('list', () => {
             this.model.pure_list = this.service[this.model.service].list();
-            this.model.total = this.service[this.model.service].get('total');
             if (!this.model.search) {
                 this.model.list = this.service[this.model.service].list();
             }
@@ -46,6 +45,18 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
                 this.model.loading_item = false;
             }, 100);
         });
+        this.subs.obs.total = this.service[this.model.service].listen('total', (total) => {
+            console.log('Total:', total);
+            this.model.total = total;
+        });
+        this.init();
+    }
+
+    public init() {
+        if (!this.service.ready()) {
+            return this.timeout('init', () => this.init());
+        }
+        this.model.licenses = this.service.Settings.get(`licenses.${this.model.route}`) || 0;
     }
 
     public sidebarEvent(event: any) {

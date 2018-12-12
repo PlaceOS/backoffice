@@ -10,6 +10,9 @@
         "use_domain": true,
         "local_login": false
     },
+    "licenses": {
+        "systems": 50
+    },
     "app": {
         "title": "ACA Engine",
         "name": "ACA Engine",
