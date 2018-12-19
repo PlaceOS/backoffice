@@ -22,6 +22,7 @@ export class LoginComponent implements OnInit {
         if (!this.service.Settings.setup) {
             return setTimeout(() => this.init(), 200);
         }
+        this.model.env = this.service.Settings.get('env');
         this.model.logo = this.service.Settings.get('app.logo');
         this.service.Users.listen('state', (state) => {
             this.model.loading = false;

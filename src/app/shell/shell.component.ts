@@ -44,8 +44,10 @@ export class AppShellComponent extends BaseComponent implements OnInit {
     public init() {
         this.model.loading = true;
         if (!this.service.ready()) {
+            this.model.env = this.service.Settings.get('env');
             return setTimeout(() => this.init(), 200);
         }
+        this.model.env = this.service.Settings.get('env');
         this.model.loading = false;
         this.model.user = this.service.Users.current();
         this.model.tiles = this.service.Settings.get('app.tiles');

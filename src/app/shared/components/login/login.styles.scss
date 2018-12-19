@@ -8,6 +8,10 @@
     right: 0;
     bottom: 0;
     background-color: $color-primary;
+
+    &.uat {
+        background-color: $color-quinternary;
+    }
 }
 
 .login-container {

@@ -23,6 +23,9 @@
         align-items: center;
         justify-content: center;
         background-color: $color-primary;
+        &.uat {
+            background-color: $color-quinternary;
+        }
         .text {
             color: #fff;
         }

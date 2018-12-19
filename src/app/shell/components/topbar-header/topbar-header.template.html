@@ -1,6 +1,6 @@
 
 <div class="container">
-    <div class="topbar">
+    <div class="topbar" [class.uat]="model.env !== 'prod'" >
         <div class="menu" (tap)="toggleMenu()">
             <i class="material-icons">{{model.show_menu ? 'close' : 'menu'}}</i>
         </div>

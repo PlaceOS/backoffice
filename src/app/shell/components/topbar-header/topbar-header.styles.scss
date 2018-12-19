@@ -61,6 +61,10 @@
     box-shadow: 0 0 5px 0 rgba(#000, .35);
     // z-index: 1;
 
+    &.uat {
+        background-color: $color-quinternary;
+    }
+
     i {
         font-size: 2.5em;
         margin: .25em;
