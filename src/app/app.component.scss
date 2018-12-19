@@ -834,6 +834,7 @@ span.id {
 
 .tooltip[widget] {
     &.dark {
+        pointer-events: none;
         .content {
             color: #fff;
             background-color: #000;

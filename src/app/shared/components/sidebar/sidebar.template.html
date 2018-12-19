@@ -3,9 +3,9 @@
         <div class="heading">{{heading}}</div>
         <div class="count">
             <div *ngIf="new">
-                <span tooltip name="dark" [template]="info" [hover]="true" [triangle]="false">
+                <div class="inline" tooltip name="dark" [template]="info" [hover]="true" [triangle]="false">
                     {{total || 0}}<span *ngIf="licenses"> of {{licenses || '∞'}}</span>
-                </span>
+                </div>
             </div>
             <ng-template #info>
                 <div class="tooltip">

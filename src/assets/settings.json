@@ -11,7 +11,7 @@
         "local_login": false
     },
     "licenses": {
-        "systems": 50
+        "systems": 100
     },
     "app": {
         "title": "ACA Engine",
