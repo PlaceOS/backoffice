@@ -1127,4 +1127,10 @@ code {
     .null {
         color: rgba(#000, .2);
     }
+
+    a {
+        font-family: $mono-font;
+        font-size: 1em;
+        color: #00897B;
+    }
 }

@@ -159,8 +159,11 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
             .replace(/(true|false) *,?/g, '<span class="boolean">$&</span>')
             .replace(/(null|nil|undefined) *,?/g, '<span class="null">$&</span>')
             .replace(/ {4}/g, '<span class="depth"> </span>   ')
+                // Prevent separators from being colours
             .replace(/:\<\/span\>/g, '</span>:')
-            .replace(/,\<\/span\>/g, '</span>,');
+            .replace(/,\<\/span\>/g, '</span>,')
+                // Add hyperlinks to URLs
+            .replace(/(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g, '<a href="$&">$&</a>');
     }
 
     public copy() {
