@@ -125,6 +125,7 @@ input {
     display: flex;
     align-items: center;
     cursor: pointer;
+    height: 32px;
     &:hover {
         background-color: rgba(#fff, .1);
     }
@@ -175,4 +176,8 @@ input {
     margin: auto;
     font-size: .5em;
     padding: .5rem;
+}
+
+cdk-virtual-scroll-viewport {
+    min-height: 100%;
 }

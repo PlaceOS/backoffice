@@ -3,6 +3,9 @@ import { Component, Input, Output, EventEmitter, OnChanges, OnInit, ViewChild, E
 
 import { BaseComponent } from '../base.component';
 import { AppService } from '../../../services/app.service';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { BehaviorSubject } from 'rxjs';
+
 
 @Component({
     selector: 'sidebar',
@@ -23,16 +26,18 @@ export class SidebarComponent extends BaseComponent implements OnChanges, OnInit
     @Output() public event = new EventEmitter();
 
     public model: any = {};
+    public items: BehaviorSubject<any[]>;
 
-    @ViewChild('item_list') private list_el: ElementRef;
     @ViewChildren('list_item') private item_list: QueryList<ElementRef>;
+    @ViewChild(CdkVirtualScrollViewport) private viewport: CdkVirtualScrollViewport;
 
     constructor(private service: AppService) {
         super();
+        this.items = new BehaviorSubject([]);
     }
 
     public ngOnInit() {
-        this.atBottom();
+
     }
 
     public ngOnChanges(changes: any) {
@@ -40,6 +45,7 @@ export class SidebarComponent extends BaseComponent implements OnChanges, OnInit
             this.model.lowercase_header = (this.heading || '').toLowerCase();
         }
         if (changes.list || changes.close) {
+            this.items.next(this.list);
             this.atBottom();
         }
         this.subs.obs.up = this.service.Hotkey.listen(['ArrowUp'], () => this.changeSelected(-1));
@@ -51,13 +57,21 @@ export class SidebarComponent extends BaseComponent implements OnChanges, OnInit
     }
 
     public atBottom() {
-        if (!this.list_el) {
-            return this.timeout('bottom', () => this.atBottom());
-        }
-        const el = this.list_el.nativeElement;
-        if (el && el.scrollHeight - el.scrollTop === el.clientHeight) {
+        if (!this.viewport) { return this.timeout('atBottom', () => this.atBottom()); }
+        const end = this.viewport.getRenderedRange().end;
+        const total = this.viewport.getDataLength();
+
+        if (end === total) {
             this.event.emit({ type: 'more' });
         }
+    }
+
+    public trackByIdx(i) {
+        return i;
+    }
+
+    public updateList() {
+
     }
 
     public searching() {

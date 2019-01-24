@@ -13,10 +13,12 @@
                 </div>
             </ng-template>
         </div>
-        <div class="add" *ngIf="new && (total < licenses || !licenses)" (touchrelease)="event.emit({ type: 'new' })" click-responder>
+        <div class="add" *ngIf="new && (total < licenses || !licenses)" (touchrelease)="event.emit({ type: 'new' })"
+            click-responder>
             <i class="material-icons">add</i>
         </div>
-        <div class="error" *ngIf="new && (total >= licenses && licenses)" tooltip name="dark" [template]="error" [hover]="true" [triangle]="false">
+        <div class="error" *ngIf="new && (total >= licenses && licenses)" tooltip name="dark" [template]="error"
+            [hover]="true" [triangle]="false">
             <i class="material-icons">error</i>
             <ng-template #error>
                 <div class="tooltip">
@@ -37,14 +39,20 @@
     <section class="content">
         <ng-content></ng-content>
     </section>
-    <section class="list" #item_list (scroll)="atBottom()">
-        <div #list_item class="item" *ngFor="let item of list" [title]="item?.custom_name || item?.name || item" (touchrelease)="select(item)">
-            <div class="text">{{item?.custom_name || item?.name || item}}</div>
-            <div class="icon" *ngIf="active === item.id">
-                <i class="material-icons">done</i>
-            </div>
-        </div>
-        <div class="no-item" *ngIf="!loading && (!list || list.length <= 0)">
+    <section class="list" (scroll)="atBottom()">
+        <ng-container *ngIf="list">
+            <cdk-virtual-scroll-viewport itemSize="32" (scrolledIndexChange)="atBottom()">
+                <ng-container *cdkVirtualFor="let item of items | async">
+                    <div #list_item class="item" [title]="item?.custom_name || item?.name || item" (touchrelease)="select(item)">
+                        <div class="text">{{item?.custom_name || item?.name || item}}</div>
+                        <div class="icon" *ngIf="active === item.id">
+                            <i class="material-icons">done</i>
+                        </div>
+                    </div>
+                </ng-container>
+            </cdk-virtual-scroll-viewport>
+        </ng-container>
+        <!-- <div class="no-item" *ngIf="!loading && (!list || list.length <= 0)">
             <div class="icon">
                 <i class="material-icons">close</i>
             </div>
@@ -52,7 +60,7 @@
             <div class="btn" *ngIf="new">
                 <btn (tapped)="event.emit({ type: 'new' })">Add new {{model.lowercase_header}}</btn>
             </div>
-        </div>
+        </div> -->
     </section>
     <div class="loading" *ngIf="loading">
         <spinner type="double-circle-ring" color="#F44336"></spinner>

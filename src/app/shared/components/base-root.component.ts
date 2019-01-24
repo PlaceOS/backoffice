@@ -36,9 +36,9 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
             this.timeout('sidebar', () => this.showSidebar(!this.model.id));
         });
         this.subs.obs.list = this.service[this.model.service].listen('list', () => {
-            this.model.pure_list = this.service[this.model.service].list();
+            this.model.pure_list = [ ...this.service[this.model.service].list() ];
             if (!this.model.search) {
-                this.model.list = this.service[this.model.service].list();
+                this.model.list = [ ...this.service[this.model.service].list() ];
             }
             this.timeout('loading', () => {
                 this.model.loading = false;
@@ -105,11 +105,11 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
                     if (!found) { this.model.filtered_list.push(i); }
                 }
                 this.model.filtered_count =  this.service[this.model.service].get(q);
-                this.model.list = this.model.filtered_list;
+                this.model.list = [ ...this.model.filtered_list ];
                 this.model.loading = false;
             });
         } else {
-            this.model.list = this.model.pure_list;
+            this.model.list = [ ...this.model.pure_list ];
         }
     }
 

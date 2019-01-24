@@ -19,43 +19,41 @@ export class MockSystemsBackend extends BaseMockBackend {
     }
 
     private loadList() {
-        const item_list = [];
         const count = Math.ceil(Math.floor(Math.random() * 100 + 25) * this.model.scale);
         const zones = this.model.zones || [];
         const nodes = this.model.nodes || [];
-        for (let i = 0; i < count; i++) {
-            const zone_list = [];
-            const id = `sys-${Utils.padZero(i, 4)}`;
-            if (zones) {
-                const c = Math.floor(Math.random() * 3 + 1);
-                for (let j = 0; j < c; j++) {
-                    const zone = zones[Math.floor(Math.random() * zones.length)];
-                    if (zone_list.indexOf(zone) < 0) {
-                        if (!zone.systems) { zone.systems = []; }
-                        zone.systems.push(id);
-                        zone_list.push(zone.id);
+        let i = 0;
+        this.model.systems = Array(count)
+            .fill(1)
+            .map(_ => {
+                const zone_list = [];
+                const id = `sys-${Utils.padZero(i++, 4)}`;
+                if (zones) {
+                    const c = Math.floor(Math.random() * 3 + 1);
+                    for (let j = 0; j < c; j++) {
+                        const zone = zones[Math.floor(Math.random() * zones.length)];
+                        if (zone_list.indexOf(zone) < 0) {
+                            if (!zone.systems) { zone.systems = []; }
+                            zone.systems.push(id);
+                            zone_list.push(zone.id);
+                        }
                     }
                 }
-            }
-            item_list.push({
-                id,
-                edge_id: 'edge-0001',
-                name: `Test System ${i + 1}`,
-                description: faker.lorem.paragraph(),
-                bookable: Math.floor(Math.random() * 1234321) % 3,
-                capacity: Math.floor(Math.random() * 64),
-                email: `sys-${Utils.padZero(i, 4)}@room.tools`,
-                features: ``,
-                installed_ui_devices: 0,
-                support_url: '',
-                modules: [],
-                funcs: {},
-                zones: zone_list,
-                settings: this.generateSettings(),
-                created_at: moment().add(-Math.floor(Math.random() * 10000), 'm').unix()
+                return {
+                    id,
+                    edge_id: 'edge-0001',
+                    name: `Test System ${i}`,
+                    description: faker.lorem.paragraph(),
+                    bookable: Math.floor(Math.random() * 1234321) % 3,
+                    capacity: Math.floor(Math.random() * 64),
+                    email: `sys-${Utils.padZero(i, 4)}@room.tools`,
+                    features: ``, installed_ui_devices: 0, support_url: '', modules: [], funcs: {},
+                    zones: zone_list,
+                    settings: this.generateSettings(),
+                    created_at: moment().add(-Math.floor(Math.random() * 10000), 'm').unix()
+                };
             });
-        }
-        this.model.systems = item_list;
+        console.log('Items:', this.model.systems);
         this.setupBasicHandlers('/control/api/systems', this.model.systems, 'sys');
         MOCK_REQ_HANDLER.register('/control/api/systems/:id/:opt', this.model.systems, (event) => {
             if (event && event.params && event.params.id) {
