@@ -99,11 +99,9 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
     }
 
     public change(e) {
-        console.log('Value:', e, e.target.innerHTML);
         this.text_string = e.target.innerHTML
             .replace(/\<div[ \/a-zA-Z0-9=\";:\.-]*\>/g, '\n')
             .replace(/\<[ \/a-zA-Z0-9=\";:\.-]*\>/g, '');
-        console.log('Text:', this.text_string);
         this.checkSettings();
     }
 
@@ -112,7 +110,8 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
             return this.timeout('update', () => this.updateValue());
         }
         const div = this.input_field.nativeElement;
-        this.renderer.setProperty(div, 'textContent', this.text_string);
+        const value = this.text_string.replace(/\n/g, '</div><div>').replace('</div>', '');
+        this.renderer.setProperty(div, 'innerHTML', value);
     }
 
     public checkSettings() {
@@ -178,7 +177,7 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
             .replace(/[0-9]*.?[0-9]+ *,?/g, '<span class="number">$&</span>')
             .replace(/(true|false) *,?/g, '<span class="boolean">$&</span>')
             .replace(/(null|nil|undefined) *,?/g, '<span class="null">$&</span>')
-            .replace(/ {4}/g, '<span class="depth"> </span>   ')
+            .replace(/ {4}/g, '<div class="depth"><div class="bar"></div>&nbsp;</div>&nbsp;&nbsp;&nbsp;')
                 // Prevent separators from being colours
             .replace(/:\<\/span\>/g, '</span>:')
             .replace(/,\<\/span\>/g, '</span>,')

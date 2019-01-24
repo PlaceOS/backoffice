@@ -1053,18 +1053,13 @@ span {
     }
 }
 
-code {
+code,
+.code {
     font-family: $mono-font;
     white-space: pre;
     user-select: text;
 
     * {
-        font-family: $mono-font;
-        white-space: pre;
-        user-select: text;
-    }
-
-    span {
         font-family: $mono-font;
         white-space: pre;
         user-select: text;
@@ -1081,7 +1076,9 @@ code {
     &.level1 {
         .depth {
             &:nth-child(2) {
-                border-left-color: rgba(#000, .54);
+                .bar {
+                    background-color: rgba(#000, .54);
+                }
             }
         }
     }
@@ -1089,7 +1086,9 @@ code {
     &.level2 {
         .depth {
             &:nth-child(3) {
-                border-left-color: rgba(#000, .54);
+                .bar {
+                    background-color: rgba(#000, .54);
+                }
             }
         }
     }
@@ -1097,7 +1096,9 @@ code {
     &.level3 {
         .depth {
             &:nth-child(4) {
-                border-left-color: rgba(#000, .54);
+                .bar {
+                    background-color: rgba(#000, .54);
+                }
             }
         }
     }
@@ -1105,16 +1106,28 @@ code {
     &.level4 {
         .depth {
             &:nth-child(5) {
-                border-left-color: rgba(#000, .54);
+                .bar {
+                    background-color: rgba(#000, .54);
+                }
             }
         }
     }
 
     .depth {
-        border-left: 1px solid rgba(#000, .1);
+        position: relative;
+
+        .bar {
+            position: absolute;
+            width: 1px;
+            top: 1px;
+            bottom: 1px;
+            background-color: rgba(#000, .1);
+        }
 
         &:first-child {
-            border: none;
+            .bar {
+                display: none;
+            }
         }
     }
 

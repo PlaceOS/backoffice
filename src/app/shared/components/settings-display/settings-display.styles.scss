@@ -76,6 +76,7 @@ $line-height: 24px;
     // color: rgba(#000, 0);
     caret-color: rgba(#000, .87);
     white-space: pre;
+    color: rgba(#000, .2);
     div {
         line-height: $line-height;
         font-family: $mono-font;
@@ -125,6 +126,7 @@ code {
     font-family: $mono-font;
     white-space: pre;
     user-select: text;
+    display: flex;
     span {
         font-family: $mono-font;
         white-space: pre;
