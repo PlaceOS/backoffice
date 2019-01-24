@@ -153,9 +153,11 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
     protected delete() {
         if (!this.model.item) { return; }
         this.service[this.model.service].remove(this.model.item.id).then(
-            () => {
-                this.service.success(`Successfully deleted ${this.model.type} "${this.model.item.id}"`);
-                this.service.navigate([this.model.route]);
+            (i) => {
+                if (i) {
+                    this.service.success(`Successfully deleted ${this.model.type} "${this.model.item.id}"`);
+                    this.service.navigate([this.model.route]);
+                }
             },
             () => this.service.error(`Failed to delete ${this.model.type} "${this.model.item.id}"`)
         );

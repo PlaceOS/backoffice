@@ -285,7 +285,7 @@ export class BaseService {
                 if (event.type === 'Accept') {
                     this.deleteItem(id).then((d) => resolve(d), (e) => reject(e));
                 } else {
-                    reject('User cancelled');
+                    resolve();
                 }
                 event.close();
             });
@@ -308,7 +308,7 @@ export class BaseService {
                 this.http.delete(url).subscribe(
                     (resp: any) => {
                         this.removeListItem(id);
-                        resolve();
+                        resolve(id);
                         this.parent.Analytics.event((this.model.name || '').toUpperCase(), `removed_${this.model.name}`);
                         setTimeout(() => this.promises[key] = null, 2 * 1000);
                     }, (err) => {
