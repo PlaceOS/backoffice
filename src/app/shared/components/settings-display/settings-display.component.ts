@@ -1,5 +1,5 @@
 
-import { Component, Input, OnChanges, EventEmitter, Output } from '@angular/core';
+import { Component, Input, OnChanges, EventEmitter, Output, Renderer2, ViewChild, ElementRef } from '@angular/core';
 
 import { BaseComponent } from '../base.component';
 
@@ -30,7 +30,9 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
     public text_string = '{}';
     public error_list: any = {};
 
-    constructor(private service: AppService) {
+    @ViewChild('input') public input_field: ElementRef;
+
+    constructor(private service: AppService, private renderer: Renderer2) {
         super();
     }
 
@@ -40,6 +42,7 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
                 if (!this.model) { this.model = {}; }
                 if (this.input && this.text_string === '{}') {
                     this.text_string = JSON.stringify(this.model || '{}', null, 4);
+                    this.updateValue();
                 }
                 this.updateSettings();
             }, 100);
@@ -93,6 +96,23 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
 
     public updateCursor() {
 
+    }
+
+    public change(e) {
+        console.log('Value:', e, e.target.innerHTML);
+        this.text_string = e.target.innerHTML
+            .replace(/\<div[ \/a-zA-Z0-9=\";:\.-]*\>/g, '\n')
+            .replace(/\<[ \/a-zA-Z0-9=\";:\.-]*\>/g, '');
+        console.log('Text:', this.text_string);
+        this.checkSettings();
+    }
+
+    public updateValue() {
+        if (!this.input_field) {
+            return this.timeout('update', () => this.updateValue());
+        }
+        const div = this.input_field.nativeElement;
+        this.renderer.setProperty(div, 'textContent', this.text_string);
     }
 
     public checkSettings() {
@@ -163,7 +183,7 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
             .replace(/:\<\/span\>/g, '</span>:')
             .replace(/,\<\/span\>/g, '</span>,')
                 // Add hyperlinks to URLs
-            .replace(/(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g, '<a href="$&">$&</a>');
+            .replace(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.]+$/g, '<a href="$&">$&</a>');
     }
 
     public copy() {

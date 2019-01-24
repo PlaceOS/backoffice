@@ -60,7 +60,7 @@ $line-height: 24px;
     }
 }
 
-textarea {
+.input {
     position: absolute;
     top: 0;
     left: 0;
@@ -73,14 +73,20 @@ textarea {
     background: none;
     border: none;
     padding: 0 .5em 0 1em;
-    color: rgba(#000, 0);
-    white-space: nowrap;
+    // color: rgba(#000, 0);
     caret-color: rgba(#000, .87);
+    white-space: pre;
+    div {
+        line-height: $line-height;
+        font-family: $mono-font;
+    }
 }
 
 .item {
     position: relative;
     background-color: rgba(#000, .05);
+    display: flex;
+    align-items: center;
     height: $line-height;
     font-family: $mono-font;
     white-space: nowrap;
@@ -170,5 +176,9 @@ code {
     &:active {
         background-color: #f0f0f0;
         box-shadow: 0 1px 3px 0 rgba(#000,0), 0 1px 1px 0 rgba(#000,0), 0 2px 1px -1px rgba(#000,0);
+    }
+
+    img {
+        height: 1em;
     }
 }

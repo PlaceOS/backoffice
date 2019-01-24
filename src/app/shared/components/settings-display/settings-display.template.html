@@ -13,9 +13,9 @@
                 <i class="material-icons">error</i>
             </div>
         </div>
-        <textarea *ngIf="input" [(ngModel)]="text_string" (focus)="focus()" (blur)="focused = false"  (ngModelChange)="checkSettings()"></textarea>
+        <code class="input" *ngIf="input" contenteditable="true" (input)="change($event)" (focus)="focus()" (blur)="focused = false"></code>
     </div>
     <div class="copy" *ngIf="!input" (touchrelease)="copy()">
-        <i class="material-icons">input</i>
+        <img src="data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZGF0YS1wcmVmaXg9ImZhbCIgZGF0YS1pY29uPSJjb3B5IiByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDQ0OCA1MTIiIGNsYXNzPSJzdmctaW5saW5lLS1mYSBmYS1jb3B5IGZhLXctMTQgZmEtOXgiPjxwYXRoIGZpbGw9IiMwMDAiIGQ9Ik00MzMuOTQxIDY1Ljk0MWwtNTEuODgyLTUxLjg4MkE0OCA0OCAwIDAgMCAzNDguMTE4IDBIMTc2Yy0yNi41MSAwLTQ4IDIxLjQ5LTQ4IDQ4djQ4SDQ4Yy0yNi41MSAwLTQ4IDIxLjQ5LTQ4IDQ4djMyMGMwIDI2LjUxIDIxLjQ5IDQ4IDQ4IDQ4aDIyNGMyNi41MSAwIDQ4LTIxLjQ5IDQ4LTQ4di00OGg4MGMyNi41MSAwIDQ4LTIxLjQ5IDQ4LTQ4Vjk5Ljg4MmE0OCA0OCAwIDAgMC0xNC4wNTktMzMuOTQxek0zNTIgMzIuNDkxYTE1Ljg4IDE1Ljg4IDAgMCAxIDcuNDMxIDQuMTk1bDUxLjg4MiA1MS44ODNBMTUuODg1IDE1Ljg4NSAwIDAgMSA0MTUuNTA4IDk2SDM1MlYzMi40OTF6TTI4OCA0NjRjMCA4LjgyMi03LjE3OCAxNi0xNiAxNkg0OGMtOC44MjIgMC0xNi03LjE3OC0xNi0xNlYxNDRjMC04LjgyMiA3LjE3OC0xNiAxNi0xNmg4MHYyNDBjMCAyNi41MSAyMS40OSA0OCA0OCA0OGgxMTJ2NDh6bTEyOC05NmMwIDguODIyLTcuMTc4IDE2LTE2IDE2SDE3NmMtOC44MjIgMC0xNi03LjE3OC0xNi0xNlY0OGMwLTguODIyIDcuMTc4LTE2IDE2LTE2aDE0NHY3MmMwIDEzLjIgMTAuOCAyNCAyNCAyNGg3MnYyNDB6IiBjbGFzcz0iIj48L3BhdGg+PC9zdmc+">
     </div>
 </div>

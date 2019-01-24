@@ -1058,6 +1058,12 @@ code {
     white-space: pre;
     user-select: text;
 
+    * {
+        font-family: $mono-font;
+        white-space: pre;
+        user-select: text;
+    }
+
     span {
         font-family: $mono-font;
         white-space: pre;
