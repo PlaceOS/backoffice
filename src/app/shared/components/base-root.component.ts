@@ -144,9 +144,9 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
 
     protected edit() {
         if (this.model.item) {
-            this.service[this.model.service].edit(this.model.id).then(() => {
+            this.service[this.model.service].edit(this.model.id || this.model.item.id).then(() => {
                 this.sidebarEvent({ type: 'select', item: { id: this.model.id } });
-            });
+            }, () => null);
         }
     }
 
