@@ -32,7 +32,7 @@ export interface IEngineSystemTrigger {
 @Injectable({
     providedIn: 'root'
 })
-export class SystemTriggersService extends BaseService {
+export class SystemTriggersService extends BaseService<IEngineSystemTrigger> {
 
     constructor(protected http: CommsService) {
         super();

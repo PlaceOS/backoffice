@@ -19,7 +19,7 @@ export interface IEngineSearchResult {
 @Injectable({
     providedIn: 'root'
 })
-export class EngineSearchService extends BaseService {
+export class EngineSearchService extends BaseService<IEngineSearchResult> {
 
     constructor(protected http: CommsService) {
         super();

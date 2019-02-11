@@ -22,7 +22,7 @@ export interface IEngineTest {
 @Injectable({
     providedIn: 'root'
 })
-export class TestsService extends BaseService {
+export class TestsService extends BaseService<IEngineTest> {
 
     constructor(protected http: CommsService) {
         super();

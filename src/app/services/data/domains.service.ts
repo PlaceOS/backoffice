@@ -22,7 +22,7 @@ export interface IEngineDomain {
 @Injectable({
     providedIn: 'root'
 })
-export class DomainsService extends BaseService {
+export class DomainsService extends BaseService<IEngineDomain> {
 
     constructor(protected http: CommsService) {
         super();

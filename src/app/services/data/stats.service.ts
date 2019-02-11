@@ -17,7 +17,7 @@ export interface IEngineStats {
 @Injectable({
     providedIn: 'root'
 })
-export class StatsService extends BaseService {
+export class StatsService extends BaseService<IEngineStats> {
 
     constructor(protected http: CommsService) {
         super();

@@ -23,7 +23,7 @@ export interface IEngineTrigger {
 @Injectable({
     providedIn: 'root'
 })
-export class TriggersService extends BaseService {
+export class TriggersService extends BaseService<IEngineTrigger> {
 
     constructor(protected http: CommsService) {
         super();

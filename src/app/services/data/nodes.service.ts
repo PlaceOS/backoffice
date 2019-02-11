@@ -31,7 +31,7 @@ export interface IEngineEdgeNode {
 @Injectable({
     providedIn: 'root'
 })
-export class NodesService extends BaseService {
+export class NodesService extends BaseService<IEngineEdgeNode> {
 
     constructor(protected http: CommsService) {
         super();

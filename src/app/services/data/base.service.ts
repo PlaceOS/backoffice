@@ -8,7 +8,7 @@ import * as moment from 'moment';
 
 const FORBIDDEN: string[] = ['model', 'observers', 'subjects'];
 
-export class BaseService {
+export class BaseService<T> {
     public parent: any = null;
     protected model: any = {};
     protected subjects: any = {};
@@ -44,7 +44,7 @@ export class BaseService {
         return this.get('list') || [];
     }
 
-    public filter(filter: string, fields: string[] = ['id', 'name'], items: any[] = this.list()) {
+    public filter(filter: string, fields: string[] = ['id', 'name'], items: T[] = this.list()) {
         return Utils.filter(filter, items, fields);
     }
 
@@ -110,7 +110,7 @@ export class BaseService {
      * @param fields Key, value pairs for query parameters
      * @param tries Retry value. DON'T USE
      */
-    public query(fields?: any) {
+    public query(fields?: { [name: string]: any }) {
         const query = Utils.generateQueryString(fields);
         let update = true;
         if (fields && !fields.update) {
@@ -149,7 +149,7 @@ export class BaseService {
      * @param id ID to get the data for
      * @param fields Key, value pairs for query parameters
      */
-    public show(id: string, fields?: any) {
+    public show(id: string, fields?: { [name: string]: any }) {
         const key = `show|${id}`;
         if (!this.promises[key]) {
             this.promises[key] = new Promise((resolve, reject) => {
@@ -175,7 +175,7 @@ export class BaseService {
      * Add new item with the given parameters
      * @param data
      */
-    public add(data: any) {
+    public add(data: T) {
         const key = `add|${data.id || moment().seconds(0).unix()}`;
         if (!this.promises[key]) {
             this.promises[key] = new Promise((resolve, reject) => {
@@ -238,7 +238,7 @@ export class BaseService {
      * @param id ID of the item
      * @param data New values to replace on the old item
      */
-    public update(id: string, data: any, link?: any) {
+    public update(id: string, data: T, link?: any) {
         return new Promise((resolve, reject) => {
             if (!id) { return reject('Invalid ID given'); }
             this.parent.confirm(this.confirmSettings('update', data), (event) => {
@@ -250,7 +250,7 @@ export class BaseService {
         });
     }
 
-    public updateItem(id: string, data: any) {
+    public updateItem(id: string, data: T) {
         if (!id) { return new Promise((rs, rj) => rj('Invalid ID given')); }
         const key = `update|${id || moment().seconds(0).unix()}`;
         if (!this.promises[key]) {
@@ -326,7 +326,7 @@ export class BaseService {
      * @param id Module ID
      * @param task Name of the task to execute
      */
-    public task(id: string, task: string, fields?: any) {
+    public task(id: string, task: string, fields?: { [name: string]: any }) {
         const key = `task|${id}|${task}`;
         if (!this.promises[key]) {
             this.promises[key] = new Promise((resolve, reject) => {
@@ -361,7 +361,7 @@ export class BaseService {
      * Adds new items and updates existing items in the item list store
      * @param input_list List of new/updated items
      */
-    protected updateList(input_list: any[]) {
+    protected updateList(input_list: T[]) {
         // Get current list
         const item_list = this.list();
         // Add any new items to the list
@@ -382,7 +382,7 @@ export class BaseService {
         this.set('list', item_list);
     }
 
-    protected updateHashMap(list: any[]) {
+    protected updateHashMap(list: T[]) {
         const map: any = {};
         for (const item of list) {
             map[item.id] = item;
@@ -391,7 +391,7 @@ export class BaseService {
     }
 
     protected processList(input_list: any[]) {
-        const output_list: any[] = [];
+        const output_list: T[] = [];
         for (const key in (input_list || [])) {
             if (input_list.hasOwnProperty(key) && input_list[key]) {
                 const out = this.processItem(input_list[key], key);
@@ -405,7 +405,7 @@ export class BaseService {
         return raw_item;
     }
 
-    protected format(data: any) {
+    protected format(data: T) {
         const formatted_data = data;
         return formatted_data;
     }
@@ -437,7 +437,7 @@ export class BaseService {
      * @param key
      * @param fields
      */
-    protected confirmSettings(key: string, fields: any = {}) {
+    protected confirmSettings(key: string, fields: { [name: string]: any } = {}) {
         const settings: any = {
             title: '',
             message: '',
@@ -508,4 +508,4 @@ export class BaseService {
             this.subs.intervals[name] = null;
         }
     }
-}
+    }

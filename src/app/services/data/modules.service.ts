@@ -41,7 +41,7 @@ export interface IEngineModule {
 @Injectable({
     providedIn: 'root'
 })
-export class ModulesService extends BaseService {
+export class ModulesService extends BaseService<IEngineModule> {
 
     constructor(protected http: CommsService) {
         super();

@@ -30,7 +30,7 @@ export interface IEngineSystem {
 @Injectable({
     providedIn: 'root'
 })
-export class EngineSystemsService extends BaseService {
+export class EngineSystemsService extends BaseService<IEngineSystem> {
 
     constructor(protected http: CommsService) {
         super();

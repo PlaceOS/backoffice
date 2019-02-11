@@ -21,7 +21,7 @@ export interface IEngineDriver {
 @Injectable({
     providedIn: 'root'
 })
-export class DriversService extends BaseService {
+export class DriversService extends BaseService<IEngineDriver> {
 
     constructor(protected http: CommsService) {
         super();

@@ -25,7 +25,7 @@ export interface IEngineAuthSource {
 @Injectable({
     providedIn: 'root'
 })
-export class AuthSourcesService extends BaseService {
+export class AuthSourcesService extends BaseService<IEngineAuthSource> {
 
     constructor(protected http: CommsService) {
         super();

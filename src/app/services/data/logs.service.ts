@@ -28,7 +28,7 @@ export interface IEngineLogEntry {
 @Injectable({
     providedIn: 'root'
 })
-export class LogsService extends BaseService {
+export class LogsService extends BaseService<IEngineLogEntry> {
 
     constructor(protected http: CommsService) {
         super();

@@ -9,7 +9,7 @@ import { IEngineDriver } from './drivers.service';
 @Injectable({
     providedIn: 'root'
 })
-export class DiscoveryService extends BaseService {
+export class DiscoveryService extends BaseService<IEngineDriver> {
 
     constructor(protected http: CommsService) {
         super();

@@ -33,7 +33,7 @@ export interface IUser {
 @Injectable({
     providedIn: 'root'
 })
-export class UsersService extends BaseService {
+export class UsersService extends BaseService<IUser> {
 
     constructor(protected http: CommsService, private http_unauth: HttpClient) {
         super();

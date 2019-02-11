@@ -21,7 +21,7 @@ export interface IEngineZone {
 @Injectable({
     providedIn: 'root'
 })
-export class ZonesService extends BaseService {
+export class ZonesService extends BaseService<IEngineZone> {
 
     constructor(protected http: CommsService) {
         super();
