@@ -176,7 +176,7 @@ export class BaseService<T> {
      * @param data
      */
     public add(data: T) {
-        const key = `add|${data.id || moment().seconds(0).unix()}`;
+        const key = `add|${moment().seconds(0).unix()}`;
         if (!this.promises[key]) {
             this.promises[key] = new Promise((resolve, reject) => {
                 const formatted_data = this.format(data);
@@ -368,7 +368,7 @@ export class BaseService<T> {
         for (const input of input_list) {
             let found = false;
             for (const item of item_list) {
-                if (item.id === input.id) {
+                if (item.id === (input as any).id) {
                     found = true;
                     break;
                 }
@@ -385,7 +385,7 @@ export class BaseService<T> {
     protected updateHashMap(list: T[]) {
         const map: any = {};
         for (const item of list) {
-            map[item.id] = item;
+            map[(item as any).id] = item;
         }
         this.set('map', map);
     }

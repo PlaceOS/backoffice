@@ -10,21 +10,21 @@ import { SystemModalComponent } from '../../overlays/system-modal/system-modal.c
 import * as moment from 'moment';
 
 export interface IEngineSystem {
-    id: string;
-    edge_id: string;
-    name: string;
+    id?: string;
+    edge_id?: string;
+    name?: string;
     email?: string;
     description?: string;
     capacity?: number;
     feature?: string;
     modules?: string[];
     zones?: string[];
-    settings: any;
+    settings?: any;
     bookable?: boolean;
     support_url?: string;
     installed_ui_devices?: number;
     display?: any;
-    created: number;
+    created?: number;
 }
 
 @Injectable({
