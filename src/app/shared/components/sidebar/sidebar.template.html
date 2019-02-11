@@ -39,7 +39,7 @@
     <section class="content">
         <ng-content></ng-content>
     </section>
-    <section class="list" (scroll)="atBottom()">
+    <section class="list">
         <ng-container *ngIf="list">
             <cdk-virtual-scroll-viewport itemSize="32" (scrolledIndexChange)="atBottom()">
                 <ng-container *cdkVirtualFor="let item of items | async">
