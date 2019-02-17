@@ -23,8 +23,6 @@ export class StatsService extends BaseService<IEngineStats> {
         super();
         this.model.name = 'stats';
         this.model.route = '/stats';
-        this.subjects.list = new BehaviorSubject<IEngineStats[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     public load() {

@@ -28,17 +28,15 @@ export class TestsService extends BaseService<IEngineTest> {
         super();
         this.model.name = 'test';
         this.model.route = '/tests';
-        this.subjects.list = new BehaviorSubject<IEngineTest[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     public load() {
         this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: SystemModalComponent });
     }
 
-    public deleteItem() { }
-    public updateItem() { }
-    public add() { }
+    public deleteItem() { return new Promise((rs, rj) => rj('No show for this service')); }
+    public updateItem() { return new Promise<any>((rs, rj) => rj('No show for this service')); }
+    public add() { return new Promise<any>((rs, rj) => rj('No show for this service')); }
 
     /**
      * Connect websocket and run test on the server

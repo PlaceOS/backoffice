@@ -34,8 +34,6 @@ export class LogsService extends BaseService<IEngineLogEntry> {
         super();
         this.model.name = 'log';
         this.model.route = '/logs';
-        this.subjects.list = new BehaviorSubject<IEngineLogEntry[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     protected processItem(raw_item: any) {

@@ -37,8 +37,6 @@ export class NodesService extends BaseService<IEngineEdgeNode> {
         super();
         this.model.name = 'edge';
         this.model.route = '/nodes';
-        this.subjects.list = new BehaviorSubject<IEngineEdgeNode[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     protected processItem(raw_item: any) {

@@ -31,8 +31,6 @@ export class AuthSourcesService extends BaseService<IEngineAuthSource> {
         super();
         this.model.name = 'authentication source';
         this.model.route = '/authsources';
-        this.subjects.list = new BehaviorSubject<IEngineAuthSource[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     get endpoint() {

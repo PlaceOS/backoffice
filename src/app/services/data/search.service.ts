@@ -7,6 +7,7 @@ import { BaseService } from './base.service';
 import { SystemModalComponent } from '../../overlays/system-modal/system-modal.component';
 
 import * as moment from 'moment';
+import { reject } from 'q';
 
 export interface IEngineSearchResult {
     id: string;
@@ -25,18 +26,16 @@ export class EngineSearchService extends BaseService<IEngineSearchResult> {
         super();
         this.model.name = 'search';
         this.model.route = '/search';
-        this.subjects.list = new BehaviorSubject<IEngineSearchResult[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     public load() {
         this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: SystemModalComponent });
     }
 
-    public deleteItem() { }
-    public updateItem() { }
-    public add() { }
-    public show() { }
+    public deleteItem() { return new Promise((rs, rj) => rj('No show for this service')); }
+    public updateItem() { return new Promise<any>((rs, rj) => rj('No show for this service')); }
+    public add() { return new Promise<any>((rs, rj) => rj('No show for this service')); }
+    public show() { return new Promise<any>((rs, rj) => rj('No show for this service')); }
 
     protected processItem(raw_item: any) {
         const item: IEngineSearchResult = {

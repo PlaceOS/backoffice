@@ -1,22 +1,27 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { AppService } from './app.service';
+
 @Injectable({
     providedIn: 'root'
 })
 export class AnalyticsService {
-    public model: any = {};
-    public parent = null;
+    public model: { [name: string]: any } = {};
+    public parent: AppService = null;
 
-    private timers: any = {};
+    private timers: { [name: string]: number } = {};
 
     constructor(private router: Router) { }
 
-    public init() {
+    public init(): void {
         if (!this.parent || !this.parent.ready()) {
-            return setTimeout(() => this.init(), 500);
+            setTimeout(() => this.init(), 500);
+            return;
         }
+
         this.model.settings = this.parent.Settings.get('app.analytics') || {};
+        this.model.prefix = this.model.settings.prefix || 'Staff';
         if (this.model.settings && this.model.settings.enabled) {
             this.parent.Settings.log('Analytics', `Initialising...`);
             // (window as any).ga('create', 'UA-119470294-1', 'auto');
@@ -29,7 +34,7 @@ export class AnalyticsService {
      * Set User ID for the Google Analytics session
      * @param id Identifier of the User
      */
-    public setUser(id: string) {
+    public setUser(id: string): void {
         if (this.model.settings && this.model.settings.enabled && (window as any).ga) {
             this.timeout(`user|${id}`, () => {
                 this.parent.Settings.log('Analytics', `Set user ID: ${id}`);
@@ -46,29 +51,29 @@ export class AnalyticsService {
      * @param label Event Label
      * @param value Event Value
      */
-    public event(category: string, action: string, label?: string, value?: string) {
+    public event(category: string, action: string, label?: string, value?: string): void {
         if (this.model.settings && this.model.settings.enabled && (window as any).ga) {
             this.timeout(`event|${category}|${action}|${label}|${value}`, () => {
                 const l = label ? ', ' + label : '';
                 this.parent.Settings.log('Analytics', `Event: ${category}, ${action}${l}${value ? ', ' + value : ''}`);
-                (window as any).ga('send', 'event', category, action, label, value);
+                (window as any).ga('send', 'event', `${this.model.prefix}_${category}`, action, label, value);
             }, 100);
         }
     }
 
-    public screen(name: string, app_name?: string) {
+    public screen(name: string, app_name?: string): void {
         if (this.model.settings && this.model.settings.enabled && (window as any).ga && name) {
-            this.timeout(`event|${name}|${app_name || this.parent.Settings.appName}`, () => {
+            this.timeout(`event|${name}|${app_name || this.parent.Settings.app_name}`, () => {
                 this.parent.Settings.log('Analytics', `Screen: ${name}${app_name ? ', ' + app_name : ''}`);
                 (window as any).ga('send', 'screenview', {
-                    appName: app_name || this.parent.Settings.appName,
+                    appName: app_name || this.parent.Settings.app_name,
                     screenName: name
                 });
             }, 100);
         }
     }
 
-    public page(route: string, origin: boolean = false) {
+    public page(route: string, origin: boolean = false): void {
         if (this.model.settings && this.model.settings.enabled && (window as any).ga) {
             this.model.page = route || '/';
             this.timeout(`page|${route}`, () => {
@@ -78,7 +83,7 @@ export class AnalyticsService {
         }
     }
 
-    public timing(category: string, variable: string, value: string, label?: string) {
+    public timing(category: string, variable: string, value: string, label?: string): void {
         if (this.model.settings && this.model.settings.enabled && (window as any).ga) {
             this.timeout(`page|${category}|${variable}|${value}|${label}`, () => {
                 this.parent.Settings.log('Analytics', `Timing: ${category}, ${variable}, ${value}${label ? ', ' + label : ''}`);
@@ -93,12 +98,12 @@ export class AnalyticsService {
      * @param fn Timer callback
      * @param delay Timer delay
      */
-    private timeout(name: string, fn: () => void, delay: number = 300) {
+    private timeout(name: string, fn: () => void, delay: number = 300): void {
         if (this.timers[name]) {
             clearTimeout(this.timers[name]);
             this.timers[name] = null;
         }
-        this.timers[name] = setTimeout(() => {
+        this.timers[name] = <any>setTimeout(() => {
             if (fn instanceof Function) { fn(); }
             this.timers[name] = null;
         }, delay);
@@ -108,10 +113,11 @@ export class AnalyticsService {
      * Post page and screen for the current view of the application
      * @param tries Retry count. DON'T USE
      */
-    public updatePage(tries: number = 0) {
+    public updatePage(tries: number = 0): void {
         if (tries > 10) { return; }
         if (!this.model.settings || !this.model.settings.enabled || !(window as any).ga) {
-            return setTimeout(() => this.updatePage(), 200 * ++tries);
+            setTimeout(() => this.updatePage(), 200 * ++tries);
+            return;
         }
         this.timeout('update-page', () => {
             const page = this.router.url.split('?')[0];

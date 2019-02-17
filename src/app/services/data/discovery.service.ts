@@ -15,8 +15,6 @@ export class DiscoveryService extends BaseService<IEngineDriver> {
         super();
         this.model.name = 'driver';
         this.model.route = '/discovery';
-        this.subjects.list = new BehaviorSubject<IEngineDriver[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     /**

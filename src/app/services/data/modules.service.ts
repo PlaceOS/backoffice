@@ -47,8 +47,6 @@ export class ModulesService extends BaseService<IEngineModule> {
         super();
         this.model.name = 'devices';
         this.model.route = '/modules';
-        this.subjects.list = new BehaviorSubject<IEngineModule[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     public load() {

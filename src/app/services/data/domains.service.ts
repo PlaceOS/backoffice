@@ -28,8 +28,6 @@ export class DomainsService extends BaseService<IEngineDomain> {
         super();
         this.model.name = 'domain';
         this.model.route = '/domains';
-        this.subjects.list = new BehaviorSubject<IEngineDomain[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     get endpoint() {

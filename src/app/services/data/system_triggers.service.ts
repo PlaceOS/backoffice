@@ -38,8 +38,6 @@ export class SystemTriggersService extends BaseService<IEngineSystemTrigger> {
         super();
         this.model.name = 'system_trigger';
         this.model.route = '/system_triggers';
-        this.subjects.list = new BehaviorSubject<IEngineSystemTrigger[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     protected processItem(raw_item: any) {

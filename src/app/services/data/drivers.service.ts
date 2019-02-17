@@ -27,8 +27,6 @@ export class DriversService extends BaseService<IEngineDriver> {
         super();
         this.model.name = 'driver';
         this.model.route = '/dependencies';
-        this.subjects.list = new BehaviorSubject<IEngineDriver[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     public load() {
@@ -56,6 +54,10 @@ export class DriversService extends BaseService<IEngineDriver> {
             created: raw_item.created_at * 1000
         };
         return item;
+    }
+
+    public getFormFields(item: IEngineDriver) {
+        return [];
     }
 
 }

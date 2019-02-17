@@ -27,8 +27,6 @@ export class ZonesService extends BaseService<IEngineZone> {
         super();
         this.model.name = 'zone';
         this.model.route = '/zones';
-        this.subjects.list = new BehaviorSubject<IEngineZone[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     public load() {

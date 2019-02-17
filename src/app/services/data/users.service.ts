@@ -39,8 +39,6 @@ export class UsersService extends BaseService<IUser> {
         super();
         this.model.name = 'user';
         this.model.route = '/users';
-        this.subjects.list = new BehaviorSubject<IUser[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
         this.set('user', null);
         this.set('state', 'loading');
     }

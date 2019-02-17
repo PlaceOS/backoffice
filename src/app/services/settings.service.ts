@@ -29,6 +29,7 @@ const OBSERVABLES: any[] = [
 export class SettingsService {
     public parent: any = null;
     public setup = false;
+    public app_name = APP_NAME;
     private store: Storage = localStorage;
     private model: any = {
         loading: {

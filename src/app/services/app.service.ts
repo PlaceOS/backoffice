@@ -17,7 +17,7 @@ import { SystemsService } from '@acaprojects/ngx-composer';
 import { OverlayService, NotificationComponent } from '@acaprojects/ngx-widgets';
 
 import { SettingsService } from './settings.service';
-import { AnalyticsService } from './data/analytics.service';
+import { AnalyticsService } from './analytics.service';
 import { CommentsService } from './data/comments.service';
 
 import { DriversService } from './data/drivers.service';
@@ -43,6 +43,7 @@ import { Utils } from '../shared/utility.class';
 import { ConfirmModalComponent } from '../overlays/confirm-modal/confirm-modal.component';
 import { ViewModuleStateModalComponent } from '../overlays/view-module-state/view-module-state.component';
 import { ChangelogModalComponent } from '../overlays/changelog-modal/changelog-modal.component';
+import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
 
 @Injectable({
     providedIn: 'root'
@@ -98,6 +99,7 @@ export class AppService {
         this.overlay.setupModal('confirm', { cmp: ConfirmModalComponent });
         this.overlay.setupModal('view-module-state', { cmp: ViewModuleStateModalComponent });
         this.overlay.setupModal('changelog', { cmp: ChangelogModalComponent });
+        this.overlay.setupModal('item-view', { cmp: ItemCreateUpdateModalComponent });
         this.init();
     }
 
@@ -120,7 +122,9 @@ export class AppService {
             return setTimeout(() => this.init(), 500);
         }
         this.version.available.subscribe(event => {
-            this.settings.log('CACHE', `Update available: current version is ${event.current.hash} available version is ${event.available.hash}`);
+            const o_hash = event.current.hash;
+            const n_hash = event.available.hash;
+            this.settings.log('CACHE', `Update available: current version is ${o_hash} available version is ${n_hash}`);
             this.info('Newer version of the app is available', 'Refresh', () => {
                 location.reload();
             });

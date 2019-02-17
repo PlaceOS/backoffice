@@ -36,8 +36,6 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
         super();
         this.model.name = 'system';
         this.model.route = '/systems';
-        this.subjects.list = new BehaviorSubject<IEngineSystem[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     public load() {

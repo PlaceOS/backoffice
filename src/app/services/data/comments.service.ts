@@ -1,7 +1,8 @@
 
-import { CommsService } from '@acaprojects/ngx-composer';
 import { Injectable } from '@angular/core';
+
 import { IUser } from './users.service';
+import { BaseService } from './base.service';
 
 export interface IComment {
     id: string;
@@ -23,166 +24,43 @@ export interface IComment {
 @Injectable({
     providedIn: 'root'
 })
-export class CommentsService {
-    public parent: any = null;
+export class CommentsService extends BaseService<IComment> {
 
-    private model: any = {};
-    private timers: any = {};
-    private subjects: any = {};
-    private observers: any = {};
-
-    constructor(private http: CommsService) { }
-
-    public init() {
-        return;
+    /**
+     * Task for adding the like state to comment
+     * @param id ID of the comment to like
+     * @param fields Query parameters
+     */
+    public like(id: string, fields?: { name: string, [fields: string]: any }) {
+        return this.task(id, 'like', fields);
     }
 
     /**
-     * Get a list of comments matching the given fields
-     * @param fields query fields for API
+     * Task for removing like state on the comment
+     * @param id ID of the comment to dislike
+     * @param fields Query parameters
      */
-    public list(fields: any = { offset: 0, limit: 500 }) {
-        return new Promise<IComment[]>((resolve, reject) => {
-            const url = `${this.parent.api_endpoint}/comment`;
-            let query = ``;
-            if (fields) {
-                for (const k in fields) {
-                    if (fields.hasOwnProperty(k)) {
-                        if (!query) { query += '&'; }
-                        query += `${k}=${fields[k]}`;
-                    }
-                }
-            }
-            const data: IComment[] = [];
-            this.http.get(`${url}${query ? '?'  + query : ''}`).subscribe((resp: any) => {
-                for (const item of resp.results) {
-                    data.push(this.processComment(item));
-                }
-                this.processReplies(data);
-            }, (err) => {
-                reject(err);
-            }, () => {
-                resolve(data);
-            });
-        });
+    public dislike(id: string, fields?: { name: string, [fields: string]: any }) {
+        return this.task(id, 'dislike', fields);
     }
 
     /**
-     * Create new comment
-     * @param comment New comment
+     * Task for removing like state on the comment
+     * @param id ID of the comment to dislike
+     * @param fields Query parameters
      */
-    public new(comment: IComment) {
-        return new Promise((resolve, reject) => {
-            const cmt = JSON.parse(JSON.stringify(comment));
-            if (cmt.user) { delete cmt.user; }
-            if (cmt.other) {
-                const data = cmt.other;
-                data.comment = cmt.description;
-                cmt.description = JSON.stringify(data);
-                delete cmt.other;
-            }
-            const url = `${this.parent.api_endpoint}/comment`;
-            this.http.post(url, cmt).subscribe(
-                () => null,
-                (err) => { reject(err); },
-                () => { resolve('Success'); },
-            );
-        });
+    public removeVote(id: string, fields?: { name: string, [fields: string]: any }) {
+        return this.task(id, 'clear', fields);
     }
 
     /**
-     * Post update to comment
-     * @param id ID of comment
-     * @param comment Updated comment
+     * Process list data for returned items
+     * @param list Raw item data from server
      */
-    public update(id: string, comment: IComment) {
-        return new Promise((resolve, reject) => {
-            const cmt = JSON.parse(JSON.stringify(comment));
-            if (cmt.user) { delete cmt.user; }
-            if (cmt.other) {
-                const data = cmt.other;
-                data.comment = cmt.description;
-                cmt.description = JSON.stringify(data);
-                delete cmt.other;
-            }
-            const url = `${this.parent.api_endpoint}/comment/${id}`;
-            this.http.put(url, cmt).subscribe(
-                () => null,
-                (err) => { reject(err); },
-                () => { resolve('Success'); },
-            );
-        });
-    }
-
-    /**
-     * Delete comment with given ID
-     * @param id ID of comment
-     */
-    public delete(id: string) {
-        return new Promise((resolve, reject) => {
-            const url = `${this.parent.api_endpoint}/comment/${id}`;
-            this.http.delete(url).subscribe(
-                () => null,
-                (err) => { reject(err); },
-                () => { resolve('Success'); },
-            );
-        });
-    }
-
-    /**
-     * Set like state to true for comment
-     * @param id ID of comment
-     * @param master_id ID of root comment
-     */
-    public like(id: string, master_id: string = '') {
-        return new Promise((resolve, reject) => {
-            const url = `${this.parent.api_endpoint}/comment/${id}/like`;
-            let query = `name=${this.parent.Users.current().staff_code}`;
-            if (master_id) {
-                query += `&master_id=${master_id}`;
-            }
-            this.http.post(`${url}${query ? '?'  + query : ''}`, {}).subscribe(
-                () => null,
-                (err) => { reject(err); },
-                () => { resolve('Success'); },
-            );
-        });
-    }
-
-    /**
-     * Set like state to false for comment
-     * @param id ID of comment
-     * @param master_id ID of root comment
-     */
-    public dislike(id: string, master_id: string = '') {
-        return new Promise((resolve, reject) => {
-            const url = `${this.parent.api_endpoint}/comment/${id}/like`;
-            let query = `name=${this.parent.Users.current().staff_code}`;
-            if (master_id) {
-                query += `&master_id=${master_id}`;
-            }
-            this.http.post(`${url}${query ? '?'  + query : ''}`, {}).subscribe(
-                () => null,
-                (err) => { reject(err); },
-                () => { resolve('Success'); },
-            );
-        });
-    }
-
-    /**
-     * Remove like/dislike state of comment
-     * @param id ID of comment
-     */
-    public remove_vote(id: string) {
-        return new Promise((resolve, reject) => {
-            const url = `${this.parent.api_endpoint}/comment/${id}/like`;
-            const query = `name=${this.parent.Users.current().staff_code}`;
-            this.http.post(`${url}${query ? '?'  + query : ''}`, {}).subscribe(
-                () => null,
-                (err) => { reject(err); },
-                () => { resolve('Success'); },
-            );
-        });
+    protected processList(list: any[]) {
+        const output_list = super.processList(list);
+        this.processReplies(output_list);
+        return output_list;
     }
 
     /**
@@ -190,7 +68,7 @@ export class CommentsService {
      * @param cmt Raw comment data
      * @return
      */
-    private processComment(cmt: any): IComment {
+    protected processItem(cmt: any): IComment {
         const comment: IComment = {
             id: cmt.id,
             channel_id: cmt.channel_id,

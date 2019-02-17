@@ -26,8 +26,6 @@ export class ApplicationService extends BaseService<IEngineApplication> {
         super();
         this.model.name = 'application';
         this.model.route = '/applications';
-        this.subjects.list = new BehaviorSubject<IEngineApplication[]>([]);
-        this.observers.list = this.subjects.list.asObservable();
     }
 
     get endpoint() {

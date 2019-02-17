@@ -1,20 +1,33 @@
 
 import { CommsService } from '@acaprojects/ngx-composer';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 import { Utils } from '../../shared/utility.class';
 
 import * as moment from 'moment';
+import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets/components/form-controls/dynamic-form/dynamic-field.class';
+import { AppService } from '../app.service';
 
 const FORBIDDEN: string[] = ['model', 'observers', 'subjects'];
 
+export interface IBaseObject {
+    id?: string;
+    name?: string;
+    email?: string;
+    [name: string]: any;
+}
+
 export class BaseService<T> {
-    public parent: any = null;
-    protected model: any = {};
-    protected subjects: any = {};
-    protected observers: any = {};
-    protected promises: any = {};
-    protected subs: any = {
+    public parent: AppService = null;
+    protected model: { [name: string]: any } = {};
+    protected subjects: { [name: string]: BehaviorSubject<any> } = {};
+    protected observers: { [name: string]: Observable<any> } = {};
+    protected promises: { [name: string]: Promise<any> } = {};
+    protected subs: {
+        timers: { [name: string]: number },
+        intervals: { [name: string]: number },
+        obs: { [name: string]: (Subscription | (() => void)) }
+    } = {
         timers: {},     // Store for timers
         intervals: {},  // Store for intervals
         obs: {}         // Store for observables
@@ -24,31 +37,33 @@ export class BaseService<T> {
 
     constructor() {
         this.set('map', {});
+        this.set<T[]>('list', []);
         this.init();
     }
 
-    public init() {
+    public init(): void {
         if (!this.parent || !this.parent.Settings.setup || (this.parent.Settings.get('mock') && !(window as any).backend.is_loaded)) {
-            return setTimeout(() => this.init(), 500);
+            setTimeout(() => this.init(), 500);
+            return;
         }
         this.load();
     }
 
-    protected load() { }
+    protected load(): void { }
 
     get endpoint() {
         return this.parent ? `${this.parent.api_endpoint}${this.model.route}` : `/control/api${this.model.route}`;
     }
 
-    public list() {
+    public list(): T[] {
         return this.get('list') || [];
     }
 
-    public filter(filter: string, fields: string[] = ['id', 'name'], items: T[] = this.list()) {
+    public filter(filter: string, fields: string[] = ['id', 'name'], items: T[] = this.list()): T[] {
         return Utils.filter(filter, items, fields);
     }
 
-    public clearList() {
+    public clearList(): void {
         this.set('list', []);
     }
 
@@ -87,11 +102,12 @@ export class BaseService<T> {
      * Get item from list with the specific ID
      * @param id ID to search for
      */
-    public item(id: string) {
+    public item(id: string): T {
         const list = this.list();
-        for (const item of list) {
+        for (const i of list) {
+            const item = i as IBaseObject;
             if (item.id === id || item.name === id || item.email === id) {
-                return item;
+                return item as T;
             }
         }
         return null;
@@ -110,7 +126,7 @@ export class BaseService<T> {
      * @param fields Key, value pairs for query parameters
      * @param tries Retry value. DON'T USE
      */
-    public query(fields?: { [name: string]: any }) {
+    public query(fields?: { [name: string]: any }): Promise<T[]> {
         const query = Utils.generateQueryString(fields);
         let update = true;
         if (fields && !fields.update) {
@@ -149,7 +165,7 @@ export class BaseService<T> {
      * @param id ID to get the data for
      * @param fields Key, value pairs for query parameters
      */
-    public show(id: string, fields?: { [name: string]: any }) {
+    public show(id: string, fields?: { [name: string]: any }): Promise<T> {
         const key = `show|${id}`;
         if (!this.promises[key]) {
             this.promises[key] = new Promise((resolve, reject) => {
@@ -175,7 +191,7 @@ export class BaseService<T> {
      * Add new item with the given parameters
      * @param data
      */
-    public add(data: T) {
+    public add(data: T): Promise<T> {
         const key = `add|${moment().seconds(0).unix()}`;
         if (!this.promises[key]) {
             this.promises[key] = new Promise((resolve, reject) => {
@@ -204,7 +220,7 @@ export class BaseService<T> {
      */
     public new() {
         return new Promise((resolve, reject) => {
-            this.parent.Overlay.openModal(`${this.model.name}-view`, { data: {} }, (e) => {
+            this.parent.Overlay.openModal(`item-view`, { data: { service: this } }, (e) => {
                 if (e.type === 'Success') {
                     resolve(e.data.id);
                 } else {
@@ -238,7 +254,7 @@ export class BaseService<T> {
      * @param id ID of the item
      * @param data New values to replace on the old item
      */
-    public update(id: string, data: T, link?: any) {
+    public update(id: string, data: T, link?: any): Promise<T> {
         return new Promise((resolve, reject) => {
             if (!id) { return reject('Invalid ID given'); }
             this.parent.confirm(this.confirmSettings('update', data), (event) => {
@@ -250,7 +266,7 @@ export class BaseService<T> {
         });
     }
 
-    public updateItem(id: string, data: T) {
+    public updateItem(id: string, data: T): Promise<T> {
         if (!id) { return new Promise((rs, rj) => rj('Invalid ID given')); }
         const key = `update|${id || moment().seconds(0).unix()}`;
         if (!this.promises[key]) {
@@ -361,14 +377,15 @@ export class BaseService<T> {
      * Adds new items and updates existing items in the item list store
      * @param input_list List of new/updated items
      */
-    protected updateList(input_list: T[]) {
+    protected updateList(input_list: T[]): void {
         // Get current list
         const item_list = this.list();
         // Add any new items to the list
         for (const input of input_list) {
             let found = false;
-            for (const item of item_list) {
-                if (item.id === (input as any).id) {
+            for (const i of item_list) {
+                const item = i as IBaseObject;
+                if (item.id === (input as IBaseObject).id) {
                     found = true;
                     break;
                 }
@@ -382,15 +399,15 @@ export class BaseService<T> {
         this.set('list', item_list);
     }
 
-    protected updateHashMap(list: T[]) {
+    protected updateHashMap(list: T[]): void {
         const map: any = {};
         for (const item of list) {
-            map[(item as any).id] = item;
+            map[(item as IBaseObject).id] = item;
         }
         this.set('map', map);
     }
 
-    protected processList(input_list: any[]) {
+    protected processList(input_list: any[]): T[] {
         const output_list: T[] = [];
         for (const key in (input_list || [])) {
             if (input_list.hasOwnProperty(key) && input_list[key]) {
@@ -401,7 +418,7 @@ export class BaseService<T> {
         return output_list;
     }
 
-    protected processItem(raw_item: any, id?: string) {
+    protected processItem(raw_item: any, id?: string): T {
         return raw_item;
     }
 
@@ -415,18 +432,18 @@ export class BaseService<T> {
      * @param name Name of the property
      * @param value New value to assign to the property
      */
-    protected set(name: string, value: any) {
+    protected set<U>(name: string, value: U) {
         if (this.subjects[name]) {
             this.subjects[name].next(value);
         } else {
             // Create new variable to store property's value
-            this.subjects[name] = new BehaviorSubject<any>(value);
+            this.subjects[name] = new BehaviorSubject<U>(value);
             this.observers[name] = this.subjects[name].asObservable();
             // Create raw getter and setter for property
             if (!(this[name] instanceof Function)) {
                 Object.defineProperty(this, name, {
-                    get: () => this.get(name),
-                    set: (v: any) => this.set(name, v)
+                    get: (): U => this.get(name),
+                    set: (v: U) => this.set<U>(name, v)
                 });
             }
         }
@@ -438,7 +455,7 @@ export class BaseService<T> {
      * @param fields
      */
     protected confirmSettings(key: string, fields: { [name: string]: any } = {}) {
-        const settings: any = {
+        const settings = {
             title: '',
             message: '',
             icon: '',
@@ -466,13 +483,14 @@ export class BaseService<T> {
         return settings;
     }
 
-    protected removeListItem(id: string) {
+    protected removeListItem(id: string): void {
         // Get current list
         const item_list = this.list();
         // Remove matching item from the list
-        for (const item of item_list) {
+        for (const i of item_list) {
+            const item = i as IBaseObject;
             if (item.id === id) {
-                item_list.splice(item_list.indexOf(item), 1);
+                item_list.splice(item_list.indexOf(i), 1);
                 break;
             }
         }
@@ -486,10 +504,10 @@ export class BaseService<T> {
     public timeout(name: string, fn: () => void, delay: number = 300) {
         this.clearTimer(name);
         if (!(fn instanceof Function)) { return; }
-        this.subs.timers[name] = setTimeout(() => fn(), delay);
+        this.subs.timers[name] = <any>setTimeout(() => fn(), delay);
     }
 
-    public clearTimer(name: string) {
+    public clearTimer(name: string): void {
         if (this.subs.timers[name]) {
             clearTimeout(this.subs.timers[name]);
             this.subs.timers[name] = null;
@@ -499,13 +517,17 @@ export class BaseService<T> {
     public interval(name: string, fn: () => void, delay: number = 300) {
         this.clearInterval(name);
         if (!(fn instanceof Function)) { return; }
-        this.subs.intervals[name] = setInterval(() => fn(), delay);
+        this.subs.intervals[name] = <any>setInterval(() => fn(), delay);
     }
 
-    public clearInterval(name: string) {
+    public clearInterval(name: string): void {
         if (this.subs.intervals[name]) {
             clearInterval(this.subs.intervals[name]);
             this.subs.intervals[name] = null;
         }
     }
+
+    public getFormFields(item: T): IDynamicFieldOptions<any>[] {
+        return [];
     }
+}
