@@ -20,6 +20,7 @@ import { ChangelogModalComponent } from './changelog-modal/changelog-modal.compo
 import { DriverModalComponent } from './driver-modal/driver-modal.component';
 import { TriggerConditionModalComponent } from './trigger-condition-modal/trigger-condition-modal.component';
 import { TriggerActionModalComponent } from './trigger-action-modal/trigger-action-modal.component';
+import { ItemCreateUpdateModalComponent } from './item-modal/item-modal.component';
 
 const OVERLAYS: any[] = [
     ConfirmModalComponent,
@@ -33,7 +34,8 @@ const OVERLAYS: any[] = [
     ChangelogModalComponent,
     DriverModalComponent,
     TriggerConditionModalComponent,
-    TriggerActionModalComponent
+    TriggerActionModalComponent,
+    ItemCreateUpdateModalComponent
 ];
 
 @NgModule({

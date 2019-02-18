@@ -1,0 +1,24 @@
+<div class="container" *ngIf="model.service" [class.loader]="model.loading" [class.edit]="model.item">
+    <div class="header">
+        <div class="text">{{model.item ? 'Edit' : 'New'}} {{model.name}}</div>
+        <div class="close" (touchrelease)="fn.close()">
+            <i class="material-icons">close</i>
+        </div>
+    </div>
+    <div class="body">
+        <ng-container *ngIf="model.fields && model.fields.length > 0">
+            <dynamic-form [fields]="model.fields" (valid)="model.valid = true">
+                <div class="footer">
+                    <btn (tapped)="fn.close()">Cancel</btn>
+                    <btn name="inverse" type="submit" [disabled]="!model.valid" (tapped)="submit()">{{ model.item ? 'Save' : 'Add' }}</btn>
+                </div>
+            </dynamic-form>
+        </ng-container>
+    </div>
+    <div class="no-item">
+        <div class="icon">
+            <spinner type="circle-ring" color="rgba(0,0,0, .54)"></spinner>
+        </div>
+        <div class="text">Processing request...</div>
+    </div>
+</div>

@@ -55,6 +55,10 @@ export class BaseService<T> {
         return this.parent ? `${this.parent.api_endpoint}${this.model.route}` : `/control/api${this.model.route}`;
     }
 
+    public get name(): string {
+        return this.model.singular;
+    }
+
     public list(): T[] {
         return this.get('list') || [];
     }
