@@ -1,11 +1,13 @@
 
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
-import { BehaviorSubject } from 'rxjs';
+import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 
 import { BaseService } from './base.service';
 import { Utils } from '../../shared/utility.class';
 import { SystemModalComponent } from '../../overlays/system-modal/system-modal.component';
+import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
+import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 
 import * as moment from 'moment';
 
@@ -35,6 +37,7 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
     constructor(protected http: CommsService) {
         super();
         this.model.name = 'system';
+        this.model.singular = 'system';
         this.model.route = '/systems';
     }
 
@@ -174,6 +177,42 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
             created: moment(item.created).fromNow()
         };
         return item;
+    }
+
+    public getFormFields(item: IEngineSystem) {
+        const fields: IDynamicFieldOptions<any>[] = [
+            {
+                control_type: 'group', children: [
+                    { key: 'name', label: 'Name', control_type: 'text' },
+                    { key: 'email', label: 'Email', control_type: 'text' }
+                ]
+            },
+            { key: 'support_url', label: 'Support URL', control_type: 'text', validators: [] },
+            {
+                control_type: 'group', children: [
+                    { key: 'installed_ui_devices', label: 'Number of Touch Panels', type: 'number', control_type: 'text', validators: [] },
+                    { key: 'capacity', label: 'Capacity', type: 'number', control_type: 'text', validators: [] },
+                    { key: 'bookable', label: 'Bookable Space', control_type: 'toggle', validators: [] },
+                ]
+            },
+            { key: 'description', label: 'Description', control_type: 'textarea' },
+            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent, validators: [] },
+            {
+                control_type: 'group', children: [
+                    { key: 'zone_id', label: 'Zone', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Zones } },
+                    { key: 'edge_id', label: 'Edge', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Nodes } }
+                ]
+            },
+        ];
+
+        if (item) {
+            for (const i of fields) {
+                if (item[i.key]) {
+                    i.value = item[i.key];
+                }
+            }
+        }
+        return fields;
     }
 
 }
