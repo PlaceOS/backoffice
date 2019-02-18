@@ -3,6 +3,9 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+import { ScrollingModule } from '@angular/cdk/scrolling';
+
+
 import { ComposerModule } from '@acaprojects/ngx-composer';
 import { WidgetsModule } from '@acaprojects/ngx-widgets';
 
@@ -16,6 +19,8 @@ import { ItemDisplayComponent } from './item-display/item-display.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
 import { SystemExecComponent } from './system-exec/system-exec.component';
 import { SearchbarComponent } from './searchbar/searchbar.component';
+import { CronOptionsComponent } from './cron-options/cron-options.component';
+import { CUSTOM_FIELD_COMPONENTS } from './custom-fields';
 
 const COMPONENTS: any[] = [
     ...LOGIN_COMPONENTS,
@@ -26,7 +31,9 @@ const COMPONENTS: any[] = [
     ItemDisplayComponent,
     ContextMenuComponent,
     SystemExecComponent,
-    SearchbarComponent
+    SearchbarComponent,
+    CronOptionsComponent,
+    ...CUSTOM_FIELD_COMPONENTS
 ];
 
 @NgModule({
@@ -37,13 +44,15 @@ const COMPONENTS: any[] = [
         CommonModule,
         FormsModule,
         ComposerModule,
-        WidgetsModule
+        WidgetsModule,
+        ScrollingModule
     ],
     exports: [
         ...COMPONENTS
     ],
     entryComponents: [
-        ContextMenuComponent
+        ContextMenuComponent,
+        ...CUSTOM_FIELD_COMPONENTS
     ]
 })
 export class SharedComponentsModule { }

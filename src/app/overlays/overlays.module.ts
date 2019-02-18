@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { ComposerModule } from '@acaprojects/ngx-composer';
-import { WidgetsModule } from '@acaprojects/ngx-widgets';
+import { WidgetsModule, DynamicFormComponentModule } from '@acaprojects/ngx-widgets';
 import { SharedComponentsModule } from '../shared/components/shared-components.module';
 
 import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
@@ -47,6 +47,7 @@ const OVERLAYS: any[] = [
         FormsModule,
         ComposerModule,
         WidgetsModule,
+        DynamicFormComponentModule,
         SharedComponentsModule
     ],
     exports: [
