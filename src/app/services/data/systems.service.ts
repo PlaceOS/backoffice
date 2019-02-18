@@ -5,6 +5,7 @@ import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 
 import { BaseService } from './base.service';
 import { Utils } from '../../shared/utility.class';
+
 import { SystemModalComponent } from '../../overlays/system-modal/system-modal.component';
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
 import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
