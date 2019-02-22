@@ -158,7 +158,7 @@ export class UsersService extends BaseService<IUser> {
     public getFormFields(item: IUser) {
         const fields: IDynamicFieldOptions<any>[] = [
             { key: 'name', label: 'Name', control_type: 'text' },
-            { key: 'email', label: 'Email', type: 'email', control_type: 'text', validators: [Validators.email] },
+            { key: 'email', label: 'Email', type: 'email', control_type: 'text', required: true, validators: [Validators.email] },
             { key: 'card_number', label: 'Card Number', control_type: 'text' },
             { key: 'sys_admin', label: 'System Admin', control_type: 'toggle' },
             { key: 'support', label: 'Support', control_type: 'toggle' },

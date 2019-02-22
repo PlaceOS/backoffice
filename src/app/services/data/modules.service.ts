@@ -1,18 +1,18 @@
 
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
-import { BehaviorSubject } from 'rxjs';
+import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets/components/form-controls/dynamic-form/dynamic-field.class';
 
 import { BaseService } from './base.service';
 import { IEngineDriver } from './drivers.service';
 import { IEngineSystem } from './systems.service';
 
+import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
+import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
+import { FormValidators } from '../../shared/form-validators.class';
 import { DeviceModalComponent } from '../../overlays/device-modal/device-modal.component';
 
 import * as moment from 'moment';
-import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets/components/form-controls/dynamic-form/dynamic-field.class';
-import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
-import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 
 export interface IEngineModule {
     id: string;
@@ -117,8 +117,8 @@ export class ModulesService extends BaseService<IEngineModule> {
                     { key: 'control_system', label: 'Control System', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Systems }, required: true },
                 ]
             },
-            { key: 'ip', label: 'IP Address', control_type: 'text', validators: [] },
-            { key: 'port', label: 'Port', control_type: 'text', validators: [] },
+            { key: 'ip', label: 'IP Address', control_type: 'text', validators: [FormValidators.ip] },
+            { key: 'port', label: 'Port', control_type: 'text', validators: [FormValidators.numberRange(1, 65535)] },
             {
                 control_type: 'group', children: [
                     { key: 'tls', label: 'TLS', control_type: 'toggle' },
@@ -128,7 +128,7 @@ export class ModulesService extends BaseService<IEngineModule> {
                 ]
             },
             { key: 'notes', label: 'Notes', control_type: 'textarea' },
-            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent, validators: [] },
+            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent },
             { key: 'custom_name', label: 'Custom Name', control_type: 'text' },
         ];
 

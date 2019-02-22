@@ -6,6 +6,7 @@ import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 import { BaseService } from './base.service';
 import { DomainModalComponent } from '../../overlays/domain-modal/domain-modal.component';
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
+import { FormValidators } from '../../shared/form-validators.class';
 
 export interface IEngineDomain {
     id: string;
@@ -62,11 +63,11 @@ export class DomainsService extends BaseService<IEngineDomain> {
                 control_type: 'group',
                 children: [
                     { key: 'name', label: 'Name', control_type: 'text' },
-                    { key: 'domain', label: 'Domain', control_type: 'text' },
+                    { key: 'domain', label: 'Domain', control_type: 'text', required: true, validators: [FormValidators.url] },
                 ]
             },
-            { key: 'login_url', label: 'Login URL', control_type: 'text' },
-            { key: 'logout_url', label: 'Logout URL', control_type: 'text' },
+            { key: 'login_url', label: 'Login URL', control_type: 'text', validators: [FormValidators.url] },
+            { key: 'logout_url', label: 'Logout URL', control_type: 'text', validators: [FormValidators.url] },
             {
                 control_type: 'group',
                 children: [

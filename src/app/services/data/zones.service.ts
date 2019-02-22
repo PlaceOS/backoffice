@@ -1,12 +1,12 @@
 
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
-import { BehaviorSubject } from 'rxjs';
+import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 
 import { BaseService } from './base.service';
 import { ZoneModalComponent } from '../../overlays/zone-modal/zone-modal.component';
-import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
+import { FormValidators } from '../../shared/form-validators.class';
 
 export interface IEngineZone {
     id: string;
@@ -53,11 +53,11 @@ export class ZonesService extends BaseService<IEngineZone> {
 
     public getFormFields(item: IEngineZone) {
         const fields: IDynamicFieldOptions<any>[] = [
-            { key: 'name', label: 'Name', control_type: 'text' },
+            { key: 'name', label: 'Name', required: true, control_type: 'text' },
             { key: 'tags', label: 'Tags', control_type: 'text' },
-            { key: 'support_url', label: 'Support URL', control_type: 'text', validators: [] },
+            { key: 'support_url', label: 'Support URL', control_type: 'text', validators: [FormValidators.url] },
             { key: 'description', label: 'Description', control_type: 'textarea' },
-            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent, validators: [] }
+            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent }
         ];
 
         if (item) {

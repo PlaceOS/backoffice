@@ -5,6 +5,7 @@ import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 
 import { BaseService } from './base.service';
 import { Utils } from '../../shared/utility.class';
+import { FormValidators } from '../../shared/form-validators.class';
 
 import { SystemModalComponent } from '../../overlays/system-modal/system-modal.component';
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
@@ -184,20 +185,20 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
         const fields: IDynamicFieldOptions<any>[] = [
             {
                 control_type: 'group', children: [
-                    { key: 'name', label: 'Name', control_type: 'text' },
+                    { key: 'name', label: 'Name', required: true, control_type: 'text' },
                     { key: 'email', label: 'Email', control_type: 'text' }
                 ]
             },
-            { key: 'support_url', label: 'Support URL', control_type: 'text', validators: [] },
+            { key: 'support_url', label: 'Support URL', control_type: 'text', validators: [FormValidators.url] },
             {
                 control_type: 'group', children: [
-                    { key: 'installed_ui_devices', label: 'Number of Touch Panels', type: 'number', control_type: 'text', validators: [] },
-                    { key: 'capacity', label: 'Capacity', type: 'number', control_type: 'text', validators: [] },
-                    { key: 'bookable', label: 'Bookable Space', control_type: 'toggle', validators: [] },
+                    { key: 'installed_ui_devices', label: 'Number of Touch Panels', type: 'number', control_type: 'text', validators: [FormValidators.integer] },
+                    { key: 'capacity', label: 'Capacity', type: 'number', control_type: 'text', validators: [FormValidators.integer] },
+                    { key: 'bookable', label: 'Bookable Space', control_type: 'toggle'},
                 ]
             },
             { key: 'description', label: 'Description', control_type: 'textarea' },
-            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent, validators: [] },
+            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent },
             {
                 control_type: 'group', children: [
                     { key: 'zone_id', label: 'Zone', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Zones } },
