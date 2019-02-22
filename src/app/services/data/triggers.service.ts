@@ -1,7 +1,7 @@
 
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
-import { BehaviorSubject } from 'rxjs';
+import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 
 import { BaseService } from './base.service';
 
@@ -28,6 +28,7 @@ export class TriggersService extends BaseService<IEngineTrigger> {
     constructor(protected http: CommsService) {
         super();
         this.model.name = 'trigger';
+        this.model.singular = 'trigger';
         this.model.route = '/triggers';
     }
 
@@ -49,6 +50,22 @@ export class TriggersService extends BaseService<IEngineTrigger> {
             created: raw_item.created_at * 1000
         };
         return item;
+    }
+
+    public getFormFields(item: IEngineTrigger) {
+        const fields: IDynamicFieldOptions<any>[] = [
+            { key: 'name', label: 'Name', control_type: 'text', required: true },
+            { key: 'description', label: 'Description', control_type: 'textarea' },
+        ];
+
+        if (item) {
+            for (const i of fields) {
+                if (item[i.key]) {
+                    i.value = item[i.key];
+                }
+            }
+        }
+        return fields;
     }
 
 }

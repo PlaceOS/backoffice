@@ -1,7 +1,8 @@
 import { CommsService } from '@acaprojects/ngx-composer';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
+import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
+import { Validators } from '@angular/forms';
 
 import { Utils } from '../../shared/utility.class';
 import { BaseService } from './base.service';
@@ -38,6 +39,7 @@ export class UsersService extends BaseService<IUser> {
     constructor(protected http: CommsService, private http_unauth: HttpClient) {
         super();
         this.model.name = 'user';
+        this.model.singular = 'user';
         this.model.route = '/users';
         this.set('user', null);
         this.set('state', 'loading');
@@ -151,6 +153,27 @@ export class UsersService extends BaseService<IUser> {
         } else {
             return null;
         }
+    }
+
+    public getFormFields(item: IUser) {
+        const fields: IDynamicFieldOptions<any>[] = [
+            { key: 'name', label: 'Name', control_type: 'text' },
+            { key: 'email', label: 'Email', type: 'email', control_type: 'text', validators: [Validators.email] },
+            { key: 'card_number', label: 'Card Number', control_type: 'text' },
+            { key: 'sys_admin', label: 'System Admin', control_type: 'toggle' },
+            { key: 'support', label: 'Support', control_type: 'toggle' },
+            { key: 'password', label: 'Password', type: 'password', control_type: 'text' },
+            { key: 'confirm_password', label: 'Confirm Password', type: 'password', match: 'password', control_type: 'text' },
+        ];
+
+        if (item) {
+            for (const i of fields) {
+                if (item[i.key]) {
+                    i.value = item[i.key];
+                }
+            }
+        }
+        return fields;
     }
 
 }
