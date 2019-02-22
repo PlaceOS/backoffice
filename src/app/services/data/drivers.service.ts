@@ -1,10 +1,12 @@
 
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
-import { BehaviorSubject } from 'rxjs';
+import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 
 import { BaseService } from './base.service';
 import { DriverModalComponent } from '../../overlays/driver-modal/driver-modal.component';
+import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
+import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 
 export interface IEngineDriver {
     id: string;
@@ -26,6 +28,7 @@ export class DriversService extends BaseService<IEngineDriver> {
     constructor(protected http: CommsService) {
         super();
         this.model.name = 'driver';
+        this.model.singular = 'driver';
         this.model.route = '/dependencies';
     }
 
@@ -57,7 +60,24 @@ export class DriversService extends BaseService<IEngineDriver> {
     }
 
     public getFormFields(item: IEngineDriver) {
-        return [];
-    }
+        const fields: IDynamicFieldOptions<any>[] = [
+            { key: 'zone_id', label: 'Zone', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Zones } },
+            { key: 'name', label: 'Name', control_type: 'text' },
+            { key: 'role', label: 'Role', control_type: 'dropdown', options: ['Logic', 'Device', 'Service', 'SSH'] },
+            { key: 'description', label: 'Description', control_type: 'textarea' },
+            { key: 'module_name', label: 'Module Name', control_type: 'text' },
+            { key: 'default', label: 'Default', control_type: 'text' },
+            { key: 'ignore_connected', label: 'Ignore Connected', control_type: 'toggle' },
+            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent, validators: [] },
+        ];
 
+        if (item) {
+            for (const i of fields) {
+                if (item[i.key]) {
+                    i.value = item[i.key];
+                }
+            }
+        }
+        return fields;
+    }
 }
