@@ -200,7 +200,7 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
             { key: 'description', label: 'Description', control_type: 'textarea' },
             { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent },
             {
-                control_type: 'group', children: [
+                control_type: 'group', hide: !!item, children: [
                     { key: 'zone_id', label: 'Zone', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Zones } },
                     { key: 'edge_id', label: 'Edge', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Nodes } }
                 ]

@@ -61,9 +61,9 @@ export class DriversService extends BaseService<IEngineDriver> {
 
     public getFormFields(item: IEngineDriver) {
         const fields: IDynamicFieldOptions<any>[] = [
-            { key: 'zone_id', label: 'Zone', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Zones } },
+            { key: 'zone_id', label: 'Zone', hide: !!item, control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Zones } },
             { key: 'name', label: 'Name', control_type: 'text' },
-            { key: 'role', label: 'Role', control_type: 'dropdown', options: ['Logic', 'Device', 'Service', 'SSH'] },
+            { key: 'role', label: 'Role', hide: !!item, control_type: 'dropdown', options: ['Logic', 'Device', 'Service', 'SSH'] },
             { key: 'description', label: 'Description', control_type: 'textarea' },
             { key: 'module_name', label: 'Module Name', control_type: 'text' },
             { key: 'default', label: 'Default', control_type: 'text' },

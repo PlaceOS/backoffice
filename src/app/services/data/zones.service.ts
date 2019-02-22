@@ -55,7 +55,7 @@ export class ZonesService extends BaseService<IEngineZone> {
         const fields: IDynamicFieldOptions<any>[] = [
             { key: 'name', label: 'Name', required: true, control_type: 'text' },
             { key: 'tags', label: 'Tags', control_type: 'text' },
-            { key: 'support_url', label: 'Support URL', control_type: 'text', validators: [FormValidators.url] },
+            { key: 'support_url', label: 'Support URL', hide: !!item, control_type: 'text', validators: [FormValidators.url] },
             { key: 'description', label: 'Description', control_type: 'textarea' },
             { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent }
         ];

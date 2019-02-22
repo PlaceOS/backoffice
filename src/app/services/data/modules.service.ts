@@ -111,16 +111,16 @@ export class ModulesService extends BaseService<IEngineModule> {
     public getFormFields(item: IEngineModule) {
         const fields: IDynamicFieldOptions<any>[] = [
             {
-                control_type: 'group', children: [
+                control_type: 'group', hide: !!item, children: [
                     { key: 'dependency', label: 'Dependency', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Drivers }, required: true },
                     { key: 'edge', label: 'Edge', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Nodes }, required: true },
                     { key: 'control_system', label: 'Control System', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Systems }, required: true },
                 ]
             },
-            { key: 'ip', label: 'IP Address', control_type: 'text', validators: [FormValidators.ip] },
-            { key: 'port', label: 'Port', control_type: 'text', validators: [FormValidators.numberRange(1, 65535)] },
+            { key: 'ip', hide: !!item, label: 'IP Address', control_type: 'text', validators: [FormValidators.ip] },
+            { key: 'port', hide: !!item, label: 'Port', control_type: 'text', validators: [FormValidators.numberRange(1, 65535)] },
             {
-                control_type: 'group', children: [
+                control_type: 'group', hide: !!item, children: [
                     { key: 'tls', label: 'TLS', control_type: 'toggle' },
                     { key: 'udp', label: 'UDP', control_type: 'toggle' },
                     { key: 'makebreak', label: 'Makebreak', control_type: 'toggle' },

@@ -243,7 +243,7 @@ export class BaseService<T> {
         return new Promise((resolve, reject) => {
             const item = this.item(id);
             if (!item) { return; }
-            this.parent.Overlay.openModal(`${this.model.name}-view`, { data: { item } }, (e) => {
+            this.parent.Overlay.openModal(`item-view`, { data: { service: this, item } }, (e) => {
                 if (e.type === 'Success') {
                     return resolve(e.data.id);
                 }
