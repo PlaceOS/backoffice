@@ -57,6 +57,7 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
             return this.timeout('init', () => this.init());
         }
         this.model.licenses = this.service.Settings.get(`licenses.${this.model.route}`) || 0;
+        this.subs.obs.reload = this.service.listen('BACKOFFICE.reload_item', () => this.loadItem());
     }
 
     public sidebarEvent(event: any) {

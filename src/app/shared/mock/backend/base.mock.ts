@@ -51,7 +51,7 @@ export class BaseMockBackend {
         if (!list) { list = []; }
         // Mock for index GET
         MOCK_REQ_HANDLER.register(`${base_url}`, list, (event) => {
-            return this.search(event.data, event.fragment);
+            return this.search(list, event.fragment);
         });
         // Mock for index POST
         MOCK_REQ_HANDLER.register(`${base_url}`, list, (event) => {
@@ -62,7 +62,7 @@ export class BaseMockBackend {
         // Mock for show GET
         MOCK_REQ_HANDLER.register(`${base_url}/:id`, list, (event) => {
             if (event && event.params && event.params.id) {
-                for (const item of event.data) {
+                for (const item of list) {
                     if (item.id === event.params.id) {
                         return item;
                     }
@@ -73,15 +73,22 @@ export class BaseMockBackend {
         // Mock for show PUT
         MOCK_REQ_HANDLER.register(`${base_url}/:id`, list, (event) => {
             if (event && event.params && event.params.id) {
-                for (let item of event.data) {
+                for (const item of list) {
                     if (item.id === event.params.id) {
-                        item = { ...item, ...event.body };
+                        const new_item = { ...item, ...event.body };
+                        list.splice(list.indexOf(item), 1, new_item);
+                        this.updateOtherEndpoints(list);
                         return item;
                     }
                 }
             }
             return null;
         }, 'PUT');
+        return list;
+    }
+
+    protected updateOtherEndpoints(list: any[]): void {
+
     }
 
     protected request(method, url) {

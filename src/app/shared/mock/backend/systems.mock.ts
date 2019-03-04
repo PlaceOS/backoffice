@@ -54,7 +54,7 @@ export class MockSystemsBackend extends BaseMockBackend {
                 };
             });
         console.log('Items:', this.model.systems);
-        this.setupBasicHandlers('/control/api/systems', this.model.systems, 'sys');
+        this.model.systems = this.setupBasicHandlers('/control/api/systems', this.model.systems, 'sys');
         MOCK_REQ_HANDLER.register('/control/api/systems/:id/:opt', this.model.systems, (event) => {
             if (event && event.params && event.params.id) {
                 if (!event.params.opt) {
@@ -76,6 +76,21 @@ export class MockSystemsBackend extends BaseMockBackend {
             return null;
         });
         this.state.next(true);
+    }
+
+    public updateOtherEndpoints(list) {
+        this.model.zones.forEach(i => i.systems = []);
+        console.log('List:', list);
+        for (const system of list) {
+            console.log('System:', system);
+            for (const zone_id of system.zones) {
+                const zone = this.model.zones.find(i => i.id === zone_id);
+                if (zone) {
+                    zone.systems.push(system.id);
+                }
+            }
+        }
+        console.log('Zones:', this.model.zones);
     }
 
     public search(data, fragment) {

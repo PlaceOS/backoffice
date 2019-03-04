@@ -16,6 +16,7 @@ export class EngineItemDropdownComponent extends BaseComponent implements OnInit
 
     public items: IBaseObject[];
     public item: IBaseObject;
+    public count = -1;
 
     public loading = false;
 
@@ -24,6 +25,10 @@ export class EngineItemDropdownComponent extends BaseComponent implements OnInit
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.service) {
             this.load();
+        }
+        if (changes.model && !this.model) {
+            this.item = null;
+            this.count--;
         }
     }
 
