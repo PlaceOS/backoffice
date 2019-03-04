@@ -1,7 +1,10 @@
 <div class="container">
     <section class="select">
-        <btn>Add new</btn>
-        <btn>Add existing</btn>
+        <btn (tapped)="newDevice()">Add new</btn>
+        <div class="dropdown">
+            <engine-item-dropdown [service]="model.module_service" label="Select device" [(model)]="model.new_module"></engine-item-dropdown>
+        </div>
+        <btn [disabled]="!model.new_module" (tapped)="addDevice()">Add existing</btn>
     </section>
     <section>
         <div class="table" *ngIf="model.devices && model.devices.length > 0">
@@ -36,7 +39,8 @@
                     </div>
                     <div class="ip">
                         <div class="lock"><i class="material-icons" *ngIf="device.tls">lock</i></div>
-                        <a (touchrelease)="goto(device, item.ip)">{{device.ip}}</a></div>
+                        <a (touchrelease)="goto(device, item.ip)">{{device.ip}}</a>
+                    </div>
                     <div class="small" context-item [cmp]="context_menu" [touch]="divue" (event)="event($event, device)" [data]="[
                     { id: 'power', name: device.running ? 'Turn Off' : 'Power On', icon: { class: 'material-icons', value: device.running ? 'stop': 'play_arrow' } },
                     { id: 'state', name: 'View State', icon: { class: 'material-icons', value: 'visibility' } },

@@ -222,11 +222,11 @@ export class BaseService<T> {
      * Open modal for new item
      * @param data
      */
-    public new() {
+    public create(prefill?: { [name: string]: any }): Promise<T> {
         return new Promise((resolve, reject) => {
-            this.parent.Overlay.openModal(`item-view`, { data: { service: this } }, (e) => {
+            this.parent.Overlay.openModal(`item-view`, { data: { service: this, item: prefill } }, (e) => {
                 if (e.type === 'Success') {
-                    resolve(e.data.id);
+                    resolve(e.data.result);
                 } else {
                     reject();
                 }
@@ -243,9 +243,9 @@ export class BaseService<T> {
         return new Promise((resolve, reject) => {
             const item = this.item(id);
             if (!item) { return; }
-            this.parent.Overlay.openModal(`item-view`, { data: { service: this, item } }, (e) => {
+            this.parent.Overlay.openModal(`item-view`, { data: { service: this, edit: true, item } }, (e) => {
                 if (e.type === 'Success') {
-                    return resolve(e.data.id);
+                    return resolve(e.data.result);
                 }
                 e.close();
                 reject();
@@ -531,7 +531,26 @@ export class BaseService<T> {
         }
     }
 
-    public getFormFields(item: T): IDynamicFieldOptions<any>[] {
+    public getFormFields(item: T, edit: boolean = false): IDynamicFieldOptions<any>[] {
         return [];
+    }
+
+    public updateFields(fields: IDynamicFieldOptions<any>[], item: T) {
+        for (const i of fields) {
+            if (i.key && item[i.key]) {
+                console.log('Key:', i.key);
+                i.value = item[i.key];
+                if (item[i.key] && i.key === 'control_system') {
+                    i.format = (v) => item[i.key].name;
+                } else if (item[i.key] && i.key === 'edge') {
+                    i.format = (v) => item[i.key].name;
+                }
+                if (i.format) {
+                    console.log('Format', i.key, i.format(i.value));
+                }
+            } else if (i.control_type === 'group') {
+                this.updateFields(i.children, item);
+            }
+        }
     }
 }

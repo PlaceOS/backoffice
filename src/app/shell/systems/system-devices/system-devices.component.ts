@@ -1,5 +1,5 @@
 
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 import { BaseComponent } from '../../../shared/components/base.component';
@@ -13,7 +13,7 @@ import { IEngineModule } from '../../../services/data/modules.service';
     templateUrl: './system-devices.template.html',
     styleUrls: ['./system-devices.styles.scss']
 })
-export class SystemDevicesComponent extends BaseComponent implements OnChanges {
+export class SystemDevicesComponent extends BaseComponent implements OnInit, OnChanges {
     @Input() public item: IEngineSystem;
 
     public model: any = {};
@@ -24,6 +24,13 @@ export class SystemDevicesComponent extends BaseComponent implements OnChanges {
         super();
     }
 
+    public ngOnInit(): void {
+        this.model.module_service = this.service.Modules;
+        if (this.service.Nodes.list.length <= 0) {
+            this.service.Nodes.query();
+        }
+    }
+
     public ngOnChanges(changes: any) {
         if (changes.item) {
             this.load();
@@ -32,6 +39,7 @@ export class SystemDevicesComponent extends BaseComponent implements OnChanges {
 
     public load(offset: number = 0) {
         this.service.Modules.query({ sys_id: this.item.id, offset }).then((list) => {
+            list.sort((a, b) => this.item.modules.indexOf(a.id) - this.item.modules.indexOf(b.id));
             this.model.devices = list;
         }, () => null);
     }
@@ -132,28 +140,30 @@ export class SystemDevicesComponent extends BaseComponent implements OnChanges {
     }
 
     public drop(event: CdkDragDrop<any[]>) {
-        this.service.confirm({
-            icon: 'autorenew',
-            title: 'Change order?',
-            message: 'Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.',
-            accept: 'Ok',
-            cancel: true
-        }, (e) => {
-            if (e.type === 'Accept') {
-                const list: string[] = [];
-                for (const item of this.model.devices) { list.push(item.id); }
-                moveItemInArray(list, event.previousIndex, event.currentIndex);
-                e.data.loading = true;
-                this.service.Systems.updateItem(this.item.id, { modules: list })
-                    .then(() => {
-                        moveItemInArray(this.model.devices, event.previousIndex, event.currentIndex);
-                        moveItemInArray(this.item.modules, event.previousIndex, event.currentIndex);
-                        e.close();
-                    }, () => e.data.loading = false);
-            } else {
-                e.close();
-            }
-        });
+        if (event && event.previousIndex !== event.currentIndex) {
+            this.service.confirm({
+                icon: 'autorenew',
+                title: 'Change order?',
+                message: 'Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.',
+                accept: 'Ok',
+                cancel: true
+            }, (e) => {
+                if (e.type === 'Accept') {
+                    const list: string[] = [];
+                    for (const item of this.model.devices) { list.push(item.id); }
+                    moveItemInArray(list, event.previousIndex, event.currentIndex);
+                    e.data.loading = true;
+                    this.service.Systems.updateItem(this.item.id, { modules: list })
+                        .then(() => {
+                            moveItemInArray(this.model.devices, event.previousIndex, event.currentIndex);
+                            moveItemInArray(this.item.modules, event.previousIndex, event.currentIndex);
+                            e.close();
+                        }, () => e.data.loading = false);
+                } else {
+                    e.close();
+                }
+            });
+        }
     }
 
     public remove(device: IEngineModule) {
@@ -171,5 +181,37 @@ export class SystemDevicesComponent extends BaseComponent implements OnChanges {
         });
     }
 
+    public newDevice() {
+        this.service.Modules.create({
+            control_system: this.item,
+            edge: this.service.Nodes.item(this.item.edge_id)
+        }).then((item) => {
+            console.log('Item:', item);
+            this.service.success('Created new device');
+            this.joinDevice(item.id);
+        }, () => {
+            this.service.error('Error creating new device');
+        });
+    }
 
+    public addDevice() {
+        if (this.model.new_module) {
+            this.joinDevice(this.model.new_module);
+            this.model.new_module = '';
+        }
+    }
+
+    public joinDevice(id: string) {
+        const mod_list = this.item.modules;
+        if (mod_list.indexOf(id) < 0) {
+            mod_list.push(id);
+        }
+        const new_item = { ...this.item, modules: mod_list };
+        this.service.Systems.updateItem(this.item.id, new_item).then(() => {
+            this.service.success('Successfully added device to system');
+            this.load();
+        }, () => {
+            this.service.error('Failed to add module to system');
+        });
+    }
 }

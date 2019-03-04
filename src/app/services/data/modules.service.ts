@@ -108,19 +108,20 @@ export class ModulesService extends BaseService<IEngineModule> {
         return item;
     }
 
-    public getFormFields(item: IEngineModule) {
+    public getFormFields(item: IEngineModule, edit: boolean = false) {
+        console.log('Item:', item);
         const fields: IDynamicFieldOptions<any>[] = [
             {
-                control_type: 'group', hide: !!item, children: [
+                control_type: 'group', hide: !!item && edit, children: [
                     { key: 'dependency', label: 'Dependency', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Drivers }, required: true },
-                    { key: 'edge', label: 'Edge', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Nodes }, required: true },
-                    { key: 'control_system', label: 'Control System', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Systems }, required: true },
+                    { key: 'edge', label: 'Edge', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Nodes }, readonly: !!item, required: true },
+                    { key: 'control_system', label: 'Control System', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Systems }, readonly: !!item, required: true },
                 ]
             },
-            { key: 'ip', hide: !!item, label: 'IP Address', control_type: 'text', validators: [FormValidators.ip] },
-            { key: 'port', hide: !!item, label: 'Port', control_type: 'text', validators: [FormValidators.numberRange(1, 65535)] },
+            { key: 'ip', hide: !!item && edit, label: 'IP Address', control_type: 'text', validators: [FormValidators.ip] },
+            { key: 'port', hide: !!item && edit, label: 'Port', control_type: 'text', validators: [FormValidators.numberRange(1, 65535)] },
             {
-                control_type: 'group', hide: !!item, children: [
+                control_type: 'group', hide: !!item && edit, children: [
                     { key: 'tls', label: 'TLS', control_type: 'toggle' },
                     { key: 'udp', label: 'UDP', control_type: 'toggle' },
                     { key: 'makebreak', label: 'Makebreak', control_type: 'toggle' },
@@ -133,11 +134,8 @@ export class ModulesService extends BaseService<IEngineModule> {
         ];
 
         if (item) {
-            for (const i of fields) {
-                if (item[i.key]) {
-                    i.value = item[i.key];
-                }
-            }
+            console.log('Process fields');
+            this.updateFields(fields, item);
         }
         return fields;
     }

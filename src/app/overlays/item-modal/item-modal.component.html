@@ -1,6 +1,6 @@
 <div class="container" *ngIf="model.service" [class.loader]="model.loading" [class.edit]="model.item">
     <div class="header">
-        <div class="text">{{model.item ? 'Edit' : 'New'}} {{model.name}}</div>
+        <div class="text">{{model.item && model.edit ? 'Edit' : 'New'}} {{model.name}}</div>
         <div class="close" (touchrelease)="fn.close()">
             <i class="material-icons">close</i>
         </div>

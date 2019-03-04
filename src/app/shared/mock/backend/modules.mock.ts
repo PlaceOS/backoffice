@@ -61,7 +61,7 @@ export class MockModulesBackend extends BaseMockBackend {
 
     public search(data, fragment) {
         if (fragment.sys_id) {
-            data = data.filter((a) => a.control_system_id === fragment.sys_id);
+            data = data.filter((a) => a.control_system_id === fragment.sys_id || (a.systems || []).indexOf(fragment.sys_id) >= 0);
         } else if (fragment.dependency_id) {
             data = data.filter((a) => a.dependency_id === fragment.dependency_id);
         }

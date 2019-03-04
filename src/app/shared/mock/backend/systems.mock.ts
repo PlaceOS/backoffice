@@ -80,17 +80,24 @@ export class MockSystemsBackend extends BaseMockBackend {
 
     public updateOtherEndpoints(list) {
         this.model.zones.forEach(i => i.systems = []);
+        this.model.modules.forEach(i => i.systems = []);
         console.log('List:', list);
         for (const system of list) {
-            console.log('System:', system);
             for (const zone_id of system.zones) {
                 const zone = this.model.zones.find(i => i.id === zone_id);
                 if (zone) {
                     zone.systems.push(system.id);
                 }
             }
+            console.log('Mod list:', system.id, system.modules);
+            for (const mod_id of system.modules) {
+                const mod = this.model.modules.find(i => i.id === mod_id);
+                if (mod) {
+                    mod.systems.push(system.id);
+                }
+            }
         }
-        console.log('Zones:', this.model.zones);
+        console.log('Zones:', this.model.modules);
     }
 
     public search(data, fragment) {
