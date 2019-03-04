@@ -35,7 +35,6 @@ export class CustomItemDropdownFieldComponent extends BaseComponent implements I
         if (this.field.metadata) {
             this.model.service = this.field.metadata.service;
         }
-        this.load();
     }
 
     public setValue(value: string): void {
@@ -44,22 +43,5 @@ export class CustomItemDropdownFieldComponent extends BaseComponent implements I
 
     public setValid(state: boolean) {
 
-    }
-
-    public load(query: string = '') {
-        if (this.model.service) {
-            if (this.model.loading) {
-                this.clearTimer('loading');
-                return this.timeout('loading', () => {
-                    this.subs.timers.loading = null;
-                    this.load(query);
-                });
-            }
-            this.model.loading = true;
-            this.model.service.query({ q: query, offset: '0' }).then((list) => {
-                this.model.items = list;
-                this.model.loading = false;
-            }, () => this.model.loading = false);
-        }
     }
 }

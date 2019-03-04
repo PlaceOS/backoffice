@@ -1,0 +1,4 @@
+<div class="item-dropdown-field" widget>
+    <dropdown klass="form" [filter]="true" [list]="items" [model]="-1" (modelChange)="post(items[$event].id)"
+        (filterValue)="load($event)" [placeholder]="item?.id || label"></dropdown>
+</div>

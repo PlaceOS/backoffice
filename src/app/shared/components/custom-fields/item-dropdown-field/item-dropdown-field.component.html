@@ -1,4 +1,3 @@
 <div class="item-dropdown-field" widget>
-    <dropdown klass="form" [filter]="true" [list]="model.items" [model]="" (modelChange)="setValue(model.items[$event].id)"
-        (filterValue)="load($event)" [placeholder]="field.label"></dropdown>
+    <engine-item-dropdown [service]="model.service" [model]="control?.value" [label]="'Select ' + field.label" (modelChange)="control ? control.setValue($event) : ''"></engine-item-dropdown>
 </div>

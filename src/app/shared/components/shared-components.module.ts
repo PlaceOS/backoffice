@@ -21,6 +21,7 @@ import { SystemExecComponent } from './system-exec/system-exec.component';
 import { SearchbarComponent } from './searchbar/searchbar.component';
 import { CronOptionsComponent } from './cron-options/cron-options.component';
 import { CUSTOM_FIELD_COMPONENTS } from './custom-fields';
+import { EngineItemDropdownComponent } from './item-dropdown/item-dropdown.component';
 
 const COMPONENTS: any[] = [
     ...LOGIN_COMPONENTS,
@@ -33,7 +34,8 @@ const COMPONENTS: any[] = [
     SystemExecComponent,
     SearchbarComponent,
     CronOptionsComponent,
-    ...CUSTOM_FIELD_COMPONENTS
+    ...CUSTOM_FIELD_COMPONENTS,
+    EngineItemDropdownComponent
 ];
 
 @NgModule({
