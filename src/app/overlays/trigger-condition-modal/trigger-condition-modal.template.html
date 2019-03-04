@@ -61,30 +61,7 @@
                 </div>
             </div>
             <div class="fieldset" *ngIf="model.form.condition_type && model.form.condition_type.id === 'cron'">
-                <div class="field">
-                    <div class="label">Every<span class="orange">*</span>:</div>
-                    <div class="value">
-                        <dropdown [list]="model.time_types" [(model)]="model.form.period" (modelChange)="checkFields()" placeholder="Select a period"></dropdown>
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="label">on the<span class="orange">*</span>:</div>
-                    <div class="value">
-                        <dropdown [list]="model.days_of_month" [(model)]="model.form.day_of_month" (modelChange)="checkFields()" placeholder="Select a date"></dropdown>
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="label">of<span class="orange">*</span>:</div>
-                    <div class="value">
-                        <dropdown [list]="model.months" [(model)]="model.form.month" (modelChange)="checkFields()" placeholder="Select a month"></dropdown>
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="label">at<span class="orange">*</span>:</div>
-                    <div class="value">
-                        <time-input [(model)]="model.form.time"></time-input>
-                    </div>
-                </div>
+                <cron></cron>
             </div>
         </div>
         <div class="footer">

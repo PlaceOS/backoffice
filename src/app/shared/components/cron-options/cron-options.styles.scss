@@ -1,0 +1,40 @@
+
+@import 'shared.styles';
+
+.option {
+    display: flex;
+    align-items: center;
+}
+
+.block {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    border-radius: 4px;
+    background-color: rgba(#000, .05);
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .5em;
+    flex: 1;
+    margin: .25em;
+    border-radius: 4px;
+    &:hover {
+        background-color: rgba(#000, .05);
+    }
+    &.active {
+        background-color: rgba(#000, .15);
+    }
+}
+
+.tooltip {
+    font-size: .6em;
+    padding: .5em;
+    white-space: nowrap;
+    text-align: center;
+    font-weight: 400;
+}
+
