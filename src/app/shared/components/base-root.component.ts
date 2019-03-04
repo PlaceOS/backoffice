@@ -23,12 +23,15 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
         this.model.loading_item = true;
         this.model.list = [];
         this.subs.obs.route = this.route.paramMap.subscribe((params) => {
-            if (params.has('id') && this.service.get('BACKOFFICE.active_item_id') !== decodeURIComponent(params.get('id'))) {
-                this.model.id = decodeURIComponent(params.get('id'));
-                this.loadItem();
-            } else if (params.has('id')) {
-                this.model.item = this.service.get('BACKOFFICE.active_item');
-                this.loadValues();
+            if (params.has('id') && params.get('id')) {
+                const id = decodeURIComponent(params.get('id'));
+                if (this.service.get('BACKOFFICE.active_item_id') !== id) {
+                    this.model.id = id;
+                    this.loadItem();
+                } else {
+                    this.model.item = this.service.get('BACKOFFICE.active_item');
+                    this.loadValues();
+                }
             }
             if (params.has('tab')) {
                 this.model.tab = params.get('tab');
@@ -57,7 +60,6 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
             return this.timeout('init', () => this.init());
         }
         this.model.licenses = this.service.Settings.get(`licenses.${this.model.route}`) || 0;
-        this.subs.obs.reload = this.service.listen('BACKOFFICE.reload_item', () => this.loadItem());
     }
 
     public sidebarEvent(event: any) {
@@ -169,6 +171,7 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
 
     protected loadItem() {
         this.timeout('loading', () => this.model.loading_item = true, 10);
+        console.warn('ID:', this.model.id);
         this.service[this.model.service].show(this.model.id).then((item) => {
             this.timeout('set_item', () => {
                 this.model.item = item;
