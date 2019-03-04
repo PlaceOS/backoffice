@@ -1,5 +1,5 @@
 import { Dashboard } from './dashboard';
-import { ng } from './ng';
+import { ng } from './cmd';
 
 import * as packager from 'electron-packager';
 import * as gulp from 'gulp';
