@@ -24,8 +24,8 @@ pipelines:
             - git config --global user.name $GIT_USER
             - git config --global user.email $GIT_EMAIL
             - git clone https://$USER:$PASS@bitbucket.org/aca/${REPO}.git deployment
-            - rm -rf deployment/backoffice
-            - mv dist deployment/backoffice
+            - rm -rf deployment/back-office
+            - mv dist deployment/back-office
             - cd deployment
             - git add -A
             - git commit -m "[Backoffice UI] Pipeline build `date +'%Y-%m-%d %H:%M:%S'`"

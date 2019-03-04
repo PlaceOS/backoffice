@@ -43,7 +43,7 @@
         <ng-container *ngIf="list">
             <cdk-virtual-scroll-viewport itemSize="32" (scrolledIndexChange)="atBottom()">
                 <ng-container *cdkVirtualFor="let item of items | async">
-                    <div #list_item class="item" [title]="item?.custom_name || item?.name || item" (touchrelease)="select(item)">
+                    <div #list_item class="item" [title]="item?.custom_name || item?.name || item" [class.active]="active === item.id" (touchrelease)="select(item)">
                         <div class="text">{{item?.custom_name || item?.name || item}}</div>
                         <div class="icon" *ngIf="active === item.id">
                             <i class="material-icons">done</i>
