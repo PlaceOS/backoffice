@@ -536,6 +536,7 @@ export class BaseService<T> {
     }
 
     public updateFields(fields: IDynamicFieldOptions<any>[], item: T) {
+        if (!item) { return; }
         for (const i of fields) {
             if (i.key && item[i.key]) {
                 console.log('Key:', i.key);

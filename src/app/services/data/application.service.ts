@@ -56,7 +56,7 @@ export class ApplicationService extends BaseService<IEngineApplication> {
                 { key: 'scopes', label: 'Scopes', control_type: 'text' },
             ] },
             { key: 'skip_authorization', label: 'Skip Authorisation', control_type: 'toggle' },
-            { key: 'redirect_uri', label: 'Redirect URI', hide: !!item, control_type: 'text', validators: [FormValidators.url] }
+            { key: 'redirect_uri', label: 'Redirect URI', hide: !!item, control_type: 'text' }
         ];
         this.updateFields(fields, item);
         return fields;

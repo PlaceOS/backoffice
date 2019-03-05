@@ -12,6 +12,11 @@ export class FormValidators {
         return error ? { url: true, message: `Needs to be a valid URL` } : null;
     }
 
+    public static uri(control: AbstractControl) {
+        const error = !Utils.validate('uri', control.value);
+        return error ? { url: true, message: `Needs to be a valid URI` } : null;
+    }
+
     public static ip(control: AbstractControl) {
         const error = !Utils.validate('ip', control.value);
         return error ? { url: true, message: `Needs to be a valid IP address` } : null;

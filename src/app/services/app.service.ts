@@ -88,7 +88,7 @@ export class AppService {
         this.analytics.parent = this.comments.parent = this.users.parent = this.logs.parent = this;
         this.drivers.parent = this.modules.parent = this.zones.parent = this.system_triggers.parent = this;
         this.systems.parent = this.triggers.parent = this.domains.parent = this.tests.parent = this;
-        this.discovery.parent = this;
+        this.discovery.parent = this.applications.parent = this.auth_sources.parent = this;
             // Create subjects
         this.subjects.system = new BehaviorSubject('');
         this.observers.system = this.subjects.system.asObservable();

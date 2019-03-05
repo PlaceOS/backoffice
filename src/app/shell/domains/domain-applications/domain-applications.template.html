@@ -1,6 +1,6 @@
 <div class="container">
     <section class="select">
-        <btn>Add new</btn>
+        <btn (tapped)="createApplication()">Add new</btn>
     </section>
     <section>
         <div class="list" *ngIf="model.list && model.list.length > 0">

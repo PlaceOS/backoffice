@@ -40,4 +40,11 @@ export class DomainApplicationsComponent extends BaseComponent implements OnChan
             }
         }, () => null);
     }
+
+    public createApplication() {
+        console.log('Create application');
+        this.service.Applications.create().then((v) => {
+            this.load();
+        }, _ => null);
+    }
 }
