@@ -33,20 +33,22 @@ export class EngineItemDropdownComponent extends BaseComponent implements OnInit
     }
 
     public load(query: string = '') {
-        if (this.service) {
-            if (this.loading) {
-                this.clearTimer('loading');
-                return this.timeout('loading', () => {
-                    this.subs.timers.loading = null;
-                    this.load(query);
-                });
+        this.timeout('search', () => {
+            if (this.service) {
+                if (this.loading) {
+                    this.clearTimer('loading');
+                    return this.timeout('loading', () => {
+                        this.subs.timers.loading = null;
+                        this.load(query);
+                    });
+                }
+                this.loading = true;
+                this.service.query({ q: query, offset: '0' }).then((list) => {
+                    this.items = list;
+                    this.loading = false;
+                }, () => this.loading = false);
             }
-            this.loading = true;
-            this.service.query({ q: query, offset: '0' }).then((list) => {
-                this.items = list;
-                this.loading = false;
-            }, () => this.loading = false);
-        }
+        });
     }
 
     public post(id: string) {
