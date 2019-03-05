@@ -176,6 +176,37 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
         return item;
     }
 
+    public addTrigger(item: IEngineSystem) {
+        return new Promise((rs, rj) => {
+            this.parent.Overlay.openModal('select-item', { data: {
+                service: this.parent.Triggers,
+                name: 'trigger'
+            } }, (event) => {
+                if (event.type === 'Submit' && event.data.item) {
+                    event.data.loading = true;
+                    this.task(item.id, 'triggers', {
+                        control_system_id: item.id,
+                        enabled: true,
+                        important: false,
+                        trigger_id: event.data.item
+                    }).then(() => {
+                        event.close();
+                        event.data.loading = false;
+                        this.parent.success(`Successfully added trigger to system`);
+                        rs();
+                    }, () => {
+                        event.data.loading = false;
+                        this.parent.error(`Error adding trigger to system`);
+                        rj();
+                    });
+                } else {
+                    event.close();
+                    rj();
+                }
+            });
+        });
+    }
+
     public getFormFields(item: IEngineSystem) {
         const fields: IDynamicFieldOptions<any>[] = [
             {

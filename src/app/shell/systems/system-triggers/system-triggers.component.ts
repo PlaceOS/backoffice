@@ -41,4 +41,9 @@ export class SystemTriggersComponent extends BaseComponent implements OnChanges 
             this.service.navigate(['triggers', encodeURIComponent(item.trigger_id), 'systems']);
         }
     }
+
+    public addTrigger() {
+        this.service.Systems.addTrigger(this.item)
+            .then(() => this.load(), _ => null);
+    }
 }
