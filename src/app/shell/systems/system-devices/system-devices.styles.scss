@@ -40,8 +40,8 @@
 }
 
 .state {
-    height: 1.5em;
-    width: 1.5em;
+    height: 16px;
+    width: 16px;
     margin: .25em;
     background-color: #000;
     border-radius: .8em;
@@ -49,8 +49,8 @@
 
     &.active {
         background-color: $success;
-        height: .75em;
-        width: .75em;
+        height: 8px;
+        width: 8px;
         margin: .625em;
     }
 }

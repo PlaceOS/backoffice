@@ -36,11 +36,13 @@ section {
         height: 1.8em;
         border-radius: .95em;
         margin: .25em;
-        background-color: rgba(#000, .2);
+        background-color: #fff;
         padding: .25em 1em;
         font-size: .8em;
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 1px 3px 0 rgba(#000, .2), 0 1px 1px 0 rgba(#000, .14), 0 2px 1px -1px rgba(#000, .12);
+        text-transform: capitalize;
     }
 }
