@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
 
 import { BaseService } from './base.service';
+import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
+import { FormValidators } from '../../shared/form-validators.class';
 
 export interface IEngineApplication {
     id: string;
@@ -24,6 +26,7 @@ export class ApplicationService extends BaseService<IEngineApplication> {
     constructor(protected http: CommsService) {
         super();
         this.model.name = 'application';
+        this.model.singular = 'application';
         this.model.route = '/applications';
     }
 
@@ -44,6 +47,19 @@ export class ApplicationService extends BaseService<IEngineApplication> {
             created: raw_item.created_at * 1000
         };
         return item;
+    }
+
+    public getFormFields(item: IEngineApplication) {
+        const fields: IDynamicFieldOptions<any>[] = [
+            { control_type: 'group', children: [
+                { key: 'name', label: 'Name', required: true, control_type: 'text' },
+                { key: 'scopes', label: 'Scopes', control_type: 'text' },
+            ] },
+            { key: 'skip_authorization', label: 'Skip Authorisation', control_type: 'toggle' },
+            { key: 'redirect_uri', label: 'Redirect URI', hide: !!item, control_type: 'text', validators: [FormValidators.url] }
+        ];
+        this.updateFields(fields, item);
+        return fields;
     }
 
 }

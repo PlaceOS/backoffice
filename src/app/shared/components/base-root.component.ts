@@ -140,7 +140,7 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
     }
 
     protected new() {
-        this.service[this.model.service].new().then((id) => {
+        this.service[this.model.service].create().then((id) => {
             this.sidebarEvent({ type: 'select', item: { id } });
         });
     }
