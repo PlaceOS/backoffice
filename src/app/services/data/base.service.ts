@@ -1,12 +1,12 @@
 
 import { CommsService } from '@acaprojects/ngx-composer';
+import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 import { Utils } from '../../shared/utility.class';
+import { AppService } from '../app.service';
 
 import * as moment from 'moment';
-import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets/components/form-controls/dynamic-form/dynamic-field.class';
-import { AppService } from '../app.service';
 
 const FORBIDDEN: string[] = ['model', 'observers', 'subjects'];
 
@@ -49,7 +49,7 @@ export class BaseService<T> {
         this.load();
     }
 
-    protected load(): void { }
+    protected load() { }
 
     get endpoint() {
         return this.parent ? `${this.parent.api_endpoint}${this.model.route}` : `/control/api${this.model.route}`;

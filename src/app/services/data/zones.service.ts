@@ -4,7 +4,6 @@ import { CommsService } from '@acaprojects/ngx-composer';
 import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 
 import { BaseService } from './base.service';
-import { ZoneModalComponent } from '../../overlays/zone-modal/zone-modal.component';
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
 import { FormValidators } from '../../shared/form-validators.class';
 
@@ -30,10 +29,6 @@ export class ZonesService extends BaseService<IEngineZone> {
         this.model.name = 'zone';
         this.model.singular = 'zone';
         this.model.route = '/zones';
-    }
-
-    public load() {
-        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: ZoneModalComponent });
     }
 
     protected processItem(raw_item: any) {

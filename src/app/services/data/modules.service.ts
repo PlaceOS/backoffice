@@ -10,7 +10,6 @@ import { IEngineSystem } from './systems.service';
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
 import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 import { FormValidators } from '../../shared/form-validators.class';
-import { DeviceModalComponent } from '../../overlays/device-modal/device-modal.component';
 
 import * as moment from 'moment';
 
@@ -51,10 +50,6 @@ export class ModulesService extends BaseService<IEngineModule> {
         this.model.name = 'devices';
         this.model.singular = 'device';
         this.model.route = '/modules';
-    }
-
-    public load() {
-        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: DeviceModalComponent });
     }
 
     /**

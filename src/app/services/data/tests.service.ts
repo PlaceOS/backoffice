@@ -1,12 +1,8 @@
 
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
-import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
-import { SystemModalComponent } from '../../overlays/system-modal/system-modal.component';
-
-import * as moment from 'moment';
 
 export interface IEngineTest {
     id: string;
@@ -28,10 +24,6 @@ export class TestsService extends BaseService<IEngineTest> {
         super();
         this.model.name = 'test';
         this.model.route = '/tests';
-    }
-
-    public load() {
-        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: SystemModalComponent });
     }
 
     public deleteItem() { return new Promise((rs, rj) => rj('No show for this service')); }

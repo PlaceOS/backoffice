@@ -1,11 +1,8 @@
 
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
-import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
-
-import * as moment from 'moment';
 
 export interface IEngineEdgeNode {
     id: string;

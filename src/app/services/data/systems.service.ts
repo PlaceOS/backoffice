@@ -7,7 +7,6 @@ import { BaseService } from './base.service';
 import { Utils } from '../../shared/utility.class';
 import { FormValidators } from '../../shared/form-validators.class';
 
-import { SystemModalComponent } from '../../overlays/system-modal/system-modal.component';
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
 import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 
@@ -41,10 +40,6 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
         this.model.name = 'system';
         this.model.singular = 'system';
         this.model.route = '/systems';
-    }
-
-    public load() {
-        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: SystemModalComponent });
     }
 
     /**

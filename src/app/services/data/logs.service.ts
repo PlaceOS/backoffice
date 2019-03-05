@@ -1,7 +1,6 @@
 
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
-import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
 import { IEngineSystem } from './systems.service';

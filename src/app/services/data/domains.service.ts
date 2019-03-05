@@ -4,7 +4,6 @@ import { CommsService } from '@acaprojects/ngx-composer';
 import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 
 import { BaseService } from './base.service';
-import { DomainModalComponent } from '../../overlays/domain-modal/domain-modal.component';
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
 import { FormValidators } from '../../shared/form-validators.class';
 
@@ -35,10 +34,6 @@ export class DomainsService extends BaseService<IEngineDomain> {
 
     get endpoint() {
         return `/auth/api${this.model.route}`;
-    }
-
-    public load() {
-        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: DomainModalComponent });
     }
 
     protected processItem(raw_item: any) {

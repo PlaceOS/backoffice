@@ -6,7 +6,6 @@ import { Validators } from '@angular/forms';
 
 import { Utils } from '../../shared/utility.class';
 import { BaseService } from './base.service';
-import { UserModalComponent } from '../../overlays/user-modal/user-modal.component';
 
 import * as moment from 'moment';
 
@@ -56,7 +55,6 @@ export class UsersService extends BaseService<IUser> {
                 this.timeout('load', () => this.load(tries), 300 * ++tries);
             }
         }, () => this.timeout('load', () => this.load(tries), 300 * ++tries));
-        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: UserModalComponent });
     }
 
     /**

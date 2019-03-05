@@ -4,7 +4,6 @@ import { CommsService } from '@acaprojects/ngx-composer';
 import { BehaviorSubject } from 'rxjs';
 
 import { BaseService } from './base.service';
-import { SystemModalComponent } from '../../overlays/system-modal/system-modal.component';
 
 import * as moment from 'moment';
 import { reject } from 'q';
@@ -26,10 +25,6 @@ export class EngineSearchService extends BaseService<IEngineSearchResult> {
         super();
         this.model.name = 'search';
         this.model.route = '/search';
-    }
-
-    public load() {
-        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: SystemModalComponent });
     }
 
     public deleteItem() { return new Promise((rs, rj) => rj('No show for this service')); }

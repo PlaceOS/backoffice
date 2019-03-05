@@ -5,7 +5,6 @@ import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 
 import { BaseService } from './base.service';
 
-import { TriggerModalComponent } from '../../overlays/trigger-modal/trigger-modal.component';
 import { TriggerConditionModalComponent } from '../../overlays/trigger-condition-modal/trigger-condition-modal.component';
 import { TriggerActionModalComponent } from '../../overlays/trigger-action-modal/trigger-action-modal.component';
 
@@ -33,7 +32,6 @@ export class TriggersService extends BaseService<IEngineTrigger> {
     }
 
     public load() {
-        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: TriggerModalComponent });
         this.parent.Overlay.setupModal(`${this.model.name}-condition`, { cmp: TriggerConditionModalComponent });
         this.parent.Overlay.setupModal(`${this.model.name}-action`, { cmp: TriggerActionModalComponent });
     }
