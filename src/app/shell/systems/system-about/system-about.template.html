@@ -24,8 +24,8 @@
     </section>
     <header *ngIf="model.modules && model.modules.length > 0">Execute command</header>
     <system-exec [system_id]="item?.id"></system-exec>
-    <header>Settings</header>
+    <header>Settings <span (touchrelease)="toggleSettings()">{{ model.merged === false ? 'This system' : 'Merged' }}</span></header>
     <section>
-        <settings-display [model]="item?.settings || {}"></settings-display>
+        <settings-display [model]="model?.settings || {}"></settings-display>
     </section>
 </div>

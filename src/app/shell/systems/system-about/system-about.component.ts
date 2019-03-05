@@ -1,16 +1,18 @@
 
-import { Component, Input, OnChanges, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, Input, OnChanges, ViewChildren, QueryList, ElementRef, SimpleChanges } from '@angular/core';
 
 import { BaseComponent } from '../../../shared/components/base.component';
 import { IEngineSystem } from '../../../services/data/systems.service';
 import { AppService } from '../../../services/app.service';
+
+import * as merge from 'deepmerge';
 
 @Component({
     selector: 'system-about',
     templateUrl: './system-about.template.html',
     styleUrls: ['./system-about.styles.scss']
 })
-export class SystemAboutComponent extends BaseComponent {
+export class SystemAboutComponent extends BaseComponent implements OnChanges {
     @Input() public item: IEngineSystem;
 
     public model: any = {};
@@ -19,6 +21,12 @@ export class SystemAboutComponent extends BaseComponent {
 
     constructor(private service: AppService) {
         super();
+    }
+
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes.item && this.item) {
+            this.loadZones();
+        }
     }
 
     public start() {
@@ -61,5 +69,30 @@ export class SystemAboutComponent extends BaseComponent {
 
     public logs() {
 
+    }
+
+    public toggleSettings() {
+        this.model.merged = this.model.merged === false ? true : false;
+        this.updateSettings();
+    }
+
+    public updateSettings() {
+        if (!this.item) { return; }
+        if (this.model.merged !== false) {
+            this.model.settings = merge({}, this.item.settings);
+            for (const zone of this.model.zones) {
+                this.model.settings = merge(this.model.settings, zone.settings);
+            }
+        } else {
+            this.model.settings = this.item.settings;
+        }
+    }
+
+    public loadZones() {
+        this.service.Zones.query({ sys_id: this.item.id, offset: 0 }).then((list) => {
+            list.sort((a, b) => this.item.zones.indexOf(b.id) - this.item.zones.indexOf(a.id));
+            this.model.zones = list;
+            this.updateSettings();
+        }, () => null);
     }
 }

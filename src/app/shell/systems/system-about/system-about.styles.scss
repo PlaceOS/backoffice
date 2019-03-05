@@ -6,8 +6,16 @@
 }
 
 header {
+    display: flex;
+    align-items: center;
     font-weight: bold;
     font-size: 1.1em;
+    span {
+        font-size: .7em;
+        color: rgba(#000, .54);
+        padding: 0 1em;
+        font-weight: 300;
+    }
 }
 
 section {
