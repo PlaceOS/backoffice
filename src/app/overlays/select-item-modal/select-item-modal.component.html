@@ -1,0 +1,23 @@
+<div class="container" *ngIf="model.service" [class.loader]="model.loading" [class.edit]="model.item">
+    <div class="header">
+        <div class="text">Add {{model.name}}</div>
+        <div class="close" (touchrelease)="fn.close()">
+            <i class="material-icons">close</i>
+        </div>
+    </div>
+    <div class="body">
+        <div class="content">
+            <engine-item-dropdown [service]="model.service" [label]="'Select ' + model.name" [(model)]="model.item"></engine-item-dropdown>
+        </div>
+        <div class="footer">
+            <btn (tapped)="fn.close()">Cancel</btn>
+            <btn name="inverse" type="submit" [disabled]="!model.item" (tapped)="submit()">{{ 'Add' }}</btn>
+        </div>
+    </div>
+    <div class="no-item">
+        <div class="icon">
+            <spinner type="circle-ring" color="rgba(0,0,0, .54)"></spinner>
+        </div>
+        <div class="text">Processing request...</div>
+    </div>
+</div>

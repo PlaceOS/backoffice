@@ -44,6 +44,7 @@ import { ConfirmModalComponent } from '../overlays/confirm-modal/confirm-modal.c
 import { ViewModuleStateModalComponent } from '../overlays/view-module-state/view-module-state.component';
 import { ChangelogModalComponent } from '../overlays/changelog-modal/changelog-modal.component';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
+import { SelectItemModalComponent } from '../overlays/select-item-modal/select-item-modal.component';
 
 @Injectable({
     providedIn: 'root'
@@ -100,6 +101,7 @@ export class AppService {
         this.overlay.setupModal('view-module-state', { cmp: ViewModuleStateModalComponent });
         this.overlay.setupModal('changelog', { cmp: ChangelogModalComponent });
         this.overlay.setupModal('item-view', { cmp: ItemCreateUpdateModalComponent });
+        this.overlay.setupModal('select-item', { cmp: SelectItemModalComponent });
         this.init();
     }
 
