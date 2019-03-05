@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 
 import { AppService } from '../../services/app.service';
 import { Utils } from '../../shared/utility.class';
-import { SystemModalComponent } from '../../overlays/system-modal/system-modal.component';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
 
 @Component({

@@ -4,7 +4,6 @@ import { CommsService } from '@acaprojects/ngx-composer';
 import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 
 import { BaseService } from './base.service';
-import { DriverModalComponent } from '../../overlays/driver-modal/driver-modal.component';
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
 import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 
@@ -30,10 +29,6 @@ export class DriversService extends BaseService<IEngineDriver> {
         this.model.name = 'driver';
         this.model.singular = 'driver';
         this.model.route = '/dependencies';
-    }
-
-    public load() {
-        this.parent.Overlay.setupModal(`${this.model.name}-view`, { cmp: DriverModalComponent });
     }
 
     /**

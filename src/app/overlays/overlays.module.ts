@@ -10,32 +10,18 @@ import { SharedComponentsModule } from '../shared/components/shared-components.m
 import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
 import { ViewModuleStateModalComponent } from './view-module-state/view-module-state.component';
 
-import { SystemModalComponent } from './system-modal/system-modal.component';
-import { DeviceModalComponent } from './device-modal/device-modal.component';
-import { ZoneModalComponent } from './zone-modal/zone-modal.component';
-import { TriggerModalComponent } from './trigger-modal/trigger-modal.component';
-import { UserModalComponent } from './user-modal/user-modal.component';
-import { DomainModalComponent } from './domain-modal/domain-modal.component';
-import { ChangelogModalComponent } from './changelog-modal/changelog-modal.component';
-import { DriverModalComponent } from './driver-modal/driver-modal.component';
 import { TriggerConditionModalComponent } from './trigger-condition-modal/trigger-condition-modal.component';
 import { TriggerActionModalComponent } from './trigger-action-modal/trigger-action-modal.component';
 import { ItemCreateUpdateModalComponent } from './item-modal/item-modal.component';
+import { ChangelogModalComponent } from './changelog-modal/changelog-modal.component';
 
 const OVERLAYS: any[] = [
     ConfirmModalComponent,
     ViewModuleStateModalComponent,
-    SystemModalComponent,
-    DeviceModalComponent,
-    ZoneModalComponent,
-    TriggerModalComponent,
-    UserModalComponent,
-    DomainModalComponent,
-    ChangelogModalComponent,
-    DriverModalComponent,
     TriggerConditionModalComponent,
     TriggerActionModalComponent,
-    ItemCreateUpdateModalComponent
+    ItemCreateUpdateModalComponent,
+    ChangelogModalComponent
 ];
 
 @NgModule({
