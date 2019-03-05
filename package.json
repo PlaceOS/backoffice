@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@acaprojects/ngx-composer": "^0.10.9",
-    "@acaprojects/ngx-widgets": "^0.26.7",
+    "@acaprojects/ngx-widgets": "^0.26.8",
     "@angular-devkit/build-angular": "^0.10.7",
     "@angular/cdk": "^7.3.3",
     "@angular/cli": "^7.3.4",
@@ -49,6 +49,7 @@
     "chart.js": "^2.7.3",
     "codelyzer": "^4.5.0",
     "cypress": "^3.1.5",
+    "deepmerge": "^3.2.0",
     "durable-json-lint": "0.0.3",
     "electron-packager": "^10.1.2",
     "faker": "^4.1.0",
