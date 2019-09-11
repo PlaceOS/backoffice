@@ -11,6 +11,7 @@ import { CustomSettingsFieldComponent } from '../../shared/components/custom-fie
 import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 
 import * as moment from 'moment';
+import { SystemLogModalComponent } from '../../overlays/system-log-modal/system-log-modal.component';
 
 export interface IEngineSystem {
     id?: string;
@@ -40,6 +41,10 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
         this.model.name = 'system';
         this.model.singular = 'system';
         this.model.route = '/systems';
+    }
+
+    public load() {
+        this.parent.Overlay.setupModal('view-system-logs', { cmp: SystemLogModalComponent });
     }
 
     /**
@@ -205,6 +210,11 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
                 }
             });
         });
+    }
+
+    public logs(item: IEngineSystem) {
+        if (!item || !item.id) { return; }
+        this.parent.Overlay.openModal('view-system-logs', { data: { id: item.id } }, (e) => e.close());
     }
 
     public getFormFields(item: IEngineSystem) {

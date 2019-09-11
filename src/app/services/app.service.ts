@@ -45,6 +45,7 @@ import { ViewModuleStateModalComponent } from '../overlays/view-module-state/vie
 import { ChangelogModalComponent } from '../overlays/changelog-modal/changelog-modal.component';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
 import { SelectItemModalComponent } from '../overlays/select-item-modal/select-item-modal.component';
+import { SystemLogsService } from './data/system_logs.service';
 
 @Injectable({
     providedIn: 'root'
@@ -83,13 +84,14 @@ export class AppService {
         private stats: StatsService,
         private tests: TestsService,
         private discovery: DiscoveryService,
+        private system_logs: SystemLogsService,
         private hotkey: HotkeyService
     ) {
             // Set parent service on child services
         this.analytics.parent = this.comments.parent = this.users.parent = this.logs.parent = this;
         this.drivers.parent = this.modules.parent = this.zones.parent = this.system_triggers.parent = this;
         this.systems.parent = this.triggers.parent = this.domains.parent = this.tests.parent = this;
-        this.discovery.parent = this.applications.parent = this.auth_sources.parent = this;
+        this.discovery.parent = this.applications.parent = this.auth_sources.parent = this.system_logs.parent = this;
             // Create subjects
         this.subjects.system = new BehaviorSubject('');
         this.observers.system = this.subjects.system.asObservable();
@@ -270,6 +272,7 @@ export class AppService {
     get Stats() { return this.stats; }
     get Tests() { return this.tests; }
     get Discovery() { return this.discovery; }
+    get SystemLogs() { return this.system_logs; }
 
     /**
      * Set the page title

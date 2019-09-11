@@ -6,6 +6,7 @@ import { BaseService } from './base.service';
 import { IEngineSystem } from './systems.service';
 
 import * as moment from 'moment';
+import { IUser } from './users.service';
 
 export interface IEngineLogEntry {
     id: string;
@@ -16,6 +17,7 @@ export interface IEngineLogEntry {
     installed_device?: boolean;
     ip?: string;
     user_id?: string;
+    user?: IUser;
     system_id?: string;
     systems?: IEngineSystem[];
     display?: any;
@@ -35,7 +37,7 @@ export class LogsService extends BaseService<IEngineLogEntry> {
         this.model.route = '/logs';
     }
 
-    protected processItem(raw_item: any) {
+    public processItem(raw_item: any) {
         const item: IEngineLogEntry = {
             id: raw_item.id,
             name: raw_item.name,
@@ -47,6 +49,7 @@ export class LogsService extends BaseService<IEngineLogEntry> {
             user_id: raw_item.user_id,
             system_id: raw_item.system_id,
             systems: raw_item.systems,
+            user: raw_item.user,
             display: {
                 started: moment(raw_item.created_at * 1000).fromNow(),
                 ended: moment(raw_item.ended_at * 1000).format('MMM d, YYYY - hh:mm A')

@@ -15,6 +15,7 @@ import { TriggerActionModalComponent } from './trigger-action-modal/trigger-acti
 import { ItemCreateUpdateModalComponent } from './item-modal/item-modal.component';
 import { ChangelogModalComponent } from './changelog-modal/changelog-modal.component';
 import { SelectItemModalComponent } from './select-item-modal/select-item-modal.component';
+import { SystemLogModalComponent } from './system-log-modal/system-log-modal.component';
 
 const OVERLAYS: any[] = [
     ConfirmModalComponent,
@@ -23,7 +24,8 @@ const OVERLAYS: any[] = [
     TriggerActionModalComponent,
     ItemCreateUpdateModalComponent,
     ChangelogModalComponent,
-    SelectItemModalComponent
+    SelectItemModalComponent,
+    SystemLogModalComponent
 ];
 
 @NgModule({
