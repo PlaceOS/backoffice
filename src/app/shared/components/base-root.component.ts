@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { BaseComponent } from './base.component';
-import { AppService } from '../../services/app.service';
-import { Utils } from '../utility.class';
 import { ActivatedRoute } from '@angular/router';
+
+import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { ApplicationService } from '../../services/app.service';
+import { toQueryString } from '../utilities/api.utilities';
 
 @Component({
     selector: 'app-base-root-component',
@@ -12,7 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 export class BaseRootComponent extends BaseComponent implements OnInit {
     public model: any = {};
 
-    constructor(protected service: AppService, protected route: ActivatedRoute) {
+    constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
         super();
         this.model.type = 'system';
         this.model.route = 'systems';
@@ -22,7 +23,7 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
     public ngOnInit() {
         this.model.loading_item = true;
         this.model.list = [];
-        this.subs.obs.route = this.route.paramMap.subscribe((params) => {
+        this.subscription('route.params', this.route.paramMap.subscribe((params) => {
             if (params.has('id') && params.get('id')) {
                 const id = decodeURIComponent(params.get('id'));
                 if (this.service.get('BACKOFFICE.active_item_id') !== id) {
@@ -37,8 +38,8 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
                 this.model.tab = params.get('tab');
             }
             this.timeout('sidebar', () => this.showSidebar(!this.model.id));
-        });
-        this.subs.obs.list = this.service[this.model.service].listen('list', () => {
+        }));
+        this.subscription('list', this.service[this.model.service].listen('list', () => {
             this.model.pure_list = [ ...this.service[this.model.service].list() ];
             if (!this.model.search) {
                 this.model.list = [ ...this.service[this.model.service].list() ];
@@ -47,19 +48,19 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
                 this.model.loading = false;
                 this.model.loading_item = false;
             }, 100);
-        });
-        this.subs.obs.total = this.service[this.model.service].listen('total', (total) => {
+        }));
+        this.subscription('total', this.service[this.model.service].listen('total', (total) => {
             console.log('Total:', total);
             this.model.total = total;
-        });
+        }));
         this.init();
     }
 
     public init() {
-        if (!this.service.ready()) {
+        if (!this.service.is_ready) {
             return this.timeout('init', () => this.init());
         }
-        this.model.licenses = this.service.Settings.get(`licenses.${this.model.route}`) || 0;
+        this.model.licenses = this.service.setting(`licenses.${this.model.route}`) || 0;
     }
 
     public sidebarEvent(event: any) {
@@ -94,7 +95,7 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
             if (this.model.filtered_count === this.model.filtered_list.length) { return; }
             this.model.loading = true;
             const query = { offset: this.model.filtered_list.length || 0, q: this.model.search };
-            const q = `total_${Utils.generateQueryString(query)}`;
+            const q = `total_${toQueryString(query)}`;
             this.service[this.model.service].query(query).then((list) => {
                 if (this.model.filtered_list) { this.model.filtered_list = []; }
                 for (const i of list) {
@@ -130,7 +131,7 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
     public itemEvent(event: any) {
         if (!event) { return; }
         if (event.type === 'tab' && this.model.item && event.value) {
-            if (this.subs.timers.navigate) { return; }
+            if (this._timers.navigate) { return; }
             this.service.navigate([this.model.route, encodeURIComponent(this.model.item.id), event.value ]);
         } else if (event.type === 'edit') {
             this.edit();
@@ -158,11 +159,11 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
         this.service[this.model.service].remove(this.model.item.id).then(
             (i) => {
                 if (i) {
-                    this.service.success(`Successfully deleted ${this.model.type} "${this.model.item.id}"`);
+                    this.service.notifySuccess(`Successfully deleted ${this.model.type} "${this.model.item.id}"`);
                     this.service.navigate([this.model.route]);
                 }
             },
-            () => this.service.error(`Failed to delete ${this.model.type} "${this.model.item.id}"`)
+            () => this.service.notifyError(`Failed to delete ${this.model.type} "${this.model.item.id}"`)
         );
     }
 
@@ -181,7 +182,7 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
                 this.timeout('item', () => this.model.loading_item = false);
             }, 50);
         }, () => {
-            this.service.error(`Failed to load data for ${this.model.type} "${this.model.id}"`);
+            this.service.notifyError(`Failed to load data for ${this.model.type} "${this.model.id}"`);
             this.model.loading_item = false;
             this.service.navigate([this.model.route]);
         });

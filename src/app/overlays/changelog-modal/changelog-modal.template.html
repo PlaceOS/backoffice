@@ -5,7 +5,7 @@
             <i class="material-icons">close</i>
         </div>
     </div>
-    <div class="body markdown" *ngIf="model.changelog" [innerHTML]="model.changelog | safe"></div>
+    <div class="body markdown" *ngIf="model.changelog" [innerHTML]="model.changelog | safe:'html'"></div>
     <div class="body" *ngIf="!model.changelog">
         <div class="no-item">
             <div class="icon">

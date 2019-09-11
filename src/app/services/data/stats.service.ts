@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
 import { BehaviorSubject } from 'rxjs';
 
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
 
 export interface IEngineStats {
     id?: string;
@@ -17,16 +17,12 @@ export interface IEngineStats {
 @Injectable({
     providedIn: 'root'
 })
-export class StatsService extends BaseService<IEngineStats> {
+export class BackofficeStatsService extends BaseAPIService<IEngineStats> {
 
     constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'stats';
-        this.model.route = '/stats';
-    }
-
-    public load() {
-
+        super(http);
+        this._name = 'stats';
+        this._api_route = '/stats';
     }
 
     public connections(fields?: any) {
@@ -49,7 +45,7 @@ export class StatsService extends BaseService<IEngineStats> {
         return this.show('triggers', fields);
     }
 
-    protected processItem(raw_item: any) {
+    protected process(raw_item: any) {
         const item: IEngineStats = {
             period: raw_item.period_name,
             interval: raw_item.interval,

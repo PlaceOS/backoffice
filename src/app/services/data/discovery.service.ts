@@ -2,18 +2,18 @@
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
 
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
 import { IEngineDriver } from './drivers.service';
 
 @Injectable({
     providedIn: 'root'
 })
-export class DiscoveryService extends BaseService<IEngineDriver> {
+export class BackofficeDiscoveryService extends BaseAPIService<IEngineDriver> {
 
     constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'driver';
-        this.model.route = '/discovery';
+        super(http);
+        this._name = 'driver';
+        this._api_route = '/discovery';
     }
 
     /**
@@ -24,7 +24,7 @@ export class DiscoveryService extends BaseService<IEngineDriver> {
         return this.show('scan');
     }
 
-    protected processItem(raw_item: any) {
+    protected process(raw_item: any) {
         const item: IEngineDriver = {
             id: raw_item.id,
             name: raw_item.name,

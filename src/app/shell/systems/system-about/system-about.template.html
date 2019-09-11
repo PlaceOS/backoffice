@@ -1,8 +1,8 @@
 <div class="container">
     <section class="select">
-        <btn (tapped)="start()">Start System</btn>
-        <btn (tapped)="stop()">Stop System</btn>
-        <btn (tapped)="logs()">Access Logs</btn>
+        <button widget (tapped)="start()">Start System</button>
+        <button widget (tapped)="stop()">Stop System</button>
+        <button widget (tapped)="logs()">Access Logs</button>
     </section>
     <section class="details">
         <div class="field" *ngIf="item.support_url">

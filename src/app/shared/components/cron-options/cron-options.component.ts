@@ -1,8 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-import { BaseComponent } from '../base.component';
-
-import * as moment from 'moment';
+import { BaseComponent } from '../../globals/base.component';
 
 const CRON_PERIOD: any[] = [
     { id: 'minute', name: 'Minutely', shorthand: 'm' },

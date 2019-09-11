@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { AppService } from '../../services/app.service';
+import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
 
 @Component({
@@ -12,7 +12,7 @@ import { BaseRootComponent } from '../../shared/components/base-root.component';
 })
 export class UsersComponent extends BaseRootComponent {
 
-    constructor(protected service: AppService, protected route: ActivatedRoute) {
+    constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
         super(service, route);
         this.model.type = 'user';
         this.model.service = 'Users';

@@ -2,7 +2,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { AppService } from '../../services/app.service';
+import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
 
 @Component({
@@ -13,10 +13,10 @@ import { BaseRootComponent } from '../../shared/components/base-root.component';
 export class TestsComponent extends BaseRootComponent {
     public model: any = {};
 
-    @ViewChild('cmd_line') private cmd_line: ElementRef;
-    @ViewChild('cmd_input') private cmd_input: ElementRef;
+    @ViewChild('cmd_line', { static: true }) private cmd_line: ElementRef;
+    @ViewChild('cmd_input', { static: true }) private cmd_input: ElementRef;
 
-    constructor(protected service: AppService, protected route: ActivatedRoute) {
+    constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
         super(service, route);
         this.model.type = 'test';
         this.model.service = 'Tests';

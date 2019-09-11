@@ -1,17 +1,17 @@
 
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
-import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets/components/form-controls/dynamic-form/dynamic-field.class';
 
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
 import { IEngineDriver } from './drivers.service';
 import { IEngineSystem } from './systems.service';
 
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
-import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
-import { FormValidators } from '../../shared/form-validators.class';
+import { CustomDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
+import { IFormFieldOptions } from '@acaprojects/ngx-dynamic-forms';
+import { buildValidateRange, validateIpAddress } from 'src/app/shared/utilities/validation.utilities';
 
 export interface IEngineModule {
     id: string;
@@ -43,13 +43,13 @@ export interface IEngineModule {
 @Injectable({
     providedIn: 'root'
 })
-export class ModulesService extends BaseService<IEngineModule> {
+export class BackofficeModulesService extends BaseAPIService<IEngineModule> {
 
     constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'devices';
-        this.model.singular = 'device';
-        this.model.route = '/modules';
+        super(http);
+        this._name = 'devices';
+        this._singular = 'device';
+        this._api_route = '/modules';
     }
 
     /**
@@ -68,7 +68,7 @@ export class ModulesService extends BaseService<IEngineModule> {
         return this.task(id, 'stop');
     }
 
-    protected processItem(raw_item: any) {
+    protected process(raw_item: any) {
         const item: IEngineModule = {
             id: raw_item.id,
             dependency_id: raw_item.dependency_id,
@@ -98,40 +98,35 @@ export class ModulesService extends BaseService<IEngineModule> {
             item.custom_name = `${item.dependency ? item.dependency.name : 'Blank'} - ${item.system ? item.system.name : 'Blank'}`;
         }
         item.display = {
-            created: moment(item.created).fromNow()
+            created: dayjs(item.created).format()
         };
         return item;
     }
 
     public getFormFields(item: IEngineModule, edit: boolean = false) {
         console.log('Item:', item);
-        const fields: IDynamicFieldOptions<any>[] = [
+        const fields: IFormFieldOptions<any>[] = [
             {
-                control_type: 'group', hide: !!item && edit, children: [
-                    { key: 'dependency', label: 'Dependency', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Drivers }, required: true },
-                    { key: 'edge', label: 'Edge', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Nodes }, readonly: !!item, required: true },
-                    { key: 'control_system', label: 'Control System', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Systems }, readonly: !!item, required: true },
+                key: 'owner_group', value: '', type: 'group', hide: !!item && edit, children: [
+                    { key: 'dependency', label: 'Dependency', value: '', type: 'custom', content: CustomDropdownFieldComponent, metadata: { service: this.parent.Drivers }, required: true },
+                    { key: 'edge', label: 'Edge', value: '', type: 'custom', content: CustomDropdownFieldComponent, metadata: { service: this.parent.Nodes }, settings: {readonly: !!item}, required: true },
+                    { key: 'control_system', label: 'Control System', value: '', type: 'custom', content: CustomDropdownFieldComponent, metadata: { service: this.parent.Systems }, settings: { readonly: !!item}, required: true },
                 ]
             },
-            { key: 'ip', hide: !!item && edit, label: 'IP Address', control_type: 'text', validators: [FormValidators.ip] },
-            { key: 'port', hide: !!item && edit, label: 'Port', control_type: 'text', validators: [FormValidators.numberRange(1, 65535)] },
+            { key: 'ip', hide: !!item && edit, label: 'IP Address', value: '', type: 'input', validators: [validateIpAddress] },
+            { key: 'port', hide: !!item && edit, label: 'Port', value: '', type: 'input', validators: [buildValidateRange(1, 65535)] },
             {
-                control_type: 'group', hide: !!item && edit, children: [
-                    { key: 'tls', label: 'TLS', control_type: 'toggle' },
-                    { key: 'udp', label: 'UDP', control_type: 'toggle' },
-                    { key: 'makebreak', label: 'Makebreak', control_type: 'toggle' },
-                    { key: 'ignore_connection', label: 'Ignore Connection', control_type: 'toggle' },
+                key: 'options_group', value: '', type: 'group', hide: !!item && edit, children: [
+                    { key: 'tls', label: 'TLS', value: '', type: 'checkbox' },
+                    { key: 'udp', label: 'UDP', value: '', type: 'checkbox' },
+                    { key: 'makebreak', label: 'Makebreak', value: '', type: 'checkbox' },
+                    { key: 'ignore_connection', label: 'Ignore Connection', value: '', type: 'checkbox' },
                 ]
             },
-            { key: 'notes', label: 'Notes', control_type: 'textarea' },
-            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent },
-            { key: 'custom_name', label: 'Custom Name', control_type: 'text' },
+            { key: 'notes', label: 'Notes', value: '', type: 'textarea' },
+            { key: 'settings', label: 'Settings', value: '', type: 'custom', settings: {flex: true}, content: CustomSettingsFieldComponent },
+            { key: 'custom_name', label: 'Custom Name', value: '', type: 'input' },
         ];
-
-        if (item) {
-            console.log('Process fields');
-            this.updateFields(fields, item);
-        }
         return fields;
     }
 

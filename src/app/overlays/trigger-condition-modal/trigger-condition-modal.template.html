@@ -10,16 +10,16 @@
             <div class="field">
                 <div class="label">Condition Type<span class="orange">*</span>:</div>
                 <div class="value">
-                    <dropdown [list]="model.condition_types" [model]="-1" (modelChange)="model.form.condition_type = model.condition_types[$event]"
-                        placeholder="Select a System"></dropdown>
+                    <a-dropdown [items]="model.condition_types" [ngModel]="-1" (ngModelChange)="model.form.condition_type = model.condition_types[$event]"
+                        placeholder="Select a System"></a-dropdown>
                 </div>
             </div>
             <div class="fieldset" *ngIf="model.form.condition_type && model.form.condition_type.id === 'webhook'">
                 <div class="field">
                     <div class="label">Select type<span class="orange">*</span>:</div>
                     <div class="value">
-                        <dropdown [list]="model.webhook_types" [model]="-1" (modelChange)="model.form.webhook_type = model.webhook_types[$event]; checkFields()"
-                            placeholder="Select a webhook type"></dropdown>
+                        <a-dropdown [items]="model.webhook_types" [ngModel]="-1" (ngModelChange)="model.form.webhook_type = model.webhook_types[$event]; checkFields()"
+                            placeholder="Select a webhook type"></a-dropdown>
                     </div>
                 </div>
                 <div class="info">Webhooks can provide a JSON payload with a command to execute.</div>
@@ -28,8 +28,8 @@
                 <div class="field">
                     <div class="label">Status variable<span class="orange">*</span>:</div>
                     <div class="value">
-                        <dropdown [list]="model.status_variables" [model]="-1" (modelChange)="model.form.lhs_variable = model.status_variables[$event]; checkFields()"
-                            placeholder="Select a status variable"></dropdown>
+                        <a-dropdown [items]="model.status_variables" [ngModel]="-1" (ngModelChange)="model.form.lhs_variable = model.status_variables[$event]; checkFields()"
+                            placeholder="Select a status variable"></a-dropdown>
                     </div>
                 </div>
                 <div class="field">
@@ -39,19 +39,19 @@
                 </div>
                 <div class="field">
                     <div class="value">
-                        <dropdown [list]="model.compare_types" [model]="0" (modelChange)="model.form.compare_type = model.compare_types[$event]; checkFields()"></dropdown>
+                        <a-dropdown [items]="model.compare_types" [ngModel]="0" (ngModelChange)="model.form.compare_type = model.compare_types[$event]; checkFields()"></a-dropdown>
                     </div>
                 </div>
                 <div class="field">
                     <div class="value">
-                        <dropdown [list]="['Constant value', 'Status variable']" [(model)]="model.form.compare_value" (modelChange)="checkFields()"></dropdown>
+                        <a-dropdown [items]="['Constant value', 'Status variable']" [(ngModel)]="model.form.compare_value" (ngModelChange)="checkFields()"></a-dropdown>
                     </div>
                 </div>
                 <div class="field" *ngIf="model.form.compare_value">
                     <div class="label">Status variable<span class="orange">*</span>:</div>
                     <div class="value">
-                        <dropdown [list]="model.status_variables" [model]="-1" (modelChange)="model.form.rhs_variable = model.status_variables[$event]; checkFields()"
-                            placeholder="Select a status variable"></dropdown>
+                        <a-dropdown [items]="model.status_variables" [ngModel]="-1" (ngModelChange)="model.form.rhs_variable = model.status_variables[$event]; checkFields()"
+                            placeholder="Select a status variable"></a-dropdown>
                     </div>
                 </div>
                 <div class="field">
@@ -65,15 +65,15 @@
             </div>
         </div>
         <div class="footer">
-            <btn (tapped)="event('Cancel')">Cancel</btn>
-            <btn name="inverse" [disabled]="model.has_errors || !model.fields_valid" (tapped)="model.item ? edit() : new()">
+            <button widget (tapped)="event('Cancel')">Cancel</button>
+            <button widget name="inverse" [disabled]="model.has_errors || !model.fields_valid" (tapped)="model.item ? edit() : new()">
                 Ok
-            </btn>
+            </button>
         </div>
     </div>
     <div class="no-item">
         <div class="icon">
-            <spinner type="circle-ring" color="rgba(0,0,0, .54)"></spinner>
+            <a-spinner circle-ring color="rgba(0,0,0, .54)"></a-spinner>
         </div>
         <div class="text">Processing request...</div>
     </div>

@@ -1,6 +1,6 @@
 <div class="container" [class.uat]="model.env !== 'prod'" >
     <div class="login-container">
-        <div class="logo" [style.background]="(model.logo ? model.logo.background : '') | safestyle">
+        <div class="logo" [style.background]="(model.logo ? model.logo.background : '') | safe:'style'">
             <img *ngIf="model.logo && (model.logo.type==='image' || model.logo.type==='img')" [src]="model.logo.src">
             <i *ngIf="model.logo && (model.logo.type!=='image' && model.logo.type!=='img')" [class]="model.logo.src"></i>
         </div>
@@ -11,7 +11,7 @@
         </div>
         <div class="loader" *ngIf="model.loading">
             <div class="icon">
-                <spinner type="circle-ring" color="rgba(0,0,0, .54)"></spinner>
+                <a-spinner circle-ring color="rgba(0,0,0, .54)"></a-spinner>
             </div>
             <div class="text">
                 Loading user data...

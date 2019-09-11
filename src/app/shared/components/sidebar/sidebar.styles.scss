@@ -3,7 +3,7 @@
 
 .container {
     position: relative;
-    background-color: $color-ternary;
+    background-color: $background;
     height: 100%;
     width: 100;
     display: flex;
@@ -166,7 +166,7 @@ input {
 
     &:hover {
         background-color: #fff;
-        color: $color-ternary;
+        color: $background-light;
     }
     &:active {
         background-color: #ccc;

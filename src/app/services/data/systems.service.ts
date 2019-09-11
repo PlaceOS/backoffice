@@ -1,17 +1,15 @@
 
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
-import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
+import { IFormFieldOptions } from '@acaprojects/ngx-dynamic-forms';
+import { Validators } from '@angular/forms';
 
-import { BaseService } from './base.service';
-import { Utils } from '../../shared/utility.class';
-import { FormValidators } from '../../shared/form-validators.class';
+import { BaseAPIService } from './base.service';
+import { toQueryString } from 'src/app/shared/utilities/api.utilities';
+import { CustomSettingsFieldComponent } from 'src/app/shared/components/custom-fields/settings-field/settings-field.component';
+import { CustomDropdownFieldComponent } from 'src/app/shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 
-import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
-import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
-
-import * as moment from 'moment';
-import { SystemLogModalComponent } from '../../overlays/system-log-modal/system-log-modal.component';
+import * as dayjs from 'dayjs';
 
 export interface IEngineSystem {
     id?: string;
@@ -34,17 +32,13 @@ export interface IEngineSystem {
 @Injectable({
     providedIn: 'root'
 })
-export class EngineSystemsService extends BaseService<IEngineSystem> {
+export class BackofficeSystemsService extends BaseAPIService<IEngineSystem> {
 
     constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'system';
-        this.model.singular = 'system';
-        this.model.route = '/systems';
-    }
-
-    public load() {
-        this.parent.Overlay.setupModal('view-system-logs', { cmp: SystemLogModalComponent });
+        super(http);
+        this._name = 'system';
+        this._singular = 'system';
+        this._api_route = '/systems';
     }
 
     /**
@@ -55,22 +49,22 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
      */
     public funcs(id: string, fields?: any, tries: number = 0) {
         if (tries > 4) { return new Promise((rs, rj) => rj('Too many tries')); }
-        const query = Utils.generateQueryString(fields);
+        const query = toQueryString(fields);
         const key = `funcs|${id}|${query}`;
-        if (!this.promises[key]) {
-            this.promises[key] = new Promise((resolve, reject) => {
-                const url = `${this.endpoint}/${id}/funcs${query ? '?' + query : ''}`;
+        if (!this._promises[key]) {
+            this._promises[key] = new Promise((resolve, reject) => {
+                const url = `${this.route()}/${id}/funcs${query ? '?' + query : ''}`;
                 this.http.get(url).subscribe(
                     (resp: any) => {
                         resolve(resp);
-                        setTimeout(() => this.promises[key] = null, 5 * 1000);
+                        setTimeout(() => this._promises[key] = null, 5 * 1000);
                     }, (err) => {
-                        this.promises[key] = null;
+                        this._promises[key] = null;
                         reject(err);
                     });
             });
         }
-        return this.promises[key];
+        return this._promises[key];
     }
 
     /**
@@ -80,9 +74,9 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
      */
     public execute(id: string, details: any) {
         const key = `exec|${id}|${details}`;
-        if (!this.promises[key]) {
-            this.promises[key] = new Promise((resolve, reject) => {
-                const url = `${this.endpoint}/${id}/exec`;
+        if (!this._promises[key]) {
+            this._promises[key] = new Promise((resolve, reject) => {
+                const url = `${this.route()}/${id}/exec`;
                 if (!details || !details.method || !details.module) {
                     return reject(!details ? 'Invalid details passed to execute method' : (!details.method ? 'No method passed to execute' :  'No module passed to execute'));
                 }
@@ -96,14 +90,14 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
                 this.http.post(url, body).subscribe(
                     (resp: any) => {
                         resolve(resp instanceof Array ? resp[0] : resp);
-                        setTimeout(() => this.promises[key] = null, 200);
+                        setTimeout(() => this._promises[key] = null, 200);
                     }, (err) => {
-                        this.promises[key] = null;
+                        this._promises[key] = null;
                         reject(err instanceof Array ? err[0] : err);
                     });
             });
         }
-        return this.promises[key];
+        return this._promises[key];
     }
 
     /**
@@ -113,22 +107,22 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
      * @param index Module index
      */
     public state(id: string, module: string, index: number) {
-        const query = Utils.generateQueryString({ module, index });
+        const query = toQueryString({ module, index });
         const key = `state|${id}|${query}`;
-        if (!this.promises[key]) {
-            this.promises[key] = new Promise((resolve, reject) => {
-                const url = `${this.endpoint}/${id}/state${query ? '?' + query : ''}`;
+        if (!this._promises[key]) {
+            this._promises[key] = new Promise((resolve, reject) => {
+                const url = `${this.route()}/${id}/state${query ? '?' + query : ''}`;
                 this.http.get(url).subscribe(
                     (resp: any) => {
                         resolve(resp);
-                        setTimeout(() => this.promises[key] = null, 5 * 1000);
+                        setTimeout(() => this._promises[key] = null, 5 * 1000);
                     }, (err) => {
-                        this.promises[key] = null;
+                        this._promises[key] = null;
                         reject(err);
                     });
             });
         }
-        return this.promises[key];
+        return this._promises[key];
     }
 
     /**
@@ -176,14 +170,14 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
             created: raw_item.created_at * 1000
         };
         item.display = {
-            created: moment(item.created).fromNow()
+            created: dayjs(item.created).format()
         };
         return item;
     }
 
     public addTrigger(item: IEngineSystem) {
         return new Promise((rs, rj) => {
-            this.parent.Overlay.openModal('select-item', { data: {
+            this.parent.Overlay.open('select-item', { data: {
                 service: this.parent.Triggers,
                 name: 'trigger'
             } }, (event) => {
@@ -197,11 +191,11 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
                     }).then(() => {
                         event.close();
                         event.data.loading = false;
-                        this.parent.success(`Successfully added trigger to system`);
+                        this.parent.notifySuccess(`Successfully added trigger to system`);
                         rs();
                     }, () => {
                         event.data.loading = false;
-                        this.parent.error(`Error adding trigger to system`);
+                        this.parent.notifyError(`Error adding trigger to system`);
                         rj();
                     });
                 } else {
@@ -214,31 +208,31 @@ export class EngineSystemsService extends BaseService<IEngineSystem> {
 
     public logs(item: IEngineSystem) {
         if (!item || !item.id) { return; }
-        this.parent.Overlay.openModal('view-system-logs', { data: { id: item.id } }, (e) => e.close());
+        this.parent.Overlay.open('view-system-logs', { data: { id: item.id } }, (e) => e.close());
     }
 
     public getFormFields(item: IEngineSystem) {
-        const fields: IDynamicFieldOptions<any>[] = [
+        const fields: IFormFieldOptions<any>[] = [
             {
-                control_type: 'group', children: [
-                    { key: 'name', label: 'Name', required: true, control_type: 'text' },
-                    { key: 'email', label: 'Email', control_type: 'text' }
+                key: 'id_group', value: '', type: 'group', children: [
+                    { key: 'name', label: 'Name', required: true, value: '', type: 'input' },
+                    { key: 'email', label: 'Email', value: '', type: 'input' }
                 ]
             },
-            { key: 'support_url', label: 'Support URL', control_type: 'text', validators: [FormValidators.url] },
+            { key: 'support_url', label: 'Support URL', value: '', type: 'input', validators: [Validators.pattern('')] },
             {
-                control_type: 'group', children: [
-                    { key: 'installed_ui_devices', label: 'Number of Touch Panels', type: 'number', control_type: 'text', validators: [FormValidators.integer] },
-                    { key: 'capacity', label: 'Capacity', type: 'number', control_type: 'text', validators: [FormValidators.integer] },
-                    { key: 'bookable', label: 'Bookable Space', control_type: 'toggle'},
+                key: 'system_details', value: '', type: 'group', children: [
+                    { key: 'installed_ui_devices', label: 'Number of Touch Panels', value: '', type: 'input', attributes: { type: 'number' }, validators: [Validators.pattern(/[0-9]*/g)] },
+                    { key: 'capacity', label: 'Capacity', value: '', type: 'input', attributes: { type: 'number' }, validators: [Validators.pattern(/[0-9]*/g)] },
+                    { key: 'bookable', label: 'Bookable Space', value: '', type: 'checkbox'},
                 ]
             },
-            { key: 'description', label: 'Description', control_type: 'textarea' },
-            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent },
+            { key: 'description', label: 'Description', value: '', type: 'textarea' },
+            { key: 'settings', label: 'Settings', value: '', type: 'custom', settings: {flex: true}, content: CustomSettingsFieldComponent },
             {
-                control_type: 'group', hide: !!item, children: [
-                    { key: 'zone_id', label: 'Zone', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Zones } },
-                    { key: 'edge_id', label: 'Edge', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Nodes } }
+                key: 'owner_group', value: '', type: 'group', hide: !!item, children: [
+                    { key: 'zone_id', label: 'Zone', value: '', type: 'custom', content: CustomDropdownFieldComponent, metadata: { service: this.parent.Zones } },
+                    { key: 'edge_id', label: 'Edge', value: '', type: 'custom', content: CustomDropdownFieldComponent, metadata: { service: this.parent.Nodes } }
                 ]
             },
         ];

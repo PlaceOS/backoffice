@@ -22,7 +22,7 @@
                                     <div class="flex">
                                         <div>
                                         <ng-container *ngFor="let doc of model.item.documentation">
-                                            <a [href]="doc | safeurl">{{doc}}</a><br>
+                                            <a [href]="doc | safe:'url'">{{doc}}</a><br>
                                         </ng-container>
                                         </div>
                                     </div>

@@ -1,19 +1,24 @@
-
 import { Component, OnInit } from '@angular/core';
-import { OverlayContentComponent } from '@acaprojects/ngx-widgets';
+import { OverlayItem } from '@acaprojects/ngx-overlays';
 
-import { Utils } from '../../shared/utility.class';
+import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { ApplicationService } from 'src/app/services/app.service';
 
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
+import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
 
 @Component({
     selector: 'trigger-condition-modal',
     templateUrl: './trigger-condition-modal.template.html',
     styleUrls: ['./trigger-condition-modal.styles.scss']
 })
-export class TriggerConditionModalComponent extends OverlayContentComponent implements OnInit {
+export class TriggerConditionModalComponent extends BaseComponent implements OnInit {
 
-    private timers: any = {};
+    public model: any = {};
+
+    constructor(private _item: OverlayItem, private _service: ApplicationService) {
+        super();
+    }
 
     public ngOnInit() {
         this.model.form = {};
@@ -30,8 +35,8 @@ export class TriggerConditionModalComponent extends OverlayContentComponent impl
             { id: 'payload_only', name: 'Execute payload only(actions never run)' },
         ];
         this.model.time_types = ['minute', 'hour', 'day', 'week', 'month', 'year'];
-        const date = moment().month(0).date(1);
-        const end = moment(date).add(1, 'M');
+        const date = dayjs().month(0).date(1);
+        const end = date.add(1, 'M');
         this.model.days_of_month = [];
         for (; date.isBefore(end, 'd'); date.add(1, 'd')) {
             this.model.days_of_month.push(date.format('Do'));
@@ -76,12 +81,12 @@ export class TriggerConditionModalComponent extends OverlayContentComponent impl
         if (this.model.loading) { return; }
         setTimeout(() => {
             this.model.loading = true;
-            this.service.Zones.add(this.model.form).then((item) => {
-                this.service.success('Successfully added new zone');
+            this._service.Zones.add(this.model.form).then((item) => {
+                this._service.notifySuccess('Successfully added new zone');
                 this.model.id = item.id;
-                this.event('Success');
+                this._item.post('event', 'Success');
             }, () => {
-                this.service.error('Failed to add new zone');
+                this._service.notifyError('Failed to add new zone');
                 this.model.loading = false;
             });
         }, 300);
@@ -99,15 +104,15 @@ export class TriggerConditionModalComponent extends OverlayContentComponent impl
                 }
             }
             if (Object.keys(form).length <= 0) {
-                this.service.warning('No changes have been made');
+                this._service.notifyInfo('No changes have been made');
             } else {
                 this.model.loading = true;
-                this.service.Zones.update(this.model.item.id, form).then((item) => {
-                    this.service.success(`Successfully updated zone "${this.model.item.id}"`);
+                this._service.Zones.update(this.model.item.id, form).then((item) => {
+                    this._service.notifySuccess(`Successfully updated zone "${this.model.item.id}"`);
                     this.model.id = item.id;
-                    this.event('Success');
+                    this._item.post('event', 'Success');
                 }, () => {
-                    this.service.error(`Failed to update zone "${this.model.item.id}"`);
+                    this._service.notifyError(`Failed to update zone "${this.model.item.id}"`);
                     this.model.loading = false;
                 });
             }
@@ -115,3 +120,5 @@ export class TriggerConditionModalComponent extends OverlayContentComponent impl
         }, 300);
     }
 }
+
+OVERLAY_REGISTER.push({ id: 'trigger-condition', config: { content: TriggerConditionModalComponent, config: 'modal' } });

@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import { AppService } from '../../../services/app.service';
+import { ApplicationService } from '../../../services/app.service';
 
 @Component({
     selector: 'login-display',
@@ -10,7 +10,7 @@ import { AppService } from '../../../services/app.service';
 export class LoginComponent implements OnInit {
     public model: any = {};
 
-    constructor(private service: AppService) {}
+    constructor(private service: ApplicationService) {}
 
     public ngOnInit() {
         this.model.show = 'login';
@@ -19,11 +19,11 @@ export class LoginComponent implements OnInit {
     }
 
     public init() {
-        if (!this.service.Settings.setup) {
+        if (!this.service.is_ready) {
             return setTimeout(() => this.init(), 200);
         }
-        this.model.env = this.service.Settings.get('env');
-        this.model.logo = this.service.Settings.get('app.logo');
+        this.model.env = this.service.setting('env');
+        this.model.logo = this.service.setting('app.logo');
         this.service.Users.listen('state', (state) => {
             this.model.loading = false;
             if (state === 'invalid') {

@@ -2,8 +2,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { AppService } from '../../../services/app.service';
+import { BaseComponent } from '../../../shared/globals/base.component';
+import { ApplicationService } from '../../../services/app.service';
 
 @Component({
     selector: 'sidebar-menu',
@@ -13,26 +13,26 @@ import { AppService } from '../../../services/app.service';
 export class SidebarMenuComponent extends BaseComponent implements OnInit {
     public model: any = {};
 
-    constructor(private service: AppService, private router: Router) {
+    constructor(private service: ApplicationService, private router: Router) {
         super();
     }
 
     public ngOnInit() {
         this.init();
-        this.subs.obs.router_events = this.router.events.subscribe((e) => {
+        this.subscription('route', this.router.events.subscribe((e) => {
             if (e instanceof NavigationEnd) { this.checkRoute(); }
-        });
+        }));
     }
 
     public init() {
-        if (!this.service.ready()) {
+        if (!this.service.is_ready) {
             return this.timeout('init', () => this.init());
         }
-        this.model.menu = this.service.Settings.get('app.menu');
-        this.subs.obs.show = this.service.listen('APP.show_menu', (state) => {
+        this.model.menu = this.service.setting('app.menu');
+        this.subscription('show', this.service.listen('APP.show_menu', (state) => {
             this.model.show = state;
-            this.timeout('cancel_close', () => this.clearTimer('close'), 50);
-        });
+            this.timeout('cancel_close', () => this.clearTimeout('close'), 50);
+        }));
         this.checkRoute();
     }
 
@@ -72,6 +72,6 @@ export class SidebarMenuComponent extends BaseComponent implements OnInit {
     }
 
     public cancelClose() {
-        this.clearTimer('close');
+        this.clearTimeout('close');
     }
 }

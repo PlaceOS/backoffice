@@ -1,28 +1,49 @@
 import { Component, OnInit } from '@angular/core';
-import { OverlayContentComponent } from '@acaprojects/ngx-widgets';
-import { BaseService } from '../../services/data/base.service';
-import { AppService } from '../../services/app.service';
+
+import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { OverlayItem } from '@acaprojects/ngx-overlays';
+import { ApplicationService } from 'src/app/services/app.service';
+import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
+import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
 
 @Component({
     selector: 'select-item-modal',
     templateUrl: './select-item-modal.component.html',
     styleUrls: ['./select-item-modal.component.scss']
 })
-export class SelectItemModalComponent extends OverlayContentComponent<AppService> {
+export class SelectItemModalComponent extends BaseComponent implements OnInit {
+    /** Name of the item type */
+    public name: string;
+    /** Whether the item is being editing */
+    public edit: boolean;
+    /** Item to edit */
+    public item: any;
+    /** List of the form fields needed for the item */
+    public fields: ADynamicFormField[];
+    /** Whether the item request is being processed */
+    public loading: boolean;
 
-    public model: { service?: BaseService<any>, [name: string]: any } = {};
+    constructor(private _item: OverlayItem, private _service: ApplicationService) {
+        super();
+    }
 
-    public init() {
-        if (this.model.service) {
-            this.model.fields = this.model.service.getFormFields(this.model.item, this.model.edit);
-            this.model.name = this.model.service.name;
+    public get service() {
+        return this.service[this._item.data.service_name];
+    }
+
+    public ngOnInit(): void {
+        if (this.service) {
+            this.fields = this.service.getFormFields(this.item, this.edit);
+            this.name = this.service.name;
         } else {
-            this.fn.close();
+            this._item.close();
         }
     }
 
     public submit() {
-        this.model.loading = true;
-        this.event('Submit');
+        this.loading = true;
+        this._item.post('event', 'Submit');
     }
 }
+
+OVERLAY_REGISTER.push({ id: 'select-item', config: { content: SelectItemModalComponent, config: 'modal' } });

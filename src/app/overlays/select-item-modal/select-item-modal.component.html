@@ -10,13 +10,13 @@
             <engine-item-dropdown [service]="model.service" [label]="'Select ' + model.name" [(model)]="model.item"></engine-item-dropdown>
         </div>
         <div class="footer">
-            <btn (tapped)="fn.close()">Cancel</btn>
-            <btn name="inverse" type="submit" [disabled]="!model.item" (tapped)="submit()">{{ 'Add' }}</btn>
+            <button widget (tapped)="fn.close()">Cancel</button>
+            <button widget name="inverse" type="submit" [disabled]="!model.item" (tapped)="submit()">{{ 'Add' }}</button>
         </div>
     </div>
     <div class="no-item">
         <div class="icon">
-            <spinner type="circle-ring" color="rgba(0,0,0, .54)"></spinner>
+            <a-spinner circle-ring color="rgba(0,0,0, .54)"></a-spinner>
         </div>
         <div class="text">Processing request...</div>
     </div>

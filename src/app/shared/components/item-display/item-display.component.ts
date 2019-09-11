@@ -1,9 +1,9 @@
 
 import { Component, Input, TemplateRef, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
 
-import { BaseComponent } from '../base.component';
-import { AppService } from '../../../services/app.service';
-import { Utils } from '../../utility.class';
+import { ApplicationService } from '../../../services/app.service';
+import { BaseComponent } from '../../globals/base.component';
+import { copyToClipboard } from '../../utilities/general.utilities';
 
 @Component({
     selector: 'item-display',
@@ -21,7 +21,7 @@ export class ItemDisplayComponent extends BaseComponent implements OnInit, OnCha
 
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 
@@ -33,8 +33,8 @@ export class ItemDisplayComponent extends BaseComponent implements OnInit, OnCha
                 }
             }
         }
-        this.subs.obs.right = this.service.Hotkey.listen(['ArrowRight'], () => this.changeTab(1));
-        this.subs.obs.left = this.service.Hotkey.listen(['ArrowLeft'], () => this.changeTab(-1));
+        this.subscription('right', this.service.Hotkeys.listen(['ArrowRight'], () => this.changeTab(1)));
+        this.subscription('left', this.service.Hotkeys.listen(['ArrowLeft'], () => this.changeTab(-1)));
     }
 
     public ngOnChanges(changes: any) {
@@ -73,8 +73,8 @@ export class ItemDisplayComponent extends BaseComponent implements OnInit, OnCha
 
     public copy() {
         if (this.item && this.item.id) {
-            Utils.copyToClipboard(this.item.id);
-            this.service.info('ID copied to clipboard');
+            copyToClipboard(this.item.id);
+            this.service.notifyInfo('ID copied to clipboard');
         }
     }
 }

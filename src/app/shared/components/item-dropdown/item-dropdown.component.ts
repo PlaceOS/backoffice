@@ -1,7 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 
-import { BaseComponent } from '../base.component';
-import { BaseService, IBaseObject } from '../../../services/data/base.service';
+import { BaseAPIService } from '../../../services/data/base.service';
+import { BaseComponent } from '../../globals/base.component';
+import { BaseDataClass } from 'src/app/services/data/base-api.class';
 
 @Component({
     selector: 'engine-item-dropdown',
@@ -9,13 +10,13 @@ import { BaseService, IBaseObject } from '../../../services/data/base.service';
     styleUrls: ['./item-dropdown.component.scss']
 })
 export class EngineItemDropdownComponent extends BaseComponent implements OnInit, OnChanges {
-    @Input() service: BaseService<any>;
+    @Input() service: BaseAPIService<any>;
     @Input() label: string;
     @Input() model: string;
     @Output() modelChange = new EventEmitter<string>();
 
-    public items: IBaseObject[];
-    public item: IBaseObject;
+    public items: BaseDataClass[];
+    public item: BaseDataClass;
     public count = -1;
 
     public loading = false;
@@ -36,15 +37,13 @@ export class EngineItemDropdownComponent extends BaseComponent implements OnInit
         this.timeout('search', () => {
             if (this.service) {
                 if (this.loading) {
-                    this.clearTimer('loading');
                     return this.timeout('loading', () => {
-                        this.subs.timers.loading = null;
                         this.load(query);
                     });
                 }
                 this.loading = true;
                 this.service.query({ q: query, offset: '0' }).then((list) => {
-                    this.items = list;
+                    this.items = list as any[];
                     this.loading = false;
                 }, () => this.loading = false);
             }

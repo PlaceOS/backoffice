@@ -1,8 +1,8 @@
 
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { AppService } from '../../../services/app.service';
+import { BaseComponent } from '../../../shared/globals/base.component';
+import { ApplicationService } from '../../../services/app.service';
 import { IEngineDomain } from '../../../services/data/domains.service';
 
 @Component({
@@ -15,7 +15,7 @@ export class DomainUsersComponent extends BaseComponent implements OnInit, OnCha
 
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 

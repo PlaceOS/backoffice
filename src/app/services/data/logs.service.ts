@@ -2,10 +2,10 @@
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
 
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
 import { IEngineSystem } from './systems.service';
 
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
 import { IUser } from './users.service';
 
 export interface IEngineLogEntry {
@@ -29,15 +29,15 @@ export interface IEngineLogEntry {
 @Injectable({
     providedIn: 'root'
 })
-export class LogsService extends BaseService<IEngineLogEntry> {
+export class BackofficeLogsService extends BaseAPIService<IEngineLogEntry> {
 
     constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'log';
-        this.model.route = '/logs';
+        super(http);
+        this._name = 'log';
+        this._api_route = '/logs';
     }
 
-    public processItem(raw_item: any) {
+    public process(raw_item: any) {
         const item: IEngineLogEntry = {
             id: raw_item.id,
             name: raw_item.name,
@@ -51,8 +51,8 @@ export class LogsService extends BaseService<IEngineLogEntry> {
             systems: raw_item.systems,
             user: raw_item.user,
             display: {
-                started: moment(raw_item.created_at * 1000).fromNow(),
-                ended: moment(raw_item.ended_at * 1000).format('MMM d, YYYY - hh:mm A')
+                started: dayjs(raw_item.created_at * 1000).format(),
+                ended: dayjs(raw_item.ended_at * 1000).format('MMM d, YYYY - hh:mm A')
             },
             created: raw_item.created_at * 1000,
             last_checked: raw_item.last_checked * 1000,

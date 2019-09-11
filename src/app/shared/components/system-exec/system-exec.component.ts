@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, ViewChildren, ElementRef, QueryList } from '@angular/core';
 
-import { AppService } from '../../../services/app.service';
-import { BaseComponent } from '../base.component';
+import { ApplicationService } from '../../../services/app.service';
+import { BaseComponent } from '../../globals/base.component';
 
 @Component({
     selector: 'system-exec',
@@ -16,7 +16,7 @@ export class SystemExecComponent extends BaseComponent implements OnInit, OnChan
 
     @ViewChildren('argument') private arg_list: QueryList<ElementRef>;
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 
@@ -161,14 +161,14 @@ export class SystemExecComponent extends BaseComponent implements OnInit, OnChan
                 args: JSON.parse(args)
             };
             this.service.Systems.execute(this.system_id, details).then((result) => {
-                this.service.success('Command successful executed.<br>View Response?', 'View', () => {
+                this.service.notifySuccess('Command successful executed.<br>View Response?', 'View', () => {
                     // console.log('View response:', result);
                 });
             }, (err) => {
                 if (typeof err === 'string' && err.length < 64) {
-                    this.service.error(err);
+                    this.service.notifyError(err);
                 } else {
-                    this.service.error(`Executing '${this.model.fn.name}' failed.<br>View Error?`, 'View', () => {
+                    this.service.notifyError(`Executing '${this.model.fn.name}' failed.<br>View Error?`, 'View', () => {
                         // console.log('View error:', err);
                     });
                 }

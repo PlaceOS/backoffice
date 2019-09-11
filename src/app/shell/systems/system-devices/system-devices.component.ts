@@ -2,8 +2,8 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { AppService } from '../../../services/app.service';
+import { BaseComponent } from '../../../shared/globals/base.component';
+import { ApplicationService } from '../../../services/app.service';
 import { IEngineSystem } from '../../../services/data/systems.service';
 import { ContextMenuComponent } from '../../../shared/components/context-menu/context-menu.component';
 import { IEngineModule } from '../../../services/data/modules.service';
@@ -20,7 +20,7 @@ export class SystemDevicesComponent extends BaseComponent implements OnInit, OnC
 
     public context_menu = ContextMenuComponent;
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 
@@ -77,26 +77,26 @@ export class SystemDevicesComponent extends BaseComponent implements OnInit, OnC
     public power(device: IEngineModule) {
         if (device.running) {
             this.service.Modules.stop(device.id).then(() => {
-                this.service.success('Module successfully stopped');
+                this.service.notifySuccess('Module successfully stopped');
                 this.reload(device);
             }, (err) => {
                 if (typeof err === 'string' && err.length < 64) {
-                    this.service.error(err);
+                    this.service.notifyError(err);
                 } else {
-                    this.service.error(`Failed to stop device '${device.id}'.<br>View Error?`, 'View', () => {
+                    this.service.notifyError(`Failed to stop device '${device.id}'.<br>View Error?`, 'View', () => {
                         // console.log('View error:', err);
                     });
                 }
             });
         } else {
             this.service.Modules.start(device.id).then(() => {
-                this.service.success('Module successfully stopped');
+                this.service.notifySuccess('Module successfully stopped');
                 this.reload(device);
             }, (err) => {
                 if (typeof err === 'string' && err.length < 64) {
-                    this.service.error(err);
+                    this.service.notifyError(err);
                 } else {
-                    this.service.error(`Failed to stop device '${device.id}'.<br>View Error?`, 'View', () => {
+                    this.service.notifyError(`Failed to stop device '${device.id}'.<br>View Error?`, 'View', () => {
                         // console.log('View error:', err);
                     });
                 }
@@ -115,24 +115,26 @@ export class SystemDevicesComponent extends BaseComponent implements OnInit, OnC
     }
 
     public viewState(device: IEngineModule) {
-        this.service.Overlay.openModal('view-module-state', { data: { system: this.item, module: device } }, (e) => {
+        this.service.Overlay.open('view-module-state', { data: { system: this.item, module: device } }, (e) => {
             e.close();
         });
     }
 
     public reloadModule(device: IEngineModule) {
-        this.service.confirm({
-            icon: 'refresh',
-            title: 'Reload module?',
-            message: 'New driver code will be loaded and the device settings will be reloaded.',
-            accept: 'Ok',
-            cancel: true
+        this.service.Overlay.open('confirm', {
+            data: {
+                icon: 'refresh',
+                title: 'Reload module?',
+                message: 'New driver code will be loaded and the device settings will be reloaded.',
+                accept: 'Ok',
+                cancel: true
+            }
         }, (e) => {
             if (e.type === 'Accept') {
                 this.service.Drivers.reload(device.dependency.id)
                     .then(
-                        (result) => this.service.success(result.message || result),
-                        (err) => this.service.error(err.message || err)
+                        (result) => this.service.notifySuccess(result.message || result),
+                        (err) => this.service.notifyError(err.message || err)
                     );
             }
             e.close();
@@ -141,19 +143,21 @@ export class SystemDevicesComponent extends BaseComponent implements OnInit, OnC
 
     public drop(event: CdkDragDrop<any[]>) {
         if (event && event.previousIndex !== event.currentIndex) {
-            this.service.confirm({
-                icon: 'autorenew',
-                title: 'Change order?',
-                message: 'Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.',
-                accept: 'Ok',
-                cancel: true
+            this.service.Overlay.open('confirm', {
+                data: {
+                    icon: 'autorenew',
+                    title: 'Change order?',
+                    message: 'Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.',
+                    accept: 'Ok',
+                    cancel: true
+                }
             }, (e) => {
                 if (e.type === 'Accept') {
                     const list: string[] = [];
                     for (const item of this.model.devices) { list.push(item.id); }
                     moveItemInArray(list, event.previousIndex, event.currentIndex);
                     e.data.loading = true;
-                    this.service.Systems.updateItem(this.item.id, { modules: list })
+                    this.service.Systems.update(this.item.id, { modules: list })
                         .then(() => {
                             moveItemInArray(this.model.devices, event.previousIndex, event.currentIndex);
                             moveItemInArray(this.item.modules, event.previousIndex, event.currentIndex);
@@ -167,12 +171,14 @@ export class SystemDevicesComponent extends BaseComponent implements OnInit, OnC
     }
 
     public remove(device: IEngineModule) {
-        this.service.confirm({
-            icon: 'delete',
-            title: 'Remove module?',
-            message: `Remove ${device.dependency.module_name} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
-            accept: 'Ok',
-            cancel: true
+        this.service.Overlay.open('confirm', {
+            data: {
+                icon: 'delete',
+                title: 'Remove module?',
+                message: `Remove ${device.dependency.module_name} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
+                accept: 'Ok',
+                cancel: true
+            }
         }, (e) => {
             if (e.type === 'Accept') {
 
@@ -182,15 +188,15 @@ export class SystemDevicesComponent extends BaseComponent implements OnInit, OnC
     }
 
     public newDevice() {
-        this.service.Modules.create({
+        this.service.Modules.add({
             control_system: this.item,
             edge: this.service.Nodes.item(this.item.edge_id)
         }).then((item) => {
             console.log('Item:', item);
-            this.service.success('Created new device');
+            this.service.notifySuccess('Created new device');
             this.joinDevice(item.id);
         }, () => {
-            this.service.error('Error creating new device');
+            this.service.notifyError('Error creating new device');
         });
     }
 
@@ -207,11 +213,11 @@ export class SystemDevicesComponent extends BaseComponent implements OnInit, OnC
             mod_list.push(id);
         }
         const new_item = { ...this.item, modules: mod_list };
-        this.service.Systems.updateItem(this.item.id, new_item).then(() => {
-            this.service.success('Successfully added device to system');
+        this.service.Systems.update(this.item.id, new_item).then(() => {
+            this.service.notifySuccess('Successfully added device to system');
             this.load();
         }, () => {
-            this.service.error('Failed to add module to system');
+            this.service.notifyError('Failed to add module to system');
         });
     }
 }

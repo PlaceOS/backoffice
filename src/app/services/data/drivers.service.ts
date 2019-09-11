@@ -1,11 +1,11 @@
 
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
-import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
-import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
+import { CustomDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
+import { IFormFieldOptions } from '@acaprojects/ngx-dynamic-forms';
 
 export interface IEngineDriver {
     id: string;
@@ -22,13 +22,13 @@ export interface IEngineDriver {
 @Injectable({
     providedIn: 'root'
 })
-export class DriversService extends BaseService<IEngineDriver> {
+export class BackofficeDriversService extends BaseAPIService<IEngineDriver> {
 
     constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'driver';
-        this.model.singular = 'driver';
-        this.model.route = '/dependencies';
+        super(http);
+        this._name = 'driver';
+        this._singular = 'driver';
+        this._api_route = '/dependencies';
     }
 
     /**
@@ -39,7 +39,7 @@ export class DriversService extends BaseService<IEngineDriver> {
         return this.task(id, 'reload');
     }
 
-    protected processItem(raw_item: any) {
+    protected process(raw_item: any) {
         const item: IEngineDriver = {
             id: raw_item.id,
             name: raw_item.name,
@@ -55,15 +55,15 @@ export class DriversService extends BaseService<IEngineDriver> {
     }
 
     public getFormFields(item: IEngineDriver) {
-        const fields: IDynamicFieldOptions<any>[] = [
-            { key: 'zone_id', label: 'Zone', hide: !!item, control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Zones } },
-            { key: 'name', label: 'Name', control_type: 'text' },
-            { key: 'role', label: 'Role', hide: !!item, control_type: 'dropdown', options: ['Logic', 'Device', 'Service', 'SSH'] },
-            { key: 'description', label: 'Description', control_type: 'textarea' },
-            { key: 'module_name', label: 'Module Name', control_type: 'text' },
-            { key: 'default', label: 'Default', control_type: 'text' },
-            { key: 'ignore_connected', label: 'Ignore Connected', control_type: 'toggle' },
-            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent, validators: [] },
+        const fields: IFormFieldOptions<any>[] = [
+            { key: 'zone_id', label: 'Zone', hide: !!item, value: '', type: 'custom', content: CustomDropdownFieldComponent, metadata: { service: this.parent.Zones } },
+            { key: 'name', label: 'Name', value: '', type: 'input' },
+            { key: 'role', label: 'Role', hide: !!item, value: '', type: 'dropdown', metadata: { options: ['Logic', 'Device', 'Service', 'SSH'] } },
+            { key: 'description', label: 'Description', value: '', type: 'textarea' },
+            { key: 'module_name', label: 'Module Name', value: '', type: 'input' },
+            { key: 'default', label: 'Default', value: '', type: 'input' },
+            { key: 'ignore_connected', label: 'Ignore Connected', value: '', type: 'group' },
+            { key: 'settings', label: 'Settings', value: '', type: 'custom', settings: { flex: true }, content: CustomSettingsFieldComponent, validators: [] },
         ];
 
         if (item) {

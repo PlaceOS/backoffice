@@ -1,6 +1,6 @@
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { AppService } from '../../../../services/app.service';
+import { ApplicationService } from '../../../../services/app.service';
 
 @Component({
     selector: 'login-form',
@@ -13,17 +13,17 @@ export class LoginFormComponent {
 
     public model: any = {};
 
-    constructor(private service: AppService) { }
+    constructor(private service: ApplicationService) { }
 
     public ngOnInit() {
         this.init();
     }
 
     public init() {
-        if (!this.service.ready()) {
+        if (!this.service.is_ready) {
             return setTimeout(() => this.init(), 500);
         }
-        this.model.settings = this.service.Settings.get('app.login') || {};
+        this.model.settings = this.service.setting('app.login') || {};
     }
 
     public login() {

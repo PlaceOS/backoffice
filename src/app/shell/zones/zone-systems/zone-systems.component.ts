@@ -1,9 +1,9 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
 
-import { BaseComponent } from '../../../shared/components/base.component';
+import { BaseComponent } from '../../../shared/globals/base.component';
 import { IEngineZone } from '../../../services/data/zones.service';
-import { AppService } from '../../../services/app.service';
+import { ApplicationService } from '../../../services/app.service';
 
 @Component({
     selector: 'zone-systems',
@@ -15,7 +15,7 @@ export class ZoneSystemsComponent extends BaseComponent implements OnChanges {
 
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 

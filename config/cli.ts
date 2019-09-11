@@ -1,52 +1,77 @@
-import { Dashboard } from './dashboard';
-import { ng } from './cmd';
+const del = require('del');
+const gulp = require('gulp');
+const yargs = require('yargs');
+const replace = require('gulp-string-replace');
+const dayjs = require('dayjs');
+const m_fs = require('fs-extra');
 
-import * as packager from 'electron-packager';
-import * as gulp from 'gulp';
-import * as install from 'gulp-install';
-import * as runSequence from 'run-sequence';
-import * as yargs from 'yargs';
+const { version } = require('./cmd');
 
-const argv = yargs.argv;
+/** Node project configuration */
+const npmconfig = require('../package.json');
 
-const ngargs: string[] = [];
-let error = false;
+const app_path = './src/app';
 
-if (argv.prod || (argv.demo === true && argv.prod !== 'false')) { ngargs.push('--prod'); }
-if (argv.aot || (argv.demo === true && argv.aot !== 'false')) { ngargs.push('--aot'); }
-if (argv.port) { ngargs.push(`--port=${argv.port}`); }
+/** Nuke old build assets */
+gulp.task('clean', () => ((...globs: string[]) => del(globs))('dist/', 'compiled/', '_package'));
 
-Dashboard.show(argv.prod ? 'prod' : 'dev');
-
-gulp.task('build', (next) => runSequence('pre-build', 'ng:build', 'post-build', 'check:error', next));
-
-gulp.task('serve', (next) => runSequence('pre-serve', 'ng:serve', next));
-
-gulp.task('ng:build', (next) => {
-    ng('build', ...ngargs).then(() => next(), () => { error = true; next(); });
+/** Update core */
+gulp.task('update-core-version', () => {
+    let version = yargs.argv.v || npmconfig.version;
+    version = version.replace(/^v/, '');
+    if (npmconfig.name.indexOf('ngx-') === 0 && version) {
+        return m_fs.outputJson('./package.json', { ...npmconfig, core_version: version }, { spaces: 4 });
+    }
+    return m_fs.outputJson('./package.json', npmconfig, { spaces: 4 });
 });
 
-gulp.task('ng:serve', () => ng('serve', ...ngargs));
-gulp.task('check:error', (next) => { error ? next('Building Angular project failed') : next(); });
+/** Update version details to the current time and version */
+gulp.task('version:update', () => {
+    let v = yargs.argv.v || npmconfig.version;
+    const core = npmconfig.core_version;
+    v = v.replace(/^v/, '');
+    const b = dayjs()
+        .startOf('s')
+        .valueOf();
+    return gulp
+        .src([`${app_path}/shared/globals/application.ts`])
+        .pipe(replace(/export const version = '[0-9a-zA-Z.-]*'/g, `export const version = '${v}'`, { logs: { enabled: true } }))
+        .pipe(replace(/export const core_version = '[0-9a-zA-Z.-]*'/g, `export const core_version = '${core}'`, { logs: { enabled: true } }))
+        .pipe(replace(/export const build = dayjs\([0-9]*\);/g, `export const build = dayjs(${b});`, { logs: { enabled: true } }))
+        .pipe(gulp.dest(`${app_path}/shared/globals/`));
+});
 
-gulp.task('package', (next) => runSequence('build', 'install', 'package-app', next));
+/** Return version details back to the dev details */
+gulp.task('version:clean', () => {
+    const v = npmconfig.version;
+    const b = dayjs()
+        .startOf('s')
+        .valueOf();
+    return gulp
+        .src([`${app_path}/shared/globals/application.ts`])
+        .pipe(replace(/export const version = '[0-9a-zA-Z.-]*'/g, `export const version = 'local-dev'`, { logs: { enabled: true } }))
+        .pipe(replace(/export const build = dayjs\([0-9]*\);/g, `export const build = dayjs();`, { logs: { enabled: true } }))
+        .pipe(gulp.dest(`${app_path}/shared/globals/`));
+});
 
-gulp.task('install', () => gulp.src('./dist/package.json').pipe(install({ production: true })));
+/** Remove mock data from being included in builds */
+gulp.task('mocks:disable', () => {
+    return gulp
+        .src([`${app_path}/app.module.ts`])
+        .pipe(replace(/import '\.\/shared\/mocks'/g, `//import './shared/mocks'`, { logs: { enabled: true } }))
+        .pipe(gulp.dest(`${app_path}/`));
+});
 
-gulp.task('package-app', () =>
-    packager({
-        dir: './dist',
-        out: '_package',
-        overwrite: true,
-        icon: './dist/assets/icon/favicon',
-    }, (error, appPaths) => {
-        console.log('===========================================================');
-        console.log('================ Electron Packager Results ================');
-        console.log('===========================================================');
-        if (error) {
-            console.log(error);
-        } else if (appPaths) {
-            console.log(appPaths.join('\n'));
-        }
-    })
-);
+/** Add mock data to being included in builds */
+gulp.task('mocks:enable', () => {
+    return gulp
+        .src([`${app_path}/app.module.ts`])
+        .pipe(replace(/\/*import '\.\/shared\/mocks'/g, `import './shared/mocks'`, { logs: { enabled: true } }))
+        .pipe(gulp.dest(`${app_path}/`));
+});
+
+/** Run build tasks */
+gulp.task('build', gulp.series('pre-build', 'ng:build', 'post-build'));
+
+/** Run serve tasks */
+gulp.task('serve', gulp.series('pre-serve', 'ng:serve'));

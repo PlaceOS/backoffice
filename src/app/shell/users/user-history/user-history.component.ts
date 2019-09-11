@@ -1,9 +1,9 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
 
-import { BaseComponent } from '../../../shared/components/base.component';
+import { BaseComponent } from '../../../shared/globals/base.component';
 import { IUser } from '../../../services/data/users.service';
-import { AppService } from '../../../services/app.service';
+import { ApplicationService } from '../../../services/app.service';
 
 @Component({
     selector: 'user-history',
@@ -15,7 +15,7 @@ export class UserHistoryComponent extends BaseComponent implements OnChanges {
 
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 

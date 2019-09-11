@@ -1,13 +1,14 @@
 import { CommsService } from '@acaprojects/ngx-composer';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 import { Validators } from '@angular/forms';
+import { IFormFieldOptions } from '@acaprojects/ngx-dynamic-forms';
 
-import { Utils } from '../../shared/utility.class';
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
+import { filterList } from 'src/app/shared/utilities/general.utilities';
+import { toQueryString } from 'src/app/shared/utilities/api.utilities';
 
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
 
 export interface IUser {
     id: string;
@@ -33,28 +34,30 @@ export interface IUser {
 @Injectable({
     providedIn: 'root'
 })
-export class UsersService extends BaseService<IUser> {
+export class BackofficeUsersService extends BaseAPIService<IUser> {
 
     constructor(protected http: CommsService, private http_unauth: HttpClient) {
-        super();
-        this.model.name = 'user';
-        this.model.singular = 'user';
-        this.model.route = '/users';
+        super(http);
+        this._name = 'user';
+        this._singular = 'user';
+        this._api_route = '/users';
         this.set('user', null);
         this.set('state', 'loading');
     }
 
-    protected load(tries: number = 0) {
-        if (tries > 3) { return this.set('state', 'invalid'); }
-        this.set('state', 'loading');
-        this.show('current').then((user) => {
-            if (user) {
-                this.set('user', user);
-                this.set('state', 'success');
-            } else {
-                this.timeout('load', () => this.load(tries), 300 * ++tries);
-            }
-        }, () => this.timeout('load', () => this.load(tries), 300 * ++tries));
+    protected load(): Promise<void> {
+        return new Promise((resolve) => {
+            this.set('state', 'loading');
+            this.show('current').then((user) => {
+                if (user) {
+                    this.set('user', user);
+                    this.set('state', 'success');
+                    resolve();
+                } else {
+                    this.timeout('load', () => this.load().then(_ => resolve()), 600);
+                }
+            }, () => this.timeout('load', () => this.load().then(_ => resolve()), 600));
+        })
     }
 
     /**
@@ -65,8 +68,8 @@ export class UsersService extends BaseService<IUser> {
     }
 
     public setToken(token: string, expiry: number) {
-        if (!expiry) { expiry = moment().add(7, 'd').valueOf(); }
-        const path = `${location.origin}${this.parent.Settings.get('composer.route') || ''}/oauth-resp.html`;
+        if (!expiry) { expiry = dayjs().add(7, 'd').valueOf(); }
+        const path = `${location.origin}${this.parent.setting('composer.route') || ''}/oauth-resp.html`;
         if (localStorage) {
             const client_id = this.http.hash(path);
             localStorage.setItem(`${client_id}_access_token`, token);
@@ -77,7 +80,7 @@ export class UsersService extends BaseService<IUser> {
     }
 
     public getFilteredUsers(filter: string, items: IUser[] = this.list(), fields: string[] = ['name', 'email']) {
-        return this.filter(filter, fields, items);
+        return filterList(filter, items, fields);
     }
 
     /**
@@ -85,8 +88,8 @@ export class UsersService extends BaseService<IUser> {
      * @param fields Key value pairs of post parameters
      */
     public login(fields: any = {}) {
-        this.subjects.state.next('loading');
-        const query = Utils.generateQueryString(fields);
+        this._subjects.state.next('loading');
+        const query = toQueryString(fields);
         let headers = new HttpHeaders();
         headers = headers.append('Content-Type', 'application/x-www-form-urlencoded');
         this.http_unauth.post('/auth/jwt/callback', query, { headers }).subscribe((res: any) => {
@@ -97,12 +100,12 @@ export class UsersService extends BaseService<IUser> {
                 }
                 this.http.tryLogin();
             } else {
-                this.subjects.state.next('invalid');
+                this._subjects.state.next('invalid');
             }
             return;
         }, (err) => {
             if (err.status >= 400) {
-                this.subjects.state.next('error');
+                this._subjects.state.next('error');
             } else {
                 if (sessionStorage) {
                     const clientId = this.http.hash(`${location.origin}/oauth-resp.html`);
@@ -121,7 +124,7 @@ export class UsersService extends BaseService<IUser> {
      * Convert user data to local format
      * @param user User data
      */
-    protected processItem(user: any) {
+    protected process(user: any) {
         if (user) {
             const u_org = user.organisation;
             const org = {
@@ -142,7 +145,7 @@ export class UsersService extends BaseService<IUser> {
                 organisation_id: org.id,
                 organisation_name: org.name,
                 staff_code: user.staff_code,
-                gravatar_hash: this.http.hash(user.email)
+                gravatar_hash: this.http.hash(user.email || '')
             };
             if (member.id) {
                 member.image = user.image || null;
@@ -154,14 +157,14 @@ export class UsersService extends BaseService<IUser> {
     }
 
     public getFormFields(item: IUser) {
-        const fields: IDynamicFieldOptions<any>[] = [
-            { key: 'name', label: 'Name', control_type: 'text' },
-            { key: 'email', label: 'Email', type: 'email', control_type: 'text', required: true, validators: [Validators.email] },
-            { key: 'card_number', label: 'Card Number', control_type: 'text' },
-            { key: 'sys_admin', label: 'System Admin', control_type: 'toggle' },
-            { key: 'support', label: 'Support', control_type: 'toggle' },
-            { key: 'password', label: 'Password', type: 'password', control_type: 'text' },
-            { key: 'confirm_password', label: 'Confirm Password', type: 'password', match: 'password', control_type: 'text' },
+        const fields: IFormFieldOptions<any>[] = [
+            { key: 'name', label: 'Name', value: '', type: 'input' },
+            { key: 'email', label: 'Email', attributes: {type: 'email'}, value: '', type: 'input', required: true, validators: [Validators.email] },
+            { key: 'card_number', label: 'Card Number', value: '', type: 'input' },
+            { key: 'sys_admin', label: 'System Admin', value: '', type: 'checkbox' },
+            { key: 'support', label: 'Support', value: '', type: 'checkbox' },
+            { key: 'password', label: 'Password', attributes: {type: 'password'}, value: '', type: 'input' },
+            { key: 'confirm_password', label: 'Confirm Password', attributes: { type: 'password' }, metadata: { match: 'password'}, value: '', type: 'input' },
         ];
 
         if (item) {

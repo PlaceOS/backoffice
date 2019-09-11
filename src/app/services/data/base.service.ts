@@ -1,221 +1,209 @@
-
 import { CommsService } from '@acaprojects/ngx-composer';
-import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, Subscriber, Subject } from 'rxjs';
 
-import { Utils } from '../../shared/utility.class';
-import { AppService } from '../app.service';
+import { BaseDataClass } from './base-api.class';
+import { BaseClass } from '../../shared/globals/base.class';
+import { ApplicationService } from '../app.service';
+import { HashMap } from '../../shared/utilities/types.utilities';
+import { toQueryString } from '../../shared/utilities/api.utilities';
 
-import * as moment from 'moment';
-
-const FORBIDDEN: string[] = ['model', 'observers', 'subjects'];
-
-export interface IBaseObject {
-    id?: string;
-    name?: string;
-    email?: string;
-    [name: string]: any;
+export interface IEngineResponse {
+    results: HashMap[];
+    total: number
 }
 
-export class BaseService<T> {
-    public parent: AppService = null;
-    protected model: { [name: string]: any } = {};
-    protected subjects: { [name: string]: BehaviorSubject<any> } = {};
-    protected observers: { [name: string]: Observable<any> } = {};
-    protected promises: { [name: string]: Promise<any> } = {};
-    protected subs: {
-        timers: { [name: string]: number },
-        intervals: { [name: string]: number },
-        obs: { [name: string]: (Subscription | (() => void)) }
-    } = {
-        timers: {},     // Store for timers
-        intervals: {},  // Store for intervals
-        obs: {}         // Store for observables
-    };
+export class BaseAPIService<T = BaseDataClass> extends BaseClass {
+    /** Application service */
+    public parent: ApplicationService;
+    /** Display name of the service */
+    protected _name: string;
+    /** Name of a single item from the service */
+    protected _singular: string;
+    /** API Route of the service */
+    protected _api_route: string;
+    /** Map of state variables for Service */
+    protected _subjects: { [key: string]: BehaviorSubject<any> | Subject<any> } = {};
+    /** Map of observables for state variables */
+    protected _observers: { [key: string]: Observable<any> } = {};
+    /** Map of poll subscribers for API endpoints */
+    protected _subscribers: { [key: string]: Subscriber<any> } = {};
+    /** Map of promises for Service */
+    protected _promises: { [key: string]: Promise<any> } = {};
+    /** Whether the service has initialised or not */
+    protected _initialised: boolean;
+    /** Comparison function for service items */
+    protected _compare: (a: T, b: T) => boolean = (a, b) => a === b || (a as any).id === (b as any).id;
+    /** Default filter function for list method */
+    protected _list_filter: (a: T) => boolean = (a) => !!a;
 
-    protected http: CommsService;
-
-    constructor() {
-        this.set('map', {});
-        this.set<T[]>('list', []);
-        this.init();
-    }
-
-    public init(): void {
-        if (!this.parent || !this.parent.Settings.setup || (this.parent.Settings.get('mock') && !(window as any).backend.is_loaded)) {
-            setTimeout(() => this.init(), 500);
-            return;
-        }
-        this.load();
-    }
-
-    protected load() { }
-
-    get endpoint() {
-        return this.parent ? `${this.parent.api_endpoint}${this.model.route}` : `/control/api${this.model.route}`;
-    }
-
-    public get name(): string {
-        return this.model.singular;
-    }
-
-    public list(): T[] {
-        return this.get('list') || [];
-    }
-
-    public filter(filter: string, fields: string[] = ['id', 'name'], items: T[] = this.list()): T[] {
-        return Utils.filter(filter, items, fields);
-    }
-
-    public clearList(): void {
+    constructor(protected http: CommsService) {
+        super();
+        this._name = 'base';
+        this._singular = 'base';
+        this._api_route = 'base';
         this.set('list', []);
     }
 
+    /** Whether service has been initialised */
+    public get initialised() { return this._initialised; }
+
     /**
-     * Listen to changes of given property
-     * @param name Name of the property
-     * @param next Callback for changes to properties value
+     * Initailise service
      */
-    public listen(name: string, next: (data: any) => void) {
-        if (this.subjects[name]) {
-            return this.observers[name].subscribe(next);
+    public init() {
+        if (!this.parent || !this.parent.is_ready) {
+            return this.timeout('init', () => this.init());
+        }
+        this.load().then(_ => this._initialised = true);
+    }
+
+    /**
+     * Get API route for the service
+     * @param engine Whether endpoint is using the application API or engine API
+     */
+    public route(engine: boolean = false) {
+        const endpoint = this.parent ? (engine ? this.parent.engine_endpoint : this.parent.endpoint) : '/api';
+        return `${endpoint}${this._api_route}`;
+    }
+    /** API Route of the service */
+    public get api_route() {
+        return this._api_route;
+    }
+
+    /**
+     * Get a service related setting from the settings service
+     * @param key Name of the setting. i.e. nested items can be grabbed using `.` to seperate key names
+     */
+    public setting(key: string) {
+        return this.parent ? this.parent.setting(`app.${this._name.toLowerCase()}.${key}`) : null;
+    }
+
+    /**
+     * Get the current value of the named property
+     * @param name Property name
+     */
+    public get<U = any>(name: string): U {
+        return this._subjects[name] && this._subjects[name] instanceof BehaviorSubject
+            ? (this._subjects[name] as BehaviorSubject<U>).getValue()
+            : null;
+    }
+
+
+    /**
+     * Listen to value change of the named property
+     * @param name Property name
+     * @param next Callback for value changes
+     */
+    public listen<U = any>(name: string, next: (_: U) => void): Subscription {
+        return this._observers[name] ? this._observers[name].subscribe(next) : null;
+    }
+
+    /**
+     * Update the value of the named property
+     * @param name Property name
+     * @param value New value
+     */
+    protected set<U = any>(name: string, value: U): void {
+        if (!this._subjects[name]) {
+            this._subjects[name] = new BehaviorSubject<U>(value);
+            this._observers[name] = this._subjects[name].asObservable();
         } else {
-            // Create new variable to store property's value
-            this.subjects[name] = new BehaviorSubject<any>(this[name] instanceof Function ? null : this[name]);
-            this.observers[name] = this.subjects[name].asObservable();
-            // Create raw getter and setter for property
-            if (!(this[name] instanceof Function)) {
-                Object.defineProperty(this, name, {
-                    get: () => this.get(name),
-                    set: (v: any) => this.set(name, v)
-                });
-            }
-            return this.observers[name].subscribe(next);
+            this._subjects[name].next(value);
         }
     }
 
     /**
-     * Get the current value of the given property
-     * @param name Name of the property
+     * Get list of loaded items
+     * @param filterFn Function for filtering the list
      */
-    public get(name: string) {
-        return this.subjects[name] ? this.subjects[name].getValue() : null;
+    public list(filterFn: (a: T) => boolean = this._list_filter): T[] {
+        const list = this.get('list') || [];
+        return list.reduce((a, i) => { if (filterFn(i)) { a.push(i); } return a; }, []);
     }
 
     /**
-     * Get item from list with the specific ID
-     * @param id ID to search for
+     * Get item with the given id from the loaded items
+     * @param id ID of the item
      */
     public item(id: string): T {
-        const list = this.list();
-        for (const i of list) {
-            const item = i as IBaseObject;
-            if (item.id === id || item.name === id || item.email === id) {
-                return item as T;
-            }
-        }
-        return null;
+        const list = this.get('list') || [];
+        return list.find(i => i.id === id || i.email === id);
     }
 
     /**
-     * Get observable for property
-     * @param name Name of the property. Possible values bookings, new_booking, and update_booking
+     * Query the index of the API route associated with this service
+     * @param query_params Map of query paramaters to add to the request URL
      */
-    public observer(name: string) {
-        return this.subjects[name] ? this.observers[name] : null;
-    }
-
-    /**
-     * Get item listing
-     * @param fields Key, value pairs for query parameters
-     * @param tries Retry value. DON'T USE
-     */
-    public query(fields?: { [name: string]: any }): Promise<T[]> {
-        const query = Utils.generateQueryString(fields);
-        let update = true;
-        if (fields && !fields.update) {
-            for (const f in fields) {
-                if (fields.hasOwnProperty(f) && f !== 'offset' && f !== 'limit') {
-                    update = false;
-                    break;
-                }
-            }
+    public query(query_params: HashMap = { update_list: true }): Promise<T[] | HashMap[]> {
+        let engine = false;
+        let cache = 1000;
+        if (query_params) {
+            engine = !!query_params.engine;
+            delete query_params.engine;
+            cache = query_params.cache || 1000;
+            delete query_params.cache;
         }
+        const query = toQueryString(query_params);
         const key = `query|${query}`;
-        if (!this.promises[key]) {
-            this.promises[key] = new Promise((resolve, reject) => {
-                const url = `${this.endpoint}${query ? '?' + query : ''}`;
+        if (!this._promises[key]) {
+            this._promises[key] = new Promise((resolve, reject) => {
+                const url = `${this.route(engine)}${query ? '?' + query : ''}`;
+                let result: T[] | HashMap[] = [];
                 this.http.get(url).subscribe(
-                    (resp: any) => {
-                        const item_list = this.processList(resp.results ? resp.results || resp : resp);
-                        if (update) {
-                            this.updateList(item_list);
-                            this.set('total', resp.total || item_list.length);
-                        } else {
-                            this.set(`total_${query}`, resp.total || item_list.length);
+                    (d: IEngineResponse | HashMap[]) => {
+                        result = d && d instanceof Array
+                            ? d.map(i => this.process(i))
+                            : (d && !(d instanceof Array) && d.results
+                                ? d.results as HashMap[]
+                                : []);
+                    }, e => {
+                        reject(e);
+                        this._promises.new_item = null;
+                    },
+                    () => {
+                        if ((!query || (query_params && query_params.update_list)) && result.length > 0 && result[0] instanceof BaseDataClass) {
+                            this.set('list', this.updateList(this.get('list'), result as T[]));
                         }
-                        resolve(item_list);
-                        setTimeout(() => this.promises[key] = null, 5 * 1000);
-                    }, (err) => {
-                        this.promises[key] = null;
-                        reject(err);
-                    });
+                        resolve(result);
+                        this.timeout(key, () => (this._promises[key] = null), cache);
+                    }
+                );
             });
         }
-        return this.promises[key];
-    }
-    /**
-     * Get item with the given ID
-     * @param id ID to get the data for
-     * @param fields Key, value pairs for query parameters
-     */
-    public show(id: string, fields?: { [name: string]: any }): Promise<T> {
-        const key = `show|${id}`;
-        if (!this.promises[key]) {
-            this.promises[key] = new Promise((resolve, reject) => {
-                const control = fields && fields.control;
-                if (control) { delete fields.control; }
-                const query = Utils.generateQueryString(fields) || (fields ? 'complete=true' : '');
-                const url = `${control ? ('/control/api' + this.model.route) : this.endpoint}/${encodeURIComponent(id)}${query ? '?' + query : ''}`;
-                this.http.get(url).subscribe(
-                    (resp: any) => {
-                        const item = this.processItem(resp, id);
-                        resolve(item);
-                        setTimeout(() => this.promises[key] = null, 2 * 1000);
-                    }, (err) => {
-                        this.promises[key] = null;
-                        reject(err);
-                    });
-            });
-        }
-        return this.promises[key];
+        return this._promises[key];
     }
 
     /**
-     * Add new item with the given parameters
-     * @param data
+     * Query the API route for a sepecific item
+     * @param id ID of the item
+     * @param query_params Map of query paramaters to add to the request URL
      */
-    public add(data: T): Promise<T> {
-        const key = `add|${moment().seconds(0).unix()}`;
-        if (!this.promises[key]) {
-            this.promises[key] = new Promise((resolve, reject) => {
-                const formatted_data = this.format(data);
-                const url = `${this.endpoint}`;
-                this.http.post(url, formatted_data).subscribe(
-                    (resp: any) => {
-                        const item = this.processItem(resp);
-                        this.updateList([item]);
-                        resolve(item);
-                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `created_${this.model.name}`);
-                        setTimeout(() => this.promises[key] = null, 2 * 1000);
-                    }, (err) => {
-                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `create_${this.model.name}_fail`);
-                        this.promises[key] = null;
-                        reject(err);
-                    });
+    public show(id: string, query_params: HashMap = {}): Promise<T> {
+        let engine = false;
+        if (query_params) {
+            engine = !!query_params.engine;
+            delete query_params.engine;
+        }
+        const query = toQueryString(query_params);
+        const key = `show|${id}|${query}`;
+        if (!this._promises[key]) {
+            this._promises[key] = new Promise<T>((resolve, reject) => {
+                const url = `${this.route(engine)}${query ? '?' + query : ''}`;
+                let result: T = null;
+                this.http.get(url).subscribe(
+                    d => result = this.process(d),
+                    e => {
+                        reject(e);
+                        this._promises[key] = null;
+                    },
+                    () => {
+                        resolve(result);
+                        this.timeout(key, () => (this._promises[key] = null), 1000);
+                    }
+                );
             });
         }
-        return this.promises[key];
+        return this._promises[key];
     }
 
     /**
@@ -224,334 +212,252 @@ export class BaseService<T> {
      */
     public create(prefill?: { [name: string]: any }): Promise<T> {
         return new Promise((resolve, reject) => {
-            this.parent.Overlay.openModal(`item-view`, { data: { service: this, item: prefill } }, (e) => {
+            this.parent.Overlay.open(`item-view`, { data: { service: this, item: prefill } }, (e) => {
                 if (e.type === 'Success') {
                     resolve(e.data.result);
                 } else {
                     reject();
                 }
-                e.close();
             });
         });
     }
 
     /**
-     * Open modal for edit item
-     * @param data
+     * Make post request for a new item to the service
+     * @param form_data Data to post to the server
+     * @param query_params Map of query paramaters to add to the request URL
      */
-    public edit(id: string) {
-        return new Promise((resolve, reject) => {
-            const item = this.item(id);
-            if (!item) { return; }
-            this.parent.Overlay.openModal(`item-view`, { data: { service: this, edit: true, item } }, (e) => {
-                if (e.type === 'Success') {
-                    return resolve(e.data.result);
-                }
-                e.close();
-                reject();
-            });
-        });
-    }
-
-    /**
-     * Update item with given ID
-     * @param id ID of the item
-     * @param data New values to replace on the old item
-     */
-    public update(id: string, data: T, link?: any): Promise<T> {
-        return new Promise((resolve, reject) => {
-            if (!id) { return reject('Invalid ID given'); }
-            this.parent.confirm(this.confirmSettings('update', data), (event) => {
-                if (event.type === 'Accept') {
-                    this.updateItem(id, data).then((d) => resolve(d), (e) => reject(e));
-                } else { reject('User cancelled'); }
-                event.close();
-            });
-        });
-    }
-
-    public updateItem(id: string, data: T): Promise<T> {
-        if (!id) { return new Promise((rs, rj) => rj('Invalid ID given')); }
-        const key = `update|${id || moment().seconds(0).unix()}`;
-        if (!this.promises[key]) {
-            this.promises[key] = new Promise((resolve, reject) => {
-                const formatted_data = this.format(data);
-                const url = `${this.endpoint}/${id}`;
-                this.http.put(url, formatted_data).subscribe(
-                    (resp: any) => {
-                        const item = this.processItem(resp);
-                        resolve(item);
-                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `updated_${this.model.name}`);
-                        setTimeout(() => this.promises[key] = null, 2 * 1000);
-                    }, (err) => {
-                        this.promises[key] = null;
-                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `update_${this.model.name}_fail`);
-                        reject(err);
-                    });
-            });
-        }
-        return this.promises[key];
-    }
-
-    /**
-     * Remove item with the given ID
-     * @param id ID of the item
-     */
-    public remove(id: string, link?: any) {
-        return new Promise((resolve, reject) => {
-            if (!id) { return reject('Invalid ID given'); }
-            const item = this.item(id) || { id, name: id };
-            this.parent.confirm(this.confirmSettings('delete', item), (event) => {
-                if (event.type === 'Accept') {
-                    this.deleteItem(id).then((d) => resolve(d), (e) => reject(e));
-                } else {
-                    resolve();
-                }
-                event.close();
-            });
-        });
-    }
-
-    /**
-     * Alias for the remove method
-     * @param id
-     */
-    public delete(id: string) {
-        return this.remove(id);
-    }
-
-    protected deleteItem(id: string) {
-        const key = `delete|${id || moment().seconds(0).unix()}`;
-        if (!this.promises[key]) {
-            this.promises[key] = new Promise((resolve, reject) => {
-                const url = `${this.endpoint}/${id}`;
-                this.http.delete(url).subscribe(
-                    (resp: any) => {
-                        this.removeListItem(id);
-                        resolve(id);
-                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `removed_${this.model.name}`);
-                        setTimeout(() => this.promises[key] = null, 2 * 1000);
-                    }, (err) => {
-                        this.promises[key] = null;
-                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `remove_${this.model.name}_fail`);
-                        reject(err);
-                    });
-            });
-        }
-        return this.promises[key];
-    }
-
-    /**
-     * Execute task on the the given module
-     * @param id Module ID
-     * @param task Name of the task to execute
-     */
-    public task(id: string, task: string, fields?: { [name: string]: any }) {
-        const key = `task|${id}|${task}`;
-        if (!this.promises[key]) {
-            this.promises[key] = new Promise((resolve, reject) => {
-                const url = `${this.endpoint}/${id}/${task}`;
-                const body: any = {
-                    id,
-                    _task: task
-                };
-                if (fields) {
-                    for (const k in fields) {
-                        if (fields.hasOwnProperty(k)) {
-                            body[k] = fields[k];
-                        }
+    public add(form_data: HashMap, query_params: HashMap = {}): Promise<T> {
+        if (!this._promises.new_item) {
+            this._promises.new_item = new Promise<T>((resolve, reject) => {
+                const query = toQueryString(query_params);
+                const url = `${this.route(query_params.engine)}${query ? '?' + query : ''}`;
+                let result: T = null;
+                this.http.post(url, form_data).subscribe(
+                    d => (result = this.process(d)),
+                    e => {
+                        reject(e);
+                        this.analyticsEvent(`create-${this._name.toLowerCase()}-failed`);
+                        this._promises.new_item = null;
+                    },
+                    () => {
+                        resolve(result);
+                        this.set('list', this.updateList(this.get('list'), [result]));
+                        this.analyticsEvent(`create-${this._name.toLowerCase()}-success`);
+                        this._promises.new_item = null;
                     }
-                }
-                this.http.post(url, body).subscribe(
-                    (resp: any) => {
-                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `${this.model.name}_task_${task}`);
-                        resolve(resp || {});
-                        setTimeout(() => this.promises[key] = null, 200);
-                    }, (err) => {
-                        this.promises[key] = null;
-                        this.parent.Analytics.event((this.model.name || '').toUpperCase(), `${this.model.name}_task_${task}_failed`);
-                        reject(err instanceof Array ? err[0] : err);
-                    });
+                );
             });
         }
-        return this.promises[key];
+        return this._promises.new_item;
     }
 
     /**
-     * Adds new items and updates existing items in the item list store
-     * @param input_list List of new/updated items
+     * Perform API task for the given item ID
+     * @param id ID of the item
+     * @param task_name Name of the task
+     * @param form_data Map of data to pass to the API
      */
-    protected updateList(input_list: T[]): void {
-        // Get current list
-        const item_list = this.list();
-        // Add any new items to the list
-        for (const input of input_list) {
-            let found = false;
-            for (const i of item_list) {
-                const item = i as IBaseObject;
-                if (item.id === (input as IBaseObject).id) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                item_list.push(input);
-            }
+    public task<U = any>(id: string, task_name: string, form_data: HashMap = {}): Promise<U> {
+        const query = toQueryString(form_data);
+        const key = `task|${id}|${task_name}|${query}`;
+        if (!this._promises[key]) {
+            this._promises[key] = new Promise<U>((resolve, reject) => {
+                const post_data = { ...form_data, id, _task: task_name };
+                const url = `${this.route(form_data.engine)}/${id}/${task_name}`;
+                let result = null;
+                this.http.post(url, post_data).subscribe(
+                    d => result = d,
+                    e => {
+                        reject(e);
+                        this.analyticsEvent(`${this._name.toLowerCase()}-task-${task_name}-failed`, id);
+                        this._promises[key] = null;
+                    },
+                    () => {
+                        resolve(result as U);
+                        this.analyticsEvent(`${this._name.toLowerCase()}-task-${task_name}-success`, id);
+                        this.timeout(key, () => this._promises[key] = null, 1000);
+                    }
+                );
+            });
         }
-        // Store changes to the list
-        this.updateHashMap(item_list);
-        this.set('list', item_list);
-    }
-
-    protected updateHashMap(list: T[]): void {
-        const map: any = {};
-        for (const item of list) {
-            map[(item as IBaseObject).id] = item;
-        }
-        this.set('map', map);
-    }
-
-    protected processList(input_list: any[]): T[] {
-        const output_list: T[] = [];
-        for (const key in (input_list || [])) {
-            if (input_list.hasOwnProperty(key) && input_list[key]) {
-                const out = this.processItem(input_list[key], key);
-                if (out) { output_list.push(out); }
-            }
-        }
-        return output_list;
-    }
-
-    protected processItem(raw_item: any, id?: string): T {
-        return raw_item;
-    }
-
-    protected format(data: T) {
-        const formatted_data = data;
-        return formatted_data;
+        return this._promises[key];
     }
 
     /**
-     * Set the value of the given property
-     * @param name Name of the property
-     * @param value New value to assign to the property
+     * Setup a poller for an API endpoint
+     * @param id Show request ID. Leave blank to poll on the query endpoint
+     * @param query_params Map of query paramaters to add to the polled URL
+     * @param delay Delay between each poll event
      */
-    protected set<U>(name: string, value: U) {
-        if (this.subjects[name]) {
-            this.subjects[name].next(value);
+    public poll(id?: string, query_params: HashMap = {}, delay: number = 5000): Observable<T | T[]> {
+        const key = `poll|${id || ''}|${toQueryString(query_params) || ''}`;
+        this.stopPoll(id, query_params);
+        this._subjects[key] = new Subject<T | T[]>();
+        this._observers[key] = this._subjects[key].asObservable();
+        const sub = this._subjects[key];
+        const query = { ...(query_params || {}), _poll: true };
+        if (id) {
+            this.show(id, query).then((d) => sub.next(d), e => sub.error(e));
+            this.interval(key, () => {
+                this.show(id, query).then((d) => sub.next(d), e => sub.error(e));
+            }, delay);
         } else {
-            // Create new variable to store property's value
-            this.subjects[name] = new BehaviorSubject<U>(value);
-            this.observers[name] = this.subjects[name].asObservable();
-            // Create raw getter and setter for property
-            if (!(this[name] instanceof Function)) {
-                Object.defineProperty(this, name, {
-                    get: (): U => this.get(name),
-                    set: (v: U) => this.set<U>(name, v)
-                });
-            }
+            this.query(query).then((d) => sub.next(d), e => sub.error(e));
+            this.interval(key, () => {
+                this.query(query).then((d) => sub.next(d), e => sub.error(e));
+            }, delay);
+        }
+        return this._observers[key];
+    }
+
+    /**
+     * Destroy poller
+     * @param id
+     * @param query_params
+     */
+    public stopPoll(id?: string, query_params: HashMap = {}) {
+        const key = `poll|${id || ''}|${toQueryString(query_params) || ''}`;
+        if (this._subjects[key]) {
+            this._subjects[key].complete();
+            this._subjects[key] = null;
+            this._observers[key] = null;
         }
     }
 
     /**
-     * Generate settings for confirm modal
-     * @param key
-     * @param fields
+     * Make put request for changes to the item with the given id
+     * @param id ID of the item being updated
+     * @param form_data New values for the item
+     * @param query_params Map of query paramaters to add to the request URL
      */
-    protected confirmSettings(key: string, fields: { [name: string]: any } = {}) {
-        const settings = {
-            title: '',
-            message: '',
-            icon: '',
-            link: fields.link,
-            accept: 'Ok',
-            cancel: true
-        };
-        switch (key) {
-            case 'delete':
-                settings.title = `Delete ${this.model.name}`;
-                settings.message = `Are you sure you wish to delete ${this.model.name} '${fields.name || fields.title || ''}'?`;
-                settings.icon = 'delete';
-                break;
-            case 'update':
-                settings.title = `Update ${this.model.name}`;
-                settings.message = `Update ${this.model.name} '${fields.name || fields.title || ''}'?`;
-                settings.icon = 'cloud_upload';
-                break;
-            case 'add':
-                settings.title = `New ${this.model.name}`;
-                settings.message = `Create new ${this.model.name} '${fields.name || fields.title || ''}'?`;
-                settings.icon = 'add';
-                break;
+    public update(id: string, form_data: HashMap, query_params: HashMap = {}): Promise<T> {
+        const key = `update|${id}`;
+        if (!this._promises[key]) {
+            this._promises[key] = new Promise<T>((resolve, reject) => {
+                const query = toQueryString(query_params);
+                const url = `${this.route(query_params.engine)}/${id}${query ? '?' + query : ''}`;
+                let result: T = null;
+                this.http.put(url, form_data).subscribe(
+                    d => (result = this.process(d)),
+                    e => {
+                        reject(e);
+                        this.analyticsEvent(`update-${this._name.toLowerCase()}-failed`, id);
+                        this._promises[key] = null;
+                    },
+                    () => {
+                        resolve(result);
+                        this.set('list', this.updateList(this.removeItem(this.get('list'), { id } as any), [result]));
+                        this.analyticsEvent(`update-${this._name.toLowerCase()}-success`, id);
+                        this._promises[key] = null;
+                    }
+                );
+            });
         }
-        return settings;
+        return this._promises[key];
     }
 
-    protected removeListItem(id: string): void {
-        // Get current list
-        const item_list = this.list();
-        // Remove matching item from the list
-        for (const i of item_list) {
-            const item = i as IBaseObject;
-            if (item.id === id) {
-                item_list.splice(item_list.indexOf(i), 1);
-                break;
+    /**
+     * Make delete request for the given item
+     * @param id ID of item
+     */
+    public delete(id: string): Promise<void> {
+        const key = `delete|${id}`;
+        if (!this._promises[key]) {
+            this._promises[key] = new Promise<void>((resolve, reject) => {
+                const url = `${this.route()}/${id}`;
+                this.http.delete(url).subscribe(
+                    _ => null,
+                    e => reject(e),
+                    () => {
+                        this.set('list', this.removeItem(this.get('list'), ({ id } as any)));
+                        resolve();
+                    }
+                );
+            });
+        }
+        return this._promises[key];
+    }
+
+    /**
+     * Add new API item from another service or API class
+     * @param id ID of the item/or service adding the new item
+     * @param data Raw API data for the new item
+     * @param type Adder type
+     */
+    public addFrom(id: string, data: HashMap, type: 'class' | 'service' | 'other' = 'other'): string {
+        const new_item = this.process(data);
+        this.set('list', this.updateList(this.get('list'), [new_item]));
+        return (new_item as any).id;
+    }
+
+    /**
+     * Remove items with the given IDs from the list
+     * @param id ID of the item/or service remove the list of items
+     * @param remove_ids List of item IDs to remove
+     * @param type Remover type
+     */
+    public removeFrom(id: string, remove_ids: string[], type: 'class' | 'service' | 'other' = 'other') {
+
+    }
+
+    /**
+     * Load initial data for the service
+     */
+    protected load(): Promise<void> {
+        return new Promise<void>((resolve) => {
+            resolve();
+        });
+    }
+
+    /**
+     * Post analytics event for this service
+     * @param action Name of the action to post
+     */
+    protected analyticsEvent(action: string, label?: string) {
+        if (this.parent && this.parent.Analytics) {
+            this.parent.Analytics.event(this._name, `${this.parent.name.toLowerCase()}-${action}`, label);
+        }
+    }
+
+    /**
+     * Convert raw API data into a valid API Object
+     * @param raw_item Raw API data
+     */
+    protected process(raw_item: HashMap): T {
+        return raw_item as T;
+    }
+
+    /**
+     * Update recorded list of items
+     * @param old_list Old list of items
+     * @param list List of updated items
+     * @param compareFn Function to compare items to remove duplicates
+     */
+    protected updateList(old_list: T[], list: T[], compareFn: (a: T, b: T) => boolean = this._compare): T[] {
+        if (!list || list.length === 0) { return old_list; }
+        const new_list: T[] = [];
+        const mixed_list = [...list, ...old_list];
+        if (!compareFn) { compareFn = this._compare; }
+        for (const item of mixed_list) {
+            const found = new_list.find(i => compareFn(i, item));
+            if (!found) {
+                new_list.push(item);
             }
         }
-        this.set('list', item_list);
-        // Remove matching item from map
-        const map = this.get('map');
-        if (map[id]) { delete map[id]; }
-        this.set('map', map);
+        return new_list;
     }
 
-    public timeout(name: string, fn: () => void, delay: number = 300) {
-        this.clearTimer(name);
-        if (!(fn instanceof Function)) { return; }
-        this.subs.timers[name] = <any>setTimeout(() => fn(), delay);
-    }
-
-    public clearTimer(name: string): void {
-        if (this.subs.timers[name]) {
-            clearTimeout(this.subs.timers[name]);
-            this.subs.timers[name] = null;
-        }
-    }
-
-    public interval(name: string, fn: () => void, delay: number = 300) {
-        this.clearInterval(name);
-        if (!(fn instanceof Function)) { return; }
-        this.subs.intervals[name] = <any>setInterval(() => fn(), delay);
-    }
-
-    public clearInterval(name: string): void {
-        if (this.subs.intervals[name]) {
-            clearInterval(this.subs.intervals[name]);
-            this.subs.intervals[name] = null;
-        }
-    }
-
-    public getFormFields(item: T, edit: boolean = false): IDynamicFieldOptions<any>[] {
-        return [];
-    }
-
-    public updateFields(fields: IDynamicFieldOptions<any>[], item: T) {
-        if (!item) { return; }
-        for (const i of fields) {
-            if (i.key && item[i.key]) {
-                console.log('Key:', i.key);
-                i.value = item[i.key];
-                if (item[i.key] && i.key === 'control_system') {
-                    i.format = (v) => item[i.key].name;
-                } else if (item[i.key] && i.key === 'edge') {
-                    i.format = (v) => item[i.key].name;
-                }
-                if (i.format) {
-                    console.log('Format', i.key, i.format(i.value));
-                }
-            } else if (i.control_type === 'group') {
-                this.updateFields(i.children, item);
-            }
-        }
+    /**
+     * Remove the given item from the given list
+     * @param list List of items
+     * @param item Item to remove
+     * @param compareFn Function to compare items
+     */
+    protected removeItem(list: T[], item: T, compareFn?: (a: T, b: T) => boolean) {
+        const new_list = [];
+        if (!compareFn) { compareFn = this._compare; }
+        list.forEach(i => compareFn(item, i) ? null : new_list.push(i));
+        return new_list;
     }
 }

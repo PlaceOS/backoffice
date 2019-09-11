@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
 
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
 
 export interface IEngineAuthSource {
     id: string;
@@ -24,19 +24,19 @@ export interface IEngineAuthSource {
 @Injectable({
     providedIn: 'root'
 })
-export class AuthSourcesService extends BaseService<IEngineAuthSource> {
+export class BackofficeAuthSourcesService extends BaseAPIService<IEngineAuthSource> {
 
     constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'authentication source';
-        this.model.route = '/authsources';
+        super(http);
+        this._name = 'authentication source';
+        this._api_route = '/authsources';
     }
 
-    get endpoint() {
-        return `/auth/api${this.model.route}`;
+    public route(engine?: boolean): string {
+        return `/auth/api${this._api_route}`;
     }
 
-    protected processItem(raw_item: any) {
+    protected process(raw_item: any) {
         const item: IEngineAuthSource = {
             id: raw_item.id,
             uid: raw_item.uid,

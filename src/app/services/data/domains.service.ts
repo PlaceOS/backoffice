@@ -1,11 +1,11 @@
 
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
-import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
 
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
-import { FormValidators } from '../../shared/form-validators.class';
+import { IFormFieldOptions } from '@acaprojects/ngx-dynamic-forms';
+import { Validators } from '@angular/forms';
 
 export interface IEngineDomain {
     id: string;
@@ -23,17 +23,17 @@ export interface IEngineDomain {
 @Injectable({
     providedIn: 'root'
 })
-export class DomainsService extends BaseService<IEngineDomain> {
+export class BackofficeDomainsService extends BaseAPIService<IEngineDomain> {
 
     constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'domain';
-        this.model.singular = 'domain';
-        this.model.route = '/domains';
+        super(http);
+        this._name = 'domain';
+        this._singular = 'domain';
+        this._api_route = '/domains';
     }
 
-    get endpoint() {
-        return `/auth/api${this.model.route}`;
+    public route() {
+        return `/auth/api${this._api_route}`;
     }
 
     protected processItem(raw_item: any) {
@@ -53,24 +53,26 @@ export class DomainsService extends BaseService<IEngineDomain> {
     }
 
     public getFormFields(item: IEngineDomain) {
-        const fields: IDynamicFieldOptions<any>[] = [
+        const fields: IFormFieldOptions[] = [
             {
-                control_type: 'group',
+                key: 'details_group',
+                type: 'group',
                 children: [
-                    { key: 'name', label: 'Name', control_type: 'text' },
-                    { key: 'domain', label: 'Domain', control_type: 'text', required: true, validators: [FormValidators.url] },
-                ]
+                    { key: 'name', label: 'Name', type: 'input', value: '' },
+                    { key: 'domain', label: 'Domain', type: 'input', required: true, validators: [Validators.pattern('')], value: '' },
+                ], value: ''
             },
-            { key: 'login_url', label: 'Login URL', control_type: 'text', validators: [FormValidators.url] },
-            { key: 'logout_url', label: 'Logout URL', control_type: 'text', validators: [FormValidators.url] },
+            { key: 'login_url', label: 'Login URL', type: 'input', validators: [Validators.pattern('')], value: '' },
+            { key: 'logout_url', label: 'Logout URL', type: 'input', validators: [Validators.pattern('')], value: '' },
             {
-                control_type: 'group',
+                key: 'config_group',
+                type: 'group',
                 children: [
-                    { key: 'internals', label: 'Internals', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent },
-                    { key: 'config', label: 'Config', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent },
-                ]
+                    { key: 'internals', label: 'Internals', type: 'custom', settings: { flex: true }, content: CustomSettingsFieldComponent, value: '' },
+                    { key: 'config', label: 'Config', type: 'custom', settings: { flex: true}, content: CustomSettingsFieldComponent, value: '' },
+                ], value: ''
             },
-            { key: 'description', label: 'Description', control_type: 'textarea' }
+            { key: 'description', label: 'Description', type: 'textarea', value: '' }
         ];
 
         if (item) {

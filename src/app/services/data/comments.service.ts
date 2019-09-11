@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 
 import { IUser } from './users.service';
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
 
 export interface IComment {
     id: string;
@@ -24,7 +24,7 @@ export interface IComment {
 @Injectable({
     providedIn: 'root'
 })
-export class CommentsService extends BaseService<IComment> {
+export class BackofficeCommentsService extends BaseAPIService<IComment> {
 
     /**
      * Task for adding the like state to comment
@@ -58,7 +58,7 @@ export class CommentsService extends BaseService<IComment> {
      * @param list Raw item data from server
      */
     protected processList(list: any[]) {
-        const output_list = super.processList(list);
+        const output_list = list.map(i => this.process(i));
         this.processReplies(output_list);
         return output_list;
     }
@@ -68,7 +68,7 @@ export class CommentsService extends BaseService<IComment> {
      * @param cmt Raw comment data
      * @return
      */
-    protected processItem(cmt: any): IComment {
+    protected process(cmt: any): IComment {
         const comment: IComment = {
             id: cmt.id,
             channel_id: cmt.channel_id,

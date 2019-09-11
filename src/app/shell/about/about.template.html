@@ -17,7 +17,7 @@
                         <div class="label">Backoffice Version</div>
                         <div class="value">{{model.backoffice_version || '0.0.0'}}</div>
                         <div class="button" *ngIf="model.changelog">
-                            <btn name="fill-width" (tapped)="changelog(model.changelog)">View Changelog</btn>
+                            <button widget name="fill-width" (tapped)="changelog(model.changelog)">View Changelog</button>
                         </div>
                     </div>
                     <div class="field">
@@ -28,7 +28,7 @@
                         <div class="label">Engine Version</div>
                         <div class="value">{{model.engine_version || '0.0.0'}}</div>
                         <div class="button" *ngIf="model.engine_changelog">
-                            <btn name="full-width" (tapped)="changelog(model.engine_changelog)">View Changelog</btn>
+                            <button widget name="full-width" (tapped)="changelog(model.engine_changelog)">View Changelog</button>
                         </div>
                     </div>
                 </div>

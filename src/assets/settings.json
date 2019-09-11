@@ -1,6 +1,4 @@
 {
-    "version": "0.1.0",
-    "build": "local-dev",
     "env": "dev",
     "debug": true,
     "composer": {
@@ -10,102 +8,71 @@
         "use_domain": true,
         "local_login": false
     },
-    "licenses": {
-        "systems": 100
-    },
     "app": {
-        "title": "ACA Engine",
-        "name": "ACA Engine",
-        "description": "ACA Engine Frontend made in Angular 6+",
-        "short_name": "Engine",
-        "code": "ENGINE",
-        "login": {
-            "forgot": false
-        },
-        "analytics": {
-            "enabled": false,
-            "tracking_id": ""
-        },
+        "title": "ACA Booking UI",
+        "name": "ACA Booking UI",
+        "description": "ACA Booking UI written with Angular Framework",
+        "short_name": "Bookings",
+        "code": "BOOK",
         "logo": {
             "type": "img",
             "src": "assets/img/logo.svg",
+            "inverse": "assets/img/logo-inverse.svg",
             "background": ""
         },
-        "copyright": "Copyright 2018 ACA Projects",
-        "global_search": true,
-        "menu": {
-            "list": [
+        "topbar": false,
+        "booking": {
+            "title_prefix": ""
+        },
+        "rooms": {
+            "enabled": false
+        },
+        "users": {
+            "enabled": false,
+            "search": false
+        },
+        "select": {
+            "header": "Please select a space"
+        },
+        "bookings": {
+            "fields": [
                 {
-                    "id": "systems",
-                    "name": "Systems",
-                    "icon": {
-                        "class": "material-icons",
-                        "value": "account_balance"
-                    }
+                    "key": "space",
+                    "type": "input",
+                    "label": "Space",
+                    "hide": true
                 },
                 {
-                    "id": "devices",
-                    "name": "Devices",
-                    "icon": {
-                        "class": "material-icons",
-                        "value": "devices_other"
-                    }
+                    "key": "host",
+                    "type": "custom",
+                    "label": "Host"
                 },
                 {
-                    "id": "zones",
-                    "name": "Zones",
-                    "icon": {
-                        "class": "material-icons",
-                        "value": "device_hub"
-                    }
+                    "key": "date",
+                    "type": "custom",
+                    "label": "Date",
+                    "hide": true
                 },
                 {
-                    "id": "drivers",
-                    "name": "Drivers",
-                    "icon": {
-                        "class": "material-icons",
-                        "value": "settings"
-                    }
+                    "key": "period",
+                    "type": "group",
+                    "children": [
+                        {
+                            "key": "time",
+                            "type": "custom",
+                            "label": "Start time"
+                        },
+                        {
+                            "key": "duration",
+                            "type": "custom",
+                            "label": "Duration"
+                        }
+                    ]
                 },
                 {
-                    "id": "triggers",
-                    "name": "Triggers",
-                    "icon": {
-                        "class": "material-icons",
-                        "value": "timer"
-                    }
-                },
-                {
-                    "id": "metrics",
-                    "name": "Metrics",
-                    "icon": {
-                        "class": "material-icons",
-                        "value": "timeline"
-                    }
-                },
-                {
-                    "id": "users",
-                    "name": "Users",
-                    "icon": {
-                        "class": "material-icons",
-                        "value": "account_circle"
-                    }
-                },
-                {
-                    "id": "domains",
-                    "name": "Domains",
-                    "icon": {
-                        "class": "material-icons",
-                        "value": "web_asset"
-                    }
-                },
-                {
-                    "id": "tests",
-                    "name": "Testing",
-                    "icon": {
-                        "class": "material-icons",
-                        "value": "developer_board"
-                    }
+                    "key": "title",
+                    "type": "input",
+                    "label": "Title"
                 }
             ]
         }

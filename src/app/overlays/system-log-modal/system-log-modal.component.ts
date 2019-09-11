@@ -1,27 +1,41 @@
 import { Component, OnInit } from '@angular/core';
-import { OverlayContentComponent } from '@acaprojects/ngx-widgets';
-import { BaseService } from '../../services/data/base.service';
-import { AppService } from '../../services/app.service';
+import { OverlayItem } from '@acaprojects/ngx-overlays';
+
+import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { ApplicationService } from 'src/app/services/app.service';
+import { IEngineLogEntry } from 'src/app/services/data/logs.service';
+import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
 
 @Component({
     selector: 'system-log-modal',
     templateUrl: './system-log-modal.component.html',
     styleUrls: ['./system-log-modal.component.scss']
 })
-export class SystemLogModalComponent extends OverlayContentComponent<AppService> {
+export class SystemLogModalComponent extends BaseComponent implements OnInit {
+    /** ID of the system to get logs for */
+    public id: string;
+    /** List of the available log entries for the set system */
+    public logs: IEngineLogEntry[];
+    /** Whether the system's logs are loading */
+    public loading: boolean;
 
-    public model: { service?: BaseService<any>, [name: string]: any } = {};
+    constructor(private _item: OverlayItem, private _service: ApplicationService) {
+        super();
+    }
 
-    public init() {
-        if (this.model.id) {
-            this.model.loading = true;
-            this.service.SystemLogs.query({ limit: 500, id: this.model.sys_id }).then((list) => {
-                this.model.logs = list.sort((a, b) => b.created - a.created);
+    public ngOnInit(): void {
+        this.id = this._item.data.sys_id;
+        if (this.id) {
+            this.loading = true;
+            this._service.SystemLogs.query({ limit: 500, id: this.id }).then((list: IEngineLogEntry[]) => {
+                this.logs = list.sort((a, b) => b.created - a.created);
             }, () => {
-                this.service.error('Error loading logs for system');
+                this._service.notifyError('Error loading logs for system');
             });
         } else {
-            this.fn.close();
+            this._item.close();
         }
     }
 }
+
+OVERLAY_REGISTER.push({ id: 'system-logs', config: { content: SystemLogModalComponent, config: 'modal' } });

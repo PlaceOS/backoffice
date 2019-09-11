@@ -1,5 +1,5 @@
 
-const domain = 'localhost:8888';
+const domain = 'localhost:3000';
 const secure = false;
 const valid_ssl = false;
 

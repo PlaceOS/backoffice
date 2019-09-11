@@ -1,0 +1,17 @@
+
+@import 'shared.styles';
+
+input {
+    font-size: 1em;
+    min-width: 100%;
+    padding: .5em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    background-color: #fff;
+    color: rgba($font-dark, .87);
+
+    &:focus {
+        border-bottom-color: $color-primary;
+    }
+}

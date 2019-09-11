@@ -18,7 +18,7 @@
     </ng-container>
     <div class="no-item" center *ngIf="model.searching">
         <div class="icon">
-            <spinner type="circle-ring" color="#F44336"></spinner>
+            <a-spinner circle-ring color="#F44336"></a-spinner>
         </div>
         <div class="text">Searching...</div>
     </div>
@@ -29,6 +29,6 @@
         <div class="text">No matches found</div>
     </div>
     <div class="more" *ngIf="model.getting_more">
-        <spinner type="double-circle-ring" color="#F44336"></spinner>
+        <a-spinner double-circle-ring color="#F44336"></a-spinner>
     </div>
 </div>

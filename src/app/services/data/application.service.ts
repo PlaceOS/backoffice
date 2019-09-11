@@ -2,9 +2,8 @@
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
 
-import { BaseService } from './base.service';
-import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
-import { FormValidators } from '../../shared/form-validators.class';
+import { BaseAPIService } from './base.service';
+import { IFormFieldOptions } from '@acaprojects/ngx-dynamic-forms';
 
 export interface IEngineApplication {
     id: string;
@@ -21,20 +20,20 @@ export interface IEngineApplication {
 @Injectable({
     providedIn: 'root'
 })
-export class ApplicationService extends BaseService<IEngineApplication> {
+export class BackofficeApplicationService extends BaseAPIService<IEngineApplication> {
 
     constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'application';
-        this.model.singular = 'application';
-        this.model.route = '/applications';
+        super(http);
+        this._name = 'application';
+        this._singular = 'application';
+        this._api_route = '/applications';
     }
 
     get endpoint() {
-        return `/auth/api${this.model.route}`;
+        return `/auth/api${this.route}`;
     }
 
-    protected processItem(raw_item: any) {
+    protected process(raw_item: any) {
         const item: IEngineApplication = {
             id: raw_item.id,
             uid: raw_item.uid,
@@ -50,15 +49,15 @@ export class ApplicationService extends BaseService<IEngineApplication> {
     }
 
     public getFormFields(item: IEngineApplication) {
-        const fields: IDynamicFieldOptions<any>[] = [
-            { control_type: 'group', children: [
-                { key: 'name', label: 'Name', required: true, control_type: 'text' },
-                { key: 'scopes', label: 'Scopes', control_type: 'text' },
-            ] },
-            { key: 'skip_authorization', label: 'Skip Authorisation', control_type: 'toggle' },
-            { key: 'redirect_uri', label: 'Redirect URI', hide: !!item, control_type: 'text' }
+        const fields: IFormFieldOptions[] = [
+            { key: '', type: 'group', children: [
+                { key: 'name', label: 'Name', required: true, type: 'input', value: item.name },
+                { key: 'scopes', label: 'Scopes', type: 'input', value: '' },
+            ], value: '' },
+            { key: 'skip_authorization', label: 'Skip Authorisation', type: 'checkbox', value: '' },
+            { key: 'redirect_uri', label: 'Redirect URI', hide: !!item, type: 'input', value: '' }
         ];
-        this.updateFields(fields, item);
+        // this.updateFields(fields, item);
         return fields;
     }
 

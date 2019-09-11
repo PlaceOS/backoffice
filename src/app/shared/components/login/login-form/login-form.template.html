@@ -1,14 +1,14 @@
 <div class="container">
     <form name="login">
         <div class="field">
-            <input-field [(model)]="form.user" [placeholder]="model.user_field || 'Email'"></input-field>
+            <input [(ngModel)]="form.user" [placeholder]="model.user_field || 'Email'">
         </div>
         <div class="field">
-            <input-field [type]="model.show_pass ? 'text' : 'password'" [(model)]="form.pass" [placeholder]="model.user_field || 'Password'"></input-field>
+            <input [type]="model.show_pass ? 'text' : 'password'" [(ngModel)]="form.pass" [placeholder]="model.user_field || 'Password'">
         </div>
         <div class="forgot" *ngIf="!model.settings || model.settings.forgot !== false" (tap)="forgot()">Forgot?</div>
         <div class="options">
-            <btn type="submit" (tapped)="login()">Login</btn>
+            <button widget type="submit" (tapped)="login()">Login</button>
         </div>
     </form>
 </div>

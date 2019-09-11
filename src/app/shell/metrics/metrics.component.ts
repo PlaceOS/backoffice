@@ -2,13 +2,13 @@
 import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { BaseComponent } from '../../shared/components/base.component';
-import { AppService } from '../../services/app.service';
+import { BaseComponent } from '../../shared/globals/base.component';
+import { ApplicationService } from '../../services/app.service';
 import { ContextMenuComponent } from '../../shared/components/context-menu/context-menu.component';
+import { isMobileDevice, copyToClipboard } from 'src/app/shared/utilities/general.utilities';
 
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
 import * as Chart from 'chart.js';
-import { Utils } from '../../shared/utility.class';
 
 @Component({
     selector: 'app-metrics',
@@ -19,11 +19,11 @@ export class MetricsComponent extends BaseComponent implements OnInit {
     public model: any = {};
     public context_menu = ContextMenuComponent;
 
-    @ViewChild('connected_graph') public connected: ElementRef;
-    @ViewChild('offline_graph') public offline: ElementRef;
-    @ViewChild('triggers_graph') public triggers: ElementRef;
+    @ViewChild('connected_graph', { static: true }) public connected: ElementRef;
+    @ViewChild('offline_graph', { static: true }) public offline: ElementRef;
+    @ViewChild('triggers_graph', { static: true }) public triggers: ElementRef;
 
-    constructor(private service: AppService, private route: ActivatedRoute, private router: Router) {
+    constructor(private service: ApplicationService, private route: ActivatedRoute, private router: Router) {
         super();
         Chart.defaults.global.defaultFontColor = 'white';
         Chart.defaults.global.legend.display = false;
@@ -38,7 +38,7 @@ export class MetricsComponent extends BaseComponent implements OnInit {
         this.model.options = ['Last Hour', 'Last Day', 'Last Week', 'Last Month'];
         this.interval('time', () => this.updateTime(), 1000);
         this.interval('histograms', () => this.loadHistograms(), 5 * 60 * 1000);
-        this.subs.obs.route = this.route.paramMap.subscribe((params) => {
+        this.subscription('route', this.route.paramMap.subscribe((params) => {
             if (params.has('period')) {
                 this.model.period = params.get('period');
                 this.loadHistograms();
@@ -51,13 +51,13 @@ export class MetricsComponent extends BaseComponent implements OnInit {
                 }
             }
             if (!this.model.index || this.model.index < 0) { this.model.index = 1; }
-        });
+        }));
         this.updateTime();
         this.init();
     }
 
     public init() {
-        if (!this.service.ready()) {
+        if (!this.service.is_ready) {
             return this.timeout('init', () => this.init());
         }
         this.updateContextList();
@@ -84,7 +84,7 @@ export class MetricsComponent extends BaseComponent implements OnInit {
     }
 
     public updateTime() {
-        const now = moment();
+        const now = dayjs();
         this.model.time = now.format('hh:mm A');
         this.model.date = now.format('ddd, MMM D');
         this.model.hour_angle = (now.hour() % 12 + now.minute() / 60) / 12 * 360;
@@ -93,7 +93,7 @@ export class MetricsComponent extends BaseComponent implements OnInit {
     }
 
     public loadOfflineDevices() {
-        const now = moment();
+        const now = dayjs();
         this.service.Modules.query({ as_of: now.unix(), connected: false, running: true }).then((list) => {
             this.model.offline_devices = list;
             this.model.system_map = {};
@@ -119,7 +119,7 @@ export class MetricsComponent extends BaseComponent implements OnInit {
 
     public loadHistograms() {
         this.service.Stats.connections({ period: this.model.period || 'day' }).then((details) => {
-            const start = moment(details.start).add(-details.interval, 's');
+            const start = dayjs(details.start).add(-details.interval, 's');
             const labels = [];
             const data = [];
             for (const point of details.histogram) {
@@ -129,7 +129,7 @@ export class MetricsComponent extends BaseComponent implements OnInit {
             this.updateChart('connected', 'Connected Devices', labels, data);
         });
         this.service.Stats.offline({ period: this.model.period || 'day' }).then((details) => {
-            const start = moment(details.start).add(-details.interval, 's');
+            const start = dayjs(details.start).add(-details.interval, 's');
             const labels = [];
             const data = [];
             for (const point of details.histogram) {
@@ -139,7 +139,7 @@ export class MetricsComponent extends BaseComponent implements OnInit {
             this.updateChart('offline', 'Offline Devices', labels, data);
         });
         this.service.Stats.triggers({ period: this.model.period || 'day' }).then((details) => {
-            const start = moment(details.start).add(-details.interval, 's');
+            const start = dayjs(details.start).add(-details.interval, 's');
             const labels = [];
             const data = [];
             for (const point of details.histogram) {
@@ -152,7 +152,7 @@ export class MetricsComponent extends BaseComponent implements OnInit {
 
     public updateChart(name, title, labels, data) {
         const context = this[name].nativeElement.getContext('2d');
-        const now = moment();
+        const now = dayjs();
         this.model.triggers_chart = new Chart(context, {
             type: 'line',
             data: {
@@ -181,8 +181,8 @@ export class MetricsComponent extends BaseComponent implements OnInit {
             if (e.data.id === 'open') {
                 window.open(`#/metrics/dashboard/${this.model.period || 'day'}?trust=true`, '_blank');
             } else if (e.data.id === 'copy') {
-                Utils.copyToClipboard(`#/metrics/dashboard/${this.model.period || 'day'}?trust=true`);
-                this.service.info('Copied Fullscreen URL to clipboard');
+                copyToClipboard(`#/metrics/dashboard/${this.model.period || 'day'}?trust=true`);
+                this.service.notifyInfo('Copied Fullscreen URL to clipboard');
             } else if (e.data.id === 'hour') {
                 this.changePeriod(0);
             } else if (e.data.id === 'day') {
@@ -201,7 +201,7 @@ export class MetricsComponent extends BaseComponent implements OnInit {
             { id: 'copy', name: 'Copy Fullscreen URL', icon: { class: 'material-icons', value: 'http' } },
             { id: 'hidden', name: 'Hidden Issues', icon: { class: 'material-icons', value: 'visibility' } }
         ];
-        const mobile = Utils.isMobileDevice();
+        const mobile = isMobileDevice();
         if (mobile || true) {
             this.model.context_list = this.model.context_list.concat([
                 { id: 'hour', name: 'Set period to hour', icon: { class: 'material-icons', value: 'timeline' } },

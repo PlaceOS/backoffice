@@ -2,9 +2,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { AppService } from '../../services/app.service';
+import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
-import { Utils } from '../../shared/utility.class';
+import { toQueryString } from 'src/app/shared/utilities/api.utilities';
 
 @Component({
     selector: 'app-devices',
@@ -13,7 +13,7 @@ import { Utils } from '../../shared/utility.class';
 })
 export class DevicesComponent extends BaseRootComponent {
 
-    constructor(protected service: AppService, protected route: ActivatedRoute) {
+    constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
         super(service, route);
         this.model.type = 'device';
         this.model.service = 'Modules';
@@ -22,7 +22,7 @@ export class DevicesComponent extends BaseRootComponent {
 
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, module_id: this.model.item.id };
-        const q = `total_${Utils.generateQueryString(query)}`;
+        const q = `total_${toQueryString(query)}`;
             // Get system count
         this.service.Systems.query(query)
             .then(() => this.model.systems = this.service.Systems.get(q));

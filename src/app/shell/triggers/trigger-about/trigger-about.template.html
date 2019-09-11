@@ -1,14 +1,14 @@
 <div class="container">
     <div class="settings">
         <section>
-            <dropdown [filter]="true" [list]="model.systems" [model]="-1" (modelChange)="select(model.systems[$event])"
-                (filterValue)="loadSystems($event)" placeholder="Select a System"></dropdown>
+            <a-dropdown [options]="{ can_filter: true }" [items]="model.systems" [ngModel]="-1" (ngModelChange)="select(model.systems[$event])"
+                (searchChange)="loadSystems($event)" placeholder="Select a System"></a-dropdown>
         </section>
         <header>
             <div class="action" *ngIf="model.selected_system">
-                <btn format="mini-action" (tapped)="addCondition()">
+                <button widget format="mini-action" (tapped)="addCondition()">
                     <i class="material-icons">add</i>
-                </btn>
+                </button>
             </div>
             <div class="text">Conditions</div>
         </header>
@@ -22,9 +22,9 @@
         </section>
         <header>
             <div class="action" *ngIf="model.selected_system">
-                <btn format="mini-action" (tapped)="addAction()">
+                <button widget format="mini-action" (tapped)="addAction()">
                     <i class="material-icons">add</i>
-                </btn>
+                </button>
             </div>
             <div class="text">Actions</div>
         </header>

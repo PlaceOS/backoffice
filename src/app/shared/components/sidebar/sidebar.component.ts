@@ -1,10 +1,10 @@
 
 import { Component, Input, Output, EventEmitter, OnChanges, OnInit, ViewChild, ElementRef, ViewChildren, QueryList } from '@angular/core';
-
-import { BaseComponent } from '../base.component';
-import { AppService } from '../../../services/app.service';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { BehaviorSubject } from 'rxjs';
+
+import { ApplicationService } from '../../../services/app.service';
+import { BaseComponent } from '../../globals/base.component';
 
 
 @Component({
@@ -29,9 +29,9 @@ export class SidebarComponent extends BaseComponent implements OnChanges, OnInit
     public items: BehaviorSubject<any[]>;
 
     @ViewChildren('list_item') private item_list: QueryList<ElementRef>;
-    @ViewChild(CdkVirtualScrollViewport) private viewport: CdkVirtualScrollViewport;
+    @ViewChild(CdkVirtualScrollViewport, { static: true }) private viewport: CdkVirtualScrollViewport;
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
         this.items = new BehaviorSubject([]);
     }
@@ -48,8 +48,8 @@ export class SidebarComponent extends BaseComponent implements OnChanges, OnInit
             this.items.next(this.list);
             this.atBottom();
         }
-        this.subs.obs.up = this.service.Hotkey.listen(['ArrowUp'], () => this.changeSelected(-1));
-        this.subs.obs.down = this.service.Hotkey.listen(['ArrowDown'], () => this.changeSelected(1));
+        this.subscription('up', this.service.Hotkeys.listen(['ArrowUp'], () => this.changeSelected(-1)));
+        this.subscription('down', this.service.Hotkeys.listen(['ArrowDown'], () => this.changeSelected(1)));
     }
 
     public select(item) {

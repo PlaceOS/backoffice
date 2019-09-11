@@ -5,15 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { ComposerModule } from '@acaprojects/ngx-composer';
-import { WidgetsModule } from '@acaprojects/ngx-widgets';
 
 import { ROUTES } from './domains.routes';
 
 import { DomainsComponent } from './domains.component';
-import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { DomainApplicationsComponent } from './domain-applications/domain-applications.component';
 import { DomainAuthenticationComponent } from './domain-authentication/domain-authentication.component';
 import { DomainUsersComponent } from './domain-users/domain-users.component';
+import { SharedContentModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -27,9 +26,8 @@ import { DomainUsersComponent } from './domain-users/domain-users.component';
         CommonModule,
         FormsModule,
         ComposerModule,
-        WidgetsModule,
         RouterModule.forChild(ROUTES),
-        SharedComponentsModule
+        SharedContentModule
     ]
 })
 export class AppDomainsModule { }

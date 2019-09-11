@@ -1,11 +1,11 @@
 
 import { Component, Input, OnChanges, EventEmitter, Output, Renderer2, ViewChild, ElementRef } from '@angular/core';
 
-import { BaseComponent } from '../base.component';
+import { ApplicationService } from '../../../services/app.service';
+import { BaseComponent } from '../../globals/base.component';
 
 import * as json_lint from 'durable-json-lint';
-import { AppService } from '../../../services/app.service';
-import { Utils } from '../../utility.class';
+import { copyToClipboard } from '../../utilities/general.utilities';
 
 @Component({
     selector: 'settings-display',
@@ -30,9 +30,9 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
     public text_string = '{}';
     public error_list: any = {};
 
-    @ViewChild('input') public input_field: ElementRef;
+    @ViewChild('input', { static: true }) public input_field: ElementRef;
 
-    constructor(private service: AppService, private renderer: Renderer2) {
+    constructor(private service: ApplicationService, private renderer: Renderer2) {
         super();
     }
 
@@ -186,7 +186,7 @@ export class SettingsDisplayComponent extends BaseComponent implements OnChanges
     }
 
     public copy() {
-        Utils.copyToClipboard(JSON.stringify(this.model, null, 4));
-        this.service.info('Copied settings to clipboard');
+        copyToClipboard(JSON.stringify(this.model, null, 4));
+        this.service.notifyInfo('Copied settings to clipboard');
     }
 }

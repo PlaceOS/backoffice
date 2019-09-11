@@ -10,8 +10,8 @@
             <div class="field">
                 <div class="label">Action<span class="orange">*</span>:</div>
                 <div class="value">
-                    <dropdown [list]="model.action_types" [model]="-1" (modelChange)="model.form.action_type = model.action_types[$event]"
-                        placeholder="Select an action"></dropdown>
+                    <a-dropdown [items]="model.action_types" [ngModel]="-1" (ngModelChange)="model.form.action_type = model.action_types[$event]"
+                        placeholder="Select an action"></a-dropdown>
                 </div>
             </div>
             <div class="fieldset" *ngIf="model.form.action_type && model.form.action_type.id === 'execute'">
@@ -37,15 +37,15 @@
             </div>
         </div>
         <div class="footer">
-            <btn (tapped)="event('Cancel')">Cancel</btn>
-            <btn name="inverse" [disabled]="model.has_errors || !model.fields_valid" (tapped)="model.item ? edit() : new()">
+            <button widget (tapped)="event('Cancel')">Cancel</button>
+            <button widget name="inverse" [disabled]="model.has_errors || !model.fields_valid" (tapped)="model.item ? edit() : new()">
                 Ok
-            </btn>
+            </button>
         </div>
     </div>
     <div class="no-item">
         <div class="icon">
-            <spinner type="circle-ring" color="rgba(0,0,0, .54)"></spinner>
+            <a-spinner circle-ring color="rgba(0,0,0, .54)"></a-spinner>
         </div>
         <div class="text">Processing request...</div>
     </div>

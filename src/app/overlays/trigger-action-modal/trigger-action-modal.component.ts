@@ -1,19 +1,23 @@
 
 import { Component, OnInit } from '@angular/core';
-import { OverlayContentComponent } from '@acaprojects/ngx-widgets';
+import { OverlayItem } from '@acaprojects/ngx-overlays';
 
-import { Utils } from '../../shared/utility.class';
-
-import * as moment from 'moment';
+import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { ApplicationService } from 'src/app/services/app.service';
+import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
 
 @Component({
     selector: 'trigger-action-modal',
     templateUrl: './trigger-action-modal.template.html',
     styleUrls: ['./trigger-action-modal.styles.scss']
 })
-export class TriggerActionModalComponent extends OverlayContentComponent implements OnInit {
+export class TriggerActionModalComponent extends BaseComponent implements OnInit {
 
-    private timers: any = {};
+    public model: any = {};
+
+    constructor(private _item: OverlayItem, private _service: ApplicationService) {
+        super();
+    }
 
     public ngOnInit() {
         this.model.form = {};
@@ -45,12 +49,12 @@ export class TriggerActionModalComponent extends OverlayContentComponent impleme
         if (this.model.loading) { return; }
         setTimeout(() => {
             this.model.loading = true;
-            this.service.Zones.add(this.model.form).then((item) => {
-                this.service.success('Successfully added new zone');
+            this._service.Zones.add(this.model.form).then((item) => {
+                this._service.notifySuccess('Successfully added new zone');
                 this.model.id = item.id;
-                this.event('Success');
+                this._item.post('event', 'Success');
             }, () => {
-                this.service.error('Failed to add new zone');
+                this._service.notifyError('Failed to add new zone');
                 this.model.loading = false;
             });
         }, 300);
@@ -68,19 +72,20 @@ export class TriggerActionModalComponent extends OverlayContentComponent impleme
                 }
             }
             if (Object.keys(form).length <= 0) {
-                this.service.warning('No changes have been made');
+                this._service.notifyInfo('No changes have been made');
             } else {
                 this.model.loading = true;
-                this.service.Zones.update(this.model.item.id, form).then((item) => {
-                    this.service.success(`Successfully updated zone "${this.model.item.id}"`);
+                this._service.Zones.update(this.model.item.id, form).then((item) => {
+                    this._service.notifySuccess(`Successfully updated zone "${this.model.item.id}"`);
                     this.model.id = item.id;
-                    this.event('Success');
+                    this._item.post('event', 'Success');
                 }, () => {
-                    this.service.error(`Failed to update zone "${this.model.item.id}"`);
+                    this._service.notifyError(`Failed to update zone "${this.model.item.id}"`);
                     this.model.loading = false;
                 });
             }
-
         }, 300);
     }
 }
+
+OVERLAY_REGISTER.push({ id: 'trigger-action', config: { content: TriggerActionModalComponent, config: 'modal' } });

@@ -1,7 +1,9 @@
 
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { OverlayContentComponent } from '@acaprojects/ngx-widgets';
+import { OverlayItem } from '@acaprojects/ngx-overlays';
+
+import { BaseComponent } from '../../globals/base.component';
 
 
 @Component({
@@ -21,9 +23,28 @@ import { OverlayContentComponent } from '@acaprojects/ngx-widgets';
         ]),
     ]
 })
-export class ContextMenuComponent extends OverlayContentComponent implements AfterViewInit {
+export class ContextMenuComponent extends BaseComponent implements AfterViewInit {
+    /** Top position of the menu */
+    public top: number;
+    /** Whether menu show to the left of the cursor */
+    public right: boolean;
+    /**  */
+    public offset: number;
 
-    @ViewChild('container') private container: ElementRef;
+    @ViewChild('container', { static: true }) private container: ElementRef;
+
+    constructor(private _item: OverlayItem) {
+        super();
+    }
+
+    /** List of menu items to display */
+    public get menu_items(): any[] {
+        return this._item.data.data;
+    }
+
+    public ngOnInit(): void {
+        this.offset = this._item.data.offset;
+    }
 
     public ngAfterViewInit() {
         setTimeout(() => this.updatePosition(), 10);
@@ -34,14 +55,18 @@ export class ContextMenuComponent extends OverlayContentComponent implements Aft
             return setTimeout(() => this.updatePosition(), 50);
         }
         const box = this.container.nativeElement.getBoundingClientRect();
-        this.model.right = false;
-        this.model.top = 0;
-        if (this.model.offset) {
+        this.right = false;
+        this.top = 0;
+        if (this.offset) {
             if (window.innerHeight < box.bottom) {
-                this.model.top = window.innerHeight - (box.bottom + 5);
+                this.top = window.innerHeight - (box.bottom + 5);
             }
-            this.model.right = box.right - 5 > window.innerWidth;
+            this.right = box.right - 5 > window.innerWidth;
         }
+    }
+
+    public post(data: any) {
+        this._item.post('event', data);
     }
 
 }

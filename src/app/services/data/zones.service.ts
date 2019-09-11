@@ -1,11 +1,11 @@
 
 import { Injectable } from '@angular/core';
+import { Validators } from '@angular/forms';
 import { CommsService } from '@acaprojects/ngx-composer';
-import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
+import { IFormFieldOptions } from '@acaprojects/ngx-dynamic-forms';
 
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
-import { FormValidators } from '../../shared/form-validators.class';
 
 export interface IEngineZone {
     id: string;
@@ -22,13 +22,13 @@ export interface IEngineZone {
 @Injectable({
     providedIn: 'root'
 })
-export class ZonesService extends BaseService<IEngineZone> {
+export class BackofficeZonesService extends BaseAPIService<IEngineZone> {
 
     constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'zone';
-        this.model.singular = 'zone';
-        this.model.route = '/zones';
+        super(http);
+        this._name = 'zone';
+        this._singular = 'zone';
+        this._api_route = '/zones';
     }
 
     protected processItem(raw_item: any) {
@@ -47,12 +47,12 @@ export class ZonesService extends BaseService<IEngineZone> {
     }
 
     public getFormFields(item: IEngineZone) {
-        const fields: IDynamicFieldOptions<any>[] = [
-            { key: 'name', label: 'Name', required: true, control_type: 'text' },
-            { key: 'tags', label: 'Tags', control_type: 'text' },
-            { key: 'support_url', label: 'Support URL', hide: !!item, control_type: 'text', validators: [FormValidators.url] },
-            { key: 'description', label: 'Description', control_type: 'textarea' },
-            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent }
+        const fields: IFormFieldOptions<any>[] = [
+            { key: 'name', label: 'Name', required: true, value: '', type: 'input' },
+            { key: 'tags', label: 'Tags', value: '', type: 'input' },
+            { key: 'support_url', label: 'Support URL', hide: !!item, value: '', type: 'input', validators: [Validators.pattern('')] },
+            { key: 'description', label: 'Description', value: '', type: 'textarea' },
+            { key: 'settings', label: 'Settings', value: '', type: 'custom', settings: { flex: true }, content: CustomSettingsFieldComponent }
         ];
 
         if (item) {

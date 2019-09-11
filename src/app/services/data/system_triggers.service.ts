@@ -2,9 +2,9 @@
 import { Injectable } from '@angular/core';
 import { CommsService } from '@acaprojects/ngx-composer';
 
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
 
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
 
 export interface IEngineSystemTrigger {
     id: string;
@@ -31,15 +31,15 @@ export interface IEngineSystemTrigger {
 @Injectable({
     providedIn: 'root'
 })
-export class SystemTriggersService extends BaseService<IEngineSystemTrigger> {
+export class BackofficeSystemTriggersService extends BaseAPIService<IEngineSystemTrigger> {
 
     constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'system_trigger';
-        this.model.route = '/system_triggers';
+        super(http);
+        this._name = 'system_trigger';
+        this._api_route = '/system_triggers';
     }
 
-    protected processItem(raw_item: any) {
+    protected process(raw_item: any) {
         const item: IEngineSystemTrigger = {
             id: raw_item.id,
             system_id: raw_item.control_system_id,
@@ -61,7 +61,7 @@ export class SystemTriggersService extends BaseService<IEngineSystemTrigger> {
             updated: raw_item.updated_at * 1000
         };
         item.display = {
-            created: moment(item.created).fromNow()
+            created: dayjs(item.created).format()
         };
         return item;
     }

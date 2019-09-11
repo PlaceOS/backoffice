@@ -1,7 +1,7 @@
 
-import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { BaseComponent } from '../../globals/base.component';
 
-import { BaseComponent } from '../base.component';
 
 @Component({
     selector: 'searchbar',
@@ -20,7 +20,7 @@ export class SearchbarComponent extends BaseComponent {
 
     public model: any = {};
 
-    @ViewChild('input') private input: ElementRef;
+    @ViewChild('input', { static: true }) private input: ElementRef;
 
     constructor() {
         super();

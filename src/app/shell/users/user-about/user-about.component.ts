@@ -1,7 +1,7 @@
 
 import { Component, Input } from '@angular/core';
 
-import { BaseComponent } from '../../../shared/components/base.component';
+import { BaseComponent } from '../../../shared/globals/base.component';
 import { IUser } from '../../../services/data/users.service';
 
 @Component({

@@ -1,0 +1,191 @@
+@import 'shared.styles';
+
+.dropdown[widget] {
+    border-radius: 4px;
+
+    &.fill {
+        width: 100%;
+    }
+}
+
+.dropdown-list[widget] {
+    border-radius: 4px;
+}
+
+.spinner {
+    svg {
+        width: 100%;
+    }
+}
+
+button[widget] {
+    outline: none;
+    &.default {
+        background-color: $color-primary;
+    }
+
+    &.action {
+        height: 2em;
+        width: 2em;
+        border-radius: 100%;
+        background-color: #fff;
+        color: rgba(#000, 0.87);
+        border: 2px solid rgba(#000, 0.87);
+        box-shadow: 0 0 0 2px #fff;
+        font-size: 1.5em;
+
+        &:hover {
+            box-shadow: 0 0 0 2px rgba(#fff, 0.6);
+        }
+
+        .wrapper {
+            height: 100%;
+            padding: 0;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            width: 100%;
+        }
+    }
+
+    &[disabled] {
+        background-color: #ccc;
+        pointer-events: none;
+    }
+}
+
+.dropdown[widget] {
+    &.default {
+        width: 9.5em;
+    }
+}
+
+.dynamic-field[widget] {
+    .details {
+        min-width: 100%;
+    }
+
+    label {
+        margin-left: 0;
+    }
+
+    .control {
+        min-width: 10em;
+    }
+}
+
+.overlay-backdrop {
+    background-color: rgba(#000, 0.6);
+}
+
+.modal[widget] {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(#000, 0.2), 0 1px 1px 0 rgba(#000, 0.14), 0 2px 1px -1px rgba(#000, 0.12);
+    max-width: 95vw;
+    max-height: 90vh;
+
+    & > .header {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        height: 2.5em;
+        background-color: #f0f0f0;
+
+        .text {
+            padding: 0.75em;
+            min-width: 10em;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .close {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 1.8em;
+            font-size: 1.25em;
+        }
+    }
+
+    & > .body {
+        width: 100%;
+        min-height: 4em;
+        flex: 1;
+        overflow: auto;
+        padding: 0.5em;
+    }
+
+    & > .footer {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-top: 1px solid #ccc;
+
+        button {
+            min-width: 6em;
+        }
+    }
+}
+
+.notification[widget] {
+    .content > .text {
+        display: flex;
+        align-items: center;
+    }
+
+    .icon {
+        height: 1.25em;
+        width: 1.25em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2em;
+        margin-right: .3em;
+    }
+
+    @mixin notify-style($back, $fore, $icon) {
+        .item {
+            background-color: $back !important;
+            color: $fore;
+
+            i:after {
+                content: $icon;
+            }
+        }
+    }
+
+    .action {
+        margin: 0 .5em;
+        .icon {
+            background: none;
+            margin: 0;
+            &:after {
+                font-family: "Material Icons";
+                content: 'close';
+            }
+        }
+    }
+
+    &.error {
+        @include notify-style($error, #fff, 'error');
+    }
+
+    &.warn {
+        @include notify-style($pending, #fff, 'warning');
+    }
+
+    &.info {
+        @include notify-style($color-primary, #fff, 'info');
+    }
+
+    &.success {
+        @include notify-style($success, #fff, 'done');
+    }
+}

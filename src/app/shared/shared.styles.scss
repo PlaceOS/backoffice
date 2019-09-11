@@ -1,47 +1,56 @@
-/*==============================*\
-|| Shared Global SASS Variables ||
-\*==============================*/
 
-/*====================*\
-||  Colour Variables  ||
-\*====================*/
+/*=======================*\
+||  Application Colours  ||
+\*=======================*/
 
-$success: #309b40;
-$success-alt: #4285f4;
-$error: #db291d;
-$pending: #FF9800;
-$neutral: #797979;
+$font-dark: #000;
+$font-light: #fff;
 
-$background: #f0f0f0;
+$success: #2e7d32;
+$success-light: #60ad5e;
+$success-dark: #005005;
 
-$color-primary: #B71C1C;
-$color-secondary: #263238;
-$color-ternary: #37474F;
-$color-quaternary: #26A69A;
-$color-quinternary: #0277BD;
-$color-sexternary: #7fe43b;
+$pending: #ff8f00;
+$pending-light: #ffc046;
+$pending-dark: #c56000;
 
-/*====================*\
-||  Sizing Variables  ||
-\*====================*/
+$error: #d32f2f;
+$error-light: #ff6f60;
+$error-dark: #ab000d;
 
-$header-height: 3.5em;
-$header-bg: $color-primary;
-$header-color: #fff;
+$color-primary: #b71c1c;
+$color-primary-light: #f05545;
+$color-primary-dark: #7f0000;
 
-/*====================*\
-||   Font Variables   ||
-\*====================*/
+$color-secondary: #37474f;
+$color-secondary-light: #62727b;
+$color-secondary-dark: #102027;
 
-$base-size: 16px;
-$tablet-size: 16px;
+$color-develop: #1976d2;
+$color-develop-light: #63a4ff;
+$color-develop-dark: #004ba0;
+
+$background: #263238;
+$background-light: #4f5b62;
+$background-dark: #000a12;
+
+/*===========*\
+||   Fonts   ||
+\*===========*/
+
+$font: "Roboto Slab", "Roboto", "Verdana", "Helvetica Neue", Arial, sans-serif;
+$heading-font: $font;
+$mono-font: "Fira Code", monospace;
+
+$base-size: 20px;
+$tablet-size: 12px;
 $mobile-size: 16px;
 
-$font-stack: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
+/*============*\
+||   Sizing   ||
+\*============*/
 
-$heading-font: $font-stack;
-$main-font: $font-stack;
-$mono-font: "Fira Code", monospace;
+$header-height: 4em;
 
 /*===================*\
 ||   Media Queries   ||
@@ -49,9 +58,11 @@ $mono-font: "Fira Code", monospace;
 
 $break-mobile: 450px;
 $break-tablet: 800px;
+$break-laptop: 1024px;
 
 $break-landscape-mobile: 800px;
 $break-landscape-tablet: 1048px;
+$break-landscape-laptop: 1280px;
 
 @mixin respond-to($media) {
     @if $media == mobile {
@@ -76,7 +87,22 @@ $break-landscape-tablet: 1048px;
         @media only screen and (orientation: landscape) and (min-width: $break-landscape-mobile + 1) {
             @content;
         }
-    } @else if $media == tablet {
+    } @else if $media == laptop {
+        @media only screen and (orientation: portrait) and (min-width: $break-tablet + 1) and (max-width: $break-laptop) {
+            @content;
+        }
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-tablet + 1) and (max-width: $break-landscape-laptop) {
+            @content;
+        }
+    } @else if $media == laptop-landscape {
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-tablet + 1) and (max-width: $break-landscape-laptop) {
+            @content;
+        }
+    } @else if $media == laptop-portrait {
+        @media only screen and (orientation: portrait) and (min-width: $break-tablet + 1) and (max-width: $break-laptop) {
+            @content;
+        }
+    }  @else if $media == lat {
         @media only screen and (orientation: portrait) and (min-width: $break-mobile + 1) and (max-width: $break-tablet) {
             @content;
         }
@@ -89,9 +115,6 @@ $break-landscape-tablet: 1048px;
         }
     } @else if $media == tablet-portrait {
         @media only screen and (orientation: portrait) and (min-width: $break-mobile + 1) and (max-width: $break-tablet) {
-            @content;
-        }
-        @media only screen and (orientation: landscape) and (min-width: $break-landscape-mobile + 1) and (max-width: $break-landscape-tablet) {
             @content;
         }
     } @else if ($media == tablet-mobile or $media == not-desktop) {

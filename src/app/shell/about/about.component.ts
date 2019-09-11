@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
-import { BaseComponent } from '../../shared/components/base.component';
-import { AppService } from '../../services/app.service';
+import { BaseComponent } from '../../shared/globals/base.component';
+import { ApplicationService } from '../../services/app.service';
+import { version, build } from 'src/app/shared/globals/application';
 
 @Component({
     selector: 'app-about',
@@ -11,7 +12,7 @@ import { AppService } from '../../services/app.service';
 export class AppAboutComponent extends BaseComponent implements OnInit {
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 
@@ -20,18 +21,18 @@ export class AppAboutComponent extends BaseComponent implements OnInit {
     }
 
     public init() {
-        if (!this.service.ready()) {
+        if (!this.service.is_ready) {
             return this.timeout('init', () => this.init());
         }
         this.model.user = this.service.Users.current();
-        this.model.backoffice_version = this.service.Settings.version;
-        this.model.backoffice_build = this.service.Settings.build;
-        this.model.changelog = this.service.Settings.markdown();
+        this.model.backoffice_version = version;
+        this.model.backoffice_build = build.format('DD MMM YYYY [at] h:mma');
+        // this.model.changelog = this.service.Settings.markdown();
         console.log('Model:', this.model);
     }
 
     public changelog(log: string) {
         console.log('Log:', log);
-        this.service.Overlay.openModal('changelog', { data: { changelog: log } }, (e) => e.close());
+        this.service.Overlay.open('changelog', { data: { changelog: log } }, (e) => e.close());
     }
 }
