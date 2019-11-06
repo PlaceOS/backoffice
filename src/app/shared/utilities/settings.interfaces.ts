@@ -37,6 +37,13 @@ export interface ApplicationSettings {
     logo_dark: ApplicationIcon;
     /** Logo to use on light background */
     logo_light?: ApplicationIcon;
+    /** General settings for the application */
+    general: GeneralApplicationSettings;
+}
+
+export interface GeneralApplicationSettings {
+    /** List of available menu items for the application */
+    menu_items: ApplicationLink[];
 }
 
 export interface ApplicationLink {
