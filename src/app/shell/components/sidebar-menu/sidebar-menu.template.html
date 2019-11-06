@@ -1,14 +1,31 @@
-<div class="container" *ngIf="model.menu" [class.show]="model.show" (window:tap)="close()" (tapped)="cancelClose()">
-    <div class="item" *ngFor="let item of model.menu.list" [title]="item.name" [class.active]="model.active === item.id || item.active" (tapped)="goto(item)"
-        a-tooltip name="dark" position="right" [content]="info" [hover]="true">
-        <ng-template #info>
-            <div class="tooltip">{{item.name}}</div>
-        </ng-template>
-        <div class="icon">
-            <i *ngIf="item.icon" [class]="item.icon.class">{{item.icon.value}}</i>
-            <img *ngIf="item.img || item.image || item.src" [src]="item.img || item.image || item.src">
+<div class="container" *ngIf="model.menu" [class.show]="model.show" (mouseleave)="tooltip = 'false'">
+    <ng-container *ngFor="let item of model.menu.list">
+        <div
+            class="item"
+            [title]="item.name"
+            [class.active]="model.active === item.id || item.active"
+            (tapped)="goto(item)"
+            a-tooltip
+            name="dark"
+            position="right"
+            [show]="tooltip != null ? (tooltip === item.route || tooltip === item.link) : false"
+            (showChange)="$event ? (tooltip = (item.route || item.link)) : ''"
+            [content]="info"
+            [hover]="true"
+        >
+            <ng-template #info>
+                <div class="tooltip">{{ item.name }}</div>
+            </ng-template>
+            <a *ngIf="item.link" [href]="item.link">
+                <app-icon [icon]="item?.icon"></app-icon>
+                <div class="text" *ngIf="!item?.hide_name">{{ item?.name }}</div>
+                <div class="bar"></div>
+            </a>
+            <a *ngIf="!item.link" [routerLink]="[item.route]" routerLinkActive="active">
+                <app-icon [icon]="item?.icon"></app-icon>
+                <div class="text" *ngIf="!item?.hide_name">{{ item?.name }}</div>
+                <div class="bar"></div>
+            </a>
         </div>
-        <div class="text" *ngIf="!item.hide_name">{{item.name}}</div>
-        <div class="bar"></div>
-    </div>
+    </ng-container>
 </div>

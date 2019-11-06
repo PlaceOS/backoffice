@@ -55,23 +55,10 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
         }, 50);
     }
 
-    public goto(item: any) {
-        if (item.id) {
-            this.service.navigate(item.id, item.query || {});
-        } else if (item.link || item.url) {
-            window.open(item.link || item.url, 'blank_');
-        }
-        this.close();
-    }
-
     public close() {
         this.timeout('close', () => {
             this.model.show = false;
             this.service.set('APP.show_menu', this.model.show);
         }, 100);
-    }
-
-    public cancelClose() {
-        this.clearTimeout('close');
     }
 }

@@ -2,6 +2,7 @@
 import { NgModule, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import { ADropdownsModule } from '@acaprojects/ngx-dropdown';
 import { ASpinnerModule } from '@acaprojects/ngx-spinners';
@@ -22,10 +23,10 @@ import { SearchbarComponent } from './components/searchbar/searchbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { SystemExecComponent } from './components/system-exec/system-exec.component';
 import { SettingsDisplayComponent } from './components/settings-display/settings-display.component';
-import { ScrollingModule } from '@angular/cdk/scrolling';
 import { EngineItemDropdownComponent } from './components/item-dropdown/item-dropdown.component';
 import { CronOptionsComponent } from './components/cron-options/cron-options.component';
 import { BaseRootComponent } from './components/base-root.component';
+import { IconComponent } from './components/icon/icon.component';
 
 const COMPONENTS: Type<any>[] = [
     BaseDirective,
@@ -37,7 +38,8 @@ const COMPONENTS: Type<any>[] = [
     SettingsDisplayComponent,
     ...LOGIN_COMPONENTS,
     EngineItemDropdownComponent,
-    CronOptionsComponent
+    CronOptionsComponent,
+    IconComponent
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [

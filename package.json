@@ -38,7 +38,7 @@
         "@acaprojects/ngx-dropdown": "^1.0.0",
         "@acaprojects/ngx-dynamic-forms": "^1.0.8",
         "@acaprojects/ngx-google-analytics": "^1.0.1",
-        "@acaprojects/ngx-overlays": "^1.0.3",
+        "@acaprojects/ngx-overlays": "^1.0.4",
         "@acaprojects/ngx-pipes": "^1.0.0",
         "@acaprojects/ngx-spinners": "^1.0.0",
         "@acaprojects/ngx-toggles": "^1.0.0",
