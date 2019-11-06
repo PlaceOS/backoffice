@@ -1,16 +1,19 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ApplicationService } from '../../../services/app.service';
+import { BaseComponent } from '../../globals/base.component';
 
 @Component({
     selector: 'login-display',
     templateUrl: './login.template.html',
     styleUrls: ['./login.styles.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent extends BaseComponent implements OnInit {
     public model: any = {};
 
-    constructor(private service: ApplicationService) {}
+    constructor(private service: ApplicationService) {
+        super();
+    }
 
     public ngOnInit() {
         this.model.show = 'login';
@@ -24,14 +27,14 @@ export class LoginComponent implements OnInit {
         }
         this.model.env = this.service.setting('env');
         this.model.logo = this.service.setting('app.logo');
-        this.service.Users.listen('state', (state) => {
+        this.subscription('state', this.service.Users.state.subscribe((state) => {
             this.model.loading = false;
             if (state === 'invalid') {
                 this.model.show = 'login';
             } else if (state === 'loading') {
                 this.model.loading = true;
             }
-        });
+        }));
     }
 
     public processLogin(e: any) {

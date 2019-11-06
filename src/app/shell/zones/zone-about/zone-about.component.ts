@@ -1,8 +1,8 @@
 
 import { Component, Input } from '@angular/core';
+import { EngineZone } from '@acaprojects/ts-composer';
 
 import { BaseComponent } from '../../../shared/globals/base.component';
-import { IEngineZone } from '../../../services/data/zones.service';
 
 @Component({
     selector: 'zone-about',
@@ -10,6 +10,6 @@ import { IEngineZone } from '../../../services/data/zones.service';
     styleUrls: ['./zone-about.styles.scss']
 })
 export class ZoneAboutComponent extends BaseComponent {
-    @Input() public item: IEngineZone;
+    @Input() public item: EngineZone;
 
 }

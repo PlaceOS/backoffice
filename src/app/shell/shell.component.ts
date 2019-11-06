@@ -11,9 +11,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
 import { ApplicationService } from '../services/app.service';
+import { BaseComponent } from '../shared/globals/base.component';
 
 import * as dayjs from 'dayjs';
-import { BaseComponent } from '../shared/globals/base.component';
 
 @Component({
     selector: 'app-shell',
@@ -32,7 +32,7 @@ export class AppShellComponent extends BaseComponent implements OnInit {
 
     public ngOnInit() {
         this.model.year = dayjs().format('YYYY');
-        this.subscription('user', this.service.Users.listen('user', (user) => this.model.user = user));
+        this.subscription('user', this.service.Users.user.subscribe((user) => this.model.user = user));
         this.subscription('route', this.router.events.subscribe((e) => {
             if (e instanceof NavigationEnd) {
                 this.checkRoute();

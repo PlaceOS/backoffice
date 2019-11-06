@@ -1,9 +1,9 @@
 
 import { Component, Input, OnChanges, OnInit, Output, EventEmitter } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
+import { EngineSystem } from '@acaprojects/ts-composer';
 
 import { BaseComponent } from '../../../shared/globals/base.component';
-import { IEngineSystem } from '../../../services/data/systems.service';
 import { ApplicationService } from '../../../services/app.service';
 
 @Component({
@@ -12,7 +12,7 @@ import { ApplicationService } from '../../../services/app.service';
     styleUrls: ['./system-zones.styles.scss']
 })
 export class SystemZonesComponent extends BaseComponent implements OnInit, OnChanges {
-    @Input() public item: IEngineSystem;
+    @Input() public item: EngineSystem;
     @Output() public loading = new EventEmitter<boolean | string>();
 
     public model: any = {};
@@ -82,7 +82,6 @@ export class SystemZonesComponent extends BaseComponent implements OnInit, OnCha
         if (this.model.new_zone) {
             if (this.item.zones.indexOf(this.model.new_zone) < 0) {
                 const new_list = [ ...this.item.zones, this.model.new_zone ].filter(i => !!i);
-                const updated_item = { ...this.item, zones: new_list };
                 this.loading.emit(true);
                 this.service.Overlay.open('confirm', {
                     data: {
@@ -94,11 +93,11 @@ export class SystemZonesComponent extends BaseComponent implements OnInit, OnCha
                     }
                 }, (e) => {
                     if (e.type === 'Accept') {
-                        this.service.Systems.update(this.item.id, updated_item).then(() => {
+                        this.service.Systems.update(this.item.id, { ...this.item, zones: new_list }).then((item) => {
                             this.model.new_zone = null;
                             this.loading.emit(false);
                             this.service.notifySuccess(`Addeed zone "${this.model.new_zone}" to system`);
-                            this.item = updated_item;
+                            this.item = item;
                             this.load();
                         }, () => {
                             this.loading.emit(false);

@@ -1,8 +1,8 @@
 
 import { Component, Input, OnInit } from '@angular/core';
+import { EngineTrigger } from '@acaprojects/ts-composer';
 
 import { BaseComponent } from '../../../shared/globals/base.component';
-import { IEngineTrigger } from '../../../services/data/triggers.service';
 import { ApplicationService } from '../../../services/app.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { ApplicationService } from '../../../services/app.service';
     styleUrls: ['./trigger-about.styles.scss']
 })
 export class TriggerAboutComponent extends BaseComponent implements OnInit {
-    @Input() public item: IEngineTrigger;
+    @Input() public item: EngineTrigger;
 
     public model: any = {};
 

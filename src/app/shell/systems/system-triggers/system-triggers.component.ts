@@ -1,9 +1,9 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
+import { EngineSystem } from '@acaprojects/ts-composer';
 
 import { BaseComponent } from '../../../shared/globals/base.component';
 import { ApplicationService } from '../../../services/app.service';
-import { IEngineSystem } from '../../../services/data/systems.service';
 
 @Component({
     selector: 'system-triggers',
@@ -11,7 +11,7 @@ import { IEngineSystem } from '../../../services/data/systems.service';
     styleUrls: ['./system-triggers.styles.scss']
 })
 export class SystemTriggersComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IEngineSystem;
+    @Input() public item: EngineSystem;
 
     public model: any = {};
 
@@ -43,7 +43,7 @@ export class SystemTriggersComponent extends BaseComponent implements OnChanges 
     }
 
     public addTrigger() {
-        this.service.Systems.addTrigger(this.item)
-            .then(() => this.load(), _ => null);
+        // this.service.Systems.addTrigger(this.item)
+        //     .then(() => this.load(), _ => null);
     }
 }

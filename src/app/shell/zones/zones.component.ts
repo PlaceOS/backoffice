@@ -27,7 +27,7 @@ export class ZonesComponent extends BaseRootComponent {
         const q = `total_${toQueryString(query)}`;
         // Get system count
         this.service.Systems.query(query)
-            .then(() => this.model.systems = this.service.Systems.get(q));
+            .then(() => this.model.systems = this.service.Systems.last_total);
         const tquery: any = { offset: 0, limit: 1, zone_id: this.model.item.id };
         const tq = `total_${toQueryString(tquery)}`;
         // Get trigger count

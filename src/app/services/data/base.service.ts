@@ -1,7 +1,7 @@
-import { CommsService } from '@acaprojects/ngx-composer';
-import { BehaviorSubject, Observable, Subscription, Subscriber, Subject } from 'rxjs';
 
-import { BaseDataClass } from './base-api.class';
+import { BehaviorSubject, Observable, Subscription, Subscriber, Subject } from 'rxjs';
+import { EngineHttpClient, EngineResource } from '@acaprojects/ts-composer';
+
 import { BaseClass } from '../../shared/globals/base.class';
 import { ApplicationService } from '../app.service';
 import { HashMap } from '../../shared/utilities/types.utilities';
@@ -12,7 +12,7 @@ export interface IEngineResponse {
     total: number
 }
 
-export class BaseAPIService<T = BaseDataClass> extends BaseClass {
+export class BaseAPIService<T extends {}> extends BaseClass {
     /** Application service */
     public parent: ApplicationService;
     /** Display name of the service */
@@ -36,7 +36,7 @@ export class BaseAPIService<T = BaseDataClass> extends BaseClass {
     /** Default filter function for list method */
     protected _list_filter: (a: T) => boolean = (a) => !!a;
 
-    constructor(protected http: CommsService) {
+    constructor(protected http: EngineHttpClient) {
         super();
         this._name = 'base';
         this._singular = 'base';
@@ -161,7 +161,7 @@ export class BaseAPIService<T = BaseDataClass> extends BaseClass {
                         this._promises.new_item = null;
                     },
                     () => {
-                        if ((!query || (query_params && query_params.update_list)) && result.length > 0 && result[0] instanceof BaseDataClass) {
+                        if ((!query || (query_params && query_params.update_list)) && result.length > 0 && result[0] instanceof Object) {
                             this.set('list', this.updateList(this.get('list'), result as T[]));
                         }
                         resolve(result);

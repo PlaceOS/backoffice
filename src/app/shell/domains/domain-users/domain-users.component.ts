@@ -1,9 +1,9 @@
 
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { EngineDomain } from '@acaprojects/ts-composer';
 
 import { BaseComponent } from '../../../shared/globals/base.component';
 import { ApplicationService } from '../../../services/app.service';
-import { IEngineDomain } from '../../../services/data/domains.service';
 
 @Component({
     selector: 'domain-users',
@@ -11,7 +11,7 @@ import { IEngineDomain } from '../../../services/data/domains.service';
     styleUrls: ['./domain-users.styles.scss']
 })
 export class DomainUsersComponent extends BaseComponent implements OnInit, OnChanges {
-    @Input() public item: IEngineDomain;
+    @Input() public item: EngineDomain;
 
     public model: any = {};
 

@@ -1,12 +1,11 @@
 
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { EngineSystem, EngineModule } from '@acaprojects/ts-composer';
 
 import { BaseComponent } from '../../../shared/globals/base.component';
 import { ApplicationService } from '../../../services/app.service';
-import { IEngineSystem } from '../../../services/data/systems.service';
 import { ContextMenuComponent } from '../../../shared/components/context-menu/context-menu.component';
-import { IEngineModule } from '../../../services/data/modules.service';
 
 @Component({
     selector: 'system-devices',
@@ -14,7 +13,7 @@ import { IEngineModule } from '../../../services/data/modules.service';
     styleUrls: ['./system-devices.styles.scss']
 })
 export class SystemDevicesComponent extends BaseComponent implements OnInit, OnChanges {
-    @Input() public item: IEngineSystem;
+    @Input() public item: EngineSystem;
 
     public model: any = {};
 
@@ -38,7 +37,7 @@ export class SystemDevicesComponent extends BaseComponent implements OnInit, OnC
     }
 
     public load(offset: number = 0) {
-        this.service.Modules.query({ sys_id: this.item.id, offset }).then((list) => {
+        this.service.Modules.query({ system_id: this.item.id, offset }).then((list) => {
             list.sort((a, b) => this.item.modules.indexOf(a.id) - this.item.modules.indexOf(b.id));
             this.model.devices = list;
         }, () => null);
@@ -74,7 +73,7 @@ export class SystemDevicesComponent extends BaseComponent implements OnInit, OnC
         }
     }
 
-    public power(device: IEngineModule) {
+    public power(device: EngineModule) {
         if (device.running) {
             this.service.Modules.stop(device.id).then(() => {
                 this.service.notifySuccess('Module successfully stopped');
@@ -104,7 +103,7 @@ export class SystemDevicesComponent extends BaseComponent implements OnInit, OnC
         }
     }
 
-    public reload(device: IEngineModule) {
+    public reload(device: EngineModule) {
         this.service.Modules.show(device.id).then((item) => {
             for (const k in item) {
                 if (item.hasOwnProperty(k)) {
@@ -114,13 +113,13 @@ export class SystemDevicesComponent extends BaseComponent implements OnInit, OnC
         }, () => null);
     }
 
-    public viewState(device: IEngineModule) {
+    public viewState(device: EngineModule) {
         this.service.Overlay.open('view-module-state', { data: { system: this.item, module: device } }, (e) => {
             e.close();
         });
     }
 
-    public reloadModule(device: IEngineModule) {
+    public reloadModule(device: EngineModule) {
         this.service.Overlay.open('confirm', {
             data: {
                 icon: 'refresh',
@@ -131,9 +130,9 @@ export class SystemDevicesComponent extends BaseComponent implements OnInit, OnC
             }
         }, (e) => {
             if (e.type === 'Accept') {
-                this.service.Drivers.reload(device.dependency.id)
+                this.service.Drivers.reload(device.dependency_id)
                     .then(
-                        (result) => this.service.notifySuccess(result.message || result),
+                        (result) => this.service.notifySuccess('Driver successfully reloaded.'),
                         (err) => this.service.notifyError(err.message || err)
                     );
             }
@@ -170,12 +169,12 @@ export class SystemDevicesComponent extends BaseComponent implements OnInit, OnC
         }
     }
 
-    public remove(device: IEngineModule) {
+    public remove(device: EngineModule) {
         this.service.Overlay.open('confirm', {
             data: {
                 icon: 'delete',
                 title: 'Remove module?',
-                message: `Remove ${device.dependency.module_name} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
+                message: `Remove ${device.dependency_id} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
                 accept: 'Ok',
                 cancel: true
             }

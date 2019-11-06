@@ -1,86 +1,101 @@
-import { CommsService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaprojects/ngx-composer';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Validators } from '@angular/forms';
-import { IFormFieldOptions } from '@acaprojects/ngx-dynamic-forms';
+import { IFormFieldOptions, ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
+import { EngineUsersService, EngineUser, EngineUserQueryOptions } from '@acaprojects/ts-composer';
+import { BehaviorSubject } from 'rxjs';
+import { Md5 } from 'ts-md5/dist/md5';
 
-import { BaseAPIService } from './base.service';
-import { filterList } from 'src/app/shared/utilities/general.utilities';
+import { FilterFn } from 'src/app/shared/utilities/types.utilities';
 import { toQueryString } from 'src/app/shared/utilities/api.utilities';
 
 import * as dayjs from 'dayjs';
 
-export interface IUser {
-    id: string;
-    name: string;
-    first_name?: string;
-    last_name?: string;
-    email: string;
-    win_id?: string;
-    type?: 'partner' | 'internal' | 'external';
-    role?: string;
-    state?: string;
-    image: string;
-    phone?: string;
-    external?: boolean;
-    staff_code?: string;
-    organisation_id?: string;
-    organisation_name?: string;
-    organisation?: { id: string, name: string } | string;
-    b_unit?: string;
-    gravatar_hash?: string;
-}
+type ServiceItem = EngineUser;
 
 @Injectable({
     providedIn: 'root'
 })
-export class BackofficeUsersService extends BaseAPIService<IUser> {
+export class BackofficeUsersService extends EngineUsersService {
+    /** Name for a single user */
+    readonly singular: string = 'user';
+    /** Behavior subject with the currently available list of users */
+    readonly listing = new BehaviorSubject<ServiceItem[]>([]);
+    /** Active User */
+    readonly user = new BehaviorSubject<ServiceItem>(null);
+    /** State of loading the user */
+    readonly state = new BehaviorSubject<string>('');
+    /** Default method for filtering the available list */
+    private _filter_fn: FilterFn<ServiceItem> = (_) => true;
+    /** Application Service */
+    public parent: any;
 
-    constructor(protected http: CommsService, private http_unauth: HttpClient) {
-        super(http);
-        this._name = 'user';
-        this._singular = 'user';
-        this._api_route = '/users';
-        this.set('user', null);
-        this.set('state', 'loading');
+    constructor(private _composer: ComposerService, private http_unauth: HttpClient) {
+        super(undefined);
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.http = this._composer.http;
+                sub.unsubscribe();
+            }
+        });
+    }
+
+    /**
+     * Get the available list of zones
+     * @param predicate Function to filter the zone list on
+     */
+    public list(predicate: FilterFn<ServiceItem> = this._filter_fn): ServiceItem[] {
+        return (this.listing.getValue() || []).filter(predicate);
+    }
+
+    public query(query_params?: EngineUserQueryOptions): Promise<ServiceItem[]> {
+        return new Promise((resolve, reject) => {
+            super.query(query_params).then((list) => {
+                const old_list = this.list();
+                const new_list = [...list];
+                for (const item of old_list) {
+                    const found = new_list.find(i => item.id === i.id);
+                    if (!found) {
+                        new_list.push(item);
+                    }
+                }
+                this.listing.next(new_list);
+                resolve(list);
+            }, e => reject(e));
+        });
     }
 
     protected load(): Promise<void> {
         return new Promise((resolve) => {
-            this.set('state', 'loading');
+            this.state.next('loading');
             this.show('current').then((user) => {
                 if (user) {
-                    this.set('user', user);
-                    this.set('state', 'success');
+                    this.user.next(user);
+                    this.state.next('success');
                     resolve();
                 } else {
                     this.timeout('load', () => this.load().then(_ => resolve()), 600);
                 }
             }, () => this.timeout('load', () => this.load().then(_ => resolve()), 600));
-        })
+        });
     }
 
     /**
-     * Get current user
+     * Manually set the user access token
+     * @param token Token to set
+     * @param expiry Expiry time of the token
      */
-    public current() {
-        return this.get('user');
-    }
-
     public setToken(token: string, expiry: number) {
         if (!expiry) { expiry = dayjs().add(7, 'd').valueOf(); }
         const path = `${location.origin}${this.parent.setting('composer.route') || ''}/oauth-resp.html`;
         if (localStorage) {
-            const client_id = this.http.hash(path);
+            const client_id = Md5.hashStr(path);
             localStorage.setItem(`${client_id}_access_token`, token);
             localStorage.setItem(`${client_id}_expires_at`, `${expiry}`);
             location.reload();
         }
         return path;
-    }
-
-    public getFilteredUsers(filter: string, items: IUser[] = this.list(), fields: string[] = ['name', 'email']) {
-        return filterList(filter, items, fields);
     }
 
     /**
@@ -95,69 +110,39 @@ export class BackofficeUsersService extends BaseAPIService<IUser> {
         this.http_unauth.post('/auth/jwt/callback', query, { headers }).subscribe((res: any) => {
             if (res.status >= 200 && res.status < 400) {
                 if (sessionStorage) {
-                    const clientId = this.http.hash(`${location.origin}/oauth-resp.html`);
+                    const clientId = Md5.hashStr(`${location.origin}/oauth-resp.html`);
                     sessionStorage.setItem(`${clientId}_login`, 'true');
                 }
-                this.http.tryLogin();
+                this._composer.auth.authorise();
             } else {
                 this._subjects.state.next('invalid');
             }
-            return;
         }, (err) => {
             if (err.status >= 400) {
                 this._subjects.state.next('error');
             } else {
                 if (sessionStorage) {
-                    const clientId = this.http.hash(`${location.origin}/oauth-resp.html`);
+                    const clientId = Md5.hashStr(`${location.origin}/oauth-resp.html`);
                     sessionStorage.setItem(`${clientId}_login`, 'true');
                 }
-                this.http.tryLogin();
+                this._composer.auth.authorise();
             }
         }, () => this.load());
     }
 
+    /**
+     * Logout from the application
+     */
     public logout() {
-        this.http.logout();
+        this._composer.auth.logout();
     }
 
     /**
-     * Convert user data to local format
-     * @param user User data
+     * Get form fields for the given item
+     * @param item
      */
-    protected process(user: any) {
-        if (user) {
-            const u_org = user.organisation;
-            const org = {
-                id: typeof u_org !== 'string' && u_org ? u_org.id : user.organisation_id,
-                name: typeof u_org !== 'string' && u_org ? u_org.name : user.organisation_name || user.organisation,
-            };
-            const member: IUser = {
-                id: user.id || user.email,
-                win_id: user.email,
-                name: user.name || `${user.first_name} ${user.last_name}`,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                type: user.title ? (user.title.toLowerCase() === 'partner' ? 'partner' : 'internal') : 'external',
-                image: null,
-                email: user.email,
-                phone: user.phone || user.mobile,
-                b_unit: user.department,
-                organisation_id: org.id,
-                organisation_name: org.name,
-                staff_code: user.staff_code,
-                gravatar_hash: this.http.hash(user.email || '')
-            };
-            if (member.id) {
-                member.image = user.image || null;
-            }
-            return member;
-        } else {
-            return null;
-        }
-    }
-
-    public getFormFields(item: IUser) {
-        const fields: IFormFieldOptions<any>[] = [
+    public getFormFields(item: ServiceItem) {
+        const fields: ADynamicFormField<any>[] = ([
             { key: 'name', label: 'Name', value: '', type: 'input' },
             { key: 'email', label: 'Email', attributes: {type: 'email'}, value: '', type: 'input', required: true, validators: [Validators.email] },
             { key: 'card_number', label: 'Card Number', value: '', type: 'input' },
@@ -165,14 +150,12 @@ export class BackofficeUsersService extends BaseAPIService<IUser> {
             { key: 'support', label: 'Support', value: '', type: 'checkbox' },
             { key: 'password', label: 'Password', attributes: {type: 'password'}, value: '', type: 'input' },
             { key: 'confirm_password', label: 'Confirm Password', attributes: { type: 'password' }, metadata: { match: 'password'}, value: '', type: 'input' },
-        ];
-
-        if (item) {
-            for (const i of fields) {
-                if (item[i.key]) {
-                    i.value = item[i.key];
-                }
-            }
+        ] as IFormFieldOptions[])
+            .map(i => new ADynamicFormField(i));
+        /** Initialise fields and change listeners */
+        for (const field of fields) {
+            field.control.setValue(item[field.key]);
+            field.control.valueChanges.subscribe(i => item[field.key] = i);
         }
         return fields;
     }

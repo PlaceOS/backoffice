@@ -1,58 +1,60 @@
 
 import { Injectable } from '@angular/core';
-import { CommsService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaprojects/ngx-composer';
+import { EngineAuthSourcesService, EngineAuthSource } from '@acaprojects/ts-composer';
+import { BehaviorSubject } from 'rxjs';
 
-import { BaseAPIService } from './base.service';
+import { FilterFn } from 'src/app/shared/utilities/types.utilities';
+import { EngineResourceQueryOptions } from '@acaprojects/ts-composer/dist/types/http/services/resources/resources.interface';
 
-export interface IEngineAuthSource {
-    id: string;
-    uid: string;
-    authority_id?: string;
-    name: string;
-    display_name?: string;
-    auth_method?: string;
-    base?: string;
-    type: string;
-    password?: string;
-    host?: string;
-    port?: number;
-    filter: string;
-    bind_dn?: string;
-    created: number;
-}
+type ServiceItem = EngineAuthSource
 
 @Injectable({
     providedIn: 'root'
 })
-export class BackofficeAuthSourcesService extends BaseAPIService<IEngineAuthSource> {
+export class BackofficeAuthSourcesService extends EngineAuthSourcesService {
+    /** Name for a single user */
+    readonly singular: string = 'auth source';
+    /** Behavior subject with the currently available list of users */
+    readonly listing = new BehaviorSubject<ServiceItem[]>([]);
+    /** Default method for filtering the available list */
+    private _filter_fn: FilterFn<ServiceItem> = (_) => true;
+    /** Application Service */
+    public parent: any;
 
-    constructor(protected http: CommsService) {
-        super(http);
-        this._name = 'authentication source';
-        this._api_route = '/authsources';
+    constructor(private _composer: ComposerService) {
+        super(undefined);
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.http = this._composer.http;
+                sub.unsubscribe();
+            }
+        });
     }
 
-    public route(engine?: boolean): string {
-        return `/auth/api${this._api_route}`;
+    /**
+     * Get the available list of zones
+     * @param predicate Function to filter the zone list on
+     */
+    public list(predicate: FilterFn<ServiceItem> = this._filter_fn): ServiceItem[] {
+        return (this.listing.getValue() || []).filter(predicate);
     }
 
-    protected process(raw_item: any) {
-        const item: IEngineAuthSource = {
-            id: raw_item.id,
-            uid: raw_item.uid,
-            authority_id: raw_item.authority_id,
-            name: raw_item.name,
-            auth_method: raw_item.auth_method,
-            base: raw_item.base,
-            type: raw_item.type,
-            password: raw_item.password,
-            host: raw_item.host,
-            port: raw_item.port,
-            filter: raw_item.filter,
-            bind_dn: raw_item.bind_dn,
-            created: raw_item.created_at * 1000
-        };
-        return item;
+    public query(query_params?: EngineResourceQueryOptions): Promise<ServiceItem[]> {
+        return new Promise((resolve, reject) => {
+            super.query(query_params).then((list) => {
+                const old_list = this.list();
+                const new_list = [...list];
+                for (const item of old_list) {
+                    const found = new_list.find(i => item.id === i.id);
+                    if (!found) {
+                        new_list.push(item);
+                    }
+                }
+                this.listing.next(new_list);
+                resolve(list);
+            }, e => reject(e));
+        });
     }
 
 }

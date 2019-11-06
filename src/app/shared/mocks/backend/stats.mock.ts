@@ -1,11 +1,11 @@
 
-import { MOCK_REQ_HANDLER } from '@acaprojects/ngx-composer';
+import { MockHttpRequestHandlerOptions } from '@acaprojects/ts-composer';
 
 import { BaseMockBackend } from './base.mock';
+import { padZero } from '../../utilities/general.utilities';
 
 import * as faker from 'faker';
 import * as dayjs from 'dayjs';
-import { padZero } from '../../utilities/general.utilities';
 
 export class MockStatsBackend extends BaseMockBackend {
 
@@ -60,17 +60,22 @@ export class MockStatsBackend extends BaseMockBackend {
             });
         }
         this.model.states = item_list;
-        MOCK_REQ_HANDLER.register('/control/api/stats/:id', this.model.stats, (event) => {
-            const period = event.fragment.period || 'day';
-            const interval = period === 'hour' ? 5 * 60 : (period === 'week' ? 6 * 60 * 60 : (period === 'month' ? 24 * 60 * 60 : 30 * 60));
-            if (event.params.id && this.model[`graph_${event.params.id}`] && this.model[`graph_${event.params.id}`].histogram) {
-                const item = JSON.parse(JSON.stringify(this.model[`graph_${event.params.id}`]));
-                item.interval = interval;
-                item.period_name = period;
-                return item;
+        window.control.handlers.push({
+            path: '/control/api/stats/:id',
+            metadata: this.model.stats,
+            method: 'GET',
+            callback: (event) => {
+                const period = event.query_params.period || 'day';
+                const interval = period === 'hour' ? 5 * 60 : (period === 'week' ? 6 * 60 * 60 : (period === 'month' ? 24 * 60 * 60 : 30 * 60));
+                if (event.route_params.id && this.model[`graph_${event.route_params.id}`] && this.model[`graph_${event.route_params.id}`].histogram) {
+                    const item = JSON.parse(JSON.stringify(this.model[`graph_${event.route_params.id}`]));
+                    item.interval = interval;
+                    item.period_name = period;
+                    return item;
+                }
+                return null;
             }
-            return null;
-        });
+        } as MockHttpRequestHandlerOptions);
         this.state.next(true);
     }
 }

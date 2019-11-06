@@ -3,10 +3,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ComposerModule } from '@acaprojects/ngx-composer';
 
 import './shared/mocks';
 
-import { ComposerModule } from '@acaprojects/ngx-composer';
 import { AGoogleAnalyticsModule } from '@acaprojects/ngx-google-analytics';
 
 import { AppRoutingModule } from './app-routing.module';

@@ -1,8 +1,7 @@
 import { AbstractControl, Validators } from '@angular/forms';
 
-import { User } from '../../services/data/users/user.class';
-
 import * as dayjs from 'dayjs';
+import { EngineUser } from '@acaprojects/ts-composer';
 
 const HAS_ERROR = true;
 
@@ -52,17 +51,17 @@ export function validateDuration(control: AbstractControl, min: number = 30, max
     return null;
 }
 
-export function buildValidateAttendees(host: User, min: number = 0) {
+export function buildValidateAttendees(host: EngineUser, min: number = 0) {
     return (c) => validateAttendees(c, host, min);
 }
 
-export function validateAttendees(control: AbstractControl, host: User, min: number = 0) {
+export function validateAttendees(control: AbstractControl, host: EngineUser, min: number = 0) {
     if (!control || !(control.value instanceof Array)) {
         return min > 0
             ? { invalid: true, message: `Minimum of ${min} attendee${min === 1 ? ' is' : 's are'} required other than you` }
             : null;
     }
-    const list: User[] = control.value;
+    const list: EngineUser[] = control.value;
     if (host) {
         const result = list.find(a => a.email === host.email);
         if (result) { list.splice(list.indexOf(result), 1); }

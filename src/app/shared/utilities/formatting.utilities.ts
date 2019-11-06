@@ -1,7 +1,7 @@
 
-import { humaniseDuration } from './general.utilities';
+import { EngineUser } from '@acaprojects/ts-composer';
 
-import { User } from '../../services/data/users/user.class';
+import { humaniseDuration } from './general.utilities';
 
 import * as dayjs from 'dayjs';
 
@@ -14,7 +14,7 @@ import * as dayjs from 'dayjs';
  * Get function to create formatted string for a list of users with a host
  * @param host Host user
  */
-export function formatAttendeesWithHost(host: User): (_: User[]) => string {
+export function formatAttendeesWithHost(host: EngineUser): (_: EngineUser[]) => string {
     return (l) => formatAttendees(l, host);
 }
 
@@ -23,7 +23,7 @@ export function formatAttendeesWithHost(host: User): (_: User[]) => string {
  * @param list List of users
  * @param host Owner of the list of users
  */
-export function formatAttendees(list: User[], host?: User) {
+export function formatAttendees(list: EngineUser[], host?: EngineUser) {
     let attendee_str: string = '';
     if (list && list.length > 0) {
         const users = [...list];

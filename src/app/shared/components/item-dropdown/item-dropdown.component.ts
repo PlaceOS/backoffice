@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
+import { EngineResource } from '@acaprojects/ts-composer';
 
 import { BaseAPIService } from '../../../services/data/base.service';
 import { BaseComponent } from '../../globals/base.component';
-import { BaseDataClass } from 'src/app/services/data/base-api.class';
 
 @Component({
     selector: 'engine-item-dropdown',
@@ -15,8 +15,8 @@ export class EngineItemDropdownComponent extends BaseComponent implements OnInit
     @Input() model: string;
     @Output() modelChange = new EventEmitter<string>();
 
-    public items: BaseDataClass[];
-    public item: BaseDataClass;
+    public items: EngineResource<any>[];
+    public item: EngineResource<any>;
     public count = -1;
 
     public loading = false;

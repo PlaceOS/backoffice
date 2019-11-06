@@ -18,10 +18,10 @@ import { MockApplicationsBackend } from './backend/applications.mock';
 import { MockAuthSourcesBackend } from './backend/auth-sources.mock';
 import { MockSystemTriggersBackend } from './backend/systems-triggers.mock';
 import { MockNodesBackend } from './backend/nodes.mock';
-import { MOCK_REQ_HANDLER } from '@acaprojects/ngx-composer';
 import { MockStatsBackend } from './backend/stats.mock';
 import { MockTestsBackend } from './backend/tests.mock';
 import { MockDiscoveryBackend } from './backend/discovery.mock';
+import { MockHttpRequestHandlerOptions } from '@acaprojects/ts-composer';
 
 export class MockBackend {
     public model: any = {
@@ -42,6 +42,12 @@ export class MockBackend {
     private desk_id_pool: any[] = [];
 
     constructor() {
+        if (!window.control) {
+            window.control = {};
+        }
+        if (!window.control.handlers) {
+            window.control.handlers = [];
+        }
         this.log('MOCK', 'Initialising Requests');
         this.model.log = (type: string, msg: string, args?: any, out: string = 'debug', color?: string) => {
             this.log(type, msg, args, out, color);
@@ -160,55 +166,61 @@ export class MockBackend {
     }
 
     private loadSearch() {
-        MOCK_REQ_HANDLER.register(`/${this.model.api_route}/search`, null, (event) => {
-            if (event.fragment.q) {
-                let limit = 20;
-                if (event.fragment.offset) { limit += +event.fragment.offset; }
-                event.fragment.limit = limit;
-                const fragment = JSON.parse(JSON.stringify(event.fragment));
-                fragment.offset = 0;
-                let total = 0;
-                const results: any[] = [];
-                let data = [];
-                if (this.model.backend.systems) {
-                    const list = this.model.backend.systems.search(this.model.systems, fragment);
-                    list.results.forEach(element => element.type = 'system');
-                    total += list.total;
-                    data = data.concat(list.results);
-                }
-                if (this.model.backend.triggers) {
-                    const list = this.model.backend.triggers.search(this.model.triggers, fragment);
-                    list.results.forEach(element => element.type = 'trigger');
-                    total += list.total;
-                    data = data.concat(list.results);
-                }
-                if (this.model.backend.modules) {
-                    const list = this.model.backend.modules.search(this.model.modules, fragment);
-                    list.results.forEach(element => element.type = 'device');
-                    total += list.total;
-                    data = data.concat(list.results);
-                }
-                if (this.model.backend.zones) {
-                    const list = this.model.backend.zones.search(this.model.zones, fragment);
-                    list.results.forEach(element => element.type = 'zone');
-                    total += list.total;
-                    data = data.concat(list.results);
-                }
-                if (this.model.backend.users) {
-                    const list = this.model.backend.users.search(this.model.users, fragment);
-                    list.results.forEach(element => element.type = 'user');
-                    total += list.total;
-                    data = data.concat(list.results);
-                }
-                if (event.fragment && event.fragment.offset) {
-                    const start = Math.min(data.length, +(event.fragment.offset));
-                    const end = Math.min(data.length, +(event.fragment.offset) + 20);
-                    return { results: data.slice(start, end), total };
-                } else {
-                    return { results: data.slice(0, 20), total};
+        const handler: MockHttpRequestHandlerOptions = {
+            path: `/${this.model.api_route}/search`,
+            metadata: {},
+            method: 'GET',
+            callback: (event) => {
+                if (event.query_params.q) {
+                    let limit = 20;
+                    if (event.query_params.offset) { limit += +event.query_params.offset; }
+                    event.query_params.limit = limit as any;
+                    const fragment = JSON.parse(JSON.stringify(event.query_params));
+                    fragment.offset = 0;
+                    let total = 0;
+                    const results: any[] = [];
+                    let data = [];
+                    if (this.model.backend.systems) {
+                        const list = this.model.backend.systems.search(this.model.systems, fragment);
+                        list.results.forEach(element => element.type = 'system');
+                        total += list.total;
+                        data = data.concat(list.results);
+                    }
+                    if (this.model.backend.triggers) {
+                        const list = this.model.backend.triggers.search(this.model.triggers, fragment);
+                        list.results.forEach(element => element.type = 'trigger');
+                        total += list.total;
+                        data = data.concat(list.results);
+                    }
+                    if (this.model.backend.modules) {
+                        const list = this.model.backend.modules.search(this.model.modules, fragment);
+                        list.results.forEach(element => element.type = 'device');
+                        total += list.total;
+                        data = data.concat(list.results);
+                    }
+                    if (this.model.backend.zones) {
+                        const list = this.model.backend.zones.search(this.model.zones, fragment);
+                        list.results.forEach(element => element.type = 'zone');
+                        total += list.total;
+                        data = data.concat(list.results);
+                    }
+                    if (this.model.backend.users) {
+                        const list = this.model.backend.users.search(this.model.users, fragment);
+                        list.results.forEach(element => element.type = 'user');
+                        total += list.total;
+                        data = data.concat(list.results);
+                    }
+                    if (event.query_params && event.query_params.offset) {
+                        const start = Math.min(data.length, +(event.query_params.offset));
+                        const end = Math.min(data.length, +(event.query_params.offset) + 20);
+                        return { results: data.slice(start, end), total };
+                    } else {
+                        return { results: data.slice(0, 20), total };
+                    }
                 }
             }
-        });
+        };
+        window.control.handlers.push(handler);
     }
 
     private update(model: any) {

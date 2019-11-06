@@ -3,7 +3,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 
 import { BaseComponent } from '../../../shared/globals/base.component';
 import { ApplicationService } from '../../../services/app.service';
-import { IEngineDomain } from '../../../services/data/domains.service';
+import { EngineDomain } from '@acaprojects/ts-composer';
 
 @Component({
     selector: 'domain-applications',
@@ -11,7 +11,7 @@ import { IEngineDomain } from '../../../services/data/domains.service';
     styleUrls: ['./domain-applications.styles.scss']
 })
 export class DomainApplicationsComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IEngineDomain;
+    @Input() public item: EngineDomain;
 
     public model: any = {};
 
@@ -26,7 +26,7 @@ export class DomainApplicationsComponent extends BaseComponent implements OnChan
     }
 
     public load(offset: number = 0) {
-        this.service.Applications.query({ owner: this.item.id, offset }).then((list) => {
+        this.service.Applications.query({ owner: this.item.id, offset } as any).then((list) => {
             if (!offset) { this.model.list = []; }
             for (const item of (list || [])) {
                 let found = false;
@@ -43,8 +43,8 @@ export class DomainApplicationsComponent extends BaseComponent implements OnChan
 
     public createApplication() {
         console.log('Create application');
-        this.service.Applications.create().then((v) => {
-            this.load();
-        }, _ => null);
+        // this.service.Applications.create().then((v) => {
+        //     this.load();
+        // }, _ => null);
     }
 }

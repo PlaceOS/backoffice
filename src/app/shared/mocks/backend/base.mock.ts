@@ -1,8 +1,17 @@
 
-import { MOCK_REQ_HANDLER } from '@acaprojects/ngx-composer';
+import { MockHttpRequestHandlerOptions } from '@acaprojects/ts-composer';
 import { BehaviorSubject } from 'rxjs';
 
 import { padZero } from '../../utilities/general.utilities';
+
+function initialiseGlobals() {
+    if (!window.control) {
+        window.control = {};
+    }
+    if (!window.control.handlers || !(window.control.handlers instanceof Array)) {
+        window.control.handlers = [];
+    }
+}
 
 export class BaseMockBackend {
     protected state: BehaviorSubject<boolean>;
@@ -46,41 +55,60 @@ export class BaseMockBackend {
 
     public setupBasicHandlers(base_url: string, list: any[], id_prefix: string) {
         if (!list) { list = []; }
+        initialiseGlobals();
         // Mock for index GET
-        MOCK_REQ_HANDLER.register(`${base_url}`, list, (event) => {
-            return this.search(list, event.fragment);
-        });
+        window.control.handlers.push({
+            path: `${base_url}`,
+            metadata: list,
+            method: 'GET',
+            callback: (event) => this.search(list, event.query_params)
+        } as MockHttpRequestHandlerOptions);
         // Mock for index POST
-        MOCK_REQ_HANDLER.register(`${base_url}`, list, (event) => {
-            list.push({ id: `${id_prefix}-${padZero(list.length, 4)}`, ...(event.body || {}) });
-            console.log(base_url, list[list.length - 1]);
-            return list[list.length - 1];
-        }, 'POST');
+        window.control.handlers.push({
+            path: `${base_url}`,
+            metadata: list,
+            method: 'POST',
+            callback: (event) => {
+                list.push({ id: `${id_prefix}-${padZero(list.length, 4)}`, ...(event.body || {}) });
+                console.log(base_url, list[list.length - 1]);
+                return list[list.length - 1];
+            }
+        } as MockHttpRequestHandlerOptions);
         // Mock for show GET
-        MOCK_REQ_HANDLER.register(`${base_url}/:id`, list, (event) => {
-            if (event && event.params && event.params.id) {
-                for (const item of list) {
-                    if (item.id === event.params.id) {
-                        return item;
+        window.control.handlers.push({
+            path: `${base_url}/:id`,
+            metadata: list,
+            method: 'GET',
+            callback: (event) => {
+                if (event && event.route_params && event.route_params.id) {
+                    for (const item of list) {
+                        if (item.id === event.route_params.id) {
+                            return item;
+                        }
                     }
                 }
+                return null;
             }
-            return null;
-        });
+        } as MockHttpRequestHandlerOptions);
         // Mock for show PUT
-        MOCK_REQ_HANDLER.register(`${base_url}/:id`, list, (event) => {
-            if (event && event.params && event.params.id) {
-                for (const item of list) {
-                    if (item.id === event.params.id) {
-                        const new_item = { ...item, ...event.body };
-                        list.splice(list.indexOf(item), 1, new_item);
-                        this.updateOtherEndpoints(list);
-                        return item;
+        window.control.handlers.push({
+            path: `${base_url}/:id`,
+            metadata: list,
+            method: 'PUT',
+            callback: (event) => {
+                if (event && event.route_params && event.route_params.id) {
+                    for (const item of list) {
+                        if (item.id === event.route_params.id) {
+                            const new_item = { ...item, ...event.body };
+                            list.splice(list.indexOf(item), 1, new_item);
+                            this.updateOtherEndpoints(list);
+                            return item;
+                        }
                     }
                 }
+                return null;
             }
-            return null;
-        }, 'PUT');
+        } as MockHttpRequestHandlerOptions);
         return list;
     }
 

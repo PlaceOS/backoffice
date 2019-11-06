@@ -1,9 +1,9 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
+import { EngineModule } from '@acaprojects/ts-composer';
 
 import { BaseComponent } from '../../../shared/globals/base.component';
 import { ApplicationService } from '../../../services/app.service';
-import { IEngineModule } from '../../../services/data/modules.service';
 
 @Component({
     selector: 'device-systems',
@@ -11,7 +11,7 @@ import { IEngineModule } from '../../../services/data/modules.service';
     styleUrls: ['./device-systems.styles.scss']
 })
 export class DeviceSystemsComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IEngineModule;
+    @Input() public item: EngineModule;
 
     public model: any = {};
 

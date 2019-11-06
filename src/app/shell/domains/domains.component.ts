@@ -25,13 +25,13 @@ export class DomainsComponent extends BaseRootComponent {
         const q = `total_${toQueryString(query)}`;
         // Get application count
         this.service.Applications.query(query)
-            .then(() => this.model.applications = this.service.Applications.get(q));
+            .then(() => this.model.applications = this.service.Applications.last_total);
         query = { offset: 0, limit: 1, authority_id: this.model.item.id };
         // Get auth source count
         this.service.AuthSources.query(query)
-            .then(() => this.model.auth_sources = this.service.AuthSources.get(`total_${toQueryString(query)}`));
+            .then(() => this.model.auth_sources = this.service.AuthSources.last_total);
         // Get users count
         this.service.Users.query(query)
-            .then(() => this.model.users = this.service.Users.get(`total_${toQueryString(query)}`));
+            .then(() => this.model.users = this.service.Users.last_total);
     }
 }

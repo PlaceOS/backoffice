@@ -1,5 +1,5 @@
 
-import { MOCK_REQ_HANDLER } from '@acaprojects/ngx-composer';
+import { MockHttpRequestHandlerOptions } from '@acaprojects/ts-composer';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';
@@ -54,25 +54,30 @@ export class MockSystemsBackend extends BaseMockBackend {
                 };
             });
         this.model.systems = this.setupBasicHandlers('/control/api/systems', this.model.systems, 'sys');
-        MOCK_REQ_HANDLER.register('/control/api/systems/:id/:opt', this.model.systems, (event) => {
-            if (event && event.params && event.params.id) {
-                if (!event.params.opt) {
-                    for (const item of event.data) {
-                        if (item.id === event.params.id) {
-                            return item;
+        window.control.handlers.push({
+            path: '/control/api/systems/:id/:opt',
+            metadata: this.model.systems,
+            method: 'GET',
+            callback: (event) => {
+                if (event && event.params && event.params.id) {
+                    if (!event.params.opt) {
+                        for (const item of event.data) {
+                            if (item.id === event.params.id) {
+                                return item;
+                            }
                         }
-                    }
-                } else if (event.params.opt === 'funcs') {
-                    for (const item of event.data) {
-                        if (item.id === event.params.id) {
-                            return item.funcs[item.modules[+event.fragment.index - 1]];
+                    } else if (event.params.opt === 'funcs') {
+                        for (const item of event.data) {
+                            if (item.id === event.params.id) {
+                                return item.funcs[item.modules[+event.fragment.index - 1]];
+                            }
                         }
+                    } else if (event.params.opt === 'state') {
+                        return this.generateSettings();
                     }
-                } else if (event.params.opt === 'state') {
-                    return this.generateSettings();
                 }
+                return null;
             }
-            return null;
         });
         this.state.next(true);
     }

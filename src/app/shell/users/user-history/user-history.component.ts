@@ -1,8 +1,8 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
+import { EngineUser } from '@acaprojects/ts-composer';
 
 import { BaseComponent } from '../../../shared/globals/base.component';
-import { IUser } from '../../../services/data/users.service';
 import { ApplicationService } from '../../../services/app.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { ApplicationService } from '../../../services/app.service';
     styleUrls: ['./user-history.styles.scss']
 })
 export class UserHistoryComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IUser;
+    @Input() public item: EngineUser;
 
     public model: any = {};
 

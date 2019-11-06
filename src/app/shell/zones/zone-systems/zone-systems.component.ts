@@ -1,8 +1,8 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
+import { EngineZone } from '@acaprojects/ts-composer';
 
 import { BaseComponent } from '../../../shared/globals/base.component';
-import { IEngineZone } from '../../../services/data/zones.service';
 import { ApplicationService } from '../../../services/app.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { ApplicationService } from '../../../services/app.service';
     styleUrls: ['./zone-systems.styles.scss']
 })
 export class ZoneSystemsComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IEngineZone;
+    @Input() public item: EngineZone;
 
     public model: any = {};
 

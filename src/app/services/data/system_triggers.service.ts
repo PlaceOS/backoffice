@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-import { CommsService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaprojects/ngx-composer';
 
 import { BaseAPIService } from './base.service';
 
@@ -33,8 +33,14 @@ export interface IEngineSystemTrigger {
 })
 export class BackofficeSystemTriggersService extends BaseAPIService<IEngineSystemTrigger> {
 
-    constructor(protected http: CommsService) {
-        super(http);
+    constructor(private _composer: ComposerService) {
+        super(undefined);
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.http = this._composer.http;
+                sub.unsubscribe();
+            }
+        });
         this._name = 'system_trigger';
         this._api_route = '/system_triggers';
     }

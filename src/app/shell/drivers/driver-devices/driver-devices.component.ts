@@ -2,8 +2,8 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
 import { BaseComponent } from '../../../shared/globals/base.component';
-import { IEngineDriver } from '../../../services/data/drivers.service';
 import { ApplicationService } from '../../../services/app.service';
+import { EngineDriver } from '@acaprojects/ts-composer';
 
 @Component({
     selector: 'driver-devices',
@@ -11,7 +11,7 @@ import { ApplicationService } from '../../../services/app.service';
     styleUrls: ['./driver-devices.styles.scss']
 })
 export class DriverDevicesComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IEngineDriver;
+    @Input() public item: EngineDriver;
 
     public model: any = {};
 

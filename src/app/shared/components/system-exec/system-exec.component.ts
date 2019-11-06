@@ -32,7 +32,7 @@ export class SystemExecComponent extends BaseComponent implements OnInit, OnChan
 
     public loadModules(offset: number = 0) {
         if (this.system_id) {
-            this.service.Modules.query({ sys_id: this.system_id, offset }).then((list) => {
+            this.service.Modules.query({ system_id: this.system_id, offset }).then((list) => {
                 this.model.devices = list;
                 if (!offset) { this.model.modules = []; }
                 for (const mod of this.model.devices) {
@@ -50,7 +50,7 @@ export class SystemExecComponent extends BaseComponent implements OnInit, OnChan
         this.model.fn = null;
         this.model.active_module = item;
         this.model.exec_index = -1;
-        this.service.Systems.funcs(this.system_id, { index: item.index, module: item.module }).then((list) => {
+        this.service.Systems.functionList(this.system_id, item.module,item.index).then((list) => {
             this.model.fn_list = list || {};
             this.model.fn_names = Object.keys(this.model.fn_list);
         }, () => null);
@@ -160,7 +160,7 @@ export class SystemExecComponent extends BaseComponent implements OnInit, OnChan
                 index: this.model.active_module.index,
                 args: JSON.parse(args)
             };
-            this.service.Systems.execute(this.system_id, details).then((result) => {
+            this.service.Systems.execute(this.system_id, details.module, details.index, details.args).then((result) => {
                 this.service.notifySuccess('Command successful executed.<br>View Response?', 'View', () => {
                     // console.log('View response:', result);
                 });

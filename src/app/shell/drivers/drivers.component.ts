@@ -22,9 +22,8 @@ export class DriversComponent extends BaseRootComponent {
 
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, dependency_id: this.model.item.id };
-        const q = `total_${toQueryString(query)}`;
             // Get system count
         this.service.Modules.query(query)
-            .then(() => this.model.devices = this.service.Modules.get(q));
+            .then(() => this.model.devices = this.service.Modules.last_total);
     }
 }

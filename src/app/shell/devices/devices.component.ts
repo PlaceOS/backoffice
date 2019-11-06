@@ -25,6 +25,6 @@ export class DevicesComponent extends BaseRootComponent {
         const q = `total_${toQueryString(query)}`;
             // Get system count
         this.service.Systems.query(query)
-            .then(() => this.model.systems = this.service.Systems.get(q));
+            .then(() => this.model.systems = this.service.Systems.last_total);
     }
 }

@@ -1,8 +1,8 @@
 
 import { Component, Input, OnChanges, ViewChildren, QueryList, ElementRef, SimpleChanges } from '@angular/core';
+import { EngineSystem } from '@acaprojects/ts-composer';
 
 import { BaseComponent } from '../../../shared/globals/base.component';
-import { IEngineSystem } from '../../../services/data/systems.service';
 import { ApplicationService } from '../../../services/app.service';
 
 import * as merge from 'deepmerge';
@@ -13,7 +13,7 @@ import * as merge from 'deepmerge';
     styleUrls: ['./system-about.styles.scss']
 })
 export class SystemAboutComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IEngineSystem;
+    @Input() public item: EngineSystem;
 
     public model: any = {};
 

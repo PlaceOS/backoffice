@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-import { CommsService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaprojects/ngx-composer';
 
 import { BaseAPIService } from './base.service';
 
@@ -28,8 +28,14 @@ export class BackofficeTestsService extends BaseAPIService<IEngineTest> {
 
     private _connections: { [key: string]: ITestConnection } = {};
 
-    constructor(protected http: CommsService) {
-        super(http);
+    constructor(private _composer: ComposerService) {
+        super(undefined);
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.http = this._composer.http;
+                sub.unsubscribe();
+            }
+        });
         this._name = 'test';
         this._api_route = '/tests';
     }
@@ -46,21 +52,20 @@ export class BackofficeTestsService extends BaseAPIService<IEngineTest> {
     public run(item: IEngineTest, next: (d) => void) {
         const key = `websocket_${item.id}`;
         this.stop(item);
-        this.http.token.then((t) => {
-            const url = `${this.route().replace('http', 'ws')}/${encodeURIComponent(item.id)}/websocket?bearer_token=${t}`;
-            this._connections[key].ws = new WebSocket(url);
-            this.set(key, []);
-            this.listen(key, next);
-            this._connections[key].ws.onmessage = (event) => this.post(item, event.data);
-            this._connections[key].ws.onerror = (event) => {
-                this.post(item, event as any);
-                this.stop(item);
-            };
-        });
+        const token = this._composer.auth.token;
         this._connections[key] = {
             ws: null,
             stop: () => this.stop(item),
             post: (msg, send = false) => this.post(item, msg, send)
+        };
+        const url = `${this.route().replace('http', 'ws')}/${encodeURIComponent(item.id)}/websocket?bearer_token=${token}`;
+        this._connections[key].ws = new WebSocket(url);
+        this.set(key, []);
+        this.listen(key, next);
+        this._connections[key].ws.onmessage = (event) => this.post(item, event.data);
+        this._connections[key].ws.onerror = (event) => {
+            this.post(item, event as any);
+            this.stop(item);
         };
         return this._connections[key];
     }

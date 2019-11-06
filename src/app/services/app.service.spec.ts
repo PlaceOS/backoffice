@@ -5,16 +5,12 @@ import { SwUpdate } from '@angular/service-worker';
 import { of } from 'rxjs';
 
 import { AOverlayService } from '@acaprojects/ngx-overlays';
-import { SystemsService } from '@acaprojects/ngx-composer';
 import { GoogleAnalyticsService } from '@acaprojects/ngx-google-analytics';
+import { ComposerService } from '@acaprojects/ngx-composer';
 
 import { ApplicationService } from './app.service';
 import { SettingsService } from './settings.service';
-import { OrganisationService } from './data/organisation/organisation.service';
 import { UsersService } from './data/users/users.service';
-import { BookingsService } from './data/bookings/bookings.service';
-import { SpacesService } from './data/spaces/spaces.service';
-import { SystemsManagerService } from './data/systems-manager/systems-manager.service';
 import { OVERLAY_REGISTER } from '../shared/globals/overlay-register';
 import { HotkeysService } from './hotkeys.service';
 
@@ -39,13 +35,8 @@ describe('ApplicationService', () => {
                 { provide: Router, useValue: jasmine.createSpyObj('Router', ['navigate']) },
                 { provide: SwUpdate, useValue: jasmine.createSpyObj('SwUpdate', ['checkForUpdates']) },
                 { provide: AOverlayService, useValue: jasmine.createSpyObj('OverlayService', ['notify', 'register']) },
-                { provide: SystemsService, useValue: jasmine.createSpyObj('SystemsService', ['setup']) },
+                { provide: ComposerService, useValue: jasmine.createSpyObj('ComposerService', ['setup']) },
                 { provide: GoogleAnalyticsService, useValue: jasmine.createSpyObj('GoogleAnalyticsService', ['load']) },
-                { provide: OrganisationService, useValue: jasmine.createSpyObj('OrganisationService', ['init']) },
-                { provide: UsersService, useValue: jasmine.createSpyObj('UsersService', ['init']) },
-                { provide: BookingsService, useValue: jasmine.createSpyObj('BookingsService', ['init']) },
-                { provide: SpacesService, useValue: jasmine.createSpyObj('SpacesService', ['init']) },
-                { provide: SystemsManagerService, useValue: jasmine.createSpyObj('SystemsManagerService', ['init']) },
                 { provide: HotkeysService, useValue: jasmine.createSpyObj('SystemsManagerService', ['listen']) }
             ],
             imports: [CommonModule]
@@ -60,11 +51,7 @@ describe('ApplicationService', () => {
         sw.available.subscribe.and.returnValue(of(null));
         router = TestBed.get(Router);
         analytics = TestBed.get(GoogleAnalyticsService);
-        organisation = TestBed.get(OrganisationService);
-        systems = TestBed.get(SystemsManagerService);
         users = TestBed.get(UsersService);
-        bookings = TestBed.get(BookingsService);
-        spaces = TestBed.get(SpacesService);
         hotkeys = TestBed.get(HotkeysService);
     });
 

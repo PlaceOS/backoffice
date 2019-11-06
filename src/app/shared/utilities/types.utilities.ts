@@ -19,3 +19,9 @@ export interface Identity extends HashMap {
     id: string;
     name: string;
 }
+
+/** Generic type for a filter function */
+export type FilterFn<T = any> = (_: T) => boolean;
+
+/** Generic type for a comparison function */
+export type CompareFn<T = any> = (a: T, b: T) => number;

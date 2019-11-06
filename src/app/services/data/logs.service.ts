@@ -1,12 +1,11 @@
 
 import { Injectable } from '@angular/core';
-import { CommsService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaprojects/ngx-composer';
+import { EngineSystem, EngineUser } from '@acaprojects/ts-composer';
 
 import { BaseAPIService } from './base.service';
-import { IEngineSystem } from './systems.service';
 
 import * as dayjs from 'dayjs';
-import { IUser } from './users.service';
 
 export interface IEngineLogEntry {
     id: string;
@@ -17,9 +16,9 @@ export interface IEngineLogEntry {
     installed_device?: boolean;
     ip?: string;
     user_id?: string;
-    user?: IUser;
+    user?: EngineUser;
     system_id?: string;
-    systems?: IEngineSystem[];
+    systems?: EngineSystem[];
     display?: any;
     created: number;
     last_checked: number;
@@ -31,8 +30,14 @@ export interface IEngineLogEntry {
 })
 export class BackofficeLogsService extends BaseAPIService<IEngineLogEntry> {
 
-    constructor(protected http: CommsService) {
-        super(http);
+    constructor(private _composer: ComposerService) {
+        super(undefined);
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.http = this._composer.http;
+                sub.unsubscribe();
+            }
+        });
         this._name = 'log';
         this._api_route = '/logs';
     }

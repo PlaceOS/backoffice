@@ -1,14 +1,15 @@
 
 import { Injectable } from '@angular/core';
+import { EngineUser } from '@acaprojects/ts-composer';
 
-import { IUser } from './users.service';
 import { BaseAPIService } from './base.service';
+import { ComposerService } from '@acaprojects/ngx-composer';
 
 export interface IComment {
     id: string;
     channel_id: string;
     user_id: string;    // ACA User ID
-    user: IUser;
+    user: EngineUser;
     master_id: string;  // ID of master object
     reply_to_id: string;
     replies: IComment[];
@@ -25,6 +26,16 @@ export interface IComment {
     providedIn: 'root'
 })
 export class BackofficeCommentsService extends BaseAPIService<IComment> {
+
+    constructor(private _composer: ComposerService) {
+        super(undefined);
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.http = this._composer.http;
+                sub.unsubscribe();
+            }
+        });
+    }
 
     /**
      * Task for adding the like state to comment
@@ -91,7 +102,7 @@ export class BackofficeCommentsService extends BaseAPIService<IComment> {
                 comment.description = comment.other.comment;
             }
         }
-        comment.user = this.parent.Users.get(cmt.name);
+        comment.user = this.parent.Users.list(i => i.name === cmt.name)[0] || new EngineUser(this.parent.Users, cmt);
         return comment;
     }
 

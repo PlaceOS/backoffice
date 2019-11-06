@@ -3,7 +3,8 @@ import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 
-import { SystemsService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaprojects/ngx-composer';
+import { ComposerOptions } from '@acaprojects/ts-composer';
 import { AOverlayService } from '@acaprojects/ngx-overlays';
 import { GoogleAnalyticsService } from '@acaprojects/ngx-google-analytics';
 
@@ -14,7 +15,6 @@ import { SettingsService, ConsoleStream } from './settings.service';
 import { HashMap } from '../shared/utilities/types.utilities';
 
 import { HotkeysService } from './hotkeys.service';
-import { UsersService } from './data/users/users.service';
 import { OVERLAY_REGISTER } from '../shared/globals/overlay-register';
 import { BackofficeApplicationService } from './data/application.service';
 import { BackofficeAuthSourcesService } from './data/authsources.service';
@@ -34,6 +34,7 @@ import { BackofficeTestsService } from './data/tests.service';
 import { BackofficeUsersService } from './data/users.service';
 import { BackofficeTriggersService } from './data/triggers.service';
 import { BackofficeZonesService } from './data/zones.service';
+import { environment } from 'src/environments/environment';
 
 declare global {
     interface Window {
@@ -59,10 +60,10 @@ export class ApplicationService extends BaseClass {
     constructor(
         private _title: Title,
         private _router: Router,
-        private _version: SwUpdate,
+        private _cache: SwUpdate,
         private _settings: SettingsService,
         private _overlay: AOverlayService,
-        private _composer: SystemsService,
+        private _composer: ComposerService,
         private _analytics: GoogleAnalyticsService,
         private _hotkeys: HotkeysService,
         private _users: BackofficeUsersService,
@@ -85,13 +86,16 @@ export class ApplicationService extends BaseClass {
         private _engine_zones: BackofficeZonesService
     ) {
         super();
+        console.log('Start');
         this._users.parent = this._engine_apps.parent = this._engine_auth_sources.parent = this._engine_comments.parent
             = this._engine_discovery.parent = this._engine_domains.parent = this._engine_drivers.parent = this._engine_logs.parent
             = this._engine_modules.parent = this._engine_nodes.parent = this._engine_search.parent = this._engine_stats.parent
             = this._engine_system_logs.parent = this._engine_system_triggers.parent = this._engine_systems.parent
             = this._engine_tests.parent = this._engine_triggers.parent = this._engine_zones.parent = this;
+        console.log('Constructor');
         this.set('system', null);
         this.init();
+        this.setupCache();
         this.registerOverlays();
     }
 
@@ -240,7 +244,7 @@ export class ApplicationService extends BaseClass {
 
     /** Whether settings and mock data has been loaded */
     public get is_ready() {
-        return this._settings.setup;
+        return this._settings.setup && this._composer.is_initialised;
     }
 
     /**
@@ -358,34 +362,22 @@ export class ApplicationService extends BaseClass {
      * Initialise application services
      */
     private init(): void {
+        console.log('Init');
         // Wait until the settings have loaded before initialising
         if (!this._settings.setup) {
             return this.timeout('init', () => this.init());
         }
+        console.log('Setup');
         this.setupComposer();
         // Setup analytics
         this._analytics.enabled = !!this.setting('app.analytics.enabled');
         if (this._analytics.enabled) {
             this._analytics.load(this.setting('app.analytics.tracking_id'));
         }
-        this._users.init();
-        // Listen for service worker version changes
-        this._version.available.subscribe(event => {
-            const current = `current version is ${event.current.hash}`;
-            const available = `available version is ${event.available.hash}`;
-            this.log('CACHE', `Update available: ${current} ${available}`);
-            // Device application so reloading is fine
-            location.reload();
-            // this.notifyInfo('Newer version of the app is available', 'Refresh', () => location.reload());
-        });
         // Add service to window if in debug mode
         if (window.debug) {
             window.application = this;
         }
-
-        this._hotkeys.listen(['Shift', 'Backslash'], () => {
-            this.navigate('bootstrap', { clear: true });
-        });
     }
 
     /**
@@ -396,25 +388,20 @@ export class ApplicationService extends BaseClass {
         // Get application settings
         const settings = this.setting('composer') || {};
         const protocol = settings.protocol || location.protocol;
-        const host = settings.domain || location.hostname;
-        const url = settings.use_domain ? `${protocol}//${host}` : location.origin;
+        const host = settings.domain || location.host;
+        const port = settings.port || location.port;
+        const url = settings.use_domain ? `${protocol}//${host}:${port}` : location.origin;
         const route = settings.route || '';
         const mock = this.setting('mock');
         // Generate configuration object
-        const config: any = {
-            id: 'AcaEngine',
+        const config: ComposerOptions = {
             scope: 'public',
-            protocol,
-            host,
-            port: settings.port || (location.protocol.indexOf('https') >= 0 ? '443' : '80'),
-            oauth_server: `${url}/auth/oauth/authorize`,
-            oauth_tokens: `${url}/auth/token`,
+            host: `${host}:${port}`,
+            auth_uri: `${url}/auth/oauth/authorize`,
+            token_uri: `${url}/auth/token`,
             redirect_uri: `${location.origin}${route}/oauth-resp.html`,
-            api_endpoint: `${url}/control/`,
-            proactive: true,
-            login_local: settings.local_login || (location.search || '').indexOf('prevent_login=true') >= 0 || false,
-            http: !mock,
-            mock: !!mock
+            handle_login: settings.handle_login,
+            mock
         };
         this._composer.setup(config);
     }
@@ -427,6 +414,28 @@ export class ApplicationService extends BaseClass {
             for (const overlay of OVERLAY_REGISTER) {
                 this._overlay.register(overlay.id, overlay.config);
             }
+        }
+    }
+
+    /**
+     * Setup handler for cache change events
+     */
+    private setupCache() {
+        this._cache.available.subscribe((event) => {
+            const current = `current version is ${event.current.hash}`;
+            const available = `available version is ${event.available.hash}`;
+            this.log('CACHE', `Update available: ${current} ${available}`);
+            this.notifyInfo('Newer version of the app is available', 'Refresh', () => this.activateUpdate());
+        });
+        setInterval(() => this._cache.checkForUpdate(), 5 * 60 * 1000);
+    }
+
+    /**
+     * Update the cache and reload the page
+     */
+    private activateUpdate() {
+        if (environment.production) {
+            this._cache.activateUpdate().then(() => location.reload(true));
         }
     }
 }

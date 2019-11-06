@@ -1,8 +1,8 @@
 
 import { Component, Input } from '@angular/core';
+import { EngineDriver } from '@acaprojects/ts-composer';
 
 import { BaseComponent } from '../../../shared/globals/base.component';
-import { IEngineDriver } from '../../../services/data/drivers.service';
 
 @Component({
     selector: 'driver-about',
@@ -10,6 +10,6 @@ import { IEngineDriver } from '../../../services/data/drivers.service';
     styleUrls: ['./driver-about.styles.scss']
 })
 export class DriverAboutComponent extends BaseComponent {
-    @Input() public item: IEngineDriver;
+    @Input() public item: EngineDriver;
 
 }
