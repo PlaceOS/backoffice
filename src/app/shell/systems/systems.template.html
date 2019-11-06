@@ -3,11 +3,10 @@
         <sidebar
             heading="Systems"
             [total]="total"
-            [licenses]="licenses"
+            [module]="module"
             [list]="list"
             [loading]="loading"
             [close]="show_sidebar"
-            [active]="id"
             (searchChange)="search($event)"
             (event)="sidebarEvent($event)"
         ></sidebar>

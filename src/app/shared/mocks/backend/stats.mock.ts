@@ -61,7 +61,7 @@ export class MockStatsBackend extends BaseMockBackend {
         }
         this.model.states = item_list;
         window.control.handlers.push({
-            path: '/control/api/stats/:id',
+            path: 'api/engine/v1/stats/:id',
             metadata: this.model.stats,
             method: 'GET',
             callback: (event) => {

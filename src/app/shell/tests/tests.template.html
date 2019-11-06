@@ -1,6 +1,6 @@
 <div class="container tests" [class.show]="model.show_sidebar">
     <div class="sidebar" (tapped)="showSidebar()">
-        <sidebar heading="Tests" [total]="model.total" [licenses]="model.licenses" [new]="false" [list]="model.list" (searchChange)="search($event)" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
+        <sidebar heading="Tests" [total]="model.total" [module]="module" [new]="false" [list]="model.list" (searchChange)="search($event)" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
         <item-display [item]="model.item" [has_change]="false" name="test" [active]="model.tab"

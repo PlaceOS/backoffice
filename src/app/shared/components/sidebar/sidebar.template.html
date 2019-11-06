@@ -33,7 +33,7 @@
     </header>
     <section class="search">
         <div class="input">
-            <input [(ngModel)]="search" (ngModelChange)="searching()" [placeholder]="'Filter ' + model.lowercase_header">
+            <input [(ngModel)]="search" (ngModelChange)="searching()" [placeholder]="'Filter ' + lowercase_heading">
         </div>
     </section>
     <section class="content">
@@ -41,26 +41,26 @@
     </section>
     <section class="list">
         <ng-container *ngIf="list">
-            <cdk-virtual-scroll-viewport itemSize="32" (scrolledIndexChange)="atBottom()">
+            <cdk-virtual-scroll-viewport itemSize="48" (scrolledIndexChange)="atBottom()">
                 <ng-container *cdkVirtualFor="let item of items | async">
-                    <div #list_item class="item" [title]="item?.custom_name || item?.name || item" [class.active]="active === item.id" (touchrelease)="select(item)">
-                        <div class="text">{{item?.custom_name || item?.name || item}}</div>
-                        <div class="icon" *ngIf="active === item.id">
-                            <i class="material-icons">done</i>
+                    <a [routerLink]="[route, item.id]" routerLinkActive="active">
+                        <div #list_item class="item" [title]="item?.custom_name || item?.name || item">
+                            <div class="text">{{item?.custom_name || item?.name || item}}</div>
+                            <app-icon [icon]="{ type: 'icon', class: 'material-icons', content: 'done' }"></app-icon>
                         </div>
-                    </div>
+                    </a>
                 </ng-container>
             </cdk-virtual-scroll-viewport>
         </ng-container>
-        <!-- <div class="info-block" *ngIf="!loading && (!list || list.length <= 0)">
+        <div class="info-block center" *ngIf="!loading && (!list || !list.length)">
             <div class="icon">
                 <i class="material-icons">close</i>
             </div>
-            <div class="text">{{ !search ? 'No ' + model.lowercase_header : 'No matches found'}}</div>
+            <div class="text">{{ !search ? 'No ' + lowercase_heading : 'No matches found'}}</div>
             <div class="btn" *ngIf="new">
-                <button widget (tapped)="event.emit({ type: 'new' })">Add new {{model.lowercase_header}}</button>
+                <button widget (tapped)="event.emit({ type: 'new' })">Add new {{lowercase_heading}}</button>
             </div>
-        </div> -->
+        </div>
     </section>
     <div class="loading" *ngIf="loading">
         <a-spinner double-circle-ring color="#F44336"></a-spinner>

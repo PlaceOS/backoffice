@@ -51,28 +51,14 @@ export class MockUsersBackend extends BaseMockBackend {
                 organisation_name: 'ACA'
             });
         }
+        this.model.users.push({
+            id: 'current',
+            name: 'ACA Test Robot',
+            avatar_url: '',
+            email: 'robot@acaprojects.com'
+        })
         this.model.users.sort((a, b) => a.name.localeCompare(b.name));
-        this.setupBasicHandlers('/control/api/users', this.model.users, 'user');
-        const user_index = Math.floor(Math.random() * this.model.users.length);
-        window.control.handlers.push({
-            path: `/${this.model.api_route}/users/:id`,
-            metadata: this.model.users,
-            method: 'GET',
-            callback: (event) => {
-                console.log('Event:', event);
-                if (event && event.route_params && event.route_params.id) {
-                    if (event.route_params.id === 'current') {
-                        return this.model.users[user_index];
-                    }
-                    for (const item of this.model.users) {
-                        if (item.id === event.route_params.id) {
-                            return item;
-                        }
-                    }
-                }
-                return null;
-            }
-        } as MockHttpRequestHandlerOptions);
+        this.setupBasicHandlers('api/engine/v1/users', this.model.users, 'user');
         this.state.next(true);
     }
 

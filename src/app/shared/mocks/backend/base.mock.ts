@@ -20,7 +20,7 @@ export class BaseMockBackend {
     constructor(protected model) {
         this.state = new BehaviorSubject(false);
         this.state_obs = this.state.asObservable();
-        setTimeout(() => this.init(), 100);
+        this.init();
     }
 
     protected listen(next: (state?: boolean) => void) {
@@ -80,12 +80,9 @@ export class BaseMockBackend {
             metadata: list,
             method: 'GET',
             callback: (event) => {
+                console.log('Event:', event);
                 if (event && event.route_params && event.route_params.id) {
-                    for (const item of list) {
-                        if (item.id === event.route_params.id) {
-                            return item;
-                        }
-                    }
+                    return list.find(i => i.id === event.route_params.id)
                 }
                 return null;
             }
@@ -102,7 +99,7 @@ export class BaseMockBackend {
                             const new_item = { ...item, ...event.body };
                             list.splice(list.indexOf(item), 1, new_item);
                             this.updateOtherEndpoints(list);
-                            return item;
+                            return new_item;
                         }
                     }
                 }

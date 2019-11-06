@@ -53,9 +53,9 @@ export class MockSystemsBackend extends BaseMockBackend {
                     created_at: dayjs().add(-Math.floor(Math.random() * 10000), 'm').unix()
                 };
             });
-        this.model.systems = this.setupBasicHandlers('/control/api/systems', this.model.systems, 'sys');
+        this.model.systems = this.setupBasicHandlers('api/engine/v1/systems', this.model.systems, 'sys');
         window.control.handlers.push({
-            path: '/control/api/systems/:id/:opt',
+            path: 'api/engine/v1/systems/:id/:opt',
             metadata: this.model.systems,
             method: 'GET',
             callback: (event) => {

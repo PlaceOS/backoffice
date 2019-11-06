@@ -27,6 +27,7 @@ import { EngineItemDropdownComponent } from './components/item-dropdown/item-dro
 import { CronOptionsComponent } from './components/cron-options/cron-options.component';
 import { BaseRootComponent } from './components/base-root.component';
 import { IconComponent } from './components/icon/icon.component';
+import { RouterModule } from '@angular/router';
 
 const COMPONENTS: Type<any>[] = [
     BaseDirective,
@@ -64,7 +65,8 @@ const ENTRY_COMPONENT: Type<any>[] = [
         ReactiveFormsModule,
         ACustomEventsModule,
         ADynamicFormsModule,
-        ScrollingModule
+        ScrollingModule,
+        RouterModule.forChild([])
     ],
     exports: [
         ADropdownsModule,

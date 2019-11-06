@@ -33,6 +33,7 @@
     background-color: $background-light;
     border-radius: 4px;
     @include box-shadow;
+    pointer-events: none;
 }
 
 .item {

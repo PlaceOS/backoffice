@@ -42,7 +42,7 @@ export class MockNodesBackend extends BaseMockBackend {
             });
         }
         this.model.nodes = item_list;
-        this.setupBasicHandlers('/control/api/nodes', this.model.nodes, 'edge');
+        this.setupBasicHandlers('api/engine/v1/nodes', this.model.nodes, 'edge');
         this.state.next(true);
     }
 }

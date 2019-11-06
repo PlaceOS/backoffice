@@ -39,11 +39,18 @@ export interface ApplicationSettings {
     logo_light?: ApplicationIcon;
     /** General settings for the application */
     general: GeneralApplicationSettings;
+    /** Settings used for systems module of the application */
+    systems: SystemsModuleSettings;
 }
 
 export interface GeneralApplicationSettings {
     /** List of available menu items for the application */
     menu_items: ApplicationLink[];
+}
+
+export interface SystemsModuleSettings {
+    /** Maximum number of systems allowed to be created by the user. `0` for unlimited */
+    licenses: number;
 }
 
 export interface ApplicationLink {

@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
 import { toQueryString } from '../utilities/api.utilities';
-import { EngineResource } from '@acaprojects/ts-composer';
+import { EngineResource, EngineResourceService } from '@acaprojects/ts-composer';
 
 @Component({
     selector: 'app-base-root-component',
@@ -45,6 +45,11 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
     /** Whether the sidebar should be shown on a mobile device */
     public show_sidebar: boolean;
 
+    /** Service for the active module */
+    public get module(): EngineResourceService<any> {
+        return this.service[this.service_name];
+    }
+
     constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
         super();
         this.type = 'system';
@@ -54,6 +59,7 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
 
     public ngOnInit() {
         this.loading_item = true;
+        this.service.title = this.service_name;
         this.list = [];
         this.subscription('route.params', this.route.paramMap.subscribe((params) => {
             if (params.has('id') && params.get('id')) {
@@ -84,12 +90,7 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
         this.init();
     }
 
-    public init() {
-        if (!this.service.is_ready) {
-            return this.timeout('init', () => this.init());
-        }
-        this.licenses = this.service.setting(`licenses.${this.cmp_route}`) || 0;
-    }
+    public init() { }
 
     /**
      * Handler events from the sidebar
@@ -102,6 +103,7 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
                     this.loadQuery();
                 } else if (!this.total || this.list.length < this.total) {
                     this.loading = true;
+                    console.log('Query:', this.service_name)
                     this.service[this.service_name].query({ offset: this.pure_list.length || 0 })
                         .then(() => this.loading = false, () => this.loading = false);
                 } else {

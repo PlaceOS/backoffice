@@ -1,6 +1,6 @@
 <div class="container" [class.show]="show_sidebar">
     <div class="sidebar" (tapped)="showSidebar()">
-        <sidebar heading="Users" [total]="total" [licenses]="licenses" [list]="list" (searchChange)="search($event)" [loading]="loading" [close]="show_sidebar" [active]="id" (event)="sidebarEvent($event)"></sidebar>
+        <sidebar heading="Users" [total]="total" [module]="module" [list]="list" (searchChange)="search($event)" [loading]="loading" [close]="show_sidebar" [active]="id" (event)="sidebarEvent($event)"></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
         <item-display [item]="item" [loading]="loading_item" name="user" [active]="tab"

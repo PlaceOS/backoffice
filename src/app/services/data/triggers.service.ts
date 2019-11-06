@@ -45,11 +45,11 @@ export class BackofficeTriggersService extends EngineTriggersService {
         return new Promise((resolve, reject) => {
             super.query(query_params).then((list) => {
                 const old_list = this.list();
-                const new_list = [...list];
-                for (const item of old_list) {
-                    const found = new_list.find(i => item.id === i.id);
-                    if (!found) {
-                        new_list.push(item);
+                const new_list = [...old_list, ...list];
+                for (const item of new_list) {
+                    const found = new_list.findIndex(i => i.id === item.id && i !== item);
+                    if (found >= 0) {
+                        new_list.splice(new_list.indexOf(item), 1);
                     }
                 }
                 this.listing.next(new_list);

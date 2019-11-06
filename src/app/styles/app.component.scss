@@ -84,52 +84,52 @@ span.highlight {
 
 .not-mobile {
     @include respond-to(mobile) {
-        display: none;
+        display: none !important;
     }
 }
 
 .not-tablet {
     @include respond-to(tablet) {
-        display: none;
+        display: none !important;
     }
 }
 
 .not-desktop {
     @include respond-to(desktop) {
-        display: none;
+        display: none !important;
     }
 }
 
 .not-laptop {
     @include respond-to(laptop) {
-        display: none;
+        display: none !important;
     }
 }
 
 .mobile-only {
-    display: none;
+    display: none !important;
     @include respond-to(mobile) {
-        display: inherit;
+        display: inherit !important;
     }
 }
 
 .tablet-only {
-    display: none;
+    display: none !important;
     @include respond-to(tablet) {
-        display: inherit;
+        display: inherit !important;
     }
 }
 
 .desktop-only {
-    display: none;
+    display: none !important;
     @include respond-to(desktop) {
-        display: inherit;
+        display: inherit !important;
     }
 }
 
 .laptop-only {
-    display: none;
+    display: none !important;
     @include respond-to(laptop) {
-        display: inherit;
+        display: inherit !important;
     }
 }

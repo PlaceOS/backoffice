@@ -25,3 +25,7 @@ export type FilterFn<T = any> = (_: T) => boolean;
 
 /** Generic type for a comparison function */
 export type CompareFn<T = any> = (a: T, b: T) => number;
+
+export interface EngineServiceLike extends HashMap {
+    readonly _api_route: string;
+}

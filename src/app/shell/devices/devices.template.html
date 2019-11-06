@@ -1,6 +1,6 @@
 <div class="container" [class.show]="show_sidebar">
         <div class="sidebar" (tapped)="showSidebar()">
-            <sidebar heading="Devices" [total]="total" [licenses]="licenses" [list]="list" (searchChange)="search($event)" [loading]="loading" [close]="show_sidebar" [active]="id" (event)="sidebarEvent($event)">
+            <sidebar heading="Devices" [total]="total" [module]="module" [list]="list" (searchChange)="search($event)" [loading]="loading" [close]="show_sidebar" [active]="id" (event)="sidebarEvent($event)">
                 <div class="toggle">
                     <div class="text">Only disconnected:</div>
                     <toggle type="ios"></toggle>

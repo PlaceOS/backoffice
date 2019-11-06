@@ -26,13 +26,13 @@ export class MockTestsBackend extends BaseMockBackend {
         }
         this.model.tests = zone_list;
         window.control.handlers.push({
-            path: '/control/api/tests',
+            path: 'api/engine/v1/tests',
             metadata: this.model.tests,
             method: 'GET',
             callback: (event) => this.search(event.metadata, event.query_params)
         } as MockHttpRequestHandlerOptions);
         window.control.handlers.push({
-            path: '/control/api/tests/:id',
+            path: 'api/engine/v1/tests/:id',
             metadata: this.model.tests,
             method: 'GET',
             callback: (event) => {
