@@ -2,7 +2,7 @@
 import { OverlayItem } from '@acaprojects/ngx-overlays';
 import { Component } from '@angular/core';
 
-import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
 
 @Component({
@@ -10,7 +10,7 @@ import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
     templateUrl: './confirm-modal.template.html',
     styleUrls: ['./confirm-modal.styles.scss'],
 })
-export class ConfirmModalComponent extends BaseComponent {
+export class ConfirmModalComponent extends BaseDirective {
     public model: any = {};
 
     constructor(private _item: OverlayItem) {

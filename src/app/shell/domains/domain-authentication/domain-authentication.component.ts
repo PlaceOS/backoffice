@@ -2,7 +2,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { EngineDomain } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/globals/base.component';
+import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { ApplicationService } from '../../../services/app.service';
     templateUrl: './domain-authentication.template.html',
     styleUrls: ['./domain-authentication.styles.scss']
 })
-export class DomainAuthenticationComponent extends BaseComponent implements OnChanges {
+export class DomainAuthenticationComponent extends BaseDirective implements OnChanges {
     @Input() public item: EngineDomain;
 
     public model: any = {};

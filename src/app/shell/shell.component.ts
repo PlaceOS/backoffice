@@ -11,7 +11,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
 import { ApplicationService } from '../services/app.service';
-import { BaseComponent } from '../shared/globals/base.component';
+import { BaseDirective } from '../shared/globals/base.directive';
 
 import * as dayjs from 'dayjs';
 
@@ -20,7 +20,7 @@ import * as dayjs from 'dayjs';
     styleUrls: ['./shell.styles.scss'],
     templateUrl: './shell.template.html'
 })
-export class AppShellComponent extends BaseComponent implements OnInit {
+export class AppShellComponent extends BaseDirective implements OnInit {
 
     public model: any = {};
     public timers: any = {};

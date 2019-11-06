@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
-import { BaseComponent } from '../../../shared/globals/base.component';
+import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { ApplicationService } from '../../../services/app.service';
     templateUrl: './sidebar-menu.template.html',
     styleUrls: ['./sidebar-menu.styles.scss']
 })
-export class SidebarMenuComponent extends BaseComponent implements OnInit {
+export class SidebarMenuComponent extends BaseDirective implements OnInit {
     public model: any = {};
 
     constructor(private service: ApplicationService, private router: Router) {

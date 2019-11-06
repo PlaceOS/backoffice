@@ -3,7 +3,7 @@ import { Component, Input, OnChanges, OnInit, Output, EventEmitter } from '@angu
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { EngineSystem } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/globals/base.component';
+import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { ApplicationService } from '../../../services/app.service';
     templateUrl: './system-zones.template.html',
     styleUrls: ['./system-zones.styles.scss']
 })
-export class SystemZonesComponent extends BaseComponent implements OnInit, OnChanges {
+export class SystemZonesComponent extends BaseDirective implements OnInit, OnChanges {
     @Input() public item: EngineSystem;
     @Output() public loading = new EventEmitter<boolean | string>();
 

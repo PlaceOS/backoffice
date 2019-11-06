@@ -1,13 +1,11 @@
 
-import { Component, OnDestroy } from '@angular/core';
+import { OnDestroy, Directive } from '@angular/core';
 import { BaseClass } from './base.class';
 
-@Component({
-    selector: 'a-very-basic-component-base-that-should-not-be-used',
-    template: ``,
-    styles: [``]
+@Directive({
+    selector: 'a-very-basic-component-base-that-should-not-be-used'
 })
-export class BaseComponent extends BaseClass implements OnDestroy {
+export class BaseDirective extends BaseClass implements OnDestroy {
 
     public ngOnDestroy(): void {
         // Clear local timers

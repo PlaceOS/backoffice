@@ -2,7 +2,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { EngineSystem } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/globals/base.component';
+import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { ApplicationService } from '../../../services/app.service';
     templateUrl: './system-triggers.template.html',
     styleUrls: ['./system-triggers.styles.scss']
 })
-export class SystemTriggersComponent extends BaseComponent implements OnChanges {
+export class SystemTriggersComponent extends BaseDirective implements OnChanges {
     @Input() public item: EngineSystem;
 
     public model: any = {};

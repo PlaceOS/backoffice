@@ -1,14 +1,14 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ApplicationService } from '../../../services/app.service';
-import { BaseComponent } from '../../globals/base.component';
+import { BaseDirective } from '../../globals/base.directive';
 
 @Component({
     selector: 'login-display',
     templateUrl: './login.template.html',
     styleUrls: ['./login.styles.scss']
 })
-export class LoginComponent extends BaseComponent implements OnInit {
+export class LoginComponent extends BaseDirective implements OnInit {
     public model: any = {};
 
     constructor(private service: ApplicationService) {

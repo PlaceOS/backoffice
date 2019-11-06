@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { OverlayItem } from '@acaprojects/ngx-overlays';
 
-import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
 import { IEngineLogEntry } from 'src/app/services/data/logs.service';
 import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
@@ -11,7 +11,7 @@ import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
     templateUrl: './system-log-modal.component.html',
     styleUrls: ['./system-log-modal.component.scss']
 })
-export class SystemLogModalComponent extends BaseComponent implements OnInit {
+export class SystemLogModalComponent extends BaseDirective implements OnInit {
     /** ID of the system to get logs for */
     public id: string;
     /** List of the available log entries for the set system */

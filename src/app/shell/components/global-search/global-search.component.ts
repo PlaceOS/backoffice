@@ -1,7 +1,7 @@
 import { Component, OnChanges, Input, ViewChild, ViewChildren, ElementRef, QueryList } from '@angular/core';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
-import { BaseComponent } from '../../../shared/globals/base.component';
+import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 import { toQueryString } from 'src/app/shared/utilities/api.utilities';
 
@@ -22,7 +22,7 @@ import { toQueryString } from 'src/app/shared/utilities/api.utilities';
         ])
     ]
 })
-export class GlobalSearchComponent extends BaseComponent implements OnChanges {
+export class GlobalSearchComponent extends BaseDirective implements OnChanges {
     @Input() public search: string;
 
     public model: any = {};

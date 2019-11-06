@@ -1,14 +1,14 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, ViewChildren, ElementRef, QueryList } from '@angular/core';
 
 import { ApplicationService } from '../../../services/app.service';
-import { BaseComponent } from '../../globals/base.component';
+import { BaseDirective } from '../../globals/base.directive';
 
 @Component({
     selector: 'system-exec',
     templateUrl: './system-exec.template.html',
     styleUrls: ['./system-exec.styles.scss']
 })
-export class SystemExecComponent extends BaseComponent implements OnInit, OnChanges {
+export class SystemExecComponent extends BaseDirective implements OnInit, OnChanges {
     @Input() public system_id: string;
     @Output() public event = new EventEmitter();
 

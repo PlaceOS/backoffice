@@ -1,6 +1,6 @@
 
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { BaseComponent } from '../../globals/base.component';
+import { BaseDirective } from '../../globals/base.directive';
 
 
 @Component({
@@ -8,7 +8,7 @@ import { BaseComponent } from '../../globals/base.component';
     templateUrl: './searchbar.template.html',
     styleUrls: ['./searchbar.styles.scss']
 })
-export class SearchbarComponent extends BaseComponent {
+export class SearchbarComponent extends BaseDirective {
     @Input() public filter: string;
     @Input() public limit: string;
     @Input() public dictation = true;

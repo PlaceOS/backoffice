@@ -1,7 +1,7 @@
 
 import { Component } from '@angular/core';
 
-import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
 
 @Component({
@@ -9,7 +9,7 @@ import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
     templateUrl: './changelog-modal.template.html',
     styleUrls: ['./changelog-modal.styles.scss']
 })
-export class ChangelogModalComponent extends BaseComponent {
+export class ChangelogModalComponent extends BaseDirective {
 
 }
 

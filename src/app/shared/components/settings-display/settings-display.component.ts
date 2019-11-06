@@ -2,7 +2,7 @@
 import { Component, Input, OnChanges, EventEmitter, Output, Renderer2, ViewChild, ElementRef } from '@angular/core';
 
 import { ApplicationService } from '../../../services/app.service';
-import { BaseComponent } from '../../globals/base.component';
+import { BaseDirective } from '../../globals/base.directive';
 
 import * as json_lint from 'durable-json-lint';
 import { copyToClipboard } from '../../utilities/general.utilities';
@@ -12,7 +12,7 @@ import { copyToClipboard } from '../../utilities/general.utilities';
     templateUrl: './settings-display.template.html',
     styleUrls: ['./settings-display.styles.scss']
 })
-export class SettingsDisplayComponent extends BaseComponent implements OnChanges {
+export class SettingsDisplayComponent extends BaseDirective implements OnChanges {
     @Input() public model: any;
     @Input() public group = '';
     @Input() public show = true;

@@ -2,7 +2,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { BaseComponent } from '../../shared/globals/base.component';
+import { BaseDirective } from '../../shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
 import { ContextMenuComponent } from '../../shared/components/context-menu/context-menu.component';
 import { isMobileDevice, copyToClipboard } from 'src/app/shared/utilities/general.utilities';
@@ -15,7 +15,7 @@ import * as Chart from 'chart.js';
     templateUrl: './metrics.template.html',
     styleUrls: ['./metrics.styles.scss']
 })
-export class MetricsComponent extends BaseComponent implements OnInit {
+export class MetricsComponent extends BaseDirective implements OnInit {
     public model: any = {};
     public context_menu = ContextMenuComponent;
 

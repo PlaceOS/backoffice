@@ -12,7 +12,7 @@ import { ADynamicFormsModule } from '@acaprojects/ngx-dynamic-forms';
 import { ACustomEventsModule } from '@acaprojects/ngx-custom-events';
 import { ACheckboxModule } from '@acaprojects/ngx-checkbox';
 
-import { BaseComponent } from './globals/base.component';
+import { BaseDirective } from './globals/base.directive';
 import { CustomDropdownFieldComponent } from './components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 import { CustomSettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
@@ -28,7 +28,7 @@ import { CronOptionsComponent } from './components/cron-options/cron-options.com
 import { BaseRootComponent } from './components/base-root.component';
 
 const COMPONENTS: Type<any>[] = [
-    BaseComponent,
+    BaseDirective,
     BaseRootComponent,
     ItemDisplayComponent,
     SearchbarComponent,

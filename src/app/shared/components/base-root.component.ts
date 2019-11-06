@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
 import { toQueryString } from '../utilities/api.utilities';
 import { EngineResource } from '@acaprojects/ts-composer';
@@ -11,7 +11,7 @@ import { EngineResource } from '@acaprojects/ts-composer';
     template: '',
     styles: []
 })
-export class BaseRootComponent<T extends { id: string } = EngineResource<any>> extends BaseComponent implements OnInit {
+export class BaseRootComponent<T extends { id: string } = EngineResource<any>> extends BaseDirective implements OnInit {
     /** Type of item to be rendered through the component */
     readonly type: string;
     /** Route the component is rendered on */

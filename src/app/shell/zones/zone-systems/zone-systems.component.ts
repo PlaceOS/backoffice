@@ -2,7 +2,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { EngineZone } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/globals/base.component';
+import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { ApplicationService } from '../../../services/app.service';
     templateUrl: './zone-systems.template.html',
     styleUrls: ['./zone-systems.styles.scss']
 })
-export class ZoneSystemsComponent extends BaseComponent implements OnChanges {
+export class ZoneSystemsComponent extends BaseDirective implements OnChanges {
     @Input() public item: EngineZone;
 
     public model: any = {};

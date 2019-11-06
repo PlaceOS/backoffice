@@ -2,7 +2,7 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { EngineDomain } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/globals/base.component';
+import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { ApplicationService } from '../../../services/app.service';
     templateUrl: './domain-users.template.html',
     styleUrls: ['./domain-users.styles.scss']
 })
-export class DomainUsersComponent extends BaseComponent implements OnInit, OnChanges {
+export class DomainUsersComponent extends BaseDirective implements OnInit, OnChanges {
     @Input() public item: EngineDomain;
 
     public model: any = {};

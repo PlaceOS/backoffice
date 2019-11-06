@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { OverlayItem } from '@acaprojects/ngx-overlays';
 import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
 
-import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { HashMap } from 'src/app/shared/utilities/types.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
 import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
@@ -12,7 +12,7 @@ import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
     templateUrl: './item-modal.component.html',
     styleUrls: ['./item-modal.component.scss']
 })
-export class ItemCreateUpdateModalComponent extends BaseComponent {
+export class ItemCreateUpdateModalComponent extends BaseDirective {
     /** Name of the item type */
     public name: string;
     /** Whether the item is being editing */

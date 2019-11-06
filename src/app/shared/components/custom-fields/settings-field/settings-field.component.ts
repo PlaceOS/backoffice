@@ -4,14 +4,14 @@ import { FormGroup } from '@angular/forms';
 import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
 
 import { CUSTOM_FIELD_REGISTER } from 'src/app/shared/globals/custom-field-register';
-import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { BaseDirective } from 'src/app/shared/globals/base.directive';
 
 @Component({
     selector: 'custom-settings-field',
     templateUrl: './settings-field.component.html',
     styleUrls: ['./settings-field.component.scss']
 })
-export class CustomSettingsFieldComponent extends BaseComponent implements OnInit {
+export class CustomSettingsFieldComponent extends BaseDirective implements OnInit {
 
     constructor(protected _field: ADynamicFormField, protected _group: FormGroup) {
         super();

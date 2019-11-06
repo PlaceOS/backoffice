@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-import { BaseComponent } from '../../globals/base.component';
+import { BaseDirective } from '../../globals/base.directive';
 
 const CRON_PERIOD: any[] = [
     { id: 'minute', name: 'Minutely', shorthand: 'm' },
@@ -18,7 +18,7 @@ const CRON_PERIOD: any[] = [
     templateUrl: './cron-options.template.html',
     styleUrls: ['./cron-options.styles.scss']
 })
-export class CronOptionsComponent extends BaseComponent implements OnInit {
+export class CronOptionsComponent extends BaseDirective implements OnInit {
     @Input() public cron: string;
 
     public model: any = {};

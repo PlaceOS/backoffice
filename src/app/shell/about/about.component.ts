@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { BaseComponent } from '../../shared/globals/base.component';
+import { BaseDirective } from '../../shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
 import { version, build } from 'src/app/shared/globals/application';
 
@@ -9,7 +9,7 @@ import { version, build } from 'src/app/shared/globals/application';
     templateUrl: './about.template.html',
     styleUrls: ['./about.styles.scss']
 })
-export class AppAboutComponent extends BaseComponent implements OnInit {
+export class AppAboutComponent extends BaseDirective implements OnInit {
     public model: any = {};
 
     constructor(private service: ApplicationService) {

@@ -2,14 +2,14 @@ import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChange
 import { EngineResource } from '@acaprojects/ts-composer';
 
 import { BaseAPIService } from '../../../services/data/base.service';
-import { BaseComponent } from '../../globals/base.component';
+import { BaseDirective } from '../../globals/base.directive';
 
 @Component({
     selector: 'engine-item-dropdown',
     templateUrl: './item-dropdown.component.html',
     styleUrls: ['./item-dropdown.component.scss']
 })
-export class EngineItemDropdownComponent extends BaseComponent implements OnInit, OnChanges {
+export class EngineItemDropdownComponent extends BaseDirective implements OnInit, OnChanges {
     @Input() service: BaseAPIService<any>;
     @Input() label: string;
     @Input() model: string;

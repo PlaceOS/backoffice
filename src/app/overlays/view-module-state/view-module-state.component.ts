@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { OverlayItem } from '@acaprojects/ngx-overlays';
 import { ApplicationService } from 'src/app/services/app.service';
 import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
@@ -10,7 +10,7 @@ import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
     templateUrl: './view-module-state.template.html',
     styleUrls: ['./view-module-state.styles.scss']
 })
-export class ViewModuleStateModalComponent extends BaseComponent implements OnInit {
+export class ViewModuleStateModalComponent extends BaseDirective implements OnInit {
 
     public model: any = {};
 

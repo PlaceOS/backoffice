@@ -3,14 +3,14 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { EngineZone } from '@acaprojects/ts-composer';
 
 import { ApplicationService } from '../../../services/app.service';
-import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { BaseDirective } from 'src/app/shared/globals/base.directive';
 
 @Component({
     selector: 'zone-triggers',
     templateUrl: './zone-triggers.template.html',
     styleUrls: ['./zone-triggers.styles.scss']
 })
-export class ZoneTriggersComponent extends BaseComponent implements OnChanges {
+export class ZoneTriggersComponent extends BaseDirective implements OnChanges {
     @Input() public item: EngineZone;
 
     public model: any = {};

@@ -2,7 +2,7 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
-import { BaseComponent } from '../../../shared/globals/base.component';
+import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { ApplicationService } from '../../../services/app.service';
     templateUrl: './topbar-header.template.html',
     styleUrls: ['./topbar-header.styles.scss']
 })
-export class TopbarHeaderComponent extends BaseComponent implements OnInit {
+export class TopbarHeaderComponent extends BaseDirective implements OnInit {
     @Output() public filter = new EventEmitter();
     public model: any = {};
 

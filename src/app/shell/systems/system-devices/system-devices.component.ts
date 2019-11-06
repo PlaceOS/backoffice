@@ -3,7 +3,7 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EngineSystem, EngineModule } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/globals/base.component';
+import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 import { ContextMenuComponent } from '../../../shared/components/context-menu/context-menu.component';
 
@@ -12,7 +12,7 @@ import { ContextMenuComponent } from '../../../shared/components/context-menu/co
     templateUrl: './system-devices.template.html',
     styleUrls: ['./system-devices.styles.scss']
 })
-export class SystemDevicesComponent extends BaseComponent implements OnInit, OnChanges {
+export class SystemDevicesComponent extends BaseDirective implements OnInit, OnChanges {
     @Input() public item: EngineSystem;
 
     public model: any = {};

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { BaseComponent } from 'src/app/shared/globals/base.component';
+import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { OverlayItem } from '@acaprojects/ngx-overlays';
 import { ApplicationService } from 'src/app/services/app.service';
 import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
@@ -11,7 +11,7 @@ import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
     templateUrl: './select-item-modal.component.html',
     styleUrls: ['./select-item-modal.component.scss']
 })
-export class SelectItemModalComponent extends BaseComponent implements OnInit {
+export class SelectItemModalComponent extends BaseDirective implements OnInit {
     /** Name of the item type */
     public name: string;
     /** Whether the item is being editing */

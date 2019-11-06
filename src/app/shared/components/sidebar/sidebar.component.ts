@@ -4,7 +4,7 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { BehaviorSubject } from 'rxjs';
 
 import { ApplicationService } from '../../../services/app.service';
-import { BaseComponent } from '../../globals/base.component';
+import { BaseDirective } from '../../globals/base.directive';
 
 
 @Component({
@@ -12,7 +12,7 @@ import { BaseComponent } from '../../globals/base.component';
     templateUrl: './sidebar.template.html',
     styleUrls: ['./sidebar.styles.scss']
 })
-export class SidebarComponent extends BaseComponent implements OnChanges, OnInit {
+export class SidebarComponent extends BaseDirective implements OnChanges, OnInit {
     /** Module name to display at the top of the sidebar */
     @Input() public heading = '';
     /** List of items to render on the list */

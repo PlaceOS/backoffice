@@ -2,7 +2,7 @@
 import { Component, Input, TemplateRef, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
 
 import { ApplicationService } from '../../../services/app.service';
-import { BaseComponent } from '../../globals/base.component';
+import { BaseDirective } from '../../globals/base.directive';
 import { copyToClipboard } from '../../utilities/general.utilities';
 
 @Component({
@@ -10,7 +10,7 @@ import { copyToClipboard } from '../../utilities/general.utilities';
     templateUrl: './item-display.template.html',
     styleUrls: ['./item-display.styles.scss']
 })
-export class ItemDisplayComponent extends BaseComponent implements OnInit, OnChanges {
+export class ItemDisplayComponent extends BaseDirective implements OnInit, OnChanges {
     @Input() public name: string;
     @Input() public item: any;
     @Input() public loading: boolean;

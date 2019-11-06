@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
 
-import { BaseComponent } from '../../../globals/base.component';
+import { BaseDirective } from '../../../globals/base.directive';
 import { CUSTOM_FIELD_REGISTER } from '../../../globals/custom-field-register';
 
 export interface IDropdownItem {
@@ -16,7 +16,7 @@ export interface IDropdownItem {
     templateUrl: './item-dropdown-field.component.html',
     styleUrls: ['./item-dropdown-field.component.scss']
 })
-export class CustomDropdownFieldComponent extends BaseComponent implements OnInit {
+export class CustomDropdownFieldComponent extends BaseDirective implements OnInit {
     /** Index of the active item */
     public index: number;
 

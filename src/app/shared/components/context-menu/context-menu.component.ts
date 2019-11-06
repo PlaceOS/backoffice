@@ -3,7 +3,7 @@ import { animate, keyframes, style, transition, trigger } from '@angular/animati
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { OverlayItem } from '@acaprojects/ngx-overlays';
 
-import { BaseComponent } from '../../globals/base.component';
+import { BaseDirective } from '../../globals/base.directive';
 
 
 @Component({
@@ -23,7 +23,7 @@ import { BaseComponent } from '../../globals/base.component';
         ]),
     ]
 })
-export class ContextMenuComponent extends BaseComponent implements AfterViewInit {
+export class ContextMenuComponent extends BaseDirective implements AfterViewInit {
     /** Top position of the menu */
     public top: number;
     /** Whether menu show to the left of the cursor */

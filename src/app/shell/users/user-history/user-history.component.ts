@@ -2,7 +2,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { EngineUser } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/globals/base.component';
+import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { ApplicationService } from '../../../services/app.service';
     templateUrl: './user-history.template.html',
     styleUrls: ['./user-history.styles.scss']
 })
-export class UserHistoryComponent extends BaseComponent implements OnChanges {
+export class UserHistoryComponent extends BaseDirective implements OnChanges {
     @Input() public item: EngineUser;
 
     public model: any = {};
