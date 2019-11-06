@@ -25,9 +25,11 @@ import { SettingsDisplayComponent } from './components/settings-display/settings
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { EngineItemDropdownComponent } from './components/item-dropdown/item-dropdown.component';
 import { CronOptionsComponent } from './components/cron-options/cron-options.component';
+import { BaseRootComponent } from './components/base-root.component';
 
 const COMPONENTS: Type<any>[] = [
     BaseComponent,
+    BaseRootComponent,
     ItemDisplayComponent,
     SearchbarComponent,
     SidebarComponent,

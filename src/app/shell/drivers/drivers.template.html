@@ -1,18 +1,18 @@
-<div class="container" [class.show]="model.show_sidebar">
-    <div class="sidebar" (tap)="showSidebar()">
-        <sidebar heading="Drivers" [total]="model.total" [licenses]="model.licenses" [list]="model.list" (searchChange)="search($event)" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
+<div class="container" [class.show]="show_sidebar">
+    <div class="sidebar" (tapped)="showSidebar()">
+        <sidebar heading="Drivers" [total]="total" [licenses]="licenses" [list]="list" (searchChange)="search($event)" [loading]="loading" [close]="show_sidebar" [active]="id" (event)="sidebarEvent($event)"></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
-        <item-display [item]="model.item" name="driver" [active]="model.tab"
+        <item-display [item]="item" name="driver" [active]="tab"
             [tabs]="[
                 { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
-                { id: 'devices', name: 'Devices', template: devices, count: model.devices, icon: { class: 'material-icons', value: 'devices' } }
+                { id: 'devices', name: 'Devices', template: devices, count: devices, icon: { class: 'material-icons', value: 'devices' } }
             ]" (event)="itemEvent($event)">
             <ng-template #about>
-                <driver-about [item]="model.item"></driver-about>
+                <driver-about [item]="item"></driver-about>
             </ng-template>
             <ng-template #devices>
-                <driver-devices [item]="model.item"></driver-devices>
+                <driver-devices [item]="item"></driver-devices>
             </ng-template>
         </item-display>
     </main>

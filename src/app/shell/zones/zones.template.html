@@ -1,22 +1,22 @@
-<div class="container" [class.show]="model.show_sidebar">
-    <div class="sidebar" (tap)="showSidebar()">
-        <sidebar heading="Zones" [total]="model.total" [licenses]="model.licenses" [list]="model.list" (searchChange)="search($event)" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
+<div class="container" [class.show]="show_sidebar">
+    <div class="sidebar" (tapped)="showSidebar()">
+        <sidebar heading="Zones" [total]="total" [licenses]="licenses" [list]="list" (searchChange)="search($event)" [loading]="loading" [close]="show_sidebar" [active]="id" (event)="sidebarEvent($event)"></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
-        <item-display [item]="model.item" name="zone" [active]="model.tab"
+        <item-display [item]="item" name="zone" [active]="tab"
             [tabs]="[
                 { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
-                { id: 'systems', name: 'Systems', template: systems, count: model.systems, icon: { class: 'material-icons', value: 'account_balance' } },
-                { id: 'triggers', name: 'Triggers', template: triggers, count: model.triggers, icon: { class: 'material-icons', value: 'timer' } }
+                { id: 'systems', name: 'Systems', template: systems, count: systems, icon: { class: 'material-icons', value: 'account_balance' } },
+                { id: 'triggers', name: 'Triggers', template: triggers, count: triggers, icon: { class: 'material-icons', value: 'timer' } }
             ]" (event)="itemEvent($event)">
             <ng-template #about>
-                <zone-about [item]="model.item"></zone-about>
+                <zone-about [item]="item"></zone-about>
             </ng-template>
             <ng-template #systems>
-                <zone-systems [item]="model.item"></zone-systems>
+                <zone-systems [item]="item"></zone-systems>
             </ng-template>
             <ng-template #triggers>
-                <zone-triggers [item]="model.item"></zone-triggers>
+                <zone-triggers [item]="item"></zone-triggers>
             </ng-template>
         </item-display>
     </main>

@@ -7,7 +7,7 @@
     </div>
     <div class="body markdown" *ngIf="model.changelog" [innerHTML]="model.changelog | safe:'html'"></div>
     <div class="body" *ngIf="!model.changelog">
-        <div class="no-item">
+        <div class="info-block">
             <div class="icon">
                 <i class="material-icons">close</i>
             </div>

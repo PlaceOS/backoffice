@@ -4,54 +4,82 @@ import { ActivatedRoute } from '@angular/router';
 import { BaseComponent } from 'src/app/shared/globals/base.component';
 import { ApplicationService } from '../../services/app.service';
 import { toQueryString } from '../utilities/api.utilities';
+import { EngineResource } from '@acaprojects/ts-composer';
 
 @Component({
     selector: 'app-base-root-component',
     template: '',
     styles: []
 })
-export class BaseRootComponent extends BaseComponent implements OnInit {
-    public model: any = {};
+export class BaseRootComponent<T extends { id: string } = EngineResource<any>> extends BaseComponent implements OnInit {
+    /** Type of item to be rendered through the component */
+    readonly type: string;
+    /** Route the component is rendered on */
+    readonly cmp_route: string;
+    /** Name of the API service assoicated with the  */
+    readonly service_name: string;
+    /** ID of the item to render */
+    public id: string;
+    /** Item to render on the UI */
+    public item: T;
+    /** List of items to render in the sidebar */
+    public list: T[];
+    /** Unfiltered list of items */
+    public pure_list: T[];
+    /** List of filtered items */
+    public filtered_list: T[];
+    /** Number of filtered items */
+    public filtered_count: number;
+    /** ID of the active tab in the item space */
+    public tab: string;
+    /** Whether the item list data is being loaded */
+    public loading: boolean;
+    /** Whether the active item data is being loaded */
+    public loading_item: boolean;
+    /** Search string for filtering the items list */
+    public search_str: string;
+    /** Total number of items in the list */
+    public total: number;
+    /** Total number of allowed items for this module */
+    public licenses: number;
+    /** Whether the sidebar should be shown on a mobile device */
+    public show_sidebar: boolean;
 
     constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
         super();
-        this.model.type = 'system';
-        this.model.route = 'systems';
-        this.model.service = 'Systems';
+        this.type = 'system';
+        this.cmp_route = 'systems';
+        this.service_name = 'Systems';
     }
 
     public ngOnInit() {
-        this.model.loading_item = true;
-        this.model.list = [];
+        this.loading_item = true;
+        this.list = [];
         this.subscription('route.params', this.route.paramMap.subscribe((params) => {
             if (params.has('id') && params.get('id')) {
                 const id = decodeURIComponent(params.get('id'));
                 if (this.service.get('BACKOFFICE.active_item_id') !== id) {
-                    this.model.id = id;
+                    this.id = id;
                     this.loadItem();
                 } else {
-                    this.model.item = this.service.get('BACKOFFICE.active_item');
+                    this.item = this.service.get('BACKOFFICE.active_item');
                     this.loadValues();
                 }
             }
             if (params.has('tab')) {
-                this.model.tab = params.get('tab');
+                this.tab = params.get('tab');
             }
-            this.timeout('sidebar', () => this.showSidebar(!this.model.id));
+            this.timeout('sidebar', () => this.showSidebar(!this.id));
         }));
-        this.subscription('list', this.service[this.model.service].listen('list', () => {
-            this.model.pure_list = [ ...this.service[this.model.service].list() ];
-            if (!this.model.search) {
-                this.model.list = [ ...this.service[this.model.service].list() ];
+        this.subscription('list', this.service[this.service_name].listing.subscribe(() => {
+            this.pure_list = [ ...this.service[this.service_name].list() ];
+            if (!this.search_str) {
+                this.list = [ ...this.service[this.service_name].list() ];
             }
             this.timeout('loading', () => {
-                this.model.loading = false;
-                this.model.loading_item = false;
+                this.loading = false;
+                this.loading_item = false;
             }, 100);
-        }));
-        this.subscription('total', this.service[this.model.service].listen('total', (total) => {
-            console.log('Total:', total);
-            this.model.total = total;
         }));
         this.init();
     }
@@ -60,25 +88,29 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
         if (!this.service.is_ready) {
             return this.timeout('init', () => this.init());
         }
-        this.model.licenses = this.service.setting(`licenses.${this.model.route}`) || 0;
+        this.licenses = this.service.setting(`licenses.${this.cmp_route}`) || 0;
     }
 
+    /**
+     * Handler events from the sidebar
+     * @param event Sidebar event
+     */
     public sidebarEvent(event: any) {
         this.timeout('sidebar', () => {
             if (event && event.type === 'more') {
-                if (this.model.search) {
+                if (this.search_str) {
                     this.loadQuery();
-                } else if (!this.model.total || this.model.list.length < this.model.total) {
-                    this.model.loading = true;
-                    this.service[this.model.service].query({ offset: this.model.pure_list.length || 0 })
-                        .then(() => this.model.loading = false, () => this.model.loading = false);
+                } else if (!this.total || this.list.length < this.total) {
+                    this.loading = true;
+                    this.service[this.service_name].query({ offset: this.pure_list.length || 0 })
+                        .then(() => this.loading = false, () => this.loading = false);
                 } else {
-                    this.model.loading = false;
+                    this.loading = false;
                 }
             } else if (event && event.type === 'select') {
                 this.timeout('navigate', () => {
-                    const route = [this.model.route, encodeURIComponent(event.item.id)];
-                    if (this.model.tab) { route.push(this.model.tab); }
+                    const route = [this.cmp_route, encodeURIComponent(event.item.id)];
+                    if (this.tab) { route.push(this.tab); }
                     this.service.navigate(route);
                     this.showSidebar(false);
                 });
@@ -91,48 +123,60 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
     }
 
     public loadQuery() {
-        if (this.model.search) {
-            if (this.model.filtered_count === this.model.filtered_list.length) { return; }
-            this.model.loading = true;
-            const query = { offset: this.model.filtered_list.length || 0, q: this.model.search };
+        if (this.search_str) {
+            if (this.filtered_count === this.filtered_list.length) { return; }
+            this.loading = true;
+            const query = { offset: this.filtered_list.length || 0, q: this.search_str };
             const q = `total_${toQueryString(query)}`;
-            this.service[this.model.service].query(query).then((list) => {
-                if (this.model.filtered_list) { this.model.filtered_list = []; }
+            this.service[this.service_name].query(query).then((list) => {
+                if (this.filtered_list) { this.filtered_list = []; }
                 for (const i of list) {
                     let found = false;
-                    for (const l of this.model.filtered_list) {
+                    for (const l of this.filtered_list) {
                         if (l.id === i.id) {
                             found = true;
                             break;
                         }
                     }
-                    if (!found) { this.model.filtered_list.push(i); }
+                    if (!found) { this.filtered_list.push(i); }
                 }
-                this.model.filtered_count =  this.service[this.model.service].get(q);
-                this.model.list = [ ...this.model.filtered_list ];
-                this.model.loading = false;
+                this.filtered_count =  this.service[this.service_name].get(q);
+                this.list = [ ...this.filtered_list ];
+                this.loading = false;
             });
         } else {
-            this.model.list = [ ...this.model.pure_list ];
+            this.list = [ ...this.pure_list ];
         }
     }
 
+    /**
+     * Update the filtered list of items
+     * @param str New filter string
+     */
     public search(str: string) {
-        this.model.filtered_list = [];
-        this.model.filtered_count = -1;
-        this.model.search = str;
+        this.filtered_list = [];
+        this.filtered_count = -1;
+        this.search_str = str;
         this.loadQuery();
     }
 
+    /**
+     * Update the state of showing the sidebar
+     * @param state New show state
+     */
     public showSidebar(state: boolean = true) {
-        this.timeout('sidebar', () => this.model.show_sidebar = state);
+        this.timeout('sidebar', () => this.show_sidebar = state);
     }
 
+    /**
+     * Handle actions on the active item
+     * @param event
+     */
     public itemEvent(event: any) {
         if (!event) { return; }
-        if (event.type === 'tab' && this.model.item && event.value) {
+        if (event.type === 'tab' && this.item && event.value) {
             if (this._timers.navigate) { return; }
-            this.service.navigate([this.model.route, encodeURIComponent(this.model.item.id), event.value ]);
+            this.service.navigate([this.cmp_route, encodeURIComponent(this.item.id), event.value ]);
         } else if (event.type === 'edit') {
             this.edit();
         } else if (event.type === 'delete') {
@@ -140,51 +184,64 @@ export class BaseRootComponent extends BaseComponent implements OnInit {
         }
     }
 
+
+    /**
+     * Create new
+     */
     protected new() {
-        this.service[this.model.service].create().then((id) => {
+        this.service[this.service_name].create().then((id) => {
             this.sidebarEvent({ type: 'select', item: { id } });
         });
     }
 
+
+    /**
+     * Open edit modal for active item
+     */
     protected edit() {
-        if (this.model.item) {
-            this.service[this.model.service].edit(this.model.id || this.model.item.id).then(() => {
-                this.sidebarEvent({ type: 'select', item: { id: this.model.id } });
+        if (this.item) {
+            this.service[this.service_name].edit(this.id || this.item.id).then(() => {
+                this.sidebarEvent({ type: 'select', item: { id: this.id } });
             }, () => null);
         }
     }
 
+    /**
+     * Delete the active item
+     */
     protected delete() {
-        if (!this.model.item) { return; }
-        this.service[this.model.service].remove(this.model.item.id).then(
+        if (!this.item) { return; }
+        this.service[this.service_name].remove(this.item.id).then(
             (i) => {
                 if (i) {
-                    this.service.notifySuccess(`Successfully deleted ${this.model.type} "${this.model.item.id}"`);
-                    this.service.navigate([this.model.route]);
+                    this.service.notifySuccess(`Successfully deleted ${this.type} "${this.item.id}"`);
+                    this.service.navigate([this.cmp_route]);
                 }
             },
-            () => this.service.notifyError(`Failed to delete ${this.model.type} "${this.model.item.id}"`)
+            () => this.service.notifyError(`Failed to delete ${this.type} "${this.item.id}"`)
         );
     }
 
     protected loadValues() {
     }
 
+    /**
+     * Load the data for the active item
+     */
     protected loadItem() {
-        this.timeout('loading', () => this.model.loading_item = true, 10);
-        console.warn('ID:', this.model.id);
-        this.service[this.model.service].show(this.model.id).then((item) => {
+        this.timeout('loading', () => this.loading_item = true, 10);
+        this.service[this.service_name].show(this.id).then((item) => {
             this.timeout('set_item', () => {
-                this.model.item = item;
-                this.service.set('BACKOFFICE.active_item_id', this.model.id);
-                this.service.set('BACKOFFICE.active_item', this.model.item);
+                this.item = item;
+                this.service.set('BACKOFFICE.active_item_id', this.id);
+                this.service.set('BACKOFFICE.active_item', this.item);
                 this.loadValues();
-                this.timeout('item', () => this.model.loading_item = false);
+                this.timeout('item', () => this.loading_item = false);
             }, 50);
         }, () => {
-            this.service.notifyError(`Failed to load data for ${this.model.type} "${this.model.id}"`);
-            this.model.loading_item = false;
-            this.service.navigate([this.model.route]);
+            this.service.notifyError(`Failed to load data for ${this.type} "${this.id}"`);
+            this.loading_item = false;
+            this.service.navigate([this.cmp_route]);
         });
     }
 }

@@ -16,13 +16,13 @@
             </div>
         </div>
     </ng-container>
-    <div class="no-item" center *ngIf="model.searching">
+    <div class="info-block" center *ngIf="model.searching">
         <div class="icon">
             <a-spinner circle-ring color="#F44336"></a-spinner>
         </div>
         <div class="text">Searching...</div>
     </div>
-    <div class="no-item" center *ngIf="!model.searching && (!model.list || model.list.length <= 0)">
+    <div class="info-block" center *ngIf="!model.searching && (!model.list || model.list.length <= 0)">
         <div class="icon">
             <i class="material-icons">close</i>
         </div>

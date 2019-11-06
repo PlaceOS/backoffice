@@ -1,26 +1,48 @@
-<div class="container" [class.show]="model.show_sidebar">
-    <div class="sidebar" (tap)="showSidebar()">
-        <sidebar heading="Systems" [total]="model.total" [licenses]="model.licenses" [list]="model.list" (searchChange)="search($event)" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id"
-            (event)="sidebarEvent($event)"></sidebar>
+<div class="container" [class.show]="show_sidebar">
+    <div class="sidebar" (tapped)="showSidebar()">
+        <sidebar
+            heading="Systems"
+            [total]="total"
+            [licenses]="licenses"
+            [list]="list"
+            [loading]="loading"
+            [close]="show_sidebar"
+            [active]="id"
+            (searchChange)="search($event)"
+            (event)="sidebarEvent($event)"
+        ></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
-        <item-display [item]="model.item" [loading]="model.loading_item" name="system" [tabs]="[
-                    { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
-                    { id: 'devices', name: 'Devices', count: model.devices, template: devices, icon: { class: 'material-icons', value: 'devices_other' } },
-                    { id: 'zones', name: 'Zones', count: model.zones, template: zones, icon: { class: 'material-icons', value: 'device_hub' } },
-                    { id: 'triggers', name: 'Triggers', count: model.triggers, template: triggers, icon: { class: 'material-icons', value: 'timer' } }
-                ]" [active]="model.tab" (event)="itemEvent($event)">
+        <item-display
+            name="system"
+            [item]="item"
+            [loading]="loading_item"
+            [tabs]="[
+                { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
+                {
+                    id: 'devices',
+                    name: 'Devices',
+                    count: devices,
+                    template: devices,
+                    icon: { class: 'material-icons', value: 'devices_other' }
+                },
+                { id: 'zones', name: 'Zones', count: zones, template: zones, icon: { class: 'material-icons', value: 'device_hub' } },
+                { id: 'triggers', name: 'Triggers', count: triggers, template: triggers, icon: { class: 'material-icons', value: 'timer' } }
+            ]"
+            [active]="tab"
+            (event)="itemEvent($event)"
+        >
             <ng-template #about>
-                <system-about [item]="model.item"></system-about>
+                <system-about [item]="item"></system-about>
             </ng-template>
             <ng-template #devices>
-                <system-devices [item]="model.item"></system-devices>
+                <system-devices [item]="item"></system-devices>
             </ng-template>
             <ng-template #zones>
-                <system-zones [item]="model.item"></system-zones>
+                <system-zones [item]="item"></system-zones>
             </ng-template>
             <ng-template #triggers>
-                <system-triggers [item]="model.item"></system-triggers>
+                <system-triggers [item]="item"></system-triggers>
             </ng-template>
         </item-display>
     </main>

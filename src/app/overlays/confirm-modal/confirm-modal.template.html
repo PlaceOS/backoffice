@@ -17,7 +17,7 @@
     </div>
 </div>
 <div class="container" *ngIf="model.loading || model.error || model.success">
-    <div class="no-item">
+    <div class="info-block">
         <div class="icon">
             <i class="material-icons" [class.error]="model.error" *ngIf="!model.loading">{{model.error ? 'close' : 'done'}}</i>
             <a-spinner circle-ring *ngIf="model.loading"></a-spinner>

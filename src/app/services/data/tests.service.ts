@@ -49,7 +49,7 @@ export class BackofficeTestsService extends BaseAPIService<IEngineTest> {
      * @param item Test to run
      * @param next Callback for server test events
      */
-    public run(item: IEngineTest, next: (d) => void) {
+    public run(item: IEngineTest, next: (_: string[]) => void) {
         const key = `websocket_${item.id}`;
         this.stop(item);
         const token = this._composer.auth.token;

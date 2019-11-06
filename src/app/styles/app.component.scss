@@ -74,5 +74,62 @@ span.highlight {
 
     .text {
         margin: .5em 0 0;
+        text-align: center;
+    }
+}
+
+/*=======================*\
+||      Media styles     ||
+\*=======================*/
+
+.not-mobile {
+    @include respond-to(mobile) {
+        display: none;
+    }
+}
+
+.not-tablet {
+    @include respond-to(tablet) {
+        display: none;
+    }
+}
+
+.not-desktop {
+    @include respond-to(desktop) {
+        display: none;
+    }
+}
+
+.not-laptop {
+    @include respond-to(laptop) {
+        display: none;
+    }
+}
+
+.mobile-only {
+    display: none;
+    @include respond-to(mobile) {
+        display: inherit;
+    }
+}
+
+.tablet-only {
+    display: none;
+    @include respond-to(tablet) {
+        display: inherit;
+    }
+}
+
+.desktop-only {
+    display: none;
+    @include respond-to(desktop) {
+        display: inherit;
+    }
+}
+
+.laptop-only {
+    display: none;
+    @include respond-to(laptop) {
+        display: inherit;
     }
 }

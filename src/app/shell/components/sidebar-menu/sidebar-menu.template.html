@@ -1,5 +1,5 @@
-<div class="container" *ngIf="model.menu" [class.show]="model.show" (window:tap)="close()" (tap)="cancelClose()">
-    <div class="item" *ngFor="let item of model.menu.list" [title]="item.name" [class.active]="model.active === item.id || item.active" (tap)="goto(item)"
+<div class="container" *ngIf="model.menu" [class.show]="model.show" (window:tap)="close()" (tapped)="cancelClose()">
+    <div class="item" *ngFor="let item of model.menu.list" [title]="item.name" [class.active]="model.active === item.id || item.active" (tapped)="goto(item)"
         a-tooltip name="dark" position="right" [content]="info" [hover]="true">
         <ng-template #info>
             <div class="tooltip">{{item.name}}</div>

@@ -22,7 +22,7 @@ import { SharedContentModule } from 'src/app/shared/shared.module';
         SystemAboutComponent,
         SystemDevicesComponent,
         SystemTriggersComponent,
-        SystemZonesComponent
+        SystemZonesComponent,
     ],
     imports: [
         CommonModule,

@@ -1,37 +1,42 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { EngineDomain } from '@acaprojects/ts-composer';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
-import { toQueryString } from 'src/app/shared/utilities/api.utilities';
 
 @Component({
     selector: 'app-domains',
     templateUrl: './domains.template.html',
     styleUrls: ['./domains.styles.scss']
 })
-export class DomainsComponent extends BaseRootComponent {
+export class DomainsComponent extends BaseRootComponent<EngineDomain> {
+    /** Number of triggers for the active system */
+    public applications: number;
+    /** Number of triggers for the active system */
+    public auth_sources: number;
+    /** Number of triggers for the active system */
+    public users: number;
 
     constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
         super(service, route);
-        this.model.type = 'domain';
-        this.model.service = 'Domains';
-        this.model.route = 'domains';
+        (this as any).type = 'domain';
+        (this as any).service_name = 'Domains';
+        (this as any).cmp_route = 'domains';
     }
 
     protected loadValues() {
-        let query: any = { offset: 0, limit: 1, owner: this.model.item.id };
-        const q = `total_${toQueryString(query)}`;
+        let query: any = { offset: 0, limit: 1, owner: this.item.id };
         // Get application count
         this.service.Applications.query(query)
-            .then(() => this.model.applications = this.service.Applications.last_total);
-        query = { offset: 0, limit: 1, authority_id: this.model.item.id };
+            .then(() => this.applications = this.service.Applications.last_total);
+        query = { offset: 0, limit: 1, authority_id: this.item.id };
         // Get auth source count
         this.service.AuthSources.query(query)
-            .then(() => this.model.auth_sources = this.service.AuthSources.last_total);
+            .then(() => this.auth_sources = this.service.AuthSources.last_total);
         // Get users count
         this.service.Users.query(query)
-            .then(() => this.model.users = this.service.Users.last_total);
+            .then(() => this.users = this.service.Users.last_total);
     }
 }

@@ -44,19 +44,19 @@
         </div>
     </main>
 </div>
-<div class="no-item not-mobile center" *ngIf="!item && !loading">
+<div class="info-block not-mobile center" *ngIf="!item && !loading">
     <div class="icon">
         <i class="material-icons">arrow_back</i>
     </div>
     <div class="text">Select a {{name}} from the sidebar</div>
 </div>
-<div class="no-item mobile center" *ngIf="!item && !loading">
+<div class="info-block mobile-only center" *ngIf="!item && !loading">
     <div class="icon">
         <i class="material-icons">arrow_upward</i>
     </div>
     <div class="text">Select a {{name}} from the search bar</div>
 </div>
-<div class="no-item center" *ngIf="loading">
+<div class="info-block center" *ngIf="loading">
     <div class="icon">
         <a-spinner circle-ring></a-spinner>
     </div>

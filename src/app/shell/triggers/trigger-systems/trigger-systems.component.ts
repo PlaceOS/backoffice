@@ -26,7 +26,7 @@ export class TriggerSystemsComponent extends BaseComponent implements OnChanges 
     }
 
     public load(offset: number = 0) {
-        this.service.SystemTriggers.query({ trigger_id: this.item.id, offset }).then((list) => {
+        this.service.SystemTriggers.query({ trigger_id: this.item.id, offset } as any).then((list) => {
             this.model.list = list;
         }, () => null);
     }

@@ -1,11 +1,11 @@
 
 <div class="container">
     <div class="topbar" [class.uat]="model.env !== 'prod'" >
-        <div class="menu" (tap)="toggleMenu()">
+        <div class="menu" (tapped)="toggleMenu()">
             <i class="material-icons">{{model.show_menu ? 'close' : 'menu'}}</i>
         </div>
         <div class="block">
-            <div *ngIf="model.logo" class="logo" (tap)="logo()">
+            <div *ngIf="model.logo" class="logo" (tapped)="logo()">
                 <img *ngIf="model.logo.type==='image' || model.logo.type==='img'" [src]="model.logo.src">
                 <i *ngIf="model.logo.type !== 'image' && model.logo.type!=='img'" [class]="model.logo.class">{{model.logo.value}}</i>
             </div>

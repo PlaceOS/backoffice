@@ -22,7 +22,7 @@
                         <div class="action grab" cdkDragHandle><i class="material-icons">reorder</i></div>
                     </div>
                     <div class="small">
-                        <i binding [(value)]="device.connected" [sys]="item.id" [mod]="(device.custom_name || device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)" bind="connected"></i>
+                        <i binding [(model)]="device.connected" [sys]="item.id" [mod]="(device.custom_name || device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)" bind="connected"></i>
                         <div class="state" [class.active]="device.connected"></div>
                     </div>
                     <div class="name"><a (touchrelease)="goto(device)">{{device.name}}</a></div>
@@ -39,7 +39,7 @@
                 </div>
             </div>
         </div>
-        <div class="no-item" *ngIf="!model.devices || model.devices.length <= 0">
+        <div class="info-block" *ngIf="!model.devices || model.devices.length <= 0">
             <div class="text">No devices for system</div>
         </div>
     </section>

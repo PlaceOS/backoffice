@@ -26,7 +26,7 @@ export class ZoneTriggersComponent extends BaseComponent implements OnChanges {
     }
 
     public load(offset: number = 0) {
-        this.service.SystemTriggers.query({ zone_id: this.item.id, offset }).then((list) => {
+        this.service.SystemTriggers.query({ zone_id: this.item.id, offset } as any).then((list) => {
             this.model.triggers = list;
         }, () => null);
     }
