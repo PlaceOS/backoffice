@@ -6,10 +6,11 @@ stages:
     - deploy
 
 # Cache node modules for future runs
-cache:
+cache: &global_cache
     key: aca-general-angular-cache
     paths:
-        - node_modules/
+        - node_modules
+        - package-lock.old.json
 
 variables:
     DOCKER_DRIVER: overlay2
@@ -28,44 +29,44 @@ before_script:
     - git config --global user.name $GIT_USER
     - git config --global user.email $GIT_EMAIL
     - git remote set-url origin https://$GITLAB_TOKEN@gitlab.com/$CI_PROJECT_PATH.git
+    - /bin/sh ./scripts/install-dependencies.sh
 
 # Add versioning details build from semantic release
 versioned_build:
     stage: build
+    cache:
+        <<: *global_cache
+        policy: pull
     only:
-        refs:
-            - master
-            - schedules
+        - master
     except:
         - tags
     artifacts:
         paths:
             - dist/
     script:
-        - npm install -g gulp @angular/cli semantic-release --quiet
         - npm run semantic-release
         - /bin/sh ./scripts/build-with-version-tag.sh
 
 # Standalone build of the application
 build_app:
     stage: build
+    cache:
+        <<: *global_cache
+        policy: pull
     script:
-        - npm install -g gulp @angular/cli semantic-release --quiet
-        - gulp build --prod --aot
+        - ./node_modules/.bin/gulp build --prod --aot
     artifacts:
         paths:
             - dist/
     except:
         - master
-        - schedules
         - tags
 
 # Run tests for the application
 test_app:
     stage: test
     script:
-        - npm install -g gulp @angular/cli --quiet
-        - npm install --quiet
         - npm run test:ci
     except:
         - tags
@@ -73,23 +74,23 @@ test_app:
 # Deploy demo build of the latest version
 deploy_demo:
     stage: deploy
+    cache:
+        <<: *global_cache
+        policy: pull
     only:
-        refs:
-            - deploy
-            - dev
-            - develop
+        - merge_requests
     script:
-        - npm install -g gulp @angular/cli --quiet
         - /bin/sh ./scripts/build-demo.sh
 
 # Deploy build of the latest version
 deploy_app:
     stage: deploy
+    variables:
+        CACHE: 'false'
+    cache: {}
     only:
-        refs:
-            - master
-            - develop
-            - schedules
+        - master
+        - develop
     script:
         - /bin/sh ./scripts/deploy.sh
     except:

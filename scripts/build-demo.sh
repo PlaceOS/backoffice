@@ -3,7 +3,7 @@
 if  [ -n "$AWS_ACCESS_KEY" ]; then
     if [ -n "$AWS_SECRET_KEY" ]; then
         if [ -n $DEMO_ROUTE ]; then
-            gulp build --demo --route=$DEMO_ROUTE
+            ./node_modules/.bin/gulp build --demo --route=$DEMO_ROUTE
         else
             echo "No route for demo"
         fi
