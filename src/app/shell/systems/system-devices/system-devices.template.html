@@ -1,61 +1,45 @@
 <div class="container">
     <section class="select">
-        <btn (tapped)="newDevice()">Add new</btn>
+        <button widget (tapped)="newDevice()">Add new</button>
         <div class="dropdown">
             <engine-item-dropdown [service]="model.module_service" label="Select device" [(model)]="model.new_module"></engine-item-dropdown>
         </div>
-        <btn [disabled]="!model.new_module" (tapped)="addDevice()">Add existing</btn>
+        <button widget [disabled]="!model.new_module" (tapped)="addDevice()">Add existing</button>
     </section>
     <section>
-        <div class="table" *ngIf="model.devices && model.devices.length > 0">
-            <div class="table-head table-row">
-                <div class="small"></div>
-                <div class="small"></div>
-                <div class="name">Name</div>
-                <div class="module">Class</div>
-                <div class="ip">IP</div>
-                <div class="small"></div>
-            </div>
-            <div class="table-body" cdkDropList (cdkDropListDropped)="drop($event)">
-                <div class="table-row" *ngFor="let device of (model.devices || [])" context-item [cmp]="context_menu" (event)="event($event, device)" [data]="[
-                    { id: 'power', name: device.running ? 'Turn Off' : 'Power On', icon: { class: 'material-icons', value: device.running ? 'stop': 'play_arrow' } },
-                    { id: 'state', name: 'View State', icon: { class: 'material-icons', value: 'visibility' } },
-                    { id: 'reload', name: 'Reload Module', icon: { class: 'material-icons', value: 'refresh' } },
-                    { id: 'edit', name: 'Edit Device', icon: { class: 'material-icons', value: 'edit' } },
-                    { id: 'remove', name: 'Remove Device', icon: { class: 'material-icons', value: 'delete' } },
-                    { id: 'up', name: 'Move Up', icon: { class: 'material-icons', value: 'arrow_upward' } },
-                    { id: 'down', name: 'Move Down', icon: { class: 'material-icons', value: 'arrow_downward' } }
-                ]" cdkDrag>
-                    <div class="small">
+        <table *ngIf="model.devices && model.devices.length > 0">
+            <thead>
+                <td class="small"></td>
+                <td class="small"></td>
+                <td class="name">Name</td>
+                <td class="module">Class</td>
+                <td class="ip">IP</td>
+                <td class="small"></td>
+            </thead>
+            <tbody cdkDropList (cdkDropListDropped)="drop($event)">
+                <tr *ngFor="let device of (model.devices || [])" a-context-item [content]="context_menu" (event)="event($event, device)" cdkDrag>
+                    <td class="small">
                         <div class="action grab" cdkDragHandle><i class="material-icons">reorder</i></div>
-                    </div>
-                    <div class="small">
-                        <i binding [(value)]="device.connected" [sys]="item.id" [mod]="(device.custom_name || device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)" bind="connected"></i>
+                    </td>
+                    <td class="small">
+                        <i binding [(model)]="device.connected" [sys]="item.id" [mod]="(device.custom_name || device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)" bind="connected"></i>
                         <div class="state" [class.active]="device.connected"></div>
-                    </div>
-                    <div class="name"><a (touchrelease)="goto(device)">{{device.name}}</a></div>
-                    <div class="module">
-                        <checkbox [label]="(device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)"></checkbox>
-                    </div>
-                    <div class="ip">
+                    </td>
+                    <td class="name"><a (touchrelease)="goto(device)">{{device.name}}</a></td>
+                    <td class="module">
+                        <a-checkbox [label]="(device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)"></a-checkbox>
+                    </td>
+                    <td class="ip">
                         <div class="lock"><i class="material-icons" *ngIf="device.tls">lock</i></div>
                         <a (touchrelease)="goto(device, item.ip)">{{device.ip}}</a>
-                    </div>
-                    <div class="small" context-item [cmp]="context_menu" [touch]="divue" (event)="event($event, device)" [data]="[
-                    { id: 'power', name: device.running ? 'Turn Off' : 'Power On', icon: { class: 'material-icons', value: device.running ? 'stop': 'play_arrow' } },
-                    { id: 'state', name: 'View State', icon: { class: 'material-icons', value: 'visibility' } },
-                    { id: 'reload', name: 'Reload Module', icon: { class: 'material-icons', value: 'refresh' } },
-                    { id: 'edit', name: 'Edit Device', icon: { class: 'material-icons', value: 'edit' } },
-                    { id: 'remove', name: 'Remove Device', icon: { class: 'material-icons', value: 'delete' } },
-                    { id: 'up', name: 'Move Up', icon: { class: 'material-icons', value: 'arrow_upward' } },
-                    { id: 'down', name: 'Move Down', icon: { class: 'material-icons', value: 'arrow_downward' } }
-                ]" touchrelease>
+                    </td>
+                    <td class="small" a-context-item [content]="context_menu" (event)="event($event, device)" touchrelease>
                         <div class="action"><i class="material-icons">more_vert</i></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="no-item" *ngIf="!model.devices || model.devices.length <= 0">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="info-block" *ngIf="!model.devices || model.devices.length <= 0">
             <div class="text">No devices for system</div>
         </div>
     </section>

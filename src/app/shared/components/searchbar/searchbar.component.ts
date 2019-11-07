@@ -1,14 +1,14 @@
 
-import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { BaseDirective } from '../../globals/base.directive';
 
-import { BaseComponent } from '../base.component';
 
 @Component({
     selector: 'searchbar',
     templateUrl: './searchbar.template.html',
     styleUrls: ['./searchbar.styles.scss']
 })
-export class SearchbarComponent extends BaseComponent {
+export class SearchbarComponent extends BaseDirective {
     @Input() public filter: string;
     @Input() public limit: string;
     @Input() public dictation = true;
@@ -20,7 +20,7 @@ export class SearchbarComponent extends BaseComponent {
 
     public model: any = {};
 
-    @ViewChild('input') private input: ElementRef;
+    @ViewChild('input', { static: true }) private input: ElementRef;
 
     constructor() {
         super();

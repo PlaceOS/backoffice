@@ -1,21 +1,21 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
+import { EngineModule } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { AppService } from '../../../services/app.service';
-import { IEngineModule } from '../../../services/data/modules.service';
+import { BaseDirective } from '../../../shared/globals/base.directive';
+import { ApplicationService } from '../../../services/app.service';
 
 @Component({
     selector: 'device-systems',
     templateUrl: './device-systems.template.html',
     styleUrls: ['./device-systems.styles.scss']
 })
-export class DeviceSystemsComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IEngineModule;
+export class DeviceSystemsComponent extends BaseDirective implements OnChanges {
+    @Input() public item: EngineModule;
 
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 

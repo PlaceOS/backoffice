@@ -1,39 +1,39 @@
-<div class="container" [class.fullscreen]="model.fullscreen" (window:resize)="updateContextList()">
+<div class="container" [class.fullscreen]="fullscreen" (window:resize)="updateContextList()">
     <div class="header">
         <div class="heading">Metrics</div>
         <div class="options">
             <div class="type not-mobile">
-                <dropdown [list]="model.options" [(model)]="model.index" (modelChange)="changePeriod($event)"></dropdown>
+                <a-dropdown [items]="options" [(ngModel)]="index" (ngModelChange)="changePeriod($event)"></a-dropdown>
             </div>
-            <div class="menu"context-item [cmp]="context_menu" [touch]="true" (event)="event($event)" [data]="model.context_list" touchrelease>
+            <div class="menu" a-context-item [content]="context_menu" (event)="event($event)" touchrelease>
                 <i class="material-icons">more_vert</i>
             </div>
         </div>
         <div class="time-display">
             <div class="clock">
-                <div class="hand hour" [style.transform]="'translateX(-50%) rotate(' + model.hour_angle + 'deg)' | safestyle"></div>
-                <div class="hand minute" [style.transform]="'translateX(-50%) rotate(' + model.minute_angle + 'deg)' | safestyle"></div>
-                <div class="hand second" [style.transform]="'translateX(-50%) rotate(' + model.second_angle + 'deg)' | safestyle"></div>
+                <div class="hand hour" [style.transform]="'translateX(-50%) rotate(' + hour_angle + 'deg)'"></div>
+                <div class="hand minute" [style.transform]="'translateX(-50%) rotate(' + minute_angle + 'deg)'"></div>
+                <div class="hand second" [style.transform]="'translateX(-50%) rotate(' + second_angle + 'deg)'"></div>
                 <div class="center"></div>
             </div>
             <div class="display">
-                <div class="time">{{model.time}}</div>
-                <div class="day">{{model.date}}</div>
+                <div class="time">{{time}}</div>
+                <div class="day">{{date}}</div>
             </div>
         </div>
     </div>
     <div class="body">
-        <div class="count" *ngIf="model.offline_devices && model.offline_devices.length > 0">
-            There are {{model.offline_devices.length}} devices offline
+        <div class="count" *ngIf="offline_devices && offline_devices.length > 0">
+            There are {{offline_devices.length}} devices offline
         </div>
         <div class="issues">
-            <div class="item" *ngFor="let system of (model.systems || [])">
+            <div class="item" *ngFor="let system of (systems || [])">
                 <div class="system">
                     <div class="name hover" (touchrelease)="goto(system, 'systems')">{{system.name}}</div>
                     <div class="id hover" *ngIf="system.id" (touchrelease)="goto(system, 'systems')">({{system.id}})</div>
                 </div>
-                <div class="modules" *ngIf="model.system_map && model.system_map[system.id]">
-                    <div class="device" *ngFor="let item of (model.system_map[system.id] || [])" [class.connected]="item.connected">
+                <div class="modules" *ngIf="system_map && system_map[system.id]">
+                    <div class="device" *ngFor="let item of (system_map[system.id] || [])" [class.connected]="item.connected">
                         <div class="module-class hover" (touchrelease)="goto(item, 'devices')">{{item.dependency?.module_name}}</div>
                         <div class="name hover" (touchrelease)="goto(item, 'devices')">{{item.name}}</div>
                         <div class="ip hover" (touchrelease)="goto({ link: 'http://' + item.ip })">{{item.ip}}</div>
@@ -44,7 +44,7 @@
                     </div>
                 </div>
             </div>
-            <div class="no-item" center *ngIf="!model.systems || model.systems.length <= 0">
+            <div class="info-block" center *ngIf="!systems || systems.length <= 0">
                 <div class="icon">
                     <i class="material-icons">close</i>
                 </div>

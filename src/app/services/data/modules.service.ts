@@ -1,136 +1,106 @@
 
 import { Injectable } from '@angular/core';
-import { CommsService } from '@acaprojects/ngx-composer';
-import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets/components/form-controls/dynamic-form/dynamic-field.class';
-
-import { BaseService } from './base.service';
-import { IEngineDriver } from './drivers.service';
-import { IEngineSystem } from './systems.service';
+import { ComposerService } from '@acaprojects/ngx-composer';
 
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
-import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
-import { FormValidators } from '../../shared/form-validators.class';
+import { CustomDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
+import { IFormFieldOptions, ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
+import { buildValidateRange, validateIpAddress } from 'src/app/shared/utilities/validation.utilities';
+import { EngineModulesService, EngineModule, EngineModuleQueryOptions } from '@acaprojects/ts-composer';
+import { BehaviorSubject } from 'rxjs';
+import { FilterFn } from 'src/app/shared/utilities/types.utilities';
 
-export interface IEngineModule {
-    id: string;
-    dependency_id: string;
-    system_id: string;
-    edge_id: string;
-    name: string;
-    custom_name?: string;
-    notes?: string;
-    ip?: string;
-    port?: string | number;
-    tls?: boolean;
-    udp?: boolean;
-    uri?: string;
-    makebreak?: boolean;
-    edge: any;
-    dependency: IEngineDriver;
-    system: IEngineSystem;
-    role?: number;
-    running: boolean;
-    connected?: boolean;
-    ignore_connected?: boolean;
-    settings?: any;
-    display?: any;
-    created: number;
-    updated: number;
-}
+type ServiceItem = EngineModule;
 
 @Injectable({
     providedIn: 'root'
 })
-export class ModulesService extends BaseService<IEngineModule> {
+export class BackofficeModulesService extends EngineModulesService {
+    /** Name for a single user */
+    readonly singular: string = 'device';
+    /** Behavior subject with the currently available list of users */
+    readonly listing = new BehaviorSubject<ServiceItem[]>([]);
+    /** Default method for filtering the available list */
+    private _filter_fn: FilterFn<ServiceItem> = (_) => true;
+    /** Application Service */
+    public parent: any;
 
-    constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'devices';
-        this.model.singular = 'device';
-        this.model.route = '/modules';
+    constructor(private _composer: ComposerService) {
+        super(undefined);
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.http = this._composer.http;
+                sub.unsubscribe();
+            }
+        });
     }
 
     /**
-     * Perform start task on the given module
-     * @param id Module ID
+     * Get the available list of zones
+     * @param predicate Function to filter the zone list on
      */
-    public start(id: string) {
-        return this.task(id, 'start');
+    public list(predicate: FilterFn<ServiceItem> = this._filter_fn): ServiceItem[] {
+        return (this.listing.getValue() || []).filter(predicate);
     }
 
-    /**
-     * Perform stop task on the given module
-     * @param id Module ID
-     */
-    public stop(id: string) {
-        return this.task(id, 'stop');
+    public query(query_params?: EngineModuleQueryOptions): Promise<ServiceItem[]> {
+        return new Promise((resolve, reject) => {
+            super.query(query_params).then((list) => {
+                const old_list = this.list();
+                const new_list = [...old_list, ...list];
+                for (const item of new_list) {
+                    const found = new_list.findIndex(i => i.id === item.id && i !== item);
+                    if (found >= 0) {
+                        new_list.splice(new_list.indexOf(item), 1);
+                    }
+                }
+                this.listing.next(new_list);
+                resolve(list);
+            }, e => reject(e));
+        });
     }
 
-    protected processItem(raw_item: any) {
-        const item: IEngineModule = {
-            id: raw_item.id,
-            dependency_id: raw_item.dependency_id,
-            system_id: raw_item.control_system_id,
-            edge_id: raw_item.edge_id,
-            name: raw_item.name,
-            custom_name: raw_item.custom_name,
-            notes: raw_item.notes,
-            ip: raw_item.ip,
-            port: raw_item.port,
-            tls: raw_item.tls,
-            udp: raw_item.udp,
-            uri: raw_item.uri,
-            makebreak: raw_item.makebreak,
-            edge: raw_item.edge,
-            dependency: raw_item.dependency,
-            system: raw_item.control_system,
-            role: raw_item.role,
-            running: raw_item.running,
-            connected: raw_item.connected,
-            ignore_connected: raw_item.ignore_connected,
-            settings: raw_item.settings,
-            created: raw_item.created_at * 1000,
-            updated: raw_item.updated_at * 1000
-        };
-        if (!item.custom_name) {
-            item.custom_name = `${item.dependency ? item.dependency.name : 'Blank'} - ${item.system ? item.system.name : 'Blank'}`;
-        }
-        item.display = {
-            created: moment(item.created).fromNow()
-        };
-        return item;
-    }
-
-    public getFormFields(item: IEngineModule, edit: boolean = false) {
-        console.log('Item:', item);
-        const fields: IDynamicFieldOptions<any>[] = [
+    public getFormFields(item: EngineModule) {
+        const edit = !!item.id;
+        const fields: ADynamicFormField<any>[] = ([
             {
-                control_type: 'group', hide: !!item && edit, children: [
-                    { key: 'dependency', label: 'Dependency', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Drivers }, required: true },
-                    { key: 'edge', label: 'Edge', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Nodes }, readonly: !!item, required: true },
-                    { key: 'control_system', label: 'Control System', control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Systems }, readonly: !!item, required: true },
+                key: 'owner_group', value: '', type: 'group', hide: !!item && edit, children: [
+                    { key: 'dependency', label: 'Dependency', value: '', type: 'custom', content: CustomDropdownFieldComponent, metadata: { service: this.parent.Drivers }, required: true },
+                    { key: 'edge', label: 'Edge', value: '', type: 'custom', content: CustomDropdownFieldComponent, metadata: { service: this.parent.Nodes }, settings: {readonly: !!item}, required: true },
+                    { key: 'control_system', label: 'Control System', value: '', type: 'custom', content: CustomDropdownFieldComponent, metadata: { service: this.parent.Systems }, settings: { readonly: !!item}, required: true },
                 ]
             },
-            { key: 'ip', hide: !!item && edit, label: 'IP Address', control_type: 'text', validators: [FormValidators.ip] },
-            { key: 'port', hide: !!item && edit, label: 'Port', control_type: 'text', validators: [FormValidators.numberRange(1, 65535)] },
+            { key: 'ip', hide: !!item && edit, label: 'IP Address', value: '', type: 'input', validators: [validateIpAddress] },
+            { key: 'port', hide: !!item && edit, label: 'Port', value: '', type: 'input', validators: [buildValidateRange(1, 65535)] },
             {
-                control_type: 'group', hide: !!item && edit, children: [
-                    { key: 'tls', label: 'TLS', control_type: 'toggle' },
-                    { key: 'udp', label: 'UDP', control_type: 'toggle' },
-                    { key: 'makebreak', label: 'Makebreak', control_type: 'toggle' },
-                    { key: 'ignore_connection', label: 'Ignore Connection', control_type: 'toggle' },
+                key: 'options_group', value: '', type: 'group', hide: !!item && edit, children: [
+                    { key: 'tls', label: 'TLS', value: '', type: 'checkbox' },
+                    { key: 'udp', label: 'UDP', value: '', type: 'checkbox' },
+                    { key: 'makebreak', label: 'Makebreak', value: '', type: 'checkbox' },
+                    { key: 'ignore_connection', label: 'Ignore Connection', value: '', type: 'checkbox' },
                 ]
             },
-            { key: 'notes', label: 'Notes', control_type: 'textarea' },
-            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent },
-            { key: 'custom_name', label: 'Custom Name', control_type: 'text' },
-        ];
-
-        if (item) {
-            console.log('Process fields');
-            this.updateFields(fields, item);
+            { key: 'notes', label: 'Notes', value: '', type: 'textarea' },
+            { key: 'settings', label: 'Settings', value: '', type: 'custom', settings: {flex: true}, content: CustomSettingsFieldComponent },
+            { key: 'custom_name', label: 'Custom Name', value: '', type: 'input' },
+        ] as IFormFieldOptions[])
+            .map(i => new ADynamicFormField({
+                ...i,
+                children: i.children ? i.children.map(j => new ADynamicFormField(j)) : null as any
+            }));
+        /** Initialise fields and change listeners */
+        for (const field of fields) {
+            if (field.children && field.children.length) {
+                field.children.forEach(f => {
+                    field.control.setValue(item[f.key]);
+                    field.control.valueChanges.subscribe(i => item[f.key] = i);
+                });
+            } else {
+                field.control.setValue(item[field.key]);
+                field.control.valueChanges.subscribe(i => item[field.key] = i);
+            }
         }
         return fields;
     }

@@ -5,14 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { ComposerModule } from '@acaprojects/ngx-composer';
-import { WidgetsModule } from '@acaprojects/ngx-widgets';
 
 import { ROUTES } from './devices.routes';
 
 import { DevicesComponent } from './devices.component';
-import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { DeviceAboutComponent } from './device-about/device-about.component';
 import { DeviceSystemsComponent } from './device-systems/device-systems.component';
+import { SharedContentModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -25,9 +24,8 @@ import { DeviceSystemsComponent } from './device-systems/device-systems.componen
         CommonModule,
         FormsModule,
         ComposerModule,
-        WidgetsModule,
         RouterModule.forChild(ROUTES),
-        SharedComponentsModule
+        SharedContentModule
     ]
 })
 export class AppDevicesModule { }

@@ -1,31 +1,29 @@
 
-import { NgModule } from '@angular/core';
+import { NgModule, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
-import { ComposerModule } from '@acaprojects/ngx-composer';
-import { WidgetsModule, DynamicFormComponentModule } from '@acaprojects/ngx-widgets';
-import { SharedComponentsModule } from '../shared/components/shared-components.module';
+import { SharedContentModule } from '../shared/shared.module';
 
 import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
-import { ViewModuleStateModalComponent } from './view-module-state/view-module-state.component';
-
-import { TriggerConditionModalComponent } from './trigger-condition-modal/trigger-condition-modal.component';
-import { TriggerActionModalComponent } from './trigger-action-modal/trigger-action-modal.component';
-import { ItemCreateUpdateModalComponent } from './item-modal/item-modal.component';
 import { ChangelogModalComponent } from './changelog-modal/changelog-modal.component';
+import { ItemCreateUpdateModalComponent } from './item-modal/item-modal.component';
 import { SelectItemModalComponent } from './select-item-modal/select-item-modal.component';
 import { SystemLogModalComponent } from './system-log-modal/system-log-modal.component';
+import { TriggerActionModalComponent } from './trigger-action-modal/trigger-action-modal.component';
+import { TriggerConditionModalComponent } from './trigger-condition-modal/trigger-condition-modal.component';
+import { ViewModuleStateModalComponent } from './view-module-state/view-module-state.component';
+import { FormsModule } from '@angular/forms';
 
-const OVERLAYS: any[] = [
+
+const OVERLAYS: Type<any>[] = [
     ConfirmModalComponent,
-    ViewModuleStateModalComponent,
-    TriggerConditionModalComponent,
-    TriggerActionModalComponent,
-    ItemCreateUpdateModalComponent,
     ChangelogModalComponent,
+    ItemCreateUpdateModalComponent,
     SelectItemModalComponent,
-    SystemLogModalComponent
+    SystemLogModalComponent,
+    TriggerActionModalComponent,
+    TriggerConditionModalComponent,
+    ViewModuleStateModalComponent
 ];
 
 @NgModule({
@@ -35,10 +33,7 @@ const OVERLAYS: any[] = [
     imports: [
         CommonModule,
         FormsModule,
-        ComposerModule,
-        WidgetsModule,
-        DynamicFormComponentModule,
-        SharedComponentsModule
+        SharedContentModule
     ],
     exports: [
         ...OVERLAYS
@@ -47,4 +42,4 @@ const OVERLAYS: any[] = [
         ...OVERLAYS
     ]
 })
-export class AppOverlaysModule {}
+export class SharedOverlaysModule {}

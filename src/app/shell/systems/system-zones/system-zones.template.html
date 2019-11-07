@@ -4,30 +4,30 @@
             <div class="dropdown">
                 <engine-item-dropdown [service]="model.zone_service" label="Zone" [(model)]="model.new_zone"></engine-item-dropdown>
             </div>
-            <div class="btn"><btn [disabled]="!model.new_zone" (tapped)="joinZone()">Join zone</btn></div>
+            <div class="btn"><button widget [disabled]="!model.new_zone" (tapped)="joinZone()">Join zone</button></div>
         </section>
         <section>
-            <div class="table" *ngIf="model.zones && model.zones.length > 0">
-                <div class="table-head table-row">
-                    <div class="small"></div>
-                    <div class="name">Name</div>
-                    <div class="description">Description</div>
-                    <div *ngIf="model.zones.length > 1" class="small"></div>
-                </div>
-                <div class="table-body" cdkDropList (cdkDropListDropped)="drop($event)">
-                    <div class="table-row" *ngFor="let zone of model.zones" cdkDrag>
-                        <div class="small">
+            <table *ngIf="model.zones && model.zones.length > 0">
+                <thead>
+                    <td class="small"></td>
+                    <td class="name">Name</td>
+                    <td class="description">Description</td>
+                    <td *ngIf="model.zones.length > 1" class="small"></td>
+                </thead>
+                <tbody cdkDropList (cdkDropListDropped)="drop($event)">
+                    <tr *ngFor="let zone of model.zones" cdkDrag>
+                        <td class="small">
                             <div class="action grab" cdkDragHandle><i class="material-icons">reorder</i></div>
-                        </div>
-                        <div class="name"><a (touchrelease)="goto(zone)">{{zone.name}}</a></div>
-                        <div class="description">{{zone.description}}</div>
-                        <div *ngIf="model.zones.length > 1" class="small">
+                        </td>
+                        <td class="name"><a (touchrelease)="goto(zone)">{{zone.name}}</a></td>
+                        <td class="description">{{zone.description}}</td>
+                        <td *ngIf="model.zones.length > 1" class="small">
                             <div class="action"><i class="material-icons">exit_to_app</i></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="no-item" *ngIf="!model.zones || model.zones.length <= 0">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="info-block" *ngIf="!model.zones || model.zones.length <= 0">
                 <div class="text">No zones for system</div>
             </div>
         </section>

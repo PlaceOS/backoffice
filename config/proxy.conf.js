@@ -1,6 +1,6 @@
 
-const domain = 'localhost:8888';
-const secure = false;
+const domain = 'dev.aca.im:8443';
+const secure = true;
 const valid_ssl = false;
 
 const PROXY_CONFIG = [

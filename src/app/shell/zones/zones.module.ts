@@ -5,15 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { ComposerModule } from '@acaprojects/ngx-composer';
-import { WidgetsModule } from '@acaprojects/ngx-widgets';
 
 import { ROUTES } from './zones.routes';
 
 import { ZonesComponent } from './zones.component';
-import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { ZoneAboutComponent } from './zone-about/zone-about.component';
 import { ZoneSystemsComponent } from './zone-systems/zone-systems.component';
 import { ZoneTriggersComponent } from './zone-triggers/zone-triggers.component';
+import { SharedContentModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -27,9 +26,8 @@ import { ZoneTriggersComponent } from './zone-triggers/zone-triggers.component';
         CommonModule,
         FormsModule,
         ComposerModule,
-        WidgetsModule,
         RouterModule.forChild(ROUTES),
-        SharedComponentsModule
+        SharedContentModule
     ]
 })
 export class AppZonesModule { }

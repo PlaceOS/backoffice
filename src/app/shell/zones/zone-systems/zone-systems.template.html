@@ -3,22 +3,22 @@
         <input placeholder="Filter systems">
     </div>
     <div class="list" *ngIf="model.list && model.list.length > 0">
-        <div class="table">
-            <div class="table-head table-row">
-                <div class="flex">Name</div>
-                <div class="devices">No. Devices</div>
-                <div class="created">Created</div>
-            </div>
-            <div class="table-body">
-                <div class="table-row" *ngFor="let item of model.list">
-                    <div class="flex"><a (touchrelease)="goto(item)">{{item.name}} (<span class="id">{{item.id}}</span>)</a></div>
-                    <div class="devices align-right">{{item.installed_ui_devices}}</div>
-                    <div class="created">{{item.display?.created}}</div>
-                </div>
-            </div>
-        </div>
+        <table>
+            <thead>
+                <td class="flex">Name</td>
+                <td class="devices">No. Devices</td>
+                <td class="created">Created</td>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of model.list">
+                    <td class="flex"><a (touchrelease)="goto(item)">{{item.name}} (<span class="id">{{item.id}}</span>)</a></td>
+                    <td class="devices align-right">{{item.installed_ui_devices}}</td>
+                    <td class="created">{{item.display?.created}}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <div class="no-item" *ngIf="!model.list || model.list.length <= 0">
+    <div class="info-block" *ngIf="!model.list || model.list.length <= 0">
         <div class="text">No systems found</div>
     </div>
 </div>

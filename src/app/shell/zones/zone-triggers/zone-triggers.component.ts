@@ -1,21 +1,21 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
+import { EngineZone } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { IEngineZone } from '../../../services/data/zones.service';
-import { AppService } from '../../../services/app.service';
+import { ApplicationService } from '../../../services/app.service';
+import { BaseDirective } from 'src/app/shared/globals/base.directive';
 
 @Component({
     selector: 'zone-triggers',
     templateUrl: './zone-triggers.template.html',
     styleUrls: ['./zone-triggers.styles.scss']
 })
-export class ZoneTriggersComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IEngineZone;
+export class ZoneTriggersComponent extends BaseDirective implements OnChanges {
+    @Input() public item: EngineZone;
 
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 
@@ -26,7 +26,7 @@ export class ZoneTriggersComponent extends BaseComponent implements OnChanges {
     }
 
     public load(offset: number = 0) {
-        this.service.SystemTriggers.query({ zone_id: this.item.id, offset }).then((list) => {
+        this.service.SystemTriggers.query({ zone_id: this.item.id, offset } as any).then((list) => {
             this.model.triggers = list;
         }, () => null);
     }

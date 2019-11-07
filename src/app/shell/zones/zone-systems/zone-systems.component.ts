@@ -1,21 +1,21 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
+import { EngineZone } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { IEngineZone } from '../../../services/data/zones.service';
-import { AppService } from '../../../services/app.service';
+import { BaseDirective } from '../../../shared/globals/base.directive';
+import { ApplicationService } from '../../../services/app.service';
 
 @Component({
     selector: 'zone-systems',
     templateUrl: './zone-systems.template.html',
     styleUrls: ['./zone-systems.styles.scss']
 })
-export class ZoneSystemsComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IEngineZone;
+export class ZoneSystemsComponent extends BaseDirective implements OnChanges {
+    @Input() public item: EngineZone;
 
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 

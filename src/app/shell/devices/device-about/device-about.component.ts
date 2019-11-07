@@ -1,15 +1,19 @@
 
 import { Component, Input } from '@angular/core';
+import { EngineModule } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { IEngineModule } from '../../../services/data/modules.service';
+import { BaseDirective } from '../../../shared/globals/base.directive';
 
 @Component({
     selector: 'device-about',
     templateUrl: './device-about.template.html',
     styleUrls: ['./device-about.styles.scss']
 })
-export class DeviceAboutComponent extends BaseComponent {
-    @Input() public item: IEngineModule;
+export class DeviceAboutComponent extends BaseDirective {
+    @Input() public item: EngineModule;
+
+    public get system() {
+        return null;
+    }
 
 }

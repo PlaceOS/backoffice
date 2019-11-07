@@ -1,19 +1,25 @@
 
 import { Injectable } from '@angular/core';
-import { CommsService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaprojects/ngx-composer';
+import { EngineDriver } from '@acaprojects/ts-composer';
 
-import { BaseService } from './base.service';
-import { IEngineDriver } from './drivers.service';
+import { BaseAPIService } from './base.service';
 
 @Injectable({
     providedIn: 'root'
 })
-export class DiscoveryService extends BaseService<IEngineDriver> {
+export class BackofficeDiscoveryService extends BaseAPIService<EngineDriver> {
 
-    constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'driver';
-        this.model.route = '/discovery';
+    constructor(private _composer: ComposerService) {
+        super(undefined);
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.http = this._composer.http;
+                sub.unsubscribe();
+            }
+        });
+        this._name = 'driver';
+        this._api_route = '/discovery';
     }
 
     /**
@@ -24,19 +30,8 @@ export class DiscoveryService extends BaseService<IEngineDriver> {
         return this.show('scan');
     }
 
-    protected processItem(raw_item: any) {
-        const item: IEngineDriver = {
-            id: raw_item.id,
-            name: raw_item.name,
-            class_name: raw_item.class_name,
-            module_name: raw_item.module_name,
-            role: raw_item.role,
-            description: raw_item.description,
-            settings: raw_item.settings,
-            default: raw_item.default,
-            created: raw_item.created_at * 1000
-        };
-        return item;
+    protected process(raw_item: any) {
+        return new EngineDriver(this.parent.Drivers, raw_item);
     }
 
 }

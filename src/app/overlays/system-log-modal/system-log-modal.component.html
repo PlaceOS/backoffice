@@ -1,18 +1,18 @@
-<div class="container" *ngIf="model.service" [class.loader]="model.loading" [class.edit]="model.item">
+<div class="container" [class.loader]="loading">
     <div class="header">
-        <div class="text">{{model.item && model.edit ? 'Edit' : 'New'}} {{model.name}}</div>
+        <div class="text">System logs</div>
         <div class="close" (touchrelease)="fn.close()">
             <i class="material-icons">close</i>
         </div>
     </div>
     <div class="body">
         <div class="list">
-            <div class="item" *ngFor="let item of model.logs">
+            <div class="item" *ngFor="let item of logs">
         </div>
     </div>
-    <div class="no-item">
+    <div class="info-block">
         <div class="icon">
-            <spinner type="circle-ring" color="rgba(0,0,0, .54)"></spinner>
+            <a-spinner circle-ring color="rgba(0,0,0, .54)"></a-spinner>
         </div>
         <div class="text">Processing request...</div>
     </div>

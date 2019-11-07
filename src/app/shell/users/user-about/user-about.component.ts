@@ -1,15 +1,15 @@
 
 import { Component, Input } from '@angular/core';
+import { EngineUser } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { IUser } from '../../../services/data/users.service';
+import { BaseDirective } from '../../../shared/globals/base.directive';
 
 @Component({
     selector: 'user-about',
     templateUrl: './user-about.template.html',
     styleUrls: ['./user-about.styles.scss']
 })
-export class UserAboutComponent extends BaseComponent {
-    @Input() public item: IUser;
+export class UserAboutComponent extends BaseDirective {
+    @Input() public item: EngineUser;
 
 }

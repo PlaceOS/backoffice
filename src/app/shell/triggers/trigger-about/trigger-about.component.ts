@@ -1,21 +1,21 @@
 
 import { Component, Input, OnInit } from '@angular/core';
+import { EngineTrigger } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { IEngineTrigger } from '../../../services/data/triggers.service';
-import { AppService } from '../../../services/app.service';
+import { BaseDirective } from '../../../shared/globals/base.directive';
+import { ApplicationService } from '../../../services/app.service';
 
 @Component({
     selector: 'trigger-about',
     templateUrl: './trigger-about.template.html',
     styleUrls: ['./trigger-about.styles.scss']
 })
-export class TriggerAboutComponent extends BaseComponent implements OnInit {
-    @Input() public item: IEngineTrigger;
+export class TriggerAboutComponent extends BaseDirective implements OnInit {
+    @Input() public item: EngineTrigger;
 
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 
@@ -24,7 +24,7 @@ export class TriggerAboutComponent extends BaseComponent implements OnInit {
     }
 
     public init() {
-        if (!this.service.ready()) {
+        if (!this.service.is_ready) {
             return this.timeout('init', () => this.init());
         }
         this.loadSystems();
@@ -35,16 +35,16 @@ export class TriggerAboutComponent extends BaseComponent implements OnInit {
     }
 
     public addCondition() {
-        this.service.Overlay.openModal('trigger-condition', { data: { 
-            trigger: this.item, 
+        this.service.Overlay.open('trigger-condition', { data: {
+            trigger: this.item,
             system: this.model.selected_system
         } }, (e) => e.close());
     }
 
     public addAction() {
-        this.service.Overlay.openModal('trigger-action', { data: { 
-            trigger: this.item, 
-            system: this.model.selected_system 
+        this.service.Overlay.open('trigger-action', { data: {
+            trigger: this.item,
+            system: this.model.selected_system
         } }, (e) => e.close());
     }
 
@@ -54,9 +54,9 @@ export class TriggerAboutComponent extends BaseComponent implements OnInit {
 
     private load(query: string = '', type: string = 'Zones') {
         if (this.model[`loading_${type}`]) {
-            this.clearTimer(type);
+            this.clearTimeout(type);
             return this.timeout('type', () => {
-                this.clearTimer(type);
+                this.clearTimeout(type);
                 this.load(query, type);
             }, 300);
         }

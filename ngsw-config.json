@@ -1,17 +1,12 @@
 {
+    "$schema": "./node_modules/@angular/service-worker/config/schema.json",
     "index": "/index.html",
     "assetGroups": [
         {
             "name": "app",
             "installMode": "prefetch",
             "resources": {
-                "files": [
-                    "/favicon.ico",
-                    "/index.html",
-                    "/*.bundle.css",
-                    "/*.bundle.js",
-                    "/*.chunk.js"
-                ]
+                "files": ["/favicon.ico", "/index.html", "/*.css", "/*.js"]
             }
         },
         {
@@ -19,25 +14,20 @@
             "installMode": "lazy",
             "updateMode": "prefetch",
             "resources": {
-                "files": [
-                    "/assets/**",
-                    "!/assets/settings.json",
-                    "!/assets/changelog.md"
-                ],
-                "urls": [
-                    "https://fonts.googleapis.com/**",
-                    "https://fonts.gstatic.com/**"
-                ]
+                "files": ["/assets/**", "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"]
+            }
+        },
+        {
+            "name": "fonts",
+            "resources": {
+                "urls": ["https://fonts.googleapis.com/**", "https://fonts.gstatic.com/**"]
             }
         }
     ],
     "dataGroups": [
         {
             "name": "settings",
-            "urls": [
-                "/assets/settings.json",
-                "/assets/changelog.md"
-            ],
+            "urls": ["/assets/settings.json"],
             "cacheConfig": {
                 "strategy": "freshness",
                 "maxSize": 10,
@@ -46,12 +36,8 @@
             }
         },
         {
-            "name": "control-api",
-            "urls": [
-                "/control",
-                "/api",
-                "/auth"
-            ],
+            "name": "engine-api",
+            "urls": ["/control", "/api"],
             "cacheConfig": {
                 "strategy": "freshness",
                 "maxSize": 100,

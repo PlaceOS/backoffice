@@ -1,9 +1,9 @@
 import { Component, OnChanges, Input, ViewChild, ViewChildren, ElementRef, QueryList } from '@angular/core';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { AppService } from '../../../services/app.service';
-import { Utils } from '../../../shared/utility.class';
+import { BaseDirective } from '../../../shared/globals/base.directive';
+import { ApplicationService } from '../../../services/app.service';
+import { toQueryString } from 'src/app/shared/utilities/api.utilities';
 
 @Component({
     selector: 'global-search',
@@ -22,7 +22,7 @@ import { Utils } from '../../../shared/utility.class';
         ])
     ]
 })
-export class GlobalSearchComponent extends BaseComponent implements OnChanges {
+export class GlobalSearchComponent extends BaseDirective implements OnChanges {
     @Input() public search: string;
 
     public model: any = {};
@@ -34,10 +34,10 @@ export class GlobalSearchComponent extends BaseComponent implements OnChanges {
         zone: 'Zones'
     };
 
-    @ViewChild('item_list') private list_el: ElementRef;
+    @ViewChild('item_list', { static: true }) private list_el: ElementRef;
     @ViewChildren('list_item') private item_list: QueryList<ElementRef>;
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 
@@ -53,7 +53,7 @@ export class GlobalSearchComponent extends BaseComponent implements OnChanges {
         this.model.total = 0;
         this.timeout('search', () => {
             const qry = { q: this.search, offset: 0 };
-            const q = `total_${Utils.generateQueryString(qry)}`;
+            const q = `total_${toQueryString(qry)}`;
             this.service.Search.query(qry).then((list) => {
                 this.model.list = list || [];
                 this.model.searching = false;

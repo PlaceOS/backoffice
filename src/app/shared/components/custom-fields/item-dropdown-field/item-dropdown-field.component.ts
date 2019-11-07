@@ -1,47 +1,67 @@
-
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
+import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
 
-import { DynamicField } from '@acaprojects/ngx-widgets';
-import { ICustomField } from '@acaprojects/ngx-widgets/components/form-controls/dynamic-form/custom-field/custom-field.component';
+import { BaseDirective } from '../../../globals/base.directive';
+import { CUSTOM_FIELD_REGISTER } from '../../../globals/custom-field-register';
 
-import { BaseComponent } from '../../base.component';
+export interface IDropdownItem {
+    [key: string]: any,
+    id: string,
+    name: string
+}
 
 @Component({
-    selector: 'custom-item-dropdown-field',
+    selector: 'custom-dropdown-field',
     templateUrl: './item-dropdown-field.component.html',
     styleUrls: ['./item-dropdown-field.component.scss']
 })
-export class CustomItemDropdownFieldComponent extends BaseComponent implements ICustomField<string>, OnInit {
-    public control: AbstractControl;
-    public ref_control: AbstractControl;
-    public form: FormGroup;
-    public field: DynamicField<string>;
+export class CustomDropdownFieldComponent extends BaseDirective implements OnInit {
+    /** Index of the active item */
+    public index: number;
 
-    public model: { [name: string]: any } = {};
-
-    constructor() {
+    constructor(protected _field: ADynamicFormField, protected _group: FormGroup) {
         super();
     }
 
-    ngOnInit(): void { }
+    public get field(): ADynamicFormField {
+        return this._field;
+    }
+    public get group(): FormGroup {
+        return this._group
+    }
 
-    public set(field, form): void {
-        this.field = field;
-        if (form) {
-            this.form = form;
-            this.control = this.form.controls[this.field.key];
-        }
-        if (this.field.metadata) {
-            this.model.service = this.field.metadata.service;
+    public ngOnInit(): void {
+        this.subscription('control', this.field.control.valueChanges.subscribe(() => this.update()));
+        this.timeout('init', () => this.update());
+    }
+
+    /** List of available options on the dropdown */
+    public get options(): IDropdownItem[] {
+        return (this.field.metadata ? this.field.metadata.options : null) || [];
+    }
+
+    /**
+     * Set the field value to the item at the given index
+     * @param index Index of the newly selected item
+     */
+    public setValue(index: number) {
+        const item = this.options[index];
+        if (item) {
+            this.field.setValue(item);
         }
     }
 
-    public setValue(value: string): void {
-        this.control.setValue(value);
-    }
-
-    public setValid(state: boolean) {
-
+    /**
+     * Update the selected index based on the current field value
+     */
+    private update(): void {
+        const value = this.field.control.value;
+        if (value) {
+            this.index = this.options.findIndex(i => i === value || i.id === value.id);
+        }
     }
 }
+
+CUSTOM_FIELD_REGISTER.dropdown = CustomDropdownFieldComponent;
+CUSTOM_FIELD_REGISTER.booking_type = CustomDropdownFieldComponent;

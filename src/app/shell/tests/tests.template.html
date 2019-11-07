@@ -1,57 +1,73 @@
-<div class="container tests" [class.show]="model.show_sidebar">
-    <div class="sidebar" (tap)="showSidebar()">
-        <sidebar heading="Tests" [total]="model.total" [licenses]="model.licenses" [new]="false" [list]="model.list" (searchChange)="search($event)" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
+<div class="container tests" [class.show]="show_sidebar">
+    <div class="sidebar" (tapped)="showSidebar()">
+        <sidebar
+            heading="Tests"
+            [total]="total"
+            [module]="module"
+            [list]="list"
+            (searchChange)="search($event)"
+            [loading]="loading"
+            [close]="show_sidebar"
+            (event)="sidebarEvent($event)"
+        ></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
-        <item-display [item]="model.item" [has_change]="false" name="test" [active]="model.tab"
-            [tabs]="[
-            { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }
-            ]" (event)="itemEvent($event)">
+        <item-display
+            [item]="item"
+            [has_change]="false"
+            name="test"
+            [active]="tab"
+            [tabs]="[{ id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }]"
+            (event)="itemEvent($event)"
+        >
             <ng-template #about>
                 <div class="about">
                     <div class="module-details">
-                        <div class="module">{{model.item?.module_class}}</div>
+                        <div class="module">{{ item?.module_class }}</div>
                         <div class="details">
-                            <div class="table">
-                                <div class="table-row">
-                                    <div class="field">Name</div>
-                                    <div class="flex">{{model.item?.id || model.item?.name}}</div>
-                                </div>
-                                <div class="table-row" *ngIf="model.item && model.item.documentation">
-                                    <div class="field">Reference Documentation</div>
-                                    <div class="flex">
-                                        <div>
-                                        <ng-container *ngFor="let doc of model.item.documentation">
-                                            <a [href]="doc | safeurl">{{doc}}</a><br>
-                                        </ng-container>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="table-row">
-                                    <div class="field">Module name</div>
-                                    <div class="flex">{{model.item?.module_name}}</div>
-                                </div>
-                                <div class="table-row">
-                                    <div class="field">Role</div>
-                                    <div class="flex">{{model.item?.role}}</div>
-                                </div>
-                            </div>
+                            <table>
+                                <thead>
+                                    <td class="field">Name</td>
+                                    <td class="flex">{{ item?.id || item?.name }}</td>
+                                </thead>
+                                <tbody>
+                                    <tr *ngIf="item && item.documentation">
+                                        <td class="field">Reference Documentation</td>
+                                        <td class="flex">
+                                            <div>
+                                                <ng-container *ngFor="let doc of item.documentation">
+                                                    <a [href]="doc | safe: 'url'">{{ doc }}</a
+                                                    ><br />
+                                                </ng-container>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="field">Module name</td>
+                                        <td class="flex">{{ item?.module_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="field">Role</td>
+                                        <td class="flex">{{ item?.role }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                         <div class="details">
                             <div class="name">Settings</div>
                             <div class="data">
-                                <settings-display [model]="model.item?.settings || {}"></settings-display>
+                                <settings-display [model]="item?.settings || {}"></settings-display>
                             </div>
                         </div>
                     </div>
                     <div class="terminal" #cmd_line>
                         <div class="output">
-                            <div class="line" *ngFor="let line of (model.display_lines || [])">{{line}}</div>
+                            <div class="line" *ngFor="let line of display_lines || []">{{ line }}</div>
                         </div>
                         <div class="input">
                             <div class="feed">></div>
                             <div class="field">
-                                <input #cmd_input [(ngModel)]="model.input" (keyup.enter)="send()">
+                                <input #cmd_input [(ngModel)]="input" (keyup.enter)="send()" />
                             </div>
                         </div>
                     </div>

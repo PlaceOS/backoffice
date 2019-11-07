@@ -1,21 +1,21 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
+import { EngineUser } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { IUser } from '../../../services/data/users.service';
-import { AppService } from '../../../services/app.service';
+import { BaseDirective } from '../../../shared/globals/base.directive';
+import { ApplicationService } from '../../../services/app.service';
 
 @Component({
     selector: 'user-history',
     templateUrl: './user-history.template.html',
     styleUrls: ['./user-history.styles.scss']
 })
-export class UserHistoryComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IUser;
+export class UserHistoryComponent extends BaseDirective implements OnChanges {
+    @Input() public item: EngineUser;
 
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 

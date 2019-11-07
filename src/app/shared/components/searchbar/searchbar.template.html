@@ -9,13 +9,13 @@
                 (blur)="model.focus = false; blur.emit($event)"
                 [placeholder]="placeholder">
         </div>
-        <div class="icon" *ngIf="model.speech && dictation" [class.active]="model.dictate" (tap)="startDictation()">
+        <div class="icon" *ngIf="model.speech && dictation" [class.active]="model.dictate" (tapped)="startDictation()">
             <i class="material-icons">mic</i>
         </div>
-        <div class="icon close not-mobile" *ngIf="filter && clearable" (tap)="clear()">
+        <div class="icon close not-mobile" *ngIf="filter && clearable" (tapped)="clear()">
             <i class="material-icons">close</i>
         </div>
-        <div class="icon close mobile-only" (tap)="clear()">
+        <div class="icon close mobile-only" (tapped)="clear()">
             <i class="material-icons">close</i>
         </div>
         <ng-content></ng-content>

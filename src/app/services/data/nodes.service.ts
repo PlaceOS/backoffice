@@ -1,8 +1,8 @@
 
 import { Injectable } from '@angular/core';
-import { CommsService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaprojects/ngx-composer';
 
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
 
 export interface IEngineEdgeNode {
     id: string;
@@ -28,15 +28,21 @@ export interface IEngineEdgeNode {
 @Injectable({
     providedIn: 'root'
 })
-export class NodesService extends BaseService<IEngineEdgeNode> {
+export class BackofficeNodesService extends BaseAPIService<IEngineEdgeNode> {
 
-    constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'edge';
-        this.model.route = '/nodes';
+    constructor(private _composer: ComposerService) {
+        super(undefined);
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.http = this._composer.http;
+                sub.unsubscribe();
+            }
+        });
+        this._name = 'edge';
+        this._api_route = '/nodes';
     }
 
-    protected processItem(raw_item: any) {
+    protected process(raw_item: any) {
         const item: IEngineEdgeNode = {
             id: raw_item.id,
             master_id: raw_item.master_id,

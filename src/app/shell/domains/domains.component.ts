@@ -1,9 +1,9 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { EngineDomain } from '@acaprojects/ts-composer';
 
-import { AppService } from '../../services/app.service';
-import { Utils } from '../../shared/utility.class';
+import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
 
 @Component({
@@ -11,27 +11,32 @@ import { BaseRootComponent } from '../../shared/components/base-root.component';
     templateUrl: './domains.template.html',
     styleUrls: ['./domains.styles.scss']
 })
-export class DomainsComponent extends BaseRootComponent {
+export class DomainsComponent extends BaseRootComponent<EngineDomain> {
+    /** Number of triggers for the active system */
+    public applications: number;
+    /** Number of triggers for the active system */
+    public auth_sources: number;
+    /** Number of triggers for the active system */
+    public users: number;
 
-    constructor(protected service: AppService, protected route: ActivatedRoute) {
+    constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
         super(service, route);
-        this.model.type = 'domain';
-        this.model.service = 'Domains';
-        this.model.route = 'domains';
+        (this as any).type = 'domain';
+        (this as any).service_name = 'Domains';
+        (this as any).cmp_route = 'domains';
     }
 
     protected loadValues() {
-        let query: any = { offset: 0, limit: 1, owner: this.model.item.id };
-        const q = `total_${Utils.generateQueryString(query)}`;
+        let query: any = { offset: 0, limit: 1, owner: this.item.id };
         // Get application count
         this.service.Applications.query(query)
-            .then(() => this.model.applications = this.service.Applications.get(q));
-        query = { offset: 0, limit: 1, authority_id: this.model.item.id };
+            .then(() => this.applications = this.service.Applications.last_total);
+        query = { offset: 0, limit: 1, authority_id: this.item.id };
         // Get auth source count
         this.service.AuthSources.query(query)
-            .then(() => this.model.auth_sources = this.service.AuthSources.get(`total_${Utils.generateQueryString(query)}`));
+            .then(() => this.auth_sources = this.service.AuthSources.last_total);
         // Get users count
         this.service.Users.query(query)
-            .then(() => this.model.users = this.service.Users.get(`total_${Utils.generateQueryString(query)}`));
+            .then(() => this.users = this.service.Users.last_total);
     }
 }
