@@ -188,7 +188,7 @@ button[widget] {
     }
 
     &.info {
-        @include notify-style($color-primary, #fff, 'info');
+        @include notify-style($color-develop, #fff, 'info');
     }
 
     &.success {
