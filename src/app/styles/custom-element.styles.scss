@@ -192,6 +192,6 @@ button[widget] {
     }
 
     &.success {
-        @include notify-style($success, #fff, 'done');
+        @include notify-style($success, rgb(102, 90, 90), 'done');
     }
 }

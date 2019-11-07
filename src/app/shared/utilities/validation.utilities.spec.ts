@@ -1,8 +1,6 @@
 
 import * as dayjs from 'dayjs';
-import { validateAttendees, validateDate, buildValidateStartTime, validateStartTime, buildValidateDuration, validateDuration, buildValidateAttendees } from './validation.utilities';
-import { User } from '../../services/data/users/user.class';
-import { generateMockUser } from '../../services/data/users/user.utilities';
+import { validateDate, buildValidateStartTime, validateStartTime, buildValidateDuration, validateDuration, buildValidateAttendees } from './validation.utilities';
 
 describe('Validation Utilities', () => {
     it('validateDate should properly validate the given date', () => {
@@ -43,27 +41,5 @@ describe('Validation Utilities', () => {
         expect(validateDuration({ value: 10 } as any, 15, 120)).toBeTruthy();
         expect(validateDuration({ value: 200 } as any, 15, 120)).toBeTruthy();
         expect(validateDuration({ } as any, 15, 120)).toBeNull();
-    });
-
-    it('buildValidateAttendees should return validator function', () => {
-        const host = new User(null, generateMockUser());
-        const fn = buildValidateAttendees(host, 0);
-        expect(fn instanceof Function).toBeTruthy();
-        expect(fn({ value: [] })).toBeNull();
-
-    });
-
-    it('validateAttendees should properly validate attendees', () => {
-        const host = new User(null, generateMockUser());
-        const user_list = Array(10).fill(0).map(i => new User(null, generateMockUser()));
-        expect(validateAttendees({ value: user_list } as any, host, 1)).toBeNull();
-        expect(validateAttendees({ value: [] } as any, host, 1)).toBeTruthy();
-        expect(validateAttendees({ value: host } as any, host, 1)).toBeTruthy();
-        expect(validateAttendees({ value: user_list } as any, host, 11)).toBeTruthy();
-        expect(validateAttendees({ value: [host, ...user_list] } as any, host, 11)).toBeTruthy();
-        expect(validateAttendees({ value: [] } as any, host, 0)).toBeNull();
-        expect(validateAttendees({ value: 1 } as any, host, 0)).toBeNull();
-        expect(validateAttendees({ value: 1 } as any, host, 1)).toBeTruthy();
-        expect(validateAttendees({ value: 1 } as any, host, 2)).toBeTruthy();
     });
 });

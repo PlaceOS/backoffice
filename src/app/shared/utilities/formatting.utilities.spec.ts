@@ -1,41 +1,9 @@
-import { formatAttendeesWithHost, formatAttendees, formatDate, formatTime, formatPeriodWithDuration, formatPeriod, formatRecurrence, formatSpaces, formatDuration } from "./formatting.utilities";
-import { User } from "../../services/data/users/user.class";
-import { generateMockUser } from "../../services/data/users/user.utilities";
+import { formatAttendeesWithHost, formatAttendees, formatDate, formatTime, formatPeriodWithDuration, formatPeriod, formatRecurrence, formatDuration } from "./formatting.utilities";
 
 import * as dayjs from 'dayjs';
 import { humaniseDuration } from "./general.utilities";
-import { Space } from "../../services/data/spaces/space.class";
-import { generateMockSpace } from "../../services/data/spaces/space.utilities";
 
 describe('Formatting Utilites', () => {
-
-    it('formatAttendeesWithHost should return function', () => {
-        const fn = formatAttendeesWithHost(new User(null));
-        expect(fn instanceof Function).toBeTruthy();
-        expect(typeof fn([])).toBe('string');
-    });
-
-    it('formatAttendees should return human readable attendee list string', () => {
-        const user_list: User[] = Array(10).fill(0).map(i => new User(null, generateMockUser()));
-        // Test without host
-        const list_string = formatAttendees(user_list);
-        expect(typeof list_string).toBe('string');
-        for (const user of user_list) {
-            expect(list_string).toContain(user.name);
-        }
-        expect(list_string).toContain('10 Attendees');
-        const host = new User(null, generateMockUser());
-        // Test with host
-        const list_string_with_host = formatAttendees(user_list, host);
-        expect(typeof list_string_with_host).toBe('string');
-        for (const user of user_list) {
-            expect(list_string_with_host).toContain(user.name);
-        }
-        expect(list_string_with_host).toContain(host.name);
-        expect(list_string_with_host).toContain('11 Attendees');
-        expect(formatAttendees([host, ...user_list], host)).toContain('11 Attendees');
-        expect(formatAttendees([host])).toContain('1 Attendee;');
-    });
 
     it('formatDate should return human readable date', () => {
         let date = dayjs().startOf('m');
@@ -87,18 +55,4 @@ describe('Formatting Utilites', () => {
         const date = dayjs().add(Math.floor(Math.random() * 60), 'd');
         expect(formatRecurrence({ period: 1, end: date.valueOf() })).toBe(`Daily until ${date.format('DD MMM YYYY')}`);
     });
-
-    it('formatSpaces should return human readable string for a space or list of spaces', () => {
-        const spaces = Array(10).fill(0).map(i =>  generateMockSpace());
-        expect(formatSpaces(null)).toBe('No selected space');
-        expect(formatSpaces(spaces[0] as Space)).toContain(spaces[0].name);
-        expect(formatSpaces([spaces[0] as Space])).toContain(spaces[0].name);
-        expect(formatSpaces(spaces[0] as Space)).toContain(`(${spaces[0].capacity}`);
-        spaces[0].capacity = 1;
-        expect(formatSpaces(spaces[0] as Space)).toContain(`(1 person`);
-        spaces[0].capacity = 0;
-        expect(formatSpaces(spaces[0] as Space).indexOf('(')).toBe(-1);
-        const space_string = formatSpaces(spaces as Space[]);
-        expect(space_string).toBe('10 Spaces');
-    })
 });
