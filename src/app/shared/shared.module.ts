@@ -12,6 +12,7 @@ import { AOverlayModule } from '@acaprojects/ngx-overlays';
 import { ADynamicFormsModule } from '@acaprojects/ngx-dynamic-forms';
 import { ACustomEventsModule } from '@acaprojects/ngx-custom-events';
 import { ACheckboxModule } from '@acaprojects/ngx-checkbox';
+import { ATabsModule } from '@acaprojects/ngx-tabs';
 
 import { BaseDirective } from './globals/base.directive';
 import { CustomDropdownFieldComponent } from './components/custom-fields/item-dropdown-field/item-dropdown-field.component';
@@ -65,6 +66,7 @@ const ENTRY_COMPONENT: Type<any>[] = [
         ReactiveFormsModule,
         ACustomEventsModule,
         ADynamicFormsModule,
+        ATabsModule,
         ScrollingModule,
         RouterModule.forChild([])
     ],
@@ -77,6 +79,7 @@ const ENTRY_COMPONENT: Type<any>[] = [
         ACustomEventsModule,
         ADynamicFormsModule,
         ACheckboxModule,
+        ATabsModule,
         ...COMPONENTS,
         ...ENTRY_COMPONENT
     ],

@@ -1,14 +1,40 @@
 <div class="container" [class.show]="show_sidebar">
     <div class="sidebar" (tapped)="showSidebar()">
-        <sidebar heading="Domains" [total]="total" [module]="module" [list]="list" (searchChange)="search($event)" [loading]="loading" [close]="show_sidebar" [active]="id" (event)="sidebarEvent($event)"></sidebar>
+        <sidebar
+            heading="Domains"
+            [total]="total"
+            [module]="module"
+            [list]="list"
+            (searchChange)="search($event)"
+            [loading]="loading"
+            [close]="show_sidebar"
+            (event)="sidebarEvent($event)"
+        ></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
-        <item-display [item]="item" name="zone" [active]="tab"
+        <item-display
+            [item]="item"
+            name="zone"
+            [active]="tab"
             [tabs]="[
-                { id: 'applications', name: 'Applications', count: applications || 0, template: apps, icon: { class: 'material-icons', value: 'apps' } },
-                { id: 'authentication', name: 'Authentication', count: auth_sources || 0, template: auth, icon: { class: 'material-icons', value: 'lock_open' } },
+                {
+                    id: 'applications',
+                    name: 'Applications',
+                    count: applications || 0,
+                    template: apps,
+                    icon: { class: 'material-icons', value: 'apps' }
+                },
+                {
+                    id: 'authentication',
+                    name: 'Authentication',
+                    count: auth_sources || 0,
+                    template: auth,
+                    icon: { class: 'material-icons', value: 'lock_open' }
+                },
                 { id: 'users', name: 'Users', count: users || 0, template: users, icon: { class: 'material-icons', value: 'person' } }
-            ]" (event)="itemEvent($event)">
+            ]"
+            (event)="itemEvent($event)"
+        >
             <ng-template #apps>
                 <domain-applications [item]="item"></domain-applications>
             </ng-template>

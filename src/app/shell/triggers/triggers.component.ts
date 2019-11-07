@@ -14,7 +14,7 @@ import { toQueryString } from 'src/app/shared/utilities/api.utilities';
 })
 export class TriggersComponent extends BaseRootComponent<EngineTrigger> {
     /** Number of system triggers */
-    public systems: number;
+    public system_count: number;
 
     constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
         super(service, route);
@@ -28,6 +28,6 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> {
         const q = `total_${toQueryString(query)}`;
             // Get trigger count
         this.service.SystemTriggers.query(query)
-            .then(() => this.systems = this.service.SystemTriggers.last_total);
+            .then(() => this.system_count = this.service.SystemTriggers.last_total);
     }
 }

@@ -13,11 +13,11 @@ import { BaseRootComponent } from '../../shared/components/base-root.component';
 })
 export class SystemsComponent extends BaseRootComponent<EngineSystem> {
     /** Number of triggers for the active system */
-    public triggers: number;
+    public trigger_count: number;
     /** Number of devices for the active system */
-    public devices: number;
+    public device_count: number;
     /** Number of zones for the active system */
-    public zones: number;
+    public zone_count: number;
 
     constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
         super(service, route);
@@ -30,10 +30,10 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
         const query: any = { offset: 0, limit: 1, sys_id: this.item.id };
             // Get trigger count
         this.service.SystemTriggers.query(query)
-            .then(() => this.triggers = this.service.SystemTriggers.last_total);
+            .then(() => this.trigger_count = this.service.SystemTriggers.last_total);
             // Get device count
-        this.devices = (this.item.modules || []).length;
+        this.device_count = (this.item.modules || []).length;
             // Get zone count
-        this.zones = (this.item.zones || []).length;
+        this.zone_count = (this.item.zones || []).length;
     }
 }

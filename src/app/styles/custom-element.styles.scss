@@ -54,6 +54,12 @@ button[widget] {
     }
 }
 
+.tab-group[widget] {
+    main {
+        min-height: 1px;
+    }
+}
+
 .dropdown[widget] {
     &.default {
         width: 9.5em;

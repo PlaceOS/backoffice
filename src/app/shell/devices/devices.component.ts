@@ -13,7 +13,7 @@ import { BaseRootComponent } from '../../shared/components/base-root.component';
 })
 export class DevicesComponent extends BaseRootComponent<EngineModule> {
     /** Number of systems for the active device */
-    public systems: number;
+    public system_count: number;
 
     constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
         super(service, route);
@@ -26,6 +26,9 @@ export class DevicesComponent extends BaseRootComponent<EngineModule> {
         const query: any = { offset: 0, limit: 1, module_id: this.item.id };
             // Get system count
         this.service.Systems.query(query)
-            .then(() => this.systems = this.service.Systems.last_total);
+            .then(() => {
+                this.system_count = this.service.Systems.last_total;
+                console.log('Last total:', this.system_count);
+            });
     }
 }

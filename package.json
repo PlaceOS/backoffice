@@ -41,6 +41,7 @@
         "@acaprojects/ngx-overlays": "^1.0.4",
         "@acaprojects/ngx-pipes": "^1.0.0",
         "@acaprojects/ngx-spinners": "^1.0.0",
+        "@acaprojects/ngx-tabs": "^1.0.0",
         "@acaprojects/ngx-toggles": "^1.0.0",
         "@angular-devkit/build-angular": "^0.800.6",
         "@angular/cdk": "^8.2.3",

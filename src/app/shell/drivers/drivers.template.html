@@ -1,13 +1,27 @@
 <div class="container" [class.show]="show_sidebar">
     <div class="sidebar" (tapped)="showSidebar()">
-        <sidebar heading="Drivers" [total]="total" [module]="module" [list]="list" (searchChange)="search($event)" [loading]="loading" [close]="show_sidebar" [active]="id" (event)="sidebarEvent($event)"></sidebar>
+        <sidebar
+            heading="Drivers"
+            [total]="total"
+            [module]="module"
+            [list]="list"
+            (searchChange)="search($event)"
+            [loading]="loading"
+            [close]="show_sidebar"
+            (event)="sidebarEvent($event)"
+        ></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
-        <item-display [item]="item" name="driver" [active]="tab"
+        <item-display
+            [item]="item"
+            name="driver"
+            [active]="tab"
             [tabs]="[
                 { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
                 { id: 'devices', name: 'Devices', template: devices, count: devices, icon: { class: 'material-icons', value: 'devices' } }
-            ]" (event)="itemEvent($event)">
+            ]"
+            (event)="itemEvent($event)"
+        >
             <ng-template #about>
                 <driver-about [item]="item"></driver-about>
             </ng-template>

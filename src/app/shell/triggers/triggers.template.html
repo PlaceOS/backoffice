@@ -1,13 +1,34 @@
 <div class="container" [class.show]="show_sidebar">
     <div class="sidebar" (tapped)="showSidebar()">
-        <sidebar heading="Triggers" [total]="total" [module]="module" [list]="list" (searchChange)="search($event)" [loading]="loading" [close]="show_sidebar" [active]="id"
-            (event)="sidebarEvent($event)"></sidebar>
+        <sidebar
+            heading="Triggers"
+            [total]="total"
+            [module]="module"
+            [list]="list"
+            (searchChange)="search($event)"
+            [loading]="loading"
+            [close]="show_sidebar"
+            (event)="sidebarEvent($event)"
+        ></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
-        <item-display [item]="item" [loading]="loading_item" name="trigger" [active]="tab" [tabs]="[
-                    { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
-                    { id: 'systems', name: 'Systems', template: systems, count: systems, icon: { class: 'material-icons', value: 'account_balance' } }
-                ]" (event)="itemEvent($event)">
+        <item-display
+            [item]="item"
+            [loading]="loading_item"
+            name="trigger"
+            [active]="tab"
+            [tabs]="[
+                { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
+                {
+                    id: 'systems',
+                    name: 'Systems',
+                    template: system_count,
+                    count: systems,
+                    icon: { class: 'material-icons', value: 'account_balance' }
+                }
+            ]"
+            (event)="itemEvent($event)"
+        >
             <ng-template #about>
                 <trigger-about [item]="item"></trigger-about>
             </ng-template>

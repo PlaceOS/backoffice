@@ -12,7 +12,10 @@ import { BaseRootComponent } from '../../shared/components/base-root.component';
     styleUrls: ['./zones.styles.scss']
 })
 export class ZonesComponent extends BaseRootComponent<EngineZone> {
-    public model: any = {};
+    /** Number of systems associated with the active zone */
+    public system_count: number;
+    /** Number of triggers associated with the active zone */
+    public trigger_count: number;
 
     constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
         super(service, route);
@@ -22,13 +25,13 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
     }
 
     protected loadValues() {
-        const query: any = { offset: 0, limit: 1, zone_id: this.model.item.id };
+        const query: any = { offset: 0, limit: 1, zone_id: this.item.id };
         // Get system count
         this.service.Systems.query(query)
-            .then(() => this.model.systems = this.service.Systems.last_total);
-        const tquery: any = { offset: 0, limit: 1, zone_id: this.model.item.id };
+            .then(() => this.system_count = this.service.Systems.last_total);
+        const tquery: any = { offset: 0, limit: 1, zone_id: this.item.id };
         // Get trigger count
         this.service.SystemTriggers.query(tquery)
-            .then(() => this.model.triggers = this.service.SystemTriggers.last_total);
+            .then(() => this.trigger_count = this.service.SystemTriggers.last_total);
     }
 }

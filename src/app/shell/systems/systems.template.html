@@ -21,12 +21,18 @@
                 {
                     id: 'devices',
                     name: 'Devices',
-                    count: devices,
+                    count: device_count,
                     template: devices,
                     icon: { class: 'material-icons', value: 'devices_other' }
                 },
-                { id: 'zones', name: 'Zones', count: zones, template: zones, icon: { class: 'material-icons', value: 'device_hub' } },
-                { id: 'triggers', name: 'Triggers', count: triggers, template: triggers, icon: { class: 'material-icons', value: 'timer' } }
+                { id: 'zones', name: 'Zones', count: zone_count, template: zones, icon: { class: 'material-icons', value: 'device_hub' } },
+                {
+                    id: 'triggers',
+                    name: 'Triggers',
+                    count: trigger_count,
+                    template: triggers,
+                    icon: { class: 'material-icons', value: 'timer' }
+                }
             ]"
             [active]="tab"
             (event)="itemEvent($event)"
