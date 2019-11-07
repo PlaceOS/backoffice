@@ -31,7 +31,8 @@
               "src/favicon.ico",
               "src/assets",
               "src/manifest.webmanifest",
-              "src/oauth-resp.html"
+              "src/oauth-resp.html",
+              { "glob": "**/*", "input": "node_modules/monaco-editor/min/", "output": "./assets/monaco/" }
             ],
             "styles": [
               "src/styles.scss"
@@ -100,7 +101,8 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              { "glob": "**/*", "input": "node_modules/monaco-editor/min/", "output": "./assets/monaco/" }
             ],
             "styles": [
               "src/styles.scss"
