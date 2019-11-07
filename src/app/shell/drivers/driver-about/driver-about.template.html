@@ -1,17 +1,17 @@
 <div class="container">
     <section>
-        <div class="table">
-            <div class="table-head table-row">
-                <div class="flex">Module Name</div>
-                <div class="class">Class</div>
-            </div>
-            <div class="table-body">
-                <div class="table-row">
-                    <div class="flex">{{item?.module_name}}</div>
-                    <div class="class mono">{{item?.class_name}}</div>
-                </div>
-            </div>
-        </div>
+        <table>
+            <thead>
+                <td class="flex">Module Name</td>
+                <td class="class">Class</td>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="flex">{{item?.module_name}}</td>
+                    <td class="class mono">{{item?.class_name}}</td>
+                </tr>
+            </tbody>
+        </table>
     </section>
     <section>
         <button widget>Reload Modules</button>

@@ -6,28 +6,30 @@
             </div>
         </section>
         <section class="list">
-            <div class="table" *ngIf="model.list && model.list.length > 0">
-                <div class="table-head table-row">
-                    <div class="small"></div>
-                    <div class="flex">Name</div>
-                    <div class="system">System</div>
-                    <div class="small"></div>
-                </div>
-                <div class="table-body">
-                    <div class="table-row" *ngFor="let item of model.list">
-                        <div class="small">
+            <table *ngIf="model.list && model.list.length > 0">
+                <thead>
+                    <td class="small"></td>
+                    <td class="flex">Name</td>
+                    <td class="system">System</td>
+                    <td class="small"></td>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of model.list">
+                        <td class="small">
                             <div class="state" [class.active]="item.enabled"></div>
-                        </div>
-                        <div class="flex"><a (touchrelease)="goto(item)">{{item.name}}</a></div>
-                        <div class="system"><a (touchrelease)="goto(item.system)">
+                        </td>
+                        <td class="flex"><a (touchrelease)="goto(item)">{{item.name}}</a></td>
+                        <td class="system">
+                            <a (touchrelease)="goto(item.system)">
                                 {{item.system?.name}} (<span class="id">{{item.system?.id}}</span>)
-                            </a></div>
-                        <div class="small">
+                            </a>
+                        </td>
+                        <td class="small">
                             <div class="action"><i class="material-icons">delete</i></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <div class="info-block" *ngIf="!model.list || model.list.length <= 0">
                 <div class="text">No devices with driver</div>
             </div>

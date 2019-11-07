@@ -25,31 +25,33 @@
                     <div class="module-details">
                         <div class="module">{{ item?.module_class }}</div>
                         <div class="details">
-                            <div class="table">
-                                <div class="table-row">
-                                    <div class="field">Name</div>
-                                    <div class="flex">{{ item?.id || item?.name }}</div>
-                                </div>
-                                <div class="table-row" *ngIf="item && item.documentation">
-                                    <div class="field">Reference Documentation</div>
-                                    <div class="flex">
-                                        <div>
-                                            <ng-container *ngFor="let doc of item.documentation">
-                                                <a [href]="doc | safe: 'url'">{{ doc }}</a
-                                                ><br />
-                                            </ng-container>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="table-row">
-                                    <div class="field">Module name</div>
-                                    <div class="flex">{{ item?.module_name }}</div>
-                                </div>
-                                <div class="table-row">
-                                    <div class="field">Role</div>
-                                    <div class="flex">{{ item?.role }}</div>
-                                </div>
-                            </div>
+                            <table>
+                                <thead>
+                                    <td class="field">Name</td>
+                                    <td class="flex">{{ item?.id || item?.name }}</td>
+                                </thead>
+                                <tbody>
+                                    <tr *ngIf="item && item.documentation">
+                                        <td class="field">Reference Documentation</td>
+                                        <td class="flex">
+                                            <div>
+                                                <ng-container *ngFor="let doc of item.documentation">
+                                                    <a [href]="doc | safe: 'url'">{{ doc }}</a
+                                                    ><br />
+                                                </ng-container>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="field">Module name</td>
+                                        <td class="flex">{{ item?.module_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="field">Role</td>
+                                        <td class="flex">{{ item?.role }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                         <div class="details">
                             <div class="name">Settings</div>

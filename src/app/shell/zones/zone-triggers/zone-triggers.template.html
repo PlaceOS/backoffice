@@ -9,22 +9,22 @@
                 </div>
             </section>
             <section class="list">
-                <div class="table" *ngIf="model.triggers && model.triggers.length > 0">
-                    <div class="table-head table-row">
-                        <div class="name">Name</div>
-                        <div class="flex">Description</div>
-                        <div class="small"></div>
-                    </div>
-                    <div class="table-body">
-                        <div class="table-row" *ngFor="let trigger of model.triggers">
-                            <div class="name"><a (touchrelease)="goto(trigger)">{{trigger.name}}</a></div>
-                            <div class="flex">{{trigger.description}}</div>
-                            <div class="small">
+                <table *ngIf="model.triggers && model.triggers.length > 0">
+                    <thead>
+                        <td class="name">Name</td>
+                        <td class="flex">Description</td>
+                        <td class="small"></td>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let trigger of model.triggers">
+                            <td class="name"><a (touchrelease)="goto(trigger)">{{trigger.name}}</a></td>
+                            <td class="flex">{{trigger.description}}</td>
+                            <td class="small">
                                 <div class="action"><i class="material-icons">delete</i></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
                 <div class="info-block" *ngIf="!model.triggers || model.triggers.length <= 0">
                     <div class="text">No triggers for system</div>
                 </div>

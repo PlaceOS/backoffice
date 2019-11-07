@@ -9,29 +9,29 @@
             </div>
         </section>
         <section class="list">
-            <div class="table" *ngIf="model.list && model.list.length > 0">
-                <div class="table-head table-row">
-                    <div class="small"></div>
-                    <div class="flex">Name</div>
-                    <div class="count">Count</div>
-                    <div class="added">Added</div>
-                    <div class="duo"></div>
-                </div>
-                <div class="table-body">
-                    <div class="table-row" *ngFor="let item of model.list">
-                        <div class="small">
+            <table *ngIf="model.list && model.list.length > 0">
+                <thead>
+                    <td class="small"></td>
+                    <td class="flex">Name</td>
+                    <td class="count">Count</td>
+                    <td class="added">Added</td>
+                    <td class="duo"></td>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of model.list">
+                        <td class="small">
                             <div class="state" [class.active]="item.enabled"></div>
-                        </div>
-                        <div class="flex"><a (touchrelease)="goto(item)">{{item.name}}</a></div>
-                        <div class="count">{{item.trigger_count}}</div>
-                        <div class="added">{{item.display?.created}}</div>
-                        <div class="duo">
+                        </td>
+                        <td class="flex"><a (touchrelease)="goto(item)">{{item.name}}</a></td>
+                        <td class="count">{{item.trigger_count}}</td>
+                        <td class="added">{{item.display?.created}}</td>
+                        <td class="duo">
                             <div class="action"><i class="material-icons">edit</i></div>
                             <div class="action"><i class="material-icons">delete</i></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <div class="info-block" *ngIf="!model.list || model.list.length <= 0">
                 <div class="text">No triggers for system</div>
             </div>
