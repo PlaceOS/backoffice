@@ -43,7 +43,7 @@
         <ng-container *ngIf="list">
             <cdk-virtual-scroll-viewport itemSize="48" (scrolledIndexChange)="atBottom()">
                 <ng-container *cdkVirtualFor="let item of items | async">
-                    <a [routerLink]="[route, item.id, 'about']" routerLinkActive="active">
+                    <a [routerLink]="[route, item.id]" routerLinkActive="active">
                         <div #list_item class="item" [title]="item?.custom_name || item?.name || item">
                             <div class="text">{{item?.custom_name || item?.name || item}}</div>
                             <app-icon [icon]="{ type: 'icon', class: 'material-icons', content: 'done' }"></app-icon>
