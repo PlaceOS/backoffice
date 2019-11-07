@@ -77,7 +77,6 @@
         "material-design-icons": "^3.0.1",
         "protractor": "~5.4.0",
         "semantic-release": "^15.13.30",
-        "ts-composer": "file:../../lib/ts-composer/ts-composer-0.0.0-development.tgz",
         "ts-md5": "^1.2.7",
         "ts-node": "~7.0.0",
         "tslint": "~5.15.0",
