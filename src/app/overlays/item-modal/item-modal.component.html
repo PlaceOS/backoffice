@@ -1,16 +1,16 @@
-<div class="container" *ngIf="model.service" [class.loader]="model.loading" [class.edit]="model.item">
+<div class="container" *ngIf="service" [class.loader]="loading" [class.edit]="item">
     <div class="header">
-        <div class="text">{{model.item && model.edit ? 'Edit' : 'New'}} {{model.name}}</div>
+        <div class="text">{{item && edit ? 'Edit' : 'New'}} {{name}}</div>
         <div class="close" (touchrelease)="fn.close()">
             <i class="material-icons">close</i>
         </div>
     </div>
     <div class="body">
-        <ng-container *ngIf="model.fields && model.fields.length > 0">
-            <a-dynamic-form [fields]="model.fields" (valid)="model.valid = true"></a-dynamic-form>
+        <ng-container *ngIf="fields && fields.length > 0">
+            <a-dynamic-form [fields]="fields" (valid)="valid = true"></a-dynamic-form>
             <div class="footer">
                 <button widget (tapped)="fn.close()">Cancel</button>
-                <button widget name="inverse" type="submit" [disabled]="!model.valid" (tapped)="submit()">{{ model.item ? 'Save' : 'Add' }}</button>
+                <button widget name="inverse" type="submit" [disabled]="!valid" (tapped)="submit()">{{ item ? 'Save' : 'Add' }}</button>
             </div>
         </ng-container>
     </div>

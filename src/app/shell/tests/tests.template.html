@@ -1,41 +1,40 @@
-<div class="container tests" [class.show]="model.show_sidebar">
+<div class="container tests" [class.show]="show_sidebar">
     <div class="sidebar" (tapped)="showSidebar()">
         <sidebar
             heading="Tests"
-            [total]="model.total"
+            [total]="total"
             [module]="module"
-            [new]="false"
-            [list]="model.list"
+            [list]="list"
             (searchChange)="search($event)"
-            [loading]="model.loading"
-            [close]="model.show_sidebar"
+            [loading]="loading"
+            [close]="show_sidebar"
             (event)="sidebarEvent($event)"
         ></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
         <item-display
-            [item]="model.item"
+            [item]="item"
             [has_change]="false"
             name="test"
-            [active]="model.tab"
+            [active]="tab"
             [tabs]="[{ id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } }]"
             (event)="itemEvent($event)"
         >
             <ng-template #about>
                 <div class="about">
                     <div class="module-details">
-                        <div class="module">{{ model.item?.module_class }}</div>
+                        <div class="module">{{ item?.module_class }}</div>
                         <div class="details">
                             <div class="table">
                                 <div class="table-row">
                                     <div class="field">Name</div>
-                                    <div class="flex">{{ model.item?.id || model.item?.name }}</div>
+                                    <div class="flex">{{ item?.id || item?.name }}</div>
                                 </div>
-                                <div class="table-row" *ngIf="model.item && model.item.documentation">
+                                <div class="table-row" *ngIf="item && item.documentation">
                                     <div class="field">Reference Documentation</div>
                                     <div class="flex">
                                         <div>
-                                            <ng-container *ngFor="let doc of model.item.documentation">
+                                            <ng-container *ngFor="let doc of item.documentation">
                                                 <a [href]="doc | safe: 'url'">{{ doc }}</a
                                                 ><br />
                                             </ng-container>
@@ -44,29 +43,29 @@
                                 </div>
                                 <div class="table-row">
                                     <div class="field">Module name</div>
-                                    <div class="flex">{{ model.item?.module_name }}</div>
+                                    <div class="flex">{{ item?.module_name }}</div>
                                 </div>
                                 <div class="table-row">
                                     <div class="field">Role</div>
-                                    <div class="flex">{{ model.item?.role }}</div>
+                                    <div class="flex">{{ item?.role }}</div>
                                 </div>
                             </div>
                         </div>
                         <div class="details">
                             <div class="name">Settings</div>
                             <div class="data">
-                                <settings-display [model]="model.item?.settings || {}"></settings-display>
+                                <settings-display [model]="item?.settings || {}"></settings-display>
                             </div>
                         </div>
                     </div>
                     <div class="terminal" #cmd_line>
                         <div class="output">
-                            <div class="line" *ngFor="let line of model.display_lines || []">{{ line }}</div>
+                            <div class="line" *ngFor="let line of display_lines || []">{{ line }}</div>
                         </div>
                         <div class="input">
                             <div class="feed">></div>
                             <div class="field">
-                                <input #cmd_input [(ngModel)]="model.input" (keyup.enter)="send()" />
+                                <input #cmd_input [(ngModel)]="input" (keyup.enter)="send()" />
                             </div>
                         </div>
                     </div>

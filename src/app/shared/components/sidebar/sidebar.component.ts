@@ -42,6 +42,11 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     /** Virtual scrolling viewport */
     @ViewChild(CdkVirtualScrollViewport, { static: false }) private viewport: CdkVirtualScrollViewport;
 
+    /** Whether new items for the active module can be created */
+    public get new(): boolean {
+        return false;
+    }
+
     /** Heading value lower cased */
     public get lowercase_heading() {
         return (this.heading || '').toLowerCase();

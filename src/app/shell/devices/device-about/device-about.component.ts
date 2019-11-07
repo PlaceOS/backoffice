@@ -12,4 +12,8 @@ import { BaseDirective } from '../../../shared/globals/base.directive';
 export class DeviceAboutComponent extends BaseDirective {
     @Input() public item: EngineModule;
 
+    public get system() {
+        return null;
+    }
+
 }

@@ -18,6 +18,8 @@ export class SystemLogModalComponent extends BaseDirective implements OnInit {
     public logs: IEngineLogEntry[];
     /** Whether the system's logs are loading */
     public loading: boolean;
+    /**  */
+    public name: string;
 
     constructor(private _item: OverlayItem, private _service: ApplicationService) {
         super();

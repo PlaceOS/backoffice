@@ -10,7 +10,12 @@ import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
     styleUrls: ['./changelog-modal.styles.scss']
 })
 export class ChangelogModalComponent extends BaseDirective {
-
+    /** Whether the changelog is loading */
+    public loading: boolean;
+    /** Changelog Markdown */
+    public item: string;
+    /** HTML string for rendering the change log */
+    public changelog: string;
 }
 
 OVERLAY_REGISTER.push({ id: 'changelog', config: { content: ChangelogModalComponent, config: 'modal' } });

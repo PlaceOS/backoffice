@@ -12,4 +12,9 @@ import { BaseDirective } from '../../../shared/globals/base.directive';
 export class ZoneAboutComponent extends BaseDirective {
     @Input() public item: EngineZone;
 
+    /** List of tags associated with the zone */
+    public get tag_list(): string[] {
+        return [];
+    }
+
 }
