@@ -26,8 +26,15 @@
     </header>
     <main>
         <div class="tabs" *ngIf="tabs && tabs.length > 1">
-            <a-tab-group [(tab)]="model.tab" (tabChange)="event.emit({ type: 'tab', value: $event })">
-                <a-tab *ngFor="let tab of tabs" [id]="tab.id" [style.width]="100 / tabs.length + '%'">
+            <a-tab-group>
+                <a-tab
+                    *ngFor="let tab of tabs"
+                    [id]="tab.id"
+                    [active]="active === tab.id"
+                    (activeChange)="active = tab.id; event.emit({ type: 'tab', value: tab.id })"
+                    [content]="tab.template"
+                    [style.width]="100 / tabs.length + '%'"
+                >
                     <div class="tab">
                         <i [class]="tab.icon?.class">{{ tab.icon?.value }}</i>
                         <div class="name">{{ tab.name }}&nbsp;</div>
@@ -35,13 +42,6 @@
                     </div>
                 </a-tab>
             </a-tab-group>
-        </div>
-        <div class="content" [class.border-top]="!tabs || tabs.length <= 1">
-            <ng-container *ngFor="let tab of tabs">
-                <ng-container *ngIf="model.tab === tab.id">
-                    <ng-container *ngTemplateOutlet="tab.template"></ng-container>
-                </ng-container>
-            </ng-container>
         </div>
     </main>
 </div>
