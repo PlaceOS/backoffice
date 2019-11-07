@@ -16,7 +16,7 @@
     },
     "private": true,
     "dependencies": {
-        "@acaprojects/ngx-composer": "^1.0.2",
+        "@acaprojects/ngx-composer": "^1.0.3",
         "@angular/animations": "^8.2.13",
         "@angular/common": "^8.2.13",
         "@angular/compiler": "^8.2.13",
