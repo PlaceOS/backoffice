@@ -1,18 +1,33 @@
-<div class="container" [class.show]="model.show_sidebar">
-    <div class="sidebar" (tap)="showSidebar()">
-        <sidebar heading="Users" [total]="model.total" [licenses]="model.licenses" [list]="model.list" (searchChange)="search($event)" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
+<div class="container" [class.show]="show_sidebar">
+    <div class="sidebar" (tapped)="showSidebar()">
+        <sidebar
+            heading="Users"
+            [total]="total"
+            [module]="module"
+            [list]="list"
+            (searchChange)="search($event)"
+            [loading]="loading"
+            [close]="show_sidebar"
+            (event)="sidebarEvent($event)"
+        ></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
-        <item-display [item]="model.item" [loading]="model.loading_item" name="user" [active]="model.tab"
+        <item-display
+            [item]="item"
+            [loading]="loading_item"
+            name="user"
+            [active]="tab"
             [tabs]="[
                 { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
                 { id: 'history', name: 'History', template: history, icon: { class: 'material-icons', value: 'list' } }
-            ]" (event)="itemEvent($event)">
+            ]"
+            (event)="itemEvent($event)"
+        >
             <ng-template #about>
-                <user-about [item]="model.item"></user-about>
+                <user-about [item]="item"></user-about>
             </ng-template>
             <ng-template #history>
-                <user-history [item]="model.item"></user-history>
+                <user-history [item]="item"></user-history>
             </ng-template>
         </item-display>
     </main>

@@ -1,12 +1,13 @@
-
 <div class="container" *ngIf="item && !loading">
     <header>
         <div class="heading-group">
-            <div class="heading">{{item.display_name || item.name}}</div>
+            <div class="heading">{{ item.display_name || item.name }}</div>
             <div class="info">
-                <div class="id" *ngIf="item.id" (dblclick)="copy()"><span>{{item.id}}</span></div>
+                <div class="id" *ngIf="item.id" (dblclick)="copy()">
+                    <span>{{ item.id }}</span>
+                </div>
                 <div class="chip connect" *ngIf="item.connected !== null && item.connected !== undefined" [class.active]="item.connected">
-                    {{item.connected ? 'Online' : 'Offline'}}
+                    {{ item.connected ? 'Online' : 'Offline' }}
                 </div>
                 <div class="chip secure" *ngIf="item.tls">
                     <div class="icon"><i class="material-icons">lock</i></div>
@@ -25,40 +26,40 @@
     </header>
     <main>
         <div class="tabs" *ngIf="tabs && tabs.length > 1">
-            <tab-group [(state)]="model.tab" (stateChange)="event.emit({ type: 'tab', value: $event })">
-                <tab *ngFor="let tab of tabs" [id]="tab.id" [style.width]="(100 / tabs.length) + '%'">
+            <a-tab-group>
+                <a-tab
+                    *ngFor="let tab of tabs"
+                    [id]="tab.id"
+                    [active]="active === tab.id"
+                    (activeChange)="active = tab.id; event.emit({ type: 'tab', value: tab.id })"
+                    [content]="tab.template"
+                    [style.width]="100 / tabs.length + '%'"
+                >
                     <div class="tab">
-                        <i [class]="tab.icon?.class">{{tab.icon?.value}}</i>
-                        <div class="name">{{tab.name}}&nbsp;</div>
-                        <div class="count" *ngIf="tab.count || tab.count === 0">({{tab.count || '0'}})</div>
+                        <i [class]="tab.icon?.class">{{ tab.icon?.value }}</i>
+                        <div class="name">{{ tab.name }}&nbsp;</div>
+                        <div class="count" *ngIf="tab.count || tab.count === 0">({{ tab.count || '0' }})</div>
                     </div>
-                </tab>
-            </tab-group>
-        </div>
-        <div class="content" [class.border-top]="!tabs || tabs.length <= 1">
-            <ng-container *ngFor="let tab of tabs">
-                <ng-container *ngIf="model.tab === tab.id">
-                    <ng-container *ngTemplateOutlet="tab.template"></ng-container>
-                </ng-container>
-            </ng-container>
+                </a-tab>
+            </a-tab-group>
         </div>
     </main>
 </div>
-<div class="no-item not-mobile center" *ngIf="!item && !loading">
+<div class="info-block not-mobile center" *ngIf="!item && !loading">
     <div class="icon">
         <i class="material-icons">arrow_back</i>
     </div>
-    <div class="text">Select a {{name}} from the sidebar</div>
+    <div class="text">Select a {{ name }} from the sidebar</div>
 </div>
-<div class="no-item mobile center" *ngIf="!item && !loading">
+<div class="info-block mobile-only center" *ngIf="!item && !loading">
     <div class="icon">
         <i class="material-icons">arrow_upward</i>
     </div>
-    <div class="text">Select a {{name}} from the search bar</div>
+    <div class="text">Select a {{ name }} from the search bar</div>
 </div>
-<div class="no-item center" *ngIf="loading">
+<div class="info-block center" *ngIf="loading">
     <div class="icon">
-        <spinner type="circle-ring"></spinner>
+        <a-spinner circle-ring></a-spinner>
     </div>
-    <div class="text">Loading {{name}}...</div>
+    <div class="text">Loading {{ name }}...</div>
 </div>

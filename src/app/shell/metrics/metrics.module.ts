@@ -5,12 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { ComposerModule } from '@acaprojects/ngx-composer';
-import { WidgetsModule } from '@acaprojects/ngx-widgets';
 
 import { ROUTES } from './metrics.routes';
 
 import { MetricsComponent } from './metrics.component';
-import { SharedComponentsModule } from '../../shared/components/shared-components.module';
+import { SharedContentModule } from 'src/app/shared/shared.module';
 
 @NgModule({
     declarations: [
@@ -20,9 +19,8 @@ import { SharedComponentsModule } from '../../shared/components/shared-component
         CommonModule,
         FormsModule,
         ComposerModule,
-        WidgetsModule,
         RouterModule.forChild(ROUTES),
-        SharedComponentsModule
+        SharedContentModule
     ]
 })
 export class AppMetricsModule { }

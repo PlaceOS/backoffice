@@ -3,7 +3,7 @@
 
 .container {
     position: relative;
-    background-color: $color-ternary;
+    background-color: $background;
     height: 100%;
     width: 100;
     display: flex;
@@ -125,7 +125,7 @@ input {
     display: flex;
     align-items: center;
     cursor: pointer;
-    height: 32px;
+    height: 48px;
     transition: background-color 200ms;
     background-color: rgba(#fff, 0);
 
@@ -135,11 +135,20 @@ input {
     .text {
         flex: 1;
     }
+}
 
+a {
+    text-decoration: none;
+    color: $font-light;
+    app-icon {
+        display: none;
+    }
     &.active {
-        background-color: rgba(#000, .2);
-        &:hover {
-            background-color: rgba(#000, .2);
+        .item {
+            background-color: rgba(#fff, .1);
+        }
+        app-icon {
+            display: block;
         }
     }
 }
@@ -166,7 +175,7 @@ input {
 
     &:hover {
         background-color: #fff;
-        color: $color-ternary;
+        color: $background-light;
     }
     &:active {
         background-color: #ccc;

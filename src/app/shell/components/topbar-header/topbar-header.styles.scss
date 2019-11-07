@@ -49,8 +49,8 @@
     position: relative;
     height: $header-height;
     min-height: $header-height;
-    background: $header-bg;
-    color: $header-color;
+    background: $color-primary;
+    color: $font-light;
     border-bottom: 1px solid #f0f0f0;
     width: 100%;
     background-position: center;
@@ -62,7 +62,7 @@
     // z-index: 1;
 
     &.uat {
-        background-color: $color-quinternary;
+        background-color: $color-develop;
     }
 
     i {

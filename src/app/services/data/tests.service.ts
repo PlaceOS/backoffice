@@ -1,8 +1,8 @@
 
 import { Injectable } from '@angular/core';
-import { CommsService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaprojects/ngx-composer';
 
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
 
 export interface IEngineTest {
     id: string;
@@ -15,15 +15,29 @@ export interface IEngineTest {
     documentation?: string[];
 }
 
+export interface ITestConnection {
+    ws: WebSocket;
+    stop: () => void;
+    post: (msg: string, send: any) => void;
+}
+
 @Injectable({
     providedIn: 'root'
 })
-export class TestsService extends BaseService<IEngineTest> {
+export class BackofficeTestsService extends BaseAPIService<IEngineTest> {
 
-    constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'test';
-        this.model.route = '/tests';
+    private _connections: { [key: string]: ITestConnection } = {};
+
+    constructor(private _composer: ComposerService) {
+        super(undefined);
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.http = this._composer.http;
+                sub.unsubscribe();
+            }
+        });
+        this._name = 'test';
+        this._api_route = '/tests';
     }
 
     public deleteItem() { return new Promise((rs, rj) => rj('No show for this service')); }
@@ -35,26 +49,25 @@ export class TestsService extends BaseService<IEngineTest> {
      * @param item Test to run
      * @param next Callback for server test events
      */
-    public run(item: IEngineTest, next: (d) => void) {
+    public run(item: IEngineTest, next: (_: string[]) => void) {
         const key = `websocket_${item.id}`;
         this.stop(item);
-        this.http.token.then((t) => {
-            const url = `${this.endpoint.replace('http', 'ws')}/${encodeURIComponent(item.id)}/websocket?bearer_token=${t}`;
-            this.model[key].ws = new WebSocket(url);
-            this.set(key, []);
-            this.listen(key, next);
-            this.model[key].ws.onmessage = (event) => this.post(item, event.data);
-            this.model[key].ws.onerror = (event) => {
-                this.post(item, event);
-                this.stop(item);
-            };
-        });
-        this.model[key] = {
+        const token = this._composer.auth.token;
+        this._connections[key] = {
             ws: null,
             stop: () => this.stop(item),
             post: (msg, send = false) => this.post(item, msg, send)
         };
-        return this.model[key];
+        const url = `${this.route().replace('http', 'ws')}/${encodeURIComponent(item.id)}/websocket?bearer_token=${token}`;
+        this._connections[key].ws = new WebSocket(url);
+        this.set(key, []);
+        this.listen(key, next);
+        this._connections[key].ws.onmessage = (event) => this.post(item, event.data);
+        this._connections[key].ws.onerror = (event) => {
+            this.post(item, event as any);
+            this.stop(item);
+        };
+        return this._connections[key];
     }
 
     /**
@@ -63,12 +76,10 @@ export class TestsService extends BaseService<IEngineTest> {
      */
     public stop(item: IEngineTest) {
         const key = `websocket_${item.id}`;
-        if (this.model[key]) {
-            if (this.model[key].ws) {
-                this.model[key].ws.close();
+        if (this._connections[key]) {
+            if (this._connections[key].ws) {
+                this._connections[key].ws.close();
             }
-            this.subjects[key].complete();
-            this.subjects[key] = null;
         }
     }
 
@@ -85,7 +96,7 @@ export class TestsService extends BaseService<IEngineTest> {
         this.set(key, list);
     }
 
-    protected processItem(raw_item: any, id?: string) {
+    protected process(raw_item: any, id?: string) {
         let item: IEngineTest = null;
         if (typeof raw_item === 'string') {
             const route = raw_item.split('/modules/')[1];

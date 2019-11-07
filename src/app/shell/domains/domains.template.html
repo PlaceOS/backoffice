@@ -1,22 +1,48 @@
-<div class="container" [class.show]="model.show_sidebar">
-    <div class="sidebar" (tap)="showSidebar()">
-        <sidebar heading="Domains" [total]="model.total" [licenses]="model.licenses" [list]="model.list" (searchChange)="search($event)" [loading]="model.loading" [close]="model.show_sidebar" [active]="model.id" (event)="sidebarEvent($event)"></sidebar>
+<div class="container" [class.show]="show_sidebar">
+    <div class="sidebar" (tapped)="showSidebar()">
+        <sidebar
+            heading="Domains"
+            [total]="total"
+            [module]="module"
+            [list]="list"
+            (searchChange)="search($event)"
+            [loading]="loading"
+            [close]="show_sidebar"
+            (event)="sidebarEvent($event)"
+        ></sidebar>
     </div>
     <main (touchrelease)="showSidebar(false)">
-        <item-display [item]="model.item" name="zone" [active]="model.tab"
+        <item-display
+            [item]="item"
+            name="zone"
+            [active]="tab"
             [tabs]="[
-                { id: 'applications', name: 'Applications', count: model.applications || 0, template: apps, icon: { class: 'material-icons', value: 'apps' } },
-                { id: 'authentication', name: 'Authentication', count: model.auth_sources || 0, template: auth, icon: { class: 'material-icons', value: 'lock_open' } },
-                { id: 'users', name: 'Users', count: model.users || 0, template: users, icon: { class: 'material-icons', value: 'person' } }
-            ]" (event)="itemEvent($event)">
+                {
+                    id: 'applications',
+                    name: 'Applications',
+                    count: applications || 0,
+                    template: apps,
+                    icon: { class: 'material-icons', value: 'apps' }
+                },
+                {
+                    id: 'authentication',
+                    name: 'Authentication',
+                    count: auth_sources || 0,
+                    template: auth,
+                    icon: { class: 'material-icons', value: 'lock_open' }
+                },
+                { id: 'users', name: 'Users', count: users || 0, template: users, icon: { class: 'material-icons', value: 'person' } }
+            ]"
+            (event)="itemEvent($event)"
+        >
             <ng-template #apps>
-                <domain-applications [item]="model.item"></domain-applications>
+                <domain-applications [item]="item"></domain-applications>
             </ng-template>
             <ng-template #auth>
-                <domain-authentication [item]="model.item"></domain-authentication>
+                <domain-authentication [item]="item"></domain-authentication>
             </ng-template>
             <ng-template #users>
-                <domain-users [item]="model.item"></domain-users>
+                <domain-users [item]="item"></domain-users>
             </ng-template>
         </item-display>
     </main>

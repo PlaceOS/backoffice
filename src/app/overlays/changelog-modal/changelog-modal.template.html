@@ -1,13 +1,13 @@
-<div class="container" [class.loader]="model.loading" [class.edit]="model.item">
+<div class="container" [class.loader]="loading" [class.edit]="item">
     <div class="header">
         <div class="text">Changelog</div>
         <div class="close" (touchrelease)="fn.close()">
             <i class="material-icons">close</i>
         </div>
     </div>
-    <div class="body markdown" *ngIf="model.changelog" [innerHTML]="model.changelog | safe"></div>
-    <div class="body" *ngIf="!model.changelog">
-        <div class="no-item">
+    <div class="body markdown" *ngIf="changelog" [innerHTML]="changelog | safe:'html'"></div>
+    <div class="body" *ngIf="!changelog">
+        <div class="info-block">
             <div class="icon">
                 <i class="material-icons">close</i>
             </div>

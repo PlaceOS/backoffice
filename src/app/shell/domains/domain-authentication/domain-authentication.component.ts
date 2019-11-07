@@ -1,21 +1,21 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
+import { EngineDomain } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { AppService } from '../../../services/app.service';
-import { IEngineDomain } from '../../../services/data/domains.service';
+import { BaseDirective } from '../../../shared/globals/base.directive';
+import { ApplicationService } from '../../../services/app.service';
 
 @Component({
     selector: 'domain-authentication',
     templateUrl: './domain-authentication.template.html',
     styleUrls: ['./domain-authentication.styles.scss']
 })
-export class DomainAuthenticationComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IEngineDomain;
+export class DomainAuthenticationComponent extends BaseDirective implements OnChanges {
+    @Input() public item: EngineDomain;
 
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 
@@ -26,7 +26,7 @@ export class DomainAuthenticationComponent extends BaseComponent implements OnCh
     }
 
     public load(offset: number = 0) {
-        this.service.AuthSources.query({ authority_id: this.item.id, offset }).then((list) => {
+        this.service.AuthSources.query({ authority_id: this.item.id, offset } as any).then((list) => {
             if (!offset) { this.model.list = []; }
             for (const item of (list || [])) {
                 let found = false;

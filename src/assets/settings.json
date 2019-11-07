@@ -16,7 +16,7 @@
     "app": {
         "title": "ACA Engine",
         "name": "ACA Engine",
-        "description": "ACA Engine Frontend made in Angular 6+",
+        "description": "ACA Engine Frontend made in Angular 8+",
         "short_name": "Engine",
         "code": "ENGINE",
         "login": {
@@ -33,78 +33,87 @@
         },
         "copyright": "Copyright 2018 ACA Projects",
         "global_search": true,
-        "menu": {
-            "list": [
+        "general": {
+            "menu": [
                 {
-                    "id": "systems",
                     "name": "Systems",
+                    "route": "/systems",
                     "icon": {
+                        "type": "icon",
                         "class": "material-icons",
-                        "value": "account_balance"
+                        "content": "account_balance"
                     }
                 },
                 {
-                    "id": "devices",
                     "name": "Devices",
+                    "route": "/devices",
                     "icon": {
+                        "type": "icon",
                         "class": "material-icons",
-                        "value": "devices_other"
+                        "content": "devices_other"
                     }
                 },
                 {
-                    "id": "zones",
                     "name": "Zones",
+                    "route": "/zones",
                     "icon": {
+                        "type": "icon",
                         "class": "material-icons",
-                        "value": "device_hub"
+                        "content": "device_hub"
                     }
                 },
                 {
-                    "id": "drivers",
                     "name": "Drivers",
+                    "route": "/drivers",
                     "icon": {
+                        "type": "icon",
                         "class": "material-icons",
-                        "value": "settings"
+                        "content": "settings"
                     }
                 },
                 {
-                    "id": "triggers",
                     "name": "Triggers",
+                    "route": "/triggers",
                     "icon": {
+                        "type": "icon",
                         "class": "material-icons",
-                        "value": "timer"
+                        "content": "timer"
                     }
                 },
                 {
-                    "id": "metrics",
                     "name": "Metrics",
+                    "route": "/metrics",
                     "icon": {
+                        "type": "icon",
                         "class": "material-icons",
-                        "value": "timeline"
+                        "content": "timeline"
                     }
                 },
                 {
-                    "id": "users",
                     "name": "Users",
+                    "route": "/users",
                     "icon": {
+                        "type": "icon",
                         "class": "material-icons",
-                        "value": "account_circle"
+                        "content": "account_circle"
                     }
                 },
                 {
-                    "id": "domains",
                     "name": "Domains",
+                    "route": "/domains",
                     "icon": {
+                        "type": "icon",
                         "class": "material-icons",
-                        "value": "web_asset"
+                        "content": "web_asset"
                     }
                 },
                 {
-                    "id": "tests",
                     "name": "Testing",
+                    "route": "/tests",
                     "icon": {
+                        "type": "icon",
                         "class": "material-icons",
-                        "value": "developer_board"
+                        "content": "developer_board"
                     }
                 }
             ]

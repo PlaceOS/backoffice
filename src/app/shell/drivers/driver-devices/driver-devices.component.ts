@@ -1,21 +1,21 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { IEngineDriver } from '../../../services/data/drivers.service';
-import { AppService } from '../../../services/app.service';
+import { BaseDirective } from '../../../shared/globals/base.directive';
+import { ApplicationService } from '../../../services/app.service';
+import { EngineDriver } from '@acaprojects/ts-composer';
 
 @Component({
     selector: 'driver-devices',
     templateUrl: './driver-devices.template.html',
     styleUrls: ['./driver-devices.styles.scss']
 })
-export class DriverDevicesComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IEngineDriver;
+export class DriverDevicesComponent extends BaseDirective implements OnChanges {
+    @Input() public item: EngineDriver;
 
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 

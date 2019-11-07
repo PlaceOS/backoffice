@@ -1,6 +1,6 @@
-<div class="container" #container [@show] [style.top]="model.top + 'px'" [class.right]="model.right">
-    <ng-container *ngIf="model.data">
-        <div class="item" *ngFor="let item of model.data" (touchrelease)="event(item)">
+<div class="container" #container [@show] [style.top]="top + 'px'" [class.right]="right">
+    <ng-container *ngIf="menu_items">
+        <div class="item" *ngFor="let item of menu_items" (touchrelease)="post(item)">
             <div class="icon">
                 <i *ngIf="item.icon && item.icon.class" [class]="item.icon.class">{{item.icon.value}}</i>
                 <img *ngIf="item.icon && item.icon.src" [src]="item.icon.src">

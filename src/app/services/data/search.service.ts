@@ -1,12 +1,10 @@
 
 import { Injectable } from '@angular/core';
-import { CommsService } from '@acaprojects/ngx-composer';
-import { BehaviorSubject } from 'rxjs';
+import { ComposerService } from '@acaprojects/ngx-composer';
 
-import { BaseService } from './base.service';
+import { BaseAPIService } from './base.service';
 
-import * as moment from 'moment';
-import { reject } from 'q';
+import * as dayjs from 'dayjs';
 
 export interface IEngineSearchResult {
     id: string;
@@ -19,12 +17,18 @@ export interface IEngineSearchResult {
 @Injectable({
     providedIn: 'root'
 })
-export class EngineSearchService extends BaseService<IEngineSearchResult> {
+export class BackofficeSearchService extends BaseAPIService<IEngineSearchResult> {
 
-    constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'search';
-        this.model.route = '/search';
+    constructor(private _composer: ComposerService) {
+        super(undefined);
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.http = this._composer.http;
+                sub.unsubscribe();
+            }
+        });
+        this._name = 'search';
+        this._api_route = '/search';
     }
 
     public deleteItem() { return new Promise((rs, rj) => rj('No show for this service')); }
@@ -32,7 +36,7 @@ export class EngineSearchService extends BaseService<IEngineSearchResult> {
     public add() { return new Promise<any>((rs, rj) => rj('No show for this service')); }
     public show() { return new Promise<any>((rs, rj) => rj('No show for this service')); }
 
-    protected processItem(raw_item: any) {
+    protected process(raw_item: any) {
         const item: IEngineSearchResult = {
             id: raw_item.id,
             name: raw_item.name,
@@ -40,7 +44,7 @@ export class EngineSearchService extends BaseService<IEngineSearchResult> {
             created: raw_item.created_at * 1000
         };
         item.display = {
-            created: moment(item.created).fromNow()
+            created: dayjs(item.created).format()
         };
         return item;
     }

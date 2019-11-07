@@ -1,11 +1,11 @@
 <section class="execute" *ngIf="system_id && model.modules && model.modules.length > 0">
     <div class="row">
-        <dropdown klass="form" [list]="model.modules" [model]="-1" (modelChange)="loadFunctions(model.modules[$event])"
-            placeholder="Select a device"></dropdown>
+        <a-dropdown klass="form" [items]="model.modules" [ngModel]="-1" (ngModelChange)="loadFunctions(model.modules[$event])"
+            placeholder="Select a device"></a-dropdown>
     </div>
     <div class="row">
-        <dropdown klass="form" *ngIf="model.fn_list" [list]="model.fn_names" [(model)]="model.exec_index" (modelChange)="selectFunction(model.fn_list[model.fn_names[$event]], model.fn_names[$event])"
-            placeholder="Select a function"></dropdown>
+        <a-dropdown klass="form" *ngIf="model.fn_list" [items]="model.fn_names" [(ngModel)]="model.exec_index" (ngModelChange)="selectFunction(model.fn_list[model.fn_names[$event]], model.fn_names[$event])"
+            placeholder="Select a function"></a-dropdown>
         <div class="fn-input" *ngIf="model.fn">
             <div class="bracket">(</div>
             <div class="arg" *ngFor="let arg of model.fn.args; let i = index">
@@ -21,7 +21,7 @@
             <div class="bracket">)</div>
         </div>
         <div class="send" *ngIf="model.fn">
-            <btn [disabled]="!model.fields_valid" (tapped)="execute()">Send</btn>
+            <button widget [disabled]="!model.fields_valid" (tapped)="execute()">Send</button>
         </div>
     </div>
 </section>

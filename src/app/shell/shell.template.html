@@ -15,9 +15,9 @@
     </div>
 </div>
 <div class="container loader" [class.uat]="model.env !== 'prod'" *ngIf="model.loading">
-    <div class="no-item">
+    <div class="info-block">
         <div class="icon">
-            <spinner type="circle-ring" color="#fff"></spinner>
+            <a-spinner circle-ring color="#fff"></a-spinner>
         </div>
         <div class="text">Loading application data...</div>
     </div>

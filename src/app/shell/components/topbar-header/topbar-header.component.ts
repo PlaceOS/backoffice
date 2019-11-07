@@ -2,19 +2,19 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { AppService } from '../../../services/app.service';
+import { BaseDirective } from '../../../shared/globals/base.directive';
+import { ApplicationService } from '../../../services/app.service';
 
 @Component({
     selector: 'topbar-header',
     templateUrl: './topbar-header.template.html',
     styleUrls: ['./topbar-header.styles.scss']
 })
-export class TopbarHeaderComponent extends BaseComponent implements OnInit {
+export class TopbarHeaderComponent extends BaseDirective implements OnInit {
     @Output() public filter = new EventEmitter();
     public model: any = {};
 
-    constructor(private service: AppService, private router: Router) {
+    constructor(private service: ApplicationService, private router: Router) {
         super();
     }
 
@@ -24,21 +24,21 @@ export class TopbarHeaderComponent extends BaseComponent implements OnInit {
             { id: 'profile', name: 'Profile', icon: { class: 'material-icons', value: 'account_circle' } },
             { id: 'logout', name: 'Logout', icon: { class: 'material-icons', value: 'exit_to_app' } }
         ];
-        this.subs.obs.router_events = this.router.events.subscribe((e) => {
+        this.subscription('route', this.router.events.subscribe((e) => {
             if (e instanceof NavigationEnd) { this.checkRoute(); }
-        });
+        }));
     }
 
     public init() {
-        if (!this.service.ready()) {
+        if (!this.service.is_ready) {
             return setTimeout(() => this.init(), 500);
         }
-        this.model.env = this.service.Settings.get('env');
-        this.model.logo = this.service.Settings.get('app.logo') || {};
-        this.model.has_search = this.service.Settings.get('app.global_search') || false;
+        this.model.env = this.service.setting('env');
+        this.model.logo = this.service.setting('app.logo') || {};
+        this.model.has_search = this.service.setting('app.global_search') || false;
         this.model.user = this.service.Users.current();
-        this.subs.obs.show_menu = this.service.listen('APP.show_menu', (state) => this.model.show_menu = state);
-        this.subs.obs.filter = this.service.listen('APP.global_filter', (filter) => this.model.filter = filter);
+        this.subscription('show_menu', this.service.listen('APP.show_menu', (state) => this.model.show_menu = state));
+        this.subscription('filter', this.service.listen('APP.global_filter', (filter) => this.model.filter = filter));
         this.checkRoute();
     }
 
@@ -76,7 +76,7 @@ export class TopbarHeaderComponent extends BaseComponent implements OnInit {
 
     public select(item) {
         if (item.id === 'logout') {
-            this.service.logout();
+            this.service.Users.logout();
         } else if (item.id === 'profile') {
             this.service.navigate('profile');
         }

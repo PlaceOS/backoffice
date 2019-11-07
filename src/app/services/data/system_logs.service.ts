@@ -1,27 +1,29 @@
 
 import { Injectable } from '@angular/core';
-import { CommsService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaprojects/ngx-composer';
 
-import { BaseService } from './base.service';
-import { IEngineSystem } from './systems.service';
-import { IUser } from './users.service';
-
-import * as moment from 'moment';
+import { BaseAPIService } from './base.service';
 import { IEngineLogEntry } from './logs.service';
 
 @Injectable({
     providedIn: 'root'
 })
-export class SystemLogsService extends BaseService<IEngineLogEntry> {
+export class BackofficeSystemLogsService extends BaseAPIService<IEngineLogEntry> {
 
-    constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'log';
-        this.model.route = '/system_logs';
+    constructor(private _composer: ComposerService) {
+        super(undefined);
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.http = this._composer.http;
+                sub.unsubscribe();
+            }
+        });
+        this._name = 'log';
+        this._api_route = '/system_logs';
     }
 
-    protected processItem(raw_item: any) {
-        const item = this.parent.Logs.processItem(raw_item);
+    protected process(raw_item: any) {
+        const item = this.parent.Logs.process(raw_item);
         return item;
     }
 

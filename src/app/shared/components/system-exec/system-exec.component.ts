@@ -1,14 +1,14 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, ViewChildren, ElementRef, QueryList } from '@angular/core';
 
-import { AppService } from '../../../services/app.service';
-import { BaseComponent } from '../base.component';
+import { ApplicationService } from '../../../services/app.service';
+import { BaseDirective } from '../../globals/base.directive';
 
 @Component({
     selector: 'system-exec',
     templateUrl: './system-exec.template.html',
     styleUrls: ['./system-exec.styles.scss']
 })
-export class SystemExecComponent extends BaseComponent implements OnInit, OnChanges {
+export class SystemExecComponent extends BaseDirective implements OnInit, OnChanges {
     @Input() public system_id: string;
     @Output() public event = new EventEmitter();
 
@@ -16,7 +16,7 @@ export class SystemExecComponent extends BaseComponent implements OnInit, OnChan
 
     @ViewChildren('argument') private arg_list: QueryList<ElementRef>;
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 
@@ -32,7 +32,7 @@ export class SystemExecComponent extends BaseComponent implements OnInit, OnChan
 
     public loadModules(offset: number = 0) {
         if (this.system_id) {
-            this.service.Modules.query({ sys_id: this.system_id, offset }).then((list) => {
+            this.service.Modules.query({ system_id: this.system_id, offset }).then((list) => {
                 this.model.devices = list;
                 if (!offset) { this.model.modules = []; }
                 for (const mod of this.model.devices) {
@@ -50,7 +50,7 @@ export class SystemExecComponent extends BaseComponent implements OnInit, OnChan
         this.model.fn = null;
         this.model.active_module = item;
         this.model.exec_index = -1;
-        this.service.Systems.funcs(this.system_id, { index: item.index, module: item.module }).then((list) => {
+        this.service.Systems.functionList(this.system_id, item.module,item.index).then((list) => {
             this.model.fn_list = list || {};
             this.model.fn_names = Object.keys(this.model.fn_list);
         }, () => null);
@@ -160,15 +160,15 @@ export class SystemExecComponent extends BaseComponent implements OnInit, OnChan
                 index: this.model.active_module.index,
                 args: JSON.parse(args)
             };
-            this.service.Systems.execute(this.system_id, details).then((result) => {
-                this.service.success('Command successful executed.<br>View Response?', 'View', () => {
+            this.service.Systems.execute(this.system_id, details.module, details.index, details.args).then((result) => {
+                this.service.notifySuccess('Command successful executed.<br>View Response?', 'View', () => {
                     // console.log('View response:', result);
                 });
             }, (err) => {
                 if (typeof err === 'string' && err.length < 64) {
-                    this.service.error(err);
+                    this.service.notifyError(err);
                 } else {
-                    this.service.error(`Executing '${this.model.fn.name}' failed.<br>View Error?`, 'View', () => {
+                    this.service.notifyError(`Executing '${this.model.fn.name}' failed.<br>View Error?`, 'View', () => {
                         // console.log('View error:', err);
                     });
                 }

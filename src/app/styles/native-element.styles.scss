@@ -1,0 +1,58 @@
+
+@import 'shared.styles';
+
+input {
+    font-size: 1em;
+    min-width: 100%;
+    padding: .5em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    background-color: #fff;
+    color: rgba($font-dark, .87);
+
+    &:focus {
+        border-bottom-color: $color-primary;
+    }
+}
+
+/*=======================*\
+||      Table styles     ||
+\*=======================*/
+
+table {
+    width: 100%;
+}
+
+thead {
+    color: rgba(#000, .85);
+    background-color: rgba(#000, .1);
+}
+
+tr {
+    width: 100%;
+    &:nth-child(2n) {
+        background-color: rgba(#000, .05);
+    }
+
+    &:hover {
+        background-color: rgba(#000, .1);
+    }
+
+    &.cdk-drag-preview {
+        background-color: #fff;;
+        border-radius: 4px;
+        @include box-shadow;
+    }
+}
+
+td {
+    border-color: #ccc;
+    padding: .25em .5em;
+
+    &.small {
+        width: 2em;
+        text-align: center;
+        vertical-align: middle;
+    }
+}

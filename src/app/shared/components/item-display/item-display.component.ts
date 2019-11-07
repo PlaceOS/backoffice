@@ -1,16 +1,16 @@
 
-import { Component, Input, TemplateRef, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
+import { Component, Input, TemplateRef, Output, EventEmitter, OnInit, SimpleChanges } from '@angular/core';
 
-import { BaseComponent } from '../base.component';
-import { AppService } from '../../../services/app.service';
-import { Utils } from '../../utility.class';
+import { ApplicationService } from '../../../services/app.service';
+import { BaseDirective } from '../../globals/base.directive';
+import { copyToClipboard } from '../../utilities/general.utilities';
 
 @Component({
     selector: 'item-display',
     templateUrl: './item-display.template.html',
     styleUrls: ['./item-display.styles.scss']
 })
-export class ItemDisplayComponent extends BaseComponent implements OnInit, OnChanges {
+export class ItemDisplayComponent extends BaseDirective implements OnInit {
     @Input() public name: string;
     @Input() public item: any;
     @Input() public loading: boolean;
@@ -19,41 +19,18 @@ export class ItemDisplayComponent extends BaseComponent implements OnInit, OnCha
     @Input() public active = 'about';
     @Output() public event = new EventEmitter();
 
-    public model: any = {};
-
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 
     public ngOnInit() {
-        if (this.active) {
-            for (const tab of (this.tabs || [])) {
-                if (tab.id === this.active) {
-                    this.model.tab = this.active;
-                }
-            }
-        }
-        this.subs.obs.right = this.service.Hotkey.listen(['ArrowRight'], () => this.changeTab(1));
-        this.subs.obs.left = this.service.Hotkey.listen(['ArrowLeft'], () => this.changeTab(-1));
+        this.subscription('right', this.service.Hotkeys.listen(['ArrowRight'], () => this.changeTab(1)));
+        this.subscription('left', this.service.Hotkeys.listen(['ArrowLeft'], () => this.changeTab(-1)));
     }
 
-    public ngOnChanges(changes: any) {
-        if (changes.tabs && this.tabs && this.tabs.length > 0) {
-            this.model.tab = this.tabs[0].id;
-            if (this.active) {
-                for (const tab of this.tabs) {
-                    if (tab.id === this.active) {
-                        this.model.tab = this.active;
-                    }
-                }
-            }
-        }
-        if (changes.active) {
-            for (const tab of this.tabs) {
-                if (tab.id === this.active) {
-                    this.model.tab = this.active;
-                }
-            }
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes.tabs) {
+            this.tabs.forEach((i, idx) => i.id = i.id || `${idx}`);
         }
     }
 
@@ -61,20 +38,21 @@ export class ItemDisplayComponent extends BaseComponent implements OnInit, OnCha
         if (!this.tabs || this.tabs.length === 0) { return; }
         let index = 0;
         for (const tab of this.tabs) {
-            if (tab.id === this.model.tab) {
+            if (tab.id === this.active) {
                 index = this.tabs.indexOf(tab);
             }
         }
         index += offset;
         if (index >= this.tabs.length) { index = this.tabs.length - 1; }
         if (index < 0) { index = 0; }
-        this.model.tab = this.tabs[index].id;
+        this.active = this.tabs[index].id;
+        this.event.emit({ type: 'tab', value: this.active });
     }
 
     public copy() {
         if (this.item && this.item.id) {
-            Utils.copyToClipboard(this.item.id);
-            this.service.info('ID copied to clipboard');
+            copyToClipboard(this.item.id);
+            this.service.notifyInfo('ID copied to clipboard');
         }
     }
 }

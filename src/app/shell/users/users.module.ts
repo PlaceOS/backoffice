@@ -5,14 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { ComposerModule } from '@acaprojects/ngx-composer';
-import { WidgetsModule } from '@acaprojects/ngx-widgets';
 
 import { ROUTES } from './users.routes';
 
 import { UsersComponent } from './users.component';
-import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { UserAboutComponent } from './user-about/user-about.component';
 import { UserHistoryComponent } from './user-history/user-history.component';
+import { SharedContentModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -25,9 +24,8 @@ import { UserHistoryComponent } from './user-history/user-history.component';
         CommonModule,
         FormsModule,
         ComposerModule,
-        WidgetsModule,
         RouterModule.forChild(ROUTES),
-        SharedComponentsModule
+        SharedContentModule
     ]
 })
 export class AppUsersModule { }

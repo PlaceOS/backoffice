@@ -1,76 +1,117 @@
-
 import { Injectable } from '@angular/core';
-import { CommsService } from '@acaprojects/ngx-composer';
-import { IDynamicFieldOptions } from '@acaprojects/ngx-widgets';
+import { ComposerService } from '@acaprojects/ngx-composer';
+import { IFormFieldOptions, ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
+import { EngineDriver, EngineDriversService, EngineDriverQueryOptions } from '@acaprojects/ts-composer';
+import { BehaviorSubject } from 'rxjs';
 
-import { BaseService } from './base.service';
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
-import { CustomItemDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
+import { CustomDropdownFieldComponent } from '../../shared/components/custom-fields/item-dropdown-field/item-dropdown-field.component';
+import { FilterFn } from 'src/app/shared/utilities/types.utilities';
 
-export interface IEngineDriver {
-    id: string;
-    name: string;
-    class_name: string;
-    module_name: string;
-    role: string;
-    created: number;
-    description?: string;
-    default?: number;
-    settings?: any;
-}
+type ServiceItem = EngineDriver;
 
 @Injectable({
     providedIn: 'root'
 })
-export class DriversService extends BaseService<IEngineDriver> {
+export class BackofficeDriversService extends EngineDriversService {
+    /** Name for a single user */
+    readonly singular: string = 'driver';
+    /** Behavior subject with the currently available list of drivers */
+    readonly listing = new BehaviorSubject<ServiceItem[]>([]);
+    /** Application Service */
+    public parent: any;
+    /** Default method for filtering the available list */
+    private _filter_fn: FilterFn<ServiceItem> = _ => true;
 
-    constructor(protected http: CommsService) {
-        super();
-        this.model.name = 'driver';
-        this.model.singular = 'driver';
-        this.model.route = '/dependencies';
+    constructor(private _composer: ComposerService) {
+        super(undefined);
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.http = this._composer.http;
+                sub.unsubscribe();
+            }
+        });
     }
 
     /**
-     * Perform reload task on the given driver
-     * @param id Module ID
+     * Get the available list of drivers
+     * @param predicate Function to filter the driver list on
      */
-    public reload(id: string) {
-        return this.task(id, 'reload');
+    public list(predicate: FilterFn<ServiceItem> = this._filter_fn): ServiceItem[] {
+        return (this.listing.getValue() || []).filter(predicate);
     }
 
-    protected processItem(raw_item: any) {
-        const item: IEngineDriver = {
-            id: raw_item.id,
-            name: raw_item.name,
-            class_name: raw_item.class_name,
-            module_name: raw_item.module_name,
-            role: raw_item.role,
-            description: raw_item.description,
-            settings: raw_item.settings,
-            default: raw_item.default,
-            created: raw_item.created_at * 1000
-        };
-        return item;
+    public query(query_params?: EngineDriverQueryOptions): Promise<ServiceItem[]> {
+        return new Promise((resolve, reject) => {
+            super.query(query_params).then(
+                list => {
+                    const old_list = this.list();
+                    const new_list = [...old_list, ...list];
+                    for (const item of new_list) {
+                        const found = new_list.findIndex(i => i.id === item.id && i !== item);
+                        if (found >= 0) {
+                            new_list.splice(new_list.indexOf(item), 1);
+                        }
+                    }
+                    this.listing.next(new_list);
+                    resolve(list);
+                },
+                e => reject(e)
+            );
+        });
     }
 
-    public getFormFields(item: IEngineDriver) {
-        const fields: IDynamicFieldOptions<any>[] = [
-            { key: 'zone_id', label: 'Zone', hide: !!item, control_type: 'custom', cmp: CustomItemDropdownFieldComponent, metadata: { service: this.parent.Zones } },
-            { key: 'name', label: 'Name', control_type: 'text' },
-            { key: 'role', label: 'Role', hide: !!item, control_type: 'dropdown', options: ['Logic', 'Device', 'Service', 'SSH'] },
-            { key: 'description', label: 'Description', control_type: 'textarea' },
-            { key: 'module_name', label: 'Module Name', control_type: 'text' },
-            { key: 'default', label: 'Default', control_type: 'text' },
-            { key: 'ignore_connected', label: 'Ignore Connected', control_type: 'toggle' },
-            { key: 'settings', label: 'Settings', control_type: 'custom', flex: true, cmp: CustomSettingsFieldComponent, validators: [] },
-        ];
-
-        if (item) {
-            for (const i of fields) {
-                if (item[i.key]) {
-                    i.value = item[i.key];
-                }
+    public getFormFields(item: ServiceItem) {
+        const edit = !!item.id;
+        const fields: ADynamicFormField<any>[] = ([
+            {
+                key: 'zone_id',
+                label: 'Zone',
+                hide: !!item,
+                value: '',
+                type: 'custom',
+                content: CustomDropdownFieldComponent,
+                metadata: { service: this.parent.Zones }
+            },
+            { key: 'name', label: 'Name', value: '', type: 'input' },
+            {
+                key: 'role',
+                label: 'Role',
+                hide: !!item,
+                value: '',
+                type: 'dropdown',
+                metadata: { options: ['Logic', 'Device', 'Service', 'SSH'] }
+            },
+            { key: 'description', label: 'Description', value: '', type: 'textarea' },
+            { key: 'module_name', label: 'Module Name', value: '', type: 'input' },
+            { key: 'default', label: 'Default', value: '', type: 'input' },
+            { key: 'ignore_connected', label: 'Ignore Connected', value: '', type: 'group' },
+            {
+                key: 'settings',
+                label: 'Settings',
+                value: '',
+                type: 'custom',
+                settings: { flex: true },
+                content: CustomSettingsFieldComponent,
+                validators: []
+            }
+        ] as IFormFieldOptions[]).map(
+            i =>
+                new ADynamicFormField({
+                    ...i,
+                    children: i.children ? i.children.map(j => new ADynamicFormField(j)) : (null as any)
+                })
+        );
+        /** Initialise fields and change listeners */
+        for (const field of fields) {
+            if (field.children && field.children.length) {
+                field.children.forEach(f => {
+                    field.control.setValue(item[f.key]);
+                    field.control.valueChanges.subscribe(i => (item[f.key] = i));
+                });
+            } else {
+                field.control.setValue(item[field.key]);
+                field.control.valueChanges.subscribe(i => (item[field.key] = i));
             }
         }
         return fields;

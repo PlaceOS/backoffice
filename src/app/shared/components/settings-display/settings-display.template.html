@@ -8,7 +8,7 @@
     <div class="list">
         <div class="item" [class.error]="item.error" *ngFor="let item of settings; let i = index" [class.hover]="hover === i" [style.width]="(length * .62) + 'em'"
             (mouseenter)="hovering(i)" (mouseleave)="leave(i)">
-            <code [class]="'level' + depth" [innerHTML]="item.formatted | safe"></code>
+            <code [class]="'level' + depth" [innerHTML]="item.formatted | safe:'html'"></code>
             <div class="icon error" *ngIf="item.error">
                 <i class="material-icons">error</i>
             </div>

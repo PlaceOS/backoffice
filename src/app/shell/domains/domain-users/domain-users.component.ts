@@ -1,21 +1,21 @@
 
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { EngineDomain } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { AppService } from '../../../services/app.service';
-import { IEngineDomain } from '../../../services/data/domains.service';
+import { BaseDirective } from '../../../shared/globals/base.directive';
+import { ApplicationService } from '../../../services/app.service';
 
 @Component({
     selector: 'domain-users',
     templateUrl: './domain-users.template.html',
     styleUrls: ['./domain-users.styles.scss']
 })
-export class DomainUsersComponent extends BaseComponent implements OnInit, OnChanges {
-    @Input() public item: IEngineDomain;
+export class DomainUsersComponent extends BaseDirective implements OnInit, OnChanges {
+    @Input() public item: EngineDomain;
 
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 

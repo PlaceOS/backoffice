@@ -1,21 +1,21 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
+import { EngineSystem } from '@acaprojects/ts-composer';
 
-import { BaseComponent } from '../../../shared/components/base.component';
-import { AppService } from '../../../services/app.service';
-import { IEngineSystem } from '../../../services/data/systems.service';
+import { BaseDirective } from '../../../shared/globals/base.directive';
+import { ApplicationService } from '../../../services/app.service';
 
 @Component({
     selector: 'system-triggers',
     templateUrl: './system-triggers.template.html',
     styleUrls: ['./system-triggers.styles.scss']
 })
-export class SystemTriggersComponent extends BaseComponent implements OnChanges {
-    @Input() public item: IEngineSystem;
+export class SystemTriggersComponent extends BaseDirective implements OnChanges {
+    @Input() public item: EngineSystem;
 
     public model: any = {};
 
-    constructor(private service: AppService) {
+    constructor(private service: ApplicationService) {
         super();
     }
 
@@ -26,7 +26,7 @@ export class SystemTriggersComponent extends BaseComponent implements OnChanges 
     }
 
     public load(offset: number = 0) {
-        this.service.SystemTriggers.query({ sys_id: this.item.id, offset }).then((list) => {
+        this.service.SystemTriggers.query({ sys_id: this.item.id, offset } as any).then((list) => {
             this.model.list = list;
         }, () => null);
     }
@@ -43,7 +43,7 @@ export class SystemTriggersComponent extends BaseComponent implements OnChanges 
     }
 
     public addTrigger() {
-        this.service.Systems.addTrigger(this.item)
-            .then(() => this.load(), _ => null);
+        // this.service.Systems.addTrigger(this.item)
+        //     .then(() => this.load(), _ => null);
     }
 }

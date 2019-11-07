@@ -1,11 +1,11 @@
 
 <div class="container">
     <div class="topbar" [class.uat]="model.env !== 'prod'" >
-        <div class="menu" (tap)="toggleMenu()">
+        <div class="menu" (tapped)="toggleMenu()">
             <i class="material-icons">{{model.show_menu ? 'close' : 'menu'}}</i>
         </div>
         <div class="block">
-            <div *ngIf="model.logo" class="logo" (tap)="logo()">
+            <div *ngIf="model.logo" class="logo" (tapped)="logo()">
                 <img *ngIf="model.logo.type==='image' || model.logo.type==='img'" [src]="model.logo.src">
                 <i *ngIf="model.logo.type !== 'image' && model.logo.type!=='img'" [class]="model.logo.class">{{model.logo.value}}</i>
             </div>
@@ -15,15 +15,15 @@
         </div>
         <div class="block end">
             <!-- TODO Add user details display -->
-            <div class="avatar" [title]="model.user?.name" tooltip position="bottom" offset="end" [template]="options" [(show)]="model.show" [triangle]="false" (touchrelease)="model.show = true">
-                <div class="img" [style.background-image]="('url(' + (model.user?.image || 'https://www.gravatar.com/avatar/' + model.user?.gravatar_hash) + ')') | safestyle"></div>
+            <div class="avatar" [title]="model.user?.name" a-tooltip position="bottom" offset="end" [content]="options" [(show)]="model.show" (touchrelease)="model.show = true">
+                <div class="img" [style.background-image]="('url(' + (model.user?.image || 'https://www.gravatar.com/avatar/' + model.user?.gravatar_hash) + ')') | safe:'style'"></div>
             </div>
             <ng-template #options>
                 <div class="user-options">
                     <div class="details">
                         <div class="name">{{model.user?.name || 'Guest'}}</div>
-                        <div class="avatar" tooltip position="bottom" offset="end" [template]="options" [triangle]="false">
-                            <div class="img" [style.background-image]="('url(' + (model.user?.image || 'https://www.gravatar.com/avatar/' + model.user?.gravatar_hash) + ')') | safestyle"></div>
+                        <div class="avatar" a-tooltip position="bottom" offset="end" [content]="options">
+                            <div class="img" [style.background-image]="('url(' + (model.user?.image || 'https://www.gravatar.com/avatar/' + model.user?.gravatar_hash) + ')') | safe:'style'"></div>
                         </div>
                     </div>
                     <div class="list" *ngIf="model.options">

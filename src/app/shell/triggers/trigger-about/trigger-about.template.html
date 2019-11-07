@@ -1,14 +1,14 @@
 <div class="container">
     <div class="settings">
         <section>
-            <dropdown [filter]="true" [list]="model.systems" [model]="-1" (modelChange)="select(model.systems[$event])"
-                (filterValue)="loadSystems($event)" placeholder="Select a System"></dropdown>
+            <a-dropdown [options]="{ can_filter: true }" [items]="model.systems" [ngModel]="-1" (ngModelChange)="select(model.systems[$event])"
+                (searchChange)="loadSystems($event)" placeholder="Select a System"></a-dropdown>
         </section>
         <header>
             <div class="action" *ngIf="model.selected_system">
-                <btn format="mini-action" (tapped)="addCondition()">
+                <button widget format="mini-action" (tapped)="addCondition()">
                     <i class="material-icons">add</i>
-                </btn>
+                </button>
             </div>
             <div class="text">Conditions</div>
         </header>
@@ -16,15 +16,15 @@
             <div class="list" *ngIf="model.condtions">
 
             </div>
-            <div class="no-item" *ngIf="!model.conditions">
+            <div class="info-block" *ngIf="!model.conditions">
                 <div class="text">No conditions for trigger</div>
             </div>
         </section>
         <header>
             <div class="action" *ngIf="model.selected_system">
-                <btn format="mini-action" (tapped)="addAction()">
+                <button widget format="mini-action" (tapped)="addAction()">
                     <i class="material-icons">add</i>
-                </btn>
+                </button>
             </div>
             <div class="text">Actions</div>
         </header>
@@ -32,7 +32,7 @@
             <div class="list" *ngIf="model.actions">
 
             </div>
-            <div class="no-item" *ngIf="!model.actions">
+            <div class="info-block" *ngIf="!model.actions">
                 <div class="text">No actions for trigger</div>
             </div>
         </section>

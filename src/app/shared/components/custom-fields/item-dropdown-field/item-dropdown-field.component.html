@@ -1,3 +1,12 @@
-<div class="item-dropdown-field" widget>
-    <engine-item-dropdown [service]="model.service" [model]="control?.value" [label]="'Select ' + field.label" (modelChange)="control ? control.setValue($event) : ''"></engine-item-dropdown>
-</div>
+<ng-container *ngIf="group">
+    <div class="dropdown-field">
+        <a-dropdown
+            klass="form"
+            [items]="options"
+            [(ngModel)]="index"
+            (ngModelChange)="setValue($event)"
+            [id]="field.key"
+            [placeholder]="field.label"
+        ></a-dropdown>
+    </div>
+</ng-container>

@@ -1,43 +1,35 @@
 
 import { Component, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
 
-import { BaseComponent } from '../../base.component';
-import { AbstractControl, FormGroup } from '@angular/forms';
-import { DynamicField } from '@acaprojects/ngx-widgets';
-import { ICustomField } from '@acaprojects/ngx-widgets/components/form-controls/dynamic-form/custom-field/custom-field.component';
+import { CUSTOM_FIELD_REGISTER } from 'src/app/shared/globals/custom-field-register';
+import { BaseDirective } from 'src/app/shared/globals/base.directive';
 
 @Component({
     selector: 'custom-settings-field',
     templateUrl: './settings-field.component.html',
     styleUrls: ['./settings-field.component.scss']
 })
-export class CustomSettingsFieldComponent extends BaseComponent implements ICustomField<{ [name: string]: any }>, OnInit {
-    public control: AbstractControl;
-    public ref_control: AbstractControl;
-    public form: FormGroup;
-    public field: DynamicField<{ [name: string]: any }>;
+export class CustomSettingsFieldComponent extends BaseDirective implements OnInit {
 
-    public model: any = {};
-
-    constructor() {
+    constructor(protected _field: ADynamicFormField, protected _group: FormGroup) {
         super();
+    }
+
+    public get field(): ADynamicFormField {
+        return this._field;
+    }
+    public get group(): FormGroup {
+        return this._group
     }
 
     ngOnInit(): void { }
 
-    public set(field, form): void {
-        this.field = field;
-        if (form) {
-            this.form = form;
-            this.control = this.form.controls[this.field.key];
-        }
-    }
-
     public setValue(value: { [name: string]: any }): void {
-        this.control.setValue(value);
-    }
-
-    public setValid(state: boolean) {
-
+        this._field.control.setValue(value);
     }
 }
+
+CUSTOM_FIELD_REGISTER.settings = CustomSettingsFieldComponent;
+CUSTOM_FIELD_REGISTER.config = CustomSettingsFieldComponent;
