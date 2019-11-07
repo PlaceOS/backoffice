@@ -41,12 +41,11 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
     public drop(event) {
         if (event && event.previousIndex !== event.currentIndex) {
             this.service.Overlay.open('confirm', {
+                config: 'modal',
                 data: {
-                    icon: 'autorenew',
                     title: 'Change order?',
-                    message: 'Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.',
-                    accept: 'Ok',
-                    cancel: true
+                    body: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
+                    icon: { class: 'material-icons', value: 'autorenew' }
                 }
             }, (e) => {
                 if (e.type === 'Accept') {
@@ -84,12 +83,11 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
                 const new_list = [ ...this.item.zones, this.model.new_zone ].filter(i => !!i);
                 this.loading.emit(true);
                 this.service.Overlay.open('confirm', {
+                    config: 'modal',
                     data: {
                         title: 'Add zone',
-                        message: `Add zone "${this.model.new_zone}" to system "${this.item.id}"`,
-                        icon: 'cloud_upload',
-                        accept: 'Ok',
-                        cancel: true
+                        body: `Add zone "${this.model.new_zone}" to system "${this.item.id}"`,
+                        icon: { class: 'material-icons', value: 'cloud_upload' }
                     }
                 }, (e) => {
                     if (e.type === 'Accept') {

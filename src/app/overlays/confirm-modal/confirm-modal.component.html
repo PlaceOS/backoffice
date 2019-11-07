@@ -1,0 +1,16 @@
+<div class="confirm modal" widget [@show] *ngIf="!closing">
+    <div class="header">
+        <div class="text">{{ title || 'Confirm' }}</div>
+    </div>
+    <div class="body">
+        <div class="icon" *ngIf="icon">
+            <i *ngIf="icon.class" [class]="icon.class">{{ icon.value }}</i>
+            <img *ngIf="!icon.class && icon.src" [src]="icon.src">
+        </div>
+        <div class="content" [innerHTML]="(content || 'Are you sure?') | safe"></div>
+    </div>
+    <div class="footer">
+        <button widget name="cancel" class="inverse" (tapped)="close()">Cancel</button>
+        <button widget name="accept" (tapped)="accept()">{{ action || 'Ok' }}</button>
+    </div>
+</div>

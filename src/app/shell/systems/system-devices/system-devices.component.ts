@@ -121,12 +121,11 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
 
     public reloadModule(device: EngineModule) {
         this.service.Overlay.open('confirm', {
+            config: 'modal',
             data: {
-                icon: 'refresh',
                 title: 'Reload module?',
-                message: 'New driver code will be loaded and the device settings will be reloaded.',
-                accept: 'Ok',
-                cancel: true
+                body: `New driver code will be loaded and the device settings will be reloaded.`,
+                icon: { class: 'material-icons', value: 'refresh' }
             }
         }, (e) => {
             if (e.type === 'Accept') {
@@ -143,12 +142,11 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     public drop(event: CdkDragDrop<any[]>) {
         if (event && event.previousIndex !== event.currentIndex) {
             this.service.Overlay.open('confirm', {
+                config: 'modal',
                 data: {
-                    icon: 'autorenew',
                     title: 'Change order?',
-                    message: 'Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.',
-                    accept: 'Ok',
-                    cancel: true
+                    body: `Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.`,
+                    icon: { class: 'material-icons', value: 'autorenew' }
                 }
             }, (e) => {
                 if (e.type === 'Accept') {
@@ -171,12 +169,11 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
 
     public remove(device: EngineModule) {
         this.service.Overlay.open('confirm', {
+            config: 'modal',
             data: {
-                icon: 'delete',
                 title: 'Remove module?',
-                message: `Remove ${device.dependency_id} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
-                accept: 'Ok',
-                cancel: true
+                body: `Remove ${device.dependency_id} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
+                icon: { class: 'material-icons', value: 'delete' }
             }
         }, (e) => {
             if (e.type === 'Accept') {

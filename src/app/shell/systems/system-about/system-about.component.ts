@@ -31,12 +31,11 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
 
     public start() {
         this.service.Overlay.open('confirm', {
+            config: 'modal',
             data: {
-                icon: 'play_arrow',
                 title: 'Start system?',
-                message: 'Are you sure you want to start this system?<br>All stopped modules within the system will boot up.',
-                accept: 'Ok',
-                cancel: true
+                body: `Are you sure you want to start this system?<br>All stopped modules within the system will boot up.`,
+                icon: { class: 'material-icons', value: 'play_arrow' }
             }
         }, (e) => {
             if (e.type === 'Accept') {
@@ -52,12 +51,11 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
 
     public stop() {
         this.service.Overlay.open('confirm', {
+            config: 'modal',
             data: {
-                icon: 'stop',
                 title: 'Stop system?',
-                message: 'Are you sure you want to stop this system?<br>All modules will be immediately stopped regardless of any other systems they may be in.',
-                accept: 'Ok',
-                cancel: true
+                body: `Are you sure you want to stop this system?<br>All modules will be immediately stopped regardless of any other systems they may be in.`,
+                icon: { class: 'material-icons', value: 'stop' }
             }
         }, (e) => {
             if (e.type === 'Accept') {
