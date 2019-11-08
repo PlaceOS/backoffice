@@ -4,14 +4,11 @@
     "env": "dev",
     "debug": true,
     "composer": {
-        "domain": "localhost:4200",
+        "domain": "",
         "route": "",
         "protocol": "http:",
         "use_domain": true,
         "local_login": false
-    },
-    "licenses": {
-        "systems": 100
     },
     "app": {
         "title": "ACA Engine",
@@ -117,6 +114,9 @@
                 }
             ],
             "global_search": true
+        },
+        "systems": {
+            "licenses": 100
         }
     },
     "mock": true

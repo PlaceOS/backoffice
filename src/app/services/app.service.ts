@@ -388,7 +388,7 @@ export class ApplicationService extends BaseClass {
         // Get application settings
         const settings = this.setting('composer') || {};
         const protocol = settings.protocol || location.protocol;
-        const host = settings.domain || location.host;
+        const host = settings.domain || location.hostname;
         const port = settings.port || location.port;
         const url = settings.use_domain ? `${protocol}//${host}:${port}` : location.origin;
         const route = settings.route || '';
