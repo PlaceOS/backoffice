@@ -84,7 +84,6 @@ const ENTRY_COMPONENT: Type<any>[] = [
         ...ENTRY_COMPONENT
     ],
     entryComponents: [
-        ...COMPONENTS,
         ...ENTRY_COMPONENT
     ]
 })

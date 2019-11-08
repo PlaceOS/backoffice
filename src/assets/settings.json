@@ -26,13 +26,12 @@
             "enabled": false,
             "tracking_id": ""
         },
-        "logo": {
+        "logo_light": {
             "type": "img",
             "src": "assets/img/logo.svg",
             "background": ""
         },
         "copyright": "Copyright 2018 ACA Projects",
-        "global_search": true,
         "general": {
             "menu": [
                 {
@@ -116,7 +115,8 @@
                         "content": "developer_board"
                     }
                 }
-            ]
+            ],
+            "global_search": true
         }
     },
     "mock": true

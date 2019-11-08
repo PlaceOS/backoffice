@@ -53,6 +53,7 @@ export class MockSystemsBackend extends BaseMockBackend {
                     created_at: dayjs().add(-Math.floor(Math.random() * 10000), 'm').unix()
                 };
             });
+        this.model.systems.forEach(i => this.generateMockSystem(i))
         this.model.systems = this.setupBasicHandlers('api/engine/v1/systems', this.model.systems, 'sys');
         window.control.handlers.push({
             path: 'api/engine/v1/systems/:id/:opt',
@@ -136,5 +137,13 @@ export class MockSystemsBackend extends BaseMockBackend {
             }
         }
         return data;
+    }
+
+    private generateMockSystem(data) {
+        window.control.systems[data.id] = {
+            System: [{
+                connected: Math.floor(Math.random() * 999999) % 3 === 0
+            }]
+        }
     }
 }

@@ -176,7 +176,6 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
      */
     public itemEvent(event: any) {
         if (!event) { return; }
-        console.log('Event:', event);
         if (event.type === 'tab' && this.item && event.value) {
             this.service.navigate([this.cmp_route, encodeURIComponent(this.item.id), event.value ]);
         } else if (event.type === 'edit') {

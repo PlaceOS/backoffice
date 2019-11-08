@@ -80,7 +80,6 @@ export class BaseMockBackend {
             metadata: list,
             method: 'GET',
             callback: (event) => {
-                console.log('Event:', event);
                 if (event && event.route_params && event.route_params.id) {
                     return list.find(i => i.id === event.route_params.id)
                 }

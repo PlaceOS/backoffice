@@ -171,3 +171,23 @@
     }
 }
 
+a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: rgba(#000, .85);
+}
+
+.text {
+    padding-left: .25em;
+}
+
+.user-options {
+    position: absolute;
+    right: .5em;
+    top: .25em;
+    background-color: #fff;
+    border-radius: 4px;
+    @include box-shadow;
+}
+

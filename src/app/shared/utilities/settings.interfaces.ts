@@ -46,6 +46,8 @@ export interface ApplicationSettings {
 export interface GeneralApplicationSettings {
     /** List of available menu items for the application */
     menu_items: ApplicationLink[];
+    /** Whether the application has global search in the header */
+    global_search: boolean;
 }
 
 export interface SystemsModuleSettings {

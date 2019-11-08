@@ -33,6 +33,7 @@ export class MockTriggersBackend extends BaseMockBackend {
         }
         this.model.triggers = item_list;
         this.setupBasicHandlers('api/engine/v1/triggers', this.model.triggers, 'trigger');
+        this.setupBasicHandlers('api/engine/v1/system-triggers', this.model.triggers, 'trigger');
         this.state.next(true);
     }
 }

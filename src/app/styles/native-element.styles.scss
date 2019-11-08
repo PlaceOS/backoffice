@@ -22,6 +22,12 @@ input {
 
 table {
     width: 100%;
+
+    .duo {
+        > * {
+            display: inline-block;
+        }
+    }
 }
 
 thead {

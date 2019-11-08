@@ -53,9 +53,4 @@ export class SettingsDisplayComponent extends BaseDirective implements OnInit {
             this.editor.setValue(this.code);
         }
     }
-
-    public copy() {
-        copyToClipboard(JSON.stringify(this.model, null, 4));
-        this.service.notifyInfo('Copied settings to clipboard');
-    }
 }

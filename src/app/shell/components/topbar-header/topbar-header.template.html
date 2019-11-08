@@ -1,41 +1,47 @@
 
 <div class="container">
-    <div class="topbar" [class.uat]="model.env !== 'prod'" >
+    <div class="topbar" [class.uat]="env !== 'prod'" >
         <div class="menu" (tapped)="toggleMenu()">
-            <i class="material-icons">{{model.show_menu ? 'close' : 'menu'}}</i>
+            <i class="material-icons">{{show_menu ? 'close' : 'menu'}}</i>
         </div>
         <div class="block">
-            <div *ngIf="model.logo" class="logo" (tapped)="logo()">
-                <img *ngIf="model.logo.type==='image' || model.logo.type==='img'" [src]="model.logo.src">
-                <i *ngIf="model.logo.type !== 'image' && model.logo.type!=='img'" [class]="model.logo.class">{{model.logo.value}}</i>
+            <div *ngIf="logo" class="logo" (tapped)="logo()">
+                <a [routerLink]="['/']">
+                    <img *ngIf="logo.type==='image' || logo.type==='img'" [src]="logo.src">
+                    <i *ngIf="logo.type !== 'image' && logo.type!=='img'" [class]="logo.class">{{logo.content}}</i>
+                </a>
             </div>
         </div>
         <div class="search">
-            <searchbar *ngIf="model.has_search" [(filter)]="model.filter" (filterChange)="postFilter()"></searchbar>
+            <searchbar *ngIf="has_search" [(filter)]="filter_str" (filterChange)="postFilter()"></searchbar>
         </div>
         <div class="block end">
             <!-- TODO Add user details display -->
-            <div class="avatar" [title]="model.user?.name" a-tooltip position="bottom" offset="end" [content]="options" [(show)]="model.show" (touchrelease)="model.show = true">
-                <div class="img" [style.background-image]="('url(' + (model.user?.image || 'https://www.gravatar.com/avatar/' + model.user?.gravatar_hash) + ')') | safe:'style'"></div>
+            <div class="avatar" [title]="user?.name" a-tooltip position="bottom" offset="end" [content]="options_template" [(show)]="show" (tapped)="show = !show">
+                <div class="img" [style.background-image]="('url(' + (user?.image || 'https://www.gravatar.com/avatar/' + user?.gravatar_hash) + ')') | safe:'style'"></div>
             </div>
-            <ng-template #options>
-                <div class="user-options">
-                    <div class="details">
-                        <div class="name">{{model.user?.name || 'Guest'}}</div>
-                        <div class="avatar" a-tooltip position="bottom" offset="end" [content]="options">
-                            <div class="img" [style.background-image]="('url(' + (model.user?.image || 'https://www.gravatar.com/avatar/' + model.user?.gravatar_hash) + ')') | safe:'style'"></div>
-                        </div>
-                    </div>
-                    <div class="list" *ngIf="model.options">
-                        <div class="item" *ngFor="let item of model.options" click-responder (touchrelease)="select(item)">
-                            <div class="icon">
-                                <i [class]="item.icon?.class">{{item.icon?.value}}</i>
-                            </div>
-                            <div class="text">{{item.name}}</div>
-                        </div>
-                    </div>
-                </div>
-            </ng-template>
         </div>
     </div>
 </div>
+<ng-template #options_template>
+    <div class="user-options">
+        <div class="details">
+            <div class="name">{{user?.name || 'Guest'}}</div>
+            <div class="avatar" a-tooltip position="bottom" offset="end" [content]="options">
+                <div class="img" [style.background-image]="('url(' + (user?.image || 'https://www.gravatar.com/avatar/' + user?.gravatar_hash) + ')') | safe:'style'"></div>
+            </div>
+        </div>
+        <div class="list" *ngIf="options">
+            <div class="item" *ngFor="let item of options">
+                <a *ngIf="item.link" [href]="item.link">
+                    <app-icon [icon]="item.icon"></app-icon>
+                    <div class="text">{{item.name}}</div>
+                </a>
+                <a *ngIf="item.route" [routerLink]="[item.route]" routerLinkActive="active">
+                    <app-icon [icon]="item.icon"></app-icon>
+                    <div class="text">{{item.name}}</div>
+                </a>
+            </div>
+        </div>
+    </div>
+</ng-template>
