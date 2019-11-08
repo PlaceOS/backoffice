@@ -29,6 +29,12 @@ span.highlight {
     color: $color-primary;
 }
 
+.monaco-editor {
+    * {
+        font-family: 'Fira Code', monospace;
+    }
+}
+
 /*=======================*\
 ||    Font size styles   ||
 \*=======================*/

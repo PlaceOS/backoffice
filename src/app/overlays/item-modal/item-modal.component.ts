@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { animate, style, transition, trigger } from '@angular/animations';
 import { OverlayItem } from '@acaprojects/ngx-overlays';
 import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
+import { EngineResource } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { HashMap } from 'src/app/shared/utilities/types.utilities';
@@ -10,7 +12,19 @@ import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
 @Component({
     selector: 'item-modal',
     templateUrl: './item-modal.component.html',
-    styleUrls: ['./item-modal.component.scss']
+    styleUrls: ['./item-modal.component.scss'],
+    animations: [
+        trigger('show', [
+            transition(':enter', [
+                style({ opacity: 0, transform: 'translateX(100%) scale(0)' }),
+                animate(200, style({ opacity: 1, transform: 'translateX(0%) scale(1)' }))
+            ]),
+            transition(':leave', [
+                style({ opacity: 1, transform: 'translateX(0%) scale(1)' }),
+                animate(200, style({ opacity: 0, transform: 'translateX(-100%) scale(0)' }))
+            ])
+        ])
+    ]
 })
 export class ItemCreateUpdateModalComponent extends BaseDirective {
     /** Name of the item type */
@@ -18,13 +32,15 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
     /** Whether the item is being editing */
     public edit: boolean;
     /** Item to edit */
-    public item: any;
+    public item: EngineResource<any>;
     /** Saved version of the item */
     public result: any;
     /** List of the form fields needed for the item */
     public fields: ADynamicFormField[];
     /** Whether the item request is being processed */
     public loading: boolean;
+    /** Whether modal is closing */
+    public closing: boolean;
 
     constructor(private _item: OverlayItem, private _service: ApplicationService) {
         super();
@@ -35,44 +51,53 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
         return this._item.data.service;
     }
 
-    /** Current state of the form fields */
-    public get form(): HashMap {
-        return this.fields.reduce((a, v) => { a[v.key] = v.getValue(); return a; }, {});
+    public get is_valid(): boolean {
+        this.fields.forEach(i => i.control.markAsDirty());
+        return this.fields.reduce((a, v) => {
+            console.log('Valid:', v.key, (v.isValid() || !v.required));
+            const valid = v.children && v.children.length > 0
+                ? v.children.reduce((r, i) => {
+                    console.log('Valid:',i.key, (i.isValid() || !i.required));
+                    return r && (i.isValid() || !i.required)
+                }, true)
+                : (v.isValid() || !v.required);
+            return a && valid;
+        }, true);
     }
 
     public ngOnInit(): void {
+        this.item = this._item.data.item;
+        this.edit = this._item.data.item.id;
+        this.fields = this._item.data.form;
+        this.name = this._item.data.name;
+    }
 
-        if (this.service) {
-            this.item = this._item.data.item;
-            this.edit = this._item.data.edit;
-            this.fields = this.service.getFormFields(this.item, this.edit);
-            this.name = this.service.name;
-        } else {
-            this.item.close();
+    /**
+     * Save changes and create item if it does not exist
+     */
+    public submit() {
+        if (this.item && this.is_valid) {
+            this.loading = true;
+            this.item.save().then((item) => {
+                this.result = item;
+                this.loading = false;
+                this._item.post('finish', item);
+                this._service.notifySuccess(`Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`);
+                this._item.close();
+            }, (err) => {
+                this.loading = false;
+                this._service.notifyError(`Error ${this.item.id ? 'editing' : 'adding new'} ${this.name}: ${err}`);
+            })
         }
     }
 
-    public submit() {
-        this.loading = true;
-        if (!this.item || !this.item.id) {
-            this.service.add(this.form).then((item) => {
-                this.result = item;
-                this.loading = false;
-                this._item.post('event', 'Success');
-            }, (err) => {
-                this.loading = false;
-                this._service.notifyError(`Error adding new ${this.name}: ${err}`);
-            });
-        } else {
-            this.service.update(this.item.id, this.form).then((item) => {
-                this.result = item;
-                this.loading = false;
-                this._item.post('event', 'Success');
-            }, (err) => {
-                this.loading = false;
-                this._service.notifyError(`Error adding new ${this.name}: ${err}`);
-            });
-        }
+    /**
+     * Close the modal
+     */
+    public close() {
+        this.closing = true;
+        this.timeout('close', () => this._item.close());
+
     }
 }
 

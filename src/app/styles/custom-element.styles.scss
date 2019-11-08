@@ -20,8 +20,26 @@
 
 button[widget] {
     outline: none;
+
     &.default {
         background-color: $color-primary;
+        border: 1px solid $color-primary;
+
+        &:hover {
+            background-color: $color-primary-dark;
+            color: #fff;
+        }
+    }
+
+    &.inverse {
+        background-color: #fff;
+        border: 1px solid $color-primary;
+        color: $color-primary;
+
+        &:hover {
+            background-color: $color-primary;
+            color: #fff;
+        }
     }
 
     &.action {
@@ -67,17 +85,54 @@ button[widget] {
     }
 }
 
-.dynamic-field[widget] {
+a-dynamic-form {
+    width: 100%;
+}
+
+.dynamic-form[widget] {
+    width: 100%;
+
+    .dynamic-field,
+    a-dynamic-form-field {
+        flex: 1;
+        > div {
+            display: flex;
+            flex-wrap: wrap;
+        }
+    }
+
+    .dynamic-field {
+        &:hover {
+            background-color: rgba(#000, .05);
+            border-radius: 4px;
+        }
+    }
+
+    .checkbox > .details {
+        opacity: 0;
+        user-select: none;
+    }
+
     .details {
-        min-width: 100%;
+        @include respond-to(mobile) {
+            min-width: 100%;
+        }
     }
 
-    label {
-        margin-left: 0;
+    .input {
+        justify-content: flex-start;
     }
 
-    .control {
-        min-width: 10em;
+    .group {
+        a-dynamic-form-field {
+            padding: .25em;
+            &:first-child {
+                padding-left: 0;
+            }
+            &:last-child {
+                padding-right: 0;
+            }
+        }
     }
 }
 
@@ -101,7 +156,8 @@ button[widget] {
         display: flex;
         align-items: center;
         height: 2.5em;
-        background-color: #f0f0f0;
+        background-color: $background;
+        color: $font-light;
 
         .text {
             padding: 0.75em;
@@ -125,7 +181,7 @@ button[widget] {
         min-height: 4em;
         flex: 1;
         overflow: auto;
-        padding: 0.5em;
+        padding: 1em;
     }
 
     & > .footer {
@@ -193,6 +249,6 @@ button[widget] {
     }
 
     &.success {
-        @include notify-style($success, rgb(102, 90, 90), 'done');
+        @include notify-style($success, #fff, 'done');
     }
 }

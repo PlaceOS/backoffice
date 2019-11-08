@@ -1,23 +1,27 @@
-<div class="container" *ngIf="service" [class.loader]="loading" [class.edit]="item">
+<div class="item modal" widget [@show] *ngIf="!closing" [class.is-loading]="loading">
     <div class="header">
-        <div class="text">{{item && edit ? 'Edit' : 'New'}} {{name}}</div>
-        <div class="close" (touchrelease)="fn.close()">
+        <div class="text">{{ item && edit ? 'Edit' : 'New' }} {{ name }}</div>
+        <div class="close" (tapped)="close()">
             <i class="material-icons">close</i>
         </div>
     </div>
-    <div class="body">
+    <div class="body" *ngIf="!loading; else load_state">
         <ng-container *ngIf="fields && fields.length > 0">
             <a-dynamic-form [fields]="fields" (valid)="valid = true"></a-dynamic-form>
-            <div class="footer">
-                <button widget (tapped)="fn.close()">Cancel</button>
-                <button widget name="inverse" type="submit" [disabled]="!valid" (tapped)="submit()">{{ item ? 'Save' : 'Add' }}</button>
-            </div>
         </ng-container>
     </div>
-    <div class="info-block">
-        <div class="icon">
-            <a-spinner circle-ring color="rgba(0,0,0, .54)"></a-spinner>
-        </div>
-        <div class="text">Processing request...</div>
+    <div class="footer">
+        <button widget class="inverse" (tapped)="close()">Cancel</button>
+        <button widget name="submit" type="submit" (tapped)="submit()">{{ item ? 'Save' : 'Add' }}</button>
     </div>
 </div>
+<ng-template #load_state>
+    <div class="body">
+        <div class="info-block">
+            <div class="icon">
+                <a-spinner circle-ring color="#000"></a-spinner>
+            </div>
+            <div class="text">Processing request...</div>
+        </div>
+    </div>
+</ng-template>
