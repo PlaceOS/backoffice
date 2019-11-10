@@ -6,6 +6,7 @@ import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 
 import * as merge from 'deepmerge';
+import { IOverlayEvent } from '@acaprojects/ngx-overlays';
 
 @Component({
     selector: 'system-about',
@@ -37,15 +38,14 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
                 body: `Are you sure you want to start this system?<br>All stopped modules within the system will boot up.`,
                 icon: { class: 'material-icons', value: 'play_arrow' }
             }
-        }, (e) => {
-            if (e.type === 'Accept') {
+        }, (e: IOverlayEvent<void>) => {
+            if (e.type === 'finish') {
                 this.service.Systems.start(this.item.id)
                     .then(
                         (result) => null,
-                        (err) => this.service.notifyError(err.message || err)
+                        (err) => this.service.notifyError(`Failed to start system: ${err.message || err}`)
                     );
             }
-            e.close();
         });
     }
 
@@ -57,15 +57,14 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
                 body: `Are you sure you want to stop this system?<br>All modules will be immediately stopped regardless of any other systems they may be in.`,
                 icon: { class: 'material-icons', value: 'stop' }
             }
-        }, (e) => {
-            if (e.type === 'Accept') {
-                this.service.Systems.start(this.item.id)
+        }, (e: IOverlayEvent<void>) => {
+            if (e.type === 'finish') {
+                this.service.Systems.stop(this.item.id)
                     .then(
                         (result) => null,
-                        (err) => this.service.notifyError(err.message || err)
+                        (err) => this.service.notifyError(`Failed to stop system: ${err.message || err}`)
                     );
             }
-            e.close();
         });
     }
 

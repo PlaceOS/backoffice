@@ -27,5 +27,14 @@ export type FilterFn<T = any> = (_: T) => boolean;
 export type CompareFn<T = any> = (a: T, b: T) => number;
 
 export interface EngineServiceLike extends HashMap {
+    /** API Route of the service */
     readonly _api_route: string;
+    /** Whether new items can be created for the service */
+    readonly can_create: boolean;
+    /** Whether items can be edited for the service */
+    readonly can_edit: boolean;
+    /** Total number of items */
+    readonly total: number;
+    /** Total number of filtered items */
+    readonly last_total: number;
 }
