@@ -58,7 +58,7 @@ export class MockUsersBackend extends BaseMockBackend {
             email: 'robot@acaprojects.com'
         })
         this.model.users.sort((a, b) => a.name.localeCompare(b.name));
-        this.setupBasicHandlers('api/engine/v1/users', this.model.users, 'user');
+        this.setupBasicHandlers('api/engine/v2/users', this.model.users, 'user');
         this.state.next(true);
     }
 

@@ -32,7 +32,7 @@ export class MockZonesBackend extends BaseMockBackend {
             });
         }
         this.model.zones = zone_list;
-        this.setupBasicHandlers('api/engine/v1/zones', this.model.zones, 'zone');
+        this.setupBasicHandlers('api/engine/v2/zones', this.model.zones, 'zone');
         this.state.next(true);
     }
 

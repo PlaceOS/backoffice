@@ -53,7 +53,7 @@ export class MockDriversBackend extends BaseMockBackend {
             });
         }
         this.model.drivers = driver_list;
-        this.setupBasicHandlers('api/engine/v1/dependencies', this.model.drivers, 'dep');
+        this.setupBasicHandlers('api/engine/v2/dependencies', this.model.drivers, 'dep');
         this.state.next(true);
     }
 

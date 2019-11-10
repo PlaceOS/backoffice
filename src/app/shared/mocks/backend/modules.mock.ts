@@ -53,7 +53,7 @@ export class MockModulesBackend extends BaseMockBackend {
             });
         }
         this.model.modules = item_list;
-        this.setupBasicHandlers('api/engine/v1/modules', this.model.modules, 'mod');
+        this.setupBasicHandlers('api/engine/v2/modules', this.model.modules, 'mod');
         this.state.next(true);
     }
 

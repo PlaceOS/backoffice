@@ -35,7 +35,7 @@ export class MockDiscoveryBackend extends BaseMockBackend {
             });
         }
         this.model.discovery = driver_list;
-        this.setupBasicHandlers('api/engine/v1/discovery', this.model.discovery, 'dep');
+        this.setupBasicHandlers('api/engine/v2/discovery', this.model.discovery, 'dep');
         this.state.next(true);
     }
 

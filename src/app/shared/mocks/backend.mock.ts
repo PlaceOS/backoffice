@@ -25,7 +25,7 @@ import { MockHttpRequestHandlerOptions } from '@acaprojects/ts-composer';
 
 export class MockBackend {
     public model: any = {
-        api_route: 'api/engine/v1',
+        api_route: 'api/engine/v2',
         domain: 'acaprojects.com',
         DESK_OFFSET: 0,
         scale: 1,
