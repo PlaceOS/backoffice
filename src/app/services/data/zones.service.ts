@@ -21,6 +21,8 @@ export class BackofficeZonesService extends EngineZonesService {
     private _filter_fn: FilterFn<EngineZone> = (_) => true;
     /** Application Service */
     public parent: any;
+    readonly can_create: boolean = true;
+    readonly can_edit: boolean = true;
 
     constructor(protected _composer: ComposerService) {
         super(undefined);

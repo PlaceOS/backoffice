@@ -21,6 +21,8 @@ export class BackofficeAuthSourcesService extends EngineAuthSourcesService {
     private _filter_fn: FilterFn<ServiceItem> = (_) => true;
     /** Application Service */
     public parent: any;
+    readonly can_create: boolean = true;
+    readonly can_edit: boolean = true;
 
     constructor(private _composer: ComposerService) {
         super(undefined);

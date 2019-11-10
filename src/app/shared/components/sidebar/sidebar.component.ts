@@ -7,6 +7,7 @@ import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
 import { EngineServiceLike } from '../../utilities/types.utilities';
 
+import * as dayjs from 'dayjs';
 
 @Component({
     selector: 'sidebar',
@@ -18,8 +19,6 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     @Input() public heading = '';
     /** List of items to render on the list */
     @Input() public list: any[] = [];
-    /** Maximum number of items in the current list */
-    @Input() public total: number;
     /** Name of the active module */
     @Input() public module: EngineServiceLike;
     /** Whether the list is being loaded */
@@ -36,6 +35,10 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     public items: BehaviorSubject<any[]>;
     /** Whether the application has initialised */
     public intialised: boolean;
+    /** Last time the list was updated */
+    public last_check: number;
+    /** Last total number of items when the list was fetched */
+    public last_total: number;
 
     /** List of elements for each associated item */
     @ViewChildren('list_item') private item_list: QueryList<ElementRef>;
@@ -44,7 +47,15 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
 
     /** Whether new items for the active module can be created */
     public get new(): boolean {
-        return false;
+        return this.module && this.module.can_create;
+    }
+
+    public get total(): number {
+        return this.search ? this.module.last_total : this.module.total;
+    }
+
+    public get grand_total(): number {
+        return this.module.total;
     }
 
     /** Heading value lower cased */
@@ -86,6 +97,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
 
     public ngOnChanges(changes: any) {
         if (this._service.is_ready && (changes.list || changes.close)) {
+            this.last_check = dayjs().valueOf();
             this.items.next(this.list);
             this.atBottom();
         }
@@ -93,19 +105,18 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         this.subscription('down', this._service.Hotkeys.listen(['ArrowDown'], () => this.changeSelected(1)));
     }
 
-    /**
-     * Emit a change to the active item
-     * @param item New active item
-     */
-    public select(item) {
-        this.event.emit({ type: 'select', item });
+    /** Whether to update the list of items */
+    public get is_stale() {
+        const now = dayjs();
+        const last_check = dayjs(this.last_check);
+        return this.last_total !== this.items.getValue().length || last_check.add(1, 'm').isBefore(now, 's');
     }
 
     /**
      * Check if user has scrolled to the bottom of the sidebar and emit an event to get next page of items
      */
     public atBottom() {
-        if (this.loading) {
+        if (this.loading || !this.is_stale) {
             return;
         }
         if (!this.viewport) {
@@ -114,12 +125,19 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         const end = this.viewport.getRenderedRange().end;
         const total = this.viewport.getDataLength();
         if (end === total) {
+            this.last_total = total;
+            this.last_check = dayjs().valueOf();
             this.event.emit({ type: 'more' });
         }
     }
 
     public trackByIdx(i) {
         return i;
+    }
+
+    public post(type: string) {
+        console.log('Type:', type)
+        this.event.emit({ type });
     }
 
     public searching() {
@@ -129,13 +147,12 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     public changeSelected(offset: number) {
         const list = this.item_list.toArray();
         if (list && list.length > 0) {
-            let index = -1;
+            let index = list.findIndex(i => i.nativeElement.classList.contains('active'));
             index += offset;
-            if (index >= list.length) { index = list.length - 1; }
-            if (index < 0) { index = 0; }
-            this.select(this.list[index]);
-            list[index].nativeElement.scrollIntoView(false);
-            this.atBottom();
+            if (index > 0 && index < list.length) {
+                list[index].nativeElement.scrollIntoView(false);
+                this._service.navigate([this.route, this.items.getValue()[index].id]);
+            }
         }
     }
 }

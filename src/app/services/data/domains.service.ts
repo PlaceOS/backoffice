@@ -23,6 +23,8 @@ export class BackofficeDomainsService extends EngineDomainsService {
     public parent: any;
     /** Default method for filtering the available list */
     private _filter_fn: FilterFn<ServiceItem> = _ => true;
+    readonly can_create: boolean = true;
+    readonly can_edit: boolean = true;
 
     constructor(private _composer: ComposerService) {
         super(undefined);
@@ -111,8 +113,8 @@ export class BackofficeDomainsService extends EngineDomainsService {
         for (const field of fields) {
             if (field.children && field.children.length) {
                 field.children.forEach(f => {
-                    field.control.setValue(item[f.key]);
-                    field.control.valueChanges.subscribe(i => (item[f.key] = i));
+                    f.control.setValue(item[f.key]);
+                    f.control.valueChanges.subscribe(i => (item[f.key] = i));
                 });
             } else {
                 field.control.setValue(item[field.key]);

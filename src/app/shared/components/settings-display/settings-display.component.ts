@@ -37,7 +37,7 @@ export class SettingsDisplayComponent extends BaseDirective implements OnInit {
             this.editor = monaco.editor.create(this.element.nativeElement, {
                 value: this.code,
                 language: 'json',
-                fontFamily: 'Fira Code',
+                fontFamily: `"Fira Code", monospace`,
 
                 lineNumbers: 'on',
                 roundedSelection: false,

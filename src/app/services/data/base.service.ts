@@ -210,9 +210,9 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      * Open modal for new item
      * @param data
      */
-    public create(prefill?: { [name: string]: any }): Promise<T> {
+    public openNewModal(prefill?: { [name: string]: any }): Promise<T> {
         return new Promise((resolve, reject) => {
-            this.parent.Overlay.open(`item-view`, { data: { service: this, item: prefill } }, (e) => {
+            this.parent.Overlay.open('edit-item', { data: { service: this, item: prefill } }, (e) => {
                 if (e.type === 'Success') {
                     resolve(e.data.result);
                 } else {

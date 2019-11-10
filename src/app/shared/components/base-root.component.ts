@@ -175,9 +175,12 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
      * @param event
      */
     public itemEvent(event: any) {
+        console.log('Event:', event);
         if (!event) { return; }
         if (event.type === 'tab' && this.item && event.value) {
             this.service.navigate([this.cmp_route, encodeURIComponent(this.item.id), event.value ]);
+        } else if (event.type === 'new') {
+            this.new();
         } else if (event.type === 'edit') {
             this.edit();
         } else if (event.type === 'delete') {
@@ -190,7 +193,7 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
      * Create new
      */
     protected new() {
-        this.service[this.service_name].create().then((id) => {
+        this.service[this.service_name].openNewModal().then((id) => {
             this.sidebarEvent({ type: 'select', item: { id } });
         });
     }
@@ -201,7 +204,7 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
      */
     protected edit() {
         if (this.item) {
-            this.service[this.service_name].edit(this.id || this.item.id).then(() => {
+            this.service[this.service_name].openEditModal(this.id || this.item.id).then(() => {
                 this.sidebarEvent({ type: 'select', item: { id: this.id } });
             }, () => null);
         }
@@ -212,7 +215,7 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
      */
     protected delete() {
         if (!this.item) { return; }
-        this.service[this.service_name].remove(this.item.id).then(
+        this.service[this.service_name].askDelete(this.item.id).then(
             (i) => {
                 if (i) {
                     this.service.notifySuccess(`Successfully deleted ${this.type} "${this.item.id}"`);
