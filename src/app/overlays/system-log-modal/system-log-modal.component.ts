@@ -33,6 +33,8 @@ export class SystemLogModalComponent extends BaseDirective implements OnInit {
     public loading: boolean;
     /**  */
     public name: string;
+    /** Whether the modal is closing */
+    public closing: boolean;
 
     constructor(private _item: OverlayItem, private _service: ApplicationService) {
         super();

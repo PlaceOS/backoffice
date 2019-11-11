@@ -7,6 +7,7 @@ import { ApplicationService } from '../../../services/app.service';
 import { ApplicationLink, ApplicationIcon } from 'src/app/shared/utilities/settings.interfaces';
 import { EngineUser } from '@acaprojects/ts-composer';
 
+
 @Component({
     selector: 'topbar-header',
     templateUrl: './topbar-header.template.html',
@@ -35,7 +36,7 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
     }
 
     /** Active user */
-    public get user(): EngineUser {
+    public get user(): any {
         return this._service.Users.user.getValue();
     }
 
