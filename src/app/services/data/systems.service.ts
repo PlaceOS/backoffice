@@ -75,7 +75,7 @@ export class BackofficeSystemsService extends EngineSystemsService {
      * Open modal for new item
      * @param prefill
      */
-    public openNewModal(prefill?: HashMap): Promise<string> {
+    public openNewModal(prefill?: HashMap): Promise<EngineSystem> {
         return new Promise((resolve, reject) => {
             const item = new EngineSystem(this, { settings: {}, ...(prefill || {}) });
             const form = this.getFormFields(item);
@@ -86,7 +86,14 @@ export class BackofficeSystemsService extends EngineSystemsService {
                     data: { item, form, name: this.singular }
                 },
                 (e: IOverlayEvent<ServiceItem>) => {
-                    e.type === 'finish' ? resolve(e.data.id) : reject();
+                    if (e.type === 'finish') {
+                        const list = this.listing.getValue();
+                        list.push(e.data);
+                        this.listing.next(list);
+                        resolve(e.data);
+                    } else {
+                        reject();
+                    }
                 },
                 _ => reject()
             );
@@ -97,7 +104,7 @@ export class BackofficeSystemsService extends EngineSystemsService {
      * Open modal for editing an item
      * @param item Item to edit
      */
-    public openEditModal(item: EngineSystem): Promise<string> {
+    public openEditModal(item: EngineSystem): Promise<EngineSystem> {
         return new Promise((resolve, reject) => {
             const form = this.getFormFields(item);
             this.parent.Overlay.open(
@@ -107,7 +114,19 @@ export class BackofficeSystemsService extends EngineSystemsService {
                     data: { item, form, name: this.singular }
                 },
                 (e: IOverlayEvent<ServiceItem>) => {
-                    e.type === 'finish' ? resolve(e.data.id) : reject();
+                    if (e.type === 'finish') {
+                        const list = this.listing.getValue();
+                        const index = list.findIndex(i => i.id === e.data.id);
+                        if (index >= 0) {
+                            list.splice(index, 1, e.data);
+                        } else {
+                            list.push(e.data);
+                        }
+                        this.listing.next(list);
+                        resolve(e.data);
+                    } else {
+                        reject();
+                    }
                 },
                 _ => reject()
             );

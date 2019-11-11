@@ -195,8 +195,9 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
      * Create new
      */
     protected new() {
-        this.service[this.service_name].openNewModal().then((id) => {
-            this.sidebarEvent({ type: 'select', item: { id } });
+        this.service[this.service_name].openNewModal().then((item) => {
+            this.item = item;
+            this.sidebarEvent({ type: 'select', item });
         });
     }
 
@@ -206,8 +207,8 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
      */
     protected edit() {
         if (this.item) {
-            this.service[this.service_name].openEditModal(this.item).then(() => {
-                this.sidebarEvent({ type: 'select', item: { id: this.id } });
+            this.service[this.service_name].openEditModal(this.item).then((item) => {
+                this.sidebarEvent({ type: 'select', item });
             });
         }
     }
