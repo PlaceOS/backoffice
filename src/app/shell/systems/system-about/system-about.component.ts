@@ -1,6 +1,6 @@
 
 import { Component, Input, OnChanges, ViewChildren, QueryList, ElementRef, SimpleChanges } from '@angular/core';
-import { EngineSystem } from '@acaprojects/ts-composer';
+import { EngineSystem, HashMap, EngineZone } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -14,11 +14,19 @@ import { IOverlayEvent } from '@acaprojects/ngx-overlays';
     styleUrls: ['./system-about.styles.scss']
 })
 export class SystemAboutComponent extends BaseDirective implements OnChanges {
+    /** System to render */
     @Input() public item: EngineSystem;
+    /** Whether to show the settings merged with zone and modules */
+    public merged: boolean;
+    /** Settings map for the item */
+    public settings: HashMap;
+    /** List of zones for the active system */
+    public zones: EngineZone[];
 
-    public model: any = {};
-
-    @ViewChildren('argument') private arg_list: QueryList<ElementRef>;
+    /** List of module ids associated with the system */
+    public modules(): string[] {
+        return this.item.modules || [];
+    }
 
     constructor(private service: ApplicationService) {
         super();
@@ -30,6 +38,9 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
         }
     }
 
+    /**
+     * Open confirmation modal for starting the active system
+     */
     public start() {
         this.service.Overlay.open('confirm', {
             config: 'modal',
@@ -49,6 +60,9 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
         });
     }
 
+    /**
+     * Open confirmation modal for stopping the active system
+     */
     public stop() {
         this.service.Overlay.open('confirm', {
             config: 'modal',
@@ -73,26 +87,26 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
     }
 
     public toggleSettings() {
-        this.model.merged = this.model.merged === false ? true : false;
+        this.merged = this.merged === false ? true : false;
         this.updateSettings();
     }
 
     public updateSettings() {
         if (!this.item) { return; }
-        if (this.model.merged !== false) {
-            this.model.settings = merge({}, this.item.settings);
-            for (const zone of this.model.zones) {
-                this.model.settings = merge(this.model.settings, zone.settings);
+        if (this.merged !== false) {
+            this.settings = merge({}, this.item.settings);
+            for (const zone of this.zones) {
+                this.settings = merge(this.settings, zone.settings);
             }
         } else {
-            this.model.settings = this.item.settings;
+            this.settings = this.item.settings;
         }
     }
 
     public loadZones() {
         this.service.Zones.query({ sys_id: this.item.id, offset: 0 }).then((list) => {
             list.sort((a, b) => this.item.zones.indexOf(b.id) - this.item.zones.indexOf(a.id));
-            this.model.zones = list;
+            this.zones = list;
             this.updateSettings();
         }, () => null);
     }
