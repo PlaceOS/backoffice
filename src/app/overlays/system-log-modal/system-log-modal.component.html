@@ -1,19 +1,35 @@
-<div class="container" [class.loader]="loading">
+<div class="system-logs modal" widget [@show] *ngIf="!closing" [class.is-loading]="loading">
     <div class="header">
         <div class="text">System logs</div>
-        <div class="close" (touchrelease)="fn.close()">
+        <div class="close" (tapped)="close()">
             <i class="material-icons">close</i>
         </div>
     </div>
-    <div class="body">
-        <div class="list">
-            <div class="item" *ngFor="let item of logs">
-        </div>
-    </div>
-    <div class="info-block">
-        <div class="icon">
-            <a-spinner circle-ring color="rgba(0,0,0, .54)"></a-spinner>
-        </div>
-        <div class="text">Processing request...</div>
+    <div class="body" *ngIf="!loading; else load_state">
+        <table>
+            <thead>
+                <td>User</td>
+                <td>Date/Time</td>
+                <td></td>
+            </thead>
+            <tbody>
+                <tr class="item" *ngFor="let item of logs">
+                    <td>{{ item?.user?.name }}</td>
+                    <td>{{ item?.created_at | date }}</td>
+                    <td>{{ item?.installed_device }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
+<ng-template #load_state>
+    <div class="body">
+        <div class="info-block">
+            <div class="icon">
+                <a-spinner circle-ring color="#000"></a-spinner>
+            </div>
+            <div class="text">Processing request...</div>
+        </div>
+    </div>
+</ng-template>
+

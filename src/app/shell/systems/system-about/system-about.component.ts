@@ -69,7 +69,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
     }
 
     public logs() {
-
+        this.service.Overlay.open('system-logs', { config: 'modal', data: { sys_id: this.item.id } })
     }
 
     public toggleSettings() {
