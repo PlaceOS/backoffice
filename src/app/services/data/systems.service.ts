@@ -93,6 +93,54 @@ export class BackofficeSystemsService extends EngineSystemsService {
         });
     }
 
+    /**
+     * Open modal for editing an item
+     * @param item Item to edit
+     */
+    public openEditModal(item: EngineSystem): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const form = this.getFormFields(item);
+            this.parent.Overlay.open(
+                'edit-item',
+                {
+                    config: 'modal',
+                    data: { item, form, name: this.singular }
+                },
+                (e: IOverlayEvent<ServiceItem>) => {
+                    e.type === 'finish' ? resolve(e.data.id) : reject();
+                },
+                _ => reject()
+            );
+        });
+    }
+
+    /**
+     * Open confirmation modal for deleting an item
+     * @param item Item to delete
+     */
+    public askDelete(item: EngineSystem): Promise<string> {
+        return new Promise((resolve, reject) => {
+            let complete = false;
+            this.parent.Overlay.open('confirm', {
+                config: 'modal',
+                data: {
+                    title: 'Delete system?',
+                    body: `Are you sure you want to delete this system?<br>All modules will be <b>immediately deleted</b> if they are not in another systems.`,
+                    icon: { class: 'material-icons', value: 'delete' }
+                }
+            }, (e: IOverlayEvent<void>) => {
+                if (e.type === 'finish') {
+                    complete = true;
+                    item.delete().then(() => resolve(), () => reject('Request failed'));
+                }
+            }, () => {
+                if (!complete){
+                    reject('User cancelled');
+                }
+            });
+        });
+    }
+
     public getFormFields(item: EngineSystem) {
         const fields: ADynamicFormField<any>[] = ([
             {

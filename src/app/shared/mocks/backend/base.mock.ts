@@ -105,6 +105,24 @@ export class BaseMockBackend {
                 return null;
             }
         } as MockHttpRequestHandlerOptions);
+        // Mock for show PUT
+        window.control.handlers.push({
+            path: `${base_url}/:id`,
+            metadata: list,
+            method: 'DELETE',
+            callback: (event) => {
+                if (event && event.route_params && event.route_params.id) {
+                    for (const item of list) {
+                        if (item.id === event.route_params.id) {
+                            list.splice(list.indexOf(item), 1);
+                            this.updateOtherEndpoints(list);
+                            return {};
+                        }
+                    }
+                }
+                return null;
+            }
+        } as MockHttpRequestHandlerOptions);
         return list;
     }
 

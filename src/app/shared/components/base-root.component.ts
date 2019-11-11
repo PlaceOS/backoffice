@@ -204,9 +204,9 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
      */
     protected edit() {
         if (this.item) {
-            this.service[this.service_name].openEditModal(this.id || this.item.id).then(() => {
+            this.service[this.service_name].openEditModal(this.item).then(() => {
                 this.sidebarEvent({ type: 'select', item: { id: this.id } });
-            }, () => null);
+            });
         }
     }
 
@@ -215,7 +215,7 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
      */
     protected delete() {
         if (!this.item) { return; }
-        this.service[this.service_name].askDelete(this.item.id).then(
+        this.service[this.service_name].askDelete(this.item).then(
             (i) => {
                 if (i) {
                     this.service.notifySuccess(`Successfully deleted ${this.type} "${this.item.id}"`);
