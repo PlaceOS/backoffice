@@ -2,10 +2,11 @@
 import { Injectable } from '@angular/core';
 import { ComposerService } from '@acaprojects/ngx-composer';
 import { IFormFieldOptions, ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
-import { EngineApplicationsService, EngineApplication, EngineApplicationQueryOptions } from '@acaprojects/ts-composer';
+import { EngineApplicationsService, EngineApplication, EngineApplicationQueryOptions, HashMap } from '@acaprojects/ts-composer';
 import { BehaviorSubject } from 'rxjs';
 
 import { FilterFn } from 'src/app/shared/utilities/types.utilities';
+import { IOverlayEvent } from '@acaprojects/ngx-overlays';
 
 type ServiceItem = EngineApplication;
 
@@ -59,13 +60,75 @@ export class BackofficeApplicationService extends EngineApplicationsService {
         });
     }
 
+    /**
+     * Open modal for new item
+     * @param prefill
+     */
+    public openNewModal(prefill?: HashMap): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const item = new EngineApplication(this, { settings: {}, ...(prefill || {}) });
+            const form = this.getFormFields(item);
+            this.parent.Overlay.open(
+                'edit-item',
+                {
+                    config: 'modal',
+                    data: { item, form, name: this.singular }
+                },
+                (e: IOverlayEvent<EngineApplication>) => e.type === 'finish' ? resolve(e.data.id) : reject(),
+                _ => reject()
+            );
+        });
+    }
+
+    /**
+     * Open modal for editing an item
+     * @param item Item to edit
+     */
+    public openEditModal(item: EngineApplication): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const form = this.getFormFields(item);
+            this.parent.Overlay.open(
+                'edit-item',
+                {
+                    config: 'modal',
+                    data: { item, form, name: this.singular }
+                },
+                (e: IOverlayEvent<EngineApplication>) => {
+                    e.type === 'finish' ? resolve(e.data.id) : reject();
+                },
+                _ => reject()
+            );
+        });
+    }
+
+    /**
+     * Open confirmation modal for deleting an item
+     * @param item Item to delete
+     */
+    public askDelete(item: EngineApplication): Promise<string> {
+        return new Promise((resolve, reject) => {
+            let complete = false;
+            this.parent.Overlay.open('confirm', {
+                config: 'modal',
+                data: {
+                    title: 'Delete Application?',
+                    body: `Are you sure you want to delete this application?`,
+                    icon: { class: 'material-icons', value: 'delete' }
+                }
+            }, (e: IOverlayEvent<void>) => {
+                if (e.type === 'finish') {
+                    complete = true;
+                    item.delete().then(() => resolve(), () => reject('Request failed'));
+                }
+            }, () => complete ? '' : reject('User cancelled'));
+        });
+    }
+
     public getFormFields(item: EngineApplication) {
         const edit = !!item.id;
         const fields: ADynamicFormField<any>[] = ([
-            { key: '', type: 'group', children: [
-                { key: 'name', label: 'Name', required: true, type: 'input', value: item.name },
-                { key: 'scopes', label: 'Scopes', type: 'input', value: '' },
-            ], value: '' },
+            { key: 'name', label: 'Name', required: true, type: 'input', value: item.name },
+            { key: 'scopes', label: 'Scopes', type: 'input', value: '' },
             { key: 'skip_authorization', label: 'Skip Authorisation', type: 'checkbox', value: '' },
             { key: 'redirect_uri', label: 'Redirect URI', hide: !!item, type: 'input', value: '' }
         ] as IFormFieldOptions[]).map(

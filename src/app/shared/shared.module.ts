@@ -13,6 +13,7 @@ import { ADynamicFormsModule } from '@acaprojects/ngx-dynamic-forms';
 import { ACustomEventsModule } from '@acaprojects/ngx-custom-events';
 import { ACheckboxModule } from '@acaprojects/ngx-checkbox';
 import { ATabsModule } from '@acaprojects/ngx-tabs';
+import { ATogglesModule } from '@acaprojects/ngx-toggles';
 
 import { BaseDirective } from './globals/base.directive';
 import { CustomDropdownFieldComponent } from './components/custom-fields/item-dropdown-field/item-dropdown-field.component';
@@ -79,6 +80,7 @@ const ENTRY_COMPONENT: Type<any>[] = [
         ACustomEventsModule,
         ADynamicFormsModule,
         ACheckboxModule,
+        ATogglesModule,
         ATabsModule,
         ...COMPONENTS,
         ...ENTRY_COMPONENT

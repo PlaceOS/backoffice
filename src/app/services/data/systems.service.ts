@@ -124,7 +124,7 @@ export class BackofficeSystemsService extends EngineSystemsService {
             this.parent.Overlay.open('confirm', {
                 config: 'modal',
                 data: {
-                    title: 'Delete system?',
+                    title: 'Delete System?',
                     body: `Are you sure you want to delete this system?<br>All modules will be <b>immediately deleted</b> if they are not in another systems.`,
                     icon: { class: 'material-icons', value: 'delete' }
                 }

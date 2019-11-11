@@ -1,12 +1,13 @@
 
 import { Injectable } from '@angular/core';
 import { IFormFieldOptions, ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
-import { EngineTriggersService, EngineTrigger } from '@acaprojects/ts-composer';
+import { EngineTriggersService, EngineTrigger, HashMap } from '@acaprojects/ts-composer';
 import { ComposerService } from '@acaprojects/ngx-composer';
 import { BehaviorSubject } from 'rxjs';
 
 import { FilterFn } from 'src/app/shared/utilities/types.utilities';
 import { EngineResourceQueryOptions } from '@acaprojects/ts-composer/dist/types/http/services/resources/resources.interface';
+import { IOverlayEvent } from '@acaprojects/ngx-overlays';
 
 type ServiceItem = EngineTrigger;
 
@@ -57,6 +58,70 @@ export class BackofficeTriggersService extends EngineTriggersService {
                 this.listing.next(new_list);
                 resolve(list);
             }, e => reject(e));
+        });
+    }
+
+    /**
+     * Open modal for new item
+     * @param prefill
+     */
+    public openNewModal(prefill?: HashMap): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const item = new EngineTrigger(this, { settings: {}, ...(prefill || {}) });
+            const form = this.getFormFields(item);
+            this.parent.Overlay.open(
+                'edit-item',
+                {
+                    config: 'modal',
+                    data: { item, form, name: this.singular }
+                },
+                (e: IOverlayEvent<EngineTrigger>) => e.type === 'finish' ? resolve(e.data.id) : reject(),
+                _ => reject()
+            );
+        });
+    }
+
+    /**
+     * Open modal for editing an item
+     * @param item Item to edit
+     */
+    public openEditModal(item: EngineTrigger): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const form = this.getFormFields(item);
+            this.parent.Overlay.open(
+                'edit-item',
+                {
+                    config: 'modal',
+                    data: { item, form, name: this.singular }
+                },
+                (e: IOverlayEvent<EngineTrigger>) => {
+                    e.type === 'finish' ? resolve(e.data.id) : reject();
+                },
+                _ => reject()
+            );
+        });
+    }
+
+    /**
+     * Open confirmation modal for deleting an item
+     * @param item Item to delete
+     */
+    public askDelete(item: EngineTrigger): Promise<string> {
+        return new Promise((resolve, reject) => {
+            let complete = false;
+            this.parent.Overlay.open('confirm', {
+                config: 'modal',
+                data: {
+                    title: 'Delete Trigger?',
+                    body: `Are you sure you want to delete this trigger?`,
+                    icon: { class: 'material-icons', value: 'delete' }
+                }
+            }, (e: IOverlayEvent<void>) => {
+                if (e.type === 'finish') {
+                    complete = true;
+                    item.delete().then(() => resolve(), () => reject('Request failed'));
+                }
+            }, () => complete ? '' : reject('User cancelled'));
         });
     }
 

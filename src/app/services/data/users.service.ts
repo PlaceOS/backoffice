@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Validators } from '@angular/forms';
 import { IFormFieldOptions, ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
-import { EngineUsersService, EngineUser, EngineUserQueryOptions } from '@acaprojects/ts-composer';
+import { EngineUsersService, EngineUser, EngineUserQueryOptions, HashMap } from '@acaprojects/ts-composer';
 import { BehaviorSubject } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
 
@@ -11,6 +11,7 @@ import { FilterFn } from 'src/app/shared/utilities/types.utilities';
 import { toQueryString } from 'src/app/shared/utilities/api.utilities';
 
 import * as dayjs from 'dayjs';
+import { IOverlayEvent } from '@acaprojects/ngx-overlays';
 
 type ServiceItem = EngineUser;
 
@@ -30,7 +31,7 @@ export class BackofficeUsersService extends EngineUsersService {
     private _filter_fn: FilterFn<ServiceItem> = (_) => true;
     /** Application Service */
     public parent: any;
-    readonly can_create: boolean = true;
+    readonly can_create: boolean = false;
     readonly can_edit: boolean = true;
 
     constructor(private _composer: ComposerService, private http_unauth: HttpClient) {
@@ -137,6 +138,50 @@ export class BackofficeUsersService extends EngineUsersService {
      */
     public logout() {
         this._composer.auth.logout();
+    }
+
+    /**
+     * Open modal for editing an item
+     * @param item Item to edit
+     */
+    public openEditModal(item: EngineUser): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const form = this.getFormFields(item);
+            this.parent.Overlay.open(
+                'edit-item',
+                {
+                    config: 'modal',
+                    data: { item, form, name: this.singular }
+                },
+                (e: IOverlayEvent<EngineUser>) => {
+                    e.type === 'finish' ? resolve(e.data.id) : reject();
+                },
+                _ => reject()
+            );
+        });
+    }
+
+    /**
+     * Open confirmation modal for deleting an item
+     * @param item Item to delete
+     */
+    public askDelete(item: EngineUser): Promise<string> {
+        return new Promise((resolve, reject) => {
+            let complete = false;
+            this.parent.Overlay.open('confirm', {
+                config: 'modal',
+                data: {
+                    title: 'Delete User?',
+                    body: `Are you sure you want to delete this user?`,
+                    icon: { class: 'material-icons', value: 'delete' }
+                }
+            }, (e: IOverlayEvent<void>) => {
+                if (e.type === 'finish') {
+                    complete = true;
+                    item.delete().then(() => resolve(), () => reject('Request failed'));
+                }
+            }, () => complete ? '' : reject('User cancelled'));
+        });
     }
 
     /**

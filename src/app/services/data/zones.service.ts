@@ -2,12 +2,13 @@
 import { Injectable } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { IFormFieldOptions, ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
-import { EngineZonesService, EngineZone, EngineZoneQueryOptions } from '@acaprojects/ts-composer';
+import { EngineZonesService, EngineZone, EngineZoneQueryOptions, HashMap } from '@acaprojects/ts-composer';
 import { BehaviorSubject } from 'rxjs';
 
 import { CustomSettingsFieldComponent } from '../../shared/components/custom-fields/settings-field/settings-field.component';
 import { FilterFn } from 'src/app/shared/utilities/types.utilities';
 import { ComposerService } from '@acaprojects/ngx-composer';
+import { IOverlayEvent } from '@acaprojects/ngx-overlays';
 
 @Injectable({
     providedIn: 'root'
@@ -56,6 +57,70 @@ export class BackofficeZonesService extends EngineZonesService {
                 this.listing.next(new_list);
                 resolve(list);
             }, e => reject(e));
+        });
+    }
+
+    /**
+     * Open modal for new item
+     * @param prefill
+     */
+    public openNewModal(prefill?: HashMap): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const item = new EngineZone(this, { settings: {}, ...(prefill || {}) });
+            const form = this.getFormFields(item);
+            this.parent.Overlay.open(
+                'edit-item',
+                {
+                    config: 'modal',
+                    data: { item, form, name: this.singular }
+                },
+                (e: IOverlayEvent<EngineZone>) => e.type === 'finish' ? resolve(e.data.id) : reject(),
+                _ => reject()
+            );
+        });
+    }
+
+    /**
+     * Open modal for editing an item
+     * @param item Item to edit
+     */
+    public openEditModal(item: EngineZone): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const form = this.getFormFields(item);
+            this.parent.Overlay.open(
+                'edit-item',
+                {
+                    config: 'modal',
+                    data: { item, form, name: this.singular }
+                },
+                (e: IOverlayEvent<EngineZone>) => {
+                    e.type === 'finish' ? resolve(e.data.id) : reject();
+                },
+                _ => reject()
+            );
+        });
+    }
+
+    /**
+     * Open confirmation modal for deleting an item
+     * @param item Item to delete
+     */
+    public askDelete(item: EngineZone): Promise<string> {
+        return new Promise((resolve, reject) => {
+            let complete = false;
+            this.parent.Overlay.open('confirm', {
+                config: 'modal',
+                data: {
+                    title: 'Delete Zone?',
+                    body: `Are you sure you want to delete this zone?<br>All systems will be <b>immediately deleted</b> if they are not in another zone.`,
+                    icon: { class: 'material-icons', value: 'delete' }
+                }
+            }, (e: IOverlayEvent<void>) => {
+                if (e.type === 'finish') {
+                    complete = true;
+                    item.delete().then(() => resolve(), () => reject('Request failed'));
+                }
+            }, () => complete ? '' : reject('User cancelled'));
         });
     }
 
