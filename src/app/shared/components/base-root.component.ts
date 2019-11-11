@@ -77,16 +77,18 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
             }
             this.timeout('sidebar', () => this.showSidebar(!this.id));
         }));
-        this.subscription('list', this.service[this.service_name].listing.subscribe(() => {
-            this.pure_list = [ ...this.service[this.service_name].list() ];
-            if (!this.search_str) {
-                this.list = [ ...this.service[this.service_name].list() ];
-            }
-            this.timeout('loading', () => {
-                this.loading = false;
-                this.loading_item = false;
-            }, 100);
-        }));
+        if (this.service[this.service_name].listing) {
+            this.subscription('list', this.service[this.service_name].listing.subscribe(() => {
+                this.pure_list = [ ...this.service[this.service_name].list() ];
+                if (!this.search_str) {
+                    this.list = [ ...this.service[this.service_name].list() ];
+                }
+                this.timeout('loading', () => {
+                    this.loading = false;
+                    this.loading_item = false;
+                }, 100);
+            }));
+        }
         this.init();
     }
 
@@ -222,8 +224,11 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
                     this.service.navigate([this.cmp_route]);
                 }
             },
-            () => this.service.notifyError(`Failed to delete ${this.type} "${this.item.id}"`)
-        );
+            (err) => {
+                if (err !== 'User cancelled') {
+                    this.service.notifyError(`Failed to delete ${this.type} "${this.item.id}"`);
+                }
+            });
     }
 
     protected loadValues() {

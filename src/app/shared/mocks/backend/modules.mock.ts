@@ -21,6 +21,10 @@ export class MockModulesBackend extends BaseMockBackend {
         const count = Math.ceil(Math.floor(Math.random() * 500 + 120) * this.model.scale);
         const systems = this.model.systems || [];
         const drivers = this.model.drivers || [];
+        console.log('Control:', window.control);
+        if (!window.control.systems) {
+            window.control.systems = {};
+        }
         for (let i = 0; i < count; i++) {
             const sys = systems.length > 0 ? systems[Math.floor(Math.random() * systems.length)] : { id: 'sys-test', name: 'sys' };
             const driver = drivers.length > 0 ? drivers[Math.floor(Math.random() * drivers.length)] : { id: 'dep-test', name: 'dep' };
@@ -28,7 +32,7 @@ export class MockModulesBackend extends BaseMockBackend {
             const id = `mod-${padZero(i, 4)}`;
             sys.modules.push(id);
             sys.funcs[id] = driver.funcs || {};
-            item_list.push({
+            const item = {
                 id,
                 name: `Test Module ${i + 1}`,
                 custom_name: Math.floor(Math.random() * 999) % 2 === 0 ? faker.name.firstName() : '',
@@ -50,7 +54,15 @@ export class MockModulesBackend extends BaseMockBackend {
                 created_at: dayjs().add(-Math.floor(Math.random() * 10000 + 10), 'm').unix(),
                 updated_at: dayjs().add(-Math.floor(Math.random() * 2000 + 1), 'm').unix(),
                 settings: this.generateSettings()
-            });
+            };
+            if (!window.control.systems[sys.id]) {
+                window.control.systems[sys.id] = {};
+            }
+            if (!window.control.systems[sys.id][driver.module_name]) {
+                window.control.systems[sys.id][driver.module_name] = [];
+            }
+            window.control.systems[sys.id][driver.module_name].push({ connected: item.connected })
+            item_list.push(item);
         }
         this.model.modules = item_list;
         this.setupBasicHandlers('api/engine/v2/modules', this.model.modules, 'mod');

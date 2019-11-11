@@ -98,7 +98,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     public ngOnChanges(changes: any) {
         if (this._service.is_ready && (changes.list || changes.close)) {
             this.last_check = dayjs().valueOf();
-            this.items.next(this.list);
+            this.items.next(this.list || []);
             this.atBottom();
         }
         this.subscription('up', this._service.Hotkeys.listen(['ArrowUp'], () => this.changeSelected(-1)));

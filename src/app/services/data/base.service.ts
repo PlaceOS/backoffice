@@ -35,6 +35,8 @@ export class BaseAPIService<T extends {}> extends BaseClass {
     protected _compare: (a: T, b: T) => boolean = (a, b) => a === b || (a as any).id === (b as any).id;
     /** Default filter function for list method */
     protected _list_filter: (a: T) => boolean = (a) => !!a;
+    /** List of available items */
+    readonly listing = new BehaviorSubject<T[]>([]);
 
     constructor(protected http: EngineHttpClient) {
         super();
@@ -163,6 +165,7 @@ export class BaseAPIService<T extends {}> extends BaseClass {
                     () => {
                         if ((!query || (query_params && query_params.update_list)) && result.length > 0 && result[0] instanceof Object) {
                             this.set('list', this.updateList(this.get('list'), result as T[]));
+                            this.listing.next(this.get('list') || []);
                         }
                         resolve(result);
                         this.timeout(key, () => (this._promises[key] = null), cache);

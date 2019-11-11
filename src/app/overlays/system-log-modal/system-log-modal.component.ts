@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { OverlayItem } from '@acaprojects/ngx-overlays';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
@@ -9,7 +10,19 @@ import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
 @Component({
     selector: 'system-log-modal',
     templateUrl: './system-log-modal.component.html',
-    styleUrls: ['./system-log-modal.component.scss']
+    styleUrls: ['./system-log-modal.component.scss'],
+    animations: [
+        trigger('show', [
+            transition(':enter', [
+                style({ opacity: 0, transform: 'translateX(100%) scale(0)' }),
+                animate(200, style({ opacity: 1, transform: 'translateX(0%) scale(1)' }))
+            ]),
+            transition(':leave', [
+                style({ opacity: 1, transform: 'translateX(0%) scale(1)' }),
+                animate(200, style({ opacity: 0, transform: 'translateX(-100%) scale(0)' }))
+            ])
+        ])
+    ]
 })
 export class SystemLogModalComponent extends BaseDirective implements OnInit {
     /** ID of the system to get logs for */
