@@ -12,10 +12,10 @@
             </ng-template>
         </div>
         <div class="add" *ngIf="new && (total < licenses || !licenses)" (click)="post('new')">
-            <i class="material-icons">add</i>
+            <i class="backoffice-plus"></i>
         </div>
         <div class="error" *ngIf="new && (total >= licenses && licenses)" a-tooltip name="dark" [content]="error" [hover]="true">
-            <i class="material-icons">error</i>
+            <i class="backoffice-plus">error</i>
             <ng-template #error>
                 <div class="tooltip">
                     Exceeded quota! No new item can be created<br />
@@ -24,7 +24,7 @@
             </ng-template>
         </div>
         <div class="search" (touchrelease)="close ? event.emit({ type: 'close' }) : ''">
-            <i class="material-icons">{{ close ? 'close' : 'list' }}</i>
+            <i [class]="'backoffice-' + close ? 'cross' : 'list'"></i>
         </div>
     </header>
     <section class="search">
@@ -42,7 +42,7 @@
                     <a [routerLink]="[route, item.id]" routerLinkActive="active">
                         <div #list_item class="item" [title]="item?.custom_name || item?.name || item">
                             <div class="text">{{ item?.custom_name || item?.name || item }}</div>
-                            <app-icon [icon]="{ type: 'icon', class: 'material-icons', content: 'done' }"></app-icon>
+                            <app-icon [icon]="{ type: 'icon', class: 'backoffice-check' }"></app-icon>
                         </div>
                     </a>
                 </ng-container>
@@ -50,7 +50,7 @@
         </ng-container>
         <div class="info-block center" *ngIf="!loading && (!list || !list.length)">
             <div class="icon">
-                <i class="material-icons">close</i>
+                <i class="backoffice-cross"></i>
             </div>
             <div class="text">{{ !search ? 'No ' + lowercase_heading : 'No matches found' }}</div>
             <div class="btn" *ngIf="new">

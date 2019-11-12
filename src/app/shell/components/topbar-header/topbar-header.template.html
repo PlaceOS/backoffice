@@ -2,7 +2,7 @@
 <div class="container">
     <div class="topbar" [class.uat]="env !== 'prod'" >
         <div class="menu" (tapped)="toggleMenu()">
-            <i class="material-icons">{{show_menu ? 'close' : 'menu'}}</i>
+            <i [class]="'backoffice-' + (show_menu ? 'cross' : 'menu')"></i>
         </div>
         <div class="block">
             <div *ngIf="logo" class="logo" (tapped)="logo()">

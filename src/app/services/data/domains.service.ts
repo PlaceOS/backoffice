@@ -120,7 +120,7 @@ export class BackofficeDomainsService extends EngineDomainsService {
                     data: {
                         title: 'Delete Domain?',
                         body: `Are you sure you want to delete this domain?`,
-                        icon: { class: 'material-icons', value: 'delete' }
+                        icon: { class: 'backoffice-trash' }
                     }
                 },
                 (e: IOverlayEvent<void>) => {

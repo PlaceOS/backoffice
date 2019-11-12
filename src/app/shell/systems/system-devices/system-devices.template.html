@@ -19,7 +19,7 @@
             <tbody cdkDropList (cdkDropListDropped)="drop($event)">
                 <tr *ngFor="let device of (model.devices || [])" a-context-item [content]="context_menu" (event)="event($event, device)" cdkDrag>
                     <td class="small">
-                        <div class="action grab" cdkDragHandle><i class="material-icons">reorder</i></div>
+                        <div class="action grab" cdkDragHandle><i class="backoffice-select-arrows"></i></div>
                     </td>
                     <td class="small">
                         <i binding [(model)]="device.connected" [sys]="item.id" [mod]="(device.custom_name || device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)" bind="connected"></i>
@@ -30,11 +30,11 @@
                         <a-checkbox [label]="(device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)"></a-checkbox>
                     </td>
                     <td class="ip">
-                        <div class="lock"><i class="material-icons" *ngIf="device.tls">lock</i></div>
+                        <div class="lock"><i class="backoffice-lock" *ngIf="device.tls"></i></div>
                         <a (touchrelease)="goto(device, item.ip)">{{device.ip}}</a>
                     </td>
                     <td class="small" a-context-item [content]="context_menu" (event)="event($event, device)" touchrelease>
-                        <div class="action"><i class="material-icons">more_vert</i></div>
+                        <div class="action"><i class="backoffice-dots-three-vertical"></i></div>
                     </td>
                 </tr>
             </tbody>

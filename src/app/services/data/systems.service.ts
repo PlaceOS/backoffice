@@ -145,7 +145,7 @@ export class BackofficeSystemsService extends EngineSystemsService {
                 data: {
                     title: 'Delete System?',
                     body: `Are you sure you want to delete this system?<br>All modules will be <b>immediately deleted</b> if they are not in another systems.`,
-                    icon: { class: 'material-icons', value: 'delete' }
+                    icon: { class: 'backoffice-trash' }
                 }
             }, (e: IOverlayEvent<void>) => {
                 if (e.type === 'finish') {

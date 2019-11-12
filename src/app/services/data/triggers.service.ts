@@ -114,7 +114,7 @@ export class BackofficeTriggersService extends EngineTriggersService {
                 data: {
                     title: 'Delete Trigger?',
                     body: `Are you sure you want to delete this trigger?`,
-                    icon: { class: 'material-icons', value: 'delete' }
+                    icon: { class: 'backoffice-trash' }
                 }
             }, (e: IOverlayEvent<void>) => {
                 if (e.type === 'finish') {

@@ -47,7 +47,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
             data: {
                 title: 'Start system?',
                 body: `Are you sure you want to start this system?<br>All stopped modules within the system will boot up.`,
-                icon: { class: 'material-icons', value: 'play_arrow' }
+                icon: { class: 'backoffice-controller-play' }
             }
         }, (e: IOverlayEvent<void>) => {
             if (e.type === 'finish') {
@@ -69,7 +69,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
             data: {
                 title: 'Stop system?',
                 body: `Are you sure you want to stop this system?<br>All modules will be immediately stopped regardless of any other systems they may be in.`,
-                icon: { class: 'material-icons', value: 'stop' }
+                icon: { class: 'backoffice-controller-stop' }
             }
         }, (e: IOverlayEvent<void>) => {
             if (e.type === 'finish') {

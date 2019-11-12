@@ -17,13 +17,13 @@
             name="trigger"
             [active]="tab"
             [tabs]="[
-                { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
+                { id: 'about', name: 'About', template: about, icon: { class: 'backoffice-info-with-circle' } },
                 {
                     id: 'systems',
                     name: 'Systems',
                     template: systems,
                     count: system_count,
-                    icon: { class: 'material-icons', value: 'account_balance' }
+                    icon: { class: 'backoffice-documents' }
                 }
             ]"
             (event)="itemEvent($event)"

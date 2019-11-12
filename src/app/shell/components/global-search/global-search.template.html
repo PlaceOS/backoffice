@@ -8,10 +8,10 @@
             </div>
             <div class="options">
                 <div class="icon" (touchrelease)="edit(item)">
-                    <i class="material-icons">edit</i>
+                    <i class="backoffice-edit"></i>
                 </div>
                 <div class="icon" (touchrelease)="goto(item)">
-                    <i class="material-icons">visibility</i>
+                    <i class="backoffice-eye"></i>
                 </div>
             </div>
         </div>
@@ -24,7 +24,7 @@
     </div>
     <div class="info-block" center *ngIf="!model.searching && (!model.list || model.list.length <= 0)">
         <div class="icon">
-            <i class="material-icons">close</i>
+            <i class="backoffice-cross"></i>
         </div>
         <div class="text">No matches found</div>
     </div>

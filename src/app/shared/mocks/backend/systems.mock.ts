@@ -1,5 +1,5 @@
 
-import { MockHttpRequestHandlerOptions } from '@acaprojects/ts-composer';
+import { MockHttpRequestHandlerOptions, MockHttpRequestHandler } from '@acaprojects/ts-composer';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';
@@ -60,26 +60,26 @@ export class MockSystemsBackend extends BaseMockBackend {
             metadata: this.model.systems,
             method: 'GET',
             callback: (event) => {
-                if (event && event.params && event.params.id) {
-                    if (!event.params.opt) {
-                        for (const item of event.data) {
-                            if (item.id === event.params.id) {
+                if (event && event.route_params && event.route_params.id) {
+                    if (!event.route_params.opt) {
+                        for (const item of this.model.systems) {
+                            if (item.id === event.route_params.id) {
                                 return item;
                             }
                         }
-                    } else if (event.params.opt === 'funcs') {
-                        for (const item of event.data) {
-                            if (item.id === event.params.id) {
-                                return item.funcs[item.modules[+event.fragment.index - 1]];
+                    } else if (event.route_params.opt === 'funcs') {
+                        for (const item of this.model.systems) {
+                            if (item.id === event.route_params.id) {
+                                return item.funcs[item.modules[+event.query_params.index - 1]];
                             }
                         }
-                    } else if (event.params.opt === 'state') {
+                    } else if (event.route_params.opt === 'state') {
                         return this.generateSettings();
                     }
                 }
                 return null;
             }
-        });
+        } as MockHttpRequestHandler);
         this.state.next(true);
     }
 

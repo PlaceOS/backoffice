@@ -122,7 +122,7 @@ export class BackofficeModulesService extends EngineModulesService {
                     data: {
                         title: 'Delete Module?',
                         body: `Are you sure you want to delete this module?`,
-                        icon: { class: 'material-icons', value: 'delete' }
+                        icon: { class: 'backoffice-trash' }
                     }
                 },
                 (e: IOverlayEvent<void>) => {

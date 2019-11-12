@@ -36,8 +36,8 @@
                     "route": "/systems",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "account_balance"
+                        "class": "backoffice-documents",
+                        "content": ""
                     }
                 },
                 {
@@ -45,8 +45,8 @@
                     "route": "/devices",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "devices_other"
+                        "class": "backoffice-tablet",
+                        "content": ""
                     }
                 },
                 {
@@ -54,8 +54,8 @@
                     "route": "/zones",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "device_hub"
+                        "class": "backoffice-layers",
+                        "content": ""
                     }
                 },
                 {
@@ -63,8 +63,8 @@
                     "route": "/drivers",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "settings"
+                        "class": "backoffice-tools",
+                        "content": ""
                     }
                 },
                 {
@@ -72,8 +72,8 @@
                     "route": "/triggers",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "timer"
+                        "class": "backoffice-stopwatch",
+                        "content": ""
                     }
                 },
                 {
@@ -81,8 +81,8 @@
                     "route": "/metrics",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "timeline"
+                        "class": "backoffice-line-graph",
+                        "content": ""
                     }
                 },
                 {
@@ -90,8 +90,8 @@
                     "route": "/users",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "account_circle"
+                        "class": "backoffice-users",
+                        "content": ""
                     }
                 },
                 {
@@ -99,8 +99,8 @@
                     "route": "/domains",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "web_asset"
+                        "class": "backoffice-browser",
+                        "content": ""
                     }
                 },
                 {
@@ -108,8 +108,8 @@
                     "route": "/tests",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "developer_board"
+                        "class": "backoffice-terminal",
+                        "content": ""
                     }
                 }
             ],

@@ -113,7 +113,7 @@ export class BackofficeZonesService extends EngineZonesService {
                 data: {
                     title: 'Delete Zone?',
                     body: `Are you sure you want to delete this zone?<br>All systems will be <b>immediately deleted</b> if they are not in another zone.`,
-                    icon: { class: 'material-icons', value: 'delete' }
+                    icon: { class: 'backoffice-trash' }
                 }
             }, (e: IOverlayEvent<void>) => {
                 if (e.type === 'finish') {

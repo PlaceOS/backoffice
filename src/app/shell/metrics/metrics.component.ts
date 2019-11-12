@@ -228,17 +228,17 @@ export class MetricsComponent extends BaseDirective implements OnInit {
 
     public updateContextList() {
         this.context_list = [
-            { route: 'open', name: 'Open Fullscreen URL', icon: { type: 'icon', class: 'material-icons', content: 'open_in_new' } },
-            { route: 'copy', name: 'Copy Fullscreen URL', icon: { type: 'icon', class: 'material-icons', content: 'http' } },
-            { route: 'hidden', name: 'Hidden Issues', icon: { type: 'icon', class: 'material-icons', content: 'visibility' } }
+            { route: 'open', name: 'Open Fullscreen URL', icon: { type: 'icon', class: 'backoffice-browser' } },
+            { route: 'copy', name: 'Copy Fullscreen URL', icon: { type: 'icon', class: 'backoffice-network' } },
+            { route: 'hidden', name: 'Hidden Issues', icon: { type: 'icon', class: 'backoffice-eye' } }
         ];
         const mobile = isMobileDevice();
         if (mobile || true) {
             this.context_list = this.context_list.concat([
-                { route: 'hour', name: 'Set period to hour', icon: { type: 'icon', class: 'material-icons', content: 'timeline' } },
-                { route: 'day', name: 'Set period to day', icon: { type: 'icon', class: 'material-icons', content: 'access_time' } },
-                { route: 'week', name: 'Set period to week', icon: { type: 'icon', class: 'material-icons', content: 'event' } },
-                { route: 'month', name: 'Set period to month', icon: { type: 'icon', class: 'material-icons', content: 'date_range' } }
+                { route: 'hour', name: 'Set period to hour', icon: { type: 'icon', class: 'backoffice-area-graph' } },
+                { route: 'day', name: 'Set period to day', icon: { type: 'icon', class: 'backoffice-stopwatch' } },
+                { route: 'week', name: 'Set period to week', icon: { type: 'icon', class: 'backoffice-calendar' } },
+                { route: 'month', name: 'Set period to month', icon: { type: 'icon', class: 'backoffice-bar-graph' } }
             ]);
         }
     }

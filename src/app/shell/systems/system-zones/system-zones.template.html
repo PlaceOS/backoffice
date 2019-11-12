@@ -17,12 +17,12 @@
                 <tbody cdkDropList (cdkDropListDropped)="drop($event)">
                     <tr *ngFor="let zone of model.zones" cdkDrag>
                         <td class="small">
-                            <div class="action grab" cdkDragHandle><i class="material-icons">reorder</i></div>
+                            <div class="action grab" cdkDragHandle><i class="bacoffice-select-arrows"></i></div>
                         </td>
                         <td class="name"><a (touchrelease)="goto(zone)">{{zone.name}}</a></td>
                         <td class="description">{{zone.description}}</td>
                         <td *ngIf="model.zones.length > 1" class="small">
-                            <div class="action"><i class="material-icons">exit_to_app</i></div>
+                            <div class="action"><i class="backoffice-publish"></i></div>
                         </td>
                     </tr>
                 </tbody>

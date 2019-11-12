@@ -173,7 +173,7 @@ export class BackofficeUsersService extends EngineUsersService {
                 data: {
                     title: 'Delete User?',
                     body: `Are you sure you want to delete this user?`,
-                    icon: { class: 'material-icons', value: 'delete' }
+                    icon: { class: 'backoffice-trash' }
                 }
             }, (e: IOverlayEvent<void>) => {
                 if (e.type === 'finish') {

@@ -2,14 +2,14 @@
     <div class="header">
         <div class="text">Changelog</div>
         <div class="close" (touchrelease)="fn.close()">
-            <i class="material-icons">close</i>
+            <i class="backoffice-cross"></i>
         </div>
     </div>
     <div class="body markdown" *ngIf="changelog" [innerHTML]="changelog | safe:'html'"></div>
     <div class="body" *ngIf="!changelog">
         <div class="info-block">
             <div class="icon">
-                <i class="material-icons">close</i>
+                <i class="backoffice-cross"></i>
             </div>
             <div class="text">No changelog</div>
         </div>

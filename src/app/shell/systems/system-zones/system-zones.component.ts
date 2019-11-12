@@ -45,7 +45,7 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
                 data: {
                     title: 'Change order?',
                     body: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
-                    icon: { class: 'material-icons', value: 'autorenew' }
+                    icon: { class: 'backoffice-cycle' }
                 }
             }, (e) => {
                 if (e.type === 'Accept') {
@@ -87,7 +87,7 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
                     data: {
                         title: 'Add zone',
                         body: `Add zone "${this.model.new_zone}" to system "${this.item.id}"`,
-                        icon: { class: 'material-icons', value: 'cloud_upload' }
+                        icon: { class: 'backoffice-upload-to-cloud' }
                     }
                 }, (e) => {
                     if (e.type === 'Accept') {

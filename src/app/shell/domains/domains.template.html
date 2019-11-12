@@ -21,16 +21,16 @@
                     name: 'Applications',
                     count: applications || 0,
                     template: apps,
-                    icon: { class: 'material-icons', value: 'apps' }
+                    icon: { class: 'backoffice-publish' }
                 },
                 {
                     id: 'authentication',
                     name: 'Authentication',
                     count: auth_sources || 0,
                     template: auth,
-                    icon: { class: 'material-icons', value: 'lock_open' }
+                    icon: { class: 'backoffice-lock-open' }
                 },
-                { id: 'users', name: 'Users', count: users || 0, template: users, icon: { class: 'material-icons', value: 'person' } }
+                { id: 'users', name: 'Users', count: users || 0, template: users, icon: { class: 'backoffice-users' } }
             ]"
             (event)="itemEvent($event)"
         >

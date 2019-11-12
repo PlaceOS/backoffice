@@ -6,7 +6,7 @@
                 <a-dropdown [items]="options" [(ngModel)]="index" (ngModelChange)="changePeriod($event)"></a-dropdown>
             </div>
             <div class="menu" a-context-item [content]="context_menu" (event)="event($event)" touchrelease>
-                <i class="material-icons">more_vert</i>
+                <i class="backoffice-dots-three-vertical"></i>
             </div>
         </div>
         <div class="time-display">
@@ -39,14 +39,14 @@
                         <div class="ip hover" (touchrelease)="goto({ link: 'http://' + item.ip })">{{item.ip}}</div>
                         <div class="created">{{item.display?.created}}</div>
                         <div class="action">
-                            <i class="material-icons">done</i>
+                            <i class="backoffice-check"></i>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="info-block" center *ngIf="!systems || systems.length <= 0">
                 <div class="icon">
-                    <i class="material-icons">close</i>
+                    <i class="backoffice-cross"></i>
                 </div>
                 <div class="text">No connection issues</div>
             </div>

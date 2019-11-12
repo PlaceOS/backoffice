@@ -4,6 +4,7 @@ import { BaseMockBackend } from './base.mock';
 import * as faker from 'faker';
 import * as dayjs from 'dayjs';
 import { padZero } from '../../utilities/general.utilities';
+import { EngineModuleFunction, HashMap } from '@acaprojects/ts-composer';
 
 export class MockDriversBackend extends BaseMockBackend {
 
@@ -21,21 +22,21 @@ export class MockDriversBackend extends BaseMockBackend {
         const count = Math.ceil(Math.floor(Math.random() * 10 + 5) * this.model.scale);
         for (let i = 0; i < count; i++) {
             const department = faker.commerce.department();
-            const funcs = {};
+            const funcs: HashMap<EngineModuleFunction> = {};
             const fcount = Math.floor(Math.random() * 10 + 2);
             for (let k = 0; k < fcount; k++) {
                 const acount = Math.floor(Math.random() * 5);
                 const optional = Math.floor(Math.random() * acount);
-                const args = [];
+                const params: any[] = [];
                 for (let j = 0; j < acount; j++) {
                     const arg = [];
                     arg.push(acount - j <= optional ? 'opt' : 'req');
                     arg.push(`arg${j + 1}`);
-                    args.push(arg);
+                    params.push(arg);
                 }
                 funcs[`exec${k}`] = {
                     arity: optional ? -(acount - (optional)) - 1 : acount,
-                    args
+                    params
                 };
             }
             driver_list.push({

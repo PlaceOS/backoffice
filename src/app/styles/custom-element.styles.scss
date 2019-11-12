@@ -78,6 +78,9 @@ button[widget] {
         min-height: 1px;
         max-height: calc(100vh - 13em);
     }
+    .tab-headers {
+        width: 100%;
+    }
 }
 
 .dropdown[widget] {

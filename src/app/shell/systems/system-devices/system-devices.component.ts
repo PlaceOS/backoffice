@@ -125,7 +125,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
             data: {
                 title: 'Reload module?',
                 body: `New driver code will be loaded and the device settings will be reloaded.`,
-                icon: { class: 'material-icons', value: 'refresh' }
+                icon: { class: 'backoffice-install' }
             }
         }, (e) => {
             if (e.type === 'Accept') {
@@ -146,7 +146,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
                 data: {
                     title: 'Change order?',
                     body: `Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.`,
-                    icon: { class: 'material-icons', value: 'autorenew' }
+                    icon: { class: 'backoffice-layers' }
                 }
             }, (e) => {
                 if (e.type === 'Accept') {
@@ -173,7 +173,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
             data: {
                 title: 'Remove module?',
                 body: `Remove ${device.dependency_id} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
-                icon: { class: 'material-icons', value: 'delete' }
+                icon: { class: 'backoffice-trash' }
             }
         }, (e) => {
             if (e.type === 'Accept') {

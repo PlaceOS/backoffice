@@ -52,8 +52,8 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
     public ngOnInit() {
         this.init();
         this.options = [
-            { route: '/profile', name: 'Profile', icon: { type: 'icon', class: 'material-icons', content: 'account_circle' } },
-            { link: '/logout', name: 'Logout', icon: { type: 'icon', class: 'material-icons', content: 'exit_to_app' } }
+            { route: '/profile', name: 'Profile', icon: { type: 'icon', class: 'backoffice-user' } },
+            { link: '/logout', name: 'Logout', icon: { type: 'icon', class: 'backoffice-logout' } }
         ];
     }
 

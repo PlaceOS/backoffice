@@ -113,7 +113,7 @@ export class BackofficeApplicationService extends EngineApplicationsService {
                 data: {
                     title: 'Delete Application?',
                     body: `Are you sure you want to delete this application?`,
-                    icon: { class: 'material-icons', value: 'delete' }
+                    icon: { class: 'backoffice-trash' }
                 }
             }, (e: IOverlayEvent<void>) => {
                 if (e.type === 'finish') {
