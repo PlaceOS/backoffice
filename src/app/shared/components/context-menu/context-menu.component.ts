@@ -4,6 +4,8 @@ import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { OverlayItem } from '@acaprojects/ngx-overlays';
 
 import { BaseDirective } from '../../globals/base.directive';
+import { ApplicationService } from 'src/app/services/app.service';
+import { ApplicationLink } from '../../utilities/settings.interfaces';
 
 
 @Component({
@@ -33,17 +35,18 @@ export class ContextMenuComponent extends BaseDirective implements AfterViewInit
 
     @ViewChild('container', { static: true }) private container: ElementRef;
 
-    constructor(private _item: OverlayItem) {
+    constructor(private _item: OverlayItem, private _service: ApplicationService) {
         super();
     }
 
     /** List of menu items to display */
-    public get menu_items(): any[] {
-        return this._item.data.data;
+    public get menu_items(): ApplicationLink[] {
+        return this._service.get('context-menu.items');
     }
 
     public ngOnInit(): void {
         this.offset = this._item.data.offset;
+        this.timeout('init', () => this.clearTimeout('close'), 50);
     }
 
     public ngAfterViewInit() {
@@ -57,16 +60,25 @@ export class ContextMenuComponent extends BaseDirective implements AfterViewInit
         const box = this.container.nativeElement.getBoundingClientRect();
         this.right = false;
         this.top = 0;
-        if (this.offset) {
+        // if (this.offset) {
             if (window.innerHeight < box.bottom) {
                 this.top = window.innerHeight - (box.bottom + 5);
             }
             this.right = box.right - 5 > window.innerWidth;
-        }
+        // }
     }
 
-    public post(data: any) {
+    public post(data: ApplicationLink) {
         this._item.post('event', data);
+        this._item.close();
+    }
+
+    public cancelClose() {
+        this.timeout('init', () => this.clearTimeout('close'), 50);
+    }
+
+    public close() {
+        this.timeout('close', () => this._item.close(), 100);
     }
 
 }

@@ -58,10 +58,11 @@ export class MockModulesBackend extends BaseMockBackend {
             if (!window.control.systems[sys.id]) {
                 window.control.systems[sys.id] = {};
             }
-            if (!window.control.systems[sys.id][driver.module_name]) {
-                window.control.systems[sys.id][driver.module_name] = [];
+            const mod = item.custom_name || driver.module_name;
+            if (!window.control.systems[sys.id][mod]) {
+                window.control.systems[sys.id][mod] = [];
             }
-            window.control.systems[sys.id][driver.module_name].push({ connected: item.connected })
+            window.control.systems[sys.id][mod].push({ connected: item.connected })
             item_list.push(item);
         }
         this.model.modules = item_list;

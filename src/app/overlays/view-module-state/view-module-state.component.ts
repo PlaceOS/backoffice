@@ -1,14 +1,28 @@
 import { Component, OnInit } from '@angular/core';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { HashMap, EngineModule, EngineSystem } from '@acaprojects/ts-composer';
+
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { OverlayItem } from '@acaprojects/ngx-overlays';
 import { ApplicationService } from 'src/app/services/app.service';
 import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
-import { HashMap, EngineModule, EngineSystem } from '@acaprojects/ts-composer';
 
 @Component({
     selector: 'view-module-state-modal',
     templateUrl: './view-module-state.template.html',
-    styleUrls: ['./view-module-state.styles.scss']
+    styleUrls: ['./view-module-state.styles.scss'],
+    animations: [
+        trigger('show', [
+            transition(':enter', [
+                style({ opacity: 0, transform: 'translateX(100%) scale(0)' }),
+                animate(200, style({ opacity: 1, transform: 'translateX(0%) scale(1)' }))
+            ]),
+            transition(':leave', [
+                style({ opacity: 1, transform: 'translateX(0%) scale(1)' }),
+                animate(200, style({ opacity: 0, transform: 'translateX(-100%) scale(0)' }))
+            ])
+        ])
+    ]
 })
 export class ViewModuleStateModalComponent extends BaseDirective implements OnInit {
     /** Parent system of the module */
@@ -17,6 +31,10 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
     public module: EngineModule;
     /** Current state of the selected module */
     public state: HashMap;
+    /** Whether the module state is being loaded */
+    public loading: boolean;
+    /** Whether the modal is closing */
+    public closing: boolean;
 
     /** Settings for the item */
     public get settings(): string {
@@ -40,13 +58,30 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
         this.updateState();
     }
 
+    /** Update the state of the module */
     public updateState() {
         if (this.system && this.module) {
+            this.loading = true;
             this._service.Systems.state(this.system.id, this.module.driver.module_name, this.module.role + 1).then(
-                state => (this.state = state),
-                err => this._service.notifyError(err.message || err)
+                state => {
+                    (this.state = state);
+                    this.loading = false;
+                },
+                err => {
+                    this._service.notifyError(err.message || err);
+                    this.loading = false;
+                }
             );
         }
+    }
+
+    /**
+     * Close the modal
+     */
+    public close() {
+        this.closing = true;
+        this.timeout('close', () => this._item.close());
+
     }
 }
 

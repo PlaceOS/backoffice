@@ -7,6 +7,7 @@ import { ApplicationService } from '../../../services/app.service';
 
 import * as merge from 'deepmerge';
 import { IOverlayEvent } from '@acaprojects/ngx-overlays';
+import { ConfirmModalOptions } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 
 @Component({
     selector: 'system-about',
@@ -42,14 +43,14 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
      * Open confirmation modal for starting the active system
      */
     public start() {
-        this.service.Overlay.open('confirm', {
+        this.service.Overlay.open<ConfirmModalOptions>('confirm', {
             config: 'modal',
             data: {
                 title: 'Start system?',
                 body: `Are you sure you want to start this system?<br>All stopped modules within the system will boot up.`,
-                icon: { class: 'backoffice-controller-play' }
+                icon: { type: 'icon', class: 'backoffice-controller-play' }
             }
-        }, (e: IOverlayEvent<void>) => {
+        }, (e) => {
             if (e.type === 'finish') {
                 this.service.Systems.start(this.item.id)
                     .then(
@@ -69,9 +70,9 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
             data: {
                 title: 'Stop system?',
                 body: `Are you sure you want to stop this system?<br>All modules will be immediately stopped regardless of any other systems they may be in.`,
-                icon: { class: 'backoffice-controller-stop' }
+                icon: { type: 'icon', class: 'backoffice-controller-stop' }
             }
-        }, (e: IOverlayEvent<void>) => {
+        }, (e: IOverlayEvent<ConfirmModalOptions>) => {
             if (e.type === 'finish') {
                 this.service.Systems.stop(this.item.id)
                     .then(

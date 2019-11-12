@@ -5,6 +5,13 @@ import { OverlayItem } from '@acaprojects/ngx-overlays';
 
 import { OVERLAY_REGISTER } from '../../shared/globals/overlay-register';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { ApplicationIcon } from 'src/app/shared/utilities/settings.interfaces';
+
+export interface ConfirmModalOptions {
+    title: string;
+    body: string;
+    icon?: ApplicationIcon;
+}
 
 @Component({
     selector: 'confirm-modal',

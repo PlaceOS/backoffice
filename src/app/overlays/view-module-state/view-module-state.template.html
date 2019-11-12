@@ -1,22 +1,42 @@
-<div class="container">
+<div
+    class="view-state modal"
+    widget
+    [@show]
+    *ngIf="!closing"
+    [class.is-loading]="loading"
+>
     <div class="header">
-        <div class="text">Module State - {{module?.custom_name || module?.name}}</div>
-        <div class="close" (tapped)="fn.close()">
+        <div class="text">
+            Module State - {{module?.custom_name || module?.name}}
+        </div>
+        <div class="close" (tapped)="close()">
             <i class="backoffice-cross"></i>
         </div>
     </div>
-    <div class="body">
-            <div class="system">
-                <div class="label">System:</div>
-                <div class="value">{{system?.name}}</div>
+    <div class="body" *ngIf="!loading; else load_state">
+        <div class="field">
+            <label>System:</label>
+            <div class="value">{{system?.name}}</div>
+        </div>
+        <div class="field">
+            <label>Module:</label>
+            <div class="value">
+                {{module?.driver?.module_name}} {{module?.role + 1}}
             </div>
-            <div class="system">
-                <div class="label">Module:</div>
-                <div class="value">{{module?.driver?.module_name}} {{module?.role + 1}}</div>
-                <button widget (tapped)="updateState()">Update state</button>
-            </div>
+        </div>
+        <button widget (tapped)="updateState()">Update state</button>
         <div class="settings">
             <settings-display [model]="settings"></settings-display>
         </div>
     </div>
 </div>
+<ng-template #load_state>
+    <div class="body">
+        <div class="info-block">
+            <div class="icon">
+                <a-spinner circle-ring color="#000"></a-spinner>
+            </div>
+            <div class="text">Loading state...</div>
+        </div>
+    </div>
+</ng-template>

@@ -48,19 +48,15 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
                     icon: { class: 'backoffice-cycle' }
                 }
             }, (e) => {
-                if (e.type === 'Accept') {
+                if (e.type === 'finish') {
                     const list: string[] = [];
                     for (const item of this.model.zones) { list.push(item.id); }
                     moveItemInArray(list, event.previousIndex, event.currentIndex);
-                    e.data.loading = true;
                     this.service.Systems.update(this.item.id, { zones: list })
                         .then(() => {
                             moveItemInArray(this.model.zones, event.previousIndex, event.currentIndex);
                             moveItemInArray(this.item.zones, event.previousIndex, event.currentIndex);
-                            e.close();
-                        }, () => e.data.loading = false);
-                } else {
-                    e.close();
+                        });
                 }
             });
         }
@@ -90,7 +86,7 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
                         icon: { class: 'backoffice-upload-to-cloud' }
                     }
                 }, (e) => {
-                    if (e.type === 'Accept') {
+                    if (e.type === 'finish') {
                         this.service.Systems.update(this.item.id, { ...this.item, zones: new_list }).then((item) => {
                             this.model.new_zone = null;
                             this.loading.emit(false);
@@ -104,7 +100,6 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
                     } else {
                         this.loading.emit(false);
                     }
-                    e.close();
                 });
             } else {
                 this.service.notifyInfo('The selected zone is already linked to this system');

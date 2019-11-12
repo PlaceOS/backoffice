@@ -2,7 +2,7 @@
     <div class="row">
         <a-dropdown
             klass="form"
-            [items]="modules"
+            [items]="modules || []"
             [ngModel]="null"
             (ngModelChange)="loadFunctions($event)"
             placeholder="Select a device"
@@ -12,7 +12,7 @@
         <a-dropdown
             klass="form"
             *ngIf="methods"
-            [items]="methods"
+            [items]="methods || []"
             [(ngModel)]="methods"
             (ngModelChange)="selectFunction($event)"
             placeholder="Select a function"

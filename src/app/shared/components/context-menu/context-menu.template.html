@@ -1,9 +1,27 @@
-<div class="container" #container [@show] [style.top]="top + 'px'" [class.right]="right">
+<div
+    class="context-menu"
+    #container
+    [@show]
+    [style.top]="top + 'px'"
+    [class.right]="right"
+    (window:mousedown)="close()"
+    (window:touchdown)="close()"
+    (mousedown)="cancelClose()"
+    (touchdown)="cancelClose()"
+>
     <ng-container *ngIf="menu_items">
-        <div class="item" *ngFor="let item of menu_items" (touchrelease)="post(item)">
+        <div
+            class="item"
+            *ngFor="let item of menu_items"
+            (touchrelease)="post(item)"
+        >
             <div class="icon">
-                <i *ngIf="item.icon && item.icon.class" [class]="item.icon.class">{{item.icon.value}}</i>
-                <img *ngIf="item.icon && item.icon.src" [src]="item.icon.src">
+                <i
+                    *ngIf="item.icon && item.icon.class"
+                    [class]="item.icon.class"
+                    >{{item.icon.value}}</i
+                >
+                <img *ngIf="item.icon && item.icon.src" [src]="item.icon.src" />
             </div>
             <div class="text">{{item?.name}}</div>
         </div>

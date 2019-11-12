@@ -20,6 +20,7 @@
 
 button[widget] {
     outline: none;
+    cursor: pointer;
 
     &.default {
         background-color: $color-primary;

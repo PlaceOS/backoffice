@@ -38,14 +38,14 @@ export class TriggerAboutComponent extends BaseDirective implements OnInit {
         this.service.Overlay.open('trigger-condition', { data: {
             trigger: this.item,
             system: this.model.selected_system
-        } }, (e) => e.close());
+        } });
     }
 
     public addAction() {
         this.service.Overlay.open('trigger-action', { data: {
             trigger: this.item,
             system: this.model.selected_system
-        } }, (e) => e.close());
+        } });
     }
 
     public loadSystems(query: string = '') {

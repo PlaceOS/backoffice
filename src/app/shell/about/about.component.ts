@@ -33,6 +33,6 @@ export class AppAboutComponent extends BaseDirective implements OnInit {
 
     public changelog(log: string) {
         console.log('Log:', log);
-        this.service.Overlay.open('changelog', { data: { changelog: log } }, (e) => e.close());
+        this.service.Overlay.open('changelog', { data: { changelog: log } });
     }
 }

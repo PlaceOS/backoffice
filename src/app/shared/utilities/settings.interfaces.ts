@@ -56,6 +56,8 @@ export interface SystemsModuleSettings {
 }
 
 export interface ApplicationLink {
+    /** Identifier for the icon */
+    id?: string;
     /** Name of the tile */
     name: string;
     /** Application route the tile will navigate */
