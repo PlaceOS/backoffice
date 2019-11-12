@@ -1,4 +1,11 @@
 <div class="item-dropdown-field" widget>
-    <a-dropdown klass="form" [options]="{ can_filter: true }" [items]="items" [ngModel]="count" (ngModelChange)="post(items[$event].id)"
-        (searchChange)="load($event)" [placeholder]="item?.id || label"></a-dropdown>
+    <a-dropdown
+        klass="form"
+        [options]="{ can_filter: true }"
+        [items]="items || []"
+        [ngModel]="count"
+        (ngModelChange)="post($event)"
+        (searchChange)="load($event)"
+        [placeholder]="item?.id || label"
+    ></a-dropdown>
 </div>
