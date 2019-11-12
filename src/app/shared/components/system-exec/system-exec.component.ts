@@ -1,83 +1,126 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, ViewChildren, ElementRef, QueryList } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, ViewChildren, ElementRef, QueryList, SimpleChanges } from '@angular/core';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
+import { EngineModule, EngineModuleFunction, EngineModuleFunctionMap, HashMap } from '@acaprojects/ts-composer';
+
+interface EngineModuleLike {
+    id: string;
+    name: string;
+    module: string;
+    index: number;
+}
+
+interface ModuleFunction extends EngineModuleFunction {
+    name?: string;
+}
 
 @Component({
     selector: 'system-exec',
     templateUrl: './system-exec.template.html',
     styleUrls: ['./system-exec.styles.scss']
 })
-export class SystemExecComponent extends BaseDirective implements OnInit, OnChanges {
+export class SystemExecComponent extends BaseDirective implements OnChanges {
+    /** ID of the system to execute command on */
     @Input() public system_id: string;
+    /** Emitter for exec results */
     @Output() public event = new EventEmitter();
+    /** List of modules of the system */
+    public devices: EngineModule[];
+    /** List of module associations with the system */
+    public modules: EngineModuleLike[];
+    /** List of available functions for the active module  */
+    public methods: ModuleFunction[];
+    /** Currently selected module */
+    public active_module: EngineModuleLike;
+    /** Current selected module function */
+    public active_method: ModuleFunction;
+    /** Mapping or errors to field names */
+    public error: HashMap<boolean> = {};
+    /** Whether the selected function's params are valid */
+    public fields_valid: boolean;
+    /** Mapping of function arguments to values */
+    public fields: HashMap = {};
+    /** Index of the active function param field */
+    public active_field: number;
+    /** Current location with the input fields for function params */
+    public field_pos: number;
+    /** Previous location with the input fields for function params */
+    public last_location: number;
+    /** Current value of the active input field */
+    public field_value: string;
 
-    public model: any = {};
-
+    /** List of elements containing arguments */
     @ViewChildren('argument') private arg_list: QueryList<ElementRef>;
 
     constructor(private service: ApplicationService) {
         super();
     }
 
-    public ngOnInit() {
-
-    }
-
-    public ngOnChanges(changes: any) {
+    public ngOnChanges(changes: SimpleChanges): void {
         if (changes.system_id) {
             this.loadModules();
         }
     }
 
+    /**
+     * Load the available modules for the active system
+     * @param offset
+     */
     public loadModules(offset: number = 0) {
         if (this.system_id) {
             this.service.Modules.query({ system_id: this.system_id, offset }).then((list) => {
-                this.model.devices = list;
-                if (!offset) { this.model.modules = []; }
-                for (const mod of this.model.devices) {
-                    this.model.modules.push({
-                        name: `${mod.dependency.module_name} ${mod.role + 1}`,
-                        module: mod.dependency.module_name,
-                        index: mod.role + 1
-                    });
+                this.devices = list || [];
+                if (!offset) { this.modules = []; }
+                for (const mod of this.devices) {
+                    if (mod.driver) {
+                        this.modules.push({
+                            id: mod.id,
+                            name: `${mod.driver.module_name} ${mod.role + 1}`,
+                            module: mod.driver.module_name,
+                            index: mod.role + 1
+                        });
+                    }
                 }
             }, () => null);
         }
     }
 
-    public loadFunctions(item) {
-        this.model.fn = null;
-        this.model.active_module = item;
-        this.model.exec_index = -1;
-        this.service.Systems.functionList(this.system_id, item.module,item.index).then((list) => {
-            this.model.fn_list = list || {};
-            this.model.fn_names = Object.keys(this.model.fn_list);
+    /**
+     * Load the available functions for the given module
+     * @param item
+     */
+    public loadFunctions(item: EngineModuleLike) {
+        this.methods = null;
+        this.fields = {};
+        this.active_module = item;
+        this.service.Systems.functionList(this.system_id, item.module, item.index).then((list) => {
+            if (list) {
+                this.methods = Object.keys(list).map(i => ({ name: i, ...list[i] }));
+            }
         }, () => null);
     }
 
-    public selectFunction(fn: any, name?: string) {
-        fn.name = name;
-        this.model.fields = {};
-        this.model.fn = fn;
+    public selectFunction(fn: any) {
+        this.active_method = fn;
         this.checkFields();
     }
 
     public checkFields() {
         // Check fields
-        this.model.fields_valid = !!this.model.fn;
-        this.model.error = {};
-        if (this.model.fn) {
-            for (const arg of this.model.fn.args) {
-                if (arg[0] === 'req' && !this.model.fields[arg[1]]) {
-                    this.model.fields_valid = false;
+        this.fields_valid = !!this.active_method;
+        this.error = {};
+        if (this.active_method) {
+            for (const arg of this.active_method.params) {
+                if (arg[0] === 'req' && !this.fields[arg[1]]) {
+                    this.fields_valid = false;
                     return;
                 } else {
                     try {
-                        JSON.parse(`[${this.model.fields[arg[1]] || '""'}]`);
+                        JSON.parse(`[${this.fields[arg[1]] || '""'}]`);
                     } catch (e) {
-                        this.model.error[arg[1]] = true;
-                        this.model.fields_valid = false;
+                        this.error[arg[1]] = true;
+                        this.fields_valid = false;
                     }
                 }
             }
@@ -85,9 +128,9 @@ export class SystemExecComponent extends BaseDirective implements OnInit, OnChan
         // Update field state
         const args = this.arg_list.toArray();
         if (args && args.length > 0) {
-            const current = args[this.model.active_field];
-            this.model.field_pos = current.nativeElement.selectionEnd;
-            this.timeout('field', () => this.model.field_value = current.nativeElement.value);
+            const current = args[this.active_field];
+            this.field_pos = current.nativeElement.selectionEnd;
+            this.timeout('field', () => this.field_value = current.nativeElement.value);
         }
     }
 
@@ -95,53 +138,53 @@ export class SystemExecComponent extends BaseDirective implements OnInit, OnChan
         if (e && e.preventDefault) { e.preventDefault(); }
         if (this.arg_list) {
             const args = this.arg_list.toArray();
-            const current = args[this.model.active_field].nativeElement;
+            const current = args[this.active_field].nativeElement;
             const other = e.key.toLowerCase() !== 'arrowright';
-            const right_arrow = e.key.toLowerCase() === 'arrowright' && this.model.last_location === (current.value || '').length;
-            if ((other || right_arrow) && this.model.active_field < args.length - 1) {
-                const el = args[this.model.active_field + 1].nativeElement;
+            const right_arrow = e.key.toLowerCase() === 'arrowright' && this.last_location === (current.value || '').length;
+            if ((other || right_arrow) && this.active_field < args.length - 1) {
+                const el = args[this.active_field + 1].nativeElement;
                 el.focus();
                 el.selectionStart = el.selectionEnd = 0;
             }
-            this.model.last_location = current.selectionEnd;
+            this.last_location = current.selectionEnd;
         }
     }
 
     public focused(index: number) {
-        this.model.active_field = index;
+        this.active_field = index;
         const args = this.arg_list.toArray();
-        const current = args[this.model.active_field];
-        this.model.field_pos = current.nativeElement.selectionEnd;
-        this.model.last_location = (current.nativeElement.value || '').length;
+        const current = args[this.active_field];
+        this.field_pos = current.nativeElement.selectionEnd;
+        this.last_location = (current.nativeElement.value || '').length;
     }
 
     public previousField(e) {
         if (e && e.preventDefault) { e.preventDefault(); }
         if (this.arg_list) {
             const args = this.arg_list.toArray();
-            const current = args[this.model.active_field];
-            const backspace = e.key.toLowerCase() === 'backspace' && this.model.last_location === 0;
-            const left_arrow = e.key.toLowerCase() === 'arrowleft' && this.model.last_location === 0;
-            if ((backspace || left_arrow) && current.nativeElement.selectionEnd === 0 && this.model.active_field > 0) {
-                const el = args[this.model.active_field - 1].nativeElement;
+            const current = args[this.active_field];
+            const backspace = e.key.toLowerCase() === 'backspace' && this.last_location === 0;
+            const left_arrow = e.key.toLowerCase() === 'arrowleft' && this.last_location === 0;
+            if ((backspace || left_arrow) && current.nativeElement.selectionEnd === 0 && this.active_field > 0) {
+                const el = args[this.active_field - 1].nativeElement;
                 el.focus();
                 el.selectionStart = el.selectionEnd = (el.value || '').length;
             }
-            this.model.last_location = current.nativeElement.selectionEnd;
+            this.last_location = current.nativeElement.selectionEnd;
         }
     }
 
     public execute() {
         this.checkFields();
-        if (this.model.fields_valid) {
+        if (this.fields_valid) {
             // Check if any optional arguments have a value
             const arg_list = [];
-            for (const arg of this.model.fn.args) {
-                arg_list.push(this.model.fields[arg[1]] || null);
+            for (const arg of this.active_method.params) {
+                arg_list.push(this.fields[arg[1]] || null);
             }
-            if (this.model.fn.arity < 0) {
+            if (this.active_method.arity < 0) {
                 const len = arg_list.length;
-                for (let i = len - 1; i >= Math.abs(this.model.fn.arity) - 1; i--) {
+                for (let i = len - 1; i >= Math.abs(this.active_method.arity) - 1; i--) {
                     if (arg_list[i]) { break; }
                     arg_list.pop();
                 }
@@ -155,9 +198,9 @@ export class SystemExecComponent extends BaseDirective implements OnInit, OnChan
             args += ']';
                 // Execute function
             const details = {
-                method: this.model.fn.name,
-                module: this.model.active_module.module,
-                index: this.model.active_module.index,
+                method: this.active_method.name,
+                module: this.active_module.module,
+                index: this.active_module.index,
                 args: JSON.parse(args)
             };
             this.service.Systems.execute(this.system_id, details.module, details.index, details.args).then((result) => {
@@ -168,7 +211,7 @@ export class SystemExecComponent extends BaseDirective implements OnInit, OnChan
                 if (typeof err === 'string' && err.length < 64) {
                     this.service.notifyError(err);
                 } else {
-                    this.service.notifyError(`Executing '${this.model.fn.name}' failed.<br>View Error?`, 'View', () => {
+                    this.service.notifyError(`Executing '${this.active_method.name}' failed.<br>View Error?`, 'View', () => {
                         // console.log('View error:', err);
                     });
                 }
