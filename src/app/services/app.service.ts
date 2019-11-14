@@ -244,7 +244,7 @@ export class ApplicationService extends BaseClass {
 
     /** Whether settings and mock data has been loaded */
     public get is_ready() {
-        return this._settings.setup && this._composer.is_initialised;
+        return this._settings.setup && this._composer.is_initialised && this.get('ready');
     }
 
     /**
@@ -371,8 +371,9 @@ export class ApplicationService extends BaseClass {
             if (state) {
                 sub.unsubscribe();
                 this.timeout('load_services', () => {
+                    this.set('ready', true);
                     this.Users.load();
-                }, 100);
+                }, 300);
             }
         });
         // Setup analytics
