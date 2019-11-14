@@ -362,13 +362,19 @@ export class ApplicationService extends BaseClass {
      * Initialise application services
      */
     private init(): void {
-        console.log('Init');
         // Wait until the settings have loaded before initialising
         if (!this._settings.setup) {
             return this.timeout('init', () => this.init());
         }
-        console.log('Setup');
         this.setupComposer();
+        const sub = this._composer.initialised.subscribe((state) => {
+            if (state) {
+                sub.unsubscribe();
+                this.timeout('load_services', () => {
+                    this.Users.load();
+                }, 100);
+            }
+        });
         // Setup analytics
         this._analytics.enabled = !!this.setting('app.analytics.enabled');
         if (this._analytics.enabled) {

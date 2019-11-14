@@ -58,6 +58,9 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
     }
 
     public ngOnInit() {
+        if (!this.service.is_ready) {
+            return this.timeout('init', () => this.ngOnInit());
+        }
         this.loading_item = true;
         this.service.title = this.service_name;
         this.list = [];

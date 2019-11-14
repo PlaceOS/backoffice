@@ -69,7 +69,7 @@ export class BackofficeUsersService extends EngineUsersService {
         });
     }
 
-    protected load(): Promise<void> {
+    public load(): Promise<void> {
         return new Promise((resolve) => {
             this.state.next('loading');
             this.show('current').then((user) => {
