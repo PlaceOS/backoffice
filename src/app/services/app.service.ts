@@ -367,15 +367,15 @@ export class ApplicationService extends BaseClass {
             return this.timeout('init', () => this.init());
         }
         this.setupComposer();
-        const sub = this._composer.initialised.subscribe((state) => {
+        this.subscription('composer_init', this._composer.initialised.subscribe((state) => {
             if (state) {
-                sub.unsubscribe();
+                this.unsub('composer_init');
                 this.timeout('load_services', () => {
                     this.set('ready', true);
                     this.Users.load();
                 }, 300);
             }
-        });
+        }));
         // Setup analytics
         this._analytics.enabled = !!this.setting('app.analytics.enabled');
         if (this._analytics.enabled) {

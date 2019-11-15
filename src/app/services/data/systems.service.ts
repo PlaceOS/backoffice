@@ -225,11 +225,17 @@ export class BackofficeSystemsService extends EngineSystemsService {
             if (field.children && field.children.length) {
                 field.children.forEach(f => {
                     f.control.setValue(item[f.key]);
-                    f.control.valueChanges.subscribe(i => (item[f.key] = i));
+                    f.control.valueChanges.subscribe(i => {
+                        const is_number = f.attributes ? f.attributes.type === 'number' : false;
+                        (item[f.key] = is_number ? +i : i)
+                    });
                 });
             } else {
                 field.control.setValue(item[field.key]);
-                field.control.valueChanges.subscribe(i => (item[field.key] = i));
+                field.control.valueChanges.subscribe(i => {
+                    const is_number = field.attributes ? field.attributes.type === 'number' : false;
+                    (item[field.key] = is_number ? +i : i)
+                });
             }
         }
         return fields;
