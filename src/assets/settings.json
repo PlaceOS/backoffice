@@ -42,7 +42,7 @@
                 },
                 {
                     "name": "Devices",
-                    "route": "/devices",
+                    "route": "/modules",
                     "icon": {
                         "type": "icon",
                         "class": "backoffice-tablet",
