@@ -16,25 +16,15 @@ import { HashMap } from '../shared/utilities/types.utilities';
 
 import { HotkeysService } from './hotkeys.service';
 import { OVERLAY_REGISTER } from '../shared/globals/overlay-register';
-import { BackofficeApplicationService } from './data/application.service';
-import { BackofficeAuthSourcesService } from './data/authsources.service';
 import { BackofficeCommentsService } from './data/comments.service';
 import { BackofficeDiscoveryService } from './data/discovery.service';
-import { BackofficeDomainsService } from './data/domains.service';
-import { BackofficeDriversService } from './data/drivers.service';
 import { BackofficeLogsService } from './data/logs.service';
-import { BackofficeModulesService } from './data/modules.service';
-import { BackofficeNodesService } from './data/nodes.service';
 import { BackofficeSearchService } from './data/search.service';
 import { BackofficeStatsService } from './data/stats.service';
 import { BackofficeSystemLogsService } from './data/system_logs.service';
-import { BackofficeSystemTriggersService } from './data/system_triggers.service';
-import { BackofficeSystemsService } from './data/systems.service';
 import { BackofficeTestsService } from './data/tests.service';
-import { BackofficeUsersService } from './data/users.service';
-import { BackofficeTriggersService } from './data/triggers.service';
-import { BackofficeZonesService } from './data/zones.service';
 import { environment } from 'src/environments/environment';
+import { BackofficeUsersService } from './data/users.service';
 
 declare global {
     interface Window {
@@ -66,32 +56,20 @@ export class ApplicationService extends BaseClass {
         private _composer: ComposerService,
         private _analytics: GoogleAnalyticsService,
         private _hotkeys: HotkeysService,
-        private _users: BackofficeUsersService,
-        private _engine_apps: BackofficeApplicationService,
-        private _engine_auth_sources: BackofficeAuthSourcesService,
         private _engine_comments: BackofficeCommentsService,
         private _engine_discovery: BackofficeDiscoveryService,
-        private _engine_domains: BackofficeDomainsService,
-        private _engine_drivers: BackofficeDriversService,
         private _engine_logs: BackofficeLogsService,
-        private _engine_modules: BackofficeModulesService,
-        private _engine_nodes: BackofficeNodesService,
         private _engine_search: BackofficeSearchService,
         private _engine_stats: BackofficeStatsService,
         private _engine_system_logs: BackofficeSystemLogsService,
-        private _engine_system_triggers: BackofficeSystemTriggersService,
-        private _engine_systems: BackofficeSystemsService,
         private _engine_tests: BackofficeTestsService,
-        private _engine_triggers: BackofficeTriggersService,
-        private _engine_zones: BackofficeZonesService
+        private _users: BackofficeUsersService
     ) {
         super();
         console.log('Start');
-        this._users.parent = this._engine_apps.parent = this._engine_auth_sources.parent = this._engine_comments.parent
-            = this._engine_discovery.parent = this._engine_domains.parent = this._engine_drivers.parent = this._engine_logs.parent
-            = this._engine_modules.parent = this._engine_nodes.parent = this._engine_search.parent = this._engine_stats.parent
-            = this._engine_system_logs.parent = this._engine_system_triggers.parent = this._engine_systems.parent
-            = this._engine_tests.parent = this._engine_triggers.parent = this._engine_zones.parent = this;
+        this._engine_comments.parent = this._engine_discovery.parent = this._engine_logs.parent
+            = this._engine_search.parent = this._engine_stats.parent = this._engine_system_logs.parent
+            = this._engine_tests.parent = this._users.parent = this;
         console.log('Constructor');
         this.set('system', null);
         this.init();
@@ -121,12 +99,12 @@ export class ApplicationService extends BaseClass {
 
     /** Engine Applications service */
     public get Applications() {
-        return this._engine_apps;
+        return this._composer.applications;
     }
 
     /** Engine Auth Sources service */
     public get AuthSources() {
-        return this._engine_auth_sources;
+        return this._composer.auth_sources;
     }
 
     /** Comments service */
@@ -141,12 +119,12 @@ export class ApplicationService extends BaseClass {
 
     /** Engine Domains service */
     public get Domains() {
-        return this._engine_domains;
+        return this._composer.domains;
     }
 
     /** Drivers service */
     public get Drivers() {
-        return this._engine_drivers;
+        return this._composer.drivers;
     }
 
     /** Engine Logs service */
@@ -156,12 +134,7 @@ export class ApplicationService extends BaseClass {
 
     /** Modules service */
     public get Modules() {
-        return this._engine_modules;
-    }
-
-    /** Engine Nodes service */
-    public get Nodes() {
-        return this._engine_nodes;
+        return this._composer.modules;
     }
 
     /** Engine Search service */
@@ -181,12 +154,12 @@ export class ApplicationService extends BaseClass {
 
     /** System Triggers service */
     public get SystemTriggers() {
-        return this._engine_system_triggers;
+        return this._composer.system_triggers;
     }
 
     /** Systems service */
     public get Systems() {
-        return this._engine_systems;
+        return this._composer.systems;
     }
 
     /** Testing service */
@@ -196,12 +169,12 @@ export class ApplicationService extends BaseClass {
 
     /** Triggers service */
     public get Triggers() {
-        return this._engine_triggers;
+        return this._composer.triggers;
     }
 
     /** Zones service */
     public get Zones() {
-        return this._engine_zones;
+        return this._composer.zones;
     }
 
     /**
@@ -372,7 +345,7 @@ export class ApplicationService extends BaseClass {
                 this.unsub('composer_init');
                 this.timeout('load_services', () => {
                     this.set('ready', true);
-                    this.Users.load();
+                    this.loadActiveUser();
                 }, 300);
             }
         }));
@@ -411,6 +384,10 @@ export class ApplicationService extends BaseClass {
             mock
         };
         this._composer.setup(config);
+    }
+
+    private loadActiveUser() {
+        this.Users.show('current').then((user) => this.set('user', user))
     }
 
     /**
