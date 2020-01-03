@@ -213,58 +213,30 @@ a-dynamic-form {
     }
 }
 
-.notification[widget] {
-    .content > .text {
-        display: flex;
-        align-items: center;
-    }
-
-    .icon {
-        height: 1.25em;
-        width: 1.25em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2em;
-        margin-right: .3em;
-    }
-
-    @mixin notify-style($back, $fore, $icon) {
-        .item {
-            background-color: $back !important;
-            color: $fore;
-
-            i:after {
-                content: $icon;
-            }
-        }
-    }
-
-    .action {
-        margin: 0 .5em;
-        .icon {
-            background: none;
-            margin: 0;
-            &:after {
-                font-family: "Material Icons";
-                content: 'close';
-            }
-        }
-    }
-
-    &.error {
-        @include notify-style($error, #fff, 'error');
-    }
-
-    &.warn {
-        @include notify-style($pending, #fff, 'warning');
-    }
-
-    &.info {
-        @include notify-style($color-develop, #fff, 'info');
-    }
-
-    &.success {
-        @include notify-style($success, #fff, 'done');
+.mat-simple-snackbar {
+    button.mat-button {
+        background: none;
+        border: none;
     }
 }
+
+.mat-snack-bar-container {
+    &.success {
+        background-color: $success;
+        color: #fff;
+    }
+    &.warn {
+        background-color: $pending;
+        color: #fff;
+    }
+    &.error {
+        background-color: $error;
+        color: #fff;
+    }
+    &.info {
+        background-color: $color-secondary;
+        color: #fff;
+    }
+}
+
+

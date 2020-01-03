@@ -15,6 +15,7 @@ import { ACheckboxModule } from '@acaprojects/ngx-checkbox';
 import { ATabsModule } from '@acaprojects/ngx-tabs';
 import { ATogglesModule } from '@acaprojects/ngx-toggles';
 
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BaseDirective } from './globals/base.directive';
 import { CustomDropdownFieldComponent } from './components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 import { CustomSettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
@@ -51,6 +52,10 @@ const ENTRY_COMPONENT: Type<any>[] = [
     ContextMenuComponent,
 ]
 
+const MATERIAL_MODULES: any[] = [
+    MatSnackBarModule,
+];
+
 @NgModule({
     declarations: [
         ...COMPONENTS,
@@ -69,6 +74,7 @@ const ENTRY_COMPONENT: Type<any>[] = [
         ADynamicFormsModule,
         ATabsModule,
         ScrollingModule,
+        ...MATERIAL_MODULES,
         RouterModule.forChild([])
     ],
     exports: [
@@ -83,7 +89,8 @@ const ENTRY_COMPONENT: Type<any>[] = [
         ATogglesModule,
         ATabsModule,
         ...COMPONENTS,
-        ...ENTRY_COMPONENT
+        ...ENTRY_COMPONENT,
+        ...MATERIAL_MODULES
     ],
     entryComponents: [
         ...ENTRY_COMPONENT

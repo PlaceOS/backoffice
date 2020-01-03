@@ -3,6 +3,8 @@ import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 import { ComposerService } from '@acaprojects/ngx-composer';
 import { ComposerOptions } from '@acaprojects/ts-composer';
 import { AOverlayService } from '@acaprojects/ngx-overlays';
@@ -23,8 +25,8 @@ import { BackofficeSearchService } from './data/search.service';
 import { BackofficeStatsService } from './data/stats.service';
 import { BackofficeSystemLogsService } from './data/system_logs.service';
 import { BackofficeTestsService } from './data/tests.service';
-import { environment } from 'src/environments/environment';
 import { BackofficeUsersService } from './data/users.service';
+import { ApplicationIcon } from '../shared/utilities/settings.interfaces';
 
 declare global {
     interface Window {
@@ -63,7 +65,8 @@ export class ApplicationService extends BaseClass {
         private _engine_stats: BackofficeStatsService,
         private _engine_system_logs: BackofficeSystemLogsService,
         private _engine_tests: BackofficeTestsService,
-        private _users: BackofficeUsersService
+        private _users: BackofficeUsersService,
+        private _snackbar: MatSnackBar
     ) {
         super();
         console.log('Start');
@@ -223,13 +226,41 @@ export class ApplicationService extends BaseClass {
     /**
      * Create notification popup
      * @param type CSS Class to add to the notification
-     * @param msg Message to display on the notificaiton
+     * @param message Message to display on the notificaiton
      * @param action Display text for the callback action
      * @param on_action Callback of action on the notification
+     * @param icon Icon to render to the left of the notification message
      */
-    public notify(type: string, msg: string, action?: string, on_action?: () => void): void {
-        const content = `<div class="icon"><i class="material-icons"></i></div><div class="text">${msg}</div>`;
-        this._overlay.notify(content, action, on_action, type);
+    public notify(
+        type: string,
+        message: string,
+        action: string = 'OK',
+        on_action?: () => void,
+        icon: ApplicationIcon = {
+            type: 'icon',
+            class: 'material-icons',
+            content: 'info'
+        },
+        duration: number = 5000
+    ): void {
+        const snackbar_ref = this._snackbar.open(message, action, {
+            panelClass: [type],
+            duration
+        });
+        this.subscription(
+            'snackbar_close',
+            snackbar_ref.afterDismissed().subscribe(() => {
+                this.unsub('snackbar_close');
+                this.unsub('notify');
+            })
+        );
+        if (action) {
+            on_action = on_action || (() => snackbar_ref.dismiss());
+            this.subscription(
+                'notify',
+                snackbar_ref.onAction().subscribe(() => on_action())
+            );
+        }
     }
 
     /**
@@ -238,8 +269,9 @@ export class ApplicationService extends BaseClass {
      * @param action Display text for the callback action
      * @param on_action Callback of action on the notification
      */
-    public notifySuccess(msg: string, action?: string, on_action?: () => void): void {
-        this.notify('success', msg, action, on_action);
+    public notifySuccess(msg: string, action?: string, on_action?: () => void, duration: number = 5000): void {
+        const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'done' };
+        this.notify('success', msg, action, on_action, icon, duration);
     }
 
     /**
@@ -248,8 +280,9 @@ export class ApplicationService extends BaseClass {
      * @param action Display text for the callback action
      * @param on_action Callback of action on the notification
      */
-    public notifyError(msg: string, action?: string, on_action?: () => void): void {
-        this.notify('error', msg, action, on_action);
+    public notifyError(msg: string, action?: string, on_action?: () => void, duration: number = 5000): void {
+        const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'error' };
+        this.notify('error', msg, action, on_action, icon, duration);
     }
 
     /**
@@ -258,8 +291,20 @@ export class ApplicationService extends BaseClass {
      * @param action Display text for the callback action
      * @param on_action Callback of action on the notification
      */
-    public notifyInfo(msg: string, action?: string, on_action?: () => void): void {
-        this.notify('info', msg, action, on_action);
+    public notifyWarn(msg: string, action?: string, on_action?: () => void, duration: number = 5000): void {
+        const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'warning' };
+        this.notify('warn', msg, action, on_action, icon, duration);
+    }
+
+    /**
+     * Create info notification popup
+     * @param msg Message to display on the notificaiton
+     * @param action Display text for the callback action
+     * @param on_action Callback of action on the notification
+     */
+    public notifyInfo(msg: string, action?: string, on_action?: () => void, duration: number = 5000): void {
+        const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'info' };
+        this.notify('info', msg, action, on_action, icon, duration);
     }
 
     /**
@@ -345,27 +390,19 @@ export class ApplicationService extends BaseClass {
             return this.timeout('init', () => this.init());
         }
         this.setupComposer();
-        this.subscription(
-            'composer_init',
-            this._composer.initialised.subscribe(state => {
-                if (state) {
-                    this.unsub('composer_init');
-                    this.timeout(
-                        'load_services',
-                        () => {
-                            this.set('ready', true);
-                            this.loadActiveUser();
-                        },
-                        300
-                    );
-                }
-            })
-        );
         // Setup analytics
         this._analytics.enabled = !!this.setting('app.analytics.enabled');
         if (this._analytics.enabled) {
             this._analytics.load(this.setting('app.analytics.tracking_id'));
         }
+        this.setupCache();
+        this.subscription('composer_init', this._composer.initialised.subscribe((state) => {
+            if (state) {
+                this.unsub('composer_init');
+                this.set('ready', true);
+                this.loadActiveUser();
+            }
+        }));
         // Add service to window if in debug mode
         if (window.debug) {
             window.application = this;
