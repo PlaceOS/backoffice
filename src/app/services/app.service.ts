@@ -270,7 +270,13 @@ export class ApplicationService extends BaseClass {
      * @param stream Stream to emit the console on. 'debug', 'log', 'warn' or 'error'
      * @param force Whether to force message to be emitted when debug is disabled
      */
-    public log(type: string, msg: string, args?: any, stream: ConsoleStream = 'debug', force: boolean = false): void {
+    public log(
+        type: string,
+        msg: string,
+        args?: any,
+        stream: ConsoleStream = 'debug',
+        force: boolean = false
+    ): void {
         this._settings.log(type, msg, args, stream, force);
     }
 
@@ -307,7 +313,6 @@ export class ApplicationService extends BaseClass {
             : null;
     }
 
-
     /**
      * Listen to value change of the named property
      * @param name Property name
@@ -340,15 +345,22 @@ export class ApplicationService extends BaseClass {
             return this.timeout('init', () => this.init());
         }
         this.setupComposer();
-        this.subscription('composer_init', this._composer.initialised.subscribe((state) => {
-            if (state) {
-                this.unsub('composer_init');
-                this.timeout('load_services', () => {
-                    this.set('ready', true);
-                    this.loadActiveUser();
-                }, 300);
-            }
-        }));
+        this.subscription(
+            'composer_init',
+            this._composer.initialised.subscribe(state => {
+                if (state) {
+                    this.unsub('composer_init');
+                    this.timeout(
+                        'load_services',
+                        () => {
+                            this.set('ready', true);
+                            this.loadActiveUser();
+                        },
+                        300
+                    );
+                }
+            })
+        );
         // Setup analytics
         this._analytics.enabled = !!this.setting('app.analytics.enabled');
         if (this._analytics.enabled) {
@@ -387,7 +399,7 @@ export class ApplicationService extends BaseClass {
     }
 
     private loadActiveUser() {
-        this.Users.show('current').then((user) => this.set('user', user))
+        this.Users.show('current').then(user => this.set('user', user));
     }
 
     /**
@@ -405,21 +417,46 @@ export class ApplicationService extends BaseClass {
      * Setup handler for cache change events
      */
     private setupCache() {
-        this._cache.available.subscribe((event) => {
-            const current = `current version is ${event.current.hash}`;
-            const available = `available version is ${event.available.hash}`;
-            this.log('CACHE', `Update available: ${current} ${available}`);
-            this.notifyInfo('Newer version of the app is available', 'Refresh', () => this.activateUpdate());
-        });
-        setInterval(() => this._cache.checkForUpdate(), 5 * 60 * 1000);
+        if (this._cache.isEnabled) {
+            this.subscription(
+                'cache_update',
+                this._cache.available.subscribe(event => {
+                    const current = `current version is ${event.current.hash}`;
+                    const available = `available version is ${event.available.hash}`;
+                    this.log('CACHE', `Update available: ${current} ${available}`);
+                    this.activateUpdate();
+                })
+            );
+            this.subscription(
+                'cache_activated',
+                this._cache.activated.subscribe(() => {
+                    this.log('CACHE', `Updates activated. Reloading...`);
+                    this.notifyInfo(
+                        'Newer version of the application is available',
+                        'Refresh',
+                        () => location.reload(true)
+                    );
+                })
+            );
+            setInterval(() => {
+                this.log('CACHE', `Checking for updates...`);
+                this._cache.checkForUpdate();
+            }, 5 * 60 * 1000);
+        }
     }
 
     /**
      * Update the cache and reload the page
+     *
      */
     private activateUpdate() {
-        if (environment.production) {
-            this._cache.activateUpdate().then(() => location.reload(true));
+        if (this._cache.isEnabled) {
+            this.log('CACHE', `Activating changes to the cache...`);
+            this._cache.activateUpdate().then(() => {
+                this.notifyInfo('Newer version of the application is available', 'Refresh', () =>
+                    location.reload(true)
+                );
+            });
         }
     }
 }
