@@ -10,8 +10,8 @@
             <engine-item-dropdown [service]="service" [label]="'Select ' + name" [(model)]="item"></engine-item-dropdown>
         </div>
         <div class="footer">
-            <button widget (tapped)="fn.close()">Cancel</button>
-            <button widget name="inverse" type="submit" [disabled]="!item" (tapped)="submit()">{{ 'Add' }}</button>
+            <button mat-button (tapped)="fn.close()">Cancel</button>
+            <button mat-button name="inverse" type="submit" [disabled]="!item" (tapped)="submit()">{{ 'Add' }}</button>
         </div>
     </div>
     <div class="info-block">

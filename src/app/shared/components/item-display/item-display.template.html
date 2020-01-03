@@ -16,12 +16,12 @@
             </div>
         </div>
         <div class="options" *ngIf="has_change">
-            <div class="option" click-responder (touchrelease)="event.emit({ type: 'edit' })">
-                <i class="backoffice-edit"></i>
-            </div>
-            <div class="option" click-responder (touchrelease)="event.emit({ type: 'delete' })">
-                <i class="backoffice-trash"></i>
-            </div>
+            <button mat-icon-button (touchrelease)="event.emit({ type: 'edit' })">
+                <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+            </button>
+            <button mat-icon-button (touchrelease)="event.emit({ type: 'delete' })">
+                <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+            </button>
         </div>
     </header>
     <main>

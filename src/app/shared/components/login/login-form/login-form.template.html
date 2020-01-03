@@ -8,7 +8,7 @@
         </div>
         <div class="forgot" *ngIf="!model.settings || model.settings.forgot !== false" (tapped)="forgot()">Forgot?</div>
         <div class="options">
-            <button widget type="submit" (tapped)="login()">Login</button>
+            <button mat-button type="submit" (tapped)="login()">Login</button>
         </div>
     </form>
 </div>

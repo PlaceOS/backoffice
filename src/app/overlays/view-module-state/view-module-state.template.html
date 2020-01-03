@@ -24,7 +24,7 @@
                 {{module?.driver?.module_name}} {{module?.role + 1}}
             </div>
         </div>
-        <button widget (tapped)="updateState()">Update state</button>
+        <button mat-button (tapped)="updateState()">Update state</button>
         <div class="settings">
             <settings-display [model]="settings"></settings-display>
         </div>

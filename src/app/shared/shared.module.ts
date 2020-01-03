@@ -15,7 +15,16 @@ import { ACheckboxModule } from '@acaprojects/ngx-checkbox';
 import { ATabsModule } from '@acaprojects/ngx-tabs';
 import { ATogglesModule } from '@acaprojects/ngx-toggles';
 
+import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+// import { MatDialogModule } from '@angular/material/dialog';
+// import { MatFormFieldModule } from '@angular/material/form-field';
+// import { MatInputModule } from '@angular/material/input';
+// import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+// import { MatProgressBarModule } from '@angular/material/progress-bar';
+// import { MatAutocompleteModule } from '@angular/material/autocomplete';
+// import { MatSelectModule } from '@angular/material/select';
+
 import { BaseDirective } from './globals/base.directive';
 import { CustomDropdownFieldComponent } from './components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 import { CustomSettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
@@ -53,7 +62,15 @@ const ENTRY_COMPONENT: Type<any>[] = [
 ]
 
 const MATERIAL_MODULES: any[] = [
+    MatButtonModule,
     MatSnackBarModule,
+    // MatDialogModule,
+    // MatFormFieldModule,
+    // MatInputModule,
+    // MatProgressSpinnerModule,
+    // MatProgressBarModule,
+    // MatAutocompleteModule,
+    // MatSelectModule
 ];
 
 @NgModule({

@@ -10,7 +10,7 @@
         <div class="content" [innerHTML]="(content || 'Are you sure?') | safe"></div>
     </div>
     <div class="footer">
-        <button widget name="cancel" class="inverse" (tapped)="close()">Cancel</button>
-        <button widget name="accept" (tapped)="accept()">{{ action || 'Ok' }}</button>
+        <button mat-button name="cancel" class="inverse" (tapped)="close()">Cancel</button>
+        <button mat-button name="accept" (tapped)="accept()">{{ action || 'Ok' }}</button>
     </div>
 </div>

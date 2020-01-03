@@ -23,9 +23,9 @@
                 </div>
             </ng-template>
         </div>
-        <div class="search" (touchrelease)="close ? event.emit({ type: 'close' }) : ''">
-            <i [class]="'backoffice-' + close ? 'cross' : 'list'"></i>
-        </div>
+        <button mat-icon-button (touchrelease)="close ? event.emit({ type: 'close' }) : ''">
+            <app-icon [icon]="{ class: 'backoffice-' + close ? 'cross' : 'list' }"></app-icon>
+        </button>
     </header>
     <section class="search">
         <div class="input">
@@ -54,7 +54,7 @@
             </div>
             <div class="text">{{ !search ? 'No ' + lowercase_heading : 'No matches found' }}</div>
             <div class="btn" *ngIf="new">
-                <button widget (click)="post('new')">Add new {{ lowercase_heading }}</button>
+                <button mat-button (click)="post('new')">Add new {{ lowercase_heading }}</button>
             </div>
         </div>
     </section>

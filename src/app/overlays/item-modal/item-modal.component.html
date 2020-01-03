@@ -11,8 +11,8 @@
         </ng-container>
     </div>
     <div class="footer">
-        <button widget class="inverse" (tapped)="close()">Cancel</button>
-        <button widget name="submit" type="submit" (tapped)="submit()">{{ item ? 'Save' : 'Add' }}</button>
+        <button mat-button class="inverse" (tapped)="close()">Cancel</button>
+        <button mat-button name="submit" type="submit" (tapped)="submit()">{{ item ? 'Save' : 'Add' }}</button>
     </div>
 </div>
 <ng-template #load_state>

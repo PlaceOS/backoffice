@@ -37,8 +37,8 @@
             </div>
         </div>
         <div class="footer">
-            <button widget (tapped)="event('Cancel')">Cancel</button>
-            <button widget name="inverse" [disabled]="model.has_errors || !model.fields_valid" (tapped)="model.item ? edit() : new()">
+            <button mat-button (tapped)="event('Cancel')">Cancel</button>
+            <button mat-button name="inverse" [disabled]="model.has_errors || !model.fields_valid" (tapped)="model.item ? edit() : new()">
                 Ok
             </button>
         </div>

@@ -18,59 +18,39 @@
     }
 }
 
-button[widget] {
-    outline: none;
-    cursor: pointer;
-
-    &.default {
-        background-color: $color-primary;
-        border: 1px solid $color-primary;
-
-        &:hover {
-            background-color: $color-primary-dark;
-            color: #fff;
-        }
-    }
+button.mat-button,
+a[button] {
+    background-color: $color-primary;
+    border: 1px solid $color-primary;
+    color: $font-light;
 
     &.inverse {
         background-color: #fff;
-        border: 1px solid $color-primary;
         color: $color-primary;
-
-        &:hover {
-            background-color: $color-primary;
-            color: #fff;
-        }
-    }
-
-    &.action {
-        height: 2em;
-        width: 2em;
-        border-radius: 100%;
-        background-color: #fff;
-        color: rgba(#000, 0.87);
-        border: 2px solid rgba(#000, 0.87);
-        box-shadow: 0 0 0 2px #fff;
-        font-size: 1.5em;
-
-        &:hover {
-            box-shadow: 0 0 0 2px rgba(#fff, 0.6);
-        }
-
-        .wrapper {
-            height: 100%;
-            padding: 0;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            width: 100%;
-        }
     }
 
     &[disabled] {
         background-color: #ccc;
-        border-color: #ccc;
         pointer-events: none;
+    }
+}
+
+.mat-icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2em;
+    width: 2em;
+    font-size: 1em;
+
+    .mat-button-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    app-icon {
+        font-size: 1.5em;
     }
 }
 

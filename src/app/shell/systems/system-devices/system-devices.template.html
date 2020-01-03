@@ -1,6 +1,6 @@
 <div class="container">
     <section class="select">
-        <button widget (tapped)="newDevice()">Add new</button>
+        <button mat-button (tapped)="newDevice()">Add new</button>
         <div class="dropdown">
             <engine-item-dropdown
                 [service]="module_service"
@@ -8,7 +8,7 @@
                 [(model)]="new_module"
             ></engine-item-dropdown>
         </div>
-        <button widget [disabled]="!new_module" (tapped)="addDevice()">
+        <button mat-button [disabled]="!new_module" (tapped)="addDevice()">
             Add existing
         </button>
     </section>

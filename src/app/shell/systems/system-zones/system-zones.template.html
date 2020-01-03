@@ -4,7 +4,7 @@
             <div class="dropdown">
                 <engine-item-dropdown [service]="model.zone_service" label="Zone" [(model)]="model.new_zone"></engine-item-dropdown>
             </div>
-            <div class="btn"><button widget [disabled]="!model.new_zone" (tapped)="joinZone()">Join zone</button></div>
+            <div class="btn"><button mat-button [disabled]="!model.new_zone" (tapped)="joinZone()">Join zone</button></div>
         </section>
         <section>
             <table *ngIf="model.zones && model.zones.length > 0">
