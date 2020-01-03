@@ -1,6 +1,6 @@
 
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EngineSystem } from '@acaprojects/ts-composer';
 
 import { ApplicationService } from '../../services/app.service';
@@ -19,18 +19,16 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
     /** Number of zones for the active system */
     public zone_count: number;
 
-    constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
-        super(service, route);
-        (this as any).type = 'system';
-        (this as any).service_name = 'Systems';
-        (this as any).cmp_route = 'systems';
+    constructor(protected _service: ApplicationService, protected _route: ActivatedRoute, protected _router: Router) {
+        super(_service, _route, _router);
+        this.service = this._service.Systems;
     }
 
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, sys_id: this.item.id };
             // Get trigger count
-        this.service.SystemTriggers.query(query)
-            .then(() => this.trigger_count = this.service.SystemTriggers.last_total);
+        this._service.SystemTriggers.query(query)
+            .then(() => this.trigger_count = this._service.SystemTriggers.last_total);
             // Get device count
         this.device_count = (this.item.modules || []).length;
             // Get zone count

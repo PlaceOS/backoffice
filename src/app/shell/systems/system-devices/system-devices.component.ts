@@ -6,7 +6,6 @@ import { EngineSystem, EngineModule, HashMap } from '@acaprojects/ts-composer';
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 import { ContextMenuComponent } from '../../../shared/components/context-menu/context-menu.component';
-import { BackofficeModulesService } from 'src/app/services/data/modules.service';
 import { ApplicationLink } from 'src/app/shared/utilities/settings.interfaces';
 import { IOverlayEvent } from '@acaprojects/ngx-overlays';
 
@@ -35,7 +34,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     ];
 
     /** Service for interacting with modules */
-    public get module_service(): BackofficeModulesService {
+    public get module_service() {
         return this._service.Modules;
     }
 
@@ -44,9 +43,6 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     }
 
     public ngOnInit(): void {
-        if (this._service.Nodes.list.length <= 0) {
-            this._service.Nodes.query();
-        }
         this._service.set('context-menu.items', this.menu_options);
     }
 
@@ -228,7 +224,6 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     public newDevice() {
         this._service.Modules.add({
             control_system: this.item,
-            edge: this._service.Nodes.item(this.item.edge_id)
         }).then((item) => {
             console.log('Item:', item);
             this._service.notifySuccess('Created new device');

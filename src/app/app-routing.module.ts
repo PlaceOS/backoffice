@@ -6,7 +6,7 @@ import { AppAboutComponent } from './shell/about/about.component';
 
 const routes: Routes = [
     { path: '', component: AppShellComponent, children: [
-        { path: 'devices', loadChildren: () => import('./shell/devices/devices.module').then(m => m.AppDevicesModule) },
+        { path: 'modules', loadChildren: () => import('./shell/devices/devices.module').then(m => m.AppDevicesModule) },
         { path: 'domains', loadChildren: () => import('./shell/domains/domains.module').then(m => m.AppDomainsModule) },
         { path: 'drivers', loadChildren: () => import('./shell/drivers/drivers.module').then(m => m.AppDriversModule) },
         { path: 'metrics', loadChildren: () => import('./shell/metrics/metrics.module').then(m => m.AppMetricsModule) },

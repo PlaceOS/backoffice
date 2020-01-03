@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
-import { EngineServiceLike } from '../../utilities/types.utilities';
+import { EngineServiceLike, HashMap } from '../../utilities/types.utilities';
 
 import * as dayjs from 'dayjs';
 
@@ -23,7 +23,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     @Input() public module: EngineServiceLike;
     /** Whether the list is being loaded */
     @Input() public loading: boolean;
-    /**  */
+    /** Whether sidebar is closed */
     @Input() public close = false;
     /** Search string */
     @Input() public search = '';
@@ -93,6 +93,8 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             this.items.next(this.list || []);
             this.atBottom();
         })
+        this.subscription('up', this._service.Hotkeys.listen(['ArrowUp'], () => this.changeSelected(-1)));
+        this.subscription('down', this._service.Hotkeys.listen(['ArrowDown'], () => this.changeSelected(1)));
     }
 
     public ngOnChanges(changes: any) {
@@ -101,8 +103,9 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             this.items.next(this.list || []);
             this.atBottom();
         }
-        this.subscription('up', this._service.Hotkeys.listen(['ArrowUp'], () => this.changeSelected(-1)));
-        this.subscription('down', this._service.Hotkeys.listen(['ArrowDown'], () => this.changeSelected(1)));
+        if (changes.module) {
+            this.searching();
+        }
     }
 
     /** Whether to update the list of items */
@@ -127,23 +130,51 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         if (end === total) {
             this.last_total = total;
             this.last_check = dayjs().valueOf();
-            this.event.emit({ type: 'more' });
+            if (this.last_total !== this.module.last_total) {
+                this.searching(this.list.length);
+            }
         }
     }
 
-    public trackByIdx(i) {
-        return i;
+    /**
+     *
+     * @param item
+     * @param index
+     */
+    public trackByFn(item: HashMap, index: number) {
+        return item.id || index;
     }
 
+    /** Emit events to the parent element */
     public post(type: string) {
         console.log('Type:', type)
         this.event.emit({ type });
     }
 
-    public searching() {
-        this.timeout('searching', () => this.searchChange.emit(this.search));
+    /**
+     * Update the list displayed on the sidebar
+     * @param offset
+     */
+    public searching(offset: number = 0) {
+        this.loading = true;
+        if (this.module) {
+            this.module.query({ q: this.search, offset }).then(list => {
+                this.list = offset ? this.list.concat(list) : list;
+                this.items.next(this.list);
+                this.loading = false;
+            }, (err) => {
+                this._service.notifyError(`Error updating ${this.module._name} list. ${err}`);
+                this.loading = false;
+            });
+        } else {
+            this.loading = false;
+        }
     }
 
+    /**
+     * Update the selected item
+     * @param offset Offset with which to select the new item
+     */
     public changeSelected(offset: number) {
         const list = this.item_list.toArray();
         if (list && list.length > 0) {
@@ -151,7 +182,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             index += offset;
             if (index > 0 && index < list.length) {
                 list[index].nativeElement.scrollIntoView(false);
-                this._service.navigate([this.route, this.items.getValue()[index].id]);
+                this._service.navigate([this.module._api_route, this.items.getValue()[index].id]);
             }
         }
     }

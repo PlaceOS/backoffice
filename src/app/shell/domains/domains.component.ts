@@ -1,6 +1,6 @@
 
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EngineDomain } from '@acaprojects/ts-composer';
 
 import { ApplicationService } from '../../services/app.service';
@@ -19,24 +19,22 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
     /** Number of triggers for the active system */
     public users: number;
 
-    constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
-        super(service, route);
-        (this as any).type = 'domain';
-        (this as any).service_name = 'Domains';
-        (this as any).cmp_route = 'domains';
+    constructor(protected _service: ApplicationService, protected _route: ActivatedRoute, protected _router: Router) {
+        super(_service, _route, _router);
+        this.service = this._service.Domains;
     }
 
     protected loadValues() {
         let query: any = { offset: 0, limit: 1, owner: this.item.id };
         // Get application count
-        this.service.Applications.query(query)
-            .then(() => this.applications = this.service.Applications.last_total);
+        this._service.Applications.query(query)
+            .then(() => this.applications = this._service.Applications.last_total);
         query = { offset: 0, limit: 1, authority_id: this.item.id };
         // Get auth source count
-        this.service.AuthSources.query(query)
-            .then(() => this.auth_sources = this.service.AuthSources.last_total);
+        this._service.AuthSources.query(query)
+            .then(() => this.auth_sources = this._service.AuthSources.last_total);
         // Get users count
-        this.service.Users.query(query)
-            .then(() => this.users = this.service.Users.last_total);
+        this._service.Users.query(query)
+            .then(() => this.users = this._service.Users.last_total);
     }
 }

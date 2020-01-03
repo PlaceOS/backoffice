@@ -1,6 +1,6 @@
 
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -22,16 +22,14 @@ export class TestsComponent extends BaseRootComponent {
     @ViewChild('cmd_line', { static: true }) private cmd_line: ElementRef;
     @ViewChild('cmd_input', { static: true }) private cmd_input: ElementRef;
 
-    constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
-        super(service, route);
-        (this as any).type = 'test';
-        (this as any).service_name = 'Tests';
-        (this as any).cmp_route = 'tests';
+    constructor(protected _service: ApplicationService, protected _route: ActivatedRoute, protected _router: Router) {
+        super(_service, _route, _router);
+        this.service = this._service.Tests as any;
     }
 
     protected loadValues() {
         if (this.item) {
-            this.connection = this.service.Tests.run(this.item as any, (lines) => {
+            this.connection = this._service.Tests.run(this.item as any, (lines) => {
                 this.display_lines = lines;
                 this.scroll();
             });

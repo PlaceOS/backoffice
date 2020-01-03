@@ -1,6 +1,6 @@
 
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EngineTrigger } from '@acaprojects/ts-composer';
 
 import { ApplicationService } from '../../services/app.service';
@@ -16,18 +16,16 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> {
     /** Number of system triggers */
     public system_count: number;
 
-    constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
-        super(service, route);
-        (this as any).type = 'trigger';
-        (this as any).service_name = 'Triggers';
-        (this as any).cmp_route = 'triggers';
+    constructor(protected _service: ApplicationService, protected _route: ActivatedRoute, protected _router: Router) {
+        super(_service, _route, _router);
+        this.service = this._service.Triggers;
     }
 
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, trigger_id: this.item.id };
         const q = `total_${toQueryString(query)}`;
             // Get trigger count
-        this.service.SystemTriggers.query(query)
-            .then(() => this.system_count = this.service.SystemTriggers.last_total);
+        this._service.SystemTriggers.query(query)
+            .then(() => this.system_count = this._service.SystemTriggers.last_total);
     }
 }

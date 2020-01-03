@@ -38,7 +38,7 @@
     <section class="list">
         <ng-container *ngIf="list">
             <cdk-virtual-scroll-viewport itemSize="48" (scrolledIndexChange)="atBottom()">
-                <ng-container *cdkVirtualFor="let item of items | async">
+                <ng-container *cdkVirtualFor="let item of items | async; trackBy:trackByFn">
                     <a [routerLink]="[route, item.id]" routerLinkActive="active">
                         <div #list_item class="item" [title]="item?.custom_name || item?.name || item">
                             <div class="text">{{ item?.custom_name || item?.name || item }}</div>
