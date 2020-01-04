@@ -1,28 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { animate, style, transition, trigger } from '@angular/animations';
+import { Component, OnInit, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { HashMap, EngineModule, EngineSystem } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { OverlayItem } from '@acaprojects/ngx-overlays';
 import { ApplicationService } from 'src/app/services/app.service';
-import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
+
+export interface ModuleStateModalData {
+    /** System Data to show the details for */
+    system: EngineSystem;
+    /** Module to expose the state of */
+    module: EngineModule
+}
 
 @Component({
     selector: 'view-module-state-modal',
     templateUrl: './view-module-state.template.html',
-    styleUrls: ['./view-module-state.styles.scss'],
-    animations: [
-        trigger('show', [
-            transition(':enter', [
-                style({ opacity: 0, transform: 'translateX(100%) scale(0)' }),
-                animate(200, style({ opacity: 1, transform: 'translateX(0%) scale(1)' }))
-            ]),
-            transition(':leave', [
-                style({ opacity: 1, transform: 'translateX(0%) scale(1)' }),
-                animate(200, style({ opacity: 0, transform: 'translateX(-100%) scale(0)' }))
-            ])
-        ])
-    ]
+    styleUrls: ['./view-module-state.styles.scss']
 })
 export class ViewModuleStateModalComponent extends BaseDirective implements OnInit {
     /** Parent system of the module */
@@ -48,13 +41,17 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
         return '{}';
     }
 
-    constructor(private _item: OverlayItem, private _service: ApplicationService) {
+    constructor(
+        private _dialog: MatDialogRef<ViewModuleStateModalComponent>,
+        @Inject(MAT_DIALOG_DATA) private _data: ModuleStateModalData,
+        private _service: ApplicationService
+    ) {
         super();
     }
 
     public ngOnInit() {
-        this.system = this._item.data.system;
-        this.module = this._item.data.module;
+        this.system = this._data.system;
+        this.module = this._data.module;
         this.updateState();
     }
 
@@ -79,10 +76,7 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
      * Close the modal
      */
     public close() {
-        this.closing = true;
-        this.timeout('close', () => this._item.close());
-
+        this._dialog.close();
     }
 }
 
-OVERLAY_REGISTER.push({ id: 'view-module-state', config: { content: ViewModuleStateModalComponent, config: 'modal' } });

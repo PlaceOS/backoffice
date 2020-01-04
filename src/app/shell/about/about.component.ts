@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 
 import { BaseDirective } from '../../shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
 import { version, build } from 'src/app/shared/globals/application';
+import { ChangelogModalComponent, ChangelogModalData } from 'src/app/overlays/changelog-modal/changelog-modal.component';
 
 @Component({
     selector: 'app-about',
@@ -12,7 +14,7 @@ import { version, build } from 'src/app/shared/globals/application';
 export class AppAboutComponent extends BaseDirective implements OnInit {
     public model: any = {};
 
-    constructor(private service: ApplicationService) {
+    constructor(private service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
@@ -33,6 +35,6 @@ export class AppAboutComponent extends BaseDirective implements OnInit {
 
     public changelog(log: string) {
         console.log('Log:', log);
-        this.service.Overlay.open('changelog', { data: { changelog: log } });
+        this._dialog.open<ChangelogModalComponent, ChangelogModalData>(ChangelogModalComponent, { data: { changelog: log } });
     }
 }

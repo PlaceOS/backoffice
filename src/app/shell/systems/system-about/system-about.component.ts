@@ -1,13 +1,20 @@
-
-import { Component, Input, OnChanges, ViewChildren, QueryList, ElementRef, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { EngineSystem, HashMap, EngineZone } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
+import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import {
+    ConfirmModalComponent,
+    ConfirmModalData
+} from 'src/app/overlays/confirm-modal/confirm-modal.component';
 
 import * as merge from 'deepmerge';
-import { IOverlayEvent } from '@acaprojects/ngx-overlays';
-import { ConfirmModalOptions } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import {
+    SystemLogModalComponent,
+    SystemLogModalData
+} from 'src/app/overlays/system-log-modal/system-log-modal.component';
 
 @Component({
     selector: 'system-about',
@@ -29,7 +36,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
         return this.item.modules || [];
     }
 
-    constructor(private service: ApplicationService) {
+    constructor(private service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
@@ -43,48 +50,73 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
      * Open confirmation modal for starting the active system
      */
     public start() {
-        this.service.Overlay.open<ConfirmModalOptions>('confirm', {
-            config: 'modal',
-            data: {
-                title: 'Start system?',
-                body: `Are you sure you want to start this system?<br>All stopped modules within the system will boot up.`,
-                icon: { type: 'icon', class: 'backoffice-controller-play' }
+        const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+            ConfirmModalComponent,
+            {
+                width: '22em',
+                maxWidth: '95vw',
+                maxHeight: '95vh',
+                data: {
+                    title: 'Start system?',
+                    content: `Are you sure you want to start this system?<br>All stopped modules within the system will boot up.`,
+                    icon: { type: 'icon', class: 'backoffice-controller-play' }
+                }
             }
-        }, (e) => {
-            if (e.type === 'finish') {
-                this.service.Systems.start(this.item.id)
-                    .then(
-                        (result) => null,
-                        (err) => this.service.notifyError(`Failed to start system: ${err.message || err}`)
+        );
+        this.subscription(
+            'confirm_ref',
+            ref.componentInstance.event.subscribe((e: DialogEvent) => {
+                if (e.reason === 'done') {
+                    this.service.Systems.start(this.item.id).then(
+                        result => null,
+                        err =>
+                            this.service.notifyError(
+                                `Failed to start system: ${err.message || err}`
+                            )
                     );
-            }
-        });
+                }
+            })
+        );
     }
 
     /**
      * Open confirmation modal for stopping the active system
      */
     public stop() {
-        this.service.Overlay.open('confirm', {
-            config: 'modal',
-            data: {
-                title: 'Stop system?',
-                body: `Are you sure you want to stop this system?<br>All modules will be immediately stopped regardless of any other systems they may be in.`,
-                icon: { type: 'icon', class: 'backoffice-controller-stop' }
+        const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+            ConfirmModalComponent,
+            {
+                width: '22em',
+                maxWidth: '95vw',
+                maxHeight: '95vh',
+                data: {
+                    title: 'Stop system?',
+                    content: `Are you sure you want to stop this system?<br>All modules will be immediately stopped regardless of any other systems they may be in.`,
+                    icon: { type: 'icon', class: 'backoffice-controller-stop' }
+                }
             }
-        }, (e: IOverlayEvent<ConfirmModalOptions>) => {
-            if (e.type === 'finish') {
-                this.service.Systems.stop(this.item.id)
-                    .then(
-                        (result) => null,
-                        (err) => this.service.notifyError(`Failed to stop system: ${err.message || err}`)
+        );
+        this.subscription(
+            'confirm_ref',
+            ref.componentInstance.event.subscribe((e: DialogEvent) => {
+                if (e.reason === 'done') {
+                    this.service.Systems.stop(this.item.id).then(
+                        result => null,
+                        err =>
+                            this.service.notifyError(`Failed to stop system: ${err.message || err}`)
                     );
-            }
-        });
+                }
+            })
+        );
     }
 
     public logs() {
-        this.service.Overlay.open('system-logs', { config: 'modal', data: { sys_id: this.item.id } })
+        const ref = this._dialog.open<SystemLogModalComponent, SystemLogModalData>(
+            SystemLogModalComponent,
+            {
+                data: { sys_id: this.item.id }
+            }
+        );
     }
 
     public toggleSettings() {
@@ -93,7 +125,9 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
     }
 
     public updateSettings() {
-        if (!this.item) { return; }
+        if (!this.item) {
+            return;
+        }
         if (this.merged !== false) {
             this.settings = merge({}, this.item.settings);
             for (const zone of this.zones) {
@@ -105,10 +139,13 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
     }
 
     public loadZones() {
-        this.service.Zones.query({ sys_id: this.item.id, offset: 0 }).then((list) => {
-            list.sort((a, b) => this.item.zones.indexOf(b.id) - this.item.zones.indexOf(a.id));
-            this.zones = list;
-            this.updateSettings();
-        }, () => null);
+        this.service.Zones.query({ sys_id: this.item.id, offset: 0 }).then(
+            list => {
+                list.sort((a, b) => this.item.zones.indexOf(b.id) - this.item.zones.indexOf(a.id));
+                this.zones = list;
+                this.updateSettings();
+            },
+            () => null
+        );
     }
 }

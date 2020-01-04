@@ -1,8 +1,9 @@
-import { ConfirmModalComponent } from './confirm-modal.component';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
-import { OverlayItem } from '@acaprojects/ngx-overlays';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+import { ConfirmModalComponent } from './confirm-modal.component';
 
 describe('ConfirmModalComponent', () => {
     let fixture: ComponentFixture<ConfirmModalComponent>;
@@ -12,11 +13,19 @@ describe('ConfirmModalComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [ConfirmModalComponent],
-            providers: [{ provide: OverlayItem, useValue: jasmine.createSpyObj('OverlayItem', ['close', 'post']) }],
-            imports: [CommonModule, NoopAnimationsModule]
+            providers: [{
+                provide: MAT_DIALOG_DATA,
+                useValue: {
+                    title: 'Test Confirm',
+                    content: 'This is for testing the confirm modal',
+                    action: 'test action',
+                    icon: { type: 'icon', class: 'material-icons', content: 'delete' }
+                }
+            }],
+            imports: [CommonModule]
         }).compileComponents();
         fixture = TestBed.createComponent(ConfirmModalComponent);
-        item = TestBed.get(OverlayItem);
+        item = TestBed.get(MAT_DIALOG_DATA);
         component = fixture.debugElement.componentInstance;
         fixture.detectChanges();
     });
@@ -50,7 +59,7 @@ describe('ConfirmModalComponent', () => {
 
     it('should show an icon', () => {
         const compiled: HTMLElement = fixture.debugElement.nativeElement;
-        const icon = { class: 'test-class', value: 'here' };
+        const icon: any = { type: 'icon', class: 'test-class', value: 'here' };
         expect(compiled.querySelector('.body .icon')).toBeFalsy();
         component.icon = icon;
         fixture.detectChanges();
@@ -80,15 +89,12 @@ describe('ConfirmModalComponent', () => {
         expect(compiled.querySelector('button[name="accept"]').textContent).toBe(item.data.action);
     });
 
-    it('should show call close', () => {
-        const clock = jasmine.clock();
-        clock.install();
+    it('should show call close', fakeAsync(() => {
         const compiled: HTMLElement = fixture.debugElement.nativeElement;
         compiled.querySelector('button[name="cancel"]').dispatchEvent(new Event('tapped'));
-        clock.tick(320);
+        tick(320);
         expect(item.close).toHaveBeenCalled();
-        clock.uninstall();
-    });
+    }));
 
     it('should post accept', () => {
         const compiled: HTMLElement = fixture.debugElement.nativeElement;

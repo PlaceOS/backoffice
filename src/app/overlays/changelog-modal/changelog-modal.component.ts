@@ -1,8 +1,11 @@
-
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
+
+export interface ChangelogModalData {
+    changelog: string;
+}
 
 @Component({
     selector: 'changelog-modal',
@@ -14,8 +17,13 @@ export class ChangelogModalComponent extends BaseDirective {
     public loading: boolean;
     /** Changelog Markdown */
     public item: string;
-    /** HTML string for rendering the change log */
-    public changelog: string;
-}
 
-OVERLAY_REGISTER.push({ id: 'changelog', config: { content: ChangelogModalComponent, config: 'modal' } });
+    constructor(@Inject(MAT_DIALOG_DATA) private _data: ChangelogModalData) {
+        super();
+    }
+
+    /** HTML string for rendering the change log */
+    public get changelog(): string {
+        return this._data.changelog || '';
+    }
+}

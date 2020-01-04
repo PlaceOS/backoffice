@@ -1,10 +1,14 @@
 
-import { Component, OnInit } from '@angular/core';
-import { OverlayItem } from '@acaprojects/ngx-overlays';
+import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
-import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
+import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+
+export interface TriggerActionModalData {
+
+}
 
 @Component({
     selector: 'trigger-action-modal',
@@ -12,10 +16,16 @@ import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
     styleUrls: ['./trigger-action-modal.styles.scss']
 })
 export class TriggerActionModalComponent extends BaseDirective implements OnInit {
+    /** Emitter for user action on the modal */
+    @Output() public event = new EventEmitter<DialogEvent>();
 
     public model: any = {};
 
-    constructor(private _item: OverlayItem, private _service: ApplicationService) {
+    constructor(
+        private _dialog: MatDialogRef<TriggerActionModalComponent>,
+        @Inject(MAT_DIALOG_DATA) private _data: TriggerActionModalData,
+        private _service: ApplicationService
+    ) {
         super();
     }
 
@@ -52,7 +62,7 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
             this._service.Zones.add(this.model.form).then((item) => {
                 this._service.notifySuccess('Successfully added new zone');
                 this.model.id = item.id;
-                this._item.post('event', 'Success');
+                this.event.emit({ reason: 'done', metadata: { item } });
             }, () => {
                 this._service.notifyError('Failed to add new zone');
                 this.model.loading = false;
@@ -78,7 +88,7 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
                 this._service.Zones.update(this.model.item.id, form).then((item) => {
                     this._service.notifySuccess(`Successfully updated zone "${this.model.item.id}"`);
                     this.model.id = item.id;
-                    this._item.post('event', 'Success');
+                    this.event.emit({ reason: 'done', metadata: { item } });
                 }, () => {
                     this._service.notifyError(`Failed to update zone "${this.model.item.id}"`);
                     this.model.loading = false;
@@ -87,5 +97,3 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
         }, 300);
     }
 }
-
-OVERLAY_REGISTER.push({ id: 'trigger-action', config: { content: TriggerActionModalComponent, config: 'modal' } });

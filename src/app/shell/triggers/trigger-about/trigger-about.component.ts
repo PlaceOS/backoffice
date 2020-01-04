@@ -4,6 +4,9 @@ import { EngineTrigger } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
+import { MatDialog } from '@angular/material/dialog';
+import { TriggerActionModalComponent, TriggerActionModalData } from 'src/app/overlays/trigger-action-modal/trigger-action-modal.component';
+import { TriggerConditionModalComponent, TriggerConditionData } from 'src/app/overlays/trigger-condition-modal/trigger-condition-modal.component';
 
 @Component({
     selector: 'trigger-about',
@@ -15,7 +18,7 @@ export class TriggerAboutComponent extends BaseDirective implements OnInit {
 
     public model: any = {};
 
-    constructor(private service: ApplicationService) {
+    constructor(private service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
@@ -35,14 +38,14 @@ export class TriggerAboutComponent extends BaseDirective implements OnInit {
     }
 
     public addCondition() {
-        this.service.Overlay.open('trigger-condition', { data: {
+        this._dialog.open<TriggerConditionModalComponent, TriggerConditionData>(TriggerConditionModalComponent, { data: {
             trigger: this.item,
-            system: this.model.selected_system
+            item: this.model.selected_system
         } });
     }
 
     public addAction() {
-        this.service.Overlay.open('trigger-action', { data: {
+        this._dialog.open<TriggerActionModalComponent, TriggerActionModalData>(TriggerActionModalComponent, { data: {
             trigger: this.item,
             system: this.model.selected_system
         } });

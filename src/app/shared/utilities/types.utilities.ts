@@ -46,3 +46,10 @@ export interface EngineServiceLike<T = any> extends HashMap {
     /** Remove existing item through the API request */
     delete: (id: string, query?: HashMap) => Promise<void>;
 }
+
+/** Generic event for dialog boxes */
+export interface DialogEvent {
+    /** Reason the event was called */
+    reason: 'action' | 'close' | 'reset' | 'loading' | 'done' | 'other',
+    metadata?: any;
+}

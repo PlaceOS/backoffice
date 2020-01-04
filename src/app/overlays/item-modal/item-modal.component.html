@@ -1,20 +1,20 @@
-<div class="item modal" widget [@show] *ngIf="!closing" [class.is-loading]="loading">
-    <div class="header">
-        <div class="text">{{ item && edit ? 'Edit' : 'New' }} {{ name }}</div>
-        <div class="close" (tapped)="close()">
-            <i class="backoffice-cross"></i>
-        </div>
-    </div>
+<header>
+    <h3 mat-dialog-title>{{ item && edit ? 'Edit' : 'New' }} {{ name }}</h3>
+    <button mat-icon-button mat-dialog-close>
+        <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
+    </button>
+</header>
+<mat-dialog-content>
     <div class="body" *ngIf="!loading; else load_state">
         <ng-container *ngIf="fields && fields.length > 0">
             <a-dynamic-form [fields]="fields" (valid)="valid = true"></a-dynamic-form>
         </ng-container>
     </div>
-    <div class="footer">
-        <button mat-button class="inverse" (tapped)="close()">Cancel</button>
-        <button mat-button name="submit" type="submit" (tapped)="submit()">{{ item ? 'Save' : 'Add' }}</button>
-    </div>
-</div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button class="inverse" mat-dialog-close>Cancel</button>
+    <button mat-button type="submit" (tapped)="submit()">{{ item ? 'Save' : 'Add' }}</button>
+</mat-dialog-actions>
 <ng-template #load_state>
     <div class="body">
         <div class="info-block">

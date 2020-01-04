@@ -6,9 +6,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import { ADropdownsModule } from '@acaprojects/ngx-dropdown';
 import { ASpinnerModule } from '@acaprojects/ngx-spinners';
-import { AButtonsModule } from '@acaprojects/ngx-buttons';
 import { APipesModule } from '@acaprojects/ngx-pipes';
-import { AOverlayModule } from '@acaprojects/ngx-overlays';
 import { ADynamicFormsModule } from '@acaprojects/ngx-dynamic-forms';
 import { ACustomEventsModule } from '@acaprojects/ngx-custom-events';
 import { ACheckboxModule } from '@acaprojects/ngx-checkbox';
@@ -17,7 +15,7 @@ import { ATogglesModule } from '@acaprojects/ngx-toggles';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-// import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 // import { MatFormFieldModule } from '@angular/material/form-field';
 // import { MatInputModule } from '@angular/material/input';
 // import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -64,7 +62,7 @@ const ENTRY_COMPONENT: Type<any>[] = [
 const MATERIAL_MODULES: any[] = [
     MatButtonModule,
     MatSnackBarModule,
-    // MatDialogModule,
+    MatDialogModule,
     // MatFormFieldModule,
     // MatInputModule,
     // MatProgressSpinnerModule,
@@ -82,8 +80,6 @@ const MATERIAL_MODULES: any[] = [
         CommonModule,
         ADropdownsModule,
         ASpinnerModule,
-        AButtonsModule,
-        AOverlayModule,
         FormsModule,
         APipesModule,
         ReactiveFormsModule,
@@ -97,9 +93,7 @@ const MATERIAL_MODULES: any[] = [
     exports: [
         ADropdownsModule,
         ASpinnerModule,
-        AButtonsModule,
         APipesModule,
-        AOverlayModule,
         ACustomEventsModule,
         ADynamicFormsModule,
         ACheckboxModule,

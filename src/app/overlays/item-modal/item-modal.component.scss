@@ -1,20 +1,11 @@
+
 @import 'shared.styles';
-
-.item {
-    width: 40em;
-    max-width: calc(100vw - 1em);
-    transition: width 200ms, height 200ms;
-
-    &.is-loading {
-        width: 16em;
-    }
-}
 
 .body {
     display: flex;
     align-items: center;
     flex-direction: column;
-    padding: 2em;
+    padding: 1em;
 }
 
 .icon {

@@ -17,7 +17,6 @@ import { SettingsService, ConsoleStream } from './settings.service';
 import { HashMap } from '../shared/utilities/types.utilities';
 
 import { HotkeysService } from './hotkeys.service';
-import { OVERLAY_REGISTER } from '../shared/globals/overlay-register';
 import { BackofficeCommentsService } from './data/comments.service';
 import { BackofficeDiscoveryService } from './data/discovery.service';
 import { BackofficeLogsService } from './data/logs.service';
@@ -54,7 +53,6 @@ export class ApplicationService extends BaseClass {
         private _router: Router,
         private _cache: SwUpdate,
         private _settings: SettingsService,
-        private _overlay: AOverlayService,
         private _composer: ComposerService,
         private _analytics: GoogleAnalyticsService,
         private _hotkeys: HotkeysService,
@@ -69,20 +67,11 @@ export class ApplicationService extends BaseClass {
         private _snackbar: MatSnackBar
     ) {
         super();
-        console.log('Start');
         this._engine_comments.parent = this._engine_discovery.parent = this._engine_logs.parent
             = this._engine_search.parent = this._engine_stats.parent = this._engine_system_logs.parent
             = this._engine_tests.parent = this._users.parent = this;
-        console.log('Constructor');
         this.set('system', null);
         this.init();
-        this.setupCache();
-        this.registerOverlays();
-    }
-
-    /** Overlay service */
-    public get Overlay(): AOverlayService {
-        return this._overlay;
     }
 
     /** Analytics service */
@@ -437,17 +426,6 @@ export class ApplicationService extends BaseClass {
 
     private loadActiveUser() {
         this.Users.show('current').then(user => this.set('user', user));
-    }
-
-    /**
-     * Pre-register available overlays
-     */
-    private registerOverlays(): void {
-        if (OVERLAY_REGISTER) {
-            for (const overlay of OVERLAY_REGISTER) {
-                this._overlay.register(overlay.id, overlay.config);
-            }
-        }
     }
 
     /**

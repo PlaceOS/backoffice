@@ -1,80 +1,111 @@
-<div class="container" [class.loader]="model.loading" [class.edit]="model.item">
-    <div class="header">
-        <div class="text">{{model.item ? 'Edit' : 'New'}} Trigger Condition</div>
-        <div class="close" (touchrelease)="fn.close()">
-            <i class="backoffice-cross"></i>
+<header>
+    <h3 mat-dialog-title>{{item ? 'Edit' : 'New'}} Trigger Condition</h3>
+    <button mat-icon-button mat-dialog-close>
+        <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
+    </button>
+</header>
+<mat-dialog-content>
+    <div class="body" *ngIf="!loading; else load_state">
+        <div class="field">
+            <div class="label">Condition Type<span class="orange">*</span>:</div>
+            <div class="value">
+                <a-dropdown
+                    [items]="condition_types"
+                    [ngModel]="-1"
+                    (ngModelChange)="form.condition_type = condition_types[$event]"
+                    placeholder="Select a System"
+                ></a-dropdown>
+            </div>
         </div>
-    </div>
-    <div class="body">
-        <div class="form">
+        <div class="fieldset" *ngIf="form.condition_type && form.condition_type.id === 'webhook'">
             <div class="field">
-                <div class="label">Condition Type<span class="orange">*</span>:</div>
+                <div class="label">Select type<span class="orange">*</span>:</div>
                 <div class="value">
-                    <a-dropdown [items]="model.condition_types" [ngModel]="-1" (ngModelChange)="model.form.condition_type = model.condition_types[$event]"
-                        placeholder="Select a System"></a-dropdown>
+                    <a-dropdown
+                        [items]="webhook_types"
+                        [ngModel]="-1"
+                        (ngModelChange)="form.webhook_type = webhook_types[$event]; checkFields()"
+                        placeholder="Select a webhook type"
+                    ></a-dropdown>
                 </div>
             </div>
-            <div class="fieldset" *ngIf="model.form.condition_type && model.form.condition_type.id === 'webhook'">
-                <div class="field">
-                    <div class="label">Select type<span class="orange">*</span>:</div>
-                    <div class="value">
-                        <a-dropdown [items]="model.webhook_types" [ngModel]="-1" (ngModelChange)="model.form.webhook_type = model.webhook_types[$event]; checkFields()"
-                            placeholder="Select a webhook type"></a-dropdown>
-                    </div>
-                </div>
-                <div class="info">Webhooks can provide a JSON payload with a command to execute.</div>
-            </div>
-            <div class="fieldset" *ngIf="model.form.condition_type && model.form.condition_type.id === 'compare'">
-                <div class="field">
-                    <div class="label">Status variable<span class="orange">*</span>:</div>
-                    <div class="value">
-                        <a-dropdown [items]="model.status_variables" [ngModel]="-1" (ngModelChange)="model.form.lhs_variable = model.status_variables[$event]; checkFields()"
-                            placeholder="Select a status variable"></a-dropdown>
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="value">
-                        <input [(ngModel)]="model.form.lhs_subkeys" placeholder="subkey1, subkey2, ...">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="value">
-                        <a-dropdown [items]="model.compare_types" [ngModel]="0" (ngModelChange)="model.form.compare_type = model.compare_types[$event]; checkFields()"></a-dropdown>
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="value">
-                        <a-dropdown [items]="['Constant value', 'Status variable']" [(ngModel)]="model.form.compare_value" (ngModelChange)="checkFields()"></a-dropdown>
-                    </div>
-                </div>
-                <div class="field" *ngIf="model.form.compare_value">
-                    <div class="label">Status variable<span class="orange">*</span>:</div>
-                    <div class="value">
-                        <a-dropdown [items]="model.status_variables" [ngModel]="-1" (ngModelChange)="model.form.rhs_variable = model.status_variables[$event]; checkFields()"
-                            placeholder="Select a status variable"></a-dropdown>
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="value">
-                        <input [(ngModel)]="model.form.rhs_subkeys" placeholder="subkey1, subkey2, ...">
-                    </div>
+            <div class="info">Webhooks can provide a JSON payload with a command to execute.</div>
+        </div>
+        <div class="fieldset" *ngIf="form.condition_type && form.condition_type.id === 'compare'">
+            <div class="field">
+                <div class="label">Status variable<span class="orange">*</span>:</div>
+                <div class="value">
+                    <a-dropdown
+                        [items]="status_variables"
+                        [ngModel]="-1"
+                        (ngModelChange)="form.lhs_variable = status_variables[$event]; checkFields()"
+                        placeholder="Select a status variable"
+                    ></a-dropdown>
                 </div>
             </div>
-            <div class="fieldset" *ngIf="model.form.condition_type && model.form.condition_type.id === 'cron'">
-                <cron></cron>
+            <div class="field">
+                <div class="value">
+                    <input [(ngModel)]="form.lhs_subkeys" placeholder="subkey1, subkey2, ..." />
+                </div>
+            </div>
+            <div class="field">
+                <div class="value">
+                    <a-dropdown
+                        [items]="compare_types"
+                        [ngModel]="0"
+                        (ngModelChange)="form.compare_type = compare_types[$event]; checkFields()"
+                    ></a-dropdown>
+                </div>
+            </div>
+            <div class="field">
+                <div class="value">
+                    <a-dropdown
+                        [items]="['Constant value', 'Status variable']"
+                        [(ngModel)]="form.compare_value"
+                        (ngModelChange)="checkFields()"
+                    ></a-dropdown>
+                </div>
+            </div>
+            <div class="field" *ngIf="form.compare_value">
+                <div class="label">Status variable<span class="orange">*</span>:</div>
+                <div class="value">
+                    <a-dropdown
+                        [items]="status_variables"
+                        [ngModel]="-1"
+                        (ngModelChange)="form.rhs_variable = status_variables[$event]; checkFields()"
+                        placeholder="Select a status variable"
+                    ></a-dropdown>
+                </div>
+            </div>
+            <div class="field">
+                <div class="value">
+                    <input [(ngModel)]="form.rhs_subkeys" placeholder="subkey1, subkey2, ..." />
+                </div>
             </div>
         </div>
-        <div class="footer">
-            <button mat-button (tapped)="event('Cancel')">Cancel</button>
-            <button mat-button name="inverse" [disabled]="model.has_errors || !model.fields_valid" (tapped)="model.item ? edit() : new()">
-                Ok
-            </button>
+        <div class="fieldset" *ngIf="form.condition_type && form.condition_type.id === 'cron'">
+            <cron></cron>
         </div>
     </div>
-    <div class="info-block">
-        <div class="icon">
-            <a-spinner circle-ring color="rgba(0,0,0, .54)"></a-spinner>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button class="inverse" mat-dialog-close>Cancel</button>
+    <button
+        mat-button
+        type="submit"
+        [disabled]="has_errors || !fields_valid"
+        (tapped)="item ? edit() : new()"
+    >
+        {{ item ? 'Save' : 'Add' }}
+    </button>
+</mat-dialog-actions>
+<ng-template #load_state>
+    <div class="body">
+        <div class="info-block">
+            <div class="icon">
+                <a-spinner circle-ring color="#000"></a-spinner>
+            </div>
+            <div class="text">Processing request...</div>
         </div>
-        <div class="text">Processing request...</div>
     </div>
-</div>
+</ng-template>

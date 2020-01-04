@@ -1,32 +1,31 @@
-import { Component, OnInit } from '@angular/core';
-import { animate, style, transition, trigger } from '@angular/animations';
-import { OverlayItem } from '@acaprojects/ngx-overlays';
+import { Component, Inject, EventEmitter, Output } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
 import { EngineResource } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { HashMap } from 'src/app/shared/utilities/types.utilities';
+import { HashMap, DialogEvent, EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
-import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
+
+export interface CreateEditModalData {
+    /** Service associated with the item being created/edited */
+    service: EngineServiceLike;
+    /** Item being worked on */
+    item: EngineResource<any>;
+    /** Form fields for item */
+    form: ADynamicFormField[];
+    /** Name of the type of item being worked on */
+    name: string
+}
 
 @Component({
     selector: 'item-modal',
     templateUrl: './item-modal.component.html',
-    styleUrls: ['./item-modal.component.scss'],
-    animations: [
-        trigger('show', [
-            transition(':enter', [
-                style({ opacity: 0, transform: 'translateX(100%) scale(0)' }),
-                animate(200, style({ opacity: 1, transform: 'translateX(0%) scale(1)' }))
-            ]),
-            transition(':leave', [
-                style({ opacity: 1, transform: 'translateX(0%) scale(1)' }),
-                animate(200, style({ opacity: 0, transform: 'translateX(-100%) scale(0)' }))
-            ])
-        ])
-    ]
+    styleUrls: ['./item-modal.component.scss']
 })
 export class ItemCreateUpdateModalComponent extends BaseDirective {
+    /** Emitter for user action on the modal */
+    @Output() public event = new EventEmitter<DialogEvent>();
     /** Name of the item type */
     public name: string;
     /** Whether the item is being editing */
@@ -42,13 +41,18 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
     /** Whether modal is closing */
     public closing: boolean;
 
-    constructor(private _item: OverlayItem, private _service: ApplicationService) {
+    constructor(
+        private _dialog: MatDialogRef<ItemCreateUpdateModalComponent>,
+        @Inject(MAT_DIALOG_DATA) private _data: CreateEditModalData,
+        private _service: ApplicationService
+    ) {
         super();
     }
 
+
     /** Service associated with the item */
     public get service(): any {
-        return this._item.data.service;
+        return this._data.service;
     }
 
     public get is_valid(): boolean {
@@ -66,10 +70,10 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
     }
 
     public ngOnInit(): void {
-        this.item = this._item.data.item;
-        this.edit = this._item.data.item.id;
-        this.fields = this._item.data.form;
-        this.name = this._item.data.name;
+        this.item = this._data.item;
+        this.edit = !!this._data.item.id;
+        this.fields = this._data.form;
+        this.name = this._data.name;
     }
 
     /**
@@ -81,9 +85,9 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
             this.item.save().then((item) => {
                 this.result = item;
                 this.loading = false;
-                this._item.post('finish', item);
+                this.event.emit({ reason: 'done', metadata: { item } });
                 this._service.notifySuccess(`Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`);
-                this._item.close();
+                this._dialog.close();
             }, (err) => {
                 this.loading = false;
                 this._service.notifyError(`Error ${this.item.id ? 'editing' : 'adding new'} ${this.name}: ${err}`);
@@ -95,10 +99,6 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
      * Close the modal
      */
     public close() {
-        this.closing = true;
-        this.timeout('close', () => this._item.close());
-
+        this._dialog.close();
     }
 }
-
-OVERLAY_REGISTER.push({ id: 'edit-item', config: { content: ItemCreateUpdateModalComponent, config: 'modal' } });

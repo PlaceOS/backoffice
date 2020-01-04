@@ -1,10 +1,13 @@
 
 import { Component, Input, OnChanges, OnInit, Output, EventEmitter } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
+import { MatDialog } from '@angular/material/dialog';
 import { EngineSystem } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
+import { ConfirmModalComponent, ConfirmModalData } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
     selector: 'system-zones',
@@ -17,7 +20,7 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
 
     public model: any = {};
 
-    constructor(private service: ApplicationService) {
+    constructor(private service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
@@ -40,15 +43,18 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
 
     public drop(event) {
         if (event && event.previousIndex !== event.currentIndex) {
-            this.service.Overlay.open('confirm', {
-                config: 'modal',
+            const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
+                width: '22em',
+                maxWidth: '95vw',
+                maxHeight: '95vh',
                 data: {
                     title: 'Change order?',
-                    body: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
-                    icon: { class: 'backoffice-cycle' }
+                    content: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
+                    icon: { type: 'icon', class: 'backoffice-cycle' }
                 }
-            }, (e) => {
-                if (e.type === 'finish') {
+            })
+            this.subscription('confirm_ref', ref.componentInstance.event.subscribe((e: DialogEvent) => {
+                if (e.reason === 'done') {
                     const list: string[] = [];
                     for (const item of this.model.zones) { list.push(item.id); }
                     moveItemInArray(list, event.previousIndex, event.currentIndex);
@@ -57,8 +63,10 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
                             moveItemInArray(this.model.zones, event.previousIndex, event.currentIndex);
                             moveItemInArray(this.item.zones, event.previousIndex, event.currentIndex);
                         });
+                    ref.close();
+                    this.unsub('confirm_ref');
                 }
-            });
+            }));
         }
     }
 
@@ -78,21 +86,26 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
             if (this.item.zones.indexOf(this.model.new_zone) < 0) {
                 const new_list = [ ...this.item.zones, this.model.new_zone ].filter(i => !!i);
                 this.loading.emit(true);
-                this.service.Overlay.open('confirm', {
-                    config: 'modal',
+                const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
+                    width: '22em',
+                    maxWidth: '95vw',
+                    maxHeight: '95vh',
                     data: {
                         title: 'Add zone',
-                        body: `Add zone "${this.model.new_zone}" to system "${this.item.id}"`,
-                        icon: { class: 'backoffice-upload-to-cloud' }
+                        content: `Add zone "${this.model.new_zone}" to system "${this.item.id}"`,
+                        icon: { type: 'icon', class: 'backoffice-upload-to-cloud' }
                     }
-                }, (e) => {
-                    if (e.type === 'finish') {
+                })
+                this.subscription('confirm_ref', ref.componentInstance.event.subscribe((e: DialogEvent) => {
+                    if (e.reason === 'done') {
                         this.service.Systems.update(this.item.id, { ...this.item, zones: new_list }).then((item) => {
                             this.model.new_zone = null;
                             this.loading.emit(false);
                             this.service.notifySuccess(`Addeed zone "${this.model.new_zone}" to system`);
                             this.item = item;
                             this.load();
+                            ref.close();
+                            this.unsub('confirm_ref');
                         }, () => {
                             this.loading.emit(false);
                             this.service.notifyError(`Error adding zone "${this.model.new_zone}"`);
@@ -100,7 +113,7 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
                     } else {
                         this.loading.emit(false);
                     }
-                });
+                }));
             } else {
                 this.service.notifyInfo('The selected zone is already linked to this system');
             }

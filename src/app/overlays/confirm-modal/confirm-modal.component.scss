@@ -1,10 +1,6 @@
 
 @import 'shared.styles';
 
-.confirm {
-    min-width: 20em;
-}
-
 .body {
     display: flex;
     align-items: center;
@@ -22,7 +18,13 @@
 }
 
 .content {
-    width: 16rem;
+    min-width: 16rem;
     text-align: center;
     font-size: .8em;
+}
+
+mat-dialog-actions {
+    button {
+        min-width: 8em;
+    }
 }

@@ -1,16 +1,18 @@
-<div class="confirm modal" widget [@show] *ngIf="!closing">
-    <div class="header">
-        <div class="text">{{ title || 'Confirm' }}</div>
-    </div>
+<header>
+    <h3 mat-dialog-title>{{ title || 'Confirm' }}</h3>
+</header>
+<mat-dialog-content>
     <div class="body">
         <div class="icon" *ngIf="icon">
             <i *ngIf="icon.class" [class]="icon.class">{{ icon.value }}</i>
             <img *ngIf="!icon.class && icon.src" [src]="icon.src">
         </div>
-        <div class="content" [innerHTML]="(content || 'Are you sure?') | safe"></div>
+        <div class="content">
+            <p [innerHTML]="content || 'Are you sure?'"></p>
+        </div>
     </div>
-    <div class="footer">
-        <button mat-button name="cancel" class="inverse" (tapped)="close()">Cancel</button>
-        <button mat-button name="accept" (tapped)="accept()">{{ action || 'Ok' }}</button>
-    </div>
-</div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button class="inverse" mat-dialog-close>Cancel</button>
+    <button mat-button name="accept" (tapped)="accept()">{{ action || 'Ok' }}</button>
+</mat-dialog-actions>

@@ -136,60 +136,39 @@ a-dynamic-form {
     background-color: rgba(#000, 0.6);
 }
 
-.modal[widget] {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    background-color: #fff;
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px 0 rgba(#000, 0.2), 0 1px 1px 0 rgba(#000, 0.14), 0 2px 1px -1px rgba(#000, 0.12);
-    max-width: 95vw;
-    max-height: 90vh;
+mat-dialog-container.mat-dialog-container {
+    padding: 0;
 
-    & > .header {
-        width: 100%;
+    header {
         display: flex;
         align-items: center;
-        height: 2.5em;
-        background-color: $background;
+        padding: .5em 1em;
+        width: 100%;
+        background-color: $color-primary;
         color: $font-light;
 
-        .text {
-            padding: 0.75em;
-            min-width: 10em;
+        h1, h2, h3, h4 {
             flex: 1;
-            font-weight: 500;
+            min-width: 50%;
         }
 
-        .close {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            width: 1.8em;
-            font-size: 1.25em;
+        > * {
+            margin: 0;
         }
     }
 
-    & > .body {
-        width: 100%;
-        min-height: 4em;
-        flex: 1;
-        overflow: auto;
+    .body,
+    main {
         padding: 1em;
+        pointer-events: auto;
+        overflow: hidden auto;
     }
 
-    & > .footer {
-        width: 100%;
+    mat-dialog-actions {
         display: flex;
         align-items: center;
         justify-content: center;
-        border-top: 1px solid #ccc;
-
-        button {
-            min-width: 6em;
-        }
+        margin-bottom: 0;
     }
 }
 
@@ -218,5 +197,3 @@ a-dynamic-form {
         color: #fff;
     }
 }
-
-

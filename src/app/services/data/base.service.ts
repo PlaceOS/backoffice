@@ -215,13 +215,13 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      */
     public openNewModal(prefill?: { [name: string]: any }): Promise<T> {
         return new Promise((resolve, reject) => {
-            this.parent.Overlay.open('edit-item', { data: { service: this, item: prefill } }, (e) => {
-                if (e.type === 'finish') {
-                    resolve(e.data.item as T);
-                } else {
-                    reject();
-                }
-            });
+            // this.parent.Overlay.open('edit-item', { data: { service: this, item: prefill } }, (e) => {
+            //     if (e.type === 'finish') {
+            //         resolve(e.data.item as T);
+            //     } else {
+            //         reject();
+            //     }
+            // });
         });
     }
 

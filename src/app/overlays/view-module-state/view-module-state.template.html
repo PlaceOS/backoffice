@@ -1,18 +1,11 @@
-<div
-    class="view-state modal"
-    widget
-    [@show]
-    *ngIf="!closing"
-    [class.is-loading]="loading"
->
-    <div class="header">
-        <div class="text">
-            Module State - {{module?.custom_name || module?.name}}
-        </div>
-        <div class="close" (tapped)="close()">
-            <i class="backoffice-cross"></i>
-        </div>
-    </div>
+<header>
+    <h3 mat-dialog-title>
+        Module State - {{module?.custom_name || module?.name}}</h3>
+    <button mat-icon-button mat-dialog-close>
+        <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
+    </button>
+</header>
+<mat-dialog-content>
     <div class="body" *ngIf="!loading; else load_state">
         <div class="field">
             <label>System:</label>
@@ -29,7 +22,7 @@
             <settings-display [model]="settings"></settings-display>
         </div>
     </div>
-</div>
+</mat-dialog-content>
 <ng-template #load_state>
     <div class="body">
         <div class="info-block">
