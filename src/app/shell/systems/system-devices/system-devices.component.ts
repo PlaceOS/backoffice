@@ -29,8 +29,6 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     public devices: EngineModule[];
     /** Mapping of devices to the module bindings */
     public device_classes: HashMap<string> = {};
-    /** Component to use for the context menus */
-    public context_menu = ContextMenuComponent;
     /** Store for ID of new module to add to system */
     public new_module: string;
     /** Actions available for the context menu */
@@ -109,9 +107,9 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
      * @param event Event posted by the context menu
      * @param device Module associated with the context menu event
      */
-    public handleContextEvent(event: { data: ApplicationLink }, device: EngineModule) {
-        if (event.data) {
-            switch (event.data.id) {
+    public handleContextEvent(event: ApplicationLink, device: EngineModule) {
+        if (event) {
+            switch (event.id) {
                 case 'power':
                     this.power(device);
                     break;

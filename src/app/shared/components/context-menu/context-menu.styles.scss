@@ -1,6 +1,14 @@
 
 @import 'shared.styles';
 
+:host {
+    position: relative;
+}
+
+.container {
+    pointer-events: none;
+}
+
 .context-menu {
     position: absolute;
     top: 0;
@@ -10,6 +18,9 @@
     border-radius: 8px;
     background-color: #fff;
     box-shadow: 0 1px 3px 0 rgba(#000,.2), 0 1px 1px 0 rgba(#000,.14), 0 2px 1px -1px rgba(#000,.12);
+    pointer-events: auto;
+    z-index: 999;
+
     &.right {
         right: 0;
     }

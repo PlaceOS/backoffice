@@ -4,8 +4,7 @@ import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
 import { EngineResource } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { HashMap, DialogEvent, EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
-import { ApplicationService } from 'src/app/services/app.service';
+import { DialogEvent, EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
 
 export interface CreateEditModalData {
     /** Service associated with the item being created/edited */
@@ -43,15 +42,14 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
 
     constructor(
         private _dialog: MatDialogRef<ItemCreateUpdateModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: CreateEditModalData,
-        private _service: ApplicationService
+        @Inject(MAT_DIALOG_DATA) private _data: CreateEditModalData
     ) {
         super();
     }
 
 
     /** Service associated with the item */
-    public get service(): any {
+    public get service() {
         return this._data.service;
     }
 
@@ -86,11 +84,11 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
                 this.result = item;
                 this.loading = false;
                 this.event.emit({ reason: 'done', metadata: { item } });
-                this._service.notifySuccess(`Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`);
+                this.service.parent.notifySuccess(`Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`);
                 this._dialog.close();
             }, (err) => {
                 this.loading = false;
-                this._service.notifyError(`Error ${this.item.id ? 'editing' : 'adding new'} ${this.name}: ${err}`);
+                this.service.parent.notifyError(`Error ${this.item.id ? 'editing' : 'adding new'} ${this.name}: ${err}`);
             })
         }
     }
