@@ -3,17 +3,9 @@
         <div
             class="item"
             [title]="item.name"
-            a-tooltip
-            name="dark"
-            position="right"
-            [show]="tooltip != null ? (tooltip === item.route || tooltip === item.link) : false"
-            (showChange)="$event ? (tooltip = (item.route || item.link)) : ''"
-            [content]="info"
-            [hover]="true"
+            [matTooltip]="item.name"
+            matTooltipPosition="right"
         >
-            <ng-template #info>
-                <div class="tooltip">{{ item.name }}</div>
-            </ng-template>
             <a *ngIf="item.link" [href]="item.link">
                 <app-icon [icon]="item?.icon"></app-icon>
                 <div class="text" *ngIf="!item?.hide_name">{{ item?.name }}</div>

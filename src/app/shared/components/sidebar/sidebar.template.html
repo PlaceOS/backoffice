@@ -3,25 +3,22 @@
         <div class="heading">{{ heading }}</div>
         <div class="count">
             <div>
-                <div class="inline" a-tooltip name="dark" [content]="info" [hover]="true">
+                <div class="inline" [matTooltip]="heading + ' count / License count'">
                     {{ total || 0 }} of {{ (search ? grand_total : licenses) || '∞' }}
                 </div>
             </div>
-            <ng-template #info>
-                <div class="tooltip">{{ heading }} count / License count</div>
-            </ng-template>
         </div>
         <div class="add" *ngIf="new && (total < licenses || !licenses)" (click)="post('new')">
             <i class="backoffice-plus"></i>
         </div>
-        <div class="error" *ngIf="new && (total >= licenses && licenses)" a-tooltip name="dark" [content]="error" [hover]="true">
+        <div
+            class="error"
+            *ngIf="new && (total >= licenses && licenses)"
+            matTooltip="
+            Exceeded quota! No new item can be created<br />
+            until the total is below you license count."
+        >
             <i class="backoffice-plus">error</i>
-            <ng-template #error>
-                <div class="tooltip">
-                    Exceeded quota! No new item can be created<br />
-                    until the total is below you license count.
-                </div>
-            </ng-template>
         </div>
         <button mat-icon-button (touchrelease)="close ? event.emit({ type: 'close' }) : ''">
             <app-icon [icon]="{ class: 'backoffice-' + close ? 'cross' : 'list' }"></app-icon>
@@ -29,7 +26,11 @@
     </header>
     <section class="search">
         <div class="input">
-            <input [(ngModel)]="search" (ngModelChange)="searching()" [placeholder]="'Filter ' + lowercase_heading" />
+            <input
+                [(ngModel)]="search"
+                (ngModelChange)="searching()"
+                [placeholder]="'Filter ' + lowercase_heading"
+            />
         </div>
     </section>
     <section class="content">
@@ -40,9 +41,15 @@
             <cdk-virtual-scroll-viewport itemSize="48" (scrolledIndexChange)="atBottom()">
                 <ng-container *cdkVirtualFor="let item of items | async; trackBy:trackByFn">
                     <a [routerLink]="[route, item.id]" routerLinkActive="active">
-                        <div #list_item class="item" [title]="item?.custom_name || item?.name || item">
+                        <div
+                            #list_item
+                            class="item"
+                            [title]="item?.custom_name || item?.name || item"
+                        >
                             <div class="text">{{ item?.custom_name || item?.name || item }}</div>
-                            <app-icon [icon]="{ type: 'icon', class: 'backoffice-check' }"></app-icon>
+                            <app-icon
+                                [icon]="{ type: 'icon', class: 'backoffice-check' }"
+                            ></app-icon>
                         </div>
                     </a>
                 </ng-container>

@@ -1,6 +1,7 @@
 @import 'shared.styles';
 
 .container {
+    position: relative;
     width: 100%;
     display: flex;
     align-items: center;
@@ -185,9 +186,25 @@ a {
 .user-options {
     position: absolute;
     right: .5em;
-    top: .25em;
+    bottom: .25em;
+    transform: translateY(100%);
     background-color: #fff;
     border-radius: 4px;
+    overflow: hidden;
     @include box-shadow;
+
+    .details {
+        padding: .5em;
+        background-color: #f8f8f8;
+    }
+
+    .avatar {
+        font-size: .65em;
+        margin-right: .25em;
+    }
+
+    app-icon {
+        font-size: 1.5em;
+    }
 }
 

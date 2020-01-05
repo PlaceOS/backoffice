@@ -21,6 +21,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 // import { MatProgressBarModule } from '@angular/material/progress-bar';
 // import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { BaseDirective } from './globals/base.directive';
 import { CustomDropdownFieldComponent } from './components/custom-fields/item-dropdown-field/item-dropdown-field.component';
@@ -67,7 +68,8 @@ const MATERIAL_MODULES: any[] = [
     // MatProgressSpinnerModule,
     // MatProgressBarModule,
     // MatAutocompleteModule,
-    MatSelectModule
+    MatSelectModule,
+    MatTooltipModule
 ];
 
 @NgModule({
