@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
-import { ADropdownsModule } from '@acaprojects/ngx-dropdown';
 import { ASpinnerModule } from '@acaprojects/ngx-spinners';
 import { APipesModule } from '@acaprojects/ngx-pipes';
 import { ADynamicFormsModule } from '@acaprojects/ngx-dynamic-forms';
@@ -16,12 +15,12 @@ import { ATogglesModule } from '@acaprojects/ngx-toggles';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
-// import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
 // import { MatInputModule } from '@angular/material/input';
 // import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 // import { MatProgressBarModule } from '@angular/material/progress-bar';
 // import { MatAutocompleteModule } from '@angular/material/autocomplete';
-// import { MatSelectModule } from '@angular/material/select';
+import { MatSelectModule } from '@angular/material/select';
 
 import { BaseDirective } from './globals/base.directive';
 import { CustomDropdownFieldComponent } from './components/custom-fields/item-dropdown-field/item-dropdown-field.component';
@@ -63,12 +62,12 @@ const MATERIAL_MODULES: any[] = [
     MatButtonModule,
     MatSnackBarModule,
     MatDialogModule,
-    // MatFormFieldModule,
+    MatFormFieldModule,
     // MatInputModule,
     // MatProgressSpinnerModule,
     // MatProgressBarModule,
     // MatAutocompleteModule,
-    // MatSelectModule
+    MatSelectModule
 ];
 
 @NgModule({
@@ -78,7 +77,6 @@ const MATERIAL_MODULES: any[] = [
     ],
     imports: [
         CommonModule,
-        ADropdownsModule,
         ASpinnerModule,
         FormsModule,
         APipesModule,
@@ -91,7 +89,6 @@ const MATERIAL_MODULES: any[] = [
         RouterModule.forChild([])
     ],
     exports: [
-        ADropdownsModule,
         ASpinnerModule,
         APipesModule,
         ACustomEventsModule,

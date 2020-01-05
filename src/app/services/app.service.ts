@@ -7,7 +7,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { ComposerService } from '@acaprojects/ngx-composer';
 import { ComposerOptions } from '@acaprojects/ts-composer';
-import { AOverlayService } from '@acaprojects/ngx-overlays';
 import { GoogleAnalyticsService } from '@acaprojects/ngx-google-analytics';
 
 import { Observable, BehaviorSubject, Subject, Subscription } from 'rxjs';

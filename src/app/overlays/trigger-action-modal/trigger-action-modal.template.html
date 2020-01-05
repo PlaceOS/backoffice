@@ -9,12 +9,14 @@
         <div class="field">
             <div class="label">Action<span class="orange">*</span>:</div>
             <div class="value">
-                <a-dropdown
-                    [items]="model.action_types"
-                    [ngModel]="-1"
-                    (ngModelChange)="model.form.action_type = model.action_types[$event]"
-                    placeholder="Select an action"
-                ></a-dropdown>
+                <mat-form-field appearance="outline">
+                    <mat-select #select [(value)]="model.form.action_type">
+                        <mat-label>Select an action</mat-label>
+                        <mat-option *ngFor="let option of model.action_types" [value]="option">
+                            {{ option }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
             </div>
         </div>
         <div

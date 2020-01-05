@@ -3,7 +3,14 @@
         <div class="heading">Metrics</div>
         <div class="options">
             <div class="type not-mobile">
-                <a-dropdown [items]="options" [(ngModel)]="index" (ngModelChange)="changePeriod($event)"></a-dropdown>
+                <mat-form-field appearance="outline">
+                    <mat-select #select (valueChange)="changePeriod($event)">
+                        <mat-label>Select a device</mat-label>
+                        <mat-option *ngFor="let option of options || []" [value]="option">
+                            {{ option }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
             </div>
             <div class="menu" a-context-item [content]="context_menu" (event)="event($event)" touchrelease>
                 <i class="backoffice-dots-three-vertical"></i>

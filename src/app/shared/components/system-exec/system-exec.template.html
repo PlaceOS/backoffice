@@ -1,22 +1,23 @@
 <section class="execute" *ngIf="system_id && modules && modules.length > 0">
     <div class="row">
-        <a-dropdown
-            klass="form"
-            [items]="modules || []"
-            [ngModel]="null"
-            (ngModelChange)="loadFunctions($event)"
-            placeholder="Select a device"
-        ></a-dropdown>
+        <mat-form-field appearance="outline">
+            <mat-select #select (valueChange)="loadFunctions($event)">
+                <mat-label>Select a device</mat-label>
+                <mat-option *ngFor="let option of modules || []" [value]="option">
+                    {{ option }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
     </div>
     <div class="row">
-        <a-dropdown
-            klass="form"
-            *ngIf="methods"
-            [items]="methods || []"
-            [(ngModel)]="methods"
-            (ngModelChange)="selectFunction($event)"
-            placeholder="Select a function"
-        ></a-dropdown>
+        <mat-form-field appearance="outline" *ngIf="methods">
+            <mat-select #select (valueChange)="selectFunction($event)">
+                <mat-label>Select a function</mat-label>
+                <mat-option *ngFor="let option of methods || []" [value]="option">
+                    {{ option }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
         <div class="fn-input" *ngIf="active_method">
             <div class="bracket">(</div>
             <div
