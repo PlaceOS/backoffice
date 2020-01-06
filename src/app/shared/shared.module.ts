@@ -3,6 +3,7 @@ import { NgModule, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { RouterModule } from '@angular/router';
 
 import { ASpinnerModule } from '@acaprojects/ngx-spinners';
 import { APipesModule } from '@acaprojects/ngx-pipes';
@@ -24,7 +25,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { BaseDirective } from './globals/base.directive';
-import { CustomDropdownFieldComponent } from './components/custom-fields/item-dropdown-field/item-dropdown-field.component';
 import { CustomSettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
 import { ItemDisplayComponent } from './components/item-display/item-display.component';
@@ -33,11 +33,10 @@ import { SearchbarComponent } from './components/searchbar/searchbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { SystemExecComponent } from './components/system-exec/system-exec.component';
 import { SettingsDisplayComponent } from './components/settings-display/settings-display.component';
-import { EngineItemDropdownComponent } from './components/item-dropdown/item-dropdown.component';
 import { CronOptionsComponent } from './components/cron-options/cron-options.component';
 import { BaseRootComponent } from './components/base-root.component';
 import { IconComponent } from './components/icon/icon.component';
-import { RouterModule } from '@angular/router';
+import { ItemSearchFieldComponent } from './components/custom-fields/item-search-field/item-search-field.component';
 
 const COMPONENTS: Type<any>[] = [
     BaseDirective,
@@ -48,13 +47,12 @@ const COMPONENTS: Type<any>[] = [
     SystemExecComponent,
     SettingsDisplayComponent,
     ...LOGIN_COMPONENTS,
-    EngineItemDropdownComponent,
     CronOptionsComponent,
     IconComponent
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [
-    CustomDropdownFieldComponent,
+    ItemSearchFieldComponent,
     CustomSettingsFieldComponent,
     ContextMenuComponent,
 ]
