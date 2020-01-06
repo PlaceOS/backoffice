@@ -16,10 +16,10 @@
             </div>
         </div>
         <div class="options" *ngIf="has_change">
-            <button mat-icon-button (touchrelease)="event.emit({ type: 'edit' })">
+            <button mat-icon-button (touchrelease)="edit()">
                 <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
             </button>
-            <button mat-icon-button (touchrelease)="event.emit({ type: 'delete' })">
+            <button mat-icon-button (touchrelease)="delete()">
                 <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
             </button>
         </div>

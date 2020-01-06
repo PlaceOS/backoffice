@@ -3,18 +3,29 @@
         <div class="heading">Metrics</div>
         <div class="options">
             <div class="type not-mobile">
-                <mat-form-field appearance="outline">
-                    <mat-select #select (valueChange)="changePeriod($event)">
-                        <mat-label>Select a device</mat-label>
+                <mat-form-field class="metrics" appearance="outline">
+                    <mat-select #select [value]="options[0]" (valueChange)="changePeriod($event)">
                         <mat-option *ngFor="let option of options || []" [value]="option">
                             {{ option }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="menu" a-context-item [content]="context_menu" (event)="event($event)" touchrelease>
-                <i class="backoffice-dots-three-vertical"></i>
-            </div>
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+                <app-icon
+                    [icon]="{ class: 'backoffice-dots-three-vertical' }"
+                ></app-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+                <button
+                    mat-menu-item
+                    *ngFor="let item of context_list"
+                    (tapped)="event(item)"
+                >
+                    <app-icon [icon]="item.icon"></app-icon>
+                    <div class="text">{{ item.name }}</div>
+                </button>
+            </mat-menu>
         </div>
         <div class="time-display">
             <div class="clock">

@@ -11,7 +11,11 @@
         </div>
         <div class="field" *ngIf="item.bookable">
             <label>Bookable Room:</label>
-            <div class="value">{{item.bookable ? 'Yes' : 'No'}} <a *ngIf="item.email" [href]="'mailto:' + item.email" target="_blank">{{item.email}}</a></div>
+            <div class="value">{{item.bookable ? 'Yes' : 'No'}}</div>
+        </div>
+        <div class="field" *ngIf="item.bookable && item.email">
+            <label>Email:&nbsp;</label>
+            <a *ngIf="item.email" [href]="'mailto:' + item.email" target="_blank">{{item.email}}</a>
         </div>
         <div class="field" *ngIf="item.capacity">
             <label>Capacity:</label>

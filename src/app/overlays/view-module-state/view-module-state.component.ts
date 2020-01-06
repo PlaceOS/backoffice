@@ -57,7 +57,7 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
 
     /** Update the state of the module */
     public updateState() {
-        if (this.system && this.module) {
+        if (this.system && this.module && this.module.driver) {
             this.loading = true;
             this._service.Systems.state(this.system.id, this.module.driver.module_name, this.module.role + 1).then(
                 state => {

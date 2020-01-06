@@ -9,7 +9,7 @@ import { ApplicationLink } from '../../utilities/settings.interfaces';
 
 
 @Component({
-    selector: 'context-menu',
+    selector: '[context-menu]',
     templateUrl: './context-menu.template.html',
     styleUrls: ['./context-menu.styles.scss'],
     animations: [

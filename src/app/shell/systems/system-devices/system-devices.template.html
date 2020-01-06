@@ -2,11 +2,7 @@
     <section class="select">
         <button mat-button (tapped)="newDevice()">Add new</button>
         <div class="dropdown">
-            <engine-item-dropdown
-                [service]="module_service"
-                label="Select device"
-                [(model)]="new_module"
-            ></engine-item-dropdown>
+            <item-search-field [service]="module_service"  (ngModelChange)="new_module = $event.id"></item-search-field>
         </div>
         <button mat-button [disabled]="!new_module" (tapped)="addDevice()">
             Add existing
@@ -49,39 +45,45 @@
                         ></div>
                     </td>
                     <td class="name">
-                        <a [routerLink]="['/devices', device.id]" routerLinkActive="router-link-active" >{{device.name}}</a>
+                        <a
+                            [routerLink]="['/devices', device.id]"
+                            routerLinkActive="router-link-active"
+                            >{{device.name}}</a
+                        >
                     </td>
                     <td class="module">
-                        <a-checkbox
-                            [label]="device_classes[device.id]"
-                        ></a-checkbox>
+                        <mat-checkbox>{{ device_classes[device.id] }}</mat-checkbox>
                     </td>
                     <td class="ip">
                         <div class="lock">
                             <i class="backoffice-lock" *ngIf="device.tls"></i>
                         </div>
-                        <a [href]="(device.tls ? 'https://' : 'http://') + device.ip">{{device.ip}}</a>
+                        <a [href]="(device.tls ? 'https://' : 'http://') + device.ip"
+                            >{{device.ip}}</a
+                        >
                     </td>
-                    <td
-                        class="small"
-                        a-context-item
-                        [content]="context_menu"
-                        eventName="click"
-                        (event)="handleContextEvent($event, device)"
-                        touchrelease
-                    >
-                        <div class="action">
-                            <i class="backoffice-dots-three-vertical"></i>
-                        </div>
+                    <td class="small" touchrelease>
+                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                            <app-icon
+                                [icon]="{ class: 'backoffice-dots-three-vertical' }"
+                            ></app-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button
+                                mat-menu-item
+                                *ngFor="let item of menu_options"
+                                (tapped)="handleContextEvent(item, device)"
+                            >
+                                <app-icon [icon]="item.icon"></app-icon>
+                                <div class="text">{{ item.name }}</div>
+                            </button>
+                        </mat-menu>
                     </td>
                     <td class="placeholder" colspan="6" *cdkDragPlaceholder></td>
                 </tr>
             </tbody>
         </table>
-        <div
-            class="info-block"
-            *ngIf="!devices || devices.length <= 0"
-        >
+        <div class="info-block" *ngIf="!devices || devices.length <= 0">
             <div class="text">No devices for system</div>
         </div>
     </section>

@@ -1,9 +1,25 @@
-
-import { Component, Input, TemplateRef, Output, EventEmitter, OnInit, SimpleChanges } from '@angular/core';
+import {
+    Component,
+    Input,
+    TemplateRef,
+    Output,
+    EventEmitter,
+    OnInit,
+    SimpleChanges
+} from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { EngineResource } from '@acaprojects/ts-composer';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
 import { copyToClipboard } from '../../utilities/general.utilities';
+import {
+    ConfirmModalComponent,
+    ConfirmModalData
+} from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import { DialogEvent } from '../../utilities/types.utilities';
+import { ApplicationIcon } from '../../utilities/settings.interfaces';
+import { ItemCreateUpdateModalComponent, CreateEditModalData } from 'src/app/overlays/item-modal/item-modal.component';
 
 @Component({
     selector: 'item-display',
@@ -11,31 +27,50 @@ import { copyToClipboard } from '../../utilities/general.utilities';
     styleUrls: ['./item-display.styles.scss']
 })
 export class ItemDisplayComponent extends BaseDirective implements OnInit {
+    /** Name of the type of item being shown */
     @Input() public name: string;
-    @Input() public item: any;
+    /** Resource to display details of */
+    @Input() public item: EngineResource<any>;
+    /** Whether resouce data is being loaded */
     @Input() public loading: boolean;
+    /** Whether item is allowed to be edited and deleted*/
     @Input() public has_change = true;
-    @Input() public tabs: { id: string, name: string, icon: { class: string, value: string }, template: TemplateRef<any> }[] = [];
+    /** Tabs available to the item type */
+    @Input() public tabs: {
+        id: string;
+        name: string;
+        icon: ApplicationIcon;
+        template: TemplateRef<any>;
+    }[] = [];
+    /** Active tab ID */
     @Input() public active = 'about';
     @Output() public event = new EventEmitter();
 
-    constructor(private service: ApplicationService) {
+    constructor(private service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
     public ngOnInit() {
-        this.subscription('right', this.service.Hotkeys.listen(['ArrowRight'], () => this.changeTab(1)));
-        this.subscription('left', this.service.Hotkeys.listen(['ArrowLeft'], () => this.changeTab(-1)));
+        this.subscription(
+            'right',
+            this.service.Hotkeys.listen(['ArrowRight'], () => this.changeTab(1))
+        );
+        this.subscription(
+            'left',
+            this.service.Hotkeys.listen(['ArrowLeft'], () => this.changeTab(-1))
+        );
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.tabs) {
-            this.tabs.forEach((i, idx) => i.id = i.id || `${idx}`);
+            this.tabs.forEach((i, idx) => (i.id = i.id || `${idx}`));
         }
     }
 
     public changeTab(offset: number) {
-        if (!this.tabs || this.tabs.length === 0) { return; }
+        if (!this.tabs || this.tabs.length === 0) {
+            return;
+        }
         let index = 0;
         for (const tab of this.tabs) {
             if (tab.id === this.active) {
@@ -43,16 +78,76 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
             }
         }
         index += offset;
-        if (index >= this.tabs.length) { index = this.tabs.length - 1; }
-        if (index < 0) { index = 0; }
+        if (index >= this.tabs.length) {
+            index = this.tabs.length - 1;
+        }
+        if (index < 0) {
+            index = 0;
+        }
         this.active = this.tabs[index].id;
         this.event.emit({ type: 'tab', value: this.active });
     }
 
+    /** Copy the ID of the active item to the clipboard */
     public copy() {
         if (this.item && this.item.id) {
             copyToClipboard(this.item.id);
             this.service.notifyInfo('ID copied to clipboard');
         }
+    }
+
+    /**
+     * Open modal to edit the active item
+     */
+    public edit() {
+        const ref = this._dialog.open<ItemCreateUpdateModalComponent, CreateEditModalData>(
+            ItemCreateUpdateModalComponent,
+            {
+                data: { service: (this.item as any)._service, item: this.item, form: [] as any, name: this.name }
+            }
+        );
+        this.subscription(
+            'confirm_ref',
+            ref.componentInstance.event.subscribe((e: DialogEvent) => {
+                if (e.reason === 'done') {
+                    this.item = e.metadata.item
+                }
+            })
+        );
+    }
+
+    /**
+     * Delete the active item
+     */
+    public delete() {
+        if (!this.item) return;
+        const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+            ConfirmModalComponent,
+            {
+                width: '22em',
+                maxWidth: '95vw',
+                maxHeight: '95vh',
+                data: {
+                    title: `Delete ${this.name}`,
+                    content: `<p>Are you sure you want to delete this system?</p><p>Deleting this system will <strong>immediately</strong> delete modules that are not in another system.</p>`,
+                    icon: { type: 'icon', class: 'backoffice-trash' }
+                }
+            }
+        );
+        this.subscription(
+            'confirm_ref',
+            ref.componentInstance.event.subscribe((e: DialogEvent) => {
+                if (e.reason === 'done') {
+                    this.item.delete().then(
+                        () => {
+                            this.service.notifySuccess('Successfully deleted system');
+                        },
+                        err => {
+                            this.service.notifyError(`Error deleting system. ${err}`);
+                        }
+                    );
+                }
+            })
+        );
     }
 }

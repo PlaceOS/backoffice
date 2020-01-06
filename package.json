@@ -33,10 +33,8 @@
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
-    "@acaprojects/ngx-checkbox": "^1.0.1",
     "@acaprojects/ngx-composer": "^1.0.5",
     "@acaprojects/ngx-custom-events": "^1.0.5",
-    "@acaprojects/ngx-dropdown": "^1.0.0",
     "@acaprojects/ngx-dynamic-forms": "^1.0.8",
     "@acaprojects/ngx-google-analytics": "^1.0.1",
     "@acaprojects/ngx-pipes": "^1.0.0",

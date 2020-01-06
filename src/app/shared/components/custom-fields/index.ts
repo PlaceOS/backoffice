@@ -1,8 +1,8 @@
 
 import { CustomSettingsFieldComponent } from './settings-field/settings-field.component';
-import { CustomDropdownFieldComponent } from './item-dropdown-field/item-dropdown-field.component';
+import { ItemSearchFieldComponent } from './item-search-field/item-search-field.component';
 
 export const CUSTOM_FIELD_COMPONENTS: any[] = [
     CustomSettingsFieldComponent,
-    CustomDropdownFieldComponent
+    ItemSearchFieldComponent
 ];

@@ -2,7 +2,7 @@
 import { Component, Input, OnChanges, OnInit, Output, EventEmitter } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineSystem } from '@acaprojects/ts-composer';
+import { EngineSystem, EngineZone, EngineZonesService } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -14,18 +14,23 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
     templateUrl: './system-zones.template.html',
     styleUrls: ['./system-zones.styles.scss']
 })
-export class SystemZonesComponent extends BaseDirective implements OnInit, OnChanges {
+export class SystemZonesComponent extends BaseDirective implements OnChanges {
+    /** Active item */
     @Input() public item: EngineSystem;
+    /** Emitter for changes to the loading state of the item */
     @Output() public loading = new EventEmitter<boolean | string>();
+    /** List of zones assoicated with the active item */
+    public zones: EngineZone[];
+    /** ID of a zone that the user wishes to add to the system */
+    public new_zone: string;
 
-    public model: any = {};
-
-    constructor(private service: ApplicationService, private _dialog: MatDialog) {
-        super();
+    /** Service for managing zone data */
+    public get zone_service(): EngineZonesService {
+        return this._service.Zones;
     }
 
-    public ngOnInit(): void {
-        this.model.zone_service = this.service.Zones;
+    constructor(private _service: ApplicationService, private _dialog: MatDialog) {
+        super();
     }
 
     public ngOnChanges(changes: any) {
@@ -34,10 +39,14 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
         }
     }
 
+    /**
+     * Load zone data for the active item
+     * @param offset Page offset for the service request
+     */
     public load(offset: number = 0) {
-        this.service.Zones.query({ sys_id: this.item.id, offset }).then((list) => {
+        this._service.Zones.query({ sys_id: this.item.id, offset }).then((list) => {
             list.sort((a, b) => this.item.zones.indexOf(a.id) - this.item.zones.indexOf(b.id));
-            this.model.zones = list;
+            this.zones = list;
         }, () => null);
     }
 
@@ -56,11 +65,11 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
             this.subscription('confirm_ref', ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
                     const list: string[] = [];
-                    for (const item of this.model.zones) { list.push(item.id); }
+                    for (const item of this.zones) { list.push(item.id); }
                     moveItemInArray(list, event.previousIndex, event.currentIndex);
-                    this.service.Systems.update(this.item.id, { zones: list })
+                    this._service.Systems.update(this.item.id, { zones: list })
                         .then(() => {
-                            moveItemInArray(this.model.zones, event.previousIndex, event.currentIndex);
+                            moveItemInArray(this.zones, event.previousIndex, event.currentIndex);
                             moveItemInArray(this.item.zones, event.previousIndex, event.currentIndex);
                         });
                     ref.close();
@@ -77,14 +86,14 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
             }
             window.open(item, '_blank');
         } else {
-            this.service.navigate(['zones', encodeURIComponent(item.id)]);
+            this._service.navigate(['zones', encodeURIComponent(item.id)]);
         }
     }
 
     public joinZone() {
-        if (this.model.new_zone) {
-            if (this.item.zones.indexOf(this.model.new_zone) < 0) {
-                const new_list = [ ...this.item.zones, this.model.new_zone ].filter(i => !!i);
+        if (this.new_zone) {
+            if (this.item.zones.indexOf(this.new_zone) < 0) {
+                const new_list = [ ...this.item.zones, this.new_zone ].filter(i => !!i);
                 this.loading.emit(true);
                 const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
                     width: '22em',
@@ -92,30 +101,30 @@ export class SystemZonesComponent extends BaseDirective implements OnInit, OnCha
                     maxHeight: '95vh',
                     data: {
                         title: 'Add zone',
-                        content: `Add zone "${this.model.new_zone}" to system "${this.item.id}"`,
+                        content: `Add zone "${this.new_zone}" to system "${this.item.id}"`,
                         icon: { type: 'icon', class: 'backoffice-upload-to-cloud' }
                     }
                 })
                 this.subscription('confirm_ref', ref.componentInstance.event.subscribe((e: DialogEvent) => {
                     if (e.reason === 'done') {
-                        this.service.Systems.update(this.item.id, { ...this.item, zones: new_list }).then((item) => {
-                            this.model.new_zone = null;
+                        this._service.Systems.update(this.item.id, { ...this.item, zones: new_list }).then((item) => {
+                            this.new_zone = null;
                             this.loading.emit(false);
-                            this.service.notifySuccess(`Addeed zone "${this.model.new_zone}" to system`);
+                            this._service.notifySuccess(`Addeed zone "${this.new_zone}" to system`);
                             this.item = item;
                             this.load();
                             ref.close();
                             this.unsub('confirm_ref');
                         }, () => {
                             this.loading.emit(false);
-                            this.service.notifyError(`Error adding zone "${this.model.new_zone}"`);
+                            this._service.notifyError(`Error adding zone "${this.new_zone}"`);
                         });
                     } else {
                         this.loading.emit(false);
                     }
                 }));
             } else {
-                this.service.notifyInfo('The selected zone is already linked to this system');
+                this._service.notifyInfo('The selected zone is already linked to this system');
             }
         }
     }

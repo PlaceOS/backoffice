@@ -31,6 +31,7 @@ a[button] {
 
     &[disabled] {
         background-color: #ccc;
+        border-color: #aaa;
         pointer-events: none;
     }
 }
@@ -54,6 +55,55 @@ a[button] {
     }
 }
 
+mat-form-field {
+    &.mat-form-field-appearance-outline.mat-focused {
+        .mat-form-field-outline-thick {
+            color: $color-primary;
+        }
+    }
+
+    &.metrics {
+        .mat-form-field-wrapper {
+            padding: 0;
+        }
+
+        .mat-form-field-outline {
+            border-radius: 4px;
+
+            * {
+                color: #fff;
+                border-color: #fff;
+            }
+        }
+
+        .mat-select-value {
+            color: #fff;
+        }
+    }
+}
+
+.mat-form-field-infix {
+    border-top: none;
+}
+
+.mat-select-panel {
+    .mat-option {
+        &.mat-selected {
+            &:not(.mat-option-disabled) {
+                color: $color-primary;
+            }
+        }
+    }
+}
+
+mat-select {
+    .mat-select-trigger {
+        .mat-select-arrow-wrapper {
+            transform: none;
+        }
+    }
+}
+
 .tab-group[widget] {
     main {
         min-height: 1px;
@@ -61,16 +111,6 @@ a[button] {
     }
     .tab-headers {
         width: 100%;
-    }
-}
-
-.dropdown[widget] {
-    &.default {
-        width: 9.5em;
-    }
-
-    &.form {
-        width: 12em;
     }
 }
 

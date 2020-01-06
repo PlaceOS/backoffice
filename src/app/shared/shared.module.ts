@@ -9,20 +9,21 @@ import { ASpinnerModule } from '@acaprojects/ngx-spinners';
 import { APipesModule } from '@acaprojects/ngx-pipes';
 import { ADynamicFormsModule } from '@acaprojects/ngx-dynamic-forms';
 import { ACustomEventsModule } from '@acaprojects/ngx-custom-events';
-import { ACheckboxModule } from '@acaprojects/ngx-checkbox';
 import { ATabsModule } from '@acaprojects/ngx-tabs';
-import { ATogglesModule } from '@acaprojects/ngx-toggles';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
-// import { MatInputModule } from '@angular/material/input';
+import { MatInputModule } from '@angular/material/input';
 // import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 // import { MatProgressBarModule } from '@angular/material/progress-bar';
-// import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { BaseDirective } from './globals/base.directive';
 import { CustomSettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
@@ -62,12 +63,15 @@ const MATERIAL_MODULES: any[] = [
     MatSnackBarModule,
     MatDialogModule,
     MatFormFieldModule,
-    // MatInputModule,
+    MatInputModule,
     // MatProgressSpinnerModule,
     // MatProgressBarModule,
-    // MatAutocompleteModule,
+    MatAutocompleteModule,
     MatSelectModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatMenuModule,
+    MatCheckboxModule,
+    MatSlideToggleModule
 ];
 
 @NgModule({
@@ -93,8 +97,6 @@ const MATERIAL_MODULES: any[] = [
         APipesModule,
         ACustomEventsModule,
         ADynamicFormsModule,
-        ACheckboxModule,
-        ATogglesModule,
         ATabsModule,
         ...COMPONENTS,
         ...ENTRY_COMPONENT,
