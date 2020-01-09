@@ -63,18 +63,12 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
             catchError((err) => of([])),
             map((list: T[]) => {
                 this.loading = false;
-                return filterList(this.search_str, list, ['name', 'email']);
+                const search = this.search_str.toLowerCase();
+                return list.filter((item: any) => item.name.toLowerCase().indexOf(search) >= 0 || (item.email || '').toLowerCase().indexOf(search) >= 0);
             })
         );
         // Process API results
-        this.subscription('search_results', this.search_results$.subscribe(list => {
-            this.item_list = list;
-            this.item_list.forEach((i: any) => {
-                i.match_name = matchToHighlight(i.match_name);
-                i.match_email = matchToHighlight(i.match_email);
-                return i;
-            });
-        }));
+        this.subscription('search_results', this.search_results$.subscribe(list => this.item_list = list));
     }
 
     /**

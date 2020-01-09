@@ -1,11 +1,12 @@
 import { Component, Inject, EventEmitter, Output } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { EngineResource, EngineSystem } from '@acaprojects/ts-composer';
+import { EngineResource, EngineSystem, EngineSettings } from '@acaprojects/ts-composer';
 import { FormGroup } from '@angular/forms';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { DialogEvent, EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
 import { generateSystemsFormFields, FormDetails } from 'src/app/shared/utilities/data/systems.utilities';
+import { ApplicationService } from 'src/app/services/app.service';
 
 export interface CreateEditModalData {
     /** Service associated with the item being created/edited */
@@ -34,11 +35,11 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
     public result: any;
     /** List of the form fields needed for the item */
     public form: FormGroup;
-    /** Whether the item request is being processed */
-    public loading: boolean;
+    /** Loading status for the item request is being processed */
+    public loading: string;
 
     public get name(): string {
-        return this.service.name || this.service._name;
+        return this._data.service.name || this._data.service._name;
     }
 
     public get item_type(): string {
@@ -49,7 +50,8 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
 
     constructor(
         private _dialog: MatDialogRef<ItemCreateUpdateModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: CreateEditModalData
+        @Inject(MAT_DIALOG_DATA) private _data: CreateEditModalData,
+        private _service: ApplicationService
     ) {
         super();
     }
@@ -69,11 +71,6 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
         return new FormGroup({});
     }
 
-    /** Service associated with the item */
-    public get service() {
-        return this._data.service;
-    }
-
     public ngOnInit(): void {
         this.item = this._data.item;
         this.edit = !!this._data.item.id;
@@ -86,17 +83,34 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
     public submit() {
         this.form.markAllAsTouched();
         if (this.item && this.form.valid) {
-            this.loading = true;
+            this.loading = `${this.item.id ? 'Updating' : 'Creating'} ${this.name}...`;
+            console.log('Changes:', this.item.changes);
             this.item.save().then((item) => {
                 this.result = item;
-                this.loading = false;
-                this.event.emit({ reason: 'done', metadata: { item } });
-                this.service.parent.notifySuccess(`Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`);
-                this._dialog.close();
+                this.loading = null;
+                const settings: EngineSettings = (this.item as any).settings;
+                (settings as any).parent_id = item.id;
+                if (settings && settings instanceof EngineSettings && Object.keys(settings.changes).length) {
+                    this.loading = `Saving settings for ${item.name}`;
+                    ((this.item as any).settings as EngineSettings).save().then(() => {
+                        this.loading = null;
+                        this.event.emit({ reason: 'done', metadata: { item } });
+                        this._dialog.close();
+                        this._service.notifySuccess(`Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`);
+                    }, (err) => {
+                        this.loading = null;
+                        this._service.notifyWarn(`Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}. Error saving settings: ${err}`);
+                        this._dialog.close();
+                    });
+                } else {
+                    this.event.emit({ reason: 'done', metadata: { item } });
+                    this._service.notifySuccess(`Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`);
+                    this._dialog.close();
+                }
             }, (err) => {
-                this.loading = false;
-                this.service.parent.notifyError(`Error ${this.item.id ? 'editing' : 'adding new'} ${this.name}: ${err}`);
-            })
+                this.loading = null;
+                this._service.notifyError(`Error ${this.item.id ? 'editing' : 'adding new'} ${this.name}: ${err}`);
+            });
         }
     }
 

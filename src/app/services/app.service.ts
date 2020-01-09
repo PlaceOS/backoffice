@@ -229,7 +229,7 @@ export class ApplicationService extends BaseClass {
             class: 'material-icons',
             content: 'info'
         },
-        duration: number = 5000
+        duration: number = 8000
     ): void {
         const snackbar_ref = this._snackbar.open(message, action, {
             panelClass: [type],
@@ -257,7 +257,7 @@ export class ApplicationService extends BaseClass {
      * @param action Display text for the callback action
      * @param on_action Callback of action on the notification
      */
-    public notifySuccess(msg: string, action?: string, on_action?: () => void, duration: number = 5000): void {
+    public notifySuccess(msg: string, action?: string, on_action?: () => void, duration: number = 8000): void {
         const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'done' };
         this.notify('success', msg, action, on_action, icon, duration);
     }
@@ -268,7 +268,7 @@ export class ApplicationService extends BaseClass {
      * @param action Display text for the callback action
      * @param on_action Callback of action on the notification
      */
-    public notifyError(msg: string, action?: string, on_action?: () => void, duration: number = 5000): void {
+    public notifyError(msg: string, action?: string, on_action?: () => void, duration: number = 8000): void {
         const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'error' };
         this.notify('error', msg, action, on_action, icon, duration);
     }
@@ -279,7 +279,7 @@ export class ApplicationService extends BaseClass {
      * @param action Display text for the callback action
      * @param on_action Callback of action on the notification
      */
-    public notifyWarn(msg: string, action?: string, on_action?: () => void, duration: number = 5000): void {
+    public notifyWarn(msg: string, action?: string, on_action?: () => void, duration: number = 8000): void {
         const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'warning' };
         this.notify('warn', msg, action, on_action, icon, duration);
     }
@@ -290,7 +290,7 @@ export class ApplicationService extends BaseClass {
      * @param action Display text for the callback action
      * @param on_action Callback of action on the notification
      */
-    public notifyInfo(msg: string, action?: string, on_action?: () => void, duration: number = 5000): void {
+    public notifyInfo(msg: string, action?: string, on_action?: () => void, duration: number = 8000): void {
         const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'info' };
         this.notify('info', msg, action, on_action, icon, duration);
     }

@@ -50,7 +50,7 @@ export class MockSystemsBackend extends BaseMockBackend {
                     email: `sys-${padZero(i, 4)}@room.tools`,
                     features: ``, installed_ui_devices: 0, support_url: '', modules: [], funcs: {},
                     zones: zone_list,
-                    settings: this.generateSettings(),
+                    settings: { settings_string: this.generateSettings() },
                     created_at: dayjs().add(-Math.floor(Math.random() * 10000), 'm').unix()
                 };
             });
@@ -136,7 +136,6 @@ export class MockSystemsBackend extends BaseMockBackend {
             }
         }
         const output = yaml.safeDump(data, { indent: 4 });
-        console.log('YAML:', output);
         return output;
     }
 

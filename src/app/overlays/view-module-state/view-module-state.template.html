@@ -19,7 +19,7 @@
         </div>
         <button mat-button (tapped)="updateState()">Update state</button>
         <div class="settings">
-            <settings-display [model]="settings"></settings-display>
+            <settings-form-field [ngModel]="settings" [readonly]="true"></settings-form-field>
         </div>
     </div>
 </mat-dialog-content>

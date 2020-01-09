@@ -9,10 +9,6 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { FilterFn, DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { toQueryString } from 'src/app/shared/utilities/api.utilities';
-import {
-    ItemCreateUpdateModalComponent,
-    CreateEditModalData
-} from 'src/app/overlays/item-modal/item-modal.component';
 
 import * as dayjs from 'dayjs';
 import {
@@ -170,22 +166,8 @@ export class BackofficeUsersService extends EngineUsersService {
      * Open modal for editing an item
      * @param item Item to edit
      */
-    public openEditModal(item: EngineUser): Promise<string> {
-        return new Promise((resolve, reject) => {
-            const form = this.getFormFields(item);
-            const ref = this._dialog.open<ItemCreateUpdateModalComponent, CreateEditModalData>(
-                ItemCreateUpdateModalComponent,
-                {
-                    data: { service: this, item, form: form as any, name: this.singular }
-                }
-            );
-            this.subscription(
-                'confirm_ref',
-                ref.componentInstance.event.subscribe((e: DialogEvent) => {
-                    e.reason === 'done' ? resolve(e.metadata.id) : reject();
-                })
-            );
-        });
+    public async openEditModal(item: EngineUser): Promise<string> {
+        return '';
     }
 
     /**
