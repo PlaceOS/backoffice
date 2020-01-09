@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { padZero } from '../../utilities/general.utilities';
 
-function initialiseGlobals() {
+export function initialiseGlobals() {
     if (!window.control) {
         window.control = {};
     }

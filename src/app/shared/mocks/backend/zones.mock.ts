@@ -1,6 +1,7 @@
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';
+import { MOCK_SETTINGS } from './settings.mock';
 
 import * as faker from 'faker';
 import * as dayjs from 'dayjs';
@@ -34,6 +35,14 @@ export class MockZonesBackend extends BaseMockBackend {
                 }
             });
         }
+        zone_list.forEach(zone => MOCK_SETTINGS.push({
+            id: `setting-${Math.floor(Math.random() * 999_999_999)}`,
+            parent_id: zone.id,
+            encryption_level: Math.floor(Math.random() * 4),
+            settings_string: zone.settings.settings_string,
+            keys: Object.keys(yaml.safeLoad(zone.settings.settings_string)),
+            updated_at: dayjs().subtract(Math.floor(Math.random() * 2000), 'm').valueOf()
+        }));
         this.model.zones = zone_list;
         this.setupBasicHandlers('api/engine/v2/zones', this.model.zones, 'zone');
         this.state.next(true);

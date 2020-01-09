@@ -7,6 +7,7 @@ import { padZero } from '../../utilities/general.utilities';
 import * as faker from 'faker';
 import * as dayjs from 'dayjs';
 import * as yaml from 'js-yaml';
+import { MOCK_SETTINGS } from './settings.mock';
 
 export class MockSystemsBackend extends BaseMockBackend {
 
@@ -50,10 +51,20 @@ export class MockSystemsBackend extends BaseMockBackend {
                     email: `sys-${padZero(i, 4)}@room.tools`,
                     features: ``, installed_ui_devices: 0, support_url: '', modules: [], funcs: {},
                     zones: zone_list,
-                    settings: { settings_string: this.generateSettings() },
+                    settings: {
+                        settings_string: this.generateSettings()
+                    },
                     created_at: dayjs().add(-Math.floor(Math.random() * 10000), 'm').unix()
                 };
             });
+        this.model.systems.forEach(system => MOCK_SETTINGS.push({
+            id: `setting-${Math.floor(Math.random() * 999_999_999)}`,
+            parent_id: system.id,
+            encryption_level: Math.floor(Math.random() * 4),
+            settings_string: system.settings.settings_string,
+            keys: Object.keys(yaml.safeLoad(system.settings.settings_string)),
+            updated_at: dayjs().subtract(Math.floor(Math.random() * 2000), 'm').valueOf()
+        }));
         this.model.systems.forEach(i => this.generateMockSystem(i))
         this.model.systems = this.setupBasicHandlers('api/engine/v2/systems', this.model.systems, 'sys');
         window.control.handlers.push({

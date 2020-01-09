@@ -1,9 +1,11 @@
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';
+import { MOCK_SETTINGS } from './settings.mock';
 
 import * as faker from 'faker';
 import * as dayjs from 'dayjs';
+import * as yaml from 'js-yaml';
 
 export class MockModulesBackend extends BaseMockBackend {
 
@@ -53,7 +55,9 @@ export class MockModulesBackend extends BaseMockBackend {
                 uri: '',
                 created_at: dayjs().add(-Math.floor(Math.random() * 10000 + 10), 'm').unix(),
                 updated_at: dayjs().add(-Math.floor(Math.random() * 2000 + 1), 'm').unix(),
-                settings: this.generateSettings()
+                settings: {
+                    settings_string: this.generateSettings()
+                }
             };
             if (!window.control.systems[sys.id]) {
                 window.control.systems[sys.id] = {};
@@ -65,6 +69,14 @@ export class MockModulesBackend extends BaseMockBackend {
             window.control.systems[sys.id][mod].push({ connected: item.connected })
             item_list.push(item);
         }
+        item_list.forEach(mod => MOCK_SETTINGS.push({
+            id: `setting-${Math.floor(Math.random() * 999_999_999)}`,
+            parent_id: mod.id,
+            encryption_level: Math.floor(Math.random() * 4),
+            settings_string: mod.settings.settings_string,
+            keys: Object.keys(yaml.safeLoad(mod.settings.settings_string)),
+            updated_at: dayjs().subtract(Math.floor(Math.random() * 2000), 'm').valueOf()
+        }));
         this.model.modules = item_list;
         this.setupBasicHandlers('api/engine/v2/modules', this.model.modules, 'mod');
         this.state.next(true);
@@ -85,11 +97,11 @@ export class MockModulesBackend extends BaseMockBackend {
     public generateSettings(level: number = 1) {
         if (level > 3) { return null; }
         const data: any = {};
-        const count = Math.floor(Math.random() * (6 - level) + (4 - level) * 2);
+        const count = Math.floor(Math.random() * (10 - level) + (5 - level) * 2);
         const types = ['string', 'number', 'boolean', 'object'];
         for (let i = 0; i < count; i++) {
             const type = types[Math.floor(Math.random() * types.length)];
-            switch (type) {
+            switch(type) {
                 case 'string':
                     data[`field_level_${level}_${i}`] = faker.lorem.sentence();
                     break;
@@ -104,7 +116,7 @@ export class MockModulesBackend extends BaseMockBackend {
                     break;
             }
         }
-        return data;
+        return yaml.safeDump(data);
     }
 
     public generateIP() {
