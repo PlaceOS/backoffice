@@ -1,6 +1,8 @@
 import { HashMap } from './types.utilities';
 
 import * as dayjs from 'dayjs';
+import * as merge from 'deepmerge';
+import * as yaml from 'js-yaml';
 
 export function getItemWithKeys(keys: string[], map: HashMap) {
     const key = keys.shift();
@@ -191,6 +193,18 @@ export function timeToDate(time: string): number {
     const parts = (time || '').split(':');
     const date = dayjs().hour(+parts[0]).minute(+parts[1]).startOf('m');
     return date.valueOf();
+}
+
+/**
+ * Merge two YAML objects together
+ * @param dest Destination object to merge
+ * @param source Source object to merge
+ */
+export function mergeYAMLSettings(dest: string, source: string): string {
+    const dest_obj = yaml.safeLoad(dest);
+    const source_obj = yaml.safeLoad(source);
+    const merged_obj = merge(dest_obj, source_obj);
+    return yaml.safeDump(merged_obj);
 }
 
 /**

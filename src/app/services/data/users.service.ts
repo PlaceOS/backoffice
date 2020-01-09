@@ -2,7 +2,6 @@ import { ComposerService } from '@acaprojects/ngx-composer';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Validators } from '@angular/forms';
-import { IFormFieldOptions, ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EngineUsersService, EngineUser, EngineUserQueryOptions } from '@acaprojects/ts-composer';
 import { BehaviorSubject } from 'rxjs';
@@ -177,7 +176,7 @@ export class BackofficeUsersService extends EngineUsersService {
             const ref = this._dialog.open<ItemCreateUpdateModalComponent, CreateEditModalData>(
                 ItemCreateUpdateModalComponent,
                 {
-                    data: { service: this, item, form, name: this.singular }
+                    data: { service: this, item, form: form as any, name: this.singular }
                 }
             );
             this.subscription(
@@ -229,41 +228,41 @@ export class BackofficeUsersService extends EngineUsersService {
      * @param item
      */
     public getFormFields(item: ServiceItem) {
-        const fields: ADynamicFormField<any>[] = ([
-            { key: 'name', label: 'Name', value: '', type: 'input' },
-            {
-                key: 'email',
-                label: 'Email',
-                attributes: { type: 'email' },
-                value: '',
-                type: 'input',
-                required: true,
-                validators: [Validators.email]
-            },
-            { key: 'card_number', label: 'Card Number', value: '', type: 'input' },
-            { key: 'sys_admin', label: 'System Admin', value: '', type: 'checkbox' },
-            { key: 'support', label: 'Support', value: '', type: 'checkbox' },
-            {
-                key: 'password',
-                label: 'Password',
-                attributes: { type: 'password' },
-                value: '',
-                type: 'input'
-            },
-            {
-                key: 'confirm_password',
-                label: 'Confirm Password',
-                attributes: { type: 'password' },
-                metadata: { match: 'password' },
-                value: '',
-                type: 'input'
-            }
-        ] as IFormFieldOptions[]).map(i => new ADynamicFormField(i));
-        /** Initialise fields and change listeners */
-        for (const field of fields) {
-            field.control.setValue(item[field.key]);
-            field.control.valueChanges.subscribe(i => (item[field.key] = i));
-        }
-        return fields;
+        // const fields: ADynamicFormField<any>[] = ([
+        //     { key: 'name', label: 'Name', value: '', type: 'input' },
+        //     {
+        //         key: 'email',
+        //         label: 'Email',
+        //         attributes: { type: 'email' },
+        //         value: '',
+        //         type: 'input',
+        //         required: true,
+        //         validators: [Validators.email]
+        //     },
+        //     { key: 'card_number', label: 'Card Number', value: '', type: 'input' },
+        //     { key: 'sys_admin', label: 'System Admin', value: '', type: 'checkbox' },
+        //     { key: 'support', label: 'Support', value: '', type: 'checkbox' },
+        //     {
+        //         key: 'password',
+        //         label: 'Password',
+        //         attributes: { type: 'password' },
+        //         value: '',
+        //         type: 'input'
+        //     },
+        //     {
+        //         key: 'confirm_password',
+        //         label: 'Confirm Password',
+        //         attributes: { type: 'password' },
+        //         metadata: { match: 'password' },
+        //         value: '',
+        //         type: 'input'
+        //     }
+        // ] as IFormFieldOptions[]).map(i => new ADynamicFormField(i));
+        // /** Initialise fields and change listeners */
+        // for (const field of fields) {
+        //     field.control.setValue(item[field.key]);
+        //     field.control.valueChanges.subscribe(i => (item[field.key] = i));
+        // }
+        // return fields;
     }
 }

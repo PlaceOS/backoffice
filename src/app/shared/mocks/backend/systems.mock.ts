@@ -1,11 +1,12 @@
 
-import { MockHttpRequestHandlerOptions, MockHttpRequestHandler } from '@acaprojects/ts-composer';
+import { MockHttpRequestHandler } from '@acaprojects/ts-composer';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';
 
 import * as faker from 'faker';
 import * as dayjs from 'dayjs';
+import * as yaml from 'js-yaml';
 
 export class MockSystemsBackend extends BaseMockBackend {
 
@@ -134,7 +135,9 @@ export class MockSystemsBackend extends BaseMockBackend {
                     break;
             }
         }
-        return data;
+        const output = yaml.safeDump(data, { indent: 4 });
+        console.log('YAML:', output);
+        return output;
     }
 
     private generateMockSystem(data) {

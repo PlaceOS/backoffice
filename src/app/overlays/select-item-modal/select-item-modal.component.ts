@@ -1,6 +1,5 @@
 import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
@@ -24,8 +23,6 @@ export class SelectItemModalComponent extends BaseDirective implements OnInit {
     public edit: boolean;
     /** Item to edit */
     public item: any;
-    /** List of the form fields needed for the item */
-    public fields: ADynamicFormField[];
     /** Whether the item request is being processed */
     public loading: boolean;
 
@@ -43,7 +40,7 @@ export class SelectItemModalComponent extends BaseDirective implements OnInit {
 
     public ngOnInit(): void {
         if (this.service) {
-            this.fields = this.service.getFormFields(this.item, this.edit);
+            // this.fields = this.service.getFormFields(this.item, this.edit);
             this.name = this.service.name;
         } else {
             this._dialog.close();

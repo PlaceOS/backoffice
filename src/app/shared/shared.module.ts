@@ -7,7 +7,6 @@ import { RouterModule } from '@angular/router';
 
 import { ASpinnerModule } from '@acaprojects/ngx-spinners';
 import { APipesModule } from '@acaprojects/ngx-pipes';
-import { ADynamicFormsModule } from '@acaprojects/ngx-dynamic-forms';
 import { ACustomEventsModule } from '@acaprojects/ngx-custom-events';
 import { ATabsModule } from '@acaprojects/ngx-tabs';
 
@@ -26,7 +25,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { BaseDirective } from './globals/base.directive';
-import { CustomSettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
+import { SettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
 import { ItemDisplayComponent } from './components/item-display/item-display.component';
 import { LOGIN_COMPONENTS } from './components/login';
@@ -39,6 +38,8 @@ import { BaseRootComponent } from './components/base-root.component';
 import { IconComponent } from './components/icon/icon.component';
 import { ItemSearchFieldComponent } from './components/custom-fields/item-search-field/item-search-field.component';
 
+import { SystemFormComponent } from './components/forms/system-form/system-form.component';
+
 const COMPONENTS: Type<any>[] = [
     BaseDirective,
     BaseRootComponent,
@@ -49,12 +50,13 @@ const COMPONENTS: Type<any>[] = [
     SettingsDisplayComponent,
     ...LOGIN_COMPONENTS,
     CronOptionsComponent,
-    IconComponent
+    IconComponent,
+    SystemFormComponent,
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [
     ItemSearchFieldComponent,
-    CustomSettingsFieldComponent,
+    SettingsFieldComponent,
     ContextMenuComponent,
 ]
 
@@ -86,7 +88,6 @@ const MATERIAL_MODULES: any[] = [
         APipesModule,
         ReactiveFormsModule,
         ACustomEventsModule,
-        ADynamicFormsModule,
         ATabsModule,
         ScrollingModule,
         ...MATERIAL_MODULES,
@@ -96,7 +97,6 @@ const MATERIAL_MODULES: any[] = [
         ASpinnerModule,
         APipesModule,
         ACustomEventsModule,
-        ADynamicFormsModule,
         ATabsModule,
         ...COMPONENTS,
         ...ENTRY_COMPONENT,

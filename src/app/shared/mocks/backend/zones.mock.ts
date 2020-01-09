@@ -1,9 +1,10 @@
 
 import { BaseMockBackend } from './base.mock';
+import { padZero } from '../../utilities/general.utilities';
 
 import * as faker from 'faker';
 import * as dayjs from 'dayjs';
-import { padZero } from '../../utilities/general.utilities';
+import * as yaml from 'js-yaml';
 
 export class MockZonesBackend extends BaseMockBackend {
 
@@ -28,7 +29,9 @@ export class MockZonesBackend extends BaseMockBackend {
                 created_at: dayjs().add(-Math.floor(Math.random() * 10000), 'm').unix(),
                 triggers: [],
                 trigger_data: [],
-                settings: this.generateSettings()
+                settings: {
+                    settings_string: this.generateSettings()
+                }
             });
         }
         this.model.zones = zone_list;
@@ -65,6 +68,6 @@ export class MockZonesBackend extends BaseMockBackend {
                     break;
             }
         }
-        return data;
+        return yaml.safeDump(data);
     }
 }

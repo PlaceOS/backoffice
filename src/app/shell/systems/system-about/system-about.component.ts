@@ -5,12 +5,12 @@ import { EngineSystem, HashMap, EngineZone } from '@acaprojects/ts-composer';
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { mergeYAMLSettings } from 'src/app/shared/utilities/general.utilities';
 import {
     ConfirmModalComponent,
     ConfirmModalData
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 
-import * as merge from 'deepmerge';
 import {
     SystemLogModalComponent,
     SystemLogModalData
@@ -27,7 +27,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
     /** Whether to show the settings merged with zone and modules */
     public merged: boolean;
     /** Settings map for the item */
-    public settings: HashMap;
+    public settings: string;
     /** List of zones for the active system */
     public zones: EngineZone[];
 
@@ -129,12 +129,12 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
             return;
         }
         if (this.merged !== false) {
-            this.settings = merge({}, this.item.settings);
+            this.settings = mergeYAMLSettings('', this.item.settings as any);
             for (const zone of this.zones) {
-                this.settings = merge(this.settings, zone.settings);
+                this.settings = mergeYAMLSettings(this.settings as any, zone.settings as any);
             }
         } else {
-            this.settings = this.item.settings;
+            this.settings = this.item.settings as any;
         }
     }
 
