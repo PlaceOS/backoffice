@@ -64,7 +64,7 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
                         this.loadValues();
                     }
                 }
-                this.timeout('sidebar', () => this.showSidebar(!this.id));
+                this.timeout('sidebar', () => this.show_sidebar = !this.id);
             })
         );
         this.subscription(
