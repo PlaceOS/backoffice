@@ -69,9 +69,6 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     /** Path of the active module */
     public get route() {
         let route = this.module._api_route;
-        if (route === 'modules') {
-            route = 'devices'
-        }
         return `/${route}`;
     }
 
