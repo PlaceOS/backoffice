@@ -32,6 +32,8 @@ export class ConfirmModalComponent extends BaseDirective implements OnInit {
     public action: string;
     /** Display icon properties */
     public icon: ApplicationIcon;
+    /** Loading state */
+    public loading: string;
 
     constructor(
         private _dialog: MatDialogRef<ConfirmModalComponent>,
