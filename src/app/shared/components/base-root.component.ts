@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { EngineResource } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
-import { EngineResource } from '@acaprojects/ts-composer';
 import { EngineServiceLike } from '../utilities/types.utilities';
 
 @Component({
@@ -111,9 +111,7 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
      * @param event
      */
     public itemEvent(event: any) {
-        if (!event) {
-            return;
-        }
+        if (!event) return;
         if (event.type === 'tab' && this.item && event.value) {
             this._router.navigate([], {
                 relativeTo: this._route,
@@ -125,25 +123,21 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
         } else if (event.type === 'edit') {
             this.edit();
         } else if (event.type === 'delete' && this.item) {
-            // this.delete();
+            this.delete();
         }
     }
 
     /**
-     * Create new
+     * Open create modal for a new item
      */
     protected new() { }
 
     /**
      * Open edit modal for active item
      */
-    protected edit() {
-        if (this.item) {
-            this.service.openEditModal(this.item).then(item => {
-                this.sidebarEvent({ type: 'select', item });
-            });
-        }
-    }
+    protected edit() { }
+
+    protected delete() { }
 
     protected loadValues() {}
 

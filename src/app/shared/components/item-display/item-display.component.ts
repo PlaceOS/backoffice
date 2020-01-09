@@ -120,34 +120,6 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
      * Delete the active item
      */
     public delete() {
-        if (!this.item) return;
-        const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
-            ConfirmModalComponent,
-            {
-                width: '22em',
-                maxWidth: '95vw',
-                maxHeight: '95vh',
-                data: {
-                    title: `Delete ${this.name}`,
-                    content: `<p>Are you sure you want to delete this system?</p><p>Deleting this system will <strong>immediately</strong> delete modules that are not in another system.</p>`,
-                    icon: { type: 'icon', class: 'backoffice-trash' }
-                }
-            }
-        );
-        this.subscription(
-            'confirm_ref',
-            ref.componentInstance.event.subscribe((e: DialogEvent) => {
-                if (e.reason === 'done') {
-                    this.item.delete().then(
-                        () => {
-                            this.service.notifySuccess('Successfully deleted system');
-                        },
-                        err => {
-                            this.service.notifyError(`Error deleting system. ${err}`);
-                        }
-                    );
-                }
-            })
-        );
+        this.event.emit({ type: 'delete' });
     }
 }

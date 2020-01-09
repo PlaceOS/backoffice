@@ -6,6 +6,8 @@ import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
+import { ConfirmModalComponent, ConfirmModalData } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
     selector: 'app-systems',
@@ -56,5 +58,58 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
                 service: this._service.Systems
             }
         });
+    }
+
+    /**
+     * Open the modal to create a new system
+     */
+    protected edit() {
+        if (this.item) {
+            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+                height: 'auto',
+                width: 'auto',
+                maxHeight: 'calc(100vh - 2em)',
+                maxWidth: 'calc(100vw - 2em)',
+                data: {
+                    item: this.item,
+                    service: this._service.Systems
+                }
+            });
+        }
+    }
+
+    protected delete() {
+        if (this.item) {
+            const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
+                height: 'auto',
+                width: '24em',
+                maxHeight: 'calc(100vh - 2em)',
+                maxWidth: 'calc(100vw - 2em)',
+                data: {
+                    title: `Delete system`,
+                    content: `<p>Are you sure you want delete this system?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>`,
+                    icon: { type: 'icon', class: 'backoffice-trash' }
+                }
+            });
+            this.subscription('delete_confirm', ref.componentInstance.event.subscribe((event: DialogEvent) => {
+                console.log('Here', event);
+                if (event.reason === 'done') {
+                    console.log('Here');
+                    ref.componentInstance.loading = 'Deleting system...';
+                    this.item.delete().then(() => {
+                        console.log('Here');
+                        this._service.notifySuccess(`Successfully deleted system "${this.item.name}".`);
+                        this._router.navigate(['/systems']);
+                        ref.close();
+                        console.log('Here');
+                        this.unsub('delete_confirm');
+                    }, (err) => {
+                        console.log('Here', err);
+                        ref.componentInstance.loading = null;
+                        this._service.notifyError(`Error deleting system. Error: ${err}`);
+                    });
+                }
+            }));
+        }
     }
 }
