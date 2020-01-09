@@ -36,7 +36,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
         return this.item.modules || [];
     }
 
-    constructor(private service: ApplicationService, private _dialog: MatDialog) {
+    constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
@@ -67,10 +67,10 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
             'confirm_ref',
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
-                    this.service.Systems.start(this.item.id).then(
+                    this._service.Systems.start(this.item.id).then(
                         result => null,
                         err =>
-                            this.service.notifyError(
+                            this._service.notifyError(
                                 `Failed to start system: ${err.message || err}`
                             )
                     );
@@ -100,16 +100,19 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
             'confirm_ref',
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
-                    this.service.Systems.stop(this.item.id).then(
+                    this._service.Systems.stop(this.item.id).then(
                         result => null,
                         err =>
-                            this.service.notifyError(`Failed to stop system: ${err.message || err}`)
+                            this._service.notifyError(`Failed to stop system: ${err.message || err}`)
                     );
                 }
             })
         );
     }
 
+    /**
+     * Open modal to show the access logs for the system
+     */
     public logs() {
         const ref = this._dialog.open<SystemLogModalComponent, SystemLogModalData>(
             SystemLogModalComponent,
@@ -119,11 +122,17 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
         );
     }
 
+    /**
+     * Toggle whether the settings are merged
+     */
     public toggleSettings() {
         this.merged = this.merged === false ? true : false;
         this.updateSettings();
     }
 
+    /**
+     * Update the displayed settings
+     */
     public updateSettings() {
         if (!this.item) return;
         if (this.merged !== false) {
@@ -136,8 +145,11 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
         }
     }
 
+    /**
+     * Load zones associated with the system to allow for merging
+     */
     public loadZones() {
-        this.service.Zones.query({ sys_id: this.item.id, offset: 0 }).then(
+        this._service.Zones.query({ sys_id: this.item.id, offset: 0 }).then(
             list => {
                 list.sort((a, b) => this.item.zones.indexOf(b.id) - this.item.zones.indexOf(a.id));
                 this.zones = list;

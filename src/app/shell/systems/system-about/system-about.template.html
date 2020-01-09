@@ -26,8 +26,8 @@
             <div class="value">{{item.installed_ui_devices}}</div>
         </div>
     </section>
-    <header *ngIf="modules && modules.length > 0">Execute command</header>
-    <system-exec [system_id]="item?.id"></system-exec>
+    <header *ngIf="item && item.id && item.modules">Execute command</header>
+    <system-exec [systemId]="item?.id"></system-exec>
     <header>Settings <span (touchrelease)="toggleSettings()">{{ merged === false ? 'This system' : 'Merged' }}</span></header>
     <section>
         <settings-form-field [ngModel]="settings" [readonly]="true"></settings-form-field>

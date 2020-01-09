@@ -22,13 +22,11 @@ interface ModuleFunction extends EngineModuleFunction {
 })
 export class SystemExecComponent extends BaseDirective implements OnChanges {
     /** ID of the system to execute command on */
-    @Input() public system_id: string;
+    @Input('systemId') public system_id: string;
     /** Emitter for exec results */
     @Output() public event = new EventEmitter();
     /** List of modules of the system */
     public devices: EngineModule[];
-    /** List of module associations with the system */
-    public modules: EngineModuleLike[];
     /** List of available functions for the active module  */
     public methods: ModuleFunction[];
     /** Currently selected module */
@@ -59,6 +57,7 @@ export class SystemExecComponent extends BaseDirective implements OnChanges {
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.system_id) {
+            this.devices = [];
             this.loadModules();
         }
     }
@@ -69,19 +68,8 @@ export class SystemExecComponent extends BaseDirective implements OnChanges {
      */
     public loadModules(offset: number = 0) {
         if (this.system_id) {
-            this.service.Modules.query({ system_id: this.system_id, offset }).then((list) => {
+            this.service.Modules.query({ system_id: this.system_id, offset, limit: 500 }).then((list) => {
                 this.devices = list || [];
-                if (!offset) { this.modules = []; }
-                for (const mod of this.devices) {
-                    if (mod.driver) {
-                        this.modules.push({
-                            id: mod.id,
-                            name: `${mod.driver.module_name} ${mod.role + 1}`,
-                            module: mod.driver.module_name,
-                            index: mod.role + 1
-                        });
-                    }
-                }
             }, () => null);
         }
     }
