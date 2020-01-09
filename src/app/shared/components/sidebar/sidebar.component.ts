@@ -23,6 +23,8 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     @Input() public module: EngineServiceLike;
     /** Whether the list is being loaded */
     @Input() public loading: boolean;
+    /** Additional query params to add to item load requests */
+    @Input('queryParams') public query_params: HashMap = {};
     /** Whether sidebar is closed */
     @Input() public close = false;
     /** Search string */
@@ -106,6 +108,9 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         if (changes.module) {
             this.searching();
         }
+        if (changes.query_params && this.query_params) {
+            this.searching();
+        }
     }
 
     /** Whether to update the list of items */
@@ -158,7 +163,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     public searching(offset: number = 0) {
         this.loading = true;
         if (this.module) {
-            this.module.query({ q: this.search, offset }).then(list => {
+            this.module.query({ q: this.search, offset, ...(this.query_params || {}) }).then(list => {
                 this.list = offset ? this.list.concat(list) : list;
                 this.items.next(this.list);
                 this.loading = false;

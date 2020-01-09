@@ -7,10 +7,13 @@
             (searchChange)="search($event)"
             [loading]="loading"
             [close]="show_sidebar"
+            [queryParams]="only_disconnected ? { connected: false, running: true } : {}"
             (event)="sidebarEvent($event)"
         >
             <div class="toggle">
-                <mat-slide-toggle labelPosition="before">Only Disconnected</mat-slide-toggle>
+                <mat-slide-toggle [(ngModel)]="only_disconnected" labelPosition="before">
+                    Only Disconnected
+                </mat-slide-toggle>
             </div>
         </sidebar>
     </div>
