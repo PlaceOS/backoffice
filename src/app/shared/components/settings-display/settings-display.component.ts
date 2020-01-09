@@ -12,7 +12,7 @@ import { HashMap } from '../../utilities/types.utilities';
     styleUrls: ['./settings-display.styles.scss']
 })
 export class SettingsDisplayComponent extends BaseDirective implements OnInit {
-    @Input() public model: HashMap;
+    @Input() public model: string;
     @Input() public group = '';
     @Input() public show = true;
     @Input() public sub = false;
@@ -25,7 +25,8 @@ export class SettingsDisplayComponent extends BaseDirective implements OnInit {
     private editor: any;
 
     public get code(): string {
-        return typeof this.model === 'object' ? JSON.stringify(this.model, null, 4) : `${this.model}` || ''
+        console.log('Model:', this.model);
+        return this.model;
     }
 
     constructor(private service: ApplicationService, private renderer: Renderer2) {
@@ -36,7 +37,7 @@ export class SettingsDisplayComponent extends BaseDirective implements OnInit {
         if (this.element && this.element.nativeElement) {
             this.editor = monaco.editor.create(this.element.nativeElement, {
                 value: this.code,
-                language: 'json',
+                language: 'yaml',
                 fontFamily: `"Fira Code", monospace`,
 
                 lineNumbers: 'on',

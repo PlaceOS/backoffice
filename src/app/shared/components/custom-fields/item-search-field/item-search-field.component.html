@@ -5,7 +5,7 @@
             name="item-search"
             [(ngModel)]="search_str"
             (ngModelChange)="search$.next($event)"
-            [placeholder]="'Search for ' + (service?.name || item) + '...'"
+            [placeholder]="'Search for ' + (service?.name || service?._name || item) + '...'"
             [matAutocomplete]="auto"
             (blur)="resetSearchString()"
         />

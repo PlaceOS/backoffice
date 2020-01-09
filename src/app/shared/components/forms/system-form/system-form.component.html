@@ -1,0 +1,156 @@
+<div class="system form" *ngIf="form">
+    <form [formGroup]="form">
+        <div class="field" *ngIf="form.controls.zone">
+            <label
+                for="zone"
+                [class.error]="form.controls.zone.invalid && form.controls.zone.touched"
+                >Zone<span>*</span>:
+            </label>
+            <item-search-field
+                [service]="zone_service"
+                (ngModelChange)="setZone($event)"
+            ></item-search-field>
+            <div class="error" *ngIf="form.controls.zone.invalid && form.controls.zone.touched">
+                Zone is required {{ form.controls.zone.value }}
+            </div>
+        </div>
+        <div class="fieldset">
+            <div class="field" *ngIf="form.controls.name">
+                <label
+                    for="system-name"
+                    [class.error]="form.controls.name.invalid && form.controls.name.touched"
+                    >Name<span>*</span>:</label
+                >
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="system-name"
+                        placeholder="System Name"
+                        formControlName="name"
+                        required
+                    />
+                    <mat-error *ngIf="form.controls.name.invalid"
+                        >System name is required</mat-error
+                    >
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.email">
+                <label
+                    for="system-email"
+                    [class.error]="form.controls.email.invalid && form.controls.email.touched"
+                    >Email:</label
+                >
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="system-email"
+                        placeholder="System Email"
+                        formControlName="email"
+                    />
+                    <mat-error *ngIf="form.controls.email.invalid">{{
+                        form.controls.email.hasError('email')
+                            ? 'A valid email is required'
+                            : 'Email is invalid'
+                    }}</mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="field" *ngIf="form.controls.support_url">
+            <label
+                for="support-url"
+                [class.error]="
+                    form.controls.support_url.invalid && form.controls.support_url.touched
+                "
+                >Support URL:</label
+            >
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="support-url"
+                    placeholder="Support URL"
+                    formControlName="support_url"
+                />
+                <mat-error *ngIf="form.controls.support_url.invalid">{{
+                    form.controls.support_url.hasError('pattern')
+                        ? 'A valid URL is required'
+                        : 'Support URL is invalid'
+                }}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="fieldset">
+            <div class="field" *ngIf="form.controls.installed_ui_devices">
+                <label
+                    for="ui-devices"
+                    [class.error]="
+                        form.controls.installed_ui_devices.invalid &&
+                        form.controls.installed_ui_devices.touched
+                    "
+                    >Number of Touch Panels:</label
+                >
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="ui-devices"
+                        type="number"
+                        placeholder="Number of Touch Panels"
+                        formControlName="installed_ui_devices"
+                    />
+                    <mat-error *ngIf="form.controls.installed_ui_devices.invalid"
+                        >A valid positive number is required</mat-error
+                    >
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.capacity">
+                <label
+                    for="capacity"
+                    [class.error]="form.controls.capacity.invalid && form.controls.capacity.touched"
+                    >Capacity:</label
+                >
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="capacity"
+                        type="number"
+                        placeholder="Capacity"
+                        formControlName="capacity"
+                    />
+                    <mat-error *ngIf="form.controls.capacity.invalid"
+                        >A valid positive number is required</mat-error
+                    >
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.bookable">
+                <mat-checkbox name="bookable" formControlName="bookable">Bookable</mat-checkbox>
+            </div>
+        </div>
+        <div class="field" *ngIf="form.controls.description">
+            <label for="description">Description:</label>
+            <mat-form-field appearance="outline">
+                <textarea
+                    matInput
+                    name="description"
+                    placeholder="Description"
+                    formControlName="description"
+                ></textarea>
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.settings_string">
+            <label
+                for="settings"
+                [class.error]="
+                    form.controls.settings_string.invalid && form.controls.settings_string.touched
+                "
+                >Settings:</label
+            >
+            <settings-form-field formControlName="settings_string"></settings-form-field>
+            <div
+                class="error"
+                *ngIf="
+                    form.controls.settings_string.invalid && form.controls.settings_string.touched
+                "
+            >
+                Settings must be valid YAML
+            </div>
+        </div>
+    </form>
+</div>

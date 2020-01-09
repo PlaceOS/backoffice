@@ -1,35 +1,61 @@
 
-import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
+import { Component, forwardRef } from '@angular/core';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
-import { CUSTOM_FIELD_REGISTER } from 'src/app/shared/globals/custom-field-register';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 
 @Component({
-    selector: 'custom-settings-field',
+    selector: 'settings-form-field',
     templateUrl: './settings-field.component.html',
-    styleUrls: ['./settings-field.component.scss']
+    styleUrls: ['./settings-field.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => SettingsFieldComponent),
+            multi: true
+        }
+    ]
 })
-export class CustomSettingsFieldComponent extends BaseDirective implements OnInit {
+export class SettingsFieldComponent extends BaseDirective implements ControlValueAccessor {
+    /** Current value for the */
+    public settings_string: string;
+    /** Form control on change handler */
+    private _onChange: (_: string) => void;
+    /** Form control on touch handler */
+    private _onTouch: (_: string) => void;
 
-    constructor(protected _field: ADynamicFormField, protected _group: FormGroup) {
-        super();
+    /**
+     * Update the form field value
+     * @param new_value New value to set on the form field
+     */
+    public setValue(new_value: string): void {
+        this.settings_string = new_value;
+        if (this._onChange) {
+            this._onChange(new_value);
+        }
     }
 
-    public get field(): ADynamicFormField {
-        return this._field;
-    }
-    public get group(): FormGroup {
-        return this._group
+    /**
+     * Update local value when form control value is changed
+     * @param value The new value for the component
+     */
+    public writeValue(value: string) {
+        this.settings_string = value;
     }
 
-    ngOnInit(): void { }
+    /**
+     * Registers a callback function that is called when the control's value changes in the UI.
+     * @param fn The callback function to register
+     */
+    public registerOnChange(fn: (_: string) => void): void {
+        this._onChange = fn;
+    }
 
-    public setValue(value: { [name: string]: any }): void {
-        this._field.control.setValue(value);
+    /**
+     * Registers a callback function is called by the forms API on initialization to update the form model on blur.
+     * @param fn The callback function to register
+     */
+    public registerOnTouched(fn: (_: string) => void): void {
+        this._onTouch = fn;
     }
 }
-
-CUSTOM_FIELD_REGISTER.settings = CustomSettingsFieldComponent;
-CUSTOM_FIELD_REGISTER.config = CustomSettingsFieldComponent;

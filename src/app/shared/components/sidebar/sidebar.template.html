@@ -15,13 +15,13 @@
             class="error"
             *ngIf="new && (total >= licenses && licenses)"
             matTooltip="
-            Exceeded quota! No new item can be created<br />
+            Exceeded quota! No new item can be created
             until the total is below you license count."
         >
-            <i class="backoffice-plus">error</i>
+            <i class="backoffice-warning"></i>
         </div>
-        <button mat-icon-button (touchrelease)="close ? event.emit({ type: 'close' }) : ''">
-            <app-icon [icon]="{ class: 'backoffice-' + close ? 'cross' : 'list' }"></app-icon>
+        <button mat-icon-button class="mobile-only" (touchrelease)="close ? event.emit({ type: 'close' }) : ''">
+            <app-icon [icon]="{ class: 'backoffice-' + (close ? 'cross' : 'list') }"></app-icon>
         </button>
     </header>
     <section class="search">

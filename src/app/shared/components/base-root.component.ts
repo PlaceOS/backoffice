@@ -132,12 +132,7 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
     /**
      * Create new
      */
-    protected new() {
-        this.service.openNewModal().then(item => {
-            this.item = item;
-            this.sidebarEvent({ type: 'select', item });
-        });
-    }
+    protected new() { }
 
     /**
      * Open edit modal for active item

@@ -47,7 +47,10 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
 
     /** Whether new items for the active module can be created */
     public get new(): boolean {
-        return this.module && this.module.can_create;
+        if (this.module) {
+            return this._service.setting(`app.${this.module._api_route}.can_create`);
+        }
+        return false;
     }
 
     public get total(): number {
@@ -75,7 +78,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     /** Maxiumum allowed items for the active module */
     public get licenses(): number {
         if (this.module) {
-            return this._service.setting(`app.${this.module.name}.licenses`);
+            return this._service.setting(`app.${this.module._api_route}.licenses`);
         }
         return 0;
     }
