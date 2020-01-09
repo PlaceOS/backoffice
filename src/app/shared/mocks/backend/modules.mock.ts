@@ -23,7 +23,6 @@ export class MockModulesBackend extends BaseMockBackend {
         const count = Math.ceil(Math.floor(Math.random() * 500 + 120) * this.model.scale);
         const systems = this.model.systems || [];
         const drivers = this.model.drivers || [];
-        console.log('Control:', window.control);
         if (!window.control.systems) {
             window.control.systems = {};
         }
@@ -85,6 +84,8 @@ export class MockModulesBackend extends BaseMockBackend {
     public search(data, fragment) {
         if (fragment.sys_id) {
             data = data.filter((a) => a.control_system_id === fragment.sys_id || (a.systems || []).indexOf(fragment.sys_id) >= 0);
+        } else if (fragment.system_id) {
+            data = data.filter((a) => a.control_system_id === fragment.system_id || (a.systems || []).indexOf(fragment.system_id) >= 0);
         } else if (fragment.dependency_id) {
             data = data.filter((a) => a.dependency_id === fragment.dependency_id);
         }

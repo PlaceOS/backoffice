@@ -29,6 +29,7 @@ export class MockZonesBackend extends BaseMockBackend {
                 tags: `test zone`,
                 created_at: dayjs().add(-Math.floor(Math.random() * 10000), 'm').unix(),
                 triggers: [],
+                systems: [],
                 trigger_data: [],
                 settings: {
                     settings_string: this.generateSettings()
@@ -50,7 +51,10 @@ export class MockZonesBackend extends BaseMockBackend {
 
     public search(data, fragment) {
         if (fragment.sys_id) {
-            data = data.filter((a) => (a.systems || []).indexOf(fragment.sys_id) >= 0);
+            data = data.filter((a) => {
+                console.log('Zone:', a.id, (a.systems || []), (a.systems || []).indexOf(fragment.sys_id) >= 0);
+                return (a.systems || []).indexOf(fragment.sys_id) >= 0;
+            });
         }
         return super.search(data, fragment);
     }

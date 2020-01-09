@@ -2,7 +2,11 @@
     <div class="settings">
         <section class="select">
             <div class="dropdown">
-                <item-search-field [service]="zone_service" (ngModelChange)="new_zone = $event.id"></item-search-field>
+                <item-search-field
+                    [service]="zone_service"
+                    [ngModel]="null"
+                    (ngModelChange)="new_zone = $event.id"
+                ></item-search-field>
             </div>
             <button mat-button [disabled]="!new_zone" (tapped)="joinZone()">Join zone</button>
         </section>
@@ -17,13 +21,24 @@
                 <tbody cdkDropList (cdkDropListDropped)="drop($event)">
                     <tr *ngFor="let zone of zones" cdkDrag>
                         <td class="small">
-                            <div class="action grab" cdkDragHandle><i class="bacoffice-select-arrows"></i></div>
+                            <div class="action grab" cdkDragHandle>
+                                <i class="backoffice-select-arrows"></i>
+                            </div>
                         </td>
-                        <td class="name"><a (touchrelease)="goto(zone)">{{zone.name}}</a></td>
+                        <td class="name">
+                            <a
+                                [routerLink]="['/zones', zone.id]"
+                                routerLinkActive="router-link-active"
+                                >{{zone.name}}</a
+                            >
+                        </td>
                         <td class="description">{{zone.description}}</td>
                         <td *ngIf="zones.length > 1" class="small">
-                            <div class="action"><i class="backoffice-publish"></i></div>
+                            <button mat-icon-button (tapped)="removeZone(zone)">
+                                <i class="backoffice-publish"></i>
+                            </button>
                         </td>
+                        <td class="placeholder" colspan="6" *cdkDragPlaceholder></td>
                     </tr>
                 </tbody>
             </table>

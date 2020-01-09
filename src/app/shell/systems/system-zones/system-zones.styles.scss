@@ -24,11 +24,19 @@ section {
     }
 }
 
-.table-row {
+.placeholder {
+    background: #ccc;
+    border: dotted 3px #999;
+    min-height: 3em;
+    height: 3em;
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
 
-    .name {
-        min-width: 10em;
-    }
+.name {
+    min-width: 10em;
+}
+
+.table-row {
 
     .description {
         flex: 1;
