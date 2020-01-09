@@ -94,7 +94,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     private generateDeviceBindings() {
         const counter: HashMap<number> = {};
         for (const device of this.devices) {
-            const name = device.custom_name || device.driver.module_name || 'Blank';
+            const name = device.custom_name || device.driver ? device.driver.module_name : '' || 'Blank';
             if (!counter[name]) {
                 counter[name] = 0;
             }

@@ -2,7 +2,7 @@
     <section class="select">
         <button mat-button (tapped)="newDevice()">Add new</button>
         <div class="dropdown">
-            <item-search-field [service]="module_service"  (ngModelChange)="new_module = $event.id"></item-search-field>
+            <item-search-field [service]="module_service" [ngModel]="null" (ngModelChange)="new_module = $event.id"></item-search-field>
         </div>
         <button mat-button [disabled]="!new_module" (tapped)="addDevice()">
             Add existing

@@ -89,7 +89,8 @@ export class MockModulesBackend extends BaseMockBackend {
             data = data.filter((a) => a.dependency_id === fragment.dependency_id);
         }
         if (fragment.q) {
-            data = data.filter((a) => (a.name || '').indexOf(fragment.q) >= 0);
+            const search = fragment.q.toLowerCase();
+            data = data.filter((a) => (a.name || '').toLowerCase().indexOf(search) >= 0);
         }
         return super.search(data, fragment);
     }
