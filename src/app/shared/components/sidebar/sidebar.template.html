@@ -20,7 +20,7 @@
         >
             <i class="backoffice-warning"></i>
         </div>
-        <button mat-icon-button class="mobile-only" (touchrelease)="close ? event.emit({ type: 'close' }) : ''">
+        <button mat-icon-button class="mobile-only" (touchrelease)="event.emit({ type: 'toggle' })">
             <app-icon [icon]="{ class: 'backoffice-' + (close ? 'cross' : 'list') }"></app-icon>
         </button>
     </header>

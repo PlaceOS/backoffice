@@ -1,5 +1,5 @@
 <div class="container" [class.show]="show_sidebar">
-    <div class="sidebar" (tapped)="showSidebar()">
+    <div class="sidebar">
         <sidebar
             heading="Zones"
             [module]="module"
@@ -10,7 +10,7 @@
             (event)="sidebarEvent($event)"
         ></sidebar>
     </div>
-    <main (touchrelease)="showSidebar(false)">
+    <main (touchrelease)="show_sidebar = false">
         <item-display
             [item]="item"
             name="zone"

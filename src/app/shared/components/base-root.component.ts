@@ -91,7 +91,7 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
                 if (event && event.type === 'new') {
                     this.new();
                 } else {
-                    this.showSidebar(false);
+                    this.toggleSidebar();
                 }
             },
             20
@@ -102,8 +102,8 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
      * Update the state of showing the sidebar
      * @param state New show state
      */
-    public showSidebar(state: boolean = true) {
-        this.timeout('sidebar', () => (this.show_sidebar = state));
+    public toggleSidebar() {
+        this.timeout('sidebar', () => (this.show_sidebar = !this.show_sidebar));
     }
 
     /**
