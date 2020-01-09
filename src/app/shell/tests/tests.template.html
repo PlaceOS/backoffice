@@ -55,7 +55,7 @@
                         <div class="details">
                             <div class="name">Settings</div>
                             <div class="data">
-                                <settings-display [model]="item?.settings || {}"></settings-display>
+                                <settings-form-field [ngModel]="item?.settings" [readonly]="true"></settings-form-field>
                             </div>
                         </div>
                     </div>

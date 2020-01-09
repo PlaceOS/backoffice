@@ -30,6 +30,6 @@
     <system-exec [system_id]="item?.id"></system-exec>
     <header>Settings <span (touchrelease)="toggleSettings()">{{ merged === false ? 'This system' : 'Merged' }}</span></header>
     <section>
-        <settings-display [model]="settings || {}"></settings-display>
+        <settings-form-field [ngModel]="settings" [readonly]="true"></settings-form-field>
     </section>
 </div>

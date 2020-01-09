@@ -1,8 +1,21 @@
+/// <reference path="../../../../../../node_modules/monaco-editor/monaco.d.ts" />
 
-import { Component, forwardRef } from '@angular/core';
+import {
+    Component,
+    forwardRef,
+    ViewChild,
+    ElementRef,
+    OnInit,
+    Input,
+    OnDestroy,
+    SimpleChanges,
+    OnChanges
+} from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
+
+// import * as monaco_yaml from 'monaco-editor/dev/vs/basic-languages/yaml/yaml.js';
 
 @Component({
     selector: 'settings-form-field',
@@ -16,13 +29,38 @@ import { BaseDirective } from 'src/app/shared/globals/base.directive';
         }
     ]
 })
-export class SettingsFieldComponent extends BaseDirective implements ControlValueAccessor {
+export class SettingsFieldComponent extends BaseDirective
+    implements OnInit, OnChanges, OnDestroy, ControlValueAccessor {
+    /** Whether form field is readonly */
+    @Input() public readonly: boolean = true;
     /** Current value for the */
-    public settings_string: string;
+    public settings_string: string = ' ';
     /** Form control on change handler */
     private _onChange: (_: string) => void;
     /** Form control on touch handler */
     private _onTouch: (_: string) => void;
+
+    /** Reference to the element container the monaco editor */
+    @ViewChild('editor', { static: true }) private element: ElementRef;
+    /** API object for the monaco editor */
+    private editor: any;
+
+    public ngOnInit(): void {
+        this.createEditor();
+    }
+
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes.readonly && this.editor) {
+            this.editor.updateOptions({ readOnly: !!this.readonly });
+        }
+    }
+
+    public ngOnDestroy() {
+        if (this.editor) {
+            this.editor.dispose();
+            this.editor = null;
+        }
+    }
 
     /**
      * Update the form field value
@@ -40,7 +78,16 @@ export class SettingsFieldComponent extends BaseDirective implements ControlValu
      * @param value The new value for the component
      */
     public writeValue(value: string) {
-        this.settings_string = value;
+        this.settings_string = `${value}`;
+        if (this.editor) {
+            if (this.readonly) {
+                this.editor.updateOptions({ readOnly: false });
+                this.editor.setValue(this.settings_string);
+                this.editor.updateOptions({ readOnly: true });
+            } else {
+                this.editor.setValue(this.settings_string);
+            }
+        }
     }
 
     /**
@@ -57,5 +104,28 @@ export class SettingsFieldComponent extends BaseDirective implements ControlValu
      */
     public registerOnTouched(fn: (_: string) => void): void {
         this._onTouch = fn;
+    }
+
+    /**
+     * Create and render the monaco editor to the component
+     */
+    private createEditor() {
+        if (this.element && this.element.nativeElement) {
+            // monaco.languages.register(monaco_yaml);
+            this.editor = monaco.editor.create(this.element.nativeElement, {
+                value: this.settings_string || '',
+                language: 'yaml',
+                fontFamily: `"Fira Code", monospace`,
+
+                lineNumbers: 'on',
+                roundedSelection: false,
+                scrollBeyondLastLine: false,
+                readOnly: this.readonly,
+                theme: 'vs-dark'
+            });
+            this.editor.onDidChangeModelContent(() => {
+                this.setValue(this.editor.getValue());
+            });
+        }
     }
 }

@@ -32,7 +32,6 @@ import { LOGIN_COMPONENTS } from './components/login';
 import { SearchbarComponent } from './components/searchbar/searchbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { SystemExecComponent } from './components/system-exec/system-exec.component';
-import { SettingsDisplayComponent } from './components/settings-display/settings-display.component';
 import { CronOptionsComponent } from './components/cron-options/cron-options.component';
 import { BaseRootComponent } from './components/base-root.component';
 import { IconComponent } from './components/icon/icon.component';
@@ -47,7 +46,6 @@ const COMPONENTS: Type<any>[] = [
     SearchbarComponent,
     SidebarComponent,
     SystemExecComponent,
-    SettingsDisplayComponent,
     ...LOGIN_COMPONENTS,
     CronOptionsComponent,
     IconComponent,

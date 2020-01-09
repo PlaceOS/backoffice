@@ -16,7 +16,7 @@ export interface Pair<T = any, U = string> {
 
 /** Generic interface for objects with identification details */
 export interface Identity extends HashMap {
-    id: string;
+    id: string | number;
     name: string;
 }
 

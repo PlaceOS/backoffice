@@ -1,10 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { EngineZone } from '@acaprojects/ts-composer';
+import { EncryptionLevel } from '@acaprojects/ts-composer';
 
 import { ApplicationService } from 'src/app/services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
+import { EngineServiceLike, Identity } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
     selector: 'system-form',
@@ -14,6 +14,13 @@ import { EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
 export class SystemFormComponent extends BaseDirective {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
+    /** Levels of encyption available for the system's settings */
+    public encryption_levels: Identity[] = [
+        { id: EncryptionLevel.None, name: 'None' },
+        { id: EncryptionLevel.Support, name: 'Support' },
+        { id: EncryptionLevel.Admin, name: 'Admin' },
+        { id: EncryptionLevel.NeverDisplay, name: 'Never Display' }
+    ]
 
     /** Service for handling zones */
     public get zone_service(): EngineServiceLike {
@@ -22,9 +29,5 @@ export class SystemFormComponent extends BaseDirective {
 
     constructor(private _service: ApplicationService) {
         super();
-    }
-
-    public setZone(zone: EngineZone): void {
-        this.form.controls.zone.setValue(zone.id);
     }
 }

@@ -200,11 +200,11 @@ export function timeToDate(time: string): number {
  * @param dest Destination object to merge
  * @param source Source object to merge
  */
-export function mergeYAMLSettings(dest: string, source: string): string {
-    const dest_obj = yaml.safeLoad(dest);
-    const source_obj = yaml.safeLoad(source);
+export function mergeYAMLSettings(dest: string = '', source: string = ''): string {
+    const dest_obj = yaml.safeLoad(dest) || {};
+    const source_obj = yaml.safeLoad(source) || {};
     const merged_obj = merge(dest_obj, source_obj);
-    return yaml.safeDump(merged_obj);
+    return yaml.safeDump(merged_obj, { indent: 4 });
 }
 
 /**

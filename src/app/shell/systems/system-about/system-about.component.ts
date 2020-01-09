@@ -125,16 +125,14 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
     }
 
     public updateSettings() {
-        if (!this.item) {
-            return;
-        }
+        if (!this.item) return;
         if (this.merged !== false) {
-            this.settings = mergeYAMLSettings('', this.item.settings as any);
+            this.settings = mergeYAMLSettings('', this.item.settings.settings_string || '');
             for (const zone of this.zones) {
-                this.settings = mergeYAMLSettings(this.settings as any, zone.settings as any);
+                this.settings = mergeYAMLSettings(this.settings, zone.settings.settings_string || '');
             }
         } else {
-            this.settings = this.item.settings as any;
+            this.settings = this.item.settings.settings_string || '';
         }
     }
 

@@ -8,7 +8,7 @@
             </label>
             <item-search-field
                 [service]="zone_service"
-                (ngModelChange)="setZone($event)"
+                formControlName="zone"
             ></item-search-field>
             <div class="error" *ngIf="form.controls.zone.invalid && form.controls.zone.touched">
                 Zone is required {{ form.controls.zone.value }}
@@ -134,6 +134,16 @@
                 ></textarea>
             </mat-form-field>
         </div>
+        <div class="field" *ngIf="form.controls.settings_encryption_level">
+            <label for="encryption-level">Settings Encryption Level: </label>
+            <mat-form-field appearance="outline">
+                <mat-select name="encryption-level" formControlName="settings_encryption_level">
+                    <mat-option *ngFor="let type of encryption_levels" [value]="type.id">
+                    {{type.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
         <div class="field" *ngIf="form.controls.settings_string">
             <label
                 for="settings"
@@ -142,7 +152,7 @@
                 "
                 >Settings:</label
             >
-            <settings-form-field formControlName="settings_string"></settings-form-field>
+            <settings-form-field formControlName="settings_string" [readonly]="false"></settings-form-field>
             <div
                 class="error"
                 *ngIf="
