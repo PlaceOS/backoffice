@@ -26,11 +26,10 @@
     </header>
     <main>
         <div class="tabs" *ngIf="tabs && tabs.length > 1">
-            <a-tab-group>
+            <a-tab-group [tab]="active">
                 <a-tab
                     *ngFor="let tab of tabs"
                     [id]="tab.id"
-                    [active]="active === tab.id"
                     (activeChange)="active = tab.id; event.emit({ type: 'tab', value: tab.id })"
                     [content]="tab.template"
                     [style.width]="100 / tabs.length + '%'"

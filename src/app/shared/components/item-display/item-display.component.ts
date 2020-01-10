@@ -45,6 +45,8 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
     /** Active tab ID */
     @Input() public active = 'about';
     @Output() public event = new EventEmitter();
+    /** ID of the active tab */
+    public active_tab: string;
 
     constructor(private service: ApplicationService, private _dialog: MatDialog) {
         super();
@@ -64,6 +66,9 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.tabs) {
             this.tabs.forEach((i, idx) => (i.id = i.id || `${idx}`));
+        }
+        if (changes.active_tab) {
+            this.timeout('active_tab', () => this.active_tab = this.active);
         }
     }
 
