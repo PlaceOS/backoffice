@@ -130,6 +130,9 @@
         },
         "users": {
             "can_create": true
+        },
+        "domains": {
+            "can_create": true
         }
     },
     "mock": true
