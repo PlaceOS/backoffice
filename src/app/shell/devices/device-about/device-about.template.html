@@ -4,7 +4,7 @@
         <section>
             <button mat-button>Stop Device</button>
         </section>
-        <header>Settings</header>
+        <header>Settings <span (touchrelease)="toggleSettings()">{{ merged === false ? 'This module' : 'Merged' }}</span></header>
         <section>
             <settings-form-field [ngModel]="settings" [readonly]="true"></settings-form-field>
         </section>

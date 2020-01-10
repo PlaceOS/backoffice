@@ -118,6 +118,9 @@
         "systems": {
             "licenses": 100,
             "can_create": true
+        },
+        "modules": {
+            "can_create": true
         }
     },
     "mock": true
