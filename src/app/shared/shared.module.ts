@@ -38,6 +38,7 @@ import { IconComponent } from './components/icon/icon.component';
 import { ItemSearchFieldComponent } from './components/custom-fields/item-search-field/item-search-field.component';
 
 import { SystemFormComponent } from './components/forms/system-form/system-form.component';
+import { ModuleFormComponent } from './components/forms/module-form/module-form.component';
 
 const COMPONENTS: Type<any>[] = [
     BaseDirective,
@@ -49,7 +50,9 @@ const COMPONENTS: Type<any>[] = [
     ...LOGIN_COMPONENTS,
     CronOptionsComponent,
     IconComponent,
+
     SystemFormComponent,
+    ModuleFormComponent,
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [

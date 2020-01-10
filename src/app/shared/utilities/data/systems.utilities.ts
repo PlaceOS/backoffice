@@ -44,13 +44,11 @@ export function generateSystemsFormFields(system: EngineSystem): FormDetails {
         zone: new FormControl('', [Validators.required])
     };
     const subscriptions = [];
-    console.log('System:', system);
     for (const key in fields) {
         if (fields[key] && key.indexOf('settings') < 0) {
             subscriptions.push(fields[key].valueChanges.subscribe(value => system[key] = value));
         }
     }
-    console.log('System:', system.id);
     if (!system.id) {
         subscriptions.push(
             fields.zone.valueChanges.subscribe((value: EngineZone) =>
@@ -59,13 +57,11 @@ export function generateSystemsFormFields(system: EngineSystem): FormDetails {
         );
         subscriptions.push(
             fields.settings_encryption_level.valueChanges.subscribe((value: EncryptionLevel) =>{
-                console.log('Update settings:', value);
                 (system.settings as any).change('encryption_level', value);
             })
         );
         subscriptions.push(
             fields.settings_string.valueChanges.subscribe((value: string) => {
-                console.log('Update settings:', value);
                 (system.settings as any).change('settings_string', value);
             }
             )
