@@ -1,7 +1,7 @@
-import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { EngineDomain } from '@acaprojects/ts-composer';
 
-import { FormDetails, URL_PATTERN } from './systems.utilities';
+import { FormDetails } from './systems.utilities';
 import { HashMap } from '../types.utilities';
 
 export function generateDomainFormFields(authority: EngineDomain): FormDetails {
@@ -10,9 +10,11 @@ export function generateDomainFormFields(authority: EngineDomain): FormDetails {
     }
     const fields: HashMap<FormControl> = {
         name: new FormControl(authority.name || '', [Validators.required]),
-        domain: new FormControl(authority.domain || '', [Validators.email, Validators.required]),
-        login_url: new FormControl(authority.login_url || '', [Validators.pattern(URL_PATTERN)]),
-        logout_url: new FormControl(authority.logout_url || '', [Validators.pattern(URL_PATTERN)]),
+        domain: new FormControl(authority.domain || '', [Validators.required]),
+        login_url: new FormControl(authority.login_url || ''),
+        logout_url: new FormControl(authority.logout_url || ''),
+        config: new FormControl(authority.config || ''),
+        internals: new FormControl(authority.internals || ''),
         description: new FormControl(authority.description || ''),
     };
     const subscriptions = [];

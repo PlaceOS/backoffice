@@ -30,7 +30,7 @@
                     template: auth,
                     icon: { class: 'backoffice-lock-open' }
                 },
-                { id: 'users', name: 'Users', count: users || 0, template: users, icon: { class: 'backoffice-users' } }
+                { id: 'users', name: 'Users', count: user_count || 0, template: users, icon: { class: 'backoffice-users' } }
             ]"
             (event)="itemEvent($event)"
         >

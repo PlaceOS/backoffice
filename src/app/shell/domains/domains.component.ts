@@ -20,7 +20,7 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
     /** Number of triggers for the active system */
     public auth_sources: number;
     /** Number of triggers for the active system */
-    public users: number;
+    public user_count: number;
 
     constructor(
         protected _service: ApplicationService,
@@ -44,7 +44,7 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
             () => (this.auth_sources = this._service.AuthSources.last_total)
         );
         // Get users count
-        this._service.Users.query(query).then(() => (this.users = this._service.Users.last_total));
+        this._service.Users.query(query).then(() => (this.user_count = this._service.Users.last_total));
     }
     /**
      * Open the modal to create a new system
