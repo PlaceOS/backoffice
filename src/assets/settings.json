@@ -127,6 +127,9 @@
         },
         "drivers": {
             "can_create": true
+        },
+        "users": {
+            "can_create": true
         }
     },
     "mock": true

@@ -42,6 +42,7 @@ import { SystemFormComponent } from './components/forms/system-form/system-form.
 import { ModuleFormComponent } from './components/forms/module-form/module-form.component';
 import { ZoneFormComponent } from './components/forms/zone-form/zone-form.component';
 import { DriverFormComponent } from './components/forms/driver-form/driver-form.component';
+import { UserFormComponent } from './components/forms/user-form/user-form.component';
 
 const COMPONENTS: Type<any>[] = [
     BaseDirective,
@@ -58,6 +59,7 @@ const COMPONENTS: Type<any>[] = [
     ModuleFormComponent,
     ZoneFormComponent,
     DriverFormComponent,
+    UserFormComponent,
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [

@@ -1,6 +1,6 @@
 import { Component, Inject, EventEmitter, Output } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { EngineResource, EngineSystem, EngineModule, EngineZone, EngineDriver, EngineSettings } from '@acaprojects/ts-composer';
+import { EngineResource, EngineSystem, EngineModule, EngineZone, EngineDriver, EngineUser, EngineSettings } from '@acaprojects/ts-composer';
 import { FormGroup } from '@angular/forms';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -10,6 +10,7 @@ import { ApplicationService } from 'src/app/services/app.service';
 import { generateModuleFormFields } from 'src/app/shared/utilities/data/modules.utilities';
 import { generateZoneFormFields } from 'src/app/shared/utilities/data/zones.utilites';
 import { generateDriverFormFields } from 'src/app/shared/utilities/data/drivers.utilities';
+import { generateUserFormFields } from 'src/app/shared/utilities/data/users.utilities';
 
 export interface CreateEditModalData {
     /** Service associated with the item being created/edited */
@@ -54,6 +55,8 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
             return 'zone'
         } else if (this.item instanceof EngineDriver) {
             return 'driver'
+        } else if (this.item instanceof EngineUser) {
+            return 'user'
         }
     }
 
@@ -78,6 +81,8 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
             details = generateZoneFormFields(this.item);
         } else if (this.item instanceof EngineDriver) {
             details = generateDriverFormFields(this.item);
+        } else if (this.item instanceof EngineUser) {
+            details = generateUserFormFields(this.item);
         }
         if (details) {
             details.subscriptions.forEach((sub, index) => this.subscription(`form_field_${index}`, sub));
