@@ -1,6 +1,15 @@
 <div class="container">
-    <header>Execute Command</header>
-    <section>{{item?.name}}</section>
+    <header *ngIf="system_list && system_list.length">Execute Command</header>
+    <section *ngIf="system_list && system_list.length">
+        <mat-form-field appearance="outline">
+            <mat-select [(ngModel)]="active_system" placeholder="Select system">
+                <mat-option *ngFor="let system of system_list" [value]="system">
+                {{system.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <system-exec *ngIf="active_system && active_system.id" [systemId]="active_system.id"></system-exec>
+    </section>
     <section class="tags" *ngIf="item && tag_list">
         <div class="label">Tags:</div>
         <div class="value">

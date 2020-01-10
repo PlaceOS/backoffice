@@ -2,11 +2,14 @@
         <div class="settings">
             <section class="select">
                 <div class="dropdown">
-                    <button mat-button>Add trigger</button>
+                    <button mat-button (tapped)="addTrigger()">Add trigger</button>
                 </div>
-                <div class="btn">
-                    <input placeholder="Filter triggers">
-                </div>
+                <mat-form-field appearance="outline">
+                    <div class="prefix" matPrefix>
+                        <app-icon [icon]="{ class: 'backoffice-magnifying-glass' }"></app-icon>
+                    </div>
+                    <input matInput [(ngModel)]="search_str" name="search-filter" placeholder="Filter Triggers">
+                </mat-form-field>
             </section>
             <section class="list">
                 <table *ngIf="model.triggers && model.triggers.length > 0">
@@ -26,7 +29,7 @@
                     </tbody>
                 </table>
                 <div class="info-block" *ngIf="!model.triggers || model.triggers.length <= 0">
-                    <div class="text">No triggers for system</div>
+                    <div class="text">No triggers for zone</div>
                 </div>
             </section>
         </div>

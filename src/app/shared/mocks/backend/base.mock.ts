@@ -44,12 +44,6 @@ export class BaseMockBackend {
         if (fragment.q) {
             data = data.filter((a) => (a.name || '').toLowerCase().indexOf(fragment.q.toLowerCase()) >= 0);
         }
-        if (fragment.zone_id) {
-            data = data.filter((a) => {
-                (a.zone_id || '').indexOf(fragment.zone_id) >= 0 ||
-                    (a.zones || []).indexOf(fragment.zone_id) >= 0
-            });
-        }
         if (fragment && fragment.offset) {
             const start = Math.min(data.length, +(fragment.offset));
             const end = Math.min(data.length, +(fragment.offset) + (+fragment.limit || 20));
