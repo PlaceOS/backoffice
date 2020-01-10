@@ -41,6 +41,7 @@ import { ItemSearchFieldComponent } from './components/custom-fields/item-search
 import { SystemFormComponent } from './components/forms/system-form/system-form.component';
 import { ModuleFormComponent } from './components/forms/module-form/module-form.component';
 import { ZoneFormComponent } from './components/forms/zone-form/zone-form.component';
+import { DriverFormComponent } from './components/forms/driver-form/driver-form.component';
 
 const COMPONENTS: Type<any>[] = [
     BaseDirective,
@@ -56,6 +57,7 @@ const COMPONENTS: Type<any>[] = [
     SystemFormComponent,
     ModuleFormComponent,
     ZoneFormComponent,
+    DriverFormComponent,
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [

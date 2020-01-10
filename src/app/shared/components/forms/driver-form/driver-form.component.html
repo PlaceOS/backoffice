@@ -1,0 +1,116 @@
+<div class="driver form" *ngIf="form">
+    <div class="field discovery" *ngIf="form.controls.discovery">
+        <item-search-field
+            [service]="discovery_service"
+            [(ngModel)]="base_driver"
+            (ngModelChange)="setDriverBase($event);"
+        ></item-search-field>
+        <button mat-button (tapped)="scanForDrivers()">Scan for Drivers</button>
+    </div>
+    <form [formGroup]="form">
+        <ng-container *ngIf="!form.controls.discovery || base_driver">
+            <div class="field" *ngIf="form.controls.name">
+                <label
+                    for="driver-name"
+                    [class.error]="form.controls.name.invalid && form.controls.name.touched"
+                    >Name<span>*</span>:</label
+                >
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="driver-name"
+                        placeholder="Driver Name"
+                        formControlName="name"
+                        required
+                    />
+                    <mat-error *ngIf="form.controls.name.invalid">Zone name is required</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.role">
+                <label for="role">Role: </label>
+                <mat-form-field appearance="outline">
+                    <mat-select name="role" formControlName="role">
+                        <mat-option *ngFor="let type of role_types" [value]="type.id">
+                        {{type.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.description">
+                <label for="description">Description:</label>
+                <mat-form-field appearance="outline">
+                    <textarea
+                        matInput
+                        name="description"
+                        placeholder="Description"
+                        formControlName="description"
+                    ></textarea>
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.module_name">
+                <label
+                    for="module-name"
+                    [class.error]="form.controls.module_name.invalid && form.controls.module_name.touched"
+                    >Module Name<span>*</span>:</label
+                >
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="module-name"
+                        placeholder="Module Name"
+                        formControlName="module_name"
+                        required
+                    />
+                    <mat-error *ngIf="form.controls.module_name.invalid">Module name is required</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="fieldset">
+                <div class="field" *ngIf="form.controls.default">
+                    <label
+                        for="default">Default:</label
+                    >
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="default"
+                            placeholder="Default"
+                            formControlName="default"
+                            required
+                        />
+                    </mat-form-field>
+                </div>
+                <div class="field" *ngIf="form.controls.ignore_connected">
+                    <mat-checkbox name="ignore-connected" formControlName="ignore_connected">Ignore Connected</mat-checkbox>
+                </div>
+            </div>
+            <div class="field" *ngIf="form.controls.settings_encryption_level">
+                <label for="encryption-level">Settings Encryption Level: </label>
+                <mat-form-field appearance="outline">
+                    <mat-select name="encryption-level" formControlName="settings_encryption_level">
+                        <mat-option *ngFor="let type of encryption_levels" [value]="type.id">
+                        {{type.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.settings_string">
+                <label
+                    for="settings"
+                    [class.error]="
+                        form.controls.settings_string.invalid && form.controls.settings_string.touched
+                    "
+                    >Settings:</label
+                >
+                <settings-form-field formControlName="settings_string" [readonly]="false"></settings-form-field>
+                <div
+                    class="error"
+                    *ngIf="
+                        form.controls.settings_string.invalid && form.controls.settings_string.touched
+                    "
+                >
+                    Settings must be valid YAML
+                </div>
+            </div>
+        </ng-container>
+    </form>
+</div>

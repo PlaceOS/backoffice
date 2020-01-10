@@ -198,12 +198,12 @@ export class ApplicationService extends BaseClass {
 
     /** Root API Endpoint */
     public get endpoint() {
-        return `/control/api`;
+        return this._composer.auth.api_endpoint;
     }
 
     /** Root API Endpoint for engine */
     public get engine_endpoint() {
-        return `/control/api`;
+        return this._composer.auth.api_endpoint;
     }
 
     /** Whether settings and mock data has been loaded */

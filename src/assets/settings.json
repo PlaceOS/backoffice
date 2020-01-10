@@ -124,6 +124,9 @@
         },
         "zones": {
             "can_create": true
+        },
+        "drivers": {
+            "can_create": true
         }
     },
     "mock": true
