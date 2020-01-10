@@ -64,7 +64,7 @@ export class DevicesComponent extends BaseRootComponent<EngineModule> {
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item: this.item,
-                    service: this._service.Systems
+                    service: this._service.Modules
                 }
             });
         }
@@ -79,7 +79,7 @@ export class DevicesComponent extends BaseRootComponent<EngineModule> {
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     title: `Delete device`,
-                    content: `<p>Are you sure you want delete this deice?</p><p>Deleting this will <strong>immediately</strong> remove this device from any system it is associated with</p>`,
+                    content: `<p>Are you sure you want delete this device?</p><p>Deleting this will device <strong>immediately</strong> remove it from any system associated with it</p>`,
                     icon: { type: 'icon', class: 'backoffice-trash' }
                 }
             });

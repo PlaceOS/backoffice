@@ -1,0 +1,87 @@
+<div class="zone form" *ngIf="form">
+    <form [formGroup]="form">
+        <div class="field" *ngIf="form.controls.name">
+            <label
+                for="system-name"
+                [class.error]="form.controls.name.invalid && form.controls.name.touched"
+                >Name<span>*</span>:</label
+            >
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="system-name"
+                    placeholder="System Name"
+                    formControlName="name"
+                    required
+                />
+                <mat-error *ngIf="form.controls.name.invalid">Zone name is required</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.tag_list">
+            <label
+                for="system-email"
+                [class.error]="form.controls.tag_list.invalid && form.controls.tag_list.touched"
+                >Tags:</label
+            >
+            <mat-form-field appearance="outline">
+                <mat-chip-list #chipList aria-label="Zone Tags">
+                    <mat-chip
+                        *ngFor="let tag of tag_list"
+                        [selectable]="true"
+                        [removable]="true"
+                        (removed)="removeTag(tag)"
+                    >
+                        {{ tag }}
+                        <app-icon matChipRemove [icon]="{ class: 'backoffice-cross' }"></app-icon>
+                    </mat-chip>
+                    <input
+                        placeholder="Zone tags..."
+                        [matChipInputFor]="chipList"
+                        [matChipInputSeparatorKeyCodes]="separators"
+                        [matChipInputAddOnBlur]="true"
+                        (matChipInputTokenEnd)="addTag($event)"
+                    />
+                </mat-chip-list>
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.description">
+            <label for="description">Description:</label>
+            <mat-form-field appearance="outline">
+                <textarea
+                    matInput
+                    name="description"
+                    placeholder="Description"
+                    formControlName="description"
+                ></textarea>
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.settings_encryption_level">
+            <label for="encryption-level">Settings Encryption Level: </label>
+            <mat-form-field appearance="outline">
+                <mat-select name="encryption-level" formControlName="settings_encryption_level">
+                    <mat-option *ngFor="let type of encryption_levels" [value]="type.id">
+                    {{type.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.settings_string">
+            <label
+                for="settings"
+                [class.error]="
+                    form.controls.settings_string.invalid && form.controls.settings_string.touched
+                "
+                >Settings:</label
+            >
+            <settings-form-field formControlName="settings_string" [readonly]="false"></settings-form-field>
+            <div
+                class="error"
+                *ngIf="
+                    form.controls.settings_string.invalid && form.controls.settings_string.touched
+                "
+            >
+                Settings must be valid YAML
+            </div>
+        </div>
+    </form>
+</div>

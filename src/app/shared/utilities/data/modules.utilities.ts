@@ -7,7 +7,7 @@ import { HashMap } from '../types.utilities';
 
 export function generateModuleFormFields(module: EngineModule): FormDetails {
     if (!module) {
-        throw Error('No System passed to generate form fields');
+        throw Error('No Module passed to generate form fields');
     }
     const fields: HashMap<FormControl> = {
         ip: new FormControl(module.ip || '', [Validators.pattern('^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')]),

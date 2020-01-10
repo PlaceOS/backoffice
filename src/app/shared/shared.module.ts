@@ -23,6 +23,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatChipsModule } from '@angular/material/chips';
 
 import { BaseDirective } from './globals/base.directive';
 import { SettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
@@ -39,6 +40,7 @@ import { ItemSearchFieldComponent } from './components/custom-fields/item-search
 
 import { SystemFormComponent } from './components/forms/system-form/system-form.component';
 import { ModuleFormComponent } from './components/forms/module-form/module-form.component';
+import { ZoneFormComponent } from './components/forms/zone-form/zone-form.component';
 
 const COMPONENTS: Type<any>[] = [
     BaseDirective,
@@ -53,6 +55,7 @@ const COMPONENTS: Type<any>[] = [
 
     SystemFormComponent,
     ModuleFormComponent,
+    ZoneFormComponent,
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [
@@ -74,7 +77,8 @@ const MATERIAL_MODULES: any[] = [
     MatTooltipModule,
     MatMenuModule,
     MatCheckboxModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatChipsModule
 ];
 
 @NgModule({

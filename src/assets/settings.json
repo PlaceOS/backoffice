@@ -121,6 +121,9 @@
         },
         "modules": {
             "can_create": true
+        },
+        "zones": {
+            "can_create": true
         }
     },
     "mock": true
