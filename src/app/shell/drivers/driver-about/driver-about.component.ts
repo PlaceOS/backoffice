@@ -3,6 +3,10 @@ import { Component, Input } from '@angular/core';
 import { EngineDriver } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmModalComponent, ConfirmModalData } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { ApplicationService } from 'src/app/services/app.service';
 
 @Component({
     selector: 'driver-about',
@@ -13,15 +17,52 @@ export class DriverAboutComponent extends BaseDirective {
     /** Item to render */
     @Input() public item: EngineDriver;
 
+    constructor(private _dialog: MatDialog, private _service: ApplicationService) {
+        super();
+    }
+
     public get settings(): string {
-        if (this.item && this.item.settings) {
-            if (typeof this.item.settings === 'object') {
-                return JSON.stringify(this.item.settings, null, 4);
-            } else if (typeof this.item.settings === 'string') {
-                return this.item.settings;
-            }
+        return this.item.settings.settings_string;
+    }
+
+    public reloadDriver() {
+        if (this.item) {
+            const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+                ConfirmModalComponent,
+                {
+                    height: 'auto',
+                    width: '24em',
+                    maxHeight: 'calc(100vh - 2em)',
+                    maxWidth: 'calc(100vw - 2em)',
+                    data: {
+                        title: `Reload Driver`,
+                        content: `<p>Are you sure you want reload this driver?</p><p>New driver code will be loaded and device settings will be updated.</p>`,
+                        icon: { type: 'icon', class: 'backoffice-cycle' }
+                    }
+                }
+            );
+            this.subscription(
+                'delete_confirm',
+                ref.componentInstance.event.subscribe((event: DialogEvent) => {
+                    if (event.reason === 'done') {
+                        ref.componentInstance.loading = 'Reloading driver...';
+                        this.item.reload().then(
+                            () => {
+                                this._service.notifySuccess(
+                                    `Successfully reloaded driver "${this.item.name}".`
+                                );
+                                ref.close();
+                                this.unsub('delete_confirm');
+                            },
+                            err => {
+                                ref.componentInstance.loading = null;
+                                this._service.notifyError(`Error reloading driver. Error: ${err}`);
+                            }
+                        );
+                    }
+                })
+            );
         }
-        return '{}';
     }
 
 }

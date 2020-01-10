@@ -18,8 +18,8 @@ import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item
     styleUrls: ['./drivers.styles.scss']
 })
 export class DriversComponent extends BaseRootComponent<EngineDriver> {
-    /** Number of devices for the active driver */
-    public devices: number;
+    /** Number of devices for the active system */
+    public device_count: number;
 
     constructor(
         protected _service: ApplicationService,
@@ -33,9 +33,11 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
 
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, dependency_id: this.item.id };
-        // Get system count
         this._service.Modules.query(query).then(
-            () => (this.devices = this._service.Modules.last_total)
+            () => {
+                (this.device_count = this._service.Modules.last_total || 0)
+                console.log('Devices:', this.device_count);
+            }
         );
     }
 
