@@ -21,7 +21,7 @@
                     <tbody>
                         <tr *ngFor="let trigger of model.triggers">
                             <td class="name"><a (touchrelease)="goto(trigger)">{{trigger.name}}</a></td>
-                            <td class="flex">{{trigger.description}}</td>
+                            <td class="flex description">{{trigger.description}}</td>
                             <td class="small">
                                 <div class="action"><i class="backoffice-trash"></i></div>
                             </td>
