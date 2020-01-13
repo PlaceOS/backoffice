@@ -215,7 +215,10 @@ cdk-virtual-scroll-viewport {
     pointer-events: none;
 }
 
-button[widget] {
-    width: 12em;
-    margin-top: 2em;
+.info-block {
+    button {
+        width: 12em;
+        margin-top: 2em;
+    }
 }
+

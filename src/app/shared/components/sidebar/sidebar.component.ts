@@ -8,6 +8,7 @@ import { BaseDirective } from '../../globals/base.directive';
 import { EngineServiceLike, HashMap } from '../../utilities/types.utilities';
 
 import * as dayjs from 'dayjs';
+import { unique } from '../../utilities/general.utilities';
 
 @Component({
     selector: 'sidebar',
@@ -165,6 +166,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         if (this.module) {
             this.module.query({ q: this.search, offset, ...(this.query_params || {}) }).then(list => {
                 this.list = offset ? this.list.concat(list) : list;
+                this.list = unique(this.list, 'id');
                 this.items.next(this.list);
                 this.loading = false;
             }, (err) => {
