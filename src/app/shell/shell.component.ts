@@ -8,8 +8,9 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { EngineUser } from '@acaprojects/ts-composer';
 
+import { ApplicationLink } from '../shared/utilities/settings.interfaces';
 import { ApplicationService } from '../services/app.service';
 import { BaseDirective } from '../shared/globals/base.directive';
 
@@ -21,69 +22,49 @@ import * as dayjs from 'dayjs';
     templateUrl: './shell.template.html'
 })
 export class AppShellComponent extends BaseDirective implements OnInit {
+    /** Whether the application is loading */
+    public loading: boolean;
+    /** Display string for the current year */
+    public year: string;
+    /** Currently active user */
+    public user: EngineUser;
+    /** Global search filter string */
+    public filter: string;
 
-    public model: any = {};
-    public timers: any = {};
+    /** Active environment */
+    public get env(): string {
+        return this.service.setting('env') || '';
+    }
 
-    constructor(private service: ApplicationService, private router: Router) {
+    /** List of core tiles to show on the sidebar menu */
+    public get tiles(): ApplicationLink[] {
+        return this.service.setting('app.tiles') || [];
+    }
+
+    constructor(private service: ApplicationService) {
         super();
-        this.model.routing = {};
     }
 
     public ngOnInit() {
-        this.model.year = dayjs().format('YYYY');
-        this.subscription('user', this.service.Users.user.subscribe((user) => this.model.user = user));
-        this.subscription('route', this.router.events.subscribe((e) => {
-            if (e instanceof NavigationEnd) {
-                this.checkRoute();
-            }
-        }));
+        this.year = dayjs().format('YYYY');
+        this.subscription(
+            'user',
+            this.service.Users.user.subscribe(user => (this.user = user))
+        );
         this.init();
     }
 
     public init() {
-        this.model.loading = true;
+        this.loading = true;
         if (!this.service.is_ready) {
-            this.model.env = this.service.setting('env');
             return setTimeout(() => this.init(), 200);
         }
-        this.model.env = this.service.setting('env');
-        this.model.loading = false;
-        this.model.user = this.service.Users.current();
-        this.model.tiles = this.service.setting('app.tiles');
-        this.subscription('filters', this.service.listen('APP.global_filter', (filter) => this.model.filter = filter));
-        this.checkRoute();
+        this.loading = false;
+        this.service.Users.current().then(user => (this.user = user));
     }
 
+    /** Navigate to the root page */
     public home() {
         this.service.navigate('');
-    }
-
-    public route() {
-        if (this.model.routing.sub) {
-            this.service.navigate(this.model.routing.back);
-        }
-    }
-
-    public checkRoute() {
-        const route = this.router.url.split('?')[0];
-        if (this.model.menu) {
-            this.model.menu.show_footer = this.model.hide_routes.indexOf(route) < 0;
-        }
-        if (this.model.banner) {
-            this.model.banner.show = this.model.hide_routes.indexOf(route) < 0;
-        }
-        if (this.model.tiles) {
-            for (const tile of this.model.tiles) {
-                tile.active = route.indexOf(`/${tile.id}`) === 0;
-                if (tile.active && this.model.banner) {
-                    this.model.explore = tile.id.indexOf('explore') >= 0 || route.indexOf('book/room') >= 0;
-                    this.model.banner.color = this.model.banner.color || tile.color !== '#fff' ? tile.color : '';
-                    this.model.banner.page = {
-                        links: this.service.setting(`app.${tile.settings}.banner.links`) || this.model.banner.links || []
-                    };
-                }
-            }
-        }
     }
 }

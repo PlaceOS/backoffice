@@ -1,12 +1,8 @@
-
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 import { ApplicationLink, ApplicationIcon } from 'src/app/shared/utilities/settings.interfaces';
-import { EngineUser } from '@acaprojects/ts-composer';
-
 
 @Component({
     selector: 'topbar-header',
@@ -14,16 +10,18 @@ import { EngineUser } from '@acaprojects/ts-composer';
     styleUrls: ['./topbar-header.styles.scss']
 })
 export class TopbarHeaderComponent extends BaseDirective implements OnInit {
+    /** Whether the sidebar menu should be shown */
+    @Input('showMenu') public show_menu: boolean;
+    /** Emitter for changes to the sidebar menu show state */
+    @Output('showMenuChange') public show_menu_change = new EventEmitter<boolean>();
+    /** Current global search string */
+    @Input() public filter: string;
     /** Emitter for changes to the search input */
-    @Output() public filter = new EventEmitter();
+    @Output() public filterChange = new EventEmitter();
     /** List of user actions */
     public options: ApplicationLink[];
-
+    /** Whether user tooltip should be shown */
     public show: boolean;
-
-    public show_menu: boolean;
-    /** Current global search string */
-    public filter_str: string;
 
     /** Application logo */
     public get logo(): ApplicationIcon {
@@ -42,36 +40,34 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
 
     /** Current environment of the application */
     public get env(): string {
-        return this._service.setting('env')
+        return this._service.setting('env');
     }
 
-    constructor(private _service: ApplicationService, private router: Router) {
+    constructor(private _service: ApplicationService) {
         super();
     }
 
     public ngOnInit() {
-        this.init();
         this.options = [
-            { route: '/profile', name: 'Profile', icon: { type: 'icon', class: 'backoffice-user' } },
+            {
+                route: '/profile',
+                name: 'Profile',
+                icon: { type: 'icon', class: 'backoffice-user' }
+            },
             { link: '/logout', name: 'Logout', icon: { type: 'icon', class: 'backoffice-logout' } }
         ];
     }
 
-    public init() {
-        if (!this._service.is_ready) {
-            return setTimeout(() => this.init(), 500);
-        }
-        this.subscription('show_menu', this._service.listen('APP.show_menu', (state) => this.show_menu = state));
-        this.subscription('filter', this._service.listen('APP.global_filter', (filter) => this.filter_str = filter));
-    }
-
+    /** Toggle the show state of the sidebar menu */
     public toggleMenu() {
         this.show_menu = !this.show_menu;
-        this._service.set('APP.show_menu', this.show_menu);
+        this.show_menu_change.emit(this.show_menu);
     }
 
+    /**
+     * Emit changes to the global search filter
+     */
     public postFilter() {
-        this._service.set('APP.global_filter', this.filter_str);
-        this.filter.emit(this.filter_str);
+        this.filterChange.emit(this.filter);
     }
 }

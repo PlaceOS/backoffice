@@ -1,8 +1,8 @@
 <div class="container">
     <div class="topbar" [class.uat]="env !== 'prod'">
-        <div class="menu" (tapped)="toggleMenu()">
-            <i [class]="'backoffice-' + (show_menu ? 'cross' : 'menu')"></i>
-        </div>
+        <button mat-icon-button class="mobile-only" (tapped)="toggleMenu()">
+            <app-icon [icon]="{ class: 'backoffice-' + (show_menu ? 'cross' : 'menu') }"></app-icon>
+        </button>
         <div class="block">
             <div *ngIf="logo" class="logo" (tapped)="logo()">
                 <a [routerLink]="['/']">
@@ -16,41 +16,39 @@
         <div class="search">
             <searchbar
                 *ngIf="has_search"
-                [(filter)]="filter_str"
+                [(filter)]="filter"
                 (filterChange)="postFilter()"
             ></searchbar>
         </div>
         <div class="block end">
             <!-- TODO Add user details display -->
-            <div class="avatar" [title]="user?.name" (tapped)="show = !show">
+            <button mat-icon-button class="avatar" [title]="user?.name" [matMenuTriggerFor]="menu">
                 <div
                     class="img"
                     [style.background-image]="('url(' + (user?.image || 'https://www.gravatar.com/avatar/' + user?.gravatar_hash) + ')') | safe:'style'"
                 ></div>
-            </div>
-        </div>
-    </div>
-    <div class="user-options" *ngIf="show">
-        <div class="details">
-            <div class="avatar">
-                <div
-                    class="img"
-                    [style.background-image]="('url(' + (user?.image || 'https://www.gravatar.com/avatar/' + user?.gravatar_hash) + ')') | safe:'style'"
-                ></div>
-            </div>
-            <div class="name">{{user?.name || 'Guest'}}</div>
-        </div>
-        <div class="list" *ngIf="options">
-            <div class="item" *ngFor="let item of options">
-                <a *ngIf="item.link" [href]="item.link">
-                    <app-icon [icon]="item.icon"></app-icon>
-                    <div class="text">{{item.name}}</div>
-                </a>
-                <a *ngIf="item.route" [routerLink]="[item.route]" routerLinkActive="active">
-                    <app-icon [icon]="item.icon"></app-icon>
-                    <div class="text">{{item.name}}</div>
-                </a>
-            </div>
+            </button>
         </div>
     </div>
 </div>
+<mat-menu #menu="matMenu">
+    <a mat-menu-item>
+        <div class="avatar" [routerLink]="['/profile']" routerLinkActive="active">
+            <div
+                class="img"
+                [style.background-image]="('url(' + (user?.image || 'https://www.gravatar.com/avatar/' + user?.gravatar_hash) + ')') | safe:'style'"
+            ></div>
+        </div>
+        <div class="text">{{user?.name || 'Guest'}}</div>
+    </a>
+    <ng-container *ngFor="let item of options">
+        <a *ngIf="item.link" mat-menu-item [href]="item.link">
+            <app-icon [icon]="item.icon"></app-icon>
+            <div class="text">{{item.name}}</div>
+        </a>
+        <a *ngIf="item.route" mat-menu-item [routerLink]="[item.route]" routerLinkActive="active">
+            <app-icon [icon]="item.icon"></app-icon>
+            <div class="text">{{item.name}}</div>
+        </a>
+    </ng-container>
+</mat-menu>
