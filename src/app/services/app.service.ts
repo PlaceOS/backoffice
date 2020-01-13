@@ -133,6 +133,10 @@ export class ApplicationService extends BaseClass {
         return this._engine_search;
     }
 
+    public get Repositories() {
+        return this._composer.repositories;
+    }
+
     /** Stats service */
     public get Stats() {
         return this._engine_stats;

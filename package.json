@@ -33,7 +33,7 @@
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
-    "@acaprojects/ngx-composer": "^2.0.1",
+    "@acaprojects/ngx-composer": "^2.1.0",
     "@acaprojects/ngx-custom-events": "^1.0.5",
     "@acaprojects/ngx-google-analytics": "^1.0.1",
     "@acaprojects/ngx-pipes": "^1.0.0",

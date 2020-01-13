@@ -1,0 +1,39 @@
+<div class="container" [class.show]="show_sidebar">
+    <div class="sidebar">
+        <sidebar
+            heading="Repositories"
+            [module]="module"
+            [list]="list"
+            (searchChange)="search($event)"
+            [loading]="loading"
+            [close]="show_sidebar"
+            (event)="sidebarEvent($event)"
+        ></sidebar>
+    </div>
+    <main (touchrelease)="show_sidebar = false">
+        <item-display
+            [item]="item"
+            [loading]="loading_item"
+            name="repository"
+            [active]="tab"
+            [tabs]="[
+                { id: 'about', name: 'About', template: about, icon: { class: 'backoffice-info-with-circle' } },
+                {
+                    id: 'drives',
+                    name: 'Drivers',
+                    template: drivers,
+                    count: driver_count,
+                    icon: { class: 'backoffice-documents' }
+                }
+            ]"
+            (event)="itemEvent($event)"
+        >
+            <ng-template #about>
+                <repository-about [item]="item"></repository-about>
+            </ng-template>
+            <ng-template #drivers>
+                <repository-drivers [item]="item"></repository-drivers>
+            </ng-template>
+        </item-display>
+    </main>
+</div>

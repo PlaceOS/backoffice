@@ -68,6 +68,15 @@
                     }
                 },
                 {
+                    "name": "Repos",
+                    "route": "/repositories",
+                    "icon": {
+                        "type": "icon",
+                        "class": "backoffice-package",
+                        "content": ""
+                    }
+                },
+                {
                     "name": "Triggers",
                     "route": "/triggers",
                     "icon": {

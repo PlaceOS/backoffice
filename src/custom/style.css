@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'Engine-Backoffice';
-  src:  url('fonts/Engine-Backoffice.eot?kj0fs4');
-  src:  url('fonts/Engine-Backoffice.eot?kj0fs4#iefix') format('embedded-opentype'),
-    url('fonts/Engine-Backoffice.woff2?kj0fs4') format('woff2'),
-    url('fonts/Engine-Backoffice.ttf?kj0fs4') format('truetype'),
-    url('fonts/Engine-Backoffice.woff?kj0fs4') format('woff'),
-    url('fonts/Engine-Backoffice.svg?kj0fs4#Engine-Backoffice') format('svg');
+  src:  url('fonts/Engine-Backoffice.eot?2o6hfy');
+  src:  url('fonts/Engine-Backoffice.eot?2o6hfy#iefix') format('embedded-opentype'),
+    url('fonts/Engine-Backoffice.woff2?2o6hfy') format('woff2'),
+    url('fonts/Engine-Backoffice.ttf?2o6hfy') format('truetype'),
+    url('fonts/Engine-Backoffice.woff?2o6hfy') format('woff'),
+    url('fonts/Engine-Backoffice.svg?2o6hfy#Engine-Backoffice') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -26,6 +26,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.backoffice-package:before {
+  content: "\ea82";
+}
 .backoffice-terminal:before {
   content: "\ea81";
 }
