@@ -133,6 +133,9 @@
         },
         "domains": {
             "can_create": true
+        },
+        "triggers": {
+            "can_create": true
         }
     },
     "mock": true

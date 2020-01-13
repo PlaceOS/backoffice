@@ -9,7 +9,8 @@ import {
     EngineUser,
     EngineDomain,
     EngineApplication,
-    EngineSettings
+    EngineSettings,
+    EngineTrigger
 } from '@acaprojects/ts-composer';
 import { FormGroup } from '@angular/forms';
 
@@ -26,6 +27,7 @@ import { generateDriverFormFields } from 'src/app/shared/utilities/data/drivers.
 import { generateUserFormFields } from 'src/app/shared/utilities/data/users.utilities';
 import { generateDomainFormFields } from 'src/app/shared/utilities/data/domains.utilities';
 import { generateApplicationFormFields } from 'src/app/shared/utilities/data/applications.utilities';
+import { generateTriggerFormFields } from 'src/app/shared/utilities/data/triggers.utilities';
 
 export interface CreateEditModalData {
     /** Service associated with the item being created/edited */
@@ -76,6 +78,8 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
             return 'domain';
         } else if (this.item instanceof EngineApplication) {
             return 'application';
+        } else if (this.item instanceof EngineTrigger) {
+            return 'trigger';
         }
     }
 
@@ -106,6 +110,8 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
             details = generateDomainFormFields(this.item);
         } else if (this.item instanceof EngineApplication) {
             details = generateApplicationFormFields(this.item);
+        } else if (this.item instanceof EngineTrigger) {
+            details = generateTriggerFormFields(this.item);
         }
         if (details) {
             details.subscriptions.forEach((sub, index) =>
@@ -135,7 +141,6 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
                     this.result = item;
                     this.loading = null;
                     const settings: EngineSettings = (this.item as any).settings;
-                    (settings as any).parent_id = item.id;
                     if (
                         settings &&
                         settings instanceof EngineSettings &&
@@ -143,6 +148,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
                         (settings.changes.encryption_level !== settings.encryption_level ||
                             settings.changes.settings_string)
                     ) {
+                        (settings as any).parent_id = item.id;
                         this.loading = `Saving settings for ${item.name}`;
                         ((this.item as any).settings as EngineSettings).save().then(
                             () => {
