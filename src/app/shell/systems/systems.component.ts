@@ -6,7 +6,7 @@ import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
-import { ConfirmModalComponent, ConfirmModalData } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import { ConfirmModalComponent, ConfirmModalData, CONFIRM_METADATA } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
@@ -81,10 +81,7 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
     protected delete() {
         if (this.item) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
-                height: 'auto',
-                width: '24em',
-                maxHeight: 'calc(100vh - 2em)',
-                maxWidth: 'calc(100vw - 2em)',
+                ...CONFIRM_METADATA,
                 data: {
                     title: `Delete system`,
                     content: `<p>Are you sure you want delete this system?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>`,

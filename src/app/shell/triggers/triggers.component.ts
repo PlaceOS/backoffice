@@ -7,7 +7,7 @@ import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
 import { toQueryString } from 'src/app/shared/utilities/api.utilities';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
-import { ConfirmModalData, ConfirmModalComponent } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import { ConfirmModalData, ConfirmModalComponent, CONFIRM_METADATA } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 
 @Component({
@@ -80,10 +80,7 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
                 {
-                    height: 'auto',
-                    width: '24em',
-                    maxHeight: 'calc(100vh - 2em)',
-                    maxWidth: 'calc(100vw - 2em)',
+                    ...CONFIRM_METADATA,
                     data: {
                         title: `Delete trigger`,
                         content: `<p>Are you sure you want delete this trigger?</p><p>Deleting this trigger will <strong>immediately</strong> remove it from all associated systems and zones</p>`,

@@ -8,7 +8,8 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { mergeYAMLSettings } from 'src/app/shared/utilities/general.utilities';
 import {
     ConfirmModalComponent,
-    ConfirmModalData
+    ConfirmModalData,
+    CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 
 import {
@@ -53,9 +54,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
         const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
             ConfirmModalComponent,
             {
-                width: '22em',
-                maxWidth: '95vw',
-                maxHeight: '95vh',
+                ...CONFIRM_METADATA,
                 data: {
                     title: 'Start system?',
                     content: `Are you sure you want to start this system?<br>All stopped modules within the system will boot up.`,
@@ -86,9 +85,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
         const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
             ConfirmModalComponent,
             {
-                width: '22em',
-                maxWidth: '95vw',
-                maxHeight: '95vh',
+                ...CONFIRM_METADATA,
                 data: {
                     title: 'Stop system?',
                     content: `Are you sure you want to stop this system?<br>All modules will be immediately stopped regardless of any other systems they may be in.`,

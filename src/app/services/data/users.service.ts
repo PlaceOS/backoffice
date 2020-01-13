@@ -13,7 +13,8 @@ import { toQueryString } from 'src/app/shared/utilities/api.utilities';
 import * as dayjs from 'dayjs';
 import {
     ConfirmModalComponent,
-    ConfirmModalData
+    ConfirmModalData,
+    CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 
 type ServiceItem = EngineUser;
@@ -180,9 +181,7 @@ export class BackofficeUsersService extends EngineUsersService {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
                 {
-                    width: '22em',
-                    maxWidth: '95vw',
-                    maxHeight: '95vh',
+                    ...CONFIRM_METADATA,
                     data: {
                         title: 'Delete User?',
                         content: `Are you sure you want to delete this user?`,

@@ -7,7 +7,8 @@ import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
 import {
     ConfirmModalComponent,
-    ConfirmModalData
+    ConfirmModalData,
+    CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
@@ -80,10 +81,7 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
                 {
-                    height: 'auto',
-                    width: '24em',
-                    maxHeight: 'calc(100vh - 2em)',
-                    maxWidth: 'calc(100vw - 2em)',
+                    ...CONFIRM_METADATA,
                     data: {
                         title: `Delete driver`,
                         content: `<p>Are you sure you want delete this driver?</p><p>All devices that rely on this driver will be <strong>immediately</strong> removed.</p>`,

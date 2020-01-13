@@ -16,6 +16,14 @@ export interface ConfirmModalData {
     icon: ApplicationIcon;
 }
 
+export const CONFIRM_METADATA = {
+
+    height: 'auto',
+    width: '24em',
+    maxHeight: 'calc(100vh - 2em)',
+    maxWidth: 'calc(100vw - 2em)',
+}
+
 @Component({
     selector: "confirm-modal",
     templateUrl: "./confirm-modal.component.html",

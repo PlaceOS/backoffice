@@ -9,7 +9,8 @@ import { ContextMenuComponent } from '../../../shared/components/context-menu/co
 import { ApplicationLink } from 'src/app/shared/utilities/settings.interfaces';
 import {
     ConfirmModalComponent,
-    ConfirmModalData
+    ConfirmModalData,
+    CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import {
@@ -202,9 +203,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
         const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
             ConfirmModalComponent,
             {
-                width: '22em',
-                maxWidth: '95vw',
-                maxHeight: '95vh',
+                ...CONFIRM_METADATA,
                 data: {
                     title: 'Reload module?',
                     content: `New driver code will be loaded and the device settings will be reloaded.`,
@@ -236,9 +235,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
                 {
-                    width: '22em',
-                    maxWidth: '95vw',
-                    maxHeight: '95vh',
+                    ...CONFIRM_METADATA,
                     data: {
                         title: 'Change order?',
                         content: `Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.`,
@@ -275,9 +272,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
         const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
             ConfirmModalComponent,
             {
-                width: '22em',
-                maxWidth: '95vw',
-                maxHeight: '95vh',
+                ...CONFIRM_METADATA,
                 data: {
                     title: 'Remove module?',
                     content: `Remove ${device.dependency_id} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,

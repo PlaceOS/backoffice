@@ -6,7 +6,7 @@ import { EngineSystem, EngineZone, EngineZonesService } from '@acaprojects/ts-co
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
-import { ConfirmModalComponent, ConfirmModalData } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import { ConfirmModalComponent, ConfirmModalData, CONFIRM_METADATA } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
@@ -55,9 +55,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges {
     public drop(event) {
         if (event && event.previousIndex !== event.currentIndex) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
-                width: '22em',
-                maxWidth: '95vw',
-                maxHeight: '95vh',
+                ...CONFIRM_METADATA,
                 data: {
                     title: 'Change order?',
                     content: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
@@ -84,9 +82,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges {
     public removeZone(zone: EngineZone) {
         if (zone && zone.id) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
-                width: '22em',
-                maxWidth: '95vw',
-                maxHeight: '95vh',
+                ...CONFIRM_METADATA,
                 data: {
                     title: 'Remove zone?',
                     content: `<p>Are you sure you want remove zone "${zone.name}" from the system?</p>Configuration will be updated immediately.`,
@@ -119,9 +115,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges {
                 const new_list = [ ...this.item.zones, this.new_zone ].filter(i => !!i);
                 this.loading.emit(true);
                 const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
-                    width: '22em',
-                    maxWidth: '95vw',
-                    maxHeight: '95vh',
+                    ...CONFIRM_METADATA,
                     data: {
                         title: 'Add zone',
                         content: `Add zone "${this.new_zone}" to system "${this.item.name}"`,

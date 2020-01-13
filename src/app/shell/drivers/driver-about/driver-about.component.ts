@@ -4,7 +4,7 @@ import { EngineDriver } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmModalComponent, ConfirmModalData } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import { ConfirmModalComponent, ConfirmModalData, CONFIRM_METADATA } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
 
@@ -30,10 +30,7 @@ export class DriverAboutComponent extends BaseDirective {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
                 {
-                    height: 'auto',
-                    width: '24em',
-                    maxHeight: 'calc(100vh - 2em)',
-                    maxWidth: 'calc(100vw - 2em)',
+                    ...CONFIRM_METADATA,
                     data: {
                         title: `Reload Driver`,
                         content: `<p>Are you sure you want reload this driver?</p><p>New driver code will be loaded and device settings will be updated.</p>`,

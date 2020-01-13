@@ -8,7 +8,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 import {
     ConfirmModalComponent,
-    ConfirmModalData
+    ConfirmModalData,
+    CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
@@ -67,10 +68,7 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
                 {
-                    height: 'auto',
-                    width: '24em',
-                    maxHeight: 'calc(100vh - 2em)',
-                    maxWidth: 'calc(100vw - 2em)',
+                    ...CONFIRM_METADATA,
                     data: {
                         title: `Delete user`,
                         content: `<p>Are you sure you want delete this user?</p><p>The user will be removed from the system within 24 hours</p>`,
