@@ -46,6 +46,8 @@ import { UserFormComponent } from './components/forms/user-form/user-form.compon
 import { DomainFormComponent } from './components/forms/domain-form/domain-form.component';
 import { ApplicationFormComponent } from './components/forms/application-form/application-form.component';
 import { TriggerFormComponent } from './components/forms/trigger-form/trigger-form.component';
+import { RepositoryFormComponent } from './components/forms/repository-form/repository-form.component';
+import { DriverFormatPipe } from './pipes/driver-format.pipe';
 
 const COMPONENTS: Type<any>[] = [
     BaseDirective,
@@ -66,7 +68,12 @@ const COMPONENTS: Type<any>[] = [
     DomainFormComponent,
     ApplicationFormComponent,
     TriggerFormComponent,
+    RepositoryFormComponent,
 ];
+
+const PIPES: Type<any>[] = [
+    DriverFormatPipe,
+]
 
 const ENTRY_COMPONENT: Type<any>[] = [
     ItemSearchFieldComponent,
@@ -94,6 +101,7 @@ const MATERIAL_MODULES: any[] = [
 @NgModule({
     declarations: [
         ...COMPONENTS,
+        ...PIPES,
         ...ENTRY_COMPONENT,
     ],
     imports: [
@@ -114,6 +122,7 @@ const MATERIAL_MODULES: any[] = [
         ACustomEventsModule,
         ATabsModule,
         ...COMPONENTS,
+        ...PIPES,
         ...ENTRY_COMPONENT,
         ...MATERIAL_MODULES
     ],

@@ -10,7 +10,8 @@ import {
     EngineDomain,
     EngineApplication,
     EngineSettings,
-    EngineTrigger
+    EngineTrigger,
+    EngineRepository
 } from '@acaprojects/ts-composer';
 import { FormGroup } from '@angular/forms';
 
@@ -28,6 +29,7 @@ import { generateUserFormFields } from 'src/app/shared/utilities/data/users.util
 import { generateDomainFormFields } from 'src/app/shared/utilities/data/domains.utilities';
 import { generateApplicationFormFields } from 'src/app/shared/utilities/data/applications.utilities';
 import { generateTriggerFormFields } from 'src/app/shared/utilities/data/triggers.utilities';
+import { generateRepositoryFormFields } from 'src/app/shared/utilities/data/repositories.utilities';
 
 export interface CreateEditModalData {
     /** Service associated with the item being created/edited */
@@ -80,6 +82,8 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
             return 'application';
         } else if (this.item instanceof EngineTrigger) {
             return 'trigger';
+        } else if (this.item instanceof EngineRepository) {
+            return 'repository';
         }
     }
 
@@ -112,6 +116,8 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
             details = generateApplicationFormFields(this.item);
         } else if (this.item instanceof EngineTrigger) {
             details = generateTriggerFormFields(this.item);
+        } else if (this.item instanceof EngineRepository) {
+            details = generateRepositoryFormFields(this.item);
         }
         if (details) {
             details.subscriptions.forEach((sub, index) =>
