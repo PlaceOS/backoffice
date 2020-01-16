@@ -1,32 +1,6 @@
 <div class="container" [class.fullscreen]="fullscreen" (window:resize)="updateContextList()">
     <div class="header">
         <div class="heading">Metrics</div>
-        <div class="options">
-            <div class="type not-mobile">
-                <mat-form-field class="metrics" appearance="outline">
-                    <mat-select #select [value]="options[0]" (valueChange)="changePeriod($event)">
-                        <mat-option *ngFor="let option of options || []" [value]="option">
-                            {{ option }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <button mat-icon-button [matMenuTriggerFor]="menu">
-                <app-icon
-                    [icon]="{ class: 'backoffice-dots-three-vertical' }"
-                ></app-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-                <button
-                    mat-menu-item
-                    *ngFor="let item of context_list"
-                    (tapped)="event(item)"
-                >
-                    <app-icon [icon]="item.icon"></app-icon>
-                    <div class="text">{{ item.name }}</div>
-                </button>
-            </mat-menu>
-        </div>
         <div class="time-display">
             <div class="clock">
                 <div class="hand hour" [style.transform]="'translateX(-50%) rotate(' + hour_angle + 'deg)'"></div>
@@ -41,44 +15,6 @@
         </div>
     </div>
     <div class="body">
-        <div class="count" *ngIf="offline_devices && offline_devices.length > 0">
-            There are {{offline_devices.length}} devices offline
-        </div>
-        <div class="issues">
-            <div class="item" *ngFor="let system of (systems || [])">
-                <div class="system">
-                    <div class="name hover" (touchrelease)="goto(system, 'systems')">{{system.name}}</div>
-                    <div class="id hover" *ngIf="system.id" (touchrelease)="goto(system, 'systems')">({{system.id}})</div>
-                </div>
-                <div class="modules" *ngIf="system_map && system_map[system.id]">
-                    <div class="device" *ngFor="let item of (system_map[system.id] || [])" [class.connected]="item.connected">
-                        <div class="module-class hover" (touchrelease)="goto(item, 'devices')">{{item.dependency?.module_name}}</div>
-                        <div class="name hover" (touchrelease)="goto(item, 'devices')">{{item.name}}</div>
-                        <div class="ip hover" (touchrelease)="goto({ link: 'http://' + item.ip })">{{item.ip}}</div>
-                        <div class="created">{{item.display?.created}}</div>
-                        <div class="action">
-                            <i class="backoffice-check"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="info-block" center *ngIf="!systems || systems.length <= 0">
-                <div class="icon">
-                    <i class="backoffice-cross"></i>
-                </div>
-                <div class="text">No connection issues</div>
-            </div>
-        </div>
-        <div class="graphs">
-            <div class="connected">
-                <canvas #connected_graph></canvas>
-            </div>
-            <div class="offline">
-                <canvas #offline_graph></canvas>
-            </div>
-            <div class="triggers">
-                <canvas #triggers_graph></canvas>
-            </div>
-        </div>
+        <iframe [href]="metrics_url"></iframe>
     </div>
 </div>

@@ -5,6 +5,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 import { ApplicationLink } from 'src/app/shared/utilities/settings.interfaces';
+import { ComposerService } from '@acaprojects/ngx-composer';
 
 @Component({
     selector: 'sidebar-menu',
@@ -21,7 +22,7 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
     /** Route of the shown tooltip */
     public tooltip: string;
 
-    constructor(private service: ApplicationService, private router: Router) {
+    constructor(private service: ApplicationService, private _composer: ComposerService, private router: Router) {
         super();
     }
 
@@ -34,6 +35,13 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
             return this.timeout('init', () => this.init());
         }
         this.menu_items = this.service.setting('app.general.menu');
+        /** Only allow metrics if a URL has be set */
+        if (!this._composer.auth.authority.metrics) {
+            this.menu_items = this.menu_items.filter(item => item.route.indexOf('metrics') < 0);
+            if (this.router.url.indexOf('metrics') >= 0) {
+                this.router.navigate([]);
+            }
+        }
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
