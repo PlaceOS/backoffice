@@ -17,7 +17,6 @@ import { HashMap } from '../shared/utilities/types.utilities';
 
 import { HotkeysService } from './hotkeys.service';
 import { BackofficeCommentsService } from './data/comments.service';
-import { BackofficeDiscoveryService } from './data/discovery.service';
 import { BackofficeLogsService } from './data/logs.service';
 import { BackofficeSearchService } from './data/search.service';
 import { BackofficeStatsService } from './data/stats.service';
@@ -55,7 +54,6 @@ export class ApplicationService extends BaseClass {
         private _analytics: GoogleAnalyticsService,
         private _hotkeys: HotkeysService,
         private _engine_comments: BackofficeCommentsService,
-        private _engine_discovery: BackofficeDiscoveryService,
         private _engine_logs: BackofficeLogsService,
         private _engine_search: BackofficeSearchService,
         private _engine_stats: BackofficeStatsService,
@@ -64,8 +62,8 @@ export class ApplicationService extends BaseClass {
         private _snackbar: MatSnackBar
     ) {
         super();
-        this._engine_comments.parent = this._engine_discovery.parent = this._engine_logs.parent
-            = this._engine_search.parent = this._engine_stats.parent = this._engine_system_logs.parent
+        this._engine_comments.parent = this._engine_logs.parent = this._engine_search.parent
+            = this._engine_stats.parent = this._engine_system_logs.parent
             = this._users.parent = this;
         this.set('system', null);
         this.init();
@@ -99,11 +97,6 @@ export class ApplicationService extends BaseClass {
     /** Comments service */
     public get Comments() {
         return this._engine_comments;
-    }
-
-    /** Driver Discovery service */
-    public get Discovery() {
-        return this._engine_discovery;
     }
 
     /** Engine Domains service */

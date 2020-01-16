@@ -1,4 +1,4 @@
-import { Component, OnInit, forwardRef, Input } from '@angular/core';
+import { Component, OnInit, forwardRef, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { Subject, Observable, of } from 'rxjs';
 import { switchMap, debounceTime, distinctUntilChanged, map, catchError } from 'rxjs/operators';
@@ -21,11 +21,12 @@ import { EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
         }
     ]
 })
-export class ItemSearchFieldComponent<T extends EngineResource<any> = any> extends BaseDirective implements OnInit, ControlValueAccessor {
+export class ItemSearchFieldComponent<T extends EngineResource<any> = any> extends BaseDirective
+    implements OnInit, OnChanges, ControlValueAccessor {
     /** Limit available options to these */
     @Input() public options: T[];
     /** Minimum number of characters needed to start a server query */
-    @Input('minLength') public min_length: number = 1;
+    @Input('minLength') public min_length: number = 0;
     /** Service used for searching items */
     @Input() public service: EngineServiceLike;
     /** Currently selected item */
@@ -47,28 +48,44 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
     private _onTouch: (_: T) => void;
 
     public ngOnInit(): void {
-
         // Listen for input changes
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
-            distinctUntilChanged(),
+            distinctUntilChanged((x, y) => !x || x !== y),
             switchMap(query => {
                 this.loading = true;
+                console.log('Search');
                 return this.options && this.options.length > 0
                     ? Promise.resolve(this.options)
-                    : query.length >= this.min_length
-                        ? (this.service.query({ q: query, cache: 60 * 1000 }) as Promise<T[]>)
-                        : Promise.resolve([]);
+                    : !this.min_length || query.length >= this.min_length
+                    ? (this.service.query({ q: query || '', cache: 60 * 1000 }) as Promise<T[]>)
+                    : Promise.resolve([]);
             }),
-            catchError((err) => of([])),
+            catchError(err => of([])),
             map((list: T[]) => {
                 this.loading = false;
-                const search = this.search_str.toLowerCase();
-                return list.filter((item: any) => item.name.toLowerCase().indexOf(search) >= 0 || (item.email || '').toLowerCase().indexOf(search) >= 0);
+                const search = (this.search_str || '').toLowerCase();
+                return list.filter(
+                    (item: any) =>
+                        item.name.toLowerCase().indexOf(search) >= 0 ||
+                        (item.email || '').toLowerCase().indexOf(search) >= 0
+                );
             })
         );
         // Process API results
-        this.subscription('search_results', this.search_results$.subscribe(list => this.item_list = list));
+        this.subscription(
+            'search_results',
+            this.search_results$.subscribe(list => (this.item_list = list))
+        );
+        this.timeout('init', () => {
+            this.search$.next('');
+        })
+    }
+
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes.service) {
+            this.search$.next('');
+        }
     }
 
     /**

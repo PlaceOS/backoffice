@@ -119,7 +119,7 @@ window.control.handlers.push({
     callback: event => {
         const repo = MOCK_REPOSITORIES.find(repo => repo.id === event.route_params.id);
         if (repo) {
-            const driver = MOCK_DRIVERS.find(driver => driver.id === event.query_params.driver);
+            const driver = MOCK_DRIVERS.find(driver => driver.name.split(' ').join('/') === event.query_params.driver);
             if (!driver) throw {  status: 404, message: `Unable to find driver with ID ${event.query_params.driver}` };
             return repo.commits.map(hash => ({
                 commit: hash,
@@ -142,9 +142,15 @@ window.control.handlers.push({
     callback: event => {
         const repo = MOCK_REPOSITORIES.find(repo => repo.id === event.route_params.id);
         if (repo) {
-            const driver = MOCK_DRIVERS.find(driver => driver.id === event.query_params.driver);
+            const driver = MOCK_DRIVERS.find(driver => driver.name.split(' ').join('/') === event.query_params.driver);
             if (!driver) throw {  status: 404, message: `Unable to find driver with ID ${event.query_params.driver}` };
-            return driver;
+            return {
+                descriptive_name: driver.name,
+                generic_name: driver.module_name,
+                class_name: driver.class,
+                description: driver.description,
+                default_settings: driver.settings
+            };
         }
         throw {
             status: 404,

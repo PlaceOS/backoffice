@@ -81,21 +81,3 @@ mat-checkbox {
 input {
     min-width: 0;
 }
-
-.discovery {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    item-search-field {
-        min-width: 49%;
-        width: 49%;
-        flex: 1;
-    }
-
-    button {
-        margin-left: .5em;
-        margin-top: .5em;
-        height: 2.5rem;
-        width: 10em;
-    }
-}

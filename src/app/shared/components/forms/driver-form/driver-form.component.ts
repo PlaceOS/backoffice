@@ -1,11 +1,16 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { EncryptionLevel, EngineDriver } from '@acaprojects/ts-composer';
+import {
+    EncryptionLevel,
+    EngineDriver,
+    EngineRepositoryCommit,
+    EngineRepository,
+    EngineRepositoriesService
+} from '@acaprojects/ts-composer';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { Identity } from 'src/app/shared/utilities/types.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
-import { BackofficeDiscoveryService } from 'src/app/services/data/discovery.service';
 
 @Component({
     selector: 'driver-form',
@@ -32,29 +37,70 @@ export class DriverFormComponent extends BaseDirective {
     ];
 
     /** Driver used as a template for the new driver being created */
-    public base_driver: EngineDriver;
+    public base_repo: EngineRepository;
+    /** Driver used as a template for the new driver being created */
+    public base_commit: EngineRepositoryCommit;
+    /** Driver used as a template for the new driver being created */
+    public base_driver: Identity;
+    /** List of available drivers for the active repository */
+    public driver_list: Identity[] = [];
+    /** List of available commits for the active driver */
+    public commit_list: Identity[] = [];
 
     /** Service for handling driver discovery */
-    public get discovery_service(): BackofficeDiscoveryService {
-        return this._service.Discovery;
+    public get discovery_service(): EngineRepositoriesService {
+        return this._service.Repositories;
     }
 
     constructor(private _service: ApplicationService) {
         super();
     }
 
-    public scanForDrivers() {
-        this._service.Discovery.scan().then(() => {});
+    /**
+     * Update the list of available drivers
+     * @param repo Repository to grab the drivers for
+     */
+    public updateDriverList(repo: EngineRepository) {
+        console.log('Update driver list:', repo);
+        this._service.Repositories.listDrivers(repo.id).then(list => {
+            this.driver_list = (list || []).map(driver => ({
+                id: driver,
+                name: driver.replace(/\//g, ' > ')
+            }));
+            this.commit_list = [];
+        });
+    }
+
+    /**
+     * Update the list of available commits
+     * @param driver Driver to grab commits for
+     */
+    public updateCommitList(driver: Identity) {
+        console.log('Update Commit list:', driver);
+        this._service.Repositories.listCommits(this.base_repo.id, {
+            driver: `${driver.id}`
+        }).then((list: any[]) => {
+            this.commit_list = (list || []).map((commit: EngineRepositoryCommit) => ({
+                id: commit.commit,
+                name: `${commit.commit} - ${commit.subject}`
+            }));
+        });
     }
 
     /**
      *
      * @param driver
      */
-    public setDriverBase(driver: EngineDriver) {
-        this.form.controls.name.setValue(driver.name);
-        this.form.controls.module_name.setValue(driver.module_name);
-        this.form.controls.class_name.setValue(driver.class_name);
-        this.form.controls.settings_string.setValue(driver.settings.settings_string || '');
+    public setDriverBase(event: Identity) {
+        this._service.Repositories.driverDetails(this.base_repo.id, {
+            driver: `${this.base_driver.id}`,
+            commit: `${event.id}`
+        }).then(driver => {
+            this.form.controls.name.setValue(driver.descriptive_name);
+            this.form.controls.module_name.setValue(driver.generic_name);
+            this.form.controls.class_name.setValue(this.base_driver);
+            this.form.controls.settings_string.setValue(driver.default_settings || '');
+            this.form.controls.description.setValue(driver.description || '');
+        });
     }
 }
