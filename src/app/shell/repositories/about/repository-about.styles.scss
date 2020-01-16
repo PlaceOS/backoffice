@@ -19,3 +19,15 @@ section {
 .no-item {
     font-size: .75em;
 }
+
+.field {
+    display: flex;
+    flex-direction: column;
+    margin: .75em 0;
+}
+
+label {
+    font-size: .8em;
+    font-weight: 500;
+    margin-bottom: .4em;
+}

@@ -237,3 +237,22 @@ mat-dialog-container.mat-dialog-container {
         color: #fff;
     }
 }
+
+.mat-tooltip {
+    background-color: $background-dark;
+    font-size: .8em;
+}
+
+.formatted-driver-name {
+    display: flex;
+    align-items: center;
+
+    .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 1.2em;
+        width: 1.2em;
+        font-size: 1.5em;
+    }
+}

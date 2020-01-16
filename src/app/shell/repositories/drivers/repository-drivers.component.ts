@@ -1,6 +1,6 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
-import { EngineRepository } from '@acaprojects/ts-composer';
+import { EngineRepository, EngineDriver } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -11,9 +11,10 @@ import { ApplicationService } from '../../../services/app.service';
     styleUrls: ['./repository-drivers.styles.scss']
 })
 export class RepositorySystemsComponent extends BaseDirective implements OnChanges {
+    /** Active repository */
     @Input() public item: EngineRepository;
-
-    public model: any = {};
+    /** List of drivers available in the repository */
+    public driver_list: string[] = [];
 
     constructor(private service: ApplicationService) {
         super();
@@ -27,7 +28,7 @@ export class RepositorySystemsComponent extends BaseDirective implements OnChang
 
     public load(offset: number = 0) {
         this.service.Repositories.listDrivers(this.item.id, { offset } as any).then((list) => {
-            this.model.list = list;
+            this.driver_list = list || [];
         }, () => null);
     }
 }

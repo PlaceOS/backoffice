@@ -28,69 +28,11 @@ section {
     padding: .5em .25em;
 }
 
-label {
-    font-size: .8em;
-    font-weight: 500;
-}
-
 .select {
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: .25em;
-}
-
-.execute {
-
-    .row {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    dropdown {
-        flex: 1;
-    }
-
-    .fn-input {
-        flex-grow: 2;
-        min-width: 10em;
-        max-width: 100%;
-        display: flex;
-        align-items: center;
-        * {
-            font-family: $mono-font;
-        }
-    }
-
-    .arg {
-        display: flex;
-        align-items: center;
-    }
-
-    .seperator {
-        color: rgba(#000, .2);
-        &.solid {
-            color: rgba(#000, .87);
-        }
-    }
-
-    input {
-        margin-top: 2px;
-        border: none;
-        border-bottom: 2px dashed rgba(#000, 0);
-        background: none;
-        outline: none;
-        font-size: 1em;
-        color: rgba(#000, .87);
-        padding: 0;
-        &.error {
-            border-bottom-color: $error;
-        }
-        &::placeholder {
-            color: rgba(#000, .2);
-        }
-    }
 }
 
 button {
@@ -114,6 +56,7 @@ button {
 }
 
 label {
+    font-size: .8em;
     font-weight: 500;
 }
 

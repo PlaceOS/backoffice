@@ -1,28 +1,17 @@
 <div class="container">
     <div class="settings">
-        <table *ngIf="model.list && model.list.length > 0">
+        <table *ngIf="driver_list && driver_list.length > 0">
             <thead>
-                <td class="small"></td>
                 <td class="flex">Name</td>
-                <td class="small"></td>
             </thead>
             <tbody>
-                <tr *ngFor="let item of model.list">
-                    <td class="small">
-                        <div class="state" [class.active]="item.enabled"></div>
-                    </td>
-                    <td class="flex">
-                        <a (touchrelease)="goto(item)">
-                            {{item.system?.name}} (<span class="id">{{item.system?.id}}</span>)
-                        </a>
-                    </td>
-                    <td class="small">
-                        <div class="action"><i class="backoffice-trash"></i></div>
+                <tr *ngFor="let item of driver_list">
+                    <td class="small" [innerHTML]="item | driverFormat">
                     </td>
                 </tr>
             </tbody>
         </table>
-        <div class="info-block" *ngIf="!model.list || model.list.length <= 0">
+        <div class="info-block" *ngIf="!driver_list || driver_list.length <= 0">
             <div class="text">No drivers for repository</div>
         </div>
     </div>

@@ -37,6 +37,15 @@ export function isAndroidChrome(): boolean {
 }
 
 /**
+ * Generate a random number
+ * @param ceil Biggest value to generate not inclusive
+ * @param floor Smallest value to generate. Defaults to 0
+ */
+export function randomInt(ceil: number, floor: number = 0) {
+    return Math.floor(Math.random() * (ceil - floor)) + floor;
+}
+
+/**
  * Generate string representation of a number with zeros padding the length
  * @param value Number to pad with zeros
  * @param length Length of the resulting string
