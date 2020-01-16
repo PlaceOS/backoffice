@@ -23,6 +23,12 @@ import { MockTestsBackend } from './backend/tests.mock';
 import { MockDiscoveryBackend } from './backend/discovery.mock';
 import { MockHttpRequestHandlerOptions } from '@acaprojects/ts-composer';
 
+declare global {
+    interface Window {
+        backend: MockBackend;
+    }
+}
+
 export class MockBackend {
     public model: any = {
         api_route: 'api/engine/v2',
@@ -232,5 +238,4 @@ export class MockBackend {
     }
 }
 
-const win = window as any;
-win.backend = new MockBackend();
+window.backend = new MockBackend();

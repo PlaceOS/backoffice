@@ -6,7 +6,11 @@
                 <div class="id" *ngIf="item.id" (dblclick)="copy()">
                     <span>{{ item.id }}</span>
                 </div>
-                <div class="chip connect" *ngIf="item.connected !== null && item.connected !== undefined" [class.active]="item.connected">
+                <div
+                    class="chip connect"
+                    *ngIf="item.connected !== null && item.connected !== undefined"
+                    [class.active]="item.connected"
+                >
                     {{ item.connected ? 'Online' : 'Offline' }}
                 </div>
                 <div class="chip secure" *ngIf="item.tls">
@@ -37,24 +41,30 @@
                     <div class="tab">
                         <i [class]="tab.icon?.class">{{ tab.icon?.value }}</i>
                         <div class="name">{{ tab.name }}&nbsp;</div>
-                        <div class="count" *ngIf="tab.count || tab.count === 0">({{ tab.count || '0' }})</div>
+                        <div class="count" *ngIf="tab.count || tab.count === 0">
+                            ({{ tab.count || '0' }})
+                        </div>
                     </div>
                 </a-tab>
             </a-tab-group>
         </div>
     </main>
 </div>
-<div class="info-block not-mobile center" *ngIf="!item && !loading">
-    <div class="icon">
-        <i class="backoffice-arrow-left"></i>
+<div class="not-mobile center" *ngIf="!item && !loading">
+    <div class="info-block">
+        <div class="icon">
+            <i class="backoffice-arrow-left"></i>
+        </div>
+        <div class="text">Select a {{ name }} from the sidebar</div>
     </div>
-    <div class="text">Select a {{ name }} from the sidebar</div>
 </div>
-<div class="info-block mobile-only center" *ngIf="!item && !loading">
-    <div class="icon">
-        <i class="backoffice-arrow-up"></i>
+<div class="mobile-only center" *ngIf="!item && !loading">
+    <div class="info-block">
+        <div class="icon">
+            <i class="backoffice-arrow-up"></i>
+        </div>
+        <div class="text">Select a {{ name }} from the search bar</div>
     </div>
-    <div class="text">Select a {{ name }} from the search bar</div>
 </div>
 <div class="info-block center" *ngIf="loading">
     <div class="icon">

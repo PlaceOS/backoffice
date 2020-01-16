@@ -66,7 +66,7 @@ export class ApplicationService extends BaseClass {
         super();
         this._engine_comments.parent = this._engine_discovery.parent = this._engine_logs.parent
             = this._engine_search.parent = this._engine_stats.parent = this._engine_system_logs.parent
-            = this._engine_tests.parent = this._users.parent = this;
+            = this._users.parent = this;
         this.set('system', null);
         this.init();
     }
