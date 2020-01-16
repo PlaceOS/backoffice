@@ -111,15 +111,6 @@
                         "class": "backoffice-browser",
                         "content": ""
                     }
-                },
-                {
-                    "name": "Testing",
-                    "route": "/tests",
-                    "icon": {
-                        "type": "icon",
-                        "class": "backoffice-terminal",
-                        "content": ""
-                    }
                 }
             ],
             "global_search": true

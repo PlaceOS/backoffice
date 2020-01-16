@@ -15,7 +15,6 @@ const routes: Routes = [
         { path: 'triggers', loadChildren: () => import('./shell/triggers/triggers.module').then(m => m.AppTriggersModule) },
         { path: 'users', loadChildren: () => import('./shell/users/users.module').then(m => m.AppUsersModule) },
         { path: 'zones', loadChildren: () => import('./shell/zones/zones.module').then(m => m.AppZonesModule) },
-        { path: 'tests', loadChildren: () => import('./shell/tests/tests.module').then(m => m.AppTestsModule) },
         { path: 'about', component: AppAboutComponent },
         { path: '**',      redirectTo: 'systems' }
     ] },

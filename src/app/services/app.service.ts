@@ -22,7 +22,6 @@ import { BackofficeLogsService } from './data/logs.service';
 import { BackofficeSearchService } from './data/search.service';
 import { BackofficeStatsService } from './data/stats.service';
 import { BackofficeSystemLogsService } from './data/system_logs.service';
-import { BackofficeTestsService } from './data/tests.service';
 import { BackofficeUsersService } from './data/users.service';
 import { ApplicationIcon } from '../shared/utilities/settings.interfaces';
 
@@ -61,7 +60,6 @@ export class ApplicationService extends BaseClass {
         private _engine_search: BackofficeSearchService,
         private _engine_stats: BackofficeStatsService,
         private _engine_system_logs: BackofficeSystemLogsService,
-        private _engine_tests: BackofficeTestsService,
         private _users: BackofficeUsersService,
         private _snackbar: MatSnackBar
     ) {
@@ -155,11 +153,6 @@ export class ApplicationService extends BaseClass {
     /** Systems service */
     public get Systems() {
         return this._composer.systems;
-    }
-
-    /** Testing service */
-    public get Tests() {
-        return this._engine_tests;
     }
 
     /** Triggers service */
