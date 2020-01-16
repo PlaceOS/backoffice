@@ -21,6 +21,9 @@
             ></searchbar>
         </div>
         <div class="block end">
+            <button mat-icon-button class="more-actions not-mobile" [matMenuTriggerFor]="more_actions">
+                <app-icon [icon]="{ class: 'material-icons', content: 'more_vert' }"></app-icon>
+            </button>
             <!-- TODO Add user details display -->
             <button mat-icon-button class="avatar" [title]="user?.name" [matMenuTriggerFor]="menu">
                 <div
@@ -51,4 +54,10 @@
             <div class="text">{{item.name}}</div>
         </a>
     </ng-container>
+</mat-menu>
+<mat-menu #more_actions="matMenu">
+    <button mat-menu-item *ngFor="let action of extra_action_list" (tapped)="action.callback()">
+        <app-icon [icon]="action.icon"></app-icon>
+        <div class="text">{{action.name}}</div>
+    </button>
 </mat-menu>

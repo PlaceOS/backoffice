@@ -55,15 +55,28 @@ export interface SystemsModuleSettings {
     licenses: number;
 }
 
-export interface ApplicationLink {
-    /** Identifier for the icon */
+export type ApplicationLink = ApplicationActionLink | ApplicationInternalLink | ApplicationExternalLink;
+
+
+export interface ApplicationActionLink {
+    /** Identifier for the link */
+    id?: string;
+    /** Name of the tile */
+    name: string;
+    /** Callback function to respond to action */
+    callback: () => void;
+    /** Icon associated with the tile */
+    icon: ApplicationIcon;
+    /** List of sub-links */
+    children?: ApplicationLink[];
+}
+export interface ApplicationInternalLink {
+    /** Identifier for the link */
     id?: string;
     /** Name of the tile */
     name: string;
     /** Application route the tile will navigate */
-    route?: string;
-    /** External link the tile will navigate */
-    link?: string;
+    route: string;
     /** Query parameters to add to the route being navigated to */
     query_params?: HashMap<string | number | boolean>;
     /** Icon associated with the tile */
@@ -72,13 +85,35 @@ export interface ApplicationLink {
     children?: ApplicationLink[];
 }
 
-export interface ApplicationIcon {
+export interface ApplicationExternalLink {
+    /** Identifier for the link */
+    id?: string;
+    /** Name of the tile */
+    name: string;
+    /** External link the tile will navigate */
+    link: string;
+    /** Icon associated with the tile */
+    icon: ApplicationIcon;
+    /** List of sub-links */
+    children?: ApplicationLink[];
+}
+
+export type ApplicationIcon = ApplicationElementIcon | ApplicationImageIcon;
+
+export interface ApplicationImageIcon {
     /** Type of icon */
-    type: 'img' | 'icon';
+    type: 'img';
     /** URL to the image used for the icon */
-    src?: string;
+    src: string;
+    /** Background color for icon */
+    background?: string;
+}
+
+export interface ApplicationElementIcon {
+    /** Type of icon */
+    type: 'icon';
     /** CSS class to add to icon element */
-    class?: string;
+    class: string;
     /** Contents to add to icon element */
     content?: string;
     /** Background color for icon */

@@ -2,7 +2,10 @@ import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
-import { ApplicationLink, ApplicationIcon } from 'src/app/shared/utilities/settings.interfaces';
+import { ApplicationLink, ApplicationIcon, ApplicationActionLink } from 'src/app/shared/utilities/settings.interfaces';
+import { MatDialog } from '@angular/material/dialog';
+import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
+import { EngineSystem, EngineZone } from '@acaprojects/ts-composer';
 
 @Component({
     selector: 'topbar-header',
@@ -22,6 +25,21 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
     public options: ApplicationLink[];
     /** Whether user tooltip should be shown */
     public show: boolean;
+
+    public extra_action_list: ApplicationActionLink[] = [
+        {
+            name: 'New System',
+            icon: { type: 'icon', class: 'backoffice-plus' },
+            callback: () =>
+                this.new(new EngineSystem(this._service.Systems, {}), this._service.Systems)
+        },
+        {
+            name: 'New Zone',
+            icon: { type: 'icon', class: 'backoffice-plus' },
+            callback: () =>
+                this.new(new EngineZone(this._service.Zones, {}), this._service.Zones)
+        }
+    ];
 
     /** Application logo */
     public get logo(): ApplicationIcon {
@@ -43,7 +61,7 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
         return this._service.setting('env');
     }
 
-    constructor(private _service: ApplicationService) {
+    constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
@@ -56,6 +74,21 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
             },
             { link: '/logout', name: 'Logout', icon: { type: 'icon', class: 'backoffice-logout' } }
         ];
+    }
+    /**
+     * Open the modal to create a new engine resource
+     */
+    protected new(item: EngineResource, service: any) {
+        this._dialog.open(ItemCreateUpdateModalComponent, {
+            height: 'auto',
+            width: 'auto',
+            maxHeight: 'calc(100vh - 2em)',
+            maxWidth: 'calc(100vw - 2em)',
+            data: {
+                item,
+                service
+            }
+        });
     }
 
     /** Toggle the show state of the sidebar menu */
