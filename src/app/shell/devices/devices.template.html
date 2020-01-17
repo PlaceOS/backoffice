@@ -3,9 +3,7 @@
         <sidebar
             heading="Devices"
             [module]="module"
-            [list]="list"
             (searchChange)="search($event)"
-            [loading]="loading"
             [close]="show_sidebar"
             [queryParams]="only_disconnected ? { connected: false, running: true } : {}"
             (event)="sidebarEvent($event)"

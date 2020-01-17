@@ -64,7 +64,7 @@ export interface ApplicationActionLink {
     /** Name of the tile */
     name: string;
     /** Callback function to respond to action */
-    callback: () => void;
+    callback?: () => void;
     /** Icon associated with the tile */
     icon: ApplicationIcon;
     /** List of sub-links */

@@ -5,8 +5,7 @@ import { EngineSystem, EngineModule, HashMap } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
-import { ContextMenuComponent } from '../../../shared/components/context-menu/context-menu.component';
-import { ApplicationLink } from 'src/app/shared/utilities/settings.interfaces';
+import { ApplicationLink, ApplicationActionLink } from 'src/app/shared/utilities/settings.interfaces';
 import {
     ConfirmModalComponent,
     ConfirmModalData,
@@ -33,7 +32,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     /** Store for ID of new module to add to system */
     public new_module: string;
     /** Actions available for the context menu */
-    public menu_options: ApplicationLink[] = [
+    public menu_options: ApplicationActionLink[] = [
         {
             id: 'power',
             name: 'Toggle Power',
@@ -108,7 +107,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
      * @param event Event posted by the context menu
      * @param device Module associated with the context menu event
      */
-    public handleContextEvent(event: ApplicationLink, device: EngineModule) {
+    public handleContextEvent(event: ApplicationActionLink, device: EngineModule) {
         if (event) {
             switch (event.id) {
                 case 'power':

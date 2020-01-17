@@ -14,6 +14,8 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges {
     @Input() public item: EngineZone;
 
     public model: any = {};
+    /** Filter string for zone list */
+    public search_str: string;
 
     constructor(private service: ApplicationService) {
         super();

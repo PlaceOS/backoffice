@@ -15,6 +15,8 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges 
 
     public model: any = {};
 
+    public search_str: string;
+
     constructor(private service: ApplicationService) {
         super();
     }

@@ -15,6 +15,6 @@
         </div>
     </div>
     <div class="body">
-        <iframe [href]="metrics_url"></iframe>
+        <iframe [src]="metrics_url | safe:'resource'"></iframe>
     </div>
 </div>

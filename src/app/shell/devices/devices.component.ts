@@ -17,6 +17,8 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 export class DevicesComponent extends BaseRootComponent<EngineModule> {
     /** Number of systems for the active device */
     public system_count: number;
+    /** Whether the list of devices should show only the disconnected devices */
+    public only_disconnected: boolean;
 
     constructor(
         protected _service: ApplicationService,

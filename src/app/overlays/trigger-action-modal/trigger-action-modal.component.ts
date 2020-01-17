@@ -21,6 +21,10 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
 
     public model: any = {};
 
+    public item: any;
+    public loading: boolean;
+    public has_errors: any;
+
     constructor(
         private _dialog: MatDialogRef<TriggerActionModalComponent>,
         @Inject(MAT_DIALOG_DATA) private _data: TriggerActionModalData,

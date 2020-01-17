@@ -56,7 +56,7 @@
     <button
         mat-button
         type="submit"
-        [disabled]="has_errors || !fields_valid"
+        [disabled]="has_errors"
         (tapped)="item ? edit() : new()"
     >
         {{ item ? 'Save' : 'Add' }}

@@ -78,7 +78,7 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
     /**
      * Open the modal to create a new engine resource
      */
-    protected new(item: EngineResource, service: any) {
+    protected new(item: any, service: any) {
         this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
             width: 'auto',
