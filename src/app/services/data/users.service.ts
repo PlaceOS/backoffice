@@ -125,35 +125,39 @@ export class BackofficeUsersService extends EngineUsersService {
      * @param fields Key value pairs of post parameters
      */
     public login(fields: any = {}) {
-        this._subjects.state.next('loading');
-        const query = toQueryString(fields);
-        let headers = new HttpHeaders();
-        headers = headers.append('Content-Type', 'application/x-www-form-urlencoded');
-        this.http_unauth.post('/auth/jwt/callback', query, { headers }).subscribe(
-            (res: any) => {
-                if (res.status >= 200 && res.status < 400) {
-                    if (sessionStorage) {
-                        const clientId = Md5.hashStr(`${location.origin}/oauth-resp.html`);
-                        sessionStorage.setItem(`${clientId}_login`, 'true');
+        return new Promise((resolve, reject) => {
+            this._subjects.state.next('loading');
+            const query = toQueryString(fields);
+            let headers = new HttpHeaders();
+            headers = headers.append('Content-Type', 'application/x-www-form-urlencoded');
+            this.http_unauth.post('/auth/jwt/callback', query, { headers }).subscribe(
+                (res: any) => {
+                    if (res.status >= 200 && res.status < 400) {
+                        if (sessionStorage) {
+                            const clientId = Md5.hashStr(`${location.origin}/oauth-resp.html`);
+                            sessionStorage.setItem(`${clientId}_login`, 'true');
+                        }
+                        this._composer.auth.authorise();
+                    } else {
+                        this._subjects.state.next('invalid');
                     }
-                    this._composer.auth.authorise();
-                } else {
-                    this._subjects.state.next('invalid');
-                }
-            },
-            err => {
-                if (err.status >= 400) {
-                    this._subjects.state.next('error');
-                } else {
-                    if (sessionStorage) {
-                        const clientId = Md5.hashStr(`${location.origin}/oauth-resp.html`);
-                        sessionStorage.setItem(`${clientId}_login`, 'true');
+                    resolve();
+                },
+                err => {
+                    if (err.status >= 400) {
+                        this._subjects.state.next('error');
+                    } else {
+                        if (sessionStorage) {
+                            const clientId = Md5.hashStr(`${location.origin}/oauth-resp.html`);
+                            sessionStorage.setItem(`${clientId}_login`, 'true');
+                        }
+                        this._composer.auth.authorise();
                     }
-                    this._composer.auth.authorise();
-                }
-            },
-            () => this.load()
-        );
+                    reject();
+                },
+                () => this.load()
+            );
+        })
     }
 
     /**

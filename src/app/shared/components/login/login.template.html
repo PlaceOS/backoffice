@@ -1,21 +1,28 @@
-<div class="container" [class.uat]="model.env !== 'prod'" >
+<div class="container" [class.uat]="env !== 'prod'">
     <div class="login-container">
-        <div class="logo" [style.background]="(model.logo ? model.logo.background : '') | safe:'style'">
-            <img *ngIf="model.logo && (model.logo.type==='image' || model.logo.type==='img')" [src]="model.logo.src">
-            <i *ngIf="model.logo && (model.logo.type!=='image' && model.logo.type!=='img')" [class]="model.logo.src"></i>
+        <div class="logo" [style.background]="(logo ? logo.background : '') | safe:'style'">
+            <img *ngIf="logo && (logo.type==='image' || logo.type==='img')" [src]="logo.src" />
+            <i *ngIf="logo && (logo.type!=='image' && logo.type!=='img')" [class]="logo.src"></i>
         </div>
-        <div class="form" *ngIf="!model.loading">
-            <login-form *ngIf="model.show === 'login'" (event)="processLogin($event)"></login-form>
-            <register-form *ngIf="model.show === 'register'"></register-form>
-            <forgot-pass-form *ngIf="model.show === 'forgot'"></forgot-pass-form>
-        </div>
-        <div class="loader" *ngIf="model.loading">
-            <div class="icon">
-                <a-spinner circle-ring color="rgba(0,0,0, .54)"></a-spinner>
-            </div>
-            <div class="text">
-                Loading user data...
-            </div>
+        <div class="form" *ngIf="!loading; else load_state">
+            <login-form
+                *ngIf="show === 'login'"
+                [form]="login_form"
+                (forgot)="forgottenPassword()"
+                (submitted)="login()"
+            ></login-form>
+            <register-form *ngIf="show === 'register'"></register-form>
+            <forgot-pass-form *ngIf="show === 'forgot'"></forgot-pass-form>
         </div>
     </div>
 </div>
+<ng-template #load_state>
+    <div class="loader">
+        <div class="icon">
+            <a-spinner circle-ring color="rgba(0,0,0, .54)"></a-spinner>
+        </div>
+        <div class="text">
+            Loading user data...
+        </div>
+    </div>
+</ng-template>

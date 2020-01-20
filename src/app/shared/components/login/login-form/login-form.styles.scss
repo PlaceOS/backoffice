@@ -1,41 +1,77 @@
 
 @import 'shared.styles';
 
-.container {
-    padding: 0 2em 1em;
-    max-width: 100vw;
-    width: 100%;
-    text-align: center;
+form {
+    display: flex;
+    flex-direction: column;
+    width: 18em;
+    max-width: calc(100vw - 2em);
 }
 
-.field {
-    margin-top: .5em;
-}
+.fieldset {
+    display: flex;
+    flex-wrap: wrap;
 
-.forgot {
-    text-align: right;
-    opacity: .54;
-    font-size: .7em;
-    width: 100%;
-}
+    .field {
+        width: auto;
+        flex: 1;
+        min-width: 30%;
+        margin: 0 .25em;
 
-input {
-    font-size: 1em;
-    color: #fff;
-    background: none;
-    border: none;
-    border-bottom: 1px solid #fff;
-    width: 100%;
-    padding: .5em 0;
-    margin: 0 0 .25em;
-    outline: none;
-    background-color: rgba(#fff, .05);
-    &:focus {
-        border-color: $color-primary;
+        @include respond-to(mobile) {
+            min-width: 20em;
+            margin: 0;
+        }
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        &:last-child {
+            margin-right: 0;
+        }
     }
 }
 
-span {
-    color: $color-primary;
+.field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 50%;
+    width: 100%;
+
+    div.error {
+        position: absolute;
+        bottom: .5em;
+        left: 1em;
+        color: $error;
+        font-size: .7em;
+        font-weight: 500;
+    }
 }
 
+label {
+    font-size: .8em;
+    font-weight: 500;
+    margin: .5em 0;
+
+    &.error {
+        color: $error;
+    }
+
+    span {
+        color: $pending;
+    }
+}
+
+settings-form-field {
+    margin-bottom: 1.5em;
+}
+
+mat-checkbox {
+    margin: .25em;
+}
+
+input {
+    min-width: 0;
+}

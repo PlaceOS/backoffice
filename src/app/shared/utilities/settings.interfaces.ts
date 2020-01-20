@@ -37,10 +37,17 @@ export interface ApplicationSettings {
     logo_dark: ApplicationIcon;
     /** Logo to use on light background */
     logo_light?: ApplicationIcon;
+    /** Settings for the local login form */
+    login?: LoginSettings;
     /** General settings for the application */
     general: GeneralApplicationSettings;
     /** Settings used for systems module of the application */
     systems: SystemsModuleSettings;
+}
+
+export interface LoginSettings {
+    /** Whether the user is allowed to reset their password if forgotten */
+    forgotten_password: boolean;
 }
 
 export interface GeneralApplicationSettings {

@@ -28,7 +28,7 @@ declare global {
     }
 }
 
-if (window.sentry_dsn){
+if (window.sentry_dsn) {
     Sentry.init({
         dsn: window.sentry_dsn
     });

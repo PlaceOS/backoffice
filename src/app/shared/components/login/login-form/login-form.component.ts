@@ -1,37 +1,36 @@
 
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { ApplicationService } from '../../../../services/app.service';
+import { FormGroup } from '@angular/forms';
+import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { LoginSettings } from 'src/app/shared/utilities/settings.interfaces';
 
 @Component({
     selector: 'login-form',
     templateUrl: './login-form.template.html',
     styleUrls: ['./login-form.styles.scss']
 })
-export class LoginFormComponent {
-    @Input() public form: any = {};
-    @Output() public event = new EventEmitter();
+export class LoginFormComponent extends BaseDirective implements OnInit {
+    /** Form fields for logging in */
+    @Input() public form: FormGroup;
+    /** Emitter for user forgot password action */
+    @Output() public forgot = new EventEmitter<void>();
+    /** Emitter for form submission events */
+    @Output() public submitted = new EventEmitter<void>();
+    /** Settings for the login form */
+    public settings: LoginSettings;
+    /** Whether the password should be shown */
+    public show_password: boolean;
 
-    public model: any = {};
-
-    constructor(private service: ApplicationService) { }
+    constructor(private _service: ApplicationService) {
+        super();
+    }
 
     public ngOnInit() {
-        this.init();
-    }
-
-    public init() {
-        if (!this.service.is_ready) {
-            return setTimeout(() => this.init(), 500);
+        if (!this._service.is_ready) {
+            return this.timeout('init', () => this.ngOnInit());
         }
-        this.model.settings = this.service.setting('app.login') || {};
-    }
-
-    public login() {
-        this.event.emit({ type: 'login', form: this.form });
-    }
-
-    public forgot() {
-        this.event.emit({ type: 'forgot' });
+        this.settings = this._service.setting('app.login') || {};
     }
 }
 
