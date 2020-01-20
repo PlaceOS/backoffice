@@ -55,7 +55,6 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
      */
     public close() {
         this.timeout('close', () => {
-            console.warn('Close sidebar')
             this.show = false;
             this.showChange.emit(this.show);
         }, 100);

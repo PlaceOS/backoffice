@@ -1,21 +1,15 @@
 
 @import 'shared.styles';
 
-:host {
-    max-width: 100%;
-}
-
 form {
     display: flex;
     flex-direction: column;
-    width: 36em;
-    max-width: 100%;
+    min-width: 100%;
 }
 
 .fieldset {
     display: flex;
     flex-wrap: wrap;
-    max-width: 100%;
 
     .field {
         width: auto;

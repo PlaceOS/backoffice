@@ -24,6 +24,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { BaseDirective } from './globals/base.directive';
 import { SettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
@@ -50,6 +51,8 @@ import { RepositoryFormComponent } from './components/forms/repository-form/repo
 import { TriggerConditionFormComponent } from './components/forms/trigger-condition-form/trigger-condition-form.component';
 
 import { DriverFormatPipe } from './pipes/driver-format.pipe';
+import { TriggerConditionComparisonFormComponent } from './components/forms/trigger-condition-form/comparison-form/comparison-form.component';
+import { TriggerConditionTimeFormComponent } from './components/forms/trigger-condition-form/time-form/time-form.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -89,6 +92,7 @@ const ENTRY_COMPONENT: Type<any>[] = [
 
 const MATERIAL_MODULES: any[] = [
     MatButtonModule,
+    MatButtonToggleModule,
     MatSnackBarModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -109,6 +113,8 @@ const MATERIAL_MODULES: any[] = [
         ...COMPONENTS,
         ...PIPES,
         ...ENTRY_COMPONENT,
+        TriggerConditionComparisonFormComponent,
+        TriggerConditionTimeFormComponent,
     ],
     imports: [
         CommonModule,

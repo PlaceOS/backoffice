@@ -217,6 +217,24 @@ export function mergeYAMLSettings(dest: string = '', source: string = ''): strin
 }
 
 /**
+ * Calculate the position counter for the given number e.g `1st`, `2nd`, `3rd`, `4th`...
+ * @param num Number to caculate position for
+ */
+export function numberToPosition(num: number): string {
+    const mod_ten = num % 10;
+    if (num > 10 && num < 20) {
+        return `${num}th`;
+    } else if (mod_ten === 1) {
+        return `${num}st`;
+    } else if (mod_ten === 2) {
+        return `${num}nd`;
+    } else if (mod_ten === 3) {
+        return `${num}rd`;
+    }
+    return `${num}th`;
+}
+
+/**
  * Copy the given value to the OS Clipboard
  * @param value String to copy to the clipboard
  */

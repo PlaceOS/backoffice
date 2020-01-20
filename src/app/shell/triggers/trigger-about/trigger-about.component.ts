@@ -40,6 +40,8 @@ export class TriggerAboutComponent extends BaseDirective {
         this._dialog.open<TriggerConditionModalComponent, TriggerConditionData>(
             TriggerConditionModalComponent,
             {
+                width: 'auto',
+                height: 'auto',
                 data: {
                     trigger: this.item,
                     system: this.template_system
