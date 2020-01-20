@@ -36,7 +36,7 @@ export class MockApplicationsBackend extends BaseMockBackend {
             });
         }
         this.model.applications = item_list;
-        this.setupBasicHandlers('auth/api/applications', this.model.applications, 'app');
+        this.setupBasicHandlers('api/engine/v2/applications', this.model.applications, 'app');
         this.state.next(true);
     }
 

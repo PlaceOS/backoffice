@@ -35,7 +35,7 @@ export class MockDomainsBackend extends BaseMockBackend {
             });
         }
         this.model.domains = item_list;
-        this.setupBasicHandlers('/auth/api/domains', this.model.domains, 'sgrp');
+        this.setupBasicHandlers('api/engine/v2/domains', this.model.domains, 'sgrp');
         this.state.next(true);
     }
 }

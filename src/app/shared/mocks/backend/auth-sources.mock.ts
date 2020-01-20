@@ -42,7 +42,7 @@ export class MockAuthSourcesBackend extends BaseMockBackend {
             });
         }
         this.model.auth_sources = item_list;
-        this.setupBasicHandlers('auth/api/authsources', this.model.auth_sources, 'auth');
+        this.setupBasicHandlers('api/engine/v2/authsources', this.model.auth_sources, 'auth');
         this.state.next(true);
     }
 
