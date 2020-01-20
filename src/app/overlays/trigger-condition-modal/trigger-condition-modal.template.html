@@ -1,116 +1,18 @@
 <header>
-    <h3 mat-dialog-title>{{item ? 'Edit' : 'New'}} Trigger Condition</h3>
+    <h3 mat-dialog-title>{{is_new ? 'Edit' : 'New'}} Trigger Condition</h3>
     <button mat-icon-button mat-dialog-close>
         <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
     </button>
 </header>
 <mat-dialog-content>
     <div class="body" *ngIf="!loading; else load_state">
-        <div class="field">
-            <div class="label">Condition Type<span class="orange">*</span>:</div>
-            <div class="value">
-                <mat-form-field appearance="outline">
-                    <mat-select #select (valueChange)="form.condition_type = $event">
-                        <mat-label>Select a system</mat-label>
-                        <mat-option *ngFor="let option of condition_types" [value]="option">
-                            {{ option }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-        </div>
-        <div class="fieldset" *ngIf="form.condition_type && form.condition_type.id === 'webhook'">
-            <div class="field">
-                <div class="label">Select type<span class="orange">*</span>:</div>
-                <div class="value">
-                    <mat-form-field appearance="outline">
-                        <mat-select #select (valueChange)="form.webhook_type = $event; checkFields()">
-                            <mat-label>Select webhook type</mat-label>
-                            <mat-option *ngFor="let option of webhook_types" [value]="option">
-                                {{ option }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="info">Webhooks can provide a JSON payload with a command to execute.</div>
-        </div>
-        <div class="fieldset" *ngIf="form.condition_type && form.condition_type.id === 'compare'">
-            <div class="field">
-                <div class="label">Status variable<span class="orange">*</span>:</div>
-                <div class="value">
-                    <mat-form-field appearance="outline">
-                        <mat-select #select (valueChange)="form.lhs_variable = $event; checkFields()">
-                            <mat-label>Select status variable</mat-label>
-                            <mat-option *ngFor="let option of status_variables" [value]="option">
-                                {{ option }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="field">
-                <div class="value">
-                    <input [(ngModel)]="form.lhs_subkeys" placeholder="subkey1, subkey2, ..." />
-                </div>
-            </div>
-            <div class="field">
-                <div class="value">
-                    <mat-form-field appearance="outline">
-                        <mat-select #select (valueChange)="form.compare_type = $event; checkFields()">
-                            <mat-label>Select comparison operator</mat-label>
-                            <mat-option *ngFor="let option of compare_types" [value]="option">
-                                {{ option }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="field">
-                <div class="value">
-                    <mat-form-field appearance="outline">
-                        <mat-select #select (valueChange)="form.compare_value = $event; checkFields()">
-                            <mat-label>Select comparsion value</mat-label>
-                            <mat-option *ngFor="let option of ['Constant', 'Status Variable']" [value]="option">
-                                {{ option }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="field" *ngIf="form.compare_value">
-                <div class="label">Status variable<span class="orange">*</span>:</div>
-                <div class="value">
-                    <mat-form-field appearance="outline">
-                        <mat-select #select (valueChange)="form.rhs_variable = $event; checkFields()">
-                            <mat-label>Select status variable</mat-label>
-                            <mat-option *ngFor="let option of status_variables" [value]="option">
-                                {{ option }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="field">
-                <div class="value">
-                    <input [(ngModel)]="form.rhs_subkeys" placeholder="subkey1, subkey2, ..." />
-                </div>
-            </div>
-        </div>
-        <div class="fieldset" *ngIf="form.condition_type && form.condition_type.id === 'cron'">
-            <cron></cron>
-        </div>
+        <trigger-condition-form [form]="form" [system]="system"></trigger-condition-form>
     </div>
 </mat-dialog-content>
-<mat-dialog-actions>
+<mat-dialog-actions *ngIf="!loading">
     <button mat-button class="inverse" mat-dialog-close>Cancel</button>
-    <button
-        mat-button
-        type="submit"
-        [disabled]="has_errors"
-        (tapped)="item ? edit() : new()"
-    >
-        {{ item ? 'Save' : 'Add' }}
+    <button mat-button type="submit" (tapped)="save()">
+        {{ is_new ? 'Save' : 'Add' }}
     </button>
 </mat-dialog-actions>
 <ng-template #load_state>

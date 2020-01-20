@@ -1,8 +1,10 @@
 
 import { Validators, FormControl, FormGroup } from '@angular/forms';
-import { EngineTrigger, HashMap } from '@acaprojects/ts-composer';
+import { EngineTrigger, HashMap, TriggerComparison, TimeCondition, ConditionOperator } from '@acaprojects/ts-composer';
 
 import { FormDetails } from './systems.utilities';
+
+import * as dayjs from 'dayjs';
 
 /**
  * Generate angular form controls
@@ -22,6 +24,23 @@ export function generateTriggerFormFields(trigger: EngineTrigger): FormDetails {
             subscriptions.push(fields[key].valueChanges.subscribe(value => trigger[key] = value));
         }
     }
+    return {
+        form: new FormGroup(fields),
+        subscriptions
+    };
+}
+
+export function generateTriggerConditionForm() {
+    const fields: HashMap<FormControl> = {
+        condition_type: new FormControl('compare'),
+        left: new FormControl(),
+        operator: new FormControl(ConditionOperator.EQ),
+        right: new FormControl(),
+        time_type: new FormControl('at'),
+        time: new FormControl(dayjs().unix()),
+        cron: new FormControl()
+    };
+    const subscriptions = [];
     return {
         form: new FormGroup(fields),
         subscriptions

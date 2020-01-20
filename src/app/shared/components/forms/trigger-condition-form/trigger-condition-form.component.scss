@@ -1,0 +1,77 @@
+
+@import 'shared.styles';
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 36em;
+    max-width: calc(100vw - 4em);
+}
+
+.fieldset {
+    display: flex;
+    flex-wrap: wrap;
+
+    .field {
+        width: auto;
+        flex: 1;
+        min-width: 30%;
+        margin: 0 .25em;
+
+        @include respond-to(mobile) {
+            min-width: 20em;
+            margin: 0;
+        }
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+.field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 50%;
+    width: 100%;
+
+    div.error {
+        position: absolute;
+        bottom: .5em;
+        left: 1em;
+        color: $error;
+        font-size: .7em;
+        font-weight: 500;
+    }
+}
+
+label {
+    font-size: .8em;
+    font-weight: 500;
+    margin: .5em 0;
+
+    &.error {
+        color: $error;
+    }
+
+    span {
+        color: $pending;
+    }
+}
+
+settings-form-field {
+    margin-bottom: 1.5em;
+}
+
+mat-checkbox {
+    margin: .25em;
+}
+
+input {
+    min-width: 0;
+}

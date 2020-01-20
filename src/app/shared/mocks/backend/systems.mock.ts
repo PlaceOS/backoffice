@@ -86,7 +86,7 @@ export class MockSystemsBackend extends BaseMockBackend {
                             }
                         }
                     } else if (event.route_params.opt === 'state') {
-                        return this.generateSettings();
+                        return yaml.safeLoad(this.generateSettings());
                     }
                 }
                 return null;

@@ -1,38 +1,39 @@
 <div class="container">
     <div class="settings">
         <section>
-            <!-- <a-dropdown [options]="{ can_filter: true }" [items]="model.systems" [ngModel]="-1" (ngModelChange)="select(model.systems[$event])" -->
-                <!-- (searchChange)="loadSystems($event)" placeholder="Select a System"></a-dropdown> -->
+            <div class="field">
+                <label for="dependency" matTooltip="System to use for available status variables and function calls">Template System: </label>
+                <item-search-field
+                    [service]="system_service"
+                    [(ngModel)]="template_system"
+                ></item-search-field>
+            </div>
         </section>
         <header>
-            <div class="action" *ngIf="model.selected_system">
-                <button mat-button format="mini-action" (tapped)="addCondition()">
-                    <i class="backoffice-plus"></i>
+            <div class="action" *ngIf="template_system">
+                <button mat-icon-button (tapped)="addCondition()">
+                    <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
                 </button>
             </div>
             <div class="text">Conditions</div>
         </header>
         <section>
-            <div class="list" *ngIf="model.condtions">
-
-            </div>
-            <div class="info-block" *ngIf="!model.conditions">
+            <div class="list" *ngIf="item.conditions"></div>
+            <div class="info-block" *ngIf="!item.conditions">
                 <div class="text">No conditions for trigger</div>
             </div>
         </section>
         <header>
-            <div class="action" *ngIf="model.selected_system">
-                <button mat-button format="mini-action" (tapped)="addAction()">
-                    <i class="backoffice-plus"></i>
+            <div class="action" *ngIf="template_system">
+                <button mat-icon-button (tapped)="addAction()">
+                    <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
                 </button>
             </div>
             <div class="text">Actions</div>
         </header>
         <section>
-            <div class="list" *ngIf="model.actions">
-
-            </div>
-            <div class="info-block" *ngIf="!model.actions">
+            <div class="list" *ngIf="item.actions"></div>
+            <div class="info-block" *ngIf="!item.actions">
                 <div class="text">No actions for trigger</div>
             </div>
         </section>

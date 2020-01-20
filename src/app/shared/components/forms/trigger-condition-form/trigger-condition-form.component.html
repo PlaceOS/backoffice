@@ -1,1 +1,119 @@
-<p>trigger-condition-form works!</p>
+<div class="module form" *ngIf="form">
+    <form [formGroup]="form">
+        <div class="field" *ngIf="form.controls.condition_type">
+            <label for="type">Condition Type: </label>
+            <mat-form-field appearance="outline">
+                <mat-select name="type" formControlName="condition_type">
+                    <mat-option *ngFor="let type of condition_types" [value]="type.id">
+                        {{ type.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <ng-container *ngIf="form.controls.condition_type.value === 'compare'; else time_form">
+            <ng-container
+                *ngTemplateOutlet="status_variable_form; context: { side: 'left' }"
+            ></ng-container>
+            <div class="field" *ngIf="form.controls.operator">
+                <label for="operator" hidden>Operation:</label>
+                <mat-form-field appearance="outline">
+                    <mat-select name="operator" formControlName="operator">
+                        <mat-option *ngFor="let operation of compare_types" [value]="operation.id">
+                            {{ operation.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.operator">
+                <label for="compared-to" hidden>Compared to:</label>
+                <mat-form-field appearance="outline">
+                    <mat-select
+                        name="compared-to"
+                        [(ngModel)]="rhs_type"
+                        (ngModelChange)="form.controls.right.setValue(null)"
+                        [ngModelOptions]="{ standalone: true }"
+                    >
+                        <mat-option *ngFor="let type of right_var_type" [value]="type.id">
+                            {{ type.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div
+                class="field"
+                *ngIf="rhs_type === 'constant' && form.controls.right; else rhs_status_var"
+            >
+                <label for="constant" hidden>Compared to:</label>
+                <mat-form-field appearance="outline">
+                    <input matInput name="constant" formControlName="right" placeholder="true/false, 'string', 123.456" />
+                </mat-form-field>
+            </div>
+        </ng-container>
+    </form>
+</div>
+<ng-template #rhs_status_var>
+    <ng-container
+        *ngTemplateOutlet="status_variable_form; context: { side: 'right' }"
+    ></ng-container>
+</ng-template>
+<ng-template #status_variable_form let-side="side">
+    <div class="fieldset">
+        <div class="field">
+            <label for="type">Module:</label>
+            <mat-form-field appearance="outline">
+                <mat-select
+                    name="type"
+                    [(ngModel)]="this[side + '_side'].mod"
+                    (ngModelChange)="loadSystemStatusVariables($event, side)"
+                    [ngModelOptions]="{ standalone: true }"
+                >
+                    <mat-option *ngFor="let mod of module_list" [value]="mod.name">
+                        {{ mod.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div
+            class="field"
+            *ngIf="this[side + '_status_variables'] && this[side + '_status_variables'].length"
+        >
+            <label [for]="side + '-status-var'">Status Variable:</label>
+            <mat-form-field appearance="outline">
+                <mat-select
+                    [name]="side + '-status-var'"
+                    [(ngModel)]="this[side + '_side'].status"
+                    (ngModelChange)="updateFormForSide(side)"
+                    [ngModelOptions]="{ standalone: true }"
+                >
+                    <mat-option
+                        *ngFor="let mod of this[side + '_status_variables']"
+                        [value]="mod.id"
+                    >
+                        {{ mod.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+    <div
+        class="field"
+        *ngIf="this[side + '_status_variables'] && this[side + '_status_variables'].length"
+    >
+        <label [for]="side + '-subkeys'">Subkeys:</label>
+        <mat-form-field appearance="outline">
+            <input
+                matInput
+                [ngModel]="this[side + '_keys']"
+                (ngModelChange)="this[side + '_side'].keys = $event.split(','); updateFormForSide(side);"
+                [name]="side + '-subkeys'"
+            />
+        </mat-form-field>
+    </div>
+</ng-template>
+
+<ng-template #time_form>
+    <div class="field" *ngIf="form.controls.time_type">
+        <label for="type">Condition Type: </label>
+        <input matInput name="time" type="time" />
+    </div>
+</ng-template>

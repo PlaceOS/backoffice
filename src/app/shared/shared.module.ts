@@ -47,7 +47,22 @@ import { DomainFormComponent } from './components/forms/domain-form/domain-form.
 import { ApplicationFormComponent } from './components/forms/application-form/application-form.component';
 import { TriggerFormComponent } from './components/forms/trigger-form/trigger-form.component';
 import { RepositoryFormComponent } from './components/forms/repository-form/repository-form.component';
+import { TriggerConditionFormComponent } from './components/forms/trigger-condition-form/trigger-condition-form.component';
+
 import { DriverFormatPipe } from './pipes/driver-format.pipe';
+
+const FORM_COMPONENTS: Type<any>[] = [
+    SystemFormComponent,
+    ModuleFormComponent,
+    ZoneFormComponent,
+    DriverFormComponent,
+    UserFormComponent,
+    DomainFormComponent,
+    ApplicationFormComponent,
+    TriggerFormComponent,
+    RepositoryFormComponent,
+    TriggerConditionFormComponent,
+];
 
 const COMPONENTS: Type<any>[] = [
     BaseDirective,
@@ -59,27 +74,18 @@ const COMPONENTS: Type<any>[] = [
     ...LOGIN_COMPONENTS,
     CronOptionsComponent,
     IconComponent,
-
-    SystemFormComponent,
-    ModuleFormComponent,
-    ZoneFormComponent,
-    DriverFormComponent,
-    UserFormComponent,
-    DomainFormComponent,
-    ApplicationFormComponent,
-    TriggerFormComponent,
-    RepositoryFormComponent,
+    ...FORM_COMPONENTS
 ];
 
 const PIPES: Type<any>[] = [
     DriverFormatPipe,
-]
+];
 
 const ENTRY_COMPONENT: Type<any>[] = [
     ItemSearchFieldComponent,
     SettingsFieldComponent,
     ContextMenuComponent,
-]
+];
 
 const MATERIAL_MODULES: any[] = [
     MatButtonModule,
