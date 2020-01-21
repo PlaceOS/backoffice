@@ -49,7 +49,7 @@ export class MockSystemTriggersBackend extends BaseMockBackend {
             });
         }
         this.model.system_triggers = item_list;
-        this.setupBasicHandlers('api/engine/v2/system_triggers', this.model.system_triggers, 'sys');
+        this.setupBasicHandlers('api/engine/v2/system-triggers', this.model.system_triggers, 'sys');
         this.state.next(true);
     }
 

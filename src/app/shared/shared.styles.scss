@@ -57,6 +57,12 @@ $header-height: 4em;
 ||   Mixins   ||
 \*============*/
 
+@mixin hide-text-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 @mixin box-shadow($depth: 1, $spread: 1) {
     box-shadow: 0 (1px * $spread) (3px * $spread) 0 rgba(#000, .2 * $depth),
                 0 (1px * $spread) (1px * $spread) 0 rgba(#000, .14 * $depth),

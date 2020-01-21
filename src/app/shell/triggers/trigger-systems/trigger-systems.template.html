@@ -1,28 +1,40 @@
 <div class="container">
     <div class="settings">
-        <table *ngIf="model.list && model.list.length > 0">
+        <table *ngIf="system_trigger_list && system_trigger_list.length > 0">
             <thead>
                 <td class="small"></td>
                 <td class="flex">Name</td>
+                <td class="flex">Added</td>
                 <td class="small"></td>
             </thead>
             <tbody>
-                <tr *ngFor="let item of model.list">
+                <tr *ngFor="let trigger of system_trigger_list">
                     <td class="small">
-                        <div class="state" [class.active]="item.enabled"></div>
+                        <i
+                            binding
+                            *ngIf="trigger.system_id"
+                            [sys]="trigger.system_id"
+                            mod="System_1"
+                            bind="connected"
+                            [(model)]="connected[trigger.system_id]"
+                        ></i>
+                        <div class="state" [class.active]="connected[trigger.system_id]"></div>
                     </td>
                     <td class="flex">
-                        <a (touchrelease)="goto(item)">
-                            {{item.system?.name}} (<span class="id">{{item.system?.id}}</span>)
+                        <a [routerLink]="['/systems', trigger.system_id]" *ngIf="trigger.system_id">
+                            {{trigger.system_name}} (<span class="id">{{trigger.system_id}}</span>)
                         </a>
                     </td>
+                    <td>{{ trigger.created_at * 1000 | dateFrom }}</td>
                     <td class="small">
-                        <div class="action"><i class="backoffice-trash"></i></div>
+                        <button mat-icon-button (tapped)="delete(trigger)">
+                            <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+                        </button>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <div class="info-block" *ngIf="!model.list || model.list.length <= 0">
+        <div class="info-block" *ngIf="!system_trigger_list || system_trigger_list.length <= 0">
             <div class="text">No systems with trigger</div>
         </div>
     </div>

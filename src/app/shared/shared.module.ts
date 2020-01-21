@@ -27,7 +27,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { BaseDirective } from './globals/base.directive';
-import { SettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
 import { ItemDisplayComponent } from './components/item-display/item-display.component';
 import { LOGIN_COMPONENTS } from './components/login';
@@ -37,6 +36,8 @@ import { SystemExecComponent } from './components/system-exec/system-exec.compon
 import { CronOptionsComponent } from './components/cron-options/cron-options.component';
 import { BaseRootComponent } from './components/base-root.component';
 import { IconComponent } from './components/icon/icon.component';
+
+import { SettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
 import { ItemSearchFieldComponent } from './components/custom-fields/item-search-field/item-search-field.component';
 
 import { SystemFormComponent } from './components/forms/system-form/system-form.component';
@@ -49,10 +50,11 @@ import { ApplicationFormComponent } from './components/forms/application-form/ap
 import { TriggerFormComponent } from './components/forms/trigger-form/trigger-form.component';
 import { RepositoryFormComponent } from './components/forms/repository-form/repository-form.component';
 import { TriggerConditionFormComponent } from './components/forms/trigger-condition-form/trigger-condition-form.component';
-
-import { DriverFormatPipe } from './pipes/driver-format.pipe';
 import { TriggerConditionComparisonFormComponent } from './components/forms/trigger-condition-form/comparison-form/comparison-form.component';
 import { TriggerConditionTimeFormComponent } from './components/forms/trigger-condition-form/time-form/time-form.component';
+
+import { DriverFormatPipe } from './pipes/driver-format.pipe';
+import { DateFromPipe } from './pipes/date-from.pipe';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -82,6 +84,7 @@ const COMPONENTS: Type<any>[] = [
 
 const PIPES: Type<any>[] = [
     DriverFormatPipe,
+    DateFromPipe
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [
