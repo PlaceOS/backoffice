@@ -7,11 +7,11 @@
     <div class="fieldset" *ngIf="!is_cron; else cron_time_form">
         <div class="field" *ngIf="form.controls.time">
             <label for="type">Date: </label>
-            <input matInput name="date" type="date" />
+            <a-date-field name="date" formControlName="time"></a-date-field>
         </div>
         <div class="field" *ngIf="form.controls.time">
             <label for="type">Time: </label>
-            <input matInput name="time" type="time" />
+            <a-time-field name="date" formControlName="time"></a-time-field>
         </div>
     </div>
 </div>

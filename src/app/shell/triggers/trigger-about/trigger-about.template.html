@@ -2,7 +2,11 @@
     <div class="settings">
         <section>
             <div class="field">
-                <label for="dependency" matTooltip="System to use for available status variables and function calls">Template System: </label>
+                <label
+                    for="dependency"
+                    matTooltip="System to use for available status variables and function calls"
+                    >Template System:
+                </label>
                 <item-search-field
                     [service]="system_service"
                     [(ngModel)]="template_system"
@@ -10,30 +14,98 @@
             </div>
         </section>
         <header>
-            <div class="action" *ngIf="template_system">
-                <button mat-icon-button (tapped)="addCondition()">
+            <div class="action">
+                <button mat-icon-button [disabled]="!template_system" (tapped)="addCondition()">
                     <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
                 </button>
             </div>
             <div class="text">Conditions</div>
         </header>
         <section>
-            <div class="list" *ngIf="item.conditions"></div>
-            <div class="info-block" *ngIf="!item.conditions">
+                <div class="list" *ngIf="item.conditions && item.conditions.comparisons">
+                    <div class="item" *ngFor="let comparison of item.conditions.comparisons">
+                        <div class="handle">
+                            <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
+                        </div>
+                        <div class="details">
+                            {{ comparison.left | json }} {{ comparison.operator }} {{ comparison.right | json}}
+                        </div>
+                        <button mat-icon-button>
+                            <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
+                        </button>
+                        <button mat-icon-button>
+                            <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
+                        </button>
+                    </div>
+                </div>
+                <div class="list" *ngIf="item.conditions && item.conditions.time_dependents">
+                    <div class="item" *ngFor="let time of item.conditions.time_dependents">
+                        <div class="handle">
+                            <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
+                        </div>
+                        <div class="details">
+                            {{ time.type === 'at' ? time.time : time.cron }}
+                        </div>
+                        <button mat-icon-button>
+                            <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
+                        </button>
+                        <button mat-icon-button>
+                            <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
+                        </button>
+                    </div>
+                </div>
+            <div
+                class="info-block"
+                *ngIf="!item.conditions || (!item.conditions.comparisons && !item.conditions.time_dependents) || (!item.conditions.comparisons.length && item.conditions.time_dependents.length)"
+            >
                 <div class="text">No conditions for trigger</div>
             </div>
         </section>
         <header>
-            <div class="action" *ngIf="template_system">
-                <button mat-icon-button (tapped)="addAction()">
+            <div class="action">
+                <button mat-icon-button [disabled]="!template_system" (tapped)="addAction()">
                     <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
                 </button>
             </div>
             <div class="text">Actions</div>
         </header>
         <section>
-            <div class="list" *ngIf="item.actions"></div>
-            <div class="info-block" *ngIf="!item.actions">
+            <div class="list" *ngIf="item.actions && item.actions.mailers">
+                <div class="item" *ngFor="let action of item.actions.mailers">
+                    <div class="handle">
+                        <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
+                    </div>
+                    <div class="details">
+                        {{ action.emails.join(', ') }}
+                    </div>
+                    <button mat-icon-button>
+                        <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
+                    </button>
+                    <button mat-icon-button>
+                        <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
+                    </button>
+                </div>
+            </div>
+            <div class="list" *ngIf="item.actions && item.actions.mailers">
+                <div class="item" *ngFor="let action of item.actions.functions">
+                    <div class="handle">
+                        <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
+                    </div>
+                    <div class="details">
+                        {{action.mod}}, {{ action.method }}({{ action.args | json }})
+                    </div>
+                    <button mat-icon-button>
+                        <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
+                    </button>
+                    <button mat-icon-button>
+                        <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
+                    </button>
+                </div>
+            </div>
+            <div
+                class="info-block"
+                *ngIf="!item.actions || (!item.actions.mailers && !item.actions.functions) || (!item.actions.mailers.length && !item.actions.functions.length)"
+            >
                 <div class="text">No actions for trigger</div>
             </div>
         </section>

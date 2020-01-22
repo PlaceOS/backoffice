@@ -8,11 +8,16 @@
                 <div class="prefix" matPrefix>
                     <app-icon [icon]="{ class: 'backoffice-magnifying-glass' }"></app-icon>
                 </div>
-                <input matInput [(ngModel)]="search_str" name="search-filter" placeholder="Filter Triggers">
+                <input
+                    matInput
+                    [(ngModel)]="search_str"
+                    name="search-filter"
+                    placeholder="Filter Triggers"
+                />
             </mat-form-field>
         </section>
         <section class="list">
-            <table *ngIf="model.list && model.list.length > 0">
+            <table *ngIf="trigger_list.length > 0; else empty_state">
                 <thead>
                     <td class="small"></td>
                     <td class="flex">Name</td>
@@ -21,23 +26,33 @@
                     <td class="duo"></td>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let item of model.list">
+                    <tr *ngFor="let item of trigger_list">
                         <td class="small">
                             <div class="state" [class.active]="item.enabled"></div>
                         </td>
-                        <td class="flex"><a (touchrelease)="goto(item)">{{item.name}}</a></td>
-                        <td class="count">{{item.trigger_count}}</td>
-                        <td class="added">{{item.display?.created}}</td>
+                        <td class="flex">
+                            <a [routerLink]="['/triggers', item.id]">{{item.name}}</a>
+                        </td>
+                        <td class="count">{{ item.activated_count || '0' }}</td>
+                        <td class="added">{{ (+item.created_at * 1000) | dateFrom }}</td>
                         <td class="duo">
-                            <div class="action"><i class="backoffice-edit"></i></div>
-                            <div class="action"><i class="backoffice-trash"></i></div>
+                            <div class="actions">
+                                <button mat-icon-button>
+                                    <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+                                </button>
+                                <button mat-icon-button>
+                                    <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <div class="info-block" *ngIf="!model.list || model.list.length <= 0">
-                <div class="text">No triggers for system</div>
-            </div>
         </section>
     </div>
 </div>
+<ng-template #empty_state>
+    <div class="info-block">
+        <div class="text">No triggers for system</div>
+    </div>
+</ng-template>

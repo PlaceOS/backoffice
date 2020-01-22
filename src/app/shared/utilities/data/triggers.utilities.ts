@@ -1,6 +1,12 @@
-
-import { Validators, FormControl, FormGroup } from '@angular/forms';
-import { EngineTrigger, HashMap, TriggerComparison, TimeCondition, ConditionOperator } from '@acaprojects/ts-composer';
+import { Validators, FormControl, FormGroup, AbstractControl } from '@angular/forms';
+import {
+    EngineTrigger,
+    HashMap,
+    TriggerComparison,
+    TimeCondition,
+    ConditionOperator,
+    TriggerStatusVariable
+} from '@acaprojects/ts-composer';
 
 import { FormDetails } from './systems.utilities';
 
@@ -16,12 +22,12 @@ export function generateTriggerFormFields(trigger: EngineTrigger): FormDetails {
     }
     const fields: HashMap<FormControl> = {
         name: new FormControl(trigger.name || '', [Validators.required]),
-        description: new FormControl(trigger.description || ''),
+        description: new FormControl(trigger.description || '')
     };
     const subscriptions = [];
     for (const key in fields) {
         if (fields[key] && key.indexOf('settings') < 0) {
-            subscriptions.push(fields[key].valueChanges.subscribe(value => trigger[key] = value));
+            subscriptions.push(fields[key].valueChanges.subscribe(value => (trigger[key] = value)));
         }
     }
     return {
@@ -30,14 +36,36 @@ export function generateTriggerFormFields(trigger: EngineTrigger): FormDetails {
     };
 }
 
+/**
+ * Validate a side of the comparison pair
+ * @param control Control holding the comparison
+ */
+export function validateCompare(control: AbstractControl) {
+    const form = control.parent;
+    if (
+        form &&
+        form instanceof FormGroup &&
+        form.controls.condition_type &&
+        form.controls.condition_type.value === 'compare'
+    ) {
+        if (control.value instanceof Object) {
+            const value: TriggerStatusVariable = control.value;
+            return !value.mod ? { module: true } : !value.status ? { status: true } : null;
+        } else {
+            return !control.value ? { required: true } : null;
+        }
+    }
+    return null;
+}
+
 export function generateTriggerConditionForm() {
     const fields: HashMap<FormControl> = {
         condition_type: new FormControl('compare'),
-        left: new FormControl(),
+        left: new FormControl({}, [validateCompare]),
         operator: new FormControl(ConditionOperator.EQ),
-        right: new FormControl(),
+        right: new FormControl(undefined, [validateCompare]),
         time_type: new FormControl('at'),
-        time: new FormControl(dayjs().unix()),
+        time: new FormControl(dayjs().valueOf()),
         cron: new FormControl()
     };
     const subscriptions = [];

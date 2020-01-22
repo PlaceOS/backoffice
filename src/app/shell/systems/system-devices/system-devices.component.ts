@@ -78,11 +78,6 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
                 );
                 this.devices = list;
                 this.generateDeviceBindings();
-                console.log(
-                    'Devices:',
-                    this.devices,
-                    this.devices.map(i => `${i.custom_name || i.driver.module_name}_${i.role + 1}`)
-                );
             },
             () => null
         );
@@ -94,7 +89,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     private generateDeviceBindings() {
         const counter: HashMap<number> = {};
         for (const device of this.devices) {
-            const name = device.custom_name || device.driver ? device.driver.module_name : '' || 'Blank';
+            const name = device.custom_name || (device.driver ? device.driver.module_name : '') || 'Blank';
             if (!counter[name]) {
                 counter[name] = 0;
             }

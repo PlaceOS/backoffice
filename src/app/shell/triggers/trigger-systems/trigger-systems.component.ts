@@ -45,10 +45,7 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges 
             trigger_id: this.item.id,
             offset
         } as any).then(
-            list => {
-                this.system_trigger_list = list;
-                console.log('List:', list);
-            },
+            list => this.system_trigger_list = list || [],
             () => null
         );
     }

@@ -2,6 +2,9 @@
     <ng-container
         *ngTemplateOutlet="status_variable_form; context: { side: 'left' }"
     ></ng-container>
+    <div *ngIf="form.controls.left.touched && form.controls.left.errors" class="error">
+        A module status variable is required
+    </div>
     <div class="field" *ngIf="form.controls.operator">
         <label for="operator" hidden>Operation:</label>
         <mat-form-field appearance="outline">
@@ -37,6 +40,9 @@
                 placeholder="true/false, 'string', 123.456"
             />
         </mat-form-field>
+    </div>
+    <div *ngIf="form.controls.right.touched && form.controls.right.errors" class="error">
+        A module status variable or value is required
     </div>
 </div>
 <ng-template #rhs_status_var>

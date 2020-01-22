@@ -1,6 +1,6 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
-import { EngineSystem } from '@acaprojects/ts-composer';
+import { EngineSystem, EngineTrigger } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -11,10 +11,11 @@ import { ApplicationService } from '../../../services/app.service';
     styleUrls: ['./system-triggers.styles.scss']
 })
 export class SystemTriggersComponent extends BaseDirective implements OnChanges {
+    /** Active System */
     @Input() public item: EngineSystem;
-
-    public model: any = {};
-
+    /** List of triggers associated with the active system */
+    public trigger_list: EngineTrigger[] = [];
+    /** Filter string for listing of triggers */
     public search_str: string;
 
     constructor(private service: ApplicationService) {
@@ -23,29 +24,17 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges 
 
     public ngOnChanges(changes: any) {
         if (changes.item) {
-            this.load();
+            this.loadSystemTriggers();
         }
     }
 
-    public load(offset: number = 0) {
+    public loadSystemTriggers(offset: number = 0) {
         this.service.SystemTriggers.query({ sys_id: this.item.id, offset } as any).then((list) => {
-            this.model.list = list;
+            this.trigger_list = list;
         }, () => null);
     }
 
-    public goto(item, link?: string) {
-        if (link) {
-            if (link.indexOf('http://') < 0 && link.indexOf('https://') < 0) {
-                link = `http${item.tls}://${link}${item.port ? ':' + item.port : ''}`;
-            }
-            window.open(item, '_blank');
-        } else {
-            this.service.navigate(['triggers', encodeURIComponent(item.trigger_id), 'systems']);
-        }
-    }
-
     public addTrigger() {
-        // this.service.Systems.addTrigger(this.item)
-        //     .then(() => this.load(), _ => null);
+
     }
 }

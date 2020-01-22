@@ -23,4 +23,8 @@ section {
 button {
     margin-right: .5em;
     border: 1px solid #000;
+
+    &[disabled] {
+        border-color: #ccc;
+    }
 }

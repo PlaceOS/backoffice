@@ -216,6 +216,18 @@ export function mergeYAMLSettings(dest: string = '', source: string = ''): strin
     return yaml.safeDump(merged_obj, { indent: 4 });
 }
 
+/** Get time format string for locale */
+export function timeFormatString(): string {
+    return is24HourTime() ? 'HH:mm' : 'h:mm A';
+}
+
+/** Whether locale string is displayed in 24 hour time */
+export function is24HourTime(): boolean {
+    const date = new Date();
+    const localeString = date.toLocaleTimeString();
+    return localeString.indexOf('AM') < 0 && localeString.indexOf('PM') < 0;
+}
+
 /**
  * Calculate the position counter for the given number e.g `1st`, `2nd`, `3rd`, `4th`...
  * @param num Number to caculate position for

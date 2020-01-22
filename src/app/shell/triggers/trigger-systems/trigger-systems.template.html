@@ -1,6 +1,6 @@
 <div class="container">
     <div class="settings">
-        <table *ngIf="system_trigger_list && system_trigger_list.length > 0">
+        <table *ngIf="system_trigger_list.length > 0; else empty_state">
             <thead>
                 <td class="small"></td>
                 <td class="flex">Name</td>
@@ -10,22 +10,14 @@
             <tbody>
                 <tr *ngFor="let trigger of system_trigger_list">
                     <td class="small">
-                        <i
-                            binding
-                            *ngIf="trigger.system_id"
-                            [sys]="trigger.system_id"
-                            mod="System_1"
-                            bind="connected"
-                            [(model)]="connected[trigger.system_id]"
-                        ></i>
-                        <div class="state" [class.active]="connected[trigger.system_id]"></div>
+                        <div class="state" [class.active]="trigger.enabled"></div>
                     </td>
                     <td class="flex">
-                        <a [routerLink]="['/systems', trigger.system_id]" *ngIf="trigger.system_id">
+                        <a *ngIf="trigger.system_id" [routerLink]="['/systems', trigger.system_id]">
                             {{trigger.system_name}} (<span class="id">{{trigger.system_id}}</span>)
                         </a>
                     </td>
-                    <td>{{ trigger.created_at * 1000 | dateFrom }}</td>
+                    <td>{{ +(trigger.created_at) * 1000 | dateFrom }}</td>
                     <td class="small">
                         <button mat-icon-button (tapped)="delete(trigger)">
                             <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
@@ -34,8 +26,11 @@
                 </tr>
             </tbody>
         </table>
-        <div class="info-block" *ngIf="!system_trigger_list || system_trigger_list.length <= 0">
-            <div class="text">No systems with trigger</div>
-        </div>
     </div>
 </div>
+<ng-template #empty_state>
+    <div class="info-block">
+        <div class="text">No systems with trigger</div>
+    </div>
+</ng-template>
+

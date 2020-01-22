@@ -37,8 +37,10 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether actions are loading */
     public loading: boolean;
-    /**  */
+    /** Form fields for trigger condition */
     public form: FormGroup;
+    /** Whether the triggers is new or not */
+    public is_new: boolean;
 
     /** Template system to use for status variable bindings */
     public get system(): EngineSystem {
@@ -63,8 +65,11 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
     }
 
     public save() {
+        this.form.markAllAsTouched();
+        if (!this.form.valid) {
+            return;
+        }
         this.loading = true;
-        console.log('Form:', this.form);
         if (this.form.controls.condition_type.value === 'compare') {
             const old_values = this.trigger.conditions.comparisons;
             const new_value: TriggerComparison = {
@@ -82,9 +87,10 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
             const old_values = this.trigger.conditions.time_dependents;
             const new_value: TimeCondition = {
                 type: this.form.controls.time_type.value,
-                time: this.form.controls.time.value,
+                time: (this.form.controls.time.value / 1000).toFixed(0),
                 cron: this.form.controls.cron.value
             };
+            new_value.cron ? delete new_value.time : delete new_value.cron;
             this.trigger.conditions = {
                 ...this.trigger.conditions,
                 time_dependents: old_values.length

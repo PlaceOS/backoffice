@@ -39,6 +39,8 @@ import { IconComponent } from './components/icon/icon.component';
 
 import { SettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
 import { ItemSearchFieldComponent } from './components/custom-fields/item-search-field/item-search-field.component';
+import { DateFieldComponent } from './components/custom-fields/date-field/date-field.component';
+import { TimeFieldComponent } from './components/custom-fields/time-field/time-field.component';
 
 import { SystemFormComponent } from './components/forms/system-form/system-form.component';
 import { ModuleFormComponent } from './components/forms/module-form/module-form.component';
@@ -90,7 +92,10 @@ const PIPES: Type<any>[] = [
 const ENTRY_COMPONENT: Type<any>[] = [
     ItemSearchFieldComponent,
     SettingsFieldComponent,
+    DateFieldComponent,
+    TimeFieldComponent,
     ContextMenuComponent,
+
 ];
 
 const MATERIAL_MODULES: any[] = [
