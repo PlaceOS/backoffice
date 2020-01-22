@@ -1,9 +1,6 @@
 <div class="container" [class.uat]="env !== 'prod'">
     <div class="login-container">
-        <div class="logo" [style.background]="(logo ? logo.background : '') | safe:'style'">
-            <img *ngIf="logo && (logo.type==='image' || logo.type==='img')" [src]="logo.src" />
-            <i *ngIf="logo && (logo.type!=='image' && logo.type!=='img')" [class]="logo.src"></i>
-        </div>
+        <header>ACAEngine Login</header>
         <div class="form" *ngIf="!loading; else load_state">
             <login-form
                 *ngIf="show === 'login'"

@@ -4,7 +4,10 @@
 form {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    padding: .5em;
     width: 18em;
+    margin: auto;
     max-width: calc(100vw - 2em);
 }
 
@@ -62,6 +65,10 @@ label {
     span {
         color: $pending;
     }
+}
+
+.password {
+    margin-top: -1em;
 }
 
 settings-form-field {
