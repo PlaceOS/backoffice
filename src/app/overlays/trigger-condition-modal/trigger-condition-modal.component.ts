@@ -7,7 +7,7 @@ import {
     EngineTrigger,
     TriggerConditions,
     TriggerComparison,
-    TimeCondition
+    TriggerTimeCondition
 } from '@acaprojects/ts-composer';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -24,7 +24,7 @@ export interface TriggerConditionData {
     /** Trigger to add/update */
     trigger: EngineTrigger;
     /** Trigger Condition to edit */
-    condition?: TriggerComparison | TimeCondition;
+    condition?: TriggerComparison | TriggerTimeCondition;
 }
 
 @Component({
@@ -85,7 +85,7 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
             };
         } else {
             const old_values = this.trigger.conditions.time_dependents;
-            const new_value: TimeCondition = {
+            const new_value: TriggerTimeCondition = {
                 type: this.form.controls.time_type.value,
                 time: (this.form.controls.time.value / 1000).toFixed(0),
                 cron: this.form.controls.cron.value

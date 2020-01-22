@@ -3,7 +3,7 @@ import { FormGroup } from '@angular/forms';
 import {
     EngineModule,
     EngineSystem,
-    ConditionOperator,
+    TriggerConditionOperator,
     TriggerStatusVariable
 } from '@acaprojects/ts-composer';
 
@@ -46,15 +46,15 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
 
     /** Allowed comparison operators */
     public compare_types: Identity[] = [
-        { id: ConditionOperator.EQ, name: 'equal to' },
-        { id: ConditionOperator.NEQ, name: 'not equal to' },
-        { id: ConditionOperator.GT, name: 'greater than' },
-        { id: ConditionOperator.GTE, name: 'greater than or equal' },
-        { id: ConditionOperator.LT, name: 'less than' },
-        { id: ConditionOperator.LTE, name: 'less than or equal' },
-        { id: ConditionOperator.AND, name: 'truthy AND' },
-        { id: ConditionOperator.OR, name: 'truthy OR' },
-        { id: ConditionOperator.XOR, name: 'truthy XOR' }
+        { id: TriggerConditionOperator.EQ, name: 'equal to' },
+        { id: TriggerConditionOperator.NEQ, name: 'not equal to' },
+        { id: TriggerConditionOperator.GT, name: 'greater than' },
+        { id: TriggerConditionOperator.GTE, name: 'greater than or equal' },
+        { id: TriggerConditionOperator.LT, name: 'less than' },
+        { id: TriggerConditionOperator.LTE, name: 'less than or equal' },
+        { id: TriggerConditionOperator.AND, name: 'truthy AND' },
+        { id: TriggerConditionOperator.OR, name: 'truthy OR' },
+        { id: TriggerConditionOperator.XOR, name: 'truthy XOR' }
     ];
 
     public get left_keys(): string {

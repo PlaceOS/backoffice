@@ -32,7 +32,6 @@ import { ItemDisplayComponent } from './components/item-display/item-display.com
 import { LOGIN_COMPONENTS } from './components/login';
 import { SearchbarComponent } from './components/searchbar/searchbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { SystemExecComponent } from './components/system-exec/system-exec.component';
 import { CronOptionsComponent } from './components/cron-options/cron-options.component';
 import { BaseRootComponent } from './components/base-root.component';
 import { IconComponent } from './components/icon/icon.component';
@@ -41,6 +40,7 @@ import { SettingsFieldComponent } from './components/custom-fields/settings-fiel
 import { ItemSearchFieldComponent } from './components/custom-fields/item-search-field/item-search-field.component';
 import { DateFieldComponent } from './components/custom-fields/date-field/date-field.component';
 import { TimeFieldComponent } from './components/custom-fields/time-field/time-field.component';
+import { SystemExecFieldComponent } from './components/custom-fields/system-exec-field/system-exec-field.component';
 
 import { SystemFormComponent } from './components/forms/system-form/system-form.component';
 import { ModuleFormComponent } from './components/forms/module-form/module-form.component';
@@ -49,8 +49,8 @@ import { DriverFormComponent } from './components/forms/driver-form/driver-form.
 import { UserFormComponent } from './components/forms/user-form/user-form.component';
 import { DomainFormComponent } from './components/forms/domain-form/domain-form.component';
 import { ApplicationFormComponent } from './components/forms/application-form/application-form.component';
-import { TriggerFormComponent } from './components/forms/trigger-form/trigger-form.component';
 import { RepositoryFormComponent } from './components/forms/repository-form/repository-form.component';
+import { TriggerFormComponent } from './components/forms/trigger-form/trigger-form.component';
 import { TriggerConditionFormComponent } from './components/forms/trigger-condition-form/trigger-condition-form.component';
 import { TriggerConditionComparisonFormComponent } from './components/forms/trigger-condition-form/comparison-form/comparison-form.component';
 import { TriggerConditionTimeFormComponent } from './components/forms/trigger-condition-form/time-form/time-form.component';
@@ -77,7 +77,6 @@ const COMPONENTS: Type<any>[] = [
     ItemDisplayComponent,
     SearchbarComponent,
     SidebarComponent,
-    SystemExecComponent,
     ...LOGIN_COMPONENTS,
     CronOptionsComponent,
     IconComponent,
@@ -95,7 +94,7 @@ const ENTRY_COMPONENT: Type<any>[] = [
     DateFieldComponent,
     TimeFieldComponent,
     ContextMenuComponent,
-
+    SystemExecFieldComponent
 ];
 
 const MATERIAL_MODULES: any[] = [

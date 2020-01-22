@@ -8,7 +8,7 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
-        <system-exec *ngIf="active_system && active_system.id" [systemId]="active_system.id"></system-exec>
+        <system-exec-field *ngIf="active_system && active_system.id" [systemId]="active_system.id"></system-exec-field>
     </section>
     <section class="tags" *ngIf="item && tag_list">
         <div class="label">Tags:</div>

@@ -44,7 +44,7 @@
             </div>
             <div class="bracket">)</div>
         </div>
-        <div class="send" *ngIf="active_method">
+        <div class="send" *ngIf="active_method && executable">
             <button mat-button [disabled]="!fields_valid" (tapped)="execute()">
                 Send
             </button>
