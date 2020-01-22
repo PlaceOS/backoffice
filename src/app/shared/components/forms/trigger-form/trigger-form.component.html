@@ -28,5 +28,10 @@
                 ></textarea>
             </mat-form-field>
         </div>
+        <div class="field" *ngIf="form.controls.enable_webhook">
+            <mat-checkbox name="enable-webhook" formControlName="enable_webhook">
+                Enable Webhook
+            </mat-checkbox>
+        </div>
     </form>
 </div>

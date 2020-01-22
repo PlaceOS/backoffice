@@ -22,7 +22,8 @@ export function generateTriggerFormFields(trigger: EngineTrigger): FormDetails {
     }
     const fields: HashMap<FormControl> = {
         name: new FormControl(trigger.name || '', [Validators.required]),
-        description: new FormControl(trigger.description || '')
+        description: new FormControl(trigger.description || ''),
+        enable_webhook: new FormControl(trigger.enable_webhook || '')
     };
     const subscriptions = [];
     for (const key in fields) {
