@@ -54,6 +54,7 @@ import { TriggerFormComponent } from './components/forms/trigger-form/trigger-fo
 import { TriggerConditionFormComponent } from './components/forms/trigger-condition-form/trigger-condition-form.component';
 import { TriggerConditionComparisonFormComponent } from './components/forms/trigger-condition-form/comparison-form/comparison-form.component';
 import { TriggerConditionTimeFormComponent } from './components/forms/trigger-condition-form/time-form/time-form.component';
+import { TriggerActionFormComponent } from './components/forms/trigger-action-form/trigger-action-form.component';
 
 import { DriverFormatPipe } from './pipes/driver-format.pipe';
 import { DateFromPipe } from './pipes/date-from.pipe';
@@ -69,6 +70,7 @@ const FORM_COMPONENTS: Type<any>[] = [
     TriggerFormComponent,
     RepositoryFormComponent,
     TriggerConditionFormComponent,
+    TriggerActionFormComponent,
 ];
 
 const COMPONENTS: Type<any>[] = [

@@ -249,6 +249,7 @@ export class ApplicationService extends BaseClass {
      */
     public notifySuccess(msg: string, action?: string, on_action?: () => void, duration: number = 8000): void {
         const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'done' };
+        console.debug('[APP][USER_ACTION]', msg);
         this.notify('success', msg, action, on_action, icon, duration);
     }
 
@@ -260,6 +261,7 @@ export class ApplicationService extends BaseClass {
      */
     public notifyError(msg: string, action?: string, on_action?: () => void, duration: number = 8000): void {
         const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'error' };
+        console.error('[APP][USER_ACTION]', msg);
         this.notify('error', msg, action, on_action, icon, duration);
     }
 
@@ -271,6 +273,7 @@ export class ApplicationService extends BaseClass {
      */
     public notifyWarn(msg: string, action?: string, on_action?: () => void, duration: number = 8000): void {
         const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'warning' };
+        console.warn('[APP][USER_ACTION]', msg);
         this.notify('warn', msg, action, on_action, icon, duration);
     }
 
@@ -282,6 +285,7 @@ export class ApplicationService extends BaseClass {
      */
     public notifyInfo(msg: string, action?: string, on_action?: () => void, duration: number = 8000): void {
         const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'info' };
+        console.info('[APP][USER_ACTION]', msg);
         this.notify('info', msg, action, on_action, icon, duration);
     }
 

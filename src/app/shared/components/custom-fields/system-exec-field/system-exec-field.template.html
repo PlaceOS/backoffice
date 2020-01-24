@@ -1,4 +1,4 @@
-<section class="execute" *ngIf="system_id && devices && devices.length > 0">
+<section class="execute" *ngIf="system && system.id && devices && devices.length > 0">
     <div class="row">
         <mat-form-field appearance="outline">
             <mat-select #select (valueChange)="loadFunctions($event)" placeholder="Select a device">
@@ -8,7 +8,11 @@
             </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline" *ngIf="methods">
-            <mat-select #select (valueChange)="selectFunction($event)" placeholder="Select a function">
+            <mat-select
+                #select
+                (valueChange)="selectFunction($event)"
+                placeholder="Select a function"
+            >
                 <mat-option *ngFor="let option of methods || []" [value]="option">
                     {{ option.name }}
                 </mat-option>
@@ -18,13 +22,8 @@
     <div class="row function" *ngIf="active_method">
         <div class="fn-input">
             <div class="bracket">{{active_method.name}}(</div>
-            <div
-                class="arg"
-                *ngFor="let arg of active_method.params; let i = index"
-            >
-                <span
-                    class="seperator"
-                    [class.solid]="arg[0] === 'req' || fields[arg[1]]"
+            <div class="arg" *ngFor="let arg of active_method.params; let i = index">
+                <span class="seperator" [class.solid]="arg[0] === 'req' || fields[arg[1]]"
                     >{{(i > 0 ? ',&nbsp;' : '')}}</span
                 >
                 <input

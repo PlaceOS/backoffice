@@ -27,7 +27,7 @@
         </div>
     </section>
     <header *ngIf="item && item.id && item.modules">Execute command</header>
-    <system-exec-field [systemId]="item?.id"></system-exec-field>
+    <system-exec-field [system]="item"></system-exec-field>
     <header>Settings <span (touchrelease)="toggleSettings()">{{ merged === false ? 'This system' : 'Merged' }}</span></header>
     <section>
         <settings-form-field [ngModel]="settings" [readonly]="true"></settings-form-field>

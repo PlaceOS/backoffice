@@ -11,7 +11,13 @@ import {
     forwardRef
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
-import { EngineModule, EngineModuleFunction, HashMap, TriggerFunction } from '@acaprojects/ts-composer';
+import {
+    EngineModule,
+    EngineModuleFunction,
+    HashMap,
+    TriggerFunction,
+    EngineSystem
+} from '@acaprojects/ts-composer';
 
 import { ApplicationService } from '../../../../services/app.service';
 import { BaseDirective } from '../../../globals/base.directive';
@@ -39,15 +45,16 @@ interface ModuleFunction extends EngineModuleFunction {
         }
     ]
 })
-export class SystemExecFieldComponent extends BaseDirective implements OnChanges, ControlValueAccessor {
+export class SystemExecFieldComponent extends BaseDirective
+    implements OnChanges, ControlValueAccessor {
     /** ID of the system to execute command on */
-    @Input('systemId') public system_id: string;
+    @Input() public system: EngineSystem;
     /** Whether the selected function is executable from this field */
-    @Input() public executable: boolean = true;
+    @Input() public executable = true;
     /** Emitter for exec results */
     @Output() public event = new EventEmitter();
     /** List of modules of the system */
-    public devices: EngineModule[];
+    public devices: EngineModuleLike[];
     /** List of available functions for the active module  */
     public methods: ModuleFunction[];
     /** Currently selected module */
@@ -79,6 +86,7 @@ export class SystemExecFieldComponent extends BaseDirective implements OnChanges
 
     /** Mapping of function execution details */
     public get function_value(): TriggerFunction {
+        if (!this.fields_valid) { return null; }
         const args = this.processArguments();
         const method = this.active_method ? this.active_method : { params: [], name: '' };
         return {
@@ -96,7 +104,7 @@ export class SystemExecFieldComponent extends BaseDirective implements OnChanges
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.system_id) {
+        if (changes.system) {
             this.devices = [];
             this.loadModules();
         }
@@ -107,10 +115,31 @@ export class SystemExecFieldComponent extends BaseDirective implements OnChanges
      * @param offset
      */
     public loadModules(offset: number = 0) {
-        if (this.system_id) {
-            this.service.Modules.query({ system_id: this.system_id, offset, limit: 500 }).then(
+        if (this.system) {
+            this.service.Modules.query({ system_id: this.system.id, offset, limit: 500 }).then(
                 list => {
-                    this.devices = list || [];
+                    this.devices = (list || []).map(device => {
+                        const module_name =
+                            device.custom_name ||
+                            (device.driver ? device.driver.module_name : 'System');
+                        return {
+                            id: device.id,
+                            name: device.name,
+                            module: module_name,
+                            index: 1
+                        };
+                    });
+                    this.devices.sort(
+                        (a, b) =>
+                            this.system.modules.indexOf(a.id) - this.system.modules.indexOf(b.id)
+                    );
+                    this.devices.forEach(
+                        device =>
+                            (device.index =
+                                this.devices
+                                    .filter(d => d.module === device.module)
+                                    .findIndex(mod => mod.id === device.id) + 1)
+                    );
                 },
                 () => null
             );
@@ -125,7 +154,7 @@ export class SystemExecFieldComponent extends BaseDirective implements OnChanges
         this.methods = null;
         this.fields = {};
         this.active_module = item;
-        this.service.Systems.functionList(this.system_id, item.module, item.index).then(
+        this.service.Systems.functionList(this.system.id, item.module, item.index).then(
             list => {
                 if (list) {
                     this.methods = Object.keys(list).map(i => ({ name: i, ...list[i] }));
@@ -138,7 +167,6 @@ export class SystemExecFieldComponent extends BaseDirective implements OnChanges
     public selectFunction(fn: ModuleFunction) {
         this.active_method = fn;
         this.checkFields();
-        this.setValue(this.function_value);
     }
 
     /**
@@ -170,6 +198,7 @@ export class SystemExecFieldComponent extends BaseDirective implements OnChanges
             this.field_pos = current.nativeElement.selectionEnd;
             this.timeout('field', () => (this.field_value = current.nativeElement.value));
         }
+        this.setValue(this.function_value);
     }
 
     /**
@@ -245,7 +274,7 @@ export class SystemExecFieldComponent extends BaseDirective implements OnChanges
                 args
             };
             this.service.Systems.execute(
-                this.system_id,
+                this.system.id,
                 details.module,
                 details.index,
                 details.args
@@ -305,7 +334,7 @@ export class SystemExecFieldComponent extends BaseDirective implements OnChanges
         let argument_list = [];
         try {
             argument_list = JSON.parse(args);
-        } catch (e) { }
+        } catch (e) {}
         return argument_list;
     }
 
@@ -323,9 +352,7 @@ export class SystemExecFieldComponent extends BaseDirective implements OnChanges
      * Update local value when form control value is changed
      * @param value The new value for the component
      */
-    public writeValue(value: TriggerFunction) {
-
-    }
+    public writeValue(value: TriggerFunction) {}
 
     /**
      * Registers a callback function that is called when the control's value changes in the UI.

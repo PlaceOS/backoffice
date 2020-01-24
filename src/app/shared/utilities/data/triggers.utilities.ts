@@ -2,10 +2,8 @@ import { Validators, FormControl, FormGroup, AbstractControl } from '@angular/fo
 import {
     EngineTrigger,
     HashMap,
-    TriggerComparison,
-    TimeCondition,
-    ConditionOperator,
-    TriggerStatusVariable
+    TriggerStatusVariable,
+    TriggerConditionOperator
 } from '@acaprojects/ts-composer';
 
 import { FormDetails } from './systems.utilities';
@@ -63,11 +61,45 @@ export function generateTriggerConditionForm() {
     const fields: HashMap<FormControl> = {
         condition_type: new FormControl('compare'),
         left: new FormControl({}, [validateCompare]),
-        operator: new FormControl(ConditionOperator.EQ),
+        operator: new FormControl(TriggerConditionOperator.EQ),
         right: new FormControl(undefined, [validateCompare]),
         time_type: new FormControl('at'),
         time: new FormControl(dayjs().valueOf()),
         cron: new FormControl()
+    };
+    const subscriptions = [];
+    return {
+        form: new FormGroup(fields),
+        subscriptions
+    };
+}
+
+/**
+ * Validate form control storing a list of emails
+ * @param control
+ */
+export function validateEmailList(control: AbstractControl) {
+    if (control.value && control.value instanceof Array) {
+        const value: string[] = control.value;
+        return value.reduce(
+            (valid, email) => valid && !Validators.email({ value: email } as any),
+            true
+        )
+            ? null
+            : { email: true };
+    }
+    return null;
+}
+
+/**
+ * Generate form controls for creating a trigger action
+ */
+export function generateTriggerActionForm() {
+    const fields: HashMap<FormControl> = {
+        action_type: new FormControl('function'),
+        emails: new FormControl([], [Validators.min(1), Validators.required, validateEmailList]),
+        content: new FormControl('', [Validators.required]),
+        method_call: new FormControl(null, [])
     };
     const subscriptions = [];
     return {
