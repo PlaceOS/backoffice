@@ -17,7 +17,7 @@ import {
     HashMap,
     TriggerFunction,
     EngineSystem
-} from '@acaprojects/ts-composer';
+} from '@acaengine/ts-client';
 
 import { ApplicationService } from '../../../../services/app.service';
 import { BaseDirective } from '../../../globals/base.directive';

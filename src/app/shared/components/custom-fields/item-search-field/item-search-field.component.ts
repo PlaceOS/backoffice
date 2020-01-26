@@ -3,7 +3,7 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { Subject, Observable, of } from 'rxjs';
 import { switchMap, debounceTime, distinctUntilChanged, map, catchError } from 'rxjs/operators';
 
-import { EngineResource } from '@acaprojects/ts-composer';
+import { EngineResource } from '@acaengine/ts-client';
 
 import { filterList, matchToHighlight } from 'src/app/shared/utilities/general.utilities';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';

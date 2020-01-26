@@ -1,7 +1,7 @@
 import { AbstractControl, Validators } from '@angular/forms';
 
 import * as dayjs from 'dayjs';
-import { EngineUser } from '@acaprojects/ts-composer';
+import { EngineUser } from '@acaengine/ts-client';
 
 const HAS_ERROR = true;
 

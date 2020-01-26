@@ -1,4 +1,4 @@
-import { EngineModule } from '@acaprojects/ts-composer';
+import { EngineModule } from '@acaengine/ts-client';
 
 import { HashMap } from "./types.utilities";
 

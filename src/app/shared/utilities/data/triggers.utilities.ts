@@ -4,7 +4,7 @@ import {
     HashMap,
     TriggerStatusVariable,
     TriggerConditionOperator
-} from '@acaprojects/ts-composer';
+} from '@acaengine/ts-client';
 
 import { FormDetails } from './systems.utilities';
 

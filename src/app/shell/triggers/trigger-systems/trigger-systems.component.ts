@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ComposerService } from '@acaprojects/ngx-composer';
-import { EngineTrigger, HashMap } from '@acaprojects/ts-composer';
+import { ComposerService } from '@acaengine/composer';
+import { EngineTrigger, HashMap } from '@acaengine/ts-client';
 
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 

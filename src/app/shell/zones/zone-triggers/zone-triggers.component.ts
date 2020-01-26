@@ -1,6 +1,6 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
-import { EngineZone } from '@acaprojects/ts-composer';
+import { EngineZone } from '@acaengine/ts-client';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';

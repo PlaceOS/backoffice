@@ -1,6 +1,6 @@
 
 import { Component, Input, SimpleChanges } from '@angular/core';
-import { EngineZone, EngineSystem } from '@acaprojects/ts-composer';
+import { EngineZone, EngineSystem } from '@acaengine/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';

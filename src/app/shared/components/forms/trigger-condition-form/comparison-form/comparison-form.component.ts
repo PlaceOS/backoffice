@@ -5,7 +5,7 @@ import {
     EngineSystem,
     TriggerConditionOperator,
     TriggerStatusVariable
-} from '@acaprojects/ts-composer';
+} from '@acaengine/ts-client';
 
 import { Identity } from 'src/app/shared/utilities/types.utilities';
 import { calculateModuleIndex } from 'src/app/shared/utilities/api.utilities';

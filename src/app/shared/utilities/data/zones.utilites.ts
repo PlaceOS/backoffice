@@ -1,6 +1,6 @@
 
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { EngineZone, EncryptionLevel } from '@acaprojects/ts-composer';
+import { EngineZone, EncryptionLevel } from '@acaengine/ts-client';
 
 import { FormDetails, validateYAML } from './systems.utilities';
 import { HashMap } from '../types.utilities';

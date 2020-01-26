@@ -1,5 +1,5 @@
 
-import { MockHttpRequestHandler } from '@acaprojects/ts-composer';
+import { MockHttpRequestHandler } from '@acaengine/ts-client';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';

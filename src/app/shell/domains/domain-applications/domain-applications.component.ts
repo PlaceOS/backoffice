@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { EngineDomain, EngineApplication } from '@acaprojects/ts-composer';
+import { EngineDomain, EngineApplication } from '@acaengine/ts-client';
 import { MatDialog } from '@angular/material/dialog';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';

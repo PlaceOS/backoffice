@@ -8,7 +8,7 @@ import {
     TriggerConditions,
     TriggerComparison,
     TriggerTimeCondition
-} from '@acaprojects/ts-composer';
+} from '@acaengine/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';

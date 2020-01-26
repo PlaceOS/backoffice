@@ -10,7 +10,7 @@ import {
     EngineSystem,
     TriggerMailer,
     TriggerFunction
-} from '@acaprojects/ts-composer';
+} from '@acaengine/ts-client';
 import { FormGroup } from '@angular/forms';
 
 export interface TriggerActionModalData {

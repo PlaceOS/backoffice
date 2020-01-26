@@ -9,9 +9,9 @@ import { isMobileDevice, copyToClipboard } from 'src/app/shared/utilities/genera
 
 import * as dayjs from 'dayjs';
 import * as Chart from 'chart.js';
-import { EngineModule, EngineSystem } from '@acaprojects/ts-composer';
+import { EngineModule, EngineSystem } from '@acaengine/ts-client';
 import { ApplicationLink } from 'src/app/shared/utilities/settings.interfaces';
-import { ComposerService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaengine/composer';
 
 @Component({
     selector: 'app-metrics',

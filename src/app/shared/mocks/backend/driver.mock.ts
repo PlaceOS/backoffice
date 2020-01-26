@@ -1,5 +1,5 @@
 
-import { EngineModuleFunction, HashMap } from '@acaprojects/ts-composer';
+import { EngineModuleFunction, HashMap } from '@acaengine/ts-client';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';

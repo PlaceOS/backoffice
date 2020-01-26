@@ -1,4 +1,4 @@
-import { MockHttpRequestHandler } from '@acaprojects/ts-composer';
+import { MockHttpRequestHandler } from '@acaengine/ts-client';
 
 import { padZero, randomInt } from '../../utilities/general.utilities';
 import { API } from '../common.mock';

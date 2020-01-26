@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { EncryptionLevel } from '@acaprojects/ts-composer';
+import { EncryptionLevel } from '@acaengine/ts-client';
 
 import { Identity } from 'src/app/shared/utilities/types.utilities';
 

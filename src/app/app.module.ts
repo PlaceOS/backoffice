@@ -4,7 +4,7 @@ import { NgModule, ErrorHandler } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { FormsModule } from '@angular/forms';
-import { ComposerModule } from '@acaprojects/ngx-composer';
+import { ComposerModule } from '@acaengine/composer';
 
 import { AGoogleAnalyticsModule } from '@acaprojects/ngx-google-analytics';
 

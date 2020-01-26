@@ -6,7 +6,7 @@ import {
     EngineRepositoryCommit,
     EngineRepository,
     EngineRepositoriesService
-} from '@acaprojects/ts-composer';
+} from '@acaengine/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { Identity } from 'src/app/shared/utilities/types.utilities';

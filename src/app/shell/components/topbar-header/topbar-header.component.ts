@@ -5,7 +5,7 @@ import { ApplicationService } from '../../../services/app.service';
 import { ApplicationLink, ApplicationIcon, ApplicationActionLink } from 'src/app/shared/utilities/settings.interfaces';
 import { MatDialog } from '@angular/material/dialog';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
-import { EngineSystem, EngineZone } from '@acaprojects/ts-composer';
+import { EngineSystem, EngineZone } from '@acaengine/ts-client';
 
 @Component({
     selector: 'topbar-header',

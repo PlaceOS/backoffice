@@ -1,5 +1,5 @@
 
-import { MockHttpRequestHandlerOptions } from '@acaprojects/ts-composer';
+import { MockHttpRequestHandlerOptions } from '@acaengine/ts-client';
 import { BehaviorSubject } from 'rxjs';
 
 import { padZero } from '../../utilities/general.utilities';

@@ -21,7 +21,7 @@ import { MockNodesBackend } from './backend/nodes.mock';
 import { MockStatsBackend } from './backend/stats.mock';
 import { MockTestsBackend } from './backend/tests.mock';
 import { MockDiscoveryBackend } from './backend/discovery.mock';
-import { MockHttpRequestHandlerOptions } from '@acaprojects/ts-composer';
+import { MockHttpRequestHandlerOptions } from '@acaengine/ts-client';
 
 declare global {
     interface Window {

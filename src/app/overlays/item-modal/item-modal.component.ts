@@ -12,7 +12,7 @@ import {
     EngineSettings,
     EngineTrigger,
     EngineRepository
-} from '@acaprojects/ts-composer';
+} from '@acaengine/ts-client';
 import { FormGroup } from '@angular/forms';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';

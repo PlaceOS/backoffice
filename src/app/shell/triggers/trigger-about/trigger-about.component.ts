@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { EngineTrigger, EngineSystem, EngineSystemsService } from '@acaprojects/ts-composer';
+import { EngineTrigger, EngineSystem, EngineSystemsService } from '@acaengine/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';

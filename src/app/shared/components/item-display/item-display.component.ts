@@ -8,7 +8,7 @@ import {
     SimpleChanges
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineResource } from '@acaprojects/ts-composer';
+import { EngineResource } from '@acaengine/ts-client';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';

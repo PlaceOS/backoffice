@@ -5,8 +5,8 @@ import { SwUpdate } from '@angular/service-worker';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { ComposerService } from '@acaprojects/ngx-composer';
-import { ComposerOptions } from '@acaprojects/ts-composer';
+import { ComposerService } from '@acaengine/composer';
+import { ACAEngineOptions } from '@acaengine/ts-client';
 import { GoogleAnalyticsService } from '@acaprojects/ngx-google-analytics';
 
 import { Observable, BehaviorSubject, Subject, Subscription } from 'rxjs';
@@ -405,7 +405,7 @@ export class ApplicationService extends BaseClass {
         const route = settings.route || '';
         const mock = this.setting('mock');
         // Generate configuration object
-        const config: ComposerOptions = {
+        const config: ACAEngineOptions = {
             scope: 'public',
             host: `${host}:${port}`,
             auth_uri: `${url}/auth/oauth/authorize`,

@@ -1,6 +1,6 @@
 
 import { Component, Input } from '@angular/core';
-import { EngineDriver } from '@acaprojects/ts-composer';
+import { EngineDriver } from '@acaengine/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { MatDialog } from '@angular/material/dialog';

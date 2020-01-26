@@ -1,9 +1,9 @@
-import { ComposerService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaengine/composer';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineUsersService, EngineUser, EngineUserQueryOptions } from '@acaprojects/ts-composer';
+import { EngineUsersService, EngineUser, EngineUserQueryOptions } from '@acaengine/ts-client';
 import { BehaviorSubject } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
 
@@ -11,6 +11,8 @@ import { FilterFn, DialogEvent } from 'src/app/shared/utilities/types.utilities'
 import { toQueryString } from 'src/app/shared/utilities/api.utilities';
 
 import * as dayjs from 'dayjs';
+import * as Sentry from '@sentry/browser';
+
 import {
     ConfirmModalComponent,
     ConfirmModalData,
@@ -87,6 +89,7 @@ export class BackofficeUsersService extends EngineUsersService {
                 user => {
                     if (user) {
                         this.user.next(user);
+                        Sentry.configureScope((scope) => scope.setUser({ email: user.email }));
                         this.state.next('success');
                         resolve();
                     } else {

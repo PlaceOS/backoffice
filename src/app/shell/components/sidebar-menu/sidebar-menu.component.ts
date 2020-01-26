@@ -5,7 +5,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 import { ApplicationInternalLink } from 'src/app/shared/utilities/settings.interfaces';
-import { ComposerService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaengine/composer';
 
 @Component({
     selector: 'sidebar-menu',

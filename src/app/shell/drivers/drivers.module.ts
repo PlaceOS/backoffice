@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { ComposerModule } from '@acaprojects/ngx-composer';
+import { ComposerModule } from '@acaengine/composer';
 
 import { ROUTES } from './drivers.routes';
 

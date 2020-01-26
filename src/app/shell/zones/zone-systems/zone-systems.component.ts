@@ -1,6 +1,6 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
-import { EngineZone, EngineSystem } from '@acaprojects/ts-composer';
+import { EngineZone, EngineSystem } from '@acaengine/ts-client';
 import { Observable, Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 

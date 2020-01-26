@@ -1,6 +1,6 @@
 
 import { BehaviorSubject, Observable, Subscription, Subscriber, Subject } from 'rxjs';
-import { EngineHttpClient, EngineResource } from '@acaprojects/ts-composer';
+import { EngineHttpClient, EngineResource } from '@acaengine/ts-client';
 
 import { BaseClass } from '../../shared/globals/base.class';
 import { ApplicationService } from '../app.service';
