@@ -24,6 +24,8 @@ import { BackofficeSystemLogsService } from './data/system_logs.service';
 import { BackofficeUsersService } from './data/users.service';
 import { ApplicationIcon } from '../shared/utilities/settings.interfaces';
 
+import * as Sentry from '@sentry/browser';
+
 declare global {
     interface Window {
         application: ApplicationService;
@@ -62,9 +64,7 @@ export class ApplicationService extends BaseClass {
         private _snackbar: MatSnackBar
     ) {
         super();
-        this._engine_comments.parent = this._engine_logs.parent = this._engine_search.parent
-            = this._engine_stats.parent = this._engine_system_logs.parent
-            = this._users.parent = this;
+        this._engine_comments.parent = this._engine_logs.parent = this._engine_search.parent = this._engine_stats.parent = this._engine_system_logs.parent = this._users.parent = this;
         this.set('system', null);
         this.init();
     }
@@ -247,7 +247,12 @@ export class ApplicationService extends BaseClass {
      * @param action Display text for the callback action
      * @param on_action Callback of action on the notification
      */
-    public notifySuccess(msg: string, action?: string, on_action?: () => void, duration: number = 8000): void {
+    public notifySuccess(
+        msg: string,
+        action?: string,
+        on_action?: () => void,
+        duration: number = 8000
+    ): void {
         const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'done' };
         console.debug('[APP][USER_ACTION]', msg);
         this.notify('success', msg, action, on_action, icon, duration);
@@ -259,7 +264,12 @@ export class ApplicationService extends BaseClass {
      * @param action Display text for the callback action
      * @param on_action Callback of action on the notification
      */
-    public notifyError(msg: string, action?: string, on_action?: () => void, duration: number = 8000): void {
+    public notifyError(
+        msg: string,
+        action?: string,
+        on_action?: () => void,
+        duration: number = 8000
+    ): void {
         const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'error' };
         console.error('[APP][USER_ACTION]', msg);
         this.notify('error', msg, action, on_action, icon, duration);
@@ -271,7 +281,12 @@ export class ApplicationService extends BaseClass {
      * @param action Display text for the callback action
      * @param on_action Callback of action on the notification
      */
-    public notifyWarn(msg: string, action?: string, on_action?: () => void, duration: number = 8000): void {
+    public notifyWarn(
+        msg: string,
+        action?: string,
+        on_action?: () => void,
+        duration: number = 8000
+    ): void {
         const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'warning' };
         console.warn('[APP][USER_ACTION]', msg);
         this.notify('warn', msg, action, on_action, icon, duration);
@@ -283,7 +298,12 @@ export class ApplicationService extends BaseClass {
      * @param action Display text for the callback action
      * @param on_action Callback of action on the notification
      */
-    public notifyInfo(msg: string, action?: string, on_action?: () => void, duration: number = 8000): void {
+    public notifyInfo(
+        msg: string,
+        action?: string,
+        on_action?: () => void,
+        duration: number = 8000
+    ): void {
         const icon: ApplicationIcon = { type: 'icon', class: 'material-icons', content: 'info' };
         console.info('[APP][USER_ACTION]', msg);
         this.notify('info', msg, action, on_action, icon, duration);
@@ -378,13 +398,21 @@ export class ApplicationService extends BaseClass {
             this._analytics.load(this.setting('app.analytics.tracking_id'));
         }
         this.setupCache();
-        this.subscription('composer_init', this._composer.initialised.subscribe((state) => {
-            if (state) {
-                this.unsub('composer_init');
-                this.set('ready', true);
-                this.loadActiveUser();
-            }
-        }));
+        this.subscription(
+            'composer_init',
+            this._composer.initialised.subscribe(state => {
+                if (state) {
+                    this.unsub('composer_init');
+                    this.set('ready', true);
+                    const dsn =
+                        this._composer.auth.authority.sentry_dsn || this.setting('app.sentry_dsn');
+                    if (dsn) {
+                        Sentry.init({ dsn });
+                    }
+                    this.loadActiveUser();
+                }
+            })
+        );
         // Add service to window if in debug mode
         if (window.debug) {
             window.application = this;

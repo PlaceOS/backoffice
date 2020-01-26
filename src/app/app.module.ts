@@ -18,21 +18,7 @@ import { SentryService } from './services/sentry.service';
 
 import { APP_COMPONENTS } from './shell';
 
-import * as Sentry from '@sentry/browser';
-
 import './shared/mocks';
-
-declare global {
-    interface Window {
-        sentry_dsn: string;
-    }
-}
-
-if (window.sentry_dsn) {
-    Sentry.init({
-        dsn: window.sentry_dsn
-    });
-}
 
 @NgModule({
     declarations: [
