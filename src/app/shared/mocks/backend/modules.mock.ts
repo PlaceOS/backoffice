@@ -1,3 +1,4 @@
+import { MockHttpRequest, MockHttpRequestHandler } from '@acaengine/ts-client';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';
@@ -78,6 +79,22 @@ export class MockModulesBackend extends BaseMockBackend {
         }));
         this.model.modules = item_list;
         this.setupBasicHandlers('api/engine/v2/modules', this.model.modules, 'mod');
+        window.control.handlers.push({
+            path: 'api/engine/v2/modules/:id/start',
+            method: 'POST',
+            callback: (event: MockHttpRequest) => {
+                this.setActiveState(event.route_params.id, true);
+                return {};
+            }
+        } as MockHttpRequestHandler);
+        window.control.handlers.push({
+            path: 'api/engine/v2/modules/:id/stop',
+            method: 'POST',
+            callback: (event: MockHttpRequest) => {
+                this.setActiveState(event.route_params.id, false);
+                return {};
+            }
+        } as MockHttpRequestHandler);
         this.state.next(true);
     }
 
@@ -128,5 +145,22 @@ export class MockModulesBackend extends BaseMockBackend {
             address += Math.floor(Math.random() * 256);
         }
         return address;
+    }
+
+    private setActiveState(id: string, state: boolean = false) {
+        const system = window.control.systems[id];
+        if (!system) {
+            throw { status: 404, message: `Module ${id} not found` };
+        }
+        const selected_module = this.model.modules.find(mod => mod.id === id);
+        if (!selected_module) {
+            throw { status: 404, message: `Module ${id} not found` };
+        }
+        const mod_class = selected_module.custom_name || selected_module.driver.class_name;
+        const module_list = system[mod_class];
+        if (!module_list || !module_list.length) {
+            throw { status: 404, message: `Module ${id} not found` };
+        }
+        module_list.forEach(mod => mod.connected = state);
     }
 }

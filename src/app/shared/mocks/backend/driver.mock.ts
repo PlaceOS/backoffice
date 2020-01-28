@@ -1,5 +1,5 @@
 
-import { EngineModuleFunction, HashMap } from '@acaengine/ts-client';
+import { EngineModuleFunction, HashMap, MockHttpRequestHandler } from '@acaengine/ts-client';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';
@@ -66,6 +66,11 @@ export class MockDriversBackend extends BaseMockBackend {
         }));
         this.model.drivers = driver_list;
         this.setupBasicHandlers('api/engine/v2/drivers', this.model.drivers, 'dep');
+        window.control.handlers.push({
+            path: 'api/engine/v2/drivers/:id/reload',
+            method: 'POST',
+            callback: _ => ({})
+        } as MockHttpRequestHandler);
         this.state.next(true);
     }
 

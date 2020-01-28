@@ -213,8 +213,11 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
             'confirm_ref',
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
-                    device.driver.reload().then(
-                        result => this._service.notifySuccess('Driver successfully reloaded.'),
+                    (device.driver
+                        ? device.driver.reload()
+                        : this._service.Drivers.reload(device.dependency_id)
+                    ).then(
+                        _ => this._service.notifySuccess('Driver successfully reloaded.'),
                         err => this._service.notifyError(err.message || err)
                     );
                     ref.close();
