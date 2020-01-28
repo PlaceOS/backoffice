@@ -41,7 +41,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
             name: 'Toggle Power',
             icon: { type: 'icon', class: 'backoffice-power-plug' }
         },
-        { id: 'state', name: 'View State', icon: { type: 'icon', class: 'backoffice-list' } },
+        { id: 'state', name: 'View State', icon: { type: 'icon', class: 'backoffice-eye' } },
         { id: 'reload', name: 'Reload Device', icon: { type: 'icon', class: 'backoffice-cw' } },
         { id: 'remove', name: 'Remove Device', icon: { type: 'icon', class: 'backoffice-trash' } }
     ];

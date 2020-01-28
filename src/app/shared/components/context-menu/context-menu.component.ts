@@ -1,35 +1,29 @@
-
-import { animate, keyframes, style, transition, trigger } from '@angular/animations';
-import { Component, ViewChild, ElementRef, AfterViewInit, Input, Output, HostListener, EventEmitter } from '@angular/core';
+import {
+    Component,
+    ViewChild,
+    ElementRef,
+    AfterViewInit,
+    Input,
+    HostListener,
+    OnInit
+} from '@angular/core';
+import { MatMenuTrigger, MatMenuPanel, MatMenu } from '@angular/material/menu';
 
 import { BaseDirective } from '../../globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
-import { ApplicationLink } from '../../utilities/settings.interfaces';
-
-
 
 @Component({
     selector: '[context-menu]',
     templateUrl: './context-menu.template.html',
-    styleUrls: ['./context-menu.styles.scss'],
-    animations: [
-        trigger('show', [
-            transition(':enter', [
-                animate('160ms', keyframes([
-                    style({ height: '*', width: '*', opacity: 0, offset: 0 }),
-                    style({ height: '*', width: '*', opacity: 0, offset: .2 }),
-                    style({ height: 0, width: 0, opacity: 0, offset: .4 }),
-                    style({ height: '*', width: '*', opacity: 1, offset: 1 })
-                ]))
-            ]),
-        ]),
-    ]
+    styleUrls: ['./context-menu.styles.scss']
 })
-export class ContextMenuComponent extends BaseDirective implements AfterViewInit {
+export class ContextMenuComponent extends BaseDirective implements OnInit, AfterViewInit {
     /** List of context menu items */
-    @Input('context-menu') public context_items: ApplicationLink[];
-    /** Emitter for user actions on the menu */
-    @Output('contextAction') public context_action = new EventEmitter<ApplicationLink>();
+    @Input('context-menu') public menu: MatMenuPanel;
+    /** Offset of the context menu on the x axis */
+    @Input() public offset_x: number = 0;
+    /** Offset of the context menu on the y axis */
+    @Input() public offset_y: number = 0;
     /** Top position of the menu */
     public top: number;
     /** Whether menu show to the left of the cursor */
@@ -37,15 +31,18 @@ export class ContextMenuComponent extends BaseDirective implements AfterViewInit
     /** Whether the context menu should be shown */
     public show: boolean;
     /** Location of the menu */
-    public position: { top: number, left: number };
+    public position: { top: number; left: number };
 
     @ViewChild('container', { static: true }) private container: ElementRef<HTMLDivElement>;
+    @ViewChild(MatMenuTrigger, { static: true }) private trigger: MatMenuTrigger;
 
     @HostListener('contextmenu', ['$event']) public onEvent(event) {
         event.preventDefault();
-        this.show = true;
         const box = this._element.nativeElement.getBoundingClientRect();
-        this.position = { top: event.clientY - box.top, left: event.clientX - box.left };
+        this.position = { top: event.clientY + this.offset_y, left: event.clientX + this.offset_x };
+        if (this.trigger) {
+            this.trigger.openMenu();
+        }
         this.timeout('update_position', () => this.updatePosition(), 50);
     }
 
@@ -55,7 +52,6 @@ export class ContextMenuComponent extends BaseDirective implements AfterViewInit
 
     public ngOnInit(): void {
         this.position = { top: 0, left: 0 };
-        this.timeout('init', () => this.clearTimeout('close'), 50);
     }
 
     public ngAfterViewInit() {
@@ -75,19 +71,4 @@ export class ContextMenuComponent extends BaseDirective implements AfterViewInit
         }
         this.right = box.right - 5 > window.innerWidth;
     }
-
-    /** Post user actions */
-    public post(data: ApplicationLink) {
-        this.context_action.emit(data);
-    }
-
-    public cancelClose() {
-        this.timeout('init', () => this.clearTimeout('close'), 50);
-    }
-
-    /** Delayed close of the context menu */
-    public close() {
-        this.timeout('close', () => this.show = false, 100);
-    }
-
 }

@@ -21,7 +21,8 @@
             <tbody cdkDropList (cdkDropListDropped)="drop($event)">
                 <tr
                     *ngFor="let device of (devices || [])"
-                    [context-menu]="menu_options"
+                    [context-menu]="menu"
+                    [offset_y]="-64"
                     (contextAction)="handleContextEvent($event, device)"
                     cdkDrag
                 >

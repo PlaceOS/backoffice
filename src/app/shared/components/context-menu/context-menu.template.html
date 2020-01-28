@@ -1,26 +1,9 @@
 <ng-content></ng-content>
 <div
-    class="container"
+    class="context-placeholder"
     #container
     [style.top]="position.top + 'px'"
     [style.left]="position.left + 'px'"
+    [matMenuTriggerFor]="menu"
 >
-    <div
-        class="context-menu"
-        *ngIf="show"
-        [@show]
-        [style.top]="top + 'px'"
-        [class.right]="right"
-        (window:mousedown)="close()"
-        (window:touchdown)="close()"
-        (mousedown)="cancelClose()"
-        (touchdown)="cancelClose()"
-    >
-        <ng-container *ngIf="menu_items">
-            <div class="item" *ngFor="let item of menu_items" (touchrelease)="post(item)">
-                <app-icon [icon]="item?.icon"></app-icon>
-                <div class="text">{{item?.name}}</div>
-            </div>
-        </ng-container>
-    </div>
 </div>
