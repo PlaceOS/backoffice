@@ -4,6 +4,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
 import { ApplicationIcon, ApplicationImageIcon } from '../../utilities/settings.interfaces';
+import { first } from 'rxjs/operators';
 
 @Component({
     selector: 'login-display',
@@ -21,7 +22,7 @@ export class LoginComponent extends BaseDirective implements OnInit {
     /** Current work environment for the application */
     public env: string;
 
-    constructor(private service: ApplicationService) {
+    constructor(private _service: ApplicationService) {
         super();
     }
 
@@ -32,18 +33,15 @@ export class LoginComponent extends BaseDirective implements OnInit {
             username: new FormControl(''),
             password: new FormControl('')
         });
-        this.init();
+        this._service.initialised.pipe(first(_ => _)).subscribe(() => this.init());
     }
 
     public init() {
-        if (!this.service.is_ready) {
-            return setTimeout(() => this.init(), 200);
-        }
-        this.env = this.service.setting('env');
-        this.logo = this.service.setting('app.logo') || {};
+        this.env = this._service.setting('env');
+        this.logo = this._service.setting('app.logo') || {};
         this.subscription(
             'state',
-            this.service.Users.state.subscribe(state => {
+            this._service.Users.state.subscribe(state => {
                 this.loading = false;
                 if (state === 'invalid') {
                     this.show = 'login';
@@ -64,7 +62,7 @@ export class LoginComponent extends BaseDirective implements OnInit {
     }
 
     public login() {
-        this.service.Users.login(this.login_form.value).then(
+        this._service.Users.login(this.login_form.value).then(
             () => null,
             err => this.login_form.controls.password.setErrors({ invalid: true })
         );

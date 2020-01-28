@@ -1,11 +1,12 @@
 
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router } from '@angular/router';
+import { ComposerService } from '@acaengine/composer';
+import { first } from 'rxjs/operators';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 import { ApplicationInternalLink } from 'src/app/shared/utilities/settings.interfaces';
-import { ComposerService } from '@acaengine/composer';
 
 @Component({
     selector: 'sidebar-menu',
@@ -22,19 +23,16 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
     /** Route of the shown tooltip */
     public tooltip: string;
 
-    constructor(private service: ApplicationService, private _composer: ComposerService, private router: Router) {
+    constructor(private _service: ApplicationService, private _composer: ComposerService, private router: Router) {
         super();
     }
 
     public ngOnInit() {
-        this.init();
+        this._service.initialised.pipe(first(_ => _)).subscribe(() => this.init());
     }
 
     public init() {
-        if (!this.service.is_ready) {
-            return this.timeout('init', () => this.init());
-        }
-        this.menu_items = this.service.setting('app.general.menu');
+        this.menu_items = this._service.setting('app.general.menu');
         /** Only allow metrics if a URL has be set */
         if (!this._composer.auth.authority.metrics) {
             this.menu_items = this.menu_items.filter(item => item.route && item.route.indexOf('metrics') < 0);

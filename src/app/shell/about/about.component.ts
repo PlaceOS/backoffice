@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { first } from 'rxjs/operators';
 
 import { BaseDirective } from '../../shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
@@ -14,19 +15,16 @@ import { ChangelogModalComponent, ChangelogModalData } from 'src/app/overlays/ch
 export class AppAboutComponent extends BaseDirective implements OnInit {
     public model: any = {};
 
-    constructor(private service: ApplicationService, private _dialog: MatDialog) {
+    constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
     public ngOnInit() {
-        this.init();
+        this._service.initialised.pipe(first(_ => _)).subscribe(() => this.init());
     }
 
     public init() {
-        if (!this.service.is_ready) {
-            return this.timeout('init', () => this.init());
-        }
-        this.model.user = this.service.Users.current();
+        this.model.user = this._service.Users.current();
         this.model.backoffice_version = version;
         this.model.backoffice_build = build.format('DD MMM YYYY [at] h:mma');
     }

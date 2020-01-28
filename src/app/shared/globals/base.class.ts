@@ -1,4 +1,4 @@
-import { Subscription } from "rxjs";
+import { Subscription, BehaviorSubject } from "rxjs";
 
 export class BaseClass {
     /** Store for named timers */
@@ -7,6 +7,17 @@ export class BaseClass {
     protected _intervals: { [name: string]: number } = {};
     /** Store for named subscription unsub callbacks */
     protected _subscriptions: { [name: string]: (Subscription | (() => void)) } = {};
+    /** Subject which stores the initialised state of the object */
+    protected readonly _initialised = new BehaviorSubject<boolean>(false);
+
+    /** Observable of the initialised state of the object */
+    public get initialised(): BehaviorSubject<boolean> {
+        return this._initialised;
+    }
+    /** Whether the object has been initialised */
+    public get is_initialised(): boolean {
+        return this._initialised.getValue();
+    }
 
     /**
      * Creates a named timer

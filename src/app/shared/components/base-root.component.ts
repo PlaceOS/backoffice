@@ -5,6 +5,7 @@ import { EngineResource } from '@acaengine/ts-client';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
 import { EngineServiceLike, Identity } from '../utilities/types.utilities';
+import { first } from 'rxjs/operators';
 
 @Component({
     selector: 'app-base-root-component',
@@ -46,35 +47,34 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
     }
 
     public ngOnInit() {
-        if (!this._service.is_ready) {
-            return this.timeout('init', () => this.ngOnInit());
-        }
-        this._service.title = this.service_name;
-        this.subscription(
-            'route.params',
-            this._route.paramMap.subscribe(params => {
-                if (params.has('id') && params.get('id')) {
-                    this.loading_item = true;
-                    const id = decodeURIComponent(params.get('id'));
-                    if (this._service.get('BACKOFFICE.active_item_id') !== id) {
-                        this.id = id;
-                        this.loadItem();
-                    } else {
-                        this.setActiveItem(this._service.get('BACKOFFICE.active_item'));
+        this._service.initialised.pipe(first(_ => _)).subscribe(() => {
+            this._service.title = this.service_name;
+            this.subscription(
+                'route.params',
+                this._route.paramMap.subscribe(params => {
+                    if (params.has('id') && params.get('id')) {
+                        this.loading_item = true;
+                        const id = decodeURIComponent(params.get('id'));
+                        if (this._service.get('BACKOFFICE.active_item_id') !== id) {
+                            this.id = id;
+                            this.loadItem();
+                        } else {
+                            this.setActiveItem(this._service.get('BACKOFFICE.active_item'));
+                        }
                     }
-                }
-                this.timeout('sidebar', () => (this.show_sidebar = !this.id));
-            })
-        );
-        this.subscription(
-            'route.query',
-            this._route.queryParamMap.subscribe(params => {
-                if (params.has('tab')) {
-                    this.tab = params.get('tab');
-                }
-            })
-        );
-        this.init();
+                    this.timeout('sidebar', () => (this.show_sidebar = !this.id));
+                })
+            );
+            this.subscription(
+                'route.query',
+                this._route.queryParamMap.subscribe(params => {
+                    if (params.has('tab')) {
+                        this.tab = params.get('tab');
+                    }
+                })
+            );
+            this.init();
+        });
     }
 
     public init() {}

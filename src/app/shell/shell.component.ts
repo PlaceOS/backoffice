@@ -9,6 +9,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { EngineUser } from '@acaengine/ts-client';
+import { first } from 'rxjs/operators';
 
 import { ApplicationLink } from '../shared/utilities/settings.interfaces';
 import { ApplicationService } from '../services/app.service';
@@ -33,15 +34,15 @@ export class AppShellComponent extends BaseDirective implements OnInit {
 
     /** Active environment */
     public get env(): string {
-        return this.service.setting('env') || '';
+        return this._service.setting('env') || '';
     }
 
     /** List of core tiles to show on the sidebar menu */
     public get tiles(): ApplicationLink[] {
-        return this.service.setting('app.tiles') || [];
+        return this._service.setting('app.tiles') || [];
     }
 
-    constructor(private service: ApplicationService) {
+    constructor(private _service: ApplicationService) {
         super();
     }
 
@@ -49,22 +50,19 @@ export class AppShellComponent extends BaseDirective implements OnInit {
         this.year = dayjs().format('YYYY');
         this.subscription(
             'user',
-            this.service.Users.user.subscribe(user => (this.user = user))
+            this._service.Users.user.subscribe(user => (this.user = user))
         );
-        this.init();
+        this.loading = true;
+        this._service.initialised.pipe(first(_ => _)).subscribe(() => this.init());
     }
 
     public init() {
-        this.loading = true;
-        if (!this.service.is_ready) {
-            return setTimeout(() => this.init(), 200);
-        }
         this.loading = false;
-        this.service.Users.current().then(user => (this.user = user));
+        this._service.Users.current().then(user => (this.user = user));
     }
 
     /** Navigate to the root page */
     public home() {
-        this.service.navigate('');
+        this._service.navigate('');
     }
 }

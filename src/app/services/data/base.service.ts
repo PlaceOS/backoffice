@@ -1,6 +1,7 @@
 
 import { BehaviorSubject, Observable, Subscription, Subscriber, Subject } from 'rxjs';
-import { EngineHttpClient, EngineResource } from '@acaengine/ts-client';
+import { EngineHttpClient } from '@acaengine/ts-client';
+import { first } from 'rxjs/operators';
 
 import { BaseClass } from '../../shared/globals/base.class';
 import { ApplicationService } from '../app.service';
@@ -29,8 +30,6 @@ export class BaseAPIService<T extends {}> extends BaseClass {
     protected _subscribers: { [key: string]: Subscriber<any> } = {};
     /** Map of promises for Service */
     protected _promises: { [key: string]: Promise<any> } = {};
-    /** Whether the service has initialised or not */
-    protected _initialised: boolean;
     /** Comparison function for service items */
     protected _compare: (a: T, b: T) => boolean = (a, b) => a === b || (a as any).id === (b as any).id;
     /** Default filter function for list method */
@@ -46,17 +45,16 @@ export class BaseAPIService<T extends {}> extends BaseClass {
         this.set('list', []);
     }
 
-    /** Whether service has been initialised */
-    public get initialised() { return this._initialised; }
-
     /**
      * Initailise service
      */
     public init() {
-        if (!this.parent || !this.parent.is_ready) {
+        if (!this.parent) {
             return this.timeout('init', () => this.init());
         }
-        this.load().then(_ => this._initialised = true);
+        this.parent.initialised.pipe(first(_ => _)).subscribe(() => {
+            this.load().then(_ => this._initialised.next(true));
+        });
     }
 
     /**

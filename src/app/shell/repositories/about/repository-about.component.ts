@@ -1,10 +1,10 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { EngineRepository } from '@acaengine/ts-client';
+import { MatDialog } from '@angular/material/dialog';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
-import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'repository-about',
@@ -22,12 +22,6 @@ export class RepositoryAboutComponent extends BaseDirective implements OnInit {
 
     public ngOnInit() {
 
-    }
-
-    public init() {
-        if (!this.service.is_ready) {
-            return this.timeout('init', () => this.init());
-        }
     }
 
     public select(system) {

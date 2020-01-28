@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
+import { BaseClass } from '../shared/globals/base.class';
 import { HashMap } from '../shared/utilities/types.utilities';
 import { getItemWithKeys } from '../shared/utilities/general.utilities';
 import { version, build, core_version } from '../shared/globals/application';
@@ -26,23 +26,17 @@ export type ConsoleStream = 'debug' | 'warn' | 'log' | 'error';
 @Injectable({
     providedIn: 'root'
 })
-export class SettingsService {
+export class SettingsService extends BaseClass {
 
     /** Map of settings */
     private _settings: SettingsMap = { api: {}, local: {}, session: {} };
     /** Store for promises */
     private _promises: { [name: string]: Promise<any> } = {};
-    /** Whether the service has been setup */
-    private _setup = false;
     /** Name of the application */
     private _app_name = 'ACA';
-    /** State store for the setup state of the service */
-    private _is_setup = new BehaviorSubject<boolean>(false);
-    /** Observer for the state store value */
-    private _is_setup_observer: Observable<boolean>;
 
     constructor(private http: HttpClient) {
-        this._is_setup_observer = this._is_setup.asObservable();
+        super();
         const now = dayjs();
         const built = now.isSame(build, 'd') ? `Today at ${build.format('h:mmA')}` : build.format('D MMM YYYY, h:mmA');
         this.log('CORE', `${core_version}`, null, 'debug', true);
@@ -64,23 +58,11 @@ export class SettingsService {
             this._app_name = this._settings.api.app.name;
         }
         this.log('Settings', 'Successfully loaded settings');
-        this._setup = true;
-        this._is_setup.next(this._setup);
-        this._is_setup.complete();
+        this._initialised.next(true);
     }
 
-    /** Whether settings service has initialised */
-    public get setup() { return this._setup; }
     /** Whether settings service has initialised */
     public get app_name() { return this._app_name; }
-
-    /**
-     * Observer for the setup state of the settings service
-     * @param next Callback for state changes
-     */
-    public isSetup(next: (v: boolean) => void): Subscription {
-        return this._is_setup_observer.subscribe(next);
-    }
 
     /**
      * Log data to the browser console

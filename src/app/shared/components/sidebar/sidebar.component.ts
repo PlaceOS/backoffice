@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { BehaviorSubject } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
@@ -100,32 +101,29 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     }
 
     public ngOnInit() {
-        if (!this._service.is_ready) {
-            return this.timeout('init', () => this.ngOnInit());
-        }
-        this.timeout('startup', () => {
+        this._service.initialised.pipe(first(_ => _)).subscribe(() => {
+            if (!this._service.get('BACKOFFICE.active_item')) {
+                this._service.set('BACKOFFICE.active_item', null);
+            }
+            this.subscription(
+                'active_item',
+                this._service.listen('BACKOFFICE.active_item', (item) => this.replaceActiveItem(item))
+            );
+            this.subscription(
+                'up',
+                this._service.Hotkeys.listen(['Alt', 'ArrowUp'], () => this.changeSelected(-1))
+            );
+            this.subscription(
+                'down',
+                this._service.Hotkeys.listen(['Alt', 'ArrowDown'], () => this.changeSelected(1))
+            );
             this.items.next(this.list || []);
             this.atBottom();
         });
-        if (!this._service.get('BACKOFFICE.active_item')) {
-            this._service.set('BACKOFFICE.active_item', null);
-        }
-        this.subscription(
-            'active_item',
-            this._service.listen('BACKOFFICE.active_item', (item) => this.replaceActiveItem(item))
-        );
-        this.subscription(
-            'up',
-            this._service.Hotkeys.listen(['Alt', 'ArrowUp'], () => this.changeSelected(-1))
-        );
-        this.subscription(
-            'down',
-            this._service.Hotkeys.listen(['Alt', 'ArrowDown'], () => this.changeSelected(1))
-        );
     }
 
     public ngOnChanges(changes: any) {
-        if (this._service.is_ready && (changes.list || changes.close)) {
+        if (this._service.is_initialised && (changes.list || changes.close)) {
             this.last_check = dayjs().valueOf();
             this.items.next(this.list || []);
             this.atBottom();
@@ -170,9 +168,9 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     }
 
     /**
-     *
-     * @param item
-     * @param index
+     * List item tracking function to reduce shadow dom re-rendering on changes
+     * @param item Item to check
+     * @param index Index of the item
      */
     public trackByFn(item: HashMap, index: number) {
         return item.id || index;

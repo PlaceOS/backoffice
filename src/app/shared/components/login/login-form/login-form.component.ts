@@ -4,6 +4,7 @@ import { ApplicationService } from '../../../../services/app.service';
 import { FormGroup } from '@angular/forms';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { LoginSettings } from 'src/app/shared/utilities/settings.interfaces';
+import { first } from 'rxjs/operators';
 
 @Component({
     selector: 'login-form',
@@ -27,10 +28,9 @@ export class LoginFormComponent extends BaseDirective implements OnInit {
     }
 
     public ngOnInit() {
-        if (!this._service.is_ready) {
-            return this.timeout('init', () => this.ngOnInit());
-        }
-        this.settings = this._service.setting('app.login') || {};
+        this._service.initialised.pipe(first(_ => _)).subscribe(() => {
+            this.settings = this._service.setting('app.login') || {};
+        });
     }
 }
 
