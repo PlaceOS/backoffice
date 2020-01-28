@@ -22,11 +22,15 @@ export function generateRepositoryFormFields(repository: EngineRepository): Form
     const subscriptions = [];
     for (const key in fields) {
         if (fields[key] && key.indexOf('settings') < 0) {
-            subscriptions.push(fields[key].valueChanges.subscribe(value => repository[key] = value));
+            subscriptions.push(
+                fields[key].valueChanges.subscribe(value =>
+                    repository.storePendingChange(key as any, value)
+                )
+            );
         }
     }
     if (!repository.id) {
-        (repository as any).change('commit_hash', 'head');
+        repository.storePendingChange('commit_hash', 'head');
     }
     return {
         form: new FormGroup(fields),

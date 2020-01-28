@@ -34,7 +34,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
 
     /** List of module ids associated with the system */
     public modules(): string[] {
-        return this.item.modules || [];
+        return [...this.item.modules];
     }
 
     constructor(private _service: ApplicationService, private _dialog: MatDialog) {

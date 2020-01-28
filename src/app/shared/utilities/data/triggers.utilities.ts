@@ -26,7 +26,11 @@ export function generateTriggerFormFields(trigger: EngineTrigger): FormDetails {
     const subscriptions = [];
     for (const key in fields) {
         if (fields[key] && key.indexOf('settings') < 0) {
-            subscriptions.push(fields[key].valueChanges.subscribe(value => (trigger[key] = value)));
+            subscriptions.push(
+                fields[key].valueChanges.subscribe(value =>
+                    trigger.storePendingChange(key as any, value)
+                )
+            );
         }
     }
     return {

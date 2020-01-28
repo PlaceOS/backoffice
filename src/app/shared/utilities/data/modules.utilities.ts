@@ -28,28 +28,32 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
     const subscriptions = [];
     for (const key in fields) {
         if (fields[key] && key.indexOf('settings') < 0) {
-            subscriptions.push(fields[key].valueChanges.subscribe(value => module[key] = value));
+            subscriptions.push(
+                fields[key].valueChanges.subscribe(value =>
+                    module.storePendingChange(key as any, value)
+                )
+            );
         }
     }
     if (!module.id) {
         subscriptions.push(
             fields.system.valueChanges.subscribe((value: EngineSystem) =>
-                (module as any).change('control_system_id', value.id)
+                module.storePendingChange('control_system_id', value.id)
             )
         );
         subscriptions.push(
             fields.dependency.valueChanges.subscribe((value: EngineDriver) =>
-                (module as any).change('dependency_id', value.id)
+            module.storePendingChange('dependency_id', value.id)
             )
         );
         subscriptions.push(
             fields.settings_encryption_level.valueChanges.subscribe((value: EncryptionLevel) =>{
-                (module.settings as any).change('encryption_level', value);
+                module.settings.storePendingChange('encryption_level', value);
             })
         );
         subscriptions.push(
             fields.settings_string.valueChanges.subscribe((value: string) => {
-                (module.settings as any).change('settings_string', value);
+                module.settings.storePendingChange('settings_string', value);
             }
             )
         );

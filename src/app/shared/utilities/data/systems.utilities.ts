@@ -46,23 +46,27 @@ export function generateSystemsFormFields(system: EngineSystem): FormDetails {
     const subscriptions = [];
     for (const key in fields) {
         if (fields[key] && key.indexOf('settings') < 0) {
-            subscriptions.push(fields[key].valueChanges.subscribe(value => system[key] = value));
+            subscriptions.push(
+                fields[key].valueChanges.subscribe(value =>
+                    system.storePendingChange(key as any, value)
+                )
+            );
         }
     }
     if (!system.id) {
         subscriptions.push(
             fields.zone.valueChanges.subscribe((value: EngineZone) =>
-                (system as any).change('zones', [value.id])
+                system.storePendingChange('zones', [value.id])
             )
         );
         subscriptions.push(
             fields.settings_encryption_level.valueChanges.subscribe((value: EncryptionLevel) =>{
-                (system.settings as any).change('encryption_level', value);
+                system.settings.storePendingChange('encryption_level', value);
             })
         );
         subscriptions.push(
             fields.settings_string.valueChanges.subscribe((value: string) => {
-                (system.settings as any).change('settings_string', value);
+                system.settings.storePendingChange('settings_string', value);
             }
             )
         );

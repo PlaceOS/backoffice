@@ -5,7 +5,10 @@ import { EngineSystem, EngineModule, HashMap } from '@acaengine/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
-import { ApplicationLink, ApplicationActionLink } from 'src/app/shared/utilities/settings.interfaces';
+import {
+    ApplicationLink,
+    ApplicationActionLink
+} from 'src/app/shared/utilities/settings.interfaces';
 import {
     ConfirmModalComponent,
     ConfirmModalData,
@@ -89,7 +92,8 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     private generateDeviceBindings() {
         const counter: HashMap<number> = {};
         for (const device of this.devices) {
-            const name = device.custom_name || (device.driver ? device.driver.module_name : '') || 'Blank';
+            const name =
+                device.custom_name || (device.driver ? device.driver.module_name : '') || 'Blank';
             if (!counter[name]) {
                 counter[name] = 0;
             }
@@ -241,21 +245,22 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
                 'confirm_ref',
                 ref.componentInstance.event.subscribe((e: DialogEvent) => {
                     if (e.reason === 'done') {
-                        const list: string[] = [];
-                        for (const item of this.devices) {
-                            list.push(item.id);
-                        }
+                        ref.componentInstance.loading = 'Updating device order...';
+                        const list: string[] = [...this.item.modules];
                         moveItemInArray(list, event.previousIndex, event.currentIndex);
-                        this._service.Systems.update(this.item.id, { modules: list }).then(() => {
-                            moveItemInArray(this.devices, event.previousIndex, event.currentIndex);
-                            moveItemInArray(
-                                this.item.modules,
-                                event.previousIndex,
-                                event.currentIndex
-                            );
-                        });
-                        ref.close();
-                        this.unsub('confirm_ref');
+                        this.item.storePendingChange('modules', list);
+                        this.item.save().then(
+                            () => {
+                                ref.close();
+                                this.unsub('confirm_ref');
+                            },
+                            err => {
+                                ref.componentInstance.loading = null;
+                                this._service.notifyError(
+                                    `Error reording devices. Error: ${err.message || err}`
+                                );
+                            }
+                        );
                     }
                 })
             );
@@ -308,12 +313,12 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     }
 
     public joinDevice(id: string) {
-        const mod_list = this.item.modules;
+        const mod_list = [...this.item.modules];
         if (mod_list.indexOf(id) < 0) {
             mod_list.push(id);
         }
-        const new_item = { ...this.item, modules: mod_list };
-        this._service.Systems.update(this.item.id, new_item).then(
+        this.item.storePendingChange('modules', mod_list);
+        this.item.save().then(
             () => {
                 this._service.notifySuccess('Successfully added device to system');
                 this.load();

@@ -24,19 +24,23 @@ export function generateDriverFormFields(driver: EngineDriver): FormDetails {
     const subscriptions = [];
     for (const key in fields) {
         if (fields[key] && key.indexOf('settings') < 0) {
-            subscriptions.push(fields[key].valueChanges.subscribe(value => driver[key] = value));
+            subscriptions.push(
+                fields[key].valueChanges.subscribe(value =>
+                    driver.storePendingChange(key as any, value)
+                )
+            );
         }
     }
     subscriptions.push(
         fields.settings_string.valueChanges.subscribe((value: string) => {
-            (driver.settings as any).change('settings_string', value);
+            (driver.settings as any).storePendingChange('settings_string', value);
         }
         )
     );
     if (!driver.id) {
         subscriptions.push(
             fields.settings_encryption_level.valueChanges.subscribe((value: EncryptionLevel) =>{
-                (driver.settings as any).change('encryption_level', value);
+                (driver.settings as any).storePendingChange('encryption_level', value);
             })
         );
         fields.settings_encryption_level.setValue(EncryptionLevel.None);

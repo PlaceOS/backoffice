@@ -77,12 +77,12 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
                 operator: this.form.controls.operator.value,
                 right: this.form.controls.right.value
             };
-            this.trigger.conditions = {
+            this.trigger.storePendingChange('conditions', {
                 ...this.trigger.conditions,
                 comparisons: old_values.length
                     ? [...old_values, new_value]
                     : [new_value]
-            };
+            });
         } else {
             const old_values = this.trigger.conditions.time_dependents;
             const new_value: TriggerTimeCondition = {
@@ -91,12 +91,12 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
                 cron: this.form.controls.cron.value
             };
             new_value.cron ? delete new_value.time : delete new_value.cron;
-            this.trigger.conditions = {
+            this.trigger.storePendingChange('conditions', {
                 ...this.trigger.conditions,
                 time_dependents: old_values.length
                     ? [...old_values, new_value]
                     : [new_value]
-            };
+            });
         }
         this.trigger.save().then(
             item => {
@@ -105,7 +105,7 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
                 this._dialog.close();
             },
             err => {
-                this.trigger.clearChanges();
+                this.trigger.clearPendingChanges();
                 this.loading = false;
                 this._service.notifyError(`Error adding condition to trigger. Error: ${err.message || err}`);
             }

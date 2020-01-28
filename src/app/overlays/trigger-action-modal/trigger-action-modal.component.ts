@@ -75,11 +75,11 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
                 emails: this.form.value.emails,
                 content: this.form.value.content
             });
-            this.trigger.actions = { ...this.trigger.actions, mailers };
+            this.trigger.storePendingChange('actions', { ...this.trigger.actions, mailers });
         } else {
             const functions = this.trigger.actions.functions;
             functions.push(this.form.value.method_call);
-            this.trigger.actions = { ...this.trigger.actions, functions };
+            this.trigger.storePendingChange('actions', { ...this.trigger.actions, functions });
         }
         this.trigger.save().then(
             item => {
@@ -88,7 +88,7 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
                 this._dialog.close();
             },
             err => {
-                this.trigger.clearChanges();
+                this.trigger.clearPendingChanges();
                 this.loading = false;
                 this._service.notifyError(
                     `Error adding condition to trigger. Error: ${err.message || err}`

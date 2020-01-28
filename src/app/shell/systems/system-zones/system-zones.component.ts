@@ -1,4 +1,3 @@
-
 import { Component, Input, OnChanges, OnInit, Output, EventEmitter } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
@@ -6,7 +5,11 @@ import { EngineSystem, EngineZone, EngineZonesService } from '@acaengine/ts-clie
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
-import { ConfirmModalComponent, ConfirmModalData, CONFIRM_METADATA } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import {
+    ConfirmModalComponent,
+    ConfirmModalData,
+    CONFIRM_METADATA
+} from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
@@ -44,104 +47,148 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges {
      * @param offset Page offset for the service request
      */
     public load(offset: number = 0) {
-        this._service.Zones.query({ sys_id: this.item.id, offset }).then((list) => {
-            console.log('List:', list);
-            list.sort((a, b) => this.item.zones.indexOf(a.id) - this.item.zones.indexOf(b.id));
-            this.zones = list;
-            console.log('Zones:', this.item.zones);
-        }, () => null);
+        this._service.Zones.query({ sys_id: this.item.id, offset }).then(
+            list => {
+                console.log('List:', list);
+                list.sort((a, b) => this.item.zones.indexOf(a.id) - this.item.zones.indexOf(b.id));
+                this.zones = list;
+                console.log('Zones:', this.item.zones);
+            },
+            () => null
+        );
     }
 
     public drop(event) {
         if (event && event.previousIndex !== event.currentIndex) {
-            const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
-                ...CONFIRM_METADATA,
-                data: {
-                    title: 'Change order?',
-                    content: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
-                    icon: { type: 'icon', class: 'backoffice-cycle' }
+            const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+                ConfirmModalComponent,
+                {
+                    ...CONFIRM_METADATA,
+                    data: {
+                        title: 'Change order?',
+                        content: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
+                        icon: { type: 'icon', class: 'backoffice-cycle' }
+                    }
                 }
-            })
-            this.subscription('confirm_ref', ref.componentInstance.event.subscribe((e: DialogEvent) => {
-                if (e.reason === 'done') {
-                    const list: string[] = [];
-                    for (const item of this.zones) { list.push(item.id); }
-                    moveItemInArray(list, event.previousIndex, event.currentIndex);
-                    this._service.Systems.update(this.item.id, { zones: list })
-                        .then(() => {
-                            moveItemInArray(this.zones, event.previousIndex, event.currentIndex);
-                            moveItemInArray(this.item.zones, event.previousIndex, event.currentIndex);
-                        });
-                    ref.close();
-                    this.unsub('confirm_ref');
-                }
-            }));
+            );
+            this.subscription(
+                'confirm_ref',
+                ref.componentInstance.event.subscribe((e: DialogEvent) => {
+                    if (e.reason === 'done') {
+                        const list: string[] = [...this.item.zones];
+                        moveItemInArray(list, event.previousIndex, event.currentIndex);
+                        ref.componentInstance.loading = 'Updating zone ordering...';
+                        this.item.storePendingChange('zones', list);
+                        this.item.save().then(
+                            () => {
+                                ref.close();
+                                this.unsub('confirm_ref');
+                            },
+                            err => {
+                                ref.componentInstance.loading = null;
+                                this._service.notifyError(
+                                    `Error reording zones. Error: ${err.message || err}`
+                                );
+                            }
+                        );
+                    }
+                })
+            );
         }
     }
 
     public removeZone(zone: EngineZone) {
         if (zone && zone.id) {
-            const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
-                ...CONFIRM_METADATA,
-                data: {
-                    title: 'Remove zone?',
-                    content: `<p>Are you sure you want remove zone "${zone.name}" from the system?</p>Configuration will be updated immediately.`,
-                    icon: { type: 'icon', class: 'backoffice-export' }
+            const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+                ConfirmModalComponent,
+                {
+                    ...CONFIRM_METADATA,
+                    data: {
+                        title: 'Remove zone?',
+                        content: `<p>Are you sure you want remove zone "${zone.name}" from the system?</p>Configuration will be updated immediately.`,
+                        icon: { type: 'icon', class: 'backoffice-export' }
+                    }
                 }
-            })
-            this.subscription('confirm_ref', ref.componentInstance.event.subscribe((e: DialogEvent) => {
-                if (e.reason === 'done') {
-                    this.loading.emit(true);
-                    this.item.removeZone(zone.id).then((item) => {
-                        this.loading.emit(false);
-                        this.item = item;
-                        this._service.notifySuccess(`Remove zone "${this.new_zone}" from system`);
-                        ref.close();
-                        this.unsub('confirm_ref');
-                    }, (err) => {
-                        this.loading.emit(false);
-                        this._service.notifySuccess(`Error removing "${this.new_zone}" from system. Error: ${err}`);
-                        ref.close();
-                        this.unsub('confirm_ref');
-                    });
-                }
-            }));
+            );
+            this.subscription(
+                'confirm_ref',
+                ref.componentInstance.event.subscribe((e: DialogEvent) => {
+                    if (e.reason === 'done') {
+                        this.loading.emit(true);
+                        this.item.removeZone(zone.id).then(
+                            item => {
+                                this.loading.emit(false);
+                                this.item = item;
+                                this._service.notifySuccess(
+                                    `Remove zone "${this.new_zone}" from system`
+                                );
+                                ref.close();
+                                this.unsub('confirm_ref');
+                            },
+                            err => {
+                                this.loading.emit(false);
+                                this._service.notifySuccess(
+                                    `Error removing "${this.new_zone}" from system. Error: ${err}`
+                                );
+                                ref.close();
+                                this.unsub('confirm_ref');
+                            }
+                        );
+                    }
+                })
+            );
         }
     }
 
     public joinZone() {
         if (this.new_zone) {
             if (this.item.zones.indexOf(this.new_zone) < 0) {
-                const new_list = [ ...this.item.zones, this.new_zone ].filter(i => !!i);
+                const new_list = [...this.item.zones, this.new_zone].filter(i => !!i);
                 this.loading.emit(true);
-                const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
-                    ...CONFIRM_METADATA,
-                    data: {
-                        title: 'Add zone',
-                        content: `Add zone "${this.new_zone}" to system "${this.item.name}"`,
-                        icon: { type: 'icon', class: 'backoffice-upload-to-cloud' }
+                const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+                    ConfirmModalComponent,
+                    {
+                        ...CONFIRM_METADATA,
+                        data: {
+                            title: 'Add zone',
+                            content: `Add zone "${this.new_zone}" to system "${this.item.name}"`,
+                            icon: { type: 'icon', class: 'backoffice-upload-to-cloud' }
+                        }
                     }
-                })
-                this.subscription('confirm_ref', ref.componentInstance.event.subscribe((e: DialogEvent) => {
-                    if (e.reason === 'done') {
-                        ref.componentInstance.loading = 'Adding zone to system...';
-                        this._service.Systems.update(this.item.id, { ...this.item, zones: new_list }).then((item) => {
-                            this.new_zone = null;
+                );
+                this.subscription(
+                    'confirm_ref',
+                    ref.componentInstance.event.subscribe((e: DialogEvent) => {
+                        if (e.reason === 'done') {
+                            ref.componentInstance.loading = 'Adding zone to system...';
+                            this._service.Systems.update(this.item.id, {
+                                ...this.item,
+                                zones: new_list
+                            }).then(
+                                item => {
+                                    this.new_zone = null;
+                                    this.loading.emit(false);
+                                    this._service.notifySuccess(
+                                        `Added zone "${this.new_zone}" to system`
+                                    );
+                                    this.item = item;
+                                    this.load();
+                                    ref.close();
+                                    this.unsub('confirm_ref');
+                                },
+                                () => {
+                                    ref.componentInstance.loading = null;
+                                    this.loading.emit(false);
+                                    this._service.notifyError(
+                                        `Error adding zone "${this.new_zone}"`
+                                    );
+                                }
+                            );
+                        } else {
                             this.loading.emit(false);
-                            this._service.notifySuccess(`Added zone "${this.new_zone}" to system`);
-                            this.item = item;
-                            this.load();
-                            ref.close();
-                            this.unsub('confirm_ref');
-                        }, () => {
-                            ref.componentInstance.loading = null;
-                            this.loading.emit(false);
-                            this._service.notifyError(`Error adding zone "${this.new_zone}"`);
-                        });
-                    } else {
-                        this.loading.emit(false);
-                    }
-                }));
+                        }
+                    })
+                );
             } else {
                 this._service.notifyInfo('The selected zone is already linked to this system');
             }

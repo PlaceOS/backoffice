@@ -19,24 +19,28 @@ export function generateZoneFormFields(zone: EngineZone): FormDetails {
     const subscriptions = [];
     for (const key in fields) {
         if (fields[key] && key.indexOf('settings') < 0) {
-            subscriptions.push(fields[key].valueChanges.subscribe(value => zone[key] = value));
+            subscriptions.push(
+                fields[key].valueChanges.subscribe(value =>
+                    zone.storePendingChange(key as any, value)
+                )
+            );
         }
     }
     subscriptions.push(
         fields.tag_list.valueChanges.subscribe((value: string[]) =>
-            (zone as any).change('tags', value.join(','))
+            zone.storePendingChange('tags', value.join(','))
         )
     );
     subscriptions.push(
         fields.settings_string.valueChanges.subscribe((value: string) => {
-            (zone.settings as any).change('settings_string', value);
+            zone.settings.storePendingChange('settings_string', value);
         }
         )
     );
     if (!zone.id) {
         subscriptions.push(
             fields.settings_encryption_level.valueChanges.subscribe((value: EncryptionLevel) =>{
-                (zone.settings as any).change('encryption_level', value);
+                zone.settings.storePendingChange('encryption_level', value);
             })
         );
         fields.settings_encryption_level.setValue(EncryptionLevel.None);

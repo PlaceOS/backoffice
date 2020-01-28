@@ -12,12 +12,16 @@ export function generateApplicationFormFields(app: EngineApplication): FormDetai
         name: new FormControl(app.name || '', [Validators.required]),
         scopes: new FormControl(app.scopes || ''),
         skip_authorization: new FormControl(app.skip_authorization || ''),
-        redirect_uri: new FormControl(app.redirect_uri || ''),
+        redirect_uri: new FormControl(app.redirect_uri || '')
     };
     const subscriptions = [];
     for (const key in fields) {
         if (fields[key] && key.indexOf('confirm') < 0) {
-            subscriptions.push(fields[key].valueChanges.subscribe(value => app[key] = value));
+            subscriptions.push(
+                fields[key].valueChanges.subscribe(value =>
+                    app.storePendingChange(key as any, value)
+                )
+            );
         }
     }
     return {

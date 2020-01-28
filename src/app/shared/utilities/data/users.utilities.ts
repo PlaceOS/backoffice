@@ -31,7 +31,11 @@ export function generateUserFormFields(user: EngineUser): FormDetails {
     const subscriptions = [];
     for (const key in fields) {
         if (fields[key] && key.indexOf('confirm') < 0) {
-            subscriptions.push(fields[key].valueChanges.subscribe(value => user[key] = value));
+            subscriptions.push(
+                fields[key].valueChanges.subscribe(value =>
+                    user.storePendingChange(key as any, value)
+                )
+            );
         }
     }
     return {
