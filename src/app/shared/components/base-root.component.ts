@@ -4,14 +4,14 @@ import { EngineResource } from '@acaengine/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
-import { EngineServiceLike } from '../utilities/types.utilities';
+import { EngineServiceLike, Identity } from '../utilities/types.utilities';
 
 @Component({
     selector: 'app-base-root-component',
     template: '',
     styles: []
 })
-export class BaseRootComponent<T extends { id: string } = EngineResource<any>> extends BaseDirective
+export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
     implements OnInit {
     /** Name of the API service assoicated with the  */
     readonly service_name: string;
@@ -60,11 +60,10 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
                         this.id = id;
                         this.loadItem();
                     } else {
-                        this.item = this._service.get('BACKOFFICE.active_item');
-                        this.loadValues();
+                        this.setActiveItem(this._service.get('BACKOFFICE.active_item'));
                     }
                 }
-                this.timeout('sidebar', () => this.show_sidebar = !this.id);
+                this.timeout('sidebar', () => (this.show_sidebar = !this.id));
             })
         );
         this.subscription(
@@ -111,7 +110,7 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
      * @param event
      */
     public itemEvent(event: any) {
-        if (!event) return;
+        if (!event) { return; }
         if (event.type === 'tab' && this.item && event.value) {
             this._router.navigate([], {
                 relativeTo: this._route,
@@ -130,14 +129,14 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
     /**
      * Open create modal for a new item
      */
-    protected new() { }
+    protected new() {}
 
     /**
      * Open edit modal for active item
      */
-    protected edit() { }
+    protected edit() {}
 
-    protected delete() { }
+    protected delete() {}
 
     protected loadValues() {}
 
@@ -147,19 +146,7 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
     protected loadItem() {
         this.timeout('loading', () => (this.loading_item = true), 10);
         this.service.show(this.id).then(
-            item => {
-                this.timeout(
-                    'set_item',
-                    () => {
-                        this.item = item;
-                        this._service.set('BACKOFFICE.active_item_id', this.id);
-                        this._service.set('BACKOFFICE.active_item', this.item);
-                        this.loadValues();
-                        this.timeout('item', () => (this.loading_item = false));
-                    },
-                    50
-                );
-            },
+            item => this.setActiveItem(item),
             () => {
                 this._service.notifyError(
                     `Failed to load data for ${this.service._name} "${this.id}"`
@@ -168,5 +155,22 @@ export class BaseRootComponent<T extends { id: string } = EngineResource<any>> e
                 this._service.navigate([this.service._api_route]);
             }
         );
+    }
+
+    private setActiveItem(new_item: T) {
+        this.item = new_item;
+        console.log('Setting new item:', new_item);
+        this._service.set('BACKOFFICE.active_item_id', this.id);
+        this._service.set('BACKOFFICE.active_item', this.item);
+        this.subscription(
+            'item_changes',
+            (this.item as any).changeEvents.subscribe(event => {
+                if (event.type === 'item_saved') {
+                    this.setActiveItem(event.metadata as any);
+                }
+            })
+        );
+        this.loadValues();
+        this.timeout('item', () => (this.loading_item = false));
     }
 }

@@ -1,11 +1,22 @@
-
-import { Component, Input, Output, EventEmitter, OnChanges, OnInit, ViewChild, ElementRef, ViewChildren, QueryList } from '@angular/core';
+import {
+    Component,
+    Input,
+    Output,
+    EventEmitter,
+    OnChanges,
+    OnInit,
+    ViewChild,
+    ElementRef,
+    ViewChildren,
+    QueryList,
+    ChangeDetectorRef
+} from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { BehaviorSubject } from 'rxjs';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
-import { EngineServiceLike, HashMap } from '../../utilities/types.utilities';
+import { EngineServiceLike, HashMap, Identity } from '../../utilities/types.utilities';
 
 import * as dayjs from 'dayjs';
 import { unique } from '../../utilities/general.utilities';
@@ -35,7 +46,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     /** Emitter for user actions on the component */
     @Output() public event = new EventEmitter();
     /** Async list of items to render on the sidebar list */
-    public items: BehaviorSubject<any[]>;
+    public items: BehaviorSubject<Identity[]> = new BehaviorSubject([]);
     /** Whether the application has initialised */
     public intialised: boolean;
     /** Last time the list was updated */
@@ -46,7 +57,8 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     /** List of elements for each associated item */
     @ViewChildren('list_item') private item_list: QueryList<ElementRef>;
     /** Virtual scrolling viewport */
-    @ViewChild(CdkVirtualScrollViewport, { static: false }) private viewport: CdkVirtualScrollViewport;
+    @ViewChild(CdkVirtualScrollViewport, { static: false })
+    private viewport: CdkVirtualScrollViewport;
 
     /** Whether new items for the active module can be created */
     public get new(): boolean {
@@ -71,7 +83,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
 
     /** Path of the active module */
     public get route() {
-        let route = this.module._api_route;
+        const route = this.module._api_route;
         return `/${route}`;
     }
 
@@ -83,9 +95,8 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         return 0;
     }
 
-    constructor(private _service: ApplicationService) {
+    constructor(private _service: ApplicationService, private _cdr: ChangeDetectorRef) {
         super();
-        this.items = new BehaviorSubject([]);
     }
 
     public ngOnInit() {
@@ -95,9 +106,22 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         this.timeout('startup', () => {
             this.items.next(this.list || []);
             this.atBottom();
-        })
-        this.subscription('up', this._service.Hotkeys.listen(['ArrowUp'], () => this.changeSelected(-1)));
-        this.subscription('down', this._service.Hotkeys.listen(['ArrowDown'], () => this.changeSelected(1)));
+        });
+        if (!this._service.get('BACKOFFICE.active_item')) {
+            this._service.set('BACKOFFICE.active_item', null);
+        }
+        this.subscription(
+            'active_item',
+            this._service.listen('BACKOFFICE.active_item', (item) => this.replaceActiveItem(item))
+        );
+        this.subscription(
+            'up',
+            this._service.Hotkeys.listen(['Alt', 'ArrowUp'], () => this.changeSelected(-1))
+        );
+        this.subscription(
+            'down',
+            this._service.Hotkeys.listen(['Alt', 'ArrowDown'], () => this.changeSelected(1))
+        );
     }
 
     public ngOnChanges(changes: any) {
@@ -118,7 +142,10 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     public get is_stale() {
         const now = dayjs();
         const last_check = dayjs(this.last_check);
-        return this.last_total !== this.items.getValue().length || last_check.add(1, 'm').isBefore(now, 's');
+        return (
+            this.last_total !== this.items.getValue().length ||
+            last_check.add(1, 'm').isBefore(now, 's')
+        );
     }
 
     /**
@@ -163,15 +190,18 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     public searching(offset: number = 0) {
         this.loading = true;
         if (this.module) {
-            this.module.query({ q: this.search, offset, ...(this.query_params || {}) }).then(list => {
-                this.list = offset ? this.list.concat(list) : list;
-                this.list = unique(this.list, 'id');
-                this.items.next(this.list);
-                this.loading = false;
-            }, (err) => {
-                this._service.notifyError(`Error updating ${this.module._name} list. ${err}`);
-                this.loading = false;
-            });
+            this.module.query({ q: this.search, offset, ...(this.query_params || {}) }).then(
+                list => {
+                    this.list = offset ? this.list.concat(list) : list;
+                    this.list = unique(this.list, 'id');
+                    this.items.next(this.list);
+                    this.loading = false;
+                },
+                err => {
+                    this._service.notifyError(`Error updating ${this.module._name} list. ${err}`);
+                    this.loading = false;
+                }
+            );
         } else {
             this.loading = false;
         }
@@ -191,5 +221,19 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
                 this._service.navigate([this.module._api_route, this.items.getValue()[index].id]);
             }
         }
+    }
+
+    /**
+     * Replaces the active item with the latest local version
+     * @param active_item New active item
+     */
+    private replaceActiveItem(active_item: Identity) {
+        if (!active_item) { return; }
+        const list = this.items.getValue() || [];
+        const index = list.findIndex(item => item.id === active_item.id);
+        if (index >= 0) {
+            list.splice(index, 1, active_item);
+        }
+        this.items.next([ ...list ]);
     }
 }
