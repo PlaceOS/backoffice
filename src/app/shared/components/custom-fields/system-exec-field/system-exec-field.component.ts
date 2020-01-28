@@ -281,10 +281,10 @@ export class SystemExecFieldComponent extends BaseDirective
             ).then(
                 result => {
                     this.service.notifySuccess(
-                        'Command successful executed.<br>View Response?',
+                        'Command successful executed.\nView Response?',
                         'View',
                         () => {
-                            // console.log('View response:', result);
+                            console.log('View response:', result);
                         }
                     );
                 },
@@ -293,10 +293,10 @@ export class SystemExecFieldComponent extends BaseDirective
                         this.service.notifyError(err);
                     } else {
                         this.service.notifyError(
-                            `Executing '${this.active_method.name}' failed.<br>View Error?`,
+                            `Executing '${this.active_method.name}' failed.\nView Error?`,
                             'View',
                             () => {
-                                // console.log('View error:', err);
+                                console.log('View error:', err);
                             }
                         );
                     }

@@ -236,6 +236,10 @@ mat-dialog-container.mat-dialog-container {
         background-color: $color-secondary;
         color: #fff;
     }
+
+    span {
+        white-space: pre-line;
+    }
 }
 
 .mat-tooltip {

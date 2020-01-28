@@ -141,7 +141,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
                         this._service.notifyError(err);
                     } else {
                         this._service.notifyError(
-                            `Failed to stop device '${device.id}'.<br>View Error?`,
+                            `Failed to stop device '${device.id}'.\nView Error?`,
                             'View',
                             () => {
                                 // console.log('View error:', err);
@@ -161,7 +161,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
                         this._service.notifyError(err);
                     } else {
                         this._service.notifyError(
-                            `Failed to stop device '${device.id}'.<br>View Error?`,
+                            `Failed to stop device '${device.id}'.\nView Error?`,
                             'View',
                             () => {
                                 // console.log('View error:', err);
