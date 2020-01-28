@@ -79,7 +79,6 @@ describe('TimeFieldComponent', () => {
         let date = dayjs();
         date = date.minute(Math.ceil(date.minute() / 5) * 5);
         const date_str = date.format('HH:mm');
-        console.log('Dates:', date_str, component.time_options.map(i => i.value), '\n\n\n\n\n\n\n\n\n');
         const option = component.time_options.find(block => block.value === date_str);
         expect(option).toBeTruthy();
     });
@@ -90,7 +89,6 @@ describe('TimeFieldComponent', () => {
         fixture.detectChanges();
         const date = dayjs();
         const date_str = date.format('HH:mm');
-        console.log('Date:', date_str, component.time_options[0].value)
         expect(date_str.localeCompare(component.time_options[0].value)).toBeLessThanOrEqual(0);
     });
 });

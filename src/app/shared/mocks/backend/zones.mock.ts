@@ -52,7 +52,6 @@ export class MockZonesBackend extends BaseMockBackend {
     public search(data, fragment) {
         if (fragment.sys_id) {
             data = data.filter((a) => {
-                console.log('Zone:', a.id, (a.systems || []), (a.systems || []).indexOf(fragment.sys_id) >= 0);
                 return (a.systems || []).indexOf(fragment.sys_id) >= 0;
             });
         }

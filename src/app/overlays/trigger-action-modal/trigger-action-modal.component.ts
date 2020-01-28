@@ -61,7 +61,6 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
 
     public save() {
         this.form.markAllAsTouched();
-        console.log('Form:', this.form.value);
         if (
             (this.form.controls.action_type.value === 'emails' && !this.form.valid) ||
             (this.form.controls.action_type.value === 'function' && !this.form.value.method_call)

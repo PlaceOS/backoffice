@@ -89,7 +89,6 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
                 }
             });
             this.subscription('delete_confirm', ref.componentInstance.event.subscribe((event: DialogEvent) => {
-                console.log('Here', event);
                 if (event.reason === 'done') {
                     ref.componentInstance.loading = 'Deleting system...';
                     this.item.delete().then(() => {

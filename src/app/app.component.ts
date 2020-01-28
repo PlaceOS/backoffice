@@ -15,6 +15,5 @@ export class AppComponent implements OnInit {
 
     public ngOnInit(): void {
         this._service.title = 'Loading...';
-        console.log('Ready:', this._service.is_ready);
     }
 }

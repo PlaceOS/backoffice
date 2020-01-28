@@ -295,7 +295,6 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
             control_system: this.item
         }).then(
             item => {
-                console.log('Item:', item);
                 this._service.notifySuccess('Created new device');
                 this.joinDevice(item.id);
             },

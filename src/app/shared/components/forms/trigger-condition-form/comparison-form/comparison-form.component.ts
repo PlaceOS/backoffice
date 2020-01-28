@@ -102,8 +102,6 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
                     id: key,
                     name: key
                 }));
-                console.log('Var Map:', var_map);
-                console.log('Status Vars:', this[`${side}_status_variables`]);
             },
             () =>
                 this._service.notifyError(
@@ -132,7 +130,6 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
                     name: `${module_class}_${index}`
                 };
             });
-            console.log('Modules:', this.modules, this.module_list);
         });
     }
 }

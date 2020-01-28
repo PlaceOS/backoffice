@@ -102,7 +102,6 @@ window.control.handlers.push({
         const repo = MOCK_REPOSITORIES.find(repo => repo.id === event.route_params.id);
         if (repo) {
             const driver_list = repo.drivers.map(id => MOCK_DRIVERS.find(driver => driver.id === id).name.split(' ').join('/'));
-            console.log('Drivers:', driver_list);
             return driver_list;
         }
         throw {

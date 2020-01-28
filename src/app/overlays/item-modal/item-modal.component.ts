@@ -141,7 +141,6 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
         this.form.markAllAsTouched();
         if (this.item && this.form.valid) {
             this.loading = `${this.item.id ? 'Updating' : 'Creating'} ${this.name}...`;
-            console.log('Changes:', this.item.changes);
             this.item.save().then(
                 item => {
                     this.result = item;

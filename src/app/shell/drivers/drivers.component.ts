@@ -37,7 +37,6 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
         this._service.Modules.query(query).then(
             () => {
                 (this.device_count = this._service.Modules.last_total || 0)
-                console.log('Devices:', this.device_count);
             }
         );
     }
@@ -92,7 +91,6 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
             this.subscription(
                 'delete_confirm',
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
-                    console.log('Here', event);
                     if (event.reason === 'done') {
                         ref.componentInstance.loading = 'Deleting driver...';
                         this.item.delete().then(

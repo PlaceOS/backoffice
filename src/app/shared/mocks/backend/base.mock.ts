@@ -70,7 +70,6 @@ export class BaseMockBackend {
             method: 'POST',
             callback: (event) => {
                 list.push({ id: `${id_prefix}-${padZero(list.length, 4)}`, ...(event.body || {}) });
-                console.log(base_url, list[list.length - 1]);
                 return list[list.length - 1];
             }
         } as MockHttpRequestHandlerOptions);

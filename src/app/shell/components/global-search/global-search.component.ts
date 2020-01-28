@@ -94,7 +94,6 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
             distinctUntilChanged(),
             switchMap(query => {
                 this.loading = true;
-                console.log('Search');
                 this.offset = 20;
                 return !this.min_length || query.length >= this.min_length
                     ? this.queryEndpoints(query)

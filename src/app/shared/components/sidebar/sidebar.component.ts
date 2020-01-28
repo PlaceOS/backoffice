@@ -153,7 +153,6 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
 
     /** Emit events to the parent element */
     public post(type: string) {
-        console.log('Type:', type)
         this.event.emit({ type });
     }
 

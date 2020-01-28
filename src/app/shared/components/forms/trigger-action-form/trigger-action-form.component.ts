@@ -45,7 +45,6 @@ export class TriggerActionFormComponent {
         if (email_list.indexOf(email) < 0) {
             email_list.push(email);
         }
-        console.log('Email List:', email_list);
         this.form.controls.emails.setValue(email_list);
         this.chip_list.errorState = !this.form.controls.emails.valid;
     }

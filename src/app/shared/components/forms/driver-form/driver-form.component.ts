@@ -61,7 +61,6 @@ export class DriverFormComponent extends BaseDirective {
      * @param repo Repository to grab the drivers for
      */
     public updateDriverList(repo: EngineRepository) {
-        console.log('Update driver list:', repo);
         this._service.Repositories.listDrivers(repo.id).then(list => {
             this.driver_list = (list || []).map(driver => ({
                 id: driver,
@@ -76,7 +75,6 @@ export class DriverFormComponent extends BaseDirective {
      * @param driver Driver to grab commits for
      */
     public updateCommitList(driver: Identity) {
-        console.log('Update Commit list:', driver);
         this._service.Repositories.listCommits(this.base_repo.id, {
             driver: `${driver.id}`
         }).then((list: any[]) => {

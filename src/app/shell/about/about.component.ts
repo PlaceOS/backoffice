@@ -29,12 +29,9 @@ export class AppAboutComponent extends BaseDirective implements OnInit {
         this.model.user = this.service.Users.current();
         this.model.backoffice_version = version;
         this.model.backoffice_build = build.format('DD MMM YYYY [at] h:mma');
-        // this.model.changelog = this.service.Settings.markdown();
-        console.log('Model:', this.model);
     }
 
     public changelog(log: string) {
-        console.log('Log:', log);
         this._dialog.open<ChangelogModalComponent, ChangelogModalData>(ChangelogModalComponent, { data: { changelog: log } });
     }
 }

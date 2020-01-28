@@ -112,7 +112,6 @@ export class MockSystemsBackend extends BaseMockBackend {
                 }
             }
         }
-        console.log('Zones:', this.model.modules);
     }
 
     public search(data, fragment) {
