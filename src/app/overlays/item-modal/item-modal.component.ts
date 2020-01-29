@@ -1,4 +1,4 @@
-import { Component, Inject, EventEmitter, Output } from '@angular/core';
+import { Component, Inject, EventEmitter, Output, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
     EngineResource,
@@ -28,7 +28,10 @@ import { generateDriverFormFields } from 'src/app/shared/utilities/data/drivers.
 import { generateUserFormFields } from 'src/app/shared/utilities/data/users.utilities';
 import { generateDomainFormFields } from 'src/app/shared/utilities/data/domains.utilities';
 import { generateApplicationFormFields } from 'src/app/shared/utilities/data/applications.utilities';
-import { generateTriggerFormFields } from 'src/app/shared/utilities/data/triggers.utilities';
+import {
+    generateTriggerFormFields,
+    generateTriggerSettingsFormFields
+} from 'src/app/shared/utilities/data/triggers.utilities';
 import { generateRepositoryFormFields } from 'src/app/shared/utilities/data/repositories.utilities';
 
 export interface CreateEditModalData {
@@ -40,6 +43,8 @@ export interface CreateEditModalData {
     form: any[];
     /** Name of the type of item being worked on */
     name: string;
+    /** Whether saving the form details will be handled outside the modal */
+    external_save?: boolean;
 }
 
 @Component({
@@ -47,7 +52,7 @@ export interface CreateEditModalData {
     templateUrl: './item-modal.component.html',
     styleUrls: ['./item-modal.component.scss']
 })
-export class ItemCreateUpdateModalComponent extends BaseDirective {
+export class ItemCreateUpdateModalComponent extends BaseDirective implements OnInit {
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether the item is being editing */
@@ -80,6 +85,8 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
             return 'domain';
         } else if (this.item instanceof EngineApplication) {
             return 'application';
+        } else if (this.item instanceof EngineTrigger && this._data.external_save) {
+            return 'system-trigger';
         } else if (this.item instanceof EngineTrigger) {
             return 'trigger';
         } else if (this.item instanceof EngineRepository) {
@@ -114,6 +121,8 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
             details = generateDomainFormFields(this.item);
         } else if (this.item instanceof EngineApplication) {
             details = generateApplicationFormFields(this.item);
+        } else if (this.item instanceof EngineTrigger && this._data.external_save) {
+            details = generateTriggerSettingsFormFields(this.item);
         } else if (this.item instanceof EngineTrigger) {
             details = generateTriggerFormFields(this.item);
         } else if (this.item instanceof EngineRepository) {
@@ -141,6 +150,10 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
         this.form.markAllAsTouched();
         if (this.item && this.form.valid) {
             this.loading = `${this.item.id ? 'Updating' : 'Creating'} ${this.name}...`;
+            if (this._data.external_save) {
+                this.event.emit({ reason: 'action', metadata: this.form.value });
+                return;
+            }
             this.item.save().then(
                 item => {
                     this.result = item;
@@ -186,7 +199,6 @@ export class ItemCreateUpdateModalComponent extends BaseDirective {
                 },
                 err => {
                     this.loading = null;
-                    console.error('Error:', err);
                     this._service.notifyError(
                         `Error ${this.item.id ? 'editing' : 'adding new'} ${
                             this.name

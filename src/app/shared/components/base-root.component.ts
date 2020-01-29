@@ -145,7 +145,7 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
      */
     protected loadItem() {
         this.timeout('loading', () => (this.loading_item = true), 10);
-        this.service.show(this.id).then(
+        this.service.show(this.id, { complete: true }).then(
             item => this.setActiveItem(item),
             () => {
                 this._service.notifyError(

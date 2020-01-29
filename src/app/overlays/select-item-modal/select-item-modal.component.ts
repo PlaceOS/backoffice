@@ -17,8 +17,6 @@ export interface SelectItemModalData {
 export class SelectItemModalComponent extends BaseDirective implements OnInit {
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
-    /** Name of the item type */
-    public name: string;
     /** Whether the item is being editing */
     public edit: boolean;
     /** Item to edit */
@@ -34,21 +32,22 @@ export class SelectItemModalComponent extends BaseDirective implements OnInit {
         super();
     }
 
+    public get name(): string {
+        return this.service.name || this.service._name;
+    }
+
     public get service() {
         return this._service[this._data.service_name];
     }
 
     public ngOnInit(): void {
-        if (this.service) {
-            // this.fields = this.service.getFormFields(this.item, this.edit);
-            this.name = this.service.name;
-        } else {
+        if (!this.service) {
             this._dialog.close();
         }
     }
 
     public submit() {
         this.loading = true;
-        this.event.emit({ reason: 'action' });
+        this.event.emit({ reason: 'action', metadata: this.item });
     }
 }

@@ -13,6 +13,9 @@
             <ng-container *ngSwitchCase="'trigger'">
                 <trigger-form [form]="form"></trigger-form>
             </ng-container>
+            <ng-container *ngSwitchCase="'system-trigger'">
+                <system-trigger-form [form]="form"></system-trigger-form>
+            </ng-container>
             <ng-container *ngSwitchCase="'application'">
                 <application-form [form]="form"></application-form>
             </ng-container>

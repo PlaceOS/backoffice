@@ -38,6 +38,35 @@ export function generateTriggerFormFields(trigger: EngineTrigger): FormDetails {
         subscriptions
     };
 }
+/**
+ * Generate angular form controls
+ * @param trigger Trigger to generate the form controls for
+ */
+export function generateTriggerSettingsFormFields(trigger: EngineTrigger): FormDetails {
+    if (!trigger) {
+        throw Error('No Zone passed to generate form fields');
+    }
+    const fields: HashMap<FormControl> = {
+        name: new FormControl(trigger.name || ''),
+        triggered: new FormControl(+trigger.activated_count > 0),
+        enabled: new FormControl(!!trigger.enabled),
+        important: new FormControl(!!trigger.important)
+    };
+    const subscriptions = [];
+    for (const key in fields) {
+        if (fields[key] && key.indexOf('settings') < 0) {
+            subscriptions.push(
+                fields[key].valueChanges.subscribe(value =>
+                    trigger.storePendingChange(key as any, value)
+                )
+            );
+        }
+    }
+    return {
+        form: new FormGroup(fields),
+        subscriptions
+    };
+}
 
 /**
  * Validate a side of the comparison pair

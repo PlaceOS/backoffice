@@ -1,5 +1,5 @@
 <header>
-    <h3 mat-dialog-title>Add {{name}}</h3>
+    <h3 mat-dialog-title>Add {{ name }}</h3>
     <button mat-icon-button mat-dialog-close>
         <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
     </button>
@@ -7,11 +7,11 @@
 <mat-dialog-content>
     <div class="body" *ngIf="!loading; else load_state">
         <div class="content">
-            <item-search-field [service]="service"  [(ngModel)]="item"></item-search-field>
+            <item-search-field [service]="service" [(ngModel)]="item"></item-search-field>
         </div>
     </div>
 </mat-dialog-content>
-<mat-dialog-actions>
+<mat-dialog-actions *ngIf="!loading">
     <button mat-button class="inverse" mat-dialog-close>Cancel</button>
     <button mat-button type="submit" (tapped)="submit()" [disabled]="!item">Add</button>
 </mat-dialog-actions>
