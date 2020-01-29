@@ -32,9 +32,9 @@ import { ItemDisplayComponent } from './components/item-display/item-display.com
 import { LOGIN_COMPONENTS } from './components/login';
 import { SearchbarComponent } from './components/searchbar/searchbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { CronOptionsComponent } from './components/cron-options/cron-options.component';
 import { BaseRootComponent } from './components/base-root.component';
 import { IconComponent } from './components/icon/icon.component';
+import { TerminalComponent } from './components/terminal/terminal.component';
 
 import { SettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
 import { ItemSearchFieldComponent } from './components/custom-fields/item-search-field/item-search-field.component';
@@ -82,7 +82,8 @@ const COMPONENTS: Type<any>[] = [
     ...LOGIN_COMPONENTS,
     CronOptionsComponent,
     IconComponent,
-    ...FORM_COMPONENTS
+    ...FORM_COMPONENTS,
+    TerminalComponent
 ];
 
 const PIPES: Type<any>[] = [
