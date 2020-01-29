@@ -96,7 +96,7 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
     /** Copy the ID of the active item to the clipboard */
     public copy() {
         if (this.item && this.item.id) {
-            copyToClipboard(this.item.id);
+            document.execCommand('copy');
             this.service.notifyInfo('ID copied to clipboard');
         }
     }
