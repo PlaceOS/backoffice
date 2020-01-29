@@ -80,7 +80,6 @@ const COMPONENTS: Type<any>[] = [
     SearchbarComponent,
     SidebarComponent,
     ...LOGIN_COMPONENTS,
-    CronOptionsComponent,
     IconComponent,
     ...FORM_COMPONENTS,
     TerminalComponent

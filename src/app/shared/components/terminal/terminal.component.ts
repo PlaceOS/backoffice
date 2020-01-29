@@ -1,14 +1,14 @@
-import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef, SimpleChanges } from "@angular/core";
-
+import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef, SimpleChanges, OnChanges } from "@angular/core";
 import { Terminal } from 'xterm';
-import { BaseComponent } from '../../base.component';
+
+import { BaseDirective } from '../../globals/base.directive';
 
 @Component({
     selector: "a-terminal",
     templateUrl: "./terminal.component.html",
     styleUrls: ["./terminal.component.scss"]
 })
-export class TerminalComponent extends BaseComponent implements OnInit, OnDestroy {
+export class TerminalComponent extends BaseDirective implements OnInit, OnChanges, OnDestroy {
     /** Contents to display on the terminal */
     @Input() public content: string;
     /** Resizes terminal display on change */
@@ -49,7 +49,7 @@ export class TerminalComponent extends BaseComponent implements OnInit, OnDestro
      * Resize the terminal display to fill the container element
      */
     public resizeTerminal(): void {
-        if (!this.terminal || !this.container_el) return;
+        if (!this.terminal || !this.container_el) { return; }
         const font_size = this.terminal.getOption('fontSize');
         const line_height = this.terminal.getOption('lineHeight');
         const box = this.container_el.nativeElement.getBoundingClientRect();
@@ -64,7 +64,7 @@ export class TerminalComponent extends BaseComponent implements OnInit, OnDestro
      * @param new_content New contents to render
      */
     private updateTerminalContents(new_content: string) {
-        if (!this.terminal) return;
+        if (!this.terminal) { return; }
         this.terminal.clear();
         const lines: string[] = new_content.split('\n');
         for (const line of lines) {

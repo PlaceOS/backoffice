@@ -2,13 +2,17 @@
     <section class="select">
         <button mat-button (tapped)="newDevice()">Add new</button>
         <div class="dropdown">
-            <item-search-field [service]="module_service" [ngModel]="null" (ngModelChange)="new_module = $event.id"></item-search-field>
+            <item-search-field
+                [service]="module_service"
+                [ngModel]="null"
+                (ngModelChange)="new_module = $event.id"
+            ></item-search-field>
         </div>
         <button mat-button [disabled]="!new_module" (tapped)="addDevice()">
             Add existing
         </button>
     </section>
-    <section>
+    <section class="device-list">
         <table *ngIf="devices && devices.length > 0">
             <thead>
                 <td class="small"></td>
@@ -32,13 +36,14 @@
                         </div>
                     </td>
                     <td class="small">
-                        <!-- <i
+                        <i
+                            *ngIf="device && item.id"
                             binding
                             [(model)]="device.connected"
                             [sys]="item.id"
                             [mod]="device_classes[device.id]"
                             bind="connected"
-                        ></i> -->
+                        ></i>
                         <div
                             class="state"
                             [class.active]="device.connected"
@@ -53,7 +58,12 @@
                         >
                     </td>
                     <td class="module">
-                        <mat-checkbox>{{ device_classes[device.id] }}</mat-checkbox>
+                        <mat-checkbox
+                            [checked]="device_listener[device.id]"
+                            (change)="device_listener[device.id] = $event.checked; toggleDebugEvents(device)"
+                        >
+                            {{ device_classes[device.id] }}
+                        </mat-checkbox>
                     </td>
                     <td class="ip">
                         <div class="lock">
@@ -87,5 +97,8 @@
         <div class="info-block" *ngIf="!devices || devices.length <= 0">
             <div class="text">No devices for system</div>
         </div>
+    </section>
+    <section class="terminal" *ngIf="is_listening">
+        <a-terminal [content]="device_logs"></a-terminal>
     </section>
 </div>

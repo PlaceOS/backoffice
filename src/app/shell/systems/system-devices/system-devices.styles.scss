@@ -1,7 +1,14 @@
 @import 'shared.styles';
 
 .container {
-    padding: 1em;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 4em;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
 }
 
 .options {
@@ -30,6 +37,13 @@
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
+.device-list {
+    flex: 1;
+    min-height: 8em;
+    overflow: auto;
+    padding: 1em;
+}
+
 .lock {
 
     height: 1.2em;
@@ -55,14 +69,15 @@
     }
 }
 
-section {
-    padding: .5em .25em;
+.terminal {
+    padding-top: .5em;
 }
 
 .select {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 1em 1em 0;
 
     button {
         margin: 0 .25em;

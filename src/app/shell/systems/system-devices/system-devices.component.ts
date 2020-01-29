@@ -2,13 +2,12 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 import { EngineSystem, EngineModule, HashMap } from '@acaengine/ts-client';
+import { first } from 'rxjs/operators';
+import { ComposerService } from '@acaengine/composer';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
-import {
-    ApplicationLink,
-    ApplicationActionLink
-} from 'src/app/shared/utilities/settings.interfaces';
+import { ApplicationActionLink } from 'src/app/shared/utilities/settings.interfaces';
 import {
     ConfirmModalComponent,
     ConfirmModalData,
@@ -32,6 +31,10 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     public devices: EngineModule[];
     /** Mapping of devices to the module bindings */
     public device_classes: HashMap<string> = {};
+    /** Whether a device should be listened to */
+    public device_listener: HashMap<boolean> = {};
+    /** List of debug logs for selected devices */
+    public device_logs: string = '';
     /** Store for ID of new module to add to system */
     public new_module: string;
     /** Actions available for the context menu */
@@ -51,16 +54,36 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
         return this._service.Modules;
     }
 
-    constructor(private _service: ApplicationService, private _dialog: MatDialog) {
+    /** Whether the application is listening for debug messages from the server */
+    public get is_listening(): boolean {
+        for (const id in this.device_listener) {
+            if (this.device_listener.hasOwnProperty(id) && this.device_listener[id]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    constructor(
+        private _service: ApplicationService,
+        private _dialog: MatDialog,
+        private _composer: ComposerService
+    ) {
         super();
     }
 
     public ngOnInit(): void {
-        this._service.set('context-menu.items', this.menu_options);
-    }
-
-    public ngOnDestroy() {
-        this._service.set('context-menu.items', []);
+        this.device_logs = '';
+        this._service.initialised.pipe(first(is_inited => is_inited)).subscribe(() => {
+            this.subscription(
+                'debug_events',
+                this._composer.realtime.debug_events.subscribe(event => {
+                    if (this.item.modules.find(id => id === event.module)) {
+                        this.device_logs += '\n\n' + event.message;
+                    }
+                })
+            );
+        });
     }
 
     public ngOnChanges(changes: any) {
@@ -84,21 +107,6 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
             },
             () => null
         );
-    }
-
-    /**
-     * Generate the binding modules for each device
-     */
-    private generateDeviceBindings() {
-        const counter: HashMap<number> = {};
-        for (const device of this.devices) {
-            const name =
-                device.custom_name || (device.driver ? device.driver.module_name : '') || 'Blank';
-            if (!counter[name]) {
-                counter[name] = 0;
-            }
-            this.device_classes[device.id] = `${name}_${++counter[name]}`;
-        }
     }
 
     /**
@@ -193,7 +201,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     public viewState(device: EngineModule) {
         this._dialog.open<ViewModuleStateModalComponent, ModuleStateModalData>(
             ViewModuleStateModalComponent,
-            { data: { system: this.item, module: device } }
+            { data: { system: this.item, module: device, devices: this.devices } }
         );
     }
 
@@ -329,5 +337,36 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
                 this._service.notifyError('Failed to add module to system');
             }
         );
+    }
+
+    /**
+     * Toggle debug events for a device
+     * @param device Device to listen to debug events for
+     */
+    public toggleDebugEvents(device: EngineModule) {
+        if (!device) {
+            return;
+        }
+        console.log('Toggle Device:', device, this.device_listener[device.id]);
+        if (this.device_listener[device.id]) {
+            this.subscription(`debug_${device.id}`, device.debug());
+        } else {
+            this.unsub(`debug_${device.id}`);
+        }
+    }
+
+    /**
+     * Generate the binding modules for each device
+     */
+    private generateDeviceBindings() {
+        const counter: HashMap<number> = {};
+        for (const device of this.devices) {
+            const name =
+                device.custom_name || (device.driver ? device.driver.module_name : '') || 'Blank';
+            if (!counter[name]) {
+                counter[name] = 0;
+            }
+            this.device_classes[device.id] = `${name}_${++counter[name]}`;
+        }
     }
 }

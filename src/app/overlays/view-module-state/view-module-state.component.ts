@@ -9,7 +9,9 @@ export interface ModuleStateModalData {
     /** System Data to show the details for */
     system: EngineSystem;
     /** Module to expose the state of */
-    module: EngineModule
+    module: EngineModule;
+    /** Devices associated with the system */
+    devices: EngineModule[];
 }
 
 @Component({
@@ -18,27 +20,28 @@ export interface ModuleStateModalData {
     styleUrls: ['./view-module-state.styles.scss']
 })
 export class ViewModuleStateModalComponent extends BaseDirective implements OnInit {
-    /** Parent system of the module */
-    public system: EngineSystem;
-    /** Currently selected module */
-    public module: EngineModule;
     /** Current state of the selected module */
-    public state: HashMap;
+    public state: string;
     /** Whether the module state is being loaded */
     public loading: boolean;
     /** Whether the modal is closing */
     public closing: boolean;
+    /** Mapping of devices to the module bindings */
+    public device_classes: HashMap<string> = {};
 
-    /** Settings for the item */
-    public get settings(): string {
-        if (this.state) {
-            if (typeof this.state === 'object') {
-                return JSON.stringify(this.state, null, 4);
-            } else if (typeof this.state === 'string') {
-                return this.state;
-            }
-        }
-        return '{}';
+    /** System of the selected module */
+    public get system(): EngineSystem {
+        return this._data.system;
+    }
+
+    /** Module to view the state of */
+    public get module(): EngineModule {
+        return this._data.module;
+    }
+
+    /** Devices associated with the system */
+    public get devices(): EngineModule[] {
+        return this._data.devices || [];
     }
 
     constructor(
@@ -50,26 +53,48 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
     }
 
     public ngOnInit() {
-        this.system = this._data.system;
-        this.module = this._data.module;
+        this.generateDeviceBindings();
         this.updateState();
+    }
+
+    /**
+     * Generate the binding modules for each device
+     */
+    private generateDeviceBindings() {
+        const counter: HashMap<number> = {};
+        for (const device of this.devices) {
+            const name =
+                device.custom_name || (device.driver ? device.driver.module_name : '') || 'Blank';
+            if (!counter[name]) {
+                counter[name] = 0;
+            }
+            this.device_classes[device.id] = `${name}_${++counter[name]}`;
+        }
     }
 
     /** Update the state of the module */
     public updateState() {
-        if (this.system && this.module && this.module.driver) {
-            this.loading = true;
-            this._service.Systems.state(this.system.id, this.module.driver.module_name, this.module.role + 1).then(
-                state => {
-                    (this.state = state);
-                    this.loading = false;
-                },
-                err => {
-                    this._service.notifyError(err.message || err);
-                    this.loading = false;
-                }
-            );
+        if (!this.system || !this.module) {
+            return;
         }
+        const class_name = this.device_classes[this.module.id];
+        if (!class_name) {
+            return;
+        }
+        this.loading = true;
+        const class_parts = class_name.split('_');
+        this._service.Systems.state(this.system.id, class_parts[0], +class_parts[1]).then(
+            state => {
+                console.log('State:', state);
+                this.state =
+                    typeof state === 'string' ? state : JSON.stringify(state, undefined, 4);
+                this.loading = false;
+            },
+            err => {
+                this._service.notifyError(err.message || err);
+                this.loading = false;
+            }
+        );
     }
 
     /**
@@ -79,4 +104,3 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
         this._dialog.close();
     }
 }
-
