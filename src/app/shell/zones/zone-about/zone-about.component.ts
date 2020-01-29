@@ -40,7 +40,7 @@ export class ZoneAboutComponent extends BaseDirective {
 
     /** List of tags associated with the zone */
     public get tag_list(): string[] {
-        return [];
+        return this.item && this.item.tags ? this.item.tags.split(',') : [];
     }
 
 }

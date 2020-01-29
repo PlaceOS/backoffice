@@ -11,9 +11,11 @@
         <system-exec-field *ngIf="active_system && active_system.id" [system]="active_system"></system-exec-field>
     </section>
     <section class="tags" *ngIf="item && tag_list">
-        <div class="label">Tags:</div>
+        <label for="tags">Tags:</label>
         <div class="value">
-            <div class="tag" *ngFor="let item of tag_list">{{item}}</div>
+            <mat-chip-list name="tags">
+                <mat-chip *ngFor="let tag of tag_list">{{ tag }}</mat-chip>
+            </mat-chip-list>
         </div>
     </section>
     <header>Settings</header>

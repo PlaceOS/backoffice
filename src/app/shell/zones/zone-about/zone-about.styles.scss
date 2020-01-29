@@ -16,33 +16,10 @@ section {
 
 .tags {
     display: flex;
-    padding: .5em 0;
-    .value {
-        flex: 1;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        align-content: flex-start;
-    }
+}
 
-    .label {
-        height: 1.8em;
-        margin-right: .25em;
-        display: flex;
-        align-items: center;
-    }
-
-    .tag {
-        height: 1.8em;
-        border-radius: .95em;
-        margin: .25em;
-        background-color: #fff;
-        padding: .25em 1em;
-        font-size: .8em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 1px 3px 0 rgba(#000, .2), 0 1px 1px 0 rgba(#000, .14), 0 2px 1px -1px rgba(#000, .12);
-        text-transform: capitalize;
-    }
+label {
+    font-size: .8em;
+    font-weight: 500;
+    padding: .75em .5em;
 }
