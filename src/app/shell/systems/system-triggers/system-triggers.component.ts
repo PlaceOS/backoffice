@@ -116,7 +116,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges 
                 'delete_confirm',
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
-                        ref.componentInstance.loading = 'Deleting system...';
+                        ref.componentInstance.loading = 'Removing trigger...';
                         const url = `${this._composer.auth.api_endpoint}/systems/${this.item.id}/triggers/${trigger.id}`;
                         this._composer.http.delete(url).subscribe(
                             () => null,
