@@ -85,15 +85,8 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
      * @param module Module to list status variables
      */
     public loadSystemStatusVariables(mod_name: string, side: 'left' | 'right') {
-        const mod_id = this.module_list.find(mod => mod.name === mod_name).id;
-        const module = this.modules.find(mod => mod.id === mod_id);
-        if (!module) {
-            return;
-        }
-        const module_class =
-            module.custom_name || (module.driver ? module.driver.class_name : 'System');
-        const index = calculateModuleIndex(this.modules, module);
-        this._service.Systems.state(this.system.id, module_class, index).then(
+        const name = mod_name.split('_');
+        this._service.Systems.state(this.system.id, name[0], +name[1]).then(
             var_map => {
                 if (Object.keys(var_map).length <= 0) {
                     var_map.connected = true;
@@ -102,10 +95,11 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
                     id: key,
                     name: key
                 }));
+                this.addExistingStatusVariables();
             },
             () =>
                 this._service.notifyError(
-                    `Error loading the status variables for ${this.system.id}, ${module_class}_${index}`
+                    `Error loading the status variables for ${this.system.id}, ${mod_name}`
                 )
         );
     }
@@ -130,6 +124,58 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
                     name: `${module_class}_${index}`
                 };
             });
+            this.addExistingModules();
         });
+    }
+
+    /**
+     * Add pre-exisiting module detail to the available list
+     */
+    private addExistingModules() {
+        if (this.form.controls.left && this.form.controls.left.value) {
+            const module = this.form.controls.left.value.mod;
+            if (!this.module_list.find(mod => mod.name === module)) {
+                this.module_list.unshift({ id: 'old_left_value', name: module });
+            }
+            this.loadSystemStatusVariables(module, 'left');
+            this.left_side = this.form.controls.left.value;
+        }
+        if (
+            this.form.controls.right &&
+            this.form.controls.right.value &&
+            this.form.controls.right.value.mod
+        ) {
+            this.rhs_type = 'status_var';
+            const module = this.form.controls.right.value.mod;
+            if (!this.module_list.find(mod => mod.name === module)) {
+                this.module_list.unshift({ id: 'old_right_value', name: module });
+            }
+            this.loadSystemStatusVariables(module, 'right');
+            this.right_side = this.form.controls.right_side.value;
+        }
+    }
+
+    /**
+     * Add pre-exisiting status variables to the available list
+     */
+    private addExistingStatusVariables() {
+        if (this.left_side.status) {
+            if (!this.left_status_variables.find(status => status.name === this.left_side.status)) {
+                this.left_status_variables.unshift({
+                    id: this.left_side.status,
+                    name: this.left_side.status
+                });
+            }
+        }
+        if (this.right_side.status) {
+            if (
+                !this.right_status_variables.find(status => status.name === this.right_side.status)
+            ) {
+                this.right_status_variables.unshift({
+                    id: this.right_side.status,
+                    name: this.right_side.status
+                });
+            }
+        }
     }
 }

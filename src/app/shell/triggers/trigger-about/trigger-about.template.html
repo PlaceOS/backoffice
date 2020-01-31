@@ -26,8 +26,8 @@
                 class="list"
                 *ngIf="comparisons.length || time_dependents.length; else no_conditions"
             >
+                <div class="header">Variable Comparison Condtions</div>
                 <div class="group comparisons">
-                    <div class="header">Variable Comparison Condtions</div>
                     <div
                         class="item"
                         *ngFor="let comparison of comparisons; let i = index; trackBy:i"
@@ -49,8 +49,8 @@
                         </button>
                     </div>
                 </div>
+                <div class="header">Time Dependent Conditions</div>
                 <div class="group time-dependents">
-                    <div class="header">Time Dependent Conditions</div>
                     <div
                         class="item"
                         *ngFor="let time of time_dependents; let i = index; trackBy:i"
@@ -85,8 +85,16 @@
         <section>
             <div class="list" *ngIf="functions.length || mailers.length; else no_actions">
                 <div class="header">Function Call Actions</div>
-                <div class="group functions" cdkDropList (cdkDropListDropped)="confirmReorder('function', $event)">
-                    <div class="item" *ngFor="let action of functions; let i = index; trackBy:i" cdkDrag>
+                <div
+                    class="group functions"
+                    cdkDropList
+                    (cdkDropListDropped)="confirmReorder('function', $event)"
+                >
+                    <div
+                        class="item"
+                        *ngFor="let action of functions; let i = index; trackBy:i"
+                        cdkDrag
+                    >
                         <div class="handle" cdkDragHandle>
                             <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
                         </div>
@@ -107,13 +115,24 @@
                     </div>
                 </div>
                 <div class="header">Email Actions</div>
-                <div class="group emails" cdkDropList (cdkDropListDropped)="confirmReorder('mailer', $event)">
-                    <div class="item" *ngFor="let action of mailers; let i = index; trackBy:i" cdkDrag>
+                <div
+                    class="group emails"
+                    cdkDropList
+                    (cdkDropListDropped)="confirmReorder('mailer', $event)"
+                >
+                    <div
+                        class="item"
+                        *ngFor="let action of mailers; let i = index; trackBy:i"
+                        cdkDrag
+                    >
                         <div class="handle" cdkDragHandle>
                             <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
                         </div>
                         <div class="details">
-                            <span [matTooltip]="action.emails | formatList">{{ action.emails.length }} Address{{ action.emails.length === 1 ? '' : 'es' }}</span>
+                            <span [matTooltip]="action.emails | formatList"
+                                >{{ action.emails.length }} Address{{ action.emails.length === 1 ?
+                                '' : 'es' }}</span
+                            >
                             | Body Length: {{ action.content.length }}
                         </div>
                         <button
