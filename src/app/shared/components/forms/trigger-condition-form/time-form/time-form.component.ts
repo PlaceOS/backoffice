@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { Identity } from 'src/app/shared/utilities/types.utilities';
@@ -12,7 +12,7 @@ import * as cron from 'cron-builder';
     templateUrl: './time-form.component.html',
     styleUrls: ['./time-form.component.scss']
 })
-export class TriggerConditionTimeFormComponent implements OnInit {
+export class TriggerConditionTimeFormComponent implements OnChanges {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
     /** List of available periods for scheduled repetition */
@@ -61,8 +61,18 @@ export class TriggerConditionTimeFormComponent implements OnInit {
     /** Hour of the day to recurr on */
     public cron_month: string = this.months_of_year[0];
 
-    public ngOnInit(): void { }
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes.form && this.form) {
+            this.is_cron = this.form.controls.time_type.value === 'cron';
+            if (this.is_cron) {
+                this.loadCronTab(this.form.controls.cron.value);
+            }
+        }
+    }
 
+    /**
+     * Update the output CRON string for the selected periods
+     */
     public updateCronString() {
         if (this.form && this.form.controls.cron) {
             const current_cron = new cron();
@@ -98,6 +108,43 @@ export class TriggerConditionTimeFormComponent implements OnInit {
             }
             const cron_str = current_cron.build();
             this.form.controls.cron.setValue(cron_str);
+        }
+    }
+
+    private loadCronTab(cron_tab: string): void {
+        const cron_str = new cron(cron_tab);
+        this.cron_minute =
+            cron_str.get('minute') === '*' ? this.cron_minute : +cron_str.get('minute');
+        this.cron_hour = cron_str.get('hour') === '*' ? this.cron_minute : +cron_str.get('hour');
+        if (this.cron_hour > 12) {
+            this.cron_hour = this.cron_hour % 12;
+            this.cron_hour_period = 'PM';
+        } else {
+            this.cron_hour_period = 'AM';
+        }
+        this.cron_day =
+            cron_str.get('dayOfTheWeek') === '*'
+                ? this.cron_day
+                : this.days_of_week[+cron_str.get('dayOfTheWeek')];
+        this.cron_date =
+            cron_str.get('dayOfTheMonth') === '*' ? this.cron_date : +cron_str.get('dayOfTheMonth');
+        this.cron_month =
+            cron_str.get('month') === '*'
+                ? this.cron_month
+                : this.months_of_year[+cron_str.get('month') - 1];
+        /** Set the cron period */
+        if (cron_str.get('month') !== '*') {
+            this.cron_period = 'year';
+        } else if (cron_str.get('dayOfTheMonth') !== '*') {
+            this.cron_period = 'month';
+        } else if (cron_str.get('dayOfTheWeek') !== '*') {
+            this.cron_period = 'week';
+        } else if (cron_str.get('hour') !== '*') {
+            this.cron_period = 'day';
+        } else if (cron_str.get('minute') !== '*') {
+            this.cron_period = 'hour';
+        } else {
+            this.cron_period = 'minute';
         }
     }
 }

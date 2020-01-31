@@ -82,7 +82,11 @@ export function generateTriggerComparison(): TriggerComparison {
 
 export function generateTriggerTimeDependant(): TriggerTimeCondition {
     return randomInt(999) % 2 === 0
-        ? { type: TriggerTimeConditionType.CRON, cron: `* * * * *` }
+        ? {
+              type: TriggerTimeConditionType.CRON,
+              cron: `${randomInt(12) * 5 || '*'} ${randomInt(24) || '*'} ${randomInt(31) ||
+                  '*'} ${randomInt(12) || '*'} ${randomInt(7) || '*'}`
+          }
         : {
               type: TriggerTimeConditionType.AT,
               time: `${dayjs()
@@ -105,7 +109,9 @@ export function generateTriggerMailer(): TriggerMailer {
             .fill(0)
             .map(
                 i =>
-                    `${faker.name.firstName().toLowerCase()}.${faker.name.lastName().toLowerCase()}@acaengine.com`
+                    `${faker.name
+                        .firstName()
+                        .toLowerCase()}.${faker.name.lastName().toLowerCase()}@acaengine.com`
             ),
         content: faker.lorem.paragraph()
     };
