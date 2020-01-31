@@ -22,38 +22,36 @@
             <div class="text">Conditions</div>
         </header>
         <section>
-                <div class="list" *ngIf="item.conditions && item.conditions.comparisons">
-                    <div class="item" *ngFor="let comparison of item.conditions.comparisons">
-                        <div class="handle">
-                            <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
-                        </div>
-                        <div class="details">
-                            {{ comparison.left | json }} {{ comparison.operator }} {{ comparison.right | json}}
-                        </div>
-                        <button mat-icon-button>
-                            <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
-                        </button>
-                        <button mat-icon-button>
-                            <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
-                        </button>
+            <div class="list" *ngIf="comparisons.length || time_dependents.length">
+                <div class="item" *ngFor="let comparison of comparisons; let i = index; trackBy:i">
+                    <div class="handle">
                     </div>
-                </div>
-                <div class="list" *ngIf="item.conditions && item.conditions.time_dependents">
-                    <div class="item" *ngFor="let time of item.conditions.time_dependents">
-                        <div class="handle">
-                            <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
-                        </div>
-                        <div class="details">
-                            {{ time.type === 'at' ? time.time : time.cron }}
-                        </div>
-                        <button mat-icon-button>
-                            <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
-                        </button>
-                        <button mat-icon-button>
-                            <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
-                        </button>
+                    <div class="details">
+                        {{ comparison.left | json }} {{ comparison.operator }} {{ comparison.right |
+                        json }}
                     </div>
+                    <button mat-icon-button [disabled]="!template_system" (tapped)="editCondition(comparison)">
+                        <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
+                    </button>
+                    <button mat-icon-button (tapped)="confirmRemoveCondition(comparison)">
+                        <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
+                    </button>
                 </div>
+                <div class="item" *ngFor="let time of time_dependents; let i = index; trackBy:i">
+                    <div class="handle">
+                    </div>
+                    <div class="details">
+                        {{ time.type === 'at' ? 'At time' : 'CRON' }} {{ time.type === 'at' ?
+                        time.time : time.cron }}
+                    </div>
+                    <button mat-icon-button [disabled]="!template_system" (tapped)="editCondition(time)">
+                        <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
+                    </button>
+                    <button mat-icon-button (tapped)="confirmRemoveCondition(time)">
+                        <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
+                    </button>
+                </div>
+            </div>
             <div
                 class="info-block"
                 *ngIf="!item.conditions || (!item.conditions.comparisons && !item.conditions.time_dependents) || (!item.conditions.comparisons.length && item.conditions.time_dependents.length)"
@@ -70,34 +68,32 @@
             <div class="text">Actions</div>
         </header>
         <section>
-            <div class="list" *ngIf="item.actions && item.actions.mailers">
-                <div class="item" *ngFor="let action of item.actions.mailers">
-                    <div class="handle">
-                        <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
-                    </div>
-                    <div class="details">
-                        {{ action.emails.join(', ') }}
-                    </div>
-                    <button mat-icon-button>
-                        <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
-                    </button>
-                    <button mat-icon-button>
-                        <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
-                    </button>
-                </div>
-            </div>
-            <div class="list" *ngIf="item.actions && item.actions.mailers">
-                <div class="item" *ngFor="let action of item.actions.functions">
+            <div class="list" *ngIf="functions.length || mailers.length">
+                <div class="item" *ngFor="let action of functions; let i = index; trackBy:i">
                     <div class="handle">
                         <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
                     </div>
                     <div class="details">
                         {{action.mod}}, {{ action.method }}({{ action.args | json }})
                     </div>
-                    <button mat-icon-button>
+                    <button mat-icon-button [disabled]="!template_system" (tapped)="editAction(action)">
                         <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
                     </button>
-                    <button mat-icon-button>
+                    <button mat-icon-button (tapped)="confirmRemoveAction(action)">
+                        <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
+                    </button>
+                </div>
+                <div class="item" *ngFor="let action of mailers; let i = index; trackBy:i">
+                    <div class="handle">
+                        <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
+                    </div>
+                    <div class="details">
+                        {{action.emails | json }} | Body Length: {{ action.content.length }}
+                    </div>
+                    <button mat-icon-button [disabled]="!template_system" (tapped)="editAction(action)">
+                        <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
+                    </button>
+                    <button mat-icon-button (tapped)="confirmRemoveAction(action)">
                         <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
                     </button>
                 </div>

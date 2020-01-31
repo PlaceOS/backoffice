@@ -8,7 +8,7 @@
     <div class="field" *ngIf="form.controls.operator">
         <label for="operator" hidden>Operation:</label>
         <mat-form-field appearance="outline">
-            <mat-select name="operator" formControlName="operator">
+            <mat-select name="operator" formControlName="operator" placeholder="Select comparison operator">
                 <mat-option *ngFor="let operation of compare_types" [value]="operation.id">
                     {{ operation.name }}
                 </mat-option>
@@ -60,6 +60,7 @@
                     [(ngModel)]="this[side + '_side'].mod"
                     (ngModelChange)="loadSystemStatusVariables($event, side)"
                     [ngModelOptions]="{ standalone: true }"
+                    placeholder="Select module"
                 >
                     <mat-option *ngFor="let mod of module_list" [value]="mod.name">
                         {{ mod.name }}
@@ -78,6 +79,7 @@
                     [(ngModel)]="this[side + '_side'].status"
                     (ngModelChange)="updateFormForSide(side)"
                     [ngModelOptions]="{ standalone: true }"
+                    placeholder="Select status variable"
                 >
                     <mat-option
                         *ngFor="let mod of this[side + '_status_variables']"
@@ -100,6 +102,7 @@
                 [ngModel]="this[side + '_keys']"
                 (ngModelChange)="this[side + '_side'].keys = $event.split(','); updateFormForSide(side);"
                 [name]="side + '-subkeys'"
+                placeholder="Status variable subkeys..."
             />
         </mat-form-field>
     </div>

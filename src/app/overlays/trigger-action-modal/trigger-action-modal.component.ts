@@ -56,7 +56,7 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
     }
 
     public ngOnInit() {
-        this.form = generateTriggerActionForm().form;
+        this.form = generateTriggerActionForm(this._data.action).form;
     }
 
     public save() {

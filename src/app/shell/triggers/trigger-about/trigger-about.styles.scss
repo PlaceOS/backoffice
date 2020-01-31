@@ -20,11 +20,52 @@ section {
     font-size: .75em;
 }
 
-button {
-    margin-right: .5em;
-    border: 1px solid #000;
+.item {
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    margin: 2px 0;
 
-    &[disabled] {
-        border-color: #ccc;
+    .handle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 2.5rem;
+        width: 2.5rem;
+        cursor: grab;
+    }
+
+    .details {
+        flex: 1;
+        min-width: 50%;
+        font-family: $mono-font;
+        white-space: nowrap;
+        font-size: .6em;
+        padding: 0 .5rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &:nth-child(2n) {
+        background-color: #f0f0f0;
+    }
+
+    &:hover {
+        background-color: #ccc;
+    }
+}
+
+button {
+    margin: .25em;
+}
+
+header {
+    button {
+        margin: 0 .5em 0 0;
+        border: 1px solid rgba(#000, .85);
+
+        &[disabled] {
+            border-color: #ccc;
+        }
     }
 }

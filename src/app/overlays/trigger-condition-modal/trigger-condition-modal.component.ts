@@ -61,7 +61,7 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
     }
 
     public ngOnInit() {
-        this.form = generateTriggerConditionForm().form;
+        this.form = generateTriggerConditionForm(this._data.condition).form;
     }
 
     public save() {

@@ -3,7 +3,11 @@ import {
     EngineTrigger,
     HashMap,
     TriggerStatusVariable,
-    TriggerConditionOperator
+    TriggerConditionOperator,
+    TriggerComparison,
+    TriggerTimeCondition,
+    TriggerFunction,
+    TriggerMailer
 } from '@acaengine/ts-client';
 
 import { FormDetails } from './systems.utilities';
@@ -90,15 +94,27 @@ export function validateCompare(control: AbstractControl) {
     return null;
 }
 
-export function generateTriggerConditionForm() {
+/**
+ * Generate form controls for creating a trigger condition
+ */
+export function generateTriggerConditionForm(
+    condition: TriggerComparison | TriggerTimeCondition = {} as any
+) {
+    const type = (condition as TriggerTimeCondition).type ? 'time' : 'compare';
     const fields: HashMap<FormControl> = {
-        condition_type: new FormControl('compare'),
-        left: new FormControl({}, [validateCompare]),
-        operator: new FormControl(TriggerConditionOperator.EQ),
-        right: new FormControl(undefined, [validateCompare]),
-        time_type: new FormControl('at'),
-        time: new FormControl(dayjs().valueOf()),
-        cron: new FormControl()
+        condition_type: new FormControl(type),
+        left: new FormControl((condition as TriggerComparison).left || {}, [validateCompare]),
+        operator: new FormControl(
+            (condition as TriggerComparison).operator || TriggerConditionOperator.EQ
+        ),
+        right: new FormControl((condition as TriggerComparison).right || undefined, [
+            validateCompare
+        ]),
+        time_type: new FormControl((condition as TriggerTimeCondition).type || 'at'),
+        time: new FormControl(
+            (+(condition as TriggerTimeCondition).time || 0) * 1000 || dayjs().valueOf()
+        ),
+        cron: new FormControl((condition as TriggerTimeCondition).cron || undefined)
     };
     const subscriptions = [];
     return {
@@ -127,12 +143,17 @@ export function validateEmailList(control: AbstractControl) {
 /**
  * Generate form controls for creating a trigger action
  */
-export function generateTriggerActionForm() {
+export function generateTriggerActionForm(action: TriggerFunction | TriggerMailer = {} as any) {
+    const type = action && (action as TriggerMailer).emails ? 'email' : 'function';
     const fields: HashMap<FormControl> = {
-        action_type: new FormControl('function'),
-        emails: new FormControl([], [Validators.min(1), Validators.required, validateEmailList]),
-        content: new FormControl('', [Validators.required]),
-        method_call: new FormControl(null, [])
+        action_type: new FormControl(type),
+        emails: new FormControl((action as TriggerMailer).emails || [], [
+            Validators.min(1),
+            Validators.required,
+            validateEmailList
+        ]),
+        content: new FormControl((action as TriggerMailer).emails || '', [Validators.required]),
+        method_call: new FormControl((action as TriggerFunction) || null, [])
     };
     const subscriptions = [];
     return {
