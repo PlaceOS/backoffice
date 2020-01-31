@@ -59,6 +59,7 @@ import { SystemTriggerFormComponent } from './components/forms/system-trigger-fo
 
 import { DriverFormatPipe } from './pipes/driver-format.pipe';
 import { DateFromPipe } from './pipes/date-from.pipe';
+import { FormatListPipe } from './pipes/format-list.pipe';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -89,7 +90,8 @@ const COMPONENTS: Type<any>[] = [
 
 const PIPES: Type<any>[] = [
     DriverFormatPipe,
-    DateFromPipe
+    DateFromPipe,
+    FormatListPipe,
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [

@@ -20,11 +20,19 @@ section {
     font-size: .75em;
 }
 
+.group {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+}
+
 .item {
     display: flex;
     align-items: center;
     border-radius: 4px;
     margin: 2px 0;
+    width: 100%;
 
     .handle {
         display: flex;
@@ -32,7 +40,9 @@ section {
         justify-content: center;
         height: 2.5rem;
         width: 2.5rem;
-        cursor: grab;
+        app-icon {
+            cursor: grab;
+        }
     }
 
     .details {
@@ -44,6 +54,10 @@ section {
         padding: 0 .5rem;
         overflow: hidden;
         text-overflow: ellipsis;
+
+        span {
+            font-family: $mono-font;
+        }
     }
 
     &:nth-child(2n) {
@@ -68,4 +82,27 @@ header {
             border-color: #ccc;
         }
     }
+}
+
+.header {
+    padding: 1em;
+    font-size: 1em;
+    font-weight: 500;
+}
+
+.cdk-drag-preview {
+    background-color: #fff;
+    @include box-shadow;
+
+    button {
+        display: none;
+    }
+}
+
+.placeholder {
+    background-color: rgba(#000, .1);
+    border: 4px dashed rgba(#000, .6);
+    height: 3em;
+    width: 100%;
+    border-radius: 4px;
 }

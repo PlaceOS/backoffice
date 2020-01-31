@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { ComposerModule } from '@acaengine/composer';
 
@@ -25,7 +26,8 @@ import { SharedContentModule } from 'src/app/shared/shared.module';
         FormsModule,
         ComposerModule,
         RouterModule.forChild(ROUTES),
-        SharedContentModule
+        SharedContentModule,
+        DragDropModule
     ]
 })
 export class AppTriggersModule { }

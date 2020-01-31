@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
 import {
     EngineTrigger,
     EngineSystem,
@@ -8,7 +8,7 @@ import {
     TriggerFunction,
     TriggerMailer
 } from '@acaengine/ts-client';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -26,42 +26,52 @@ import {
     ConfirmModalData,
     CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
     selector: 'trigger-about',
     templateUrl: './trigger-about.template.html',
-    styleUrls: ['./trigger-about.styles.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    styleUrls: ['./trigger-about.styles.scss']
 })
-export class TriggerAboutComponent extends BaseDirective {
+export class TriggerAboutComponent extends BaseDirective implements OnChanges {
     /** Active trigger */
     @Input() public item: EngineTrigger;
     /** System to use for conditions with systen variables and functions */
     public template_system: EngineSystem;
+    /** List of variable comparison trigger conditions */
+    public comparisons: TriggerComparison[] = [];
+    /** List of time dependent trigger conditions */
+    public time_dependents: TriggerTimeCondition[] = [];
+    /** List of function call trigger actions */
+    public functions: TriggerFunction[] = [];
+    /** List of email trigger actions */
+    public mailers: TriggerMailer[] = [];
+    /** Reference for confirmation modal */
+    private confirm_ref: MatDialogRef<ConfirmModalComponent>;
 
     /** Service for handling system endpoint requests */
     public get system_service(): EngineSystemsService {
         return this._service.Systems;
     }
 
-    public get comparisons(): any[] {
-        return (this.item.conditions || ({} as any)).comparisons || [];
-    }
-
-    public get time_dependents(): any[] {
-        return (this.item.conditions || ({} as any)).time_dependents || [];
-    }
-
-    public get functions(): any[] {
-        return (this.item.actions || ({} as any)).functions || [];
-    }
-
-    public get mailers(): any[] {
-        return (this.item.actions || ({} as any)).mailers || [];
-    }
-
     constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
+    }
+
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes.item) {
+            if (this.item && this.item.conditions) {
+                this.comparisons = this.item.conditions.comparisons || [];
+                this.time_dependents = this.item.conditions.time_dependents || [];
+                this.functions = this.item.actions.functions || [];
+                this.mailers = this.item.actions.mailers || [];
+            }
+            if (this.confirm_ref) {
+                this.confirm_ref.close();
+                this.confirm_ref = null;
+                this.unsub('delete_confirm');
+            }
+        }
     }
 
     /**
@@ -132,7 +142,7 @@ export class TriggerAboutComponent extends BaseDirective {
     }
 
     public confirmRemoveCondition(condition: TriggerComparison | TriggerTimeCondition) {
-        const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+        this.confirm_ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
             ConfirmModalComponent,
             {
                 ...CONFIRM_METADATA,
@@ -145,12 +155,10 @@ export class TriggerAboutComponent extends BaseDirective {
         );
         this.subscription(
             'delete_confirm',
-            ref.componentInstance.event.subscribe((event: DialogEvent) => {
+            this.confirm_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                 if (event.reason === 'done') {
-                    ref.componentInstance.loading = 'Removing trigger condition...';
+                    this.confirm_ref.componentInstance.loading = 'Removing trigger condition...';
                     this.removeCondition(condition);
-                    ref.close();
-                    this.unsub('delete_confirm');
                 }
             })
         );
@@ -180,7 +188,7 @@ export class TriggerAboutComponent extends BaseDirective {
         this.item.save().then(
             () => this._service.notifySuccess('Successfully removed trigger condition.'),
             err =>
-                this._service.notifySuccess(
+                this._service.notifyError(
                     `Error removing trigger condition. Error: ${err.message || err}`
                 )
         );
@@ -191,7 +199,7 @@ export class TriggerAboutComponent extends BaseDirective {
      * @param action Action to remove
      */
     public confirmRemoveAction(action: TriggerFunction | TriggerMailer) {
-        const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+        this.confirm_ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
             ConfirmModalComponent,
             {
                 ...CONFIRM_METADATA,
@@ -204,12 +212,10 @@ export class TriggerAboutComponent extends BaseDirective {
         );
         this.subscription(
             'delete_confirm',
-            ref.componentInstance.event.subscribe((event: DialogEvent) => {
+            this.confirm_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                 if (event.reason === 'done') {
-                    ref.componentInstance.loading = 'Removing trigger action...';
+                    this.confirm_ref.componentInstance.loading = 'Removing trigger action...';
                     this.removeAction(action);
-                    ref.close();
-                    this.unsub('delete_confirm');
                 }
             })
         );
@@ -239,8 +245,58 @@ export class TriggerAboutComponent extends BaseDirective {
         this.item.save().then(
             () => this._service.notifySuccess('Successfully removed trigger action.'),
             err =>
-                this._service.notifySuccess(
+                this._service.notifyError(
                     `Error removing trigger action. Error: ${err.message || err}`
+                )
+        );
+    }
+
+    /**
+     * Open confirmation modal for re-ordering action for active trigger
+     * @param type Type of action to reorder
+     * @param event Drop event details
+     */
+    public confirmReorder(type: 'function' | 'mailer', event: CdkDragDrop<any[]>): void {
+        this.confirm_ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+            ConfirmModalComponent,
+            {
+                ...CONFIRM_METADATA,
+                data: {
+                    title: `Reoreder trigger ${type} action`,
+                    content: `<p>Are you sure you want remove this trigger condition?</p><p>All systems using this trigger will be updated <strong>immediately</strong>.</p>`,
+                    icon: { type: 'icon', class: 'backoffice-trash' }
+                }
+            }
+        );
+        this.subscription(
+            'delete_confirm',
+            this.confirm_ref.componentInstance.event.subscribe((e: DialogEvent) => {
+                if (e.reason === 'done') {
+                    this.confirm_ref.componentInstance.loading = `Reordering trigger ${type} action...`;
+                    this.reorderAction(type, event);
+                }
+            })
+        );
+    }
+
+    /**
+     * Re-order action for active trigger
+     * @param type Type of action to reorder
+     * @param event Drop event details
+     */
+    private reorderAction(type: 'function' | 'mailer', event: CdkDragDrop<any[]>): void {
+        const list: any[] = [...(type === 'function' ? this.functions : this.mailers)];
+        moveItemInArray(list, event.previousIndex, event.currentIndex);
+        const actions = {
+            functions: type === 'function' ? list : this.functions,
+            mailers: type === 'function' ? this.mailers : list
+        };
+        this.item.storePendingChange('actions', actions);
+        this.item.save().then(
+            () => this._service.notifySuccess(`Successfully re-ordered trigger ${type} action.`),
+            err =>
+                this._service.notifyError(
+                    `Error re-ordered trigger ${type} action. Error: ${err.message || err}`
                 )
         );
     }

@@ -245,6 +245,7 @@ mat-dialog-container.mat-dialog-container {
 .mat-tooltip {
     background-color: $background-dark;
     font-size: .8em;
+    white-space: pre-line;
 }
 
 .formatted-driver-name {
