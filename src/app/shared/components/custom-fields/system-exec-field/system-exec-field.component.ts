@@ -54,9 +54,9 @@ export class SystemExecFieldComponent extends BaseDirective
     /** Emitter for exec results */
     @Output() public event = new EventEmitter();
     /** List of modules of the system */
-    public devices: EngineModuleLike[];
+    public devices: EngineModuleLike[] = [];
     /** List of available functions for the active module  */
-    public methods: ModuleFunction[];
+    public methods: ModuleFunction[] = [];
     /** Currently selected module */
     public active_module: EngineModuleLike;
     /** Current selected module function */
@@ -140,6 +140,9 @@ export class SystemExecFieldComponent extends BaseDirective
                                     .filter(d => d.module === device.module)
                                     .findIndex(mod => mod.id === device.id) + 1)
                     );
+                    if (!(this.devices || []).find(mod => mod.id === this.active_module.id)) {
+                        this.devices.unshift(this.active_module);
+                    }
                 },
                 () => null
             );
@@ -158,6 +161,7 @@ export class SystemExecFieldComponent extends BaseDirective
             list => {
                 if (list) {
                     this.methods = Object.keys(list).map(i => ({ name: i, ...list[i] }));
+                    this.setMethod(this.active_method.name, this.fields);
                 }
             },
             () => null
@@ -261,7 +265,7 @@ export class SystemExecFieldComponent extends BaseDirective
      * Execute the selected method
      */
     public execute() {
-        if (!this.executable) return;
+        if (!this.executable) { return; }
         this.checkFields();
         if (this.fields_valid) {
             // Check if any optional arguments have a value
@@ -352,7 +356,42 @@ export class SystemExecFieldComponent extends BaseDirective
      * Update local value when form control value is changed
      * @param value The new value for the component
      */
-    public writeValue(value: TriggerFunction) {}
+    public writeValue(value: TriggerFunction) {
+        if (value) {
+            if (value.mod) {
+                const parts = value.mod.split('_');
+                this.active_module = {
+                    id: value.mod,
+                    name: value.mod,
+                    module: parts[0],
+                    index: +parts[1]
+                };
+                if (!(this.devices || []).find(mod => mod.id === this.active_module.id)) {
+                    this.devices.unshift(this.active_module);
+                }
+            }
+            this.setMethod(value.method, value.args);
+            if (value.args) {
+                this.fields = value.args;
+            }
+        }
+    }
+
+    private setMethod(name: string, args: HashMap = {}) {
+        if (name) {
+            const method = (this.methods || []).find(a_method => a_method.name === name);
+            if (!method) {
+                this.active_method = {
+                    name,
+                    arity: Object.keys(args).length - 1,
+                    params: Object.keys(args).map(key => ['req', key]) as any
+                };
+                this.methods.unshift(this.active_method);
+            } else {
+                this.active_method = method;
+            }
+        }
+    }
 
     /**
      * Registers a callback function that is called when the control's value changes in the UI.

@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild, SimpleChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ENTER, COMMA, SPACE } from '@angular/cdk/keycodes';
 import { MatChipList } from '@angular/material/chips';
@@ -40,7 +40,7 @@ export class TriggerActionFormComponent {
      * @param email New email
      */
     public addEmail(email: string): void {
-        if (!email) return;
+        if (!email) { return; }
         const email_list = this.email_list;
         if (email_list.indexOf(email) < 0) {
             email_list.push(email);

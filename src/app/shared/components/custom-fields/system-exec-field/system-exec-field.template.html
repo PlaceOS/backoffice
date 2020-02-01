@@ -1,7 +1,7 @@
 <section class="execute" *ngIf="system && system.id && devices && devices.length > 0">
     <div class="row">
         <mat-form-field appearance="outline">
-            <mat-select #select (valueChange)="loadFunctions($event)" placeholder="Select a device">
+            <mat-select #select [value]="active_module" (valueChange)="loadFunctions($event)" placeholder="Select a device">
                 <mat-option *ngFor="let option of devices || []" [value]="option">
                     {{ option.name }}
                 </mat-option>
@@ -10,6 +10,7 @@
         <mat-form-field appearance="outline" *ngIf="methods">
             <mat-select
                 #select
+                [value]="active_method"
                 (valueChange)="selectFunction($event)"
                 placeholder="Select a function"
             >
