@@ -102,7 +102,7 @@ export class TriggerAboutComponent extends BaseDirective implements OnChanges {
                 height: 'auto',
                 data: {
                     trigger: this.item,
-                    condition,
+                    condition: JSON.parse(JSON.stringify(condition)),
                     system: this.template_system
                 }
             }

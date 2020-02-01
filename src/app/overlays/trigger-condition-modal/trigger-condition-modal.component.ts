@@ -39,8 +39,11 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
     public loading: boolean;
     /** Form fields for trigger condition */
     public form: FormGroup;
+
     /** Whether the triggers is new or not */
-    public is_new: boolean;
+    public get is_new(): boolean {
+        return !!this._data.condition;
+    }
 
     /** Template system to use for status variable bindings */
     public get system(): EngineSystem {
@@ -71,44 +74,76 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
         }
         this.loading = true;
         if (this.form.controls.condition_type.value === 'compare') {
-            const old_values = this.trigger.conditions.comparisons;
-            const new_value: TriggerComparison = {
-                left: this.form.controls.left.value,
-                operator: this.form.controls.operator.value,
-                right: this.form.controls.right.value
-            };
-            this.trigger.storePendingChange('conditions', {
-                ...this.trigger.conditions,
-                comparisons: old_values.length
-                    ? [...old_values, new_value]
-                    : [new_value]
-            });
+            this.updateComparisons();
         } else {
-            const old_values = this.trigger.conditions.time_dependents;
-            const new_value: TriggerTimeCondition = {
-                type: this.form.controls.time_type.value,
-                time: (this.form.controls.time.value / 1000).toFixed(0),
-                cron: this.form.controls.cron.value
-            };
-            new_value.cron ? delete new_value.time : delete new_value.cron;
-            this.trigger.storePendingChange('conditions', {
-                ...this.trigger.conditions,
-                time_dependents: old_values.length
-                    ? [...old_values, new_value]
-                    : [new_value]
-            });
+            this.updateTimeDependents();
         }
         this.trigger.save().then(
             item => {
                 this.event.emit({ reason: 'done', metadata: { trigger: item } });
-                this._service.notifySuccess('Successfully added condition to trigger');
+                this._service.notifySuccess(`Successfully ${this.is_new ? 'added' : 'updated'} condition to trigger`);
                 this._dialog.close();
             },
             err => {
                 this.trigger.clearPendingChanges();
                 this.loading = false;
-                this._service.notifyError(`Error adding condition to trigger. Error: ${err.message || err}`);
+                this._service.notifyError(`Error ${this.is_new ? 'adding' : 'updating'} condition to trigger. Error: ${err.message || err}`);
             }
         );
+    }
+
+    /**
+     * Update the comparison list by replace an exisiting item or add a new item
+     */
+    private updateComparisons() {
+        const old_values = [...this.trigger.conditions.comparisons];
+        const new_value: TriggerComparison = {
+            left: this.form.controls.left.value,
+            operator: this.form.controls.operator.value,
+            right: this.form.controls.right.value
+        };
+        if (this._data.condition) {
+            const old_value = JSON.stringify(this._data.condition);
+            const index = old_values.findIndex(cmp => JSON.stringify(cmp) === old_value);
+            console.log('Index:', index, old_value, old_values);
+            if (index >= 0) {
+                old_values.splice(index, 1, new_value);
+            }
+        } else {
+            old_values.push(new_value);
+        }
+        const updated_conditions = {
+            ...this.trigger.conditions,
+            comparisons: old_values
+        };
+        this.trigger.storePendingChange('conditions', updated_conditions);
+    }
+
+
+    /**
+     * Update the time dependent list by replace an exisiting item or add a new item
+     */
+    private updateTimeDependents() {
+        const old_values = [...this.trigger.conditions.time_dependents] || [];
+        const new_value: TriggerTimeCondition = {
+            type: this.form.controls.time_type.value,
+            time: (this.form.controls.time.value / 1000).toFixed(0),
+            cron: this.form.controls.cron.value
+        };
+        new_value.cron ? delete new_value.time : delete new_value.cron;
+        if (this._data.condition) {
+            const old_value = JSON.stringify(this._data.condition);
+            const index = old_values.findIndex(time => JSON.stringify(time) === old_value);
+            if (index >= 0) {
+                old_values.splice(index, 1, new_value);
+            }
+        } else {
+            old_values.push(new_value);
+        }
+        const updated_conditions = {
+            ...this.trigger.conditions,
+            time_dependents: old_values
+        };
+        this.trigger.storePendingChange('conditions', updated_conditions);
     }
 }

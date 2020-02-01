@@ -101,15 +101,21 @@ export function generateTriggerConditionForm(
     condition: TriggerComparison | TriggerTimeCondition = {} as any
 ) {
     const type = (condition as TriggerTimeCondition).type ? 'time' : 'compare';
+    const left =
+        typeof (condition as TriggerComparison).left === 'object'
+            ? { ...((condition as TriggerComparison).left as any) }
+            : (condition as TriggerComparison).left;
+    const right =
+        typeof (condition as TriggerComparison).right === 'object'
+            ? { ...((condition as TriggerComparison).right as any) }
+            : (condition as TriggerComparison).right;
     const fields: HashMap<FormControl> = {
         condition_type: new FormControl(type),
-        left: new FormControl((condition as TriggerComparison).left || {}, [validateCompare]),
+        left: new FormControl({ ...(left || {}) }, [validateCompare]),
         operator: new FormControl(
             (condition as TriggerComparison).operator || TriggerConditionOperator.EQ
         ),
-        right: new FormControl((condition as TriggerComparison).right || undefined, [
-            validateCompare
-        ]),
+        right: new FormControl(right || undefined, [validateCompare]),
         time_type: new FormControl((condition as TriggerTimeCondition).type || 'at'),
         time: new FormControl(
             (+(condition as TriggerTimeCondition).time || 0) * 1000 || dayjs().valueOf()
