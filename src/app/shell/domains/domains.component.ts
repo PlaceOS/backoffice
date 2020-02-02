@@ -40,9 +40,9 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
         );
         query = { offset: 0, limit: 1, authority_id: this.item.id };
         // Get auth source count
-        this._service.AuthSources.query(query).then(
-            () => (this.auth_sources = this._service.AuthSources.last_total)
-        );
+        // this._service.AuthSources.query(query).then(
+        //     () => (this.auth_sources = this._service.AuthSources.last_total)
+        // );
         // Get users count
         this._service.Users.query(query).then(() => (this.user_count = this._service.Users.last_total));
     }

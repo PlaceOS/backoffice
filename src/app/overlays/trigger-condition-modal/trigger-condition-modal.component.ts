@@ -127,7 +127,7 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
         const old_values = [...this.trigger.conditions.time_dependents] || [];
         const new_value: TriggerTimeCondition = {
             type: this.form.controls.time_type.value,
-            time: (this.form.controls.time.value / 1000).toFixed(0),
+            time: +(this.form.controls.time.value / 1000).toFixed(0),
             cron: this.form.controls.cron.value
         };
         new_value.cron ? delete new_value.time : delete new_value.cron;

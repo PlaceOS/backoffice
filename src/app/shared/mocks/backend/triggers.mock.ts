@@ -89,9 +89,9 @@ export function generateTriggerTimeDependant(): TriggerTimeCondition {
           }
         : {
               type: TriggerTimeConditionType.AT,
-              time: `${dayjs()
+              time: dayjs()
                   .add(randomInt(999_999) + 10, 'm')
-                  .unix()}`
+                  .unix()
           };
 }
 

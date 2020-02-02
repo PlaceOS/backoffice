@@ -108,8 +108,18 @@ export class ApplicationService extends BaseClass {
     }
 
     /** Engine Auth Sources service */
-    public get AuthSources() {
-        return this._composer.auth_sources;
+    public get OAuthSources() {
+        return this._composer.oauth_sources;
+    }
+
+    /** Engine Auth Sources service */
+    public get SAMLAuthSources() {
+        return this._composer.saml_sources;
+    }
+
+    /** Engine Auth Sources service */
+    public get LDAPAuthSources() {
+        return this._composer.ldap_sources;
     }
 
     /** Comments service */
