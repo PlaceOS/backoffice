@@ -88,6 +88,7 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
                                 this._service.notifySuccess('Successfully deleted auth source.');
                                 ref.close();
                                 this.unsub('delete_confirm');
+                                this.loadAuthSources();
                             },
                             err => {
                                 this._service.notifyError(
