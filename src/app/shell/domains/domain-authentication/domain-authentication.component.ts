@@ -69,7 +69,7 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
      * @param item Auth source to delete
      */
     public newAuthSource(): void {
-        this._dialog.open<AuthSourceModalComponent, AuthSourceModalData>(
+        const ref = this._dialog.open<AuthSourceModalComponent, AuthSourceModalData>(
             AuthSourceModalComponent,
             {
                 width: 'auto',
@@ -79,6 +79,7 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
                 }
             }
         );
+        ref.afterClosed().subscribe(() => this.loadAuthSources());
     }
 
     /**
@@ -86,7 +87,7 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
      * @param item Auth source to edit
      */
     public editAuthSource(item: EngineAuthSourceLike): void {
-        this._dialog.open<AuthSourceModalComponent, AuthSourceModalData>(
+        const ref = this._dialog.open<AuthSourceModalComponent, AuthSourceModalData>(
             AuthSourceModalComponent,
             {
                 width: 'auto',
@@ -97,6 +98,7 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
                 }
             }
         );
+        ref.afterClosed().subscribe(() => this.loadAuthSources());
     }
 
     /**
