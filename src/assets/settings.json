@@ -7,7 +7,7 @@
         "domain": "",
         "route": "",
         "protocol": "http:",
-        "use_domain": true,
+        "use_domain": false,
         "local_login": false
     },
     "app": {
@@ -116,7 +116,6 @@
             "global_search": true
         },
         "systems": {
-            "licenses": 100,
             "can_create": true
         },
         "modules": {
@@ -140,6 +139,5 @@
         "repositories": {
             "can_create": true
         }
-    },
-    "mock": true
+    }
 }

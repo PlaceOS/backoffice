@@ -23,7 +23,7 @@ import { BackofficeSearchService } from './data/search.service';
 import { BackofficeStatsService } from './data/stats.service';
 import { BackofficeSystemLogsService } from './data/system_logs.service';
 import { BackofficeUsersService } from './data/users.service';
-import { ApplicationIcon } from '../shared/utilities/settings.interfaces';
+import { ApplicationIcon, ComposerOptions } from '../shared/utilities/settings.interfaces';
 
 import * as Sentry from '@sentry/browser';
 
@@ -448,7 +448,7 @@ export class ApplicationService extends BaseClass {
     private setupComposer(): void {
         this.log('SYSTEM', 'Setup up composer...');
         // Get application settings
-        const settings = this.setting('composer') || {};
+        const settings: ComposerOptions = this.setting('composer') || {};
         const protocol = settings.protocol || location.protocol;
         const host = settings.domain || location.hostname;
         const port = settings.port || location.port;
@@ -462,9 +462,10 @@ export class ApplicationService extends BaseClass {
             auth_uri: `${url}/auth/oauth/authorize`,
             token_uri: `${url}/auth/token`,
             redirect_uri: `${location.origin}${route}/oauth-resp.html`,
-            handle_login: settings.handle_login,
+            handle_login: !settings.local_login,
             mock
         };
+        console.log('Config:', config);
         this._composer.setup(config);
     }
 
