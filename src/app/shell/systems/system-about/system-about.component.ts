@@ -108,18 +108,6 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
     }
 
     /**
-     * Open modal to show the access logs for the system
-     */
-    public logs() {
-        const ref = this._dialog.open<SystemLogModalComponent, SystemLogModalData>(
-            SystemLogModalComponent,
-            {
-                data: { sys_id: this.item.id }
-            }
-        );
-    }
-
-    /**
      * Toggle whether the settings are merged
      */
     public toggleSettings() {
