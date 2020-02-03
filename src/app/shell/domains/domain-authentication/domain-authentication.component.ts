@@ -10,9 +10,11 @@ import {
     ConfirmModalData,
     CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import { AuthSourceModalComponent, AuthSourceModalData } from 'src/app/overlays/auth-source-modal/auth-source-modal.component';
 
 export interface EngineAuthSourceLike extends Identity {
     authority_id: string;
+    save: () => Promise<EngineAuthSourceLike>;
     delete: () => Promise<void>;
 }
 
@@ -61,10 +63,46 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
         );
     }
 
-    public newAuthSource(): void {}
 
-    public editAuthSource(item: EngineAuthSourceLike): void {}
+    /**
+     * Open modal to create a new  auth source for the domain
+     * @param item Auth source to delete
+     */
+    public newAuthSource(): void {
+        this._dialog.open<AuthSourceModalComponent, AuthSourceModalData>(
+            AuthSourceModalComponent,
+            {
+                width: 'auto',
+                height: 'auto',
+                data: {
+                    domain: this.item
+                }
+            }
+        );
+    }
 
+    /**
+     * Open modal to edit auth source
+     * @param item Auth source to edit
+     */
+    public editAuthSource(item: EngineAuthSourceLike): void {
+        this._dialog.open<AuthSourceModalComponent, AuthSourceModalData>(
+            AuthSourceModalComponent,
+            {
+                width: 'auto',
+                height: 'auto',
+                data: {
+                    domain: this.item,
+                    auth_source: item as any
+                }
+            }
+        );
+    }
+
+    /**
+     * Delete the auth source from the domain
+     * @param item Auth source to delete
+     */
     public deleteAuthSource(item: EngineAuthSourceLike): void {
         if (item) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(

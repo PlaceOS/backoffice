@@ -41,7 +41,7 @@ export class MockAuthSourcesBackend extends BaseMockBackend {
 }
 
 export function generateOAuthAuthSource(domain_list: any[]) {
-    const list = Array(randomInt(30) + 10).fill(0).map((_, idx) => {
+    const list = Array(randomInt(10) + 2).fill(0).map((_, idx) => {
         return {
             id: `auth-${padZero(counter++, 4)}`,
             name: `OAuth Source ${idx + 1}`,
@@ -65,7 +65,7 @@ export function generateOAuthAuthSource(domain_list: any[]) {
 }
 
 export function generateLDAPAuthSource(domain_list: any[]) {
-    const list = Array(randomInt(30) + 10).fill(0).map(_ => {
+    const list = Array(randomInt(10) + 2).fill(0).map(_ => {
         const num = randomInt(9999999) % 3;
         return {
             id: `auth-${padZero(counter++, 4)}`,
@@ -84,7 +84,7 @@ export function generateLDAPAuthSource(domain_list: any[]) {
 }
 
 export function generateSAMLAuthSource(domain_list: any[]) {
-    const list = Array(randomInt(30) + 10).fill(0).map(_ => {
+    const list = Array(randomInt(10) + 2).fill(0).map(_ => {
         return {
             id: `auth-${padZero(counter++, 4)}`,
             name: `SAML Source ${_ + 1}`,

@@ -1,0 +1,133 @@
+<div class="module form" *ngIf="form">
+    <form [formGroup]="form">
+        <div class="field" *ngIf="form.controls.name">
+            <label
+                for="auth-source-name"
+                [class.error]="form.controls.name.invalid && form.controls.name.touched"
+            >
+                Name<span>*</span>:
+            </label>
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="auth-source-name"
+                    placeholder="Auth Source Name"
+                    formControlName="name"
+                    required
+                />
+                <mat-error *ngIf="form.controls.name.invalid">
+                    Auth source name is required
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div class="fieldset">
+            <div class="field" *ngIf="form.controls.client_id">
+                <label for="client-id">Client ID:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="client-id"
+                        placeholder="Client ID"
+                        formControlName="client_id"
+                    />
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.client_secret">
+                <label for="client-secret">Client Secret:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="client-secret"
+                        placeholder="Client Secret"
+                        formControlName="client_secret"
+                    />
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="fieldset">
+            <div class="field" *ngIf="form.controls.site">
+                <label for="site">Site:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="site"
+                        placeholder="URL of the SSO provider"
+                        formControlName="site"
+                    />
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.scope">
+                <label for="scope">Scope:</label>
+                <mat-form-field appearance="outline">
+                    <input matInput name="scope" placeholder="Scope" formControlName="scope" />
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="fieldset">
+            <div class="field type" *ngIf="form.controls.token_method">
+                <label for="token-method">Token Method: </label>
+                <mat-form-field appearance="outline">
+                    <mat-select name="token-method" formControlName="token_method">
+                        <mat-option *ngFor="let type of token_methods" [value]="type.id">
+                            {{ type.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="field type" *ngIf="form.controls.auth_scheme">
+                <label for="auth-scheme">Authentication Scheme: </label>
+                <mat-form-field appearance="outline">
+                    <mat-select name="auth-scheme" formControlName="auth_scheme">
+                        <mat-option *ngFor="let type of auth_schemes" [value]="type.id">
+                            {{ type.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="field" *ngIf="form.controls.token_url">
+            <label for="token-url">Token URL:</label>
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="token-url"
+                    placeholder="Token URL"
+                    formControlName="token_url"
+                />
+            </mat-form-field>
+        </div>
+        <div class="fieldset">
+            <div class="field" *ngIf="form.controls.authorize_url">
+                <label for="authorize-url">Authorize URL:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="authorize-url"
+                        placeholder="Authorize URL"
+                        formControlName="authorize_url"
+                    />
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.raw_info_url">
+                <label for="info-url">User Profile URL:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="raw_info_url"
+                        placeholder="User Profile URL"
+                        formControlName="raw_info_url"
+                    />
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="field" *ngIf="form.controls.info_mappings">
+            <label for="client-secret">Info Mappings:</label>
+            <object-list-field
+                [(ngModel)]="info_mapping_list"
+                (ngModelChange)="updateMappings($event)"
+                [ngModelOptions]="{ standalone: true }"
+                [fields]="['Engine', 'Remote']"
+            ></object-list-field>
+        </div>
+    </form>
+</div>

@@ -60,6 +60,10 @@ import { SystemTriggerFormComponent } from './components/forms/system-trigger-fo
 import { DriverFormatPipe } from './pipes/driver-format.pipe';
 import { DateFromPipe } from './pipes/date-from.pipe';
 import { FormatListPipe } from './pipes/format-list.pipe';
+import { OauthSourceFormComponent } from './components/forms/oauth-source-form/oauth-source-form.component';
+import { LdapSourceFormComponent } from './components/forms/ldap-source-form/ldap-source-form.component';
+import { SamlSourceFormComponent } from './components/forms/saml-source-form/saml-source-form.component';
+import { ObjectListFieldComponent } from './components/custom-fields/object-list-field/object-list-field.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -74,6 +78,9 @@ const FORM_COMPONENTS: Type<any>[] = [
     TriggerConditionFormComponent,
     TriggerActionFormComponent,
     SystemTriggerFormComponent,
+    OauthSourceFormComponent,
+    LdapSourceFormComponent,
+    SamlSourceFormComponent,
 ];
 
 const COMPONENTS: Type<any>[] = [
@@ -100,7 +107,8 @@ const ENTRY_COMPONENT: Type<any>[] = [
     DateFieldComponent,
     TimeFieldComponent,
     ContextMenuComponent,
-    SystemExecFieldComponent
+    SystemExecFieldComponent,
+    ObjectListFieldComponent,
 ];
 
 const MATERIAL_MODULES: any[] = [

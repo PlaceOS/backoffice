@@ -13,6 +13,7 @@ import { TriggerActionModalComponent } from './trigger-action-modal/trigger-acti
 import { TriggerConditionModalComponent } from './trigger-condition-modal/trigger-condition-modal.component';
 import { ViewModuleStateModalComponent } from './view-module-state/view-module-state.component';
 import { FormsModule } from '@angular/forms';
+import { AuthSourceModalComponent } from './auth-source-modal/auth-source-modal.component';
 
 
 const OVERLAYS: Type<any>[] = [
@@ -23,7 +24,8 @@ const OVERLAYS: Type<any>[] = [
     SystemLogModalComponent,
     TriggerActionModalComponent,
     TriggerConditionModalComponent,
-    ViewModuleStateModalComponent
+    ViewModuleStateModalComponent,
+    AuthSourceModalComponent
 ];
 
 @NgModule({
