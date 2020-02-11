@@ -39,9 +39,8 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
     public search_str: string;
     /** List of items from an API search */
     public search_results$: Observable<T[]>;
-
     /** Subject holding the value of the search */
-    private search$ = new Subject<string>();
+    public readonly search$ = new Subject<string>();
     /** Form control on change handler */
     private _onChange: (_: T) => void;
     /** Form control on touch handler */

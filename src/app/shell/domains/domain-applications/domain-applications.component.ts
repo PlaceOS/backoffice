@@ -58,7 +58,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
     /**
      * Open the modal to create a new system
      */
-    protected newApplication() {
+    public newApplication() {
         const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
             width: 'auto',
@@ -74,7 +74,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
     /**
      * Open the modal to create a new system
      */
-    protected editApplication(item: EngineApplication) {
+    public editApplication(item: EngineApplication) {
         if (this.item) {
             const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',

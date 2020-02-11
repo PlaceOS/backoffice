@@ -33,7 +33,11 @@
               "src/assets",
               "src/manifest.webmanifest",
               "src/oauth-resp.html",
-              { "glob": "**/*", "input": "node_modules/monaco-editor/min/", "output": "./assets/monaco/" }
+              {
+                "glob": "**/*",
+                "input": "node_modules/monaco-editor/min/",
+                "output": "./assets/monaco/"
+              }
             ],
             "styles": [
               "src/styles.scss"
@@ -108,7 +112,11 @@
               "src/favicon.ico",
               "src/assets",
               "src/manifest.webmanifest",
-              { "glob": "**/*", "input": "node_modules/monaco-editor/min/", "output": "./assets/monaco/" }
+              {
+                "glob": "**/*",
+                "input": "node_modules/monaco-editor/min/",
+                "output": "./assets/monaco/"
+              }
             ],
             "styles": [
               "src/styles.scss"
@@ -144,5 +152,8 @@
       }
     }
   },
-  "defaultProject": "ngx-backoffice"
+  "defaultProject": "ngx-backoffice",
+  "cli": {
+    "analytics": false
+  }
 }
