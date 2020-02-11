@@ -21,7 +21,7 @@ export class TriggerActionFormComponent {
     /** Variable to hold new email addresses */
     public new_email: string = '';
 
-    @ViewChild('chipList', { static: false }) private chip_list: MatChipList;
+    @ViewChild('chipList') private chip_list: MatChipList;
 
     /** List of available trigger action types */
     public action_types: Identity[] = [

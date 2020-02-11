@@ -58,7 +58,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     /** List of elements for each associated item */
     @ViewChildren('list_item') private item_list: QueryList<ElementRef>;
     /** Virtual scrolling viewport */
-    @ViewChild(CdkVirtualScrollViewport, { static: false })
+    @ViewChild(CdkVirtualScrollViewport)
     private viewport: CdkVirtualScrollViewport;
 
     /** Whether new items for the active module can be created */

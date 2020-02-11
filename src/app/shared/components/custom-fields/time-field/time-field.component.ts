@@ -39,7 +39,7 @@ export class TimeFieldComponent extends BaseDirective implements OnInit, OnChang
     private _onTouch: (_: number) => void;
 
     /** Select field for selecting the time */
-    @ViewChild('select', { static: false }) private select_field: MatSelect;
+    @ViewChild('select') private select_field: MatSelect;
 
     public ngOnInit(): void {
         this.show_select = true;
