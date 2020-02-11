@@ -158,9 +158,6 @@ const MATERIAL_MODULES: any[] = [
         ...PIPES,
         ...ENTRY_COMPONENT,
         ...MATERIAL_MODULES
-    ],
-    entryComponents: [
-        ...ENTRY_COMPONENT
     ]
 })
 export class SharedContentModule {}

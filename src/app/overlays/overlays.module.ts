@@ -39,9 +39,6 @@ const OVERLAYS: Type<any>[] = [
     ],
     exports: [
         ...OVERLAYS
-    ],
-    entryComponents: [
-        ...OVERLAYS
     ]
 })
 export class SharedOverlaysModule {}
