@@ -6,6 +6,8 @@ import {
     TriggerConditionOperator,
     TriggerComparison,
     TriggerTimeCondition,
+    TriggerAtTimeCondition,
+    TriggerCronTimeCondition,
     TriggerFunction,
     TriggerMailer
 } from '@acaengine/ts-client';
@@ -118,9 +120,9 @@ export function generateTriggerConditionForm(
         right: new FormControl(right || undefined, [validateCompare]),
         time_type: new FormControl((condition as TriggerTimeCondition).type || 'at'),
         time: new FormControl(
-            (+(condition as TriggerTimeCondition).time || 0) * 1000 || dayjs().valueOf()
+            (+(condition as TriggerAtTimeCondition).time || 0) * 1000 || dayjs().valueOf()
         ),
-        cron: new FormControl((condition as TriggerTimeCondition).cron || undefined)
+        cron: new FormControl((condition as TriggerCronTimeCondition).cron || undefined)
     };
     const subscriptions = [];
     return {
