@@ -43,6 +43,11 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
                 service: this._service.Users
             }
         });
+        ref.componentInstance.event.subscribe((event) => {
+            if (event.reason === 'done') {
+                this._router.navigate(['/users', event.metadata.item.id]);
+            }
+        });
     }
 
     /**

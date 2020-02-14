@@ -1,5 +1,5 @@
 
-import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, Input, SimpleChanges, OnChanges, OnInit } from '@angular/core';
 import { EngineModule, EngineDriver, EngineSystem } from '@acaengine/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
@@ -11,7 +11,7 @@ import { mergeYAMLSettings } from 'src/app/shared/utilities/general.utilities';
     templateUrl: './device-about.template.html',
     styleUrls: ['./device-about.styles.scss']
 })
-export class DeviceAboutComponent extends BaseDirective implements OnChanges {
+export class DeviceAboutComponent extends BaseDirective implements OnChanges, OnInit {
     /** Item to render */
     @Input() public item: EngineModule;
     /** Dependency for the active item */
@@ -25,6 +25,17 @@ export class DeviceAboutComponent extends BaseDirective implements OnChanges {
 
     constructor(private _service: ApplicationService) {
         super();
+    }
+
+    public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+                this.loadDependency();
+                this.loadSystem();
+            })
+        );
     }
 
     public ngOnChanges(changes: SimpleChanges): void {

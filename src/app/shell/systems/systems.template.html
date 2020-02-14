@@ -10,41 +10,27 @@
     <main (touchrelease)="show_sidebar = false">
         <item-display
             name="system"
+            route="systems"
             [item]="item"
             [loading]="loading_item"
             [tabs]="[
-                { id: 'about', name: 'About', template: about, icon: { class: 'backoffice-info-with-circle' } },
+                { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
                 {
                     id: 'devices',
                     name: 'Devices',
                     count: device_count,
-                    template: devices,
                     icon: { class: 'backoffice-tablet' }
                 },
-                { id: 'zones', name: 'Zones', count: zone_count, template: zones, icon: { class: 'backoffice-layers' } },
+                { id: 'zones', name: 'Zones', count: zone_count, icon: { class: 'backoffice-layers' } },
                 {
                     id: 'triggers',
                     name: 'Triggers',
                     count: trigger_count,
-                    template: triggers,
                     icon: { class: 'backoffice-stopwatch' }
                 }
             ]"
-            [active]="tab"
             (event)="itemEvent($event)"
         >
-            <ng-template #about>
-                <system-about [item]="item"></system-about>
-            </ng-template>
-            <ng-template #devices>
-                <system-devices [item]="item"></system-devices>
-            </ng-template>
-            <ng-template #zones>
-                <system-zones [item]="item"></system-zones>
-            </ng-template>
-            <ng-template #triggers>
-                <system-triggers [item]="item"></system-triggers>
-            </ng-template>
         </item-display>
     </main>
 </div>

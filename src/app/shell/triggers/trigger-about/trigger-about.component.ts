@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, Input, SimpleChanges, OnChanges, OnInit, SimpleChange } from '@angular/core';
 import {
     EngineTrigger,
     EngineSystem,
@@ -33,7 +33,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
     templateUrl: './trigger-about.template.html',
     styleUrls: ['./trigger-about.styles.scss']
 })
-export class TriggerAboutComponent extends BaseDirective implements OnChanges {
+export class TriggerAboutComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active trigger */
     @Input() public item: EngineTrigger;
     /** System to use for conditions with systen variables and functions */
@@ -56,6 +56,16 @@ export class TriggerAboutComponent extends BaseDirective implements OnChanges {
 
     constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
+    }
+
+    public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+                this.ngOnChanges({ item: new SimpleChange(null, this.item, false) });
+            })
+        );
     }
 
     public ngOnChanges(changes: SimpleChanges): void {

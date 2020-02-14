@@ -52,6 +52,11 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> {
                 service: this._service.Triggers
             }
         });
+        ref.componentInstance.event.subscribe((event) => {
+            if (event.reason === 'done') {
+                this._router.navigate(['/triggers', event.metadata.item.id]);
+            }
+        });
     }
 
     /**

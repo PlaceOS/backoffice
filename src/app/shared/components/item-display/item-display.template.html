@@ -30,23 +30,23 @@
     </header>
     <main>
         <div class="tabs" *ngIf="tabs && tabs.length > 1">
-            <a-tab-group [tab]="active">
-                <a-tab
-                    *ngFor="let tab of tabs"
-                    [id]="tab.id"
-                    (activeChange)="active = tab.id; event.emit({ type: 'tab', value: tab.id })"
-                    [content]="tab.template"
-                    [style.width]="100 / tabs.length + '%'"
+            <nav mat-tab-nav-bar [class.scroll]="is_scrolled">
+                <a class="tab" mat-tab-link
+                    *ngFor="let link of tabs"
+                    [routerLink]="['/' + route, item.id, link.id]"
+                    routerLinkActive #rla="routerLinkActive"
+                    [active]="rla.isActive"
                 >
-                    <div class="tab">
-                        <i [class]="tab.icon?.class">{{ tab.icon?.value }}</i>
-                        <div class="name">{{ tab.name }}&nbsp;</div>
-                        <div class="count" *ngIf="tab.count || tab.count === 0">
-                            ({{ tab.count || '0' }})
-                        </div>
+                    <app-icon [icon]="link.icon"></app-icon>
+                    <div class="name">{{ link.name }}&nbsp;</div>
+                    <div class="count" *ngIf="link.count || link.count === 0">
+                        ({{ link.count || '0' }})
                     </div>
-                </a-tab>
-            </a-tab-group>
+                </a>
+            </nav>
+            <div class="content" #content (scroll)="is_scrolled">
+                <router-outlet></router-outlet>
+            </div>
         </div>
     </main>
 </div>

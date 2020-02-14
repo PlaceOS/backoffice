@@ -56,6 +56,11 @@ export class DevicesComponent extends BaseRootComponent<EngineModule> {
                 service: this._service.Modules
             }
         });
+        ref.componentInstance.event.subscribe((event) => {
+            if (event.reason === 'done') {
+                this._router.navigate(['/devices', event.metadata.item.id]);
+            }
+        });
     }
 
     /**
@@ -73,6 +78,7 @@ export class DevicesComponent extends BaseRootComponent<EngineModule> {
                     service: this._service.Modules
                 }
             });
+
         }
     }
 

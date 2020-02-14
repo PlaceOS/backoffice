@@ -1,13 +1,12 @@
 <div class="container">
     <main>
         <item-display
+            name="test"
+            route="about"
             [item]="{ name: 'About' }"
             [has_change]="false"
-            name="test"
-            [active]="model.tab"
-            [tabs]="[{ id: 'about', name: 'About', template: about, icon: { class: 'backoffice-info' } }]"
+            [tabs]="[{ id: 'about', name: 'About', icon: { class: 'backoffice-info' } }]"
         >
-            <ng-template #about>
                 <div class="about">
                     <div class="user" *ngIf="model.user">
                         <div class="avatar" [style.background-image]="model.user.image ? 'url(' + model.user.image + ')' : ''"></div>
@@ -36,7 +35,6 @@
                         </div>
                     </div>
                 </div>
-            </ng-template>
         </item-display>
     </main>
 </div>

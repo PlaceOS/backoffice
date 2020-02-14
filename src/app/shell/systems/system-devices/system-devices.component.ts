@@ -73,6 +73,13 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     }
 
     public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+                this.loadDevices();
+            })
+        );
         this.device_logs = '';
         this._service.initialised.pipe(first(is_inited => is_inited)).subscribe(() => {
             this.subscription(
@@ -88,7 +95,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
 
     public ngOnChanges(changes: any) {
         if (changes.item) {
-            this.load();
+            this.loadDevices();
         }
     }
 
@@ -96,7 +103,8 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
      * Load the modules for the active system
      * @param offset Offset to load
      */
-    public load(offset: number = 0) {
+    public loadDevices(offset: number = 0) {
+        if (!this.item) { return; }
         this._service.Modules.query({ system_id: this.item.id, offset }).then(
             list => {
                 list.sort(
@@ -331,7 +339,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
         this.item.save().then(
             () => {
                 this._service.notifySuccess('Successfully added device to system');
-                this.load();
+                this.loadDevices();
             },
             () => {
                 this._service.notifyError('Failed to add module to system');

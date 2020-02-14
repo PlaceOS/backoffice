@@ -9,31 +9,21 @@
     </div>
     <main (touchrelease)="show_sidebar = false">
         <item-display
-            [item]="item"
             name="zone"
-            [active]="tab"
+            route="zones"
+            [item]="item"
             [tabs]="[
-                { id: 'about', name: 'About', template: about, icon: { class: 'backoffice-info-with-circle' } },
+                { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
                 {
                     id: 'systems',
                     name: 'Systems',
-                    template: systems,
                     count: system_count,
                     icon: { class: 'backoffice-documents' }
                 },
-                { id: 'triggers', name: 'Triggers', template: triggers, count: trigger_count, icon: { class: 'backoffice-stopwatch' } }
+                { id: 'triggers', name: 'Triggers', count: trigger_count, icon: { class: 'backoffice-stopwatch' } }
             ]"
             (event)="itemEvent($event)"
         >
-            <ng-template #about>
-                <zone-about [item]="item"></zone-about>
-            </ng-template>
-            <ng-template #systems>
-                <zone-systems [item]="item"></zone-systems>
-            </ng-template>
-            <ng-template #triggers>
-                <zone-triggers [item]="item"></zone-triggers>
-            </ng-template>
         </item-display>
     </main>
 </div>

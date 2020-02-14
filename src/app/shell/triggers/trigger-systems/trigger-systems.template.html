@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="item">
     <div class="settings">
         <table *ngIf="system_trigger_list.length > 0; else empty_state">
             <thead>

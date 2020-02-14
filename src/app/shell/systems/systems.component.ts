@@ -58,6 +58,12 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
                 service: this._service.Systems
             }
         });
+        ref.componentInstance.event.subscribe((event) => {
+            console.log('Event:', event);
+            if (event.reason === 'done') {
+                this._router.navigate(['/systems', event.metadata.item.id]);
+            }
+        });
     }
 
     /**

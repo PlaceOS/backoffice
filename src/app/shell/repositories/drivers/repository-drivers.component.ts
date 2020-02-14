@@ -1,6 +1,5 @@
-
-import { Component, Input, OnChanges } from '@angular/core';
-import { EngineRepository, EngineDriver } from '@acaengine/ts-client';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { EngineRepository } from '@acaengine/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -10,14 +9,24 @@ import { ApplicationService } from '../../../services/app.service';
     templateUrl: './repository-drivers.template.html',
     styleUrls: ['./repository-drivers.styles.scss']
 })
-export class RepositorySystemsComponent extends BaseDirective implements OnChanges {
+export class RepositoryDriversComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active repository */
     @Input() public item: EngineRepository;
     /** List of drivers available in the repository */
     public driver_list: string[] = [];
 
-    constructor(private service: ApplicationService) {
+    constructor(private _service: ApplicationService) {
         super();
+    }
+
+    public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+                this.load();
+            })
+        );
     }
 
     public ngOnChanges(changes: any) {
@@ -27,8 +36,14 @@ export class RepositorySystemsComponent extends BaseDirective implements OnChang
     }
 
     public load(offset: number = 0) {
-        this.service.Repositories.listDrivers(this.item.id, { offset } as any).then((list) => {
-            this.driver_list = list || [];
-        }, () => null);
+        if (!this.item) {
+            return;
+        }
+        this._service.Repositories.listDrivers(this.item.id, { offset } as any).then(
+            list => {
+                this.driver_list = list || [];
+            },
+            () => null
+        );
     }
 }

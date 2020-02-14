@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { EngineDriver, EngineModule } from '@acaengine/ts-client';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, Subject, of } from 'rxjs';
@@ -18,7 +18,7 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
     templateUrl: './driver-devices.template.html',
     styleUrls: ['./driver-devices.styles.scss']
 })
-export class DriverDevicesComponent extends BaseDirective implements OnChanges {
+export class DriverDevicesComponent extends BaseDirective implements OnChanges, OnInit {
     @Input() public item: EngineDriver;
 
     /** Filter string for the system list */
@@ -36,7 +36,15 @@ export class DriverDevicesComponent extends BaseDirective implements OnChanges {
         super();
     }
 
+
     public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+                this.loadDevices();
+            })
+        );
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
             distinctUntilChanged(),
@@ -77,6 +85,7 @@ export class DriverDevicesComponent extends BaseDirective implements OnChanges {
     }
 
     public loadDevices(offset: number = 0) {
+        if (!this.item) { return; }
         this._service.Modules.query({ dependency_id: this.item.id, offset, limit: 500 }).then(
             list => (this.device_list = list),
             () => null

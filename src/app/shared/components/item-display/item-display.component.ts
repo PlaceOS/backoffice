@@ -5,7 +5,9 @@ import {
     Output,
     EventEmitter,
     OnInit,
-    SimpleChanges
+    SimpleChanges,
+    ViewChild,
+    ElementRef
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EngineResource } from '@acaengine/ts-client';
@@ -21,6 +23,14 @@ import { DialogEvent } from '../../utilities/types.utilities';
 import { ApplicationIcon } from '../../utilities/settings.interfaces';
 import { ItemCreateUpdateModalComponent, CreateEditModalData } from 'src/app/overlays/item-modal/item-modal.component';
 
+export interface ApplicationTab {
+    id: string;
+    name: string;
+    icon: ApplicationIcon;
+    template: TemplateRef<any>;
+    count?: number;
+}
+
 @Component({
     selector: 'item-display',
     templateUrl: './item-display.template.html',
@@ -29,24 +39,29 @@ import { ItemCreateUpdateModalComponent, CreateEditModalData } from 'src/app/ove
 export class ItemDisplayComponent extends BaseDirective implements OnInit {
     /** Name of the type of item being shown */
     @Input() public name: string;
+    /** Base route of parent component */
+    @Input() public route: string;
     /** Resource to display details of */
     @Input() public item: EngineResource<any>;
     /** Whether resouce data is being loaded */
     @Input() public loading: boolean;
-    /** Whether item is allowed to be edited and deleted*/
+    /** Whether item is allowed to be edited and deleted */
     @Input() public has_change = true;
     /** Tabs available to the item type */
-    @Input() public tabs: {
-        id: string;
-        name: string;
-        icon: ApplicationIcon;
-        template: TemplateRef<any>;
-    }[] = [];
-    /** Active tab ID */
-    @Input() public active = 'about';
+    @Input() public tabs: ApplicationTab[] = [];
+    /** Emitter for events on the item display */
     @Output() public event = new EventEmitter();
     /** ID of the active tab */
     public active_tab: string;
+
+    @ViewChild('content') public content_el: ElementRef<HTMLDivElement>;
+
+    public get is_scrolled() {
+        if (this.content_el) {
+            return this.content_el.nativeElement.scrollTop > 0;
+        }
+        return false;
+    }
 
     constructor(private service: ApplicationService, private _dialog: MatDialog) {
         super();
@@ -63,34 +78,8 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
         );
     }
 
-    public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.tabs) {
-            this.tabs.forEach((i, idx) => (i.id = i.id || `${idx}`));
-        }
-        if (changes.active_tab) {
-            this.timeout('active_tab', () => this.active_tab = this.active);
-        }
-    }
+    public changeTab(direction) {
 
-    public changeTab(offset: number) {
-        if (!this.tabs || this.tabs.length === 0) {
-            return;
-        }
-        let index = 0;
-        for (const tab of this.tabs) {
-            if (tab.id === this.active) {
-                index = this.tabs.indexOf(tab);
-            }
-        }
-        index += offset;
-        if (index >= this.tabs.length) {
-            index = this.tabs.length - 1;
-        }
-        if (index < 0) {
-            index = 0;
-        }
-        this.active = this.tabs[index].id;
-        this.event.emit({ type: 'tab', value: this.active });
     }
 
     /** Copy the ID of the active item to the clipboard */
@@ -115,7 +104,7 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
             'confirm_ref',
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
-                    this.item = e.metadata.item
+                    this.item = e.metadata.item;
                 }
             })
         );

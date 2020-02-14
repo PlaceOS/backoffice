@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="item">
     <header *ngIf="system_list && system_list.length">Execute Command</header>
     <section *ngIf="system_list && system_list.length">
         <mat-form-field appearance="outline">

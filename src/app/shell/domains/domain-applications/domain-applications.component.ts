@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { EngineDomain, EngineApplication } from '@acaengine/ts-client';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -17,7 +17,7 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
     templateUrl: './domain-applications.template.html',
     styleUrls: ['./domain-applications.styles.scss']
 })
-export class DomainApplicationsComponent extends BaseDirective implements OnChanges {
+export class DomainApplicationsComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active domain */
     @Input() public item: EngineDomain;
     /** List of applications associated with the active domain */
@@ -27,6 +27,16 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
         super();
     }
 
+    public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+                this.loadApplications();
+            })
+        );
+    }
+
     public ngOnChanges(changes: any) {
         if (changes.item) {
             this.loadApplications();
@@ -34,6 +44,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
     }
 
     public loadApplications(offset: number = 0) {
+        if (!this.item) { return; }
         this._service.Applications.query({ owner: this.item.id, offset } as any).then(
             list => {
                 if (!offset) {

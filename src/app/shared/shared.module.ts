@@ -8,14 +8,13 @@ import { RouterModule } from '@angular/router';
 import { ASpinnerModule } from '@acaprojects/ngx-spinners';
 import { APipesModule } from '@acaprojects/ngx-pipes';
 import { ACustomEventsModule } from '@acaprojects/ngx-custom-events';
-import { ATabsModule } from '@acaprojects/ngx-tabs';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-// import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 // import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
@@ -25,6 +24,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { BaseDirective } from './globals/base.directive';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
@@ -118,7 +118,7 @@ const MATERIAL_MODULES: any[] = [
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    // MatProgressSpinnerModule,
+    MatProgressSpinnerModule,
     // MatProgressBarModule,
     MatAutocompleteModule,
     MatSelectModule,
@@ -126,7 +126,8 @@ const MATERIAL_MODULES: any[] = [
     MatMenuModule,
     MatCheckboxModule,
     MatSlideToggleModule,
-    MatChipsModule
+    MatChipsModule,
+    MatTabsModule
 ];
 
 @NgModule({
@@ -144,7 +145,6 @@ const MATERIAL_MODULES: any[] = [
         APipesModule,
         ReactiveFormsModule,
         ACustomEventsModule,
-        ATabsModule,
         ScrollingModule,
         ...MATERIAL_MODULES,
         RouterModule.forChild([])
@@ -153,7 +153,6 @@ const MATERIAL_MODULES: any[] = [
         ASpinnerModule,
         APipesModule,
         ACustomEventsModule,
-        ATabsModule,
         ...COMPONENTS,
         ...PIPES,
         ...ENTRY_COMPONENT,

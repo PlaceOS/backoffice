@@ -55,6 +55,11 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
                 service: this._service.Drivers
             }
         });
+        ref.componentInstance.event.subscribe((event) => {
+            if (event.reason === 'done') {
+                this._router.navigate(['/drivers', event.metadata.item.id]);
+            }
+        });
     }
 
     /**

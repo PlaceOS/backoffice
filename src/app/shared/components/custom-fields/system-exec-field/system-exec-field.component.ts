@@ -140,7 +140,7 @@ export class SystemExecFieldComponent extends BaseDirective
                                     .filter(d => d.module === device.module)
                                     .findIndex(mod => mod.id === device.id) + 1)
                     );
-                    if (!(this.devices || []).find(mod => mod.id === this.active_module.id)) {
+                    if (this.active_module && !(this.devices || []).find(mod => mod.id === this.active_module.id)) {
                         this.devices.unshift(this.active_module);
                     }
                 },

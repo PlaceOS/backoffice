@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChange, OnInit } from '@angular/core';
 import { EngineZone, EngineTrigger } from '@acaengine/ts-client';
 
 import { ApplicationService } from '../../../services/app.service';
@@ -21,7 +21,7 @@ import {
     templateUrl: './zone-triggers.template.html',
     styleUrls: ['./zone-triggers.styles.scss']
 })
-export class ZoneTriggersComponent extends BaseDirective implements OnChanges {
+export class ZoneTriggersComponent extends BaseDirective implements OnChanges, OnInit {
     @Input() public item: EngineZone;
 
     public model: any = {};
@@ -32,13 +32,23 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges {
         super();
     }
 
+    public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+                this.ngOnChanges({ item: new SimpleChange(null, this.item, false) });
+            })
+        );
+    }
+
     public ngOnChanges(changes: any) {
-        if (changes.item) {
-            this.load();
+        if (changes.item && this.item) {
+            this.loadZoneTriggers();
         }
     }
 
-    public load(offset: number = 0) {
+    public loadZoneTriggers(offset: number = 0) {
         this._service.SystemTriggers.query({ zone_id: this.item.id, offset } as any).then(
             list => {
                 this.model.triggers = list;

@@ -60,6 +60,11 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
                 service: this._service.Domains
             }
         });
+        ref.componentInstance.event.subscribe((event) => {
+            if (event.reason === 'done') {
+                this._router.navigate(['/domains', event.metadata.item.id]);
+            }
+        });
     }
 
     /**

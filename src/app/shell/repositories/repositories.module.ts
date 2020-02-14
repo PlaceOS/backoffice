@@ -10,7 +10,7 @@ import { ROUTES } from './repositories.routes';
 
 import { RepositoriesComponent } from './repositories.component';
 import { RepositoryAboutComponent } from './about/repository-about.component';
-import { RepositorySystemsComponent } from './drivers/repository-drivers.component';
+import { RepositoryDriversComponent } from './drivers/repository-drivers.component';
 import { SharedContentModule } from 'src/app/shared/shared.module';
 
 
@@ -18,7 +18,7 @@ import { SharedContentModule } from 'src/app/shared/shared.module';
     declarations: [
         RepositoriesComponent,
         RepositoryAboutComponent,
-        RepositorySystemsComponent
+        RepositoryDriversComponent
     ],
     imports: [
         CommonModule,

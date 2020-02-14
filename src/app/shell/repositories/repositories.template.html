@@ -9,28 +9,16 @@
     </div>
     <main (touchrelease)="show_sidebar = false">
         <item-display
+            name="repository"
+            route="repositories"
             [item]="item"
             [loading]="loading_item"
-            name="repository"
-            [active]="tab"
             [tabs]="[
-                { id: 'about', name: 'About', template: about, icon: { class: 'backoffice-info-with-circle' } },
-                {
-                    id: 'drives',
-                    name: 'Drivers',
-                    template: drivers,
-                    count: driver_count,
-                    icon: { class: 'backoffice-documents' }
-                }
+                { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
+                { id: 'drives', name: 'Drivers', count: driver_count, icon: { class: 'backoffice-documents' } }
             ]"
             (event)="itemEvent($event)"
         >
-            <ng-template #about>
-                <repository-about [item]="item"></repository-about>
-            </ng-template>
-            <ng-template #drivers>
-                <repository-drivers [item]="item"></repository-drivers>
-            </ng-template>
         </item-display>
     </main>
 </div>

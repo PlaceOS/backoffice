@@ -17,7 +17,7 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
     templateUrl: './system-zones.template.html',
     styleUrls: ['./system-zones.styles.scss']
 })
-export class SystemZonesComponent extends BaseDirective implements OnChanges {
+export class SystemZonesComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active item */
     @Input() public item: EngineSystem;
     /** Emitter for changes to the loading state of the item */
@@ -36,9 +36,19 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges {
         super();
     }
 
+    public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+                this.loadZones();
+            })
+        );
+    }
+
     public ngOnChanges(changes: any) {
         if (changes.item) {
-            this.load();
+            this.loadZones();
         }
     }
 
@@ -46,7 +56,8 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges {
      * Load zone data for the active item
      * @param offset Page offset for the service request
      */
-    public load(offset: number = 0) {
+    public loadZones(offset: number = 0) {
+        if (!this.item) { return; }
         this._service.Zones.query({ sys_id: this.item.id, offset }).then(
             list => {
                 list.sort((a, b) => this.item.zones.indexOf(a.id) - this.item.zones.indexOf(b.id));
@@ -170,7 +181,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges {
                                         `Added zone "${this.new_zone}" to system`
                                     );
                                     this.item = item;
-                                    this.load();
+                                    this.loadZones();
                                     ref.close();
                                     this.unsub('confirm_ref');
                                 },

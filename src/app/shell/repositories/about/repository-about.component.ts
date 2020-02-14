@@ -1,7 +1,6 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { EngineRepository } from '@acaengine/ts-client';
-import { MatDialog } from '@angular/material/dialog';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -16,12 +15,17 @@ export class RepositoryAboutComponent extends BaseDirective implements OnInit {
 
     public model: any = {};
 
-    constructor(private service: ApplicationService, private _dialog: MatDialog) {
+    constructor(private _service: ApplicationService) {
         super();
     }
 
-    public ngOnInit() {
-
+    public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+            })
+        );
     }
 
     public select(system) {

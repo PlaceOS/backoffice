@@ -50,6 +50,11 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
                 service: this._service.Repositories
             }
         });
+        ref.componentInstance.event.subscribe((event) => {
+            if (event.reason === 'done') {
+                this._router.navigate(['/repositories', event.metadata.item.id]);
+            }
+        });
     }
 
     /**

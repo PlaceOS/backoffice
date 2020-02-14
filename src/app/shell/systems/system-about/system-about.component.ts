@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EngineSystem, HashMap, EngineZone } from '@acaengine/ts-client';
 
@@ -22,7 +22,7 @@ import {
     templateUrl: './system-about.template.html',
     styleUrls: ['./system-about.styles.scss']
 })
-export class SystemAboutComponent extends BaseDirective implements OnChanges {
+export class SystemAboutComponent extends BaseDirective implements OnChanges, OnInit {
     /** System to render */
     @Input() public item: EngineSystem;
     /** Whether to show the settings merged with zone and modules */
@@ -39,6 +39,16 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
 
     constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
+    }
+
+    public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+                this.loadZones();
+            })
+        );
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -100,7 +110,9 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
                     this._service.Systems.stop(this.item.id).then(
                         result => null,
                         err =>
-                            this._service.notifyError(`Failed to stop system: ${err.message || err}`)
+                            this._service.notifyError(
+                                `Failed to stop system: ${err.message || err}`
+                            )
                     );
                 }
             })
@@ -119,11 +131,14 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
      * Update the displayed settings
      */
     public updateSettings() {
-        if (!this.item) return;
+        if (!this.item) { return; }
         if (this.merged !== false) {
             this.settings = mergeYAMLSettings('', this.item.settings.settings_string || '');
             for (const zone of this.zones) {
-                this.settings = mergeYAMLSettings(this.settings, zone.settings.settings_string || '');
+                this.settings = mergeYAMLSettings(
+                    this.settings,
+                    zone.settings.settings_string || ''
+                );
             }
         } else {
             this.settings = this.item.settings.settings_string || '';
@@ -134,6 +149,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges {
      * Load zones associated with the system to allow for merging
      */
     public loadZones() {
+        if (!this.item) { return; }
         this._service.Zones.query({ sys_id: this.item.id, offset: 0 }).then(
             list => {
                 list.sort((a, b) => this.item.zones.indexOf(b.id) - this.item.zones.indexOf(a.id));

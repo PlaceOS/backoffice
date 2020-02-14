@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { EngineDomain, EngineSAMLSource, EngineLDAPSource } from '@acaengine/ts-client';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -23,7 +23,7 @@ export interface EngineAuthSourceLike extends Identity {
     templateUrl: './domain-authentication.template.html',
     styleUrls: ['./domain-authentication.styles.scss']
 })
-export class DomainAuthenticationComponent extends BaseDirective implements OnChanges {
+export class DomainAuthenticationComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active domain item */
     @Input() public item: EngineDomain;
     /** List of auth sources associated with the active domain */
@@ -33,6 +33,16 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
 
     constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
+    }
+
+    public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+                this.loadAuthSources();
+            })
+        );
     }
 
     public ngOnChanges(changes: any) {
@@ -46,6 +56,7 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
      * @param offset Request page offset
      */
     public loadAuthSources(offset: number = 0) {
+        if (!this.item) { return; }
         Promise.all([
             this._service.OAuthSources.query({ authority_id: this.item.id, offset } as any),
             this._service.SAMLAuthSources.query({ authority_id: this.item.id, offset } as any),

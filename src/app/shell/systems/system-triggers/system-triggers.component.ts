@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { EngineSystem, EngineTrigger } from '@acaengine/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
@@ -22,7 +22,7 @@ import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item
     templateUrl: './system-triggers.template.html',
     styleUrls: ['./system-triggers.styles.scss']
 })
-export class SystemTriggersComponent extends BaseDirective implements OnChanges {
+export class SystemTriggersComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active System */
     @Input() public item: EngineSystem;
     /** List of triggers associated with the active system */
@@ -38,6 +38,16 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges 
         super();
     }
 
+    public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+                this.loadSystemTriggers();
+            })
+        );
+    }
+
     public ngOnChanges(changes: any): void {
         if (changes.item) {
             this.loadSystemTriggers();
@@ -45,6 +55,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges 
     }
 
     public loadSystemTriggers(offset: number = 0): void {
+        if (!this.item) { return; }
         this._service.SystemTriggers.query({ sys_id: this.item.id, offset } as any).then(
             list => {
                 this.trigger_list = list;

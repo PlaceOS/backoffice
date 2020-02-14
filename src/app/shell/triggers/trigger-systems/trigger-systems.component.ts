@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChange, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ComposerService } from '@acaengine/composer';
 import { EngineTrigger, HashMap } from '@acaengine/ts-client';
@@ -18,7 +18,7 @@ import {
     templateUrl: './trigger-systems.template.html',
     styleUrls: ['./trigger-systems.styles.scss']
 })
-export class TriggerSystemsComponent extends BaseDirective implements OnChanges {
+export class TriggerSystemsComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active trigger */
     @Input() public item: EngineTrigger;
     /** List of systems associated with the trigger */
@@ -34,8 +34,18 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges 
         super();
     }
 
+    public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+                this.ngOnChanges({ item: new SimpleChange(null, this.item, false) });
+            })
+        );
+    }
+
     public ngOnChanges(changes: any) {
-        if (changes.item) {
+        if (changes.item && this.item) {
             this.loadSystemTriggers();
         }
     }

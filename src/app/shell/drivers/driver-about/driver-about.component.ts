@@ -25,6 +25,15 @@ export class DriverAboutComponent extends BaseDirective {
         return this.item.settings.settings_string;
     }
 
+    public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+            })
+        );
+    }
+
     public reloadDriver() {
         if (this.item) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
