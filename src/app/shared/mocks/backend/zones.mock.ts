@@ -25,7 +25,7 @@ export class MockZonesBackend extends BaseMockBackend {
             zone_list.push({
                 id: `zone-${padZero(i, 4)}`,
                 name: `Test Zone ${i + 1}`,
-                description: faker.lorem.paragraph(),
+                description: `### Test Title\n\n${faker.lorem.paragraph()}`,
                 tags: `test zone`,
                 created_at: dayjs().add(-Math.floor(Math.random() * 10000), 'm').unix(),
                 triggers: [],

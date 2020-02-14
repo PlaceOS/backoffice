@@ -1,4 +1,6 @@
 <div class="container" *ngIf="item">
+    <header *ngIf="item.description">Description</header>
+    <section class="description" *ngIf="item.description" [innerHTML]="parsed_description"></section>
     <header *ngIf="system_list && system_list.length">Execute Command</header>
     <section *ngIf="system_list && system_list.length">
         <mat-form-field appearance="outline">

@@ -5,6 +5,8 @@ import { EngineZone, EngineSystem } from '@acaengine/ts-client';
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
 
+import * as marked from 'marked';
+
 @Component({
     selector: 'zone-about',
     templateUrl: './zone-about.template.html',
@@ -40,6 +42,11 @@ export class ZoneAboutComponent extends BaseDirective implements OnInit, OnChang
 
     public get settings(): string {
         return this.item.settings.settings_string;
+    }
+
+    public get parsed_description() {
+        if (!this.item) { return ''; }
+        return marked(this.item.description);
     }
 
     public loadSystems(offset: number = 0) {
