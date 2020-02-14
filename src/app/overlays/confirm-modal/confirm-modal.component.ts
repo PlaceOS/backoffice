@@ -1,33 +1,69 @@
+import { Component, OnInit, Output, EventEmitter, Inject } from "@angular/core";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
-import { OverlayItem } from '@acaprojects/ngx-overlays';
-import { Component } from '@angular/core';
-
+import { ApplicationIcon } from "../../shared/utilities/settings.interfaces";
+import { DialogEvent } from "../../shared/utilities/types.utilities";
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
+
+export interface ConfirmModalData {
+    /** Title of the modal */
+    title: string;
+    /** Contents of the modal */
+    content: string;
+    /** Text displaed on the confirmation button */
+    action?: string;
+    /** Icon to display on the modal */
+    icon: ApplicationIcon;
+}
+
+export const CONFIRM_METADATA = {
+
+    height: 'auto',
+    width: '24em',
+    maxHeight: 'calc(100vh - 2em)',
+    maxWidth: 'calc(100vw - 2em)',
+}
 
 @Component({
-    selector: 'confirm-modal',
-    templateUrl: './confirm-modal.template.html',
-    styleUrls: ['./confirm-modal.styles.scss'],
+    selector: "confirm-modal",
+    templateUrl: "./confirm-modal.component.html",
+    styleUrls: ["./confirm-modal.component.scss"]
 })
-export class ConfirmModalComponent extends BaseDirective {
-    public model: any = {};
+export class ConfirmModalComponent extends BaseDirective implements OnInit {
+    /** Emitter for user action on the modal */
+    @Output() public event = new EventEmitter<DialogEvent>();
+    /** Title of the confirm modal */
+    public title: string;
+    /** Body of the confirm modal */
+    public content: string;
+    /** Display text on the confirm button */
+    public action: string;
+    /** Display icon properties */
+    public icon: ApplicationIcon;
+    /** Loading state */
+    public loading: string;
 
-    constructor(private _item: OverlayItem) {
+    constructor(
+        private _dialog: MatDialogRef<ConfirmModalComponent>,
+        @Inject(MAT_DIALOG_DATA) private _data: ConfirmModalData
+    ) {
         super();
     }
 
     public ngOnInit(): void {
-        this.model = this._item.data || {};
+        const data = this._data;
+        if (data) {
+            this.title = data.title || "Confirm";
+            this.content = data.content || "Confirm";
+            this.action = data.action || "Ok";
+            this.icon = data.icon;
+        }
     }
 
-    public close() {
-        setTimeout(() => this._item.close(), 300);
-    }
-
-    public event(name: string) {
-        setTimeout(() => this._item.post('event', name), 300);
+    /**
+     * User confirmation of the content of the modal
+     */
+    public accept() {
+        this.event.emit({ reason: "done" });
     }
 }
-
-OVERLAY_REGISTER.push({ id: 'confirm', config: { content: ConfirmModalComponent, config: 'modal' } });

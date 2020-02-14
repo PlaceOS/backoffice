@@ -1,5 +1,5 @@
 
-import { MockHttpRequestHandlerOptions } from '@acaprojects/ts-composer';
+import { MockHttpRequestHandlerOptions } from '@acaengine/ts-client';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';
@@ -61,7 +61,7 @@ export class MockStatsBackend extends BaseMockBackend {
         }
         this.model.states = item_list;
         window.control.handlers.push({
-            path: 'api/engine/v1/stats/:id',
+            path: 'api/engine/v2/stats/:id',
             metadata: this.model.stats,
             method: 'GET',
             callback: (event) => {

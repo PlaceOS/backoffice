@@ -1,0 +1,20 @@
+<div class="container" *ngIf="item">
+    <section class="details">
+        <div class="field">
+            <label>Type:</label>
+            <div class="value">{{ item.type ? 'Interface' : 'Driver' }} Repository</div>
+        </div>
+        <div class="field">
+            <label>Folder name:</label>
+            <div class="value">{{ item.folder_name || 'No folder set' }}</div>
+        </div>
+        <div class="field">
+            <label>Repository URI:</label>
+            <div class="value"><a [href]="item.uri | safe:'url'">{{ item.uri || 'No URI set' }}</a></div>
+        </div>
+        <div class="field">
+            <label>Description:</label>
+            <div class="value">{{ item.description || 'No description' }}</div>
+        </div>
+    </section>
+</div>

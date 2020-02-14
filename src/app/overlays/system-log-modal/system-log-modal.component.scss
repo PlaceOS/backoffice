@@ -1,82 +1,14 @@
 @import 'shared.styles';
 
-.container {
-    width: 1280px;
-    max-width: 95vw;
-    font-size: 1.25em;
-    overflow: hidden;
-    transition: height 200ms, width 200ms;
-    box-shadow: 0 1px 3px 0 rgba(#000,.2), 0 1px 1px 0 rgba(#000,.14), 0 2px 1px -1px rgba(#000,.12);
-
-    .no-item {
-        display: none;
-    }
-    &.edit {
-        .new-only {
-            display: none;
-        }
-    }
-
-    &.loader {
-
-        width: 20em;
-
-        .close,
-        .body {
-            display: none !important;
-        }
-
-        .no-item {
-            display: flex;
-        }
-    }
-
-    @include respond-to(mobile) {
-        width: 20em;
-    }
-}
-
 .body {
-    font-size: .8em;
-    width: 100%;
-    overflow: auto;
-    padding: .5em;
-}
-
-.form {
-    padding: .5em;
-    font-size: .8em;
-    & > .error {
-        font-size: .8em;
-        text-align: right;
-        color: $error;
-        margin-bottom: .5em;
-        padding-right: 1em;
-    }
-}
-
-settings-display {
-    font-size: .8em;
-}
-
-input {
-    border-radius: 4px;
-    padding: .5em;
-}
-
-.footer {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    width: 100%;
+    flex-direction: column;
+    padding: 2em;
 }
 
-.no-item {
-    min-height: 15em;
-    font-size: .7em;
-    &.success {
-        .icon {
-            color: $success;
-        }
-    }
+.content {
+    width: 16rem;
+    text-align: center;
+    font-size: .8em;
 }

@@ -12,9 +12,15 @@ header {
     font-size: 1.1em;
     span {
         font-size: .7em;
-        color: rgba(#000, .54);
+        color: rgba(#000, .6);
         padding: 0 1em;
         font-weight: 300;
+        text-decoration: underline;
+        cursor: pointer;
+        transition: color 200ms;
+        &:hover {
+            color: rgba(#000, .85);
+        }
     }
 }
 
@@ -29,56 +35,13 @@ section {
     margin-bottom: .25em;
 }
 
-.execute {
-
-    .row {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
+button {
+    margin: 0 .25em;
+    &:first-child {
+        margin-left: 0;
     }
-
-    dropdown {
-        flex: 1;
-    }
-
-    .fn-input {
-        flex-grow: 2;
-        min-width: 10em;
-        max-width: 100%;
-        display: flex;
-        align-items: center;
-        * {
-            font-family: $mono-font;
-        }
-    }
-
-    .arg {
-        display: flex;
-        align-items: center;
-    }
-
-    .seperator {
-        color: rgba(#000, .2);
-        &.solid {
-            color: rgba(#000, .87);
-        }
-    }
-
-    input {
-        margin-top: 2px;
-        border: none;
-        border-bottom: 2px dashed rgba(#000, 0);
-        background: none;
-        outline: none;
-        font-size: 1em;
-        color: rgba(#000, .87);
-        padding: 0;
-        &.error {
-            border-bottom-color: $error;
-        }
-        &::placeholder {
-            color: rgba(#000, .2);
-        }
+    &:last-child {
+        margin-right: 0;
     }
 }
 
@@ -87,11 +50,16 @@ section {
     align-items: center;
     margin: .25em 0;
 
-    .label {
-        font-weight: 500;
-    }
-
     .value {
         padding: 0 .5em;
     }
+}
+
+label {
+    font-size: .8em;
+    font-weight: 500;
+}
+
+a {
+    font-size: .9em;
 }

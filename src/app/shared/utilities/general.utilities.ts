@@ -1,6 +1,8 @@
 import { HashMap } from './types.utilities';
 
 import * as dayjs from 'dayjs';
+import * as merge from 'deepmerge';
+import * as yaml from 'js-yaml';
 
 export function getItemWithKeys(keys: string[], map: HashMap) {
     const key = keys.shift();
@@ -32,6 +34,15 @@ export function isMobileSafari(): boolean {
 export function isAndroidChrome(): boolean {
     const agent = navigator.userAgent;
     return !!(agent.match(/Android/) && agent.match(/Chrome/));
+}
+
+/**
+ * Generate a random number
+ * @param ceil Biggest value to generate not inclusive
+ * @param floor Smallest value to generate. Defaults to 0
+ */
+export function randomInt(ceil: number, floor: number = 0) {
+    return Math.floor(Math.random() * (ceil - floor)) + floor;
 }
 
 /**
@@ -194,25 +205,67 @@ export function timeToDate(time: string): number {
 }
 
 /**
+ * Merge two YAML objects together
+ * @param dest Destination object to merge
+ * @param source Source object to merge
+ */
+export function mergeYAMLSettings(dest: string = '', source: string = ''): string {
+    const dest_obj = yaml.safeLoad(dest) || {};
+    const source_obj = yaml.safeLoad(source) || {};
+    const merged_obj = merge(dest_obj, source_obj);
+    return yaml.safeDump(merged_obj, { indent: 4 });
+}
+
+/** Get time format string for locale */
+export function timeFormatString(): string {
+    return is24HourTime() ? 'HH:mm' : 'h:mm A';
+}
+
+/** Whether locale string is displayed in 24 hour time */
+export function is24HourTime(): boolean {
+    const date = new Date();
+    const localeString = date.toLocaleTimeString();
+    return localeString.indexOf('AM') < 0 && localeString.indexOf('PM') < 0;
+}
+
+/**
+ * Calculate the position counter for the given number e.g `1st`, `2nd`, `3rd`, `4th`...
+ * @param num Number to caculate position for
+ */
+export function numberToPosition(num: number): string {
+    const mod_ten = num % 10;
+    if (num > 10 && num < 20) {
+        return `${num}th`;
+    } else if (mod_ten === 1) {
+        return `${num}st`;
+    } else if (mod_ten === 2) {
+        return `${num}nd`;
+    } else if (mod_ten === 3) {
+        return `${num}rd`;
+    }
+    return `${num}th`;
+}
+
+/**
  * Copy the given value to the OS Clipboard
  * @param value String to copy to the clipboard
  */
 export function copyToClipboard(value: string) {
     const el = document.createElement('textarea');  // Create a <textarea> element
-    el.value = value;                               // Set its value to the string that you want copied
+    el.value = value;                                 // Set its value to the string that you want copied
     el.setAttribute('readonly', '');                // Make it readonly to be tamper-proof
     el.style.position = 'absolute';
     el.style.left = '-9999px';                      // Move outside the screen to make it invisible
     document.body.appendChild(el);                  // Append the <textarea> element to the HTML document
     const selected =
-        document.getSelection().rangeCount > 0        // Check if there is any content selected previously
-            ? document.getSelection().getRangeAt(0)     // Store selection if found
-            : false;                                    // Mark as false to know no selection existed before
+      document.getSelection().rangeCount > 0        // Check if there is any content selected previously
+        ? document.getSelection().getRangeAt(0)     // Store selection if found
+        : false;                                    // Mark as false to know no selection existed before
     el.select();                                    // Select the <textarea> content
     document.execCommand('copy');                   // Copy - only works as a result of a user action (e.g. click events)
     document.body.removeChild(el);                  // Remove the <textarea> element
     if (selected) {                                 // If a selection existed before copying
-        document.getSelection().removeAllRanges();    // Unselect everything on the HTML document
-        document.getSelection().addRange(selected);   // Restore the original selection
+      document.getSelection().removeAllRanges();    // Unselect everything on the HTML document
+      document.getSelection().addRange(selected);   // Restore the original selection
     }
-}
+  }

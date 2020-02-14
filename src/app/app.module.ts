@@ -1,23 +1,24 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, ErrorHandler } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+import { ServiceWorkerModule } from '@angular/service-worker';
 import { FormsModule } from '@angular/forms';
-import { ComposerModule } from '@acaprojects/ngx-composer';
-
-import './shared/mocks';
+import { ComposerModule } from '@acaengine/composer';
 
 import { AGoogleAnalyticsModule } from '@acaprojects/ngx-google-analytics';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 
 import { SharedOverlaysModule } from './overlays/overlays.module';
 import { SharedContentModule } from './shared/shared.module';
+import { SentryService } from './services/sentry.service';
 
 import { APP_COMPONENTS } from './shell';
+
+import './shared/mocks';
 
 @NgModule({
     declarations: [
@@ -36,7 +37,7 @@ import { APP_COMPONENTS } from './shell';
         SharedOverlaysModule,
         SharedContentModule
     ],
-    providers: [],
+    providers: [{ provide: ErrorHandler, useClass: SentryService }],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,35 +1,131 @@
+/// <reference path="../../../../../../node_modules/monaco-editor/monaco.d.ts" />
 
-import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
+import {
+    Component,
+    forwardRef,
+    ViewChild,
+    ElementRef,
+    OnInit,
+    Input,
+    OnDestroy,
+    SimpleChanges,
+    OnChanges
+} from '@angular/core';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
-import { CUSTOM_FIELD_REGISTER } from 'src/app/shared/globals/custom-field-register';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 
+// import * as monaco_yaml from 'monaco-editor/dev/vs/basic-languages/yaml/yaml.js';
+
 @Component({
-    selector: 'custom-settings-field',
+    selector: 'settings-form-field',
     templateUrl: './settings-field.component.html',
-    styleUrls: ['./settings-field.component.scss']
+    styleUrls: ['./settings-field.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => SettingsFieldComponent),
+            multi: true
+        }
+    ]
 })
-export class CustomSettingsFieldComponent extends BaseDirective implements OnInit {
+export class SettingsFieldComponent extends BaseDirective
+    implements OnInit, OnChanges, OnDestroy, ControlValueAccessor {
+    /** Whether form field is readonly */
+    @Input() public readonly: boolean = true;
+    /** Current value for the */
+    public settings_string: string = ' ';
+    /** Form control on change handler */
+    private _onChange: (_: string) => void;
+    /** Form control on touch handler */
+    private _onTouch: (_: string) => void;
 
-    constructor(protected _field: ADynamicFormField, protected _group: FormGroup) {
-        super();
+    /** Reference to the element container the monaco editor */
+    @ViewChild('editor', { static: true }) private element: ElementRef;
+    /** API object for the monaco editor */
+    private editor: any;
+
+    public ngOnInit(): void {
+        this.createEditor();
     }
 
-    public get field(): ADynamicFormField {
-        return this._field;
-    }
-    public get group(): FormGroup {
-        return this._group
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes.readonly && this.editor) {
+            this.editor.updateOptions({ readOnly: !!this.readonly });
+        }
     }
 
-    ngOnInit(): void { }
+    public ngOnDestroy() {
+        if (this.editor) {
+            this.editor.dispose();
+            this.editor = null;
+        }
+    }
 
-    public setValue(value: { [name: string]: any }): void {
-        this._field.control.setValue(value);
+    /**
+     * Update the form field value
+     * @param new_value New value to set on the form field
+     */
+    public setValue(new_value: string): void {
+        this.settings_string = new_value;
+        if (this._onChange) {
+            this._onChange(new_value);
+        }
+    }
+
+    /**
+     * Update local value when form control value is changed
+     * @param value The new value for the component
+     */
+    public writeValue(value: string) {
+        this.settings_string = `${value}`;
+        if (this.editor) {
+            if (this.readonly) {
+                this.editor.updateOptions({ readOnly: false });
+                this.editor.setValue(this.settings_string);
+                this.editor.updateOptions({ readOnly: true });
+            } else {
+                this.editor.setValue(this.settings_string);
+            }
+        }
+    }
+
+    /**
+     * Registers a callback function that is called when the control's value changes in the UI.
+     * @param fn The callback function to register
+     */
+    public registerOnChange(fn: (_: string) => void): void {
+        this._onChange = fn;
+    }
+
+    /**
+     * Registers a callback function is called by the forms API on initialization to update the form model on blur.
+     * @param fn The callback function to register
+     */
+    public registerOnTouched(fn: (_: string) => void): void {
+        this._onTouch = fn;
+    }
+
+    /**
+     * Create and render the monaco editor to the component
+     */
+    private createEditor() {
+        if (this.element && this.element.nativeElement) {
+            // monaco.languages.register(monaco_yaml);
+            this.editor = monaco.editor.create(this.element.nativeElement, {
+                value: this.settings_string || '',
+                language: 'yaml',
+                fontFamily: `"Fira Code", monospace`,
+
+                lineNumbers: 'on',
+                roundedSelection: false,
+                scrollBeyondLastLine: false,
+                readOnly: this.readonly,
+                theme: 'vs-dark'
+            });
+            this.editor.onDidChangeModelContent(() => {
+                this.setValue(this.editor.getValue());
+            });
+        }
     }
 }
-
-CUSTOM_FIELD_REGISTER.settings = CustomSettingsFieldComponent;
-CUSTOM_FIELD_REGISTER.config = CustomSettingsFieldComponent;

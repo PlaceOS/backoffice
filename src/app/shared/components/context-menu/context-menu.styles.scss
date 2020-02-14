@@ -1,41 +1,9 @@
 
 @import 'shared.styles';
 
-.container {
-    position: absolute;
-    top: 0;
-    width: 12em;
-    max-height: 60vh;
-    overflow: hidden;
-    border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 1px 3px 0 rgba(#000,.2), 0 1px 1px 0 rgba(#000,.14), 0 2px 1px -1px rgba(#000,.12);
-    &.right {
-        right: 0;
-    }
-}
-
-.item {
-    display: flex;
-    align-items: center;
-    padding: .5em;
-    min-width: 12em;
-    cursor: pointer;
-    &:hover {
-        background-color: rgba(#000, .05);
-    }
-}
-
-.icon {
-    height: 1.5em;
-    width: 1.5em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.context-placeholder {
+    position: fixed;
+    pointer-events: none;
+    height: 1px;
+    width: 1px;
 }

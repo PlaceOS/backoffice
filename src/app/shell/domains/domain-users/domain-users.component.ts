@@ -1,6 +1,6 @@
 
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { EngineDomain } from '@acaprojects/ts-composer';
+import { EngineDomain } from '@acaengine/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -15,22 +15,30 @@ export class DomainUsersComponent extends BaseDirective implements OnInit, OnCha
 
     public model: any = {};
 
-    constructor(private service: ApplicationService) {
+    constructor(private _service: ApplicationService) {
         super();
     }
 
-    public ngOnInit() {
-        this.load();
+    public ngOnInit(): void {
+        this.subscription(
+            'item',
+            this._service.listen('BACKOFFICE.active_item', item => {
+                this.item = item;
+                this.loadUsers();
+            })
+        );
+        this.loadUsers();
     }
 
     public ngOnChanges(changes: any) {
         if (changes.item) {
-            this.load();
+            this.loadUsers();
         }
     }
 
-    public load(offset: number = 0) {
-        this.service.Users.query({ authority_id: this.item.id, offset }).then((list) => {
+    public loadUsers(offset: number = 0) {
+        if (!this.item) { return; }
+        this._service.Users.query({ authority_id: this.item.id, offset }).then((list) => {
             if (!offset) { this.model.list = []; }
             for (const item of (list || [])) {
                 let found = false;

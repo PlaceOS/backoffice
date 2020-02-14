@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { first } from 'rxjs/operators';
 
 import { BaseDirective } from '../../shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
 import { version, build } from 'src/app/shared/globals/application';
+import { ChangelogModalComponent, ChangelogModalData } from 'src/app/overlays/changelog-modal/changelog-modal.component';
 
 @Component({
     selector: 'app-about',
@@ -12,27 +15,21 @@ import { version, build } from 'src/app/shared/globals/application';
 export class AppAboutComponent extends BaseDirective implements OnInit {
     public model: any = {};
 
-    constructor(private service: ApplicationService) {
+    constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
     public ngOnInit() {
-        this.init();
+        this._service.initialised.pipe(first(_ => _)).subscribe(() => this.init());
     }
 
     public init() {
-        if (!this.service.is_ready) {
-            return this.timeout('init', () => this.init());
-        }
-        this.model.user = this.service.Users.current();
+        this.model.user = this._service.Users.current();
         this.model.backoffice_version = version;
         this.model.backoffice_build = build.format('DD MMM YYYY [at] h:mma');
-        // this.model.changelog = this.service.Settings.markdown();
-        console.log('Model:', this.model);
     }
 
     public changelog(log: string) {
-        console.log('Log:', log);
-        this.service.Overlay.open('changelog', { data: { changelog: log } }, (e) => e.close());
+        this._dialog.open<ChangelogModalComponent, ChangelogModalData>(ChangelogModalComponent, { data: { changelog: log } });
     }
 }

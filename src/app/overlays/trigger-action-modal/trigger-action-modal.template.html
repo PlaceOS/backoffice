@@ -1,52 +1,27 @@
-<div class="container" [class.loader]="model.loading" [class.edit]="model.item">
-    <div class="header">
-        <div class="text">{{model.item ? 'Edit' : 'New'}} Trigger Action</div>
-        <div class="close" (touchrelease)="fn.close()">
-            <i class="material-icons">close</i>
-        </div>
+<header>
+    <h3 mat-dialog-title>{{is_new ? 'Edit' : 'New'}} Trigger Action</h3>
+    <button mat-icon-button mat-dialog-close>
+        <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
+    </button>
+</header>
+<mat-dialog-content>
+    <div class="body" *ngIf="!loading; else load_state">
+        <trigger-action-form [form]="form" [system]="system"></trigger-action-form>
     </div>
+</mat-dialog-content>
+<mat-dialog-actions *ngIf="!loading">
+    <button mat-button class="inverse" mat-dialog-close>Cancel</button>
+    <button mat-button type="submit" (tapped)="save()">
+        {{ is_new ? 'Save' : 'Add' }}
+    </button>
+</mat-dialog-actions>
+<ng-template #load_state>
     <div class="body">
-        <div class="form">
-            <div class="field">
-                <div class="label">Action<span class="orange">*</span>:</div>
-                <div class="value">
-                    <a-dropdown [items]="model.action_types" [ngModel]="-1" (ngModelChange)="model.form.action_type = model.action_types[$event]"
-                        placeholder="Select an action"></a-dropdown>
-                </div>
+        <div class="info-block">
+            <div class="icon">
+                <a-spinner circle-ring color="#000"></a-spinner>
             </div>
-            <div class="fieldset" *ngIf="model.form.action_type && model.form.action_type.id === 'execute'">
-                <div class="field">
-                    <div class="value">
-                        <system-exec [system_id]="model.system?.id"></system-exec>
-                    </div>
-                </div>
-            </div>
-            <div class="fieldset" *ngIf="model.form.action_type && model.form.action_type.id === 'email'">
-                <div class="field">
-                    <div class="label">Email addresses:</div>
-                    <div class="value">
-                        <input [(ngModel)]="model.form.emails" placeholder="user@email.com, test@email.org, ...">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="label">Email contents:</div>
-                    <div class="value full">
-                        <textarea [(ngModel)]="model.form.content" placeholder="Email body"></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="footer">
-            <button widget (tapped)="event('Cancel')">Cancel</button>
-            <button widget name="inverse" [disabled]="model.has_errors || !model.fields_valid" (tapped)="model.item ? edit() : new()">
-                Ok
-            </button>
+            <div class="text">Processing request...</div>
         </div>
     </div>
-    <div class="info-block">
-        <div class="icon">
-            <a-spinner circle-ring color="rgba(0,0,0, .54)"></a-spinner>
-        </div>
-        <div class="text">Processing request...</div>
-    </div>
-</div>
+</ng-template>

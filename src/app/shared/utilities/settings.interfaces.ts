@@ -37,15 +37,24 @@ export interface ApplicationSettings {
     logo_dark: ApplicationIcon;
     /** Logo to use on light background */
     logo_light?: ApplicationIcon;
+    /** Settings for the local login form */
+    login?: LoginSettings;
     /** General settings for the application */
     general: GeneralApplicationSettings;
     /** Settings used for systems module of the application */
     systems: SystemsModuleSettings;
 }
 
+export interface LoginSettings {
+    /** Whether the user is allowed to reset their password if forgotten */
+    forgotten_password: boolean;
+}
+
 export interface GeneralApplicationSettings {
     /** List of available menu items for the application */
     menu_items: ApplicationLink[];
+    /** Whether the application has global search in the header */
+    global_search: boolean;
 }
 
 export interface SystemsModuleSettings {
@@ -53,13 +62,28 @@ export interface SystemsModuleSettings {
     licenses: number;
 }
 
-export interface ApplicationLink {
+export type ApplicationLink = ApplicationActionLink | ApplicationInternalLink | ApplicationExternalLink;
+
+
+export interface ApplicationActionLink {
+    /** Identifier for the link */
+    id?: string;
+    /** Name of the tile */
+    name: string;
+    /** Callback function to respond to action */
+    callback?: () => void;
+    /** Icon associated with the tile */
+    icon: ApplicationIcon;
+    /** List of sub-links */
+    children?: ApplicationLink[];
+}
+export interface ApplicationInternalLink {
+    /** Identifier for the link */
+    id?: string;
     /** Name of the tile */
     name: string;
     /** Application route the tile will navigate */
-    route?: string;
-    /** External link the tile will navigate */
-    link?: string;
+    route: string;
     /** Query parameters to add to the route being navigated to */
     query_params?: HashMap<string | number | boolean>;
     /** Icon associated with the tile */
@@ -68,13 +92,35 @@ export interface ApplicationLink {
     children?: ApplicationLink[];
 }
 
-export interface ApplicationIcon {
+export interface ApplicationExternalLink {
+    /** Identifier for the link */
+    id?: string;
+    /** Name of the tile */
+    name: string;
+    /** External link the tile will navigate */
+    link: string;
+    /** Icon associated with the tile */
+    icon: ApplicationIcon;
+    /** List of sub-links */
+    children?: ApplicationLink[];
+}
+
+export type ApplicationIcon = ApplicationElementIcon | ApplicationImageIcon;
+
+export interface ApplicationImageIcon {
     /** Type of icon */
-    type: 'img' | 'icon';
+    type: 'img';
     /** URL to the image used for the icon */
-    src?: string;
+    src: string;
+    /** Background color for icon */
+    background?: string;
+}
+
+export interface ApplicationElementIcon {
+    /** Type of icon */
+    type: 'icon';
     /** CSS class to add to icon element */
-    class?: string;
+    class: string;
     /** Contents to add to icon element */
     content?: string;
     /** Background color for icon */

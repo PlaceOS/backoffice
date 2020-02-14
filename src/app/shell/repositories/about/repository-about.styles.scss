@@ -1,0 +1,33 @@
+
+@import 'shared.styles';
+
+.container {
+    padding: 1em;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+section {
+    padding: .5em .25em;
+}
+
+.no-item {
+    font-size: .75em;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    margin: .75em 0;
+}
+
+label {
+    font-size: .8em;
+    font-weight: 500;
+    margin-bottom: .4em;
+}

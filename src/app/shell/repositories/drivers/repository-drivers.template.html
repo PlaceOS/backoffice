@@ -1,0 +1,18 @@
+<div class="container" *ngIf="item">
+    <div class="settings">
+        <table *ngIf="driver_list && driver_list.length > 0">
+            <thead>
+                <td class="flex">Name</td>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of driver_list">
+                    <td class="small" [innerHTML]="item | driverFormat">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="info-block" *ngIf="!driver_list || driver_list.length <= 0">
+            <div class="text">No drivers for repository</div>
+        </div>
+    </div>
+</div>

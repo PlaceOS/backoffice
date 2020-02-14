@@ -1,0 +1,22 @@
+<div class="module form" *ngIf="form">
+    <form [formGroup]="form">
+        <div class="field" *ngIf="form.controls.condition_type">
+            <label for="type">Condition Type: </label>
+            <mat-form-field appearance="outline">
+                <mat-select name="type" formControlName="condition_type">
+                    <mat-option *ngFor="let type of condition_types" [value]="type.id">
+                        {{ type.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <ng-container *ngIf="form.controls.condition_type.value === 'compare'; else time_form">
+            <trigger-condition-comparison-form [form]="form" [system]="system"></trigger-condition-comparison-form>
+        </ng-container>
+    </form>
+</div>
+<ng-template #time_form>
+    <trigger-condition-time-form [form]="form"></trigger-condition-time-form>
+</ng-template>
+
+

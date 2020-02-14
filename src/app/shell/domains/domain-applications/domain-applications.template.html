@@ -1,9 +1,9 @@
-<div class="container">
+<div class="container" *ngIf="item">
     <section class="select">
-        <button widget (tapped)="createApplication()">Add new</button>
+        <button mat-button (tapped)="newApplication()">Add new</button>
     </section>
     <section>
-        <div class="list" *ngIf="model.list && model.list.length > 0">
+        <div class="list" *ngIf="application_list && application_list.length > 0">
             <table>
                 <thead>
                     <td class="name">Name</td>
@@ -12,19 +12,23 @@
                     <td class="duo"></td>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let item of model.list">
+                    <tr *ngFor="let item of application_list">
                         <td class="name">{{item.name}}</td>
                         <td class="flex">{{item.redirect}}</td>
                         <td class="scope">{{item.scope}}</td>
                         <td class="duo">
-                            <div class="action"><i class="material-icons">edit</i></div>
-                            <div class="action"><i class="material-icons">delete</i></div>
+                            <button mat-icon-button (tapped)="editApplication(item)">
+                                <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+                            </button>
+                            <button mat-icon-button (tapped)="deleteApplication(item)">
+                                <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+                            </button>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div class="info-block" *ngIf="!model.list || model.list.length <= 0">
+        <div class="info-block" *ngIf="!application_list || application_list.length <= 0">
             <div class="text">No applications found</div>
         </div>
     </section>

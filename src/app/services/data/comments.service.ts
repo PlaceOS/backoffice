@@ -1,9 +1,9 @@
 
 import { Injectable } from '@angular/core';
-import { EngineUser } from '@acaprojects/ts-composer';
+import { EngineUser } from '@acaengine/ts-client';
 
 import { BaseAPIService } from './base.service';
-import { ComposerService } from '@acaprojects/ngx-composer';
+import { ComposerService } from '@acaengine/composer';
 
 export interface IComment {
     id: string;
@@ -102,7 +102,9 @@ export class BackofficeCommentsService extends BaseAPIService<IComment> {
                 comment.description = comment.other.comment;
             }
         }
-        comment.user = this.parent.Users.list(i => i.name === cmt.name)[0] || new EngineUser(this.parent.Users, cmt);
+        this.parent.Users.query({ q: cmt.name }).then((list) => {
+            comment.user = list[0] || new EngineUser(this.parent.Users, cmt);
+        }, (err) => comment.user = new EngineUser(this.parent.Users, cmt));
         return comment;
     }
 

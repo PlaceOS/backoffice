@@ -1,40 +1,164 @@
-<div class="container">
+<div class="container" *ngIf="item">
     <div class="settings">
         <section>
-            <a-dropdown [options]="{ can_filter: true }" [items]="model.systems" [ngModel]="-1" (ngModelChange)="select(model.systems[$event])"
-                (searchChange)="loadSystems($event)" placeholder="Select a System"></a-dropdown>
+            <div class="field">
+                <label
+                    for="dependency"
+                    matTooltip="System to use for available status variables and function calls"
+                    >Template System:
+                </label>
+                <item-search-field
+                    [service]="system_service"
+                    [(ngModel)]="template_system"
+                ></item-search-field>
+            </div>
         </section>
         <header>
-            <div class="action" *ngIf="model.selected_system">
-                <button widget format="mini-action" (tapped)="addCondition()">
-                    <i class="material-icons">add</i>
+            <div class="action">
+                <button mat-icon-button [disabled]="!template_system" (tapped)="addCondition()">
+                    <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
                 </button>
             </div>
             <div class="text">Conditions</div>
         </header>
         <section>
-            <div class="list" *ngIf="model.condtions">
-
-            </div>
-            <div class="info-block" *ngIf="!model.conditions">
-                <div class="text">No conditions for trigger</div>
+            <div
+                class="list"
+                *ngIf="comparisons.length || time_dependents.length; else no_conditions"
+            >
+                <div class="header">Variable Comparison Condtions</div>
+                <div class="group comparisons">
+                    <div
+                        class="item"
+                        *ngFor="let comparison of comparisons; let i = index; trackBy:i"
+                    >
+                        <div class="handle"></div>
+                        <div class="details">
+                            {{ comparison.left | json }} {{ comparison.operator }} {{
+                            comparison.right | json }}
+                        </div>
+                        <button
+                            mat-icon-button
+                            [disabled]="!template_system"
+                            (tapped)="editCondition(comparison)"
+                        >
+                            <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
+                        </button>
+                        <button mat-icon-button (tapped)="confirmRemoveCondition(comparison)">
+                            <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
+                        </button>
+                    </div>
+                </div>
+                <div class="header">Time Dependent Conditions</div>
+                <div class="group time-dependents">
+                    <div
+                        class="item"
+                        *ngFor="let time of time_dependents; let i = index; trackBy:i"
+                    >
+                        <div class="handle"></div>
+                        <div class="details">
+                            {{ time.type === 'at' ? 'At time' : 'CRON' }} {{ time.type === 'at' ?
+                            time.time : time.cron }}
+                        </div>
+                        <button
+                            mat-icon-button
+                            [disabled]="!template_system"
+                            (tapped)="editCondition(time)"
+                        >
+                            <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
+                        </button>
+                        <button mat-icon-button (tapped)="confirmRemoveCondition(time)">
+                            <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
         <header>
-            <div class="action" *ngIf="model.selected_system">
-                <button widget format="mini-action" (tapped)="addAction()">
-                    <i class="material-icons">add</i>
+            <div class="action">
+                <button mat-icon-button [disabled]="!template_system" (tapped)="addAction()">
+                    <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
                 </button>
             </div>
             <div class="text">Actions</div>
         </header>
         <section>
-            <div class="list" *ngIf="model.actions">
-
-            </div>
-            <div class="info-block" *ngIf="!model.actions">
-                <div class="text">No actions for trigger</div>
+            <div class="list" *ngIf="functions.length || mailers.length; else no_actions">
+                <div class="header">Function Call Actions</div>
+                <div
+                    class="group functions"
+                    cdkDropList
+                    (cdkDropListDropped)="confirmReorder('function', $event)"
+                >
+                    <div
+                        class="item"
+                        *ngFor="let action of functions; let i = index; trackBy:i"
+                        cdkDrag
+                    >
+                        <div class="handle" cdkDragHandle>
+                            <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
+                        </div>
+                        <div class="details">
+                            {{action.mod}}, {{ action.method }}({{ action.args | json }})
+                        </div>
+                        <button
+                            mat-icon-button
+                            [disabled]="!template_system"
+                            (tapped)="editAction(action)"
+                        >
+                            <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
+                        </button>
+                        <button mat-icon-button (tapped)="confirmRemoveAction(action)">
+                            <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
+                        </button>
+                        <div class="placeholder" *cdkDragPlaceholder></div>
+                    </div>
+                </div>
+                <div class="header">Email Actions</div>
+                <div
+                    class="group emails"
+                    cdkDropList
+                    (cdkDropListDropped)="confirmReorder('mailer', $event)"
+                >
+                    <div
+                        class="item"
+                        *ngFor="let action of mailers; let i = index; trackBy:i"
+                        cdkDrag
+                    >
+                        <div class="handle" cdkDragHandle>
+                            <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
+                        </div>
+                        <div class="details">
+                            <span [matTooltip]="action.emails | formatList"
+                                >{{ action.emails.length }} Address{{ action.emails.length === 1 ?
+                                '' : 'es' }}</span
+                            >
+                            | Body Length: {{ action.content.length }}
+                        </div>
+                        <button
+                            mat-icon-button
+                            [disabled]="!template_system"
+                            (tapped)="editAction(action)"
+                        >
+                            <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
+                        </button>
+                        <button mat-icon-button (tapped)="confirmRemoveAction(action)">
+                            <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
+                        </button>
+                        <div class="placeholder" *cdkDragPlaceholder></div>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
 </div>
+<ng-template #no_conditions>
+    <div class="info-block">
+        <div class="text">No condtions for trigger</div>
+    </div>
+</ng-template>
+<ng-template #no_actions>
+    <div class="info-block">
+        <div class="text">No actions for trigger</div>
+    </div>
+</ng-template>

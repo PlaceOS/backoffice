@@ -1,8 +1,19 @@
 <div class="container">
     <div class="btn">
-        <input placeholder="Filter systems">
+        <mat-form-field appearance="outline">
+            <div class="prefix" matPrefix>
+                <app-icon [icon]="{ class: 'backoffice-magnifying-glass' }"></app-icon>
+            </div>
+            <input
+                matInput
+                [(ngModel)]="search_str"
+                (ngModelChange)="search$.next($event)"
+                name="search-filter"
+                placeholder="Filter Systems"
+            />
+        </mat-form-field>
     </div>
-    <div class="list" *ngIf="model.list && model.list.length > 0">
+    <div class="list" *ngIf="system_list && system_list.length > 0; else empty_state">
         <table>
             <thead>
                 <td class="flex">Name</td>
@@ -10,15 +21,24 @@
                 <td class="created">Created</td>
             </thead>
             <tbody>
-                <tr *ngFor="let item of model.list">
-                    <td class="flex"><a (touchrelease)="goto(divigger)">{{item.name}} (<span class="id">{{item.id}}</span>)</a></td>
+                <tr *ngFor="let item of system_list">
+                    <td class="flex">
+                        <a
+                            [routerLink]="['/systems', item.id]"
+                            routerLinkActive="router-link-active"
+                        >
+                            {{item.name}} (<span class="id">{{item.id}}</span>)
+                        </a>
+                    </td>
                     <td class="devices">{{item.installed_ui_devices}}</td>
                     <td class="created">{{item.display?.created}}</td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <div class="info-block" *ngIf="!model.list || model.list.length <= 0">
-        <div class="text">No systems found</div>
-    </div>
 </div>
+<ng-template #empty_state>
+    <div class="info-block">
+        <div class="text">No matching systems found</div>
+    </div>
+</ng-template>

@@ -11,8 +11,16 @@ header {
     font-weight: bold;
     font-size: 1.1em;
     span {
-        font-weight: normal;
-        font-size: .9em;
+        font-size: .7em;
+        color: rgba(#000, .6);
+        padding: 0 1em;
+        font-weight: 300;
+        text-decoration: underline;
+        cursor: pointer;
+        transition: color 200ms;
+        &:hover {
+            color: rgba(#000, .85);
+        }
     }
 }
 

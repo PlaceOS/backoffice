@@ -9,6 +9,14 @@
     margin-top: .5em;
 }
 
+mat-form-field {
+    width: 100%;
+
+    app-icon {
+        font-size: 1.25em;
+    }
+}
+
 
 .table-row {
     .devices,

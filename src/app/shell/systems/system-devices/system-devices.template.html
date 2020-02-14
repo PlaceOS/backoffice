@@ -1,13 +1,19 @@
-<div class="container">
+<div class="container" *ngIf="item">
     <section class="select">
-        <button widget (tapped)="newDevice()">Add new</button>
+        <button mat-button (tapped)="newDevice()">Add new</button>
         <div class="dropdown">
-            <engine-item-dropdown [service]="model.module_service" label="Select device" [(model)]="model.new_module"></engine-item-dropdown>
+            <item-search-field
+                [service]="module_service"
+                [ngModel]="null"
+                (ngModelChange)="new_module = $event.id"
+            ></item-search-field>
         </div>
-        <button widget [disabled]="!model.new_module" (tapped)="addDevice()">Add existing</button>
+        <button mat-button [disabled]="!new_module" (tapped)="addDevice()">
+            Add existing
+        </button>
     </section>
-    <section>
-        <table *ngIf="model.devices && model.devices.length > 0">
+    <section class="device-list">
+        <table *ngIf="devices && devices.length > 0">
             <thead>
                 <td class="small"></td>
                 <td class="small"></td>
@@ -17,30 +23,82 @@
                 <td class="small"></td>
             </thead>
             <tbody cdkDropList (cdkDropListDropped)="drop($event)">
-                <tr *ngFor="let device of (model.devices || [])" a-context-item [content]="context_menu" (event)="event($event, device)" cdkDrag>
+                <tr
+                    *ngFor="let device of (devices || [])"
+                    [context-menu]="menu"
+                    [offset_y]="-64"
+                    (contextAction)="handleContextEvent($event, device)"
+                    cdkDrag
+                >
                     <td class="small">
-                        <div class="action grab" cdkDragHandle><i class="material-icons">reorder</i></div>
+                        <div class="action grab" cdkDragHandle>
+                            <i class="backoffice-select-arrows"></i>
+                        </div>
                     </td>
                     <td class="small">
-                        <i binding [(model)]="device.connected" [sys]="item.id" [mod]="(device.custom_name || device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)" bind="connected"></i>
-                        <div class="state" [class.active]="device.connected"></div>
+                        <i
+                            *ngIf="device && item.id"
+                            binding
+                            [(model)]="device.connected"
+                            [sys]="item.id"
+                            [mod]="device_classes[device.id]"
+                            bind="connected"
+                        ></i>
+                        <div
+                            class="state"
+                            [class.active]="device.connected"
+                            (tapped)="power(device)"
+                        ></div>
                     </td>
-                    <td class="name"><a (touchrelease)="goto(device)">{{device.name}}</a></td>
+                    <td class="name">
+                        <a
+                            [routerLink]="['/devices', device.id]"
+                            routerLinkActive="router-link-active"
+                            >{{device.name}}</a
+                        >
+                    </td>
                     <td class="module">
-                        <a-checkbox [label]="(device.dependency?.module_name || device.dependency?.module) + '_' + (device.role + 1)"></a-checkbox>
+                        <mat-checkbox
+                            [checked]="device_listener[device.id]"
+                            (change)="device_listener[device.id] = $event.checked; toggleDebugEvents(device)"
+                        >
+                            {{ device_classes[device.id] }}
+                        </mat-checkbox>
                     </td>
                     <td class="ip">
-                        <div class="lock"><i class="material-icons" *ngIf="device.tls">lock</i></div>
-                        <a (touchrelease)="goto(device, item.ip)">{{device.ip}}</a>
+                        <div class="lock">
+                            <i class="backoffice-lock" *ngIf="device.tls"></i>
+                        </div>
+                        <a [href]="(device.tls ? 'https://' : 'http://') + device.ip"
+                            >{{device.ip}}</a
+                        >
                     </td>
-                    <td class="small" a-context-item [content]="context_menu" (event)="event($event, device)" touchrelease>
-                        <div class="action"><i class="material-icons">more_vert</i></div>
+                    <td class="small" touchrelease>
+                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                            <app-icon
+                                [icon]="{ class: 'backoffice-dots-three-vertical' }"
+                            ></app-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button
+                                mat-menu-item
+                                *ngFor="let item of menu_options"
+                                (tapped)="handleContextEvent(item, device)"
+                            >
+                                <app-icon [icon]="item.icon"></app-icon>
+                                <div class="text">{{ item.name }}</div>
+                            </button>
+                        </mat-menu>
                     </td>
+                    <td class="placeholder" colspan="6" *cdkDragPlaceholder></td>
                 </tr>
             </tbody>
         </table>
-        <div class="info-block" *ngIf="!model.devices || model.devices.length <= 0">
+        <div class="info-block" *ngIf="!devices || devices.length <= 0">
             <div class="text">No devices for system</div>
         </div>
+    </section>
+    <section class="terminal" *ngIf="is_listening">
+        <a-terminal [content]="device_logs"></a-terminal>
     </section>
 </div>

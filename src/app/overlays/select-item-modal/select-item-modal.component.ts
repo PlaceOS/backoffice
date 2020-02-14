@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { OverlayItem } from '@acaprojects/ngx-overlays';
 import { ApplicationService } from 'src/app/services/app.service';
-import { ADynamicFormField } from '@acaprojects/ngx-dynamic-forms';
-import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
+import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+
+export interface SelectItemModalData {
+    service_name: string;
+}
 
 @Component({
     selector: 'select-item-modal',
@@ -12,38 +15,39 @@ import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
     styleUrls: ['./select-item-modal.component.scss']
 })
 export class SelectItemModalComponent extends BaseDirective implements OnInit {
-    /** Name of the item type */
-    public name: string;
+    /** Emitter for user action on the modal */
+    @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether the item is being editing */
     public edit: boolean;
     /** Item to edit */
     public item: any;
-    /** List of the form fields needed for the item */
-    public fields: ADynamicFormField[];
     /** Whether the item request is being processed */
     public loading: boolean;
 
-    constructor(private _item: OverlayItem, private _service: ApplicationService) {
+    constructor(
+        private _dialog: MatDialogRef<SelectItemModalComponent>,
+        @Inject(MAT_DIALOG_DATA) private _data: SelectItemModalData,
+        private _service: ApplicationService
+    ) {
         super();
     }
 
+    public get name(): string {
+        return this.service.name || this.service._name;
+    }
+
     public get service() {
-        return this.service[this._item.data.service_name];
+        return this._service[this._data.service_name];
     }
 
     public ngOnInit(): void {
-        if (this.service) {
-            this.fields = this.service.getFormFields(this.item, this.edit);
-            this.name = this.service.name;
-        } else {
-            this._item.close();
+        if (!this.service) {
+            this._dialog.close();
         }
     }
 
     public submit() {
         this.loading = true;
-        this._item.post('event', 'Submit');
+        this.event.emit({ reason: 'action', metadata: this.item });
     }
 }
-
-OVERLAY_REGISTER.push({ id: 'select-item', config: { content: SelectItemModalComponent, config: 'modal' } });

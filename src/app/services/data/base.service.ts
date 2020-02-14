@@ -1,6 +1,7 @@
 
 import { BehaviorSubject, Observable, Subscription, Subscriber, Subject } from 'rxjs';
-import { EngineHttpClient, EngineResource } from '@acaprojects/ts-composer';
+import { EngineHttpClient } from '@acaengine/ts-client';
+import { first } from 'rxjs/operators';
 
 import { BaseClass } from '../../shared/globals/base.class';
 import { ApplicationService } from '../app.service';
@@ -29,12 +30,12 @@ export class BaseAPIService<T extends {}> extends BaseClass {
     protected _subscribers: { [key: string]: Subscriber<any> } = {};
     /** Map of promises for Service */
     protected _promises: { [key: string]: Promise<any> } = {};
-    /** Whether the service has initialised or not */
-    protected _initialised: boolean;
     /** Comparison function for service items */
     protected _compare: (a: T, b: T) => boolean = (a, b) => a === b || (a as any).id === (b as any).id;
     /** Default filter function for list method */
     protected _list_filter: (a: T) => boolean = (a) => !!a;
+    /** List of available items */
+    readonly listing = new BehaviorSubject<T[]>([]);
 
     constructor(protected http: EngineHttpClient) {
         super();
@@ -44,17 +45,16 @@ export class BaseAPIService<T extends {}> extends BaseClass {
         this.set('list', []);
     }
 
-    /** Whether service has been initialised */
-    public get initialised() { return this._initialised; }
-
     /**
      * Initailise service
      */
     public init() {
-        if (!this.parent || !this.parent.is_ready) {
+        if (!this.parent) {
             return this.timeout('init', () => this.init());
         }
-        this.load().then(_ => this._initialised = true);
+        this.parent.initialised.pipe(first(_ => _)).subscribe(() => {
+            this.load().then(_ => this._initialised.next(true));
+        });
     }
 
     /**
@@ -163,6 +163,7 @@ export class BaseAPIService<T extends {}> extends BaseClass {
                     () => {
                         if ((!query || (query_params && query_params.update_list)) && result.length > 0 && result[0] instanceof Object) {
                             this.set('list', this.updateList(this.get('list'), result as T[]));
+                            this.listing.next(this.get('list') || []);
                         }
                         resolve(result);
                         this.timeout(key, () => (this._promises[key] = null), cache);
@@ -210,15 +211,15 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      * Open modal for new item
      * @param data
      */
-    public create(prefill?: { [name: string]: any }): Promise<T> {
+    public openNewModal(prefill?: { [name: string]: any }): Promise<T> {
         return new Promise((resolve, reject) => {
-            this.parent.Overlay.open(`item-view`, { data: { service: this, item: prefill } }, (e) => {
-                if (e.type === 'Success') {
-                    resolve(e.data.result);
-                } else {
-                    reject();
-                }
-            });
+            // this.parent.Overlay.open('edit-item', { data: { service: this, item: prefill } }, (e) => {
+            //     if (e.type === 'finish') {
+            //         resolve(e.data.item as T);
+            //     } else {
+            //         reject();
+            //     }
+            // });
         });
     }
 

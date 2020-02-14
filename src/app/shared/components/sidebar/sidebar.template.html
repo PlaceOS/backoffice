@@ -1,52 +1,55 @@
 <div class="container">
     <header>
-        <div class="heading">{{heading}}</div>
+        <div class="heading">{{ heading }}</div>
         <div class="count">
-            <div *ngIf="new">
-                <div class="inline" a-tooltip name="dark" [content]="info" [hover]="true">
-                    {{total || 0}}<span *ngIf="licenses"> of {{licenses || '∞'}}</span>
+            <div>
+                <div class="inline" [matTooltip]="heading + ' count / License count'">
+                    {{ total || 0 }} of {{ (search ? grand_total : licenses) || '∞' }}
                 </div>
             </div>
-            <ng-template #info>
-                <div class="tooltip">
-                    {{heading}} count / License count
-                </div>
-            </ng-template>
         </div>
-        <div class="add" *ngIf="new && (total < licenses || !licenses)" (touchrelease)="event.emit({ type: 'new' })"
-            click-responder>
-            <i class="material-icons">add</i>
+        <div class="add" *ngIf="new && (total < licenses || !licenses)" (click)="post('new')">
+            <i class="backoffice-plus"></i>
         </div>
-        <div class="error" *ngIf="new && (total >= licenses && licenses)" a-tooltip name="dark" [content]="error"
-            [hover]="true">
-            <i class="material-icons">error</i>
-            <ng-template #error>
-                <div class="tooltip">
-                    Exceeded quota! No new item can be created<br>
-                    until the total is below you license count.
-                </div>
-            </ng-template>
+        <div
+            class="error"
+            *ngIf="new && (total >= licenses && licenses)"
+            matTooltip="
+            Exceeded quota! No new item can be created
+            until the total is below you license count."
+        >
+            <i class="backoffice-warning"></i>
         </div>
-        <div class="search" (touchrelease)="close ? event.emit({ type: 'close' }) : ''">
-            <i class="material-icons">{{ close ? 'close' : 'list'}}</i>
-        </div>
+        <button mat-icon-button class="mobile-only" (touchrelease)="event.emit({ type: 'toggle' })">
+            <app-icon [icon]="{ class: 'backoffice-' + (close ? 'cross' : 'list') }"></app-icon>
+        </button>
     </header>
     <section class="search">
         <div class="input">
-            <input [(ngModel)]="search" (ngModelChange)="searching()" [placeholder]="'Filter ' + lowercase_heading">
+            <input
+                [(ngModel)]="search"
+                (ngModelChange)="searching()"
+                [placeholder]="'Filter ' + lowercase_heading"
+            />
         </div>
     </section>
-    <section class="content">
+    <section class="content" [class.scroll]="is_scrolled">
         <ng-content></ng-content>
     </section>
     <section class="list">
         <ng-container *ngIf="list">
-            <cdk-virtual-scroll-viewport itemSize="48" (scrolledIndexChange)="atBottom()">
-                <ng-container *cdkVirtualFor="let item of items | async">
-                    <a [routerLink]="[route, item.id, 'about']" routerLinkActive="active">
-                        <div #list_item class="item" [title]="item?.custom_name || item?.name || item">
-                            <div class="text">{{item?.custom_name || item?.name || item}}</div>
-                            <app-icon [icon]="{ type: 'icon', class: 'material-icons', content: 'done' }"></app-icon>
+            <cdk-virtual-scroll-viewport itemSize="48" (scroll)="is_scrolled" (scrolledIndexChange)="atBottom()">
+                <ng-container *cdkVirtualFor="let item of items | async; trackBy:trackByFn">
+                    <a [routerLink]="[route, item.id]" routerLinkActive="active">
+                        <div
+                            #list_item
+                            class="item"
+                            [title]="item?.custom_name || item?.name || item"
+                        >
+                            <div class="text">{{ item?.custom_name || item?.name || item }}</div>
+                            <app-icon
+                                [icon]="{ type: 'icon', class: 'backoffice-check' }"
+                            ></app-icon>
                         </div>
                     </a>
                 </ng-container>
@@ -54,11 +57,11 @@
         </ng-container>
         <div class="info-block center" *ngIf="!loading && (!list || !list.length)">
             <div class="icon">
-                <i class="material-icons">close</i>
+                <i class="backoffice-cross"></i>
             </div>
-            <div class="text">{{ !search ? 'No ' + lowercase_heading : 'No matches found'}}</div>
+            <div class="text">{{ !search ? 'No ' + lowercase_heading : 'No matches found' }}</div>
             <div class="btn" *ngIf="new">
-                <button widget (tapped)="event.emit({ type: 'new' })">Add new {{lowercase_heading}}</button>
+                <button mat-button (click)="post('new')">Add new {{ lowercase_heading }}</button>
             </div>
         </div>
     </section>

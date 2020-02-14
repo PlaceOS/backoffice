@@ -17,6 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -31,7 +32,12 @@
               "src/favicon.ico",
               "src/assets",
               "src/manifest.webmanifest",
-              "src/oauth-resp.html"
+              "src/oauth-resp.html",
+              {
+                "glob": "**/*",
+                "input": "node_modules/monaco-editor/min/",
+                "output": "./assets/monaco/"
+              }
             ],
             "styles": [
               "src/styles.scss"
@@ -60,6 +66,10 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
                 }
               ],
               "serviceWorker": true,
@@ -71,7 +81,8 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "browserTarget": "ngx-backoffice:build",
-            "proxyConfig": "config/proxy.conf.js"
+            "proxyConfig": "config/proxy.conf.js",
+            "host": "0.0.0.0"
           },
           "configurations": {
             "production": {
@@ -100,7 +111,12 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              {
+                "glob": "**/*",
+                "input": "node_modules/monaco-editor/min/",
+                "output": "./assets/monaco/"
+              }
             ],
             "styles": [
               "src/styles.scss"
@@ -136,5 +152,8 @@
       }
     }
   },
-  "defaultProject": "ngx-backoffice"
+  "defaultProject": "ngx-backoffice",
+  "cli": {
+    "analytics": false
+  }
 }

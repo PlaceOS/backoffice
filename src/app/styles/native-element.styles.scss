@@ -1,7 +1,8 @@
 
 @import 'shared.styles';
 
-input {
+input,
+textarea {
     font-size: 1em;
     min-width: 100%;
     padding: .5em;
@@ -22,6 +23,12 @@ input {
 
 table {
     width: 100%;
+
+    .duo {
+        > * {
+            display: inline-block;
+        }
+    }
 }
 
 thead {
@@ -55,4 +62,8 @@ td {
         text-align: center;
         vertical-align: middle;
     }
+}
+
+a {
+    color: rgba($font-dark, .87);
 }

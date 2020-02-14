@@ -1,11 +1,9 @@
-<div class="container" #container [@show] [style.top]="top + 'px'" [class.right]="right">
-    <ng-container *ngIf="menu_items">
-        <div class="item" *ngFor="let item of menu_items" (touchrelease)="post(item)">
-            <div class="icon">
-                <i *ngIf="item.icon && item.icon.class" [class]="item.icon.class">{{item.icon.value}}</i>
-                <img *ngIf="item.icon && item.icon.src" [src]="item.icon.src">
-            </div>
-            <div class="text">{{item?.name}}</div>
-        </div>
-    </ng-container>
+<ng-content></ng-content>
+<div
+    class="context-placeholder"
+    #container
+    [style.top]="position.top + 'px'"
+    [style.left]="position.left + 'px'"
+    [matMenuTriggerFor]="menu"
+>
 </div>

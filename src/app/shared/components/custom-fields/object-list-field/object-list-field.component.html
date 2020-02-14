@@ -1,0 +1,32 @@
+<div class="object-list" *ngIf="fields && fields.length">
+    <div class="header row" *ngIf="active_list && active_list.length">
+        <div class="field" *ngFor="let field of fields" [attr.name]="field">
+            {{ field }}
+        </div>
+        <div class="gap"></div>
+    </div>
+    <div class="row" *ngFor="let item of active_list">
+        <div class="field" *ngFor="let field of fields" [attr.name]="field">
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    [name]="field"
+                    [placeholder]="field"
+                    [(ngModel)]="item[field]"
+                    (ngModelChange)="setValue(active_list)"
+                />
+            </mat-form-field>
+        </div>
+        <button mat-icon-button (tapped)="removeRow(item)">
+            <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+        </button>
+    </div>
+    <div class="row footer">
+        <button mat-button type="button" (tapped)="addRow()">
+            <div class="contents">
+                <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
+                <div class="text">New Item</div>
+            </div>
+        </button>
+    </div>
+</div>

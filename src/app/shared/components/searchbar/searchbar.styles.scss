@@ -20,14 +20,14 @@ searchbar:host {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: .1em .75em;
+    padding: 2px 0;
     background-color: rgba(#000, .2);
     caret-color: $color-primary;
     color: #fff;
     min-height: $height;
     height: $height;
     border-radius: 4px;
-    box-shadow: 0 1px 3px 0 rgba(#000, 0), 0 1px 1px 0 rgba(#000, 0), 0 2px 1px -1px rgba(#000, 0);
+    @include box-shadow(0);
     transition: width 300ms, color 300ms, background-color 300ms, box-shadow 300ms;
 
     @include respond-to(mobile) {
@@ -44,21 +44,21 @@ searchbar:host {
 
         &::placeholder {
             transition: color 300ms;
-            color: rgba(#fff, .2);
+            color: rgba(#fff, .35);
         }
     }
 
     &.focus {
         color: rgba(#000, .87);
         background-color: #fff;
-        box-shadow: 0 1px 3px 0 rgba(#000, .2), 0 1px 1px 0 rgba(#000, .14), 0 2px 1px -1px rgba(#000, .12);
+        @include box-shadow;
 
         @include respond-to(mobile) {
             position: absolute;
             right: 0;
             width: calc(100vw - 5em);
-            min-height: $height - .5em;
-            height: $height - .5em;
+            min-height: $height - .25em;
+            height: $height - .25em;
         }
         .input {
             @include respond-to(mobile) {
@@ -94,45 +94,5 @@ input {
     color: rgba(#000, .87);
     border: none;
     width: 100%;
-    padding: .5em;
-}
-
-img {
-    position: absolute;
-    top: .4em;
-    left: .4em;
-    height: 1.5em;
-    width: 1.5em;
-}
-
-.icon {
-    height: 1.2em;
-    width: 1.2em;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5em;
-
-    &:not(:first-child) {
-        @include respond-to(mobile) {
-            display: none;
-        }
-    }
-
-    &.close {
-        color: rgba(#000, .54);
-
-        &:hover {
-            color: rgba(#000, .87);
-        }
-    }
-
-    .active {
-        color: $color-primary;
-    }
-
-    &.active {
-        color: $color-primary;
-    }
+    padding: .5em 0;
 }

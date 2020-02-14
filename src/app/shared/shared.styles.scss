@@ -14,7 +14,7 @@ $pending: #ff8f00;
 $pending-light: #ffc046;
 $pending-dark: #c56000;
 
-$error: #d32f2f;
+$error: #f44336;
 $error-light: #ff6f60;
 $error-dark: #ab000d;
 
@@ -38,7 +38,7 @@ $background-dark: #000a12;
 ||   Fonts   ||
 \*===========*/
 
-$font: "Roboto Slab", "Roboto", "Verdana", "Helvetica Neue", Arial, sans-serif;
+$font: "Roboto", "Verdana", "Helvetica Neue", Arial, sans-serif;
 $heading-font: $font;
 $mono-font: "Fira Code", monospace;
 
@@ -56,6 +56,12 @@ $header-height: 4em;
 /*============*\
 ||   Mixins   ||
 \*============*/
+
+@mixin hide-text-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 @mixin box-shadow($depth: 1, $spread: 1) {
     box-shadow: 0 (1px * $spread) (3px * $spread) 0 rgba(#000, .2 * $depth),

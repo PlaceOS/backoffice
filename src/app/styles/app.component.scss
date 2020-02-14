@@ -1,6 +1,7 @@
 @import 'shared.styles';
 @import "~material-design-icons/iconfont/material-icons.css";
 @import '~firacode/distr/fira_code.css';
+@import '../../custom/style.css';
 
 html,
 body {
@@ -27,6 +28,16 @@ body {
 
 span.highlight {
     color: $color-primary;
+}
+
+.monaco-editor {
+    * {
+        font-family: 'Fira Code', monospace;
+    }
+}
+
+.mono {
+    font-family: 'Fira Code', monospace;
 }
 
 /*=======================*\

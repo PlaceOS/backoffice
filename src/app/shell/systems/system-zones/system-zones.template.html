@@ -1,33 +1,48 @@
-<div class="container">
+<div class="container" *ngIf="item">
     <div class="settings">
         <section class="select">
             <div class="dropdown">
-                <engine-item-dropdown [service]="model.zone_service" label="Zone" [(model)]="model.new_zone"></engine-item-dropdown>
+                <item-search-field
+                    [service]="zone_service"
+                    [ngModel]="null"
+                    (ngModelChange)="new_zone = $event.id"
+                ></item-search-field>
             </div>
-            <div class="btn"><button widget [disabled]="!model.new_zone" (tapped)="joinZone()">Join zone</button></div>
+            <button mat-button [disabled]="!new_zone" (tapped)="joinZone()">Join zone</button>
         </section>
         <section>
-            <table *ngIf="model.zones && model.zones.length > 0">
+            <table *ngIf="zones && zones.length > 0">
                 <thead>
                     <td class="small"></td>
                     <td class="name">Name</td>
                     <td class="description">Description</td>
-                    <td *ngIf="model.zones.length > 1" class="small"></td>
+                    <td *ngIf="zones.length > 1" class="small"></td>
                 </thead>
                 <tbody cdkDropList (cdkDropListDropped)="drop($event)">
-                    <tr *ngFor="let zone of model.zones" cdkDrag>
+                    <tr *ngFor="let zone of zones" cdkDrag>
                         <td class="small">
-                            <div class="action grab" cdkDragHandle><i class="material-icons">reorder</i></div>
+                            <div class="action grab" cdkDragHandle>
+                                <i class="backoffice-select-arrows"></i>
+                            </div>
                         </td>
-                        <td class="name"><a (touchrelease)="goto(zone)">{{zone.name}}</a></td>
+                        <td class="name">
+                            <a
+                                [routerLink]="['/zones', zone.id]"
+                                routerLinkActive="router-link-active"
+                                >{{zone.name}}</a
+                            >
+                        </td>
                         <td class="description">{{zone.description}}</td>
-                        <td *ngIf="model.zones.length > 1" class="small">
-                            <div class="action"><i class="material-icons">exit_to_app</i></div>
+                        <td *ngIf="zones.length > 1" class="small">
+                            <button mat-icon-button (tapped)="removeZone(zone)">
+                                <i class="backoffice-publish"></i>
+                            </button>
                         </td>
+                        <td class="placeholder" colspan="6" *cdkDragPlaceholder></td>
                     </tr>
                 </tbody>
             </table>
-            <div class="info-block" *ngIf="!model.zones || model.zones.length <= 0">
+            <div class="info-block" *ngIf="!zones || zones.length <= 0">
                 <div class="text">No zones for system</div>
             </div>
         </section>

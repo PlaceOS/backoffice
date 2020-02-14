@@ -1,29 +1,35 @@
 <div class="container">
     <section class="select">
-        <button widget>Add new</button>
+        <button mat-button (tapped)="newAuthSource()">Add new</button>
     </section>
     <section>
-        <div class="list" *ngIf="model.list && model.list.length > 0">
+        <div class="list" *ngIf="auth_sources && auth_sources.length > 0; else no_auth_sources">
             <table>
                 <thead>
                     <td class="name">Name</td>
-                    <td class="flex">URL</td>
+                    <td class="flex">Type</td>
                     <td class="duo"></td>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let item of model.list">
+                    <tr *ngFor="let item of auth_sources">
                         <td class="name">{{item.name}}</td>
-                        <td class="flex">{{item.redirect}}</td>
+                        <td class="flex">{{source_types[item.id]}}</td>
                         <td class="duo">
-                            <div class="action"><i class="material-icons">edit</i></div>
-                            <div class="action"><i class="material-icons">delete</i></div>
+                            <button mat-icon-button (tapped)="editAuthSource(item)">
+                                <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+                            </button>
+                            <button mat-icon-button (tapped)="deleteAuthSource(item)">
+                                <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+                            </button>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div class="info-block" *ngIf="!model.list || model.list.length <= 0">
-            <div class="text">No authentication sources found</div>
-        </div>
     </section>
 </div>
+<ng-template #no_auth_sources>
+    <div class="info-block">
+        <div class="text">No authentication sources found</div>
+    </div>
+</ng-template>

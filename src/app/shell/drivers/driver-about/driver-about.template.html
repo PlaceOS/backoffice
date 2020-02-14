@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="item">
     <section>
         <table>
             <thead>
@@ -14,10 +14,10 @@
         </table>
     </section>
     <section>
-        <button widget>Reload Modules</button>
+        <button mat-button (tapped)="reloadDriver()">Reload Modules</button>
     </section>
     <header>Settings</header>
     <section>
-        <settings-display [model]="item?.settings"></settings-display>
+        <settings-form-field [ngModel]="settings" [readonly]="true"></settings-form-field>
     </section>
 </div>

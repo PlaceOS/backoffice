@@ -1,0 +1,91 @@
+<div class="user form" *ngIf="form">
+    <form [formGroup]="form">
+        <!--  fake fields are a workaround for chrome/opera autofill getting the wrong fields -->
+        <input id="email" style="display:none" type="text" name="fakeusernameremembered">
+        <input id="password" style="display:none" type="password" name="fakepasswordremembered">
+        <div class="field" *ngIf="form.controls.name">
+            <label
+                for="system-name"
+                [class.error]="form.controls.name.invalid && form.controls.name.touched"
+                >Name<span>*</span>:</label
+            >
+            <mat-form-field appearance="outline">
+                <input matInput name="name" placeholder="Name" formControlName="name" required />
+                <mat-error *ngIf="form.controls.name.invalid">System name is required</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.email">
+            <label
+                for="useremail"
+                [class.error]="form.controls.email.invalid && form.controls.email.touched"
+                >Email<span>*</span>:</label
+            >
+            <mat-form-field appearance="outline">
+                <input matInput name="useremail" placeholder="Email" formControlName="email" autocomplete="nope" />
+                <mat-error *ngIf="form.controls.email.invalid">A valid email is required</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.staff_id">
+            <label
+                for="staff-id"
+                [class.error]="form.controls.staff_id.invalid && form.controls.staff_id.touched"
+                >Card Number:</label
+            >
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="staff-id"
+                    placeholder="Card Number"
+                    formControlName="staff_id"
+                />
+                <mat-error *ngIf="form.controls.staff_id.invalid"
+                    >A valid Card Number is required</mat-error
+                >
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.support">
+            <mat-checkbox name="support" formControlName="support">Support</mat-checkbox>
+        </div>
+        <div class="field" *ngIf="form.controls.sys_admin">
+            <mat-checkbox name="sys_admin" formControlName="sys_admin">System Admin</mat-checkbox>
+        </div>
+        <div class="field" *ngIf="form.controls.staff_id">
+            <label
+                for="new-password"
+                [class.error]="form.controls.password.invalid && form.controls.password.touched"
+                >Password:</label
+            >
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="new-password"
+                    autocomplete="new-password"
+                    type="password"
+                    placeholder="Password"
+                    formControlName="password"
+                />
+                <mat-error *ngIf="form.controls.password.invalid">Invalid Password</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.confirm_password">
+            <label
+                for="confirm-password"
+                [class.error]="
+                    form.controls.confirm_password.invalid && form.controls.confirm_password.touched
+                "
+                >Confirm Pasword:</label
+            >
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="confirm-password"
+                    placeholder="Confirm Password"
+                    formControlName="confirm_password"
+                />
+                <mat-error *ngIf="form.controls.confirm_password.invalid"
+                    >Passwords don't match</mat-error
+                >
+            </mat-form-field>
+        </div>
+    </form>
+</div>

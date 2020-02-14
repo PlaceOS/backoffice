@@ -1,10 +1,10 @@
 
-import { MockHttpRequestHandlerOptions } from '@acaprojects/ts-composer';
+import { MockHttpRequestHandlerOptions } from '@acaengine/ts-client';
 import { BehaviorSubject } from 'rxjs';
 
 import { padZero } from '../../utilities/general.utilities';
 
-function initialiseGlobals() {
+export function initialiseGlobals() {
     if (!window.control) {
         window.control = {};
     }
@@ -69,8 +69,7 @@ export class BaseMockBackend {
             metadata: list,
             method: 'POST',
             callback: (event) => {
-                list.push({ id: `${id_prefix}-${padZero(list.length, 4)}`, ...(event.body || {}) });
-                console.log(base_url, list[list.length - 1]);
+                list.push({ ...(event.body || {}), id: `${id_prefix}-${padZero(list.length, 4)}` });
                 return list[list.length - 1];
             }
         } as MockHttpRequestHandlerOptions);
@@ -80,7 +79,6 @@ export class BaseMockBackend {
             metadata: list,
             method: 'GET',
             callback: (event) => {
-                console.log('Event:', event);
                 if (event && event.route_params && event.route_params.id) {
                     return list.find(i => i.id === event.route_params.id)
                 }
@@ -100,6 +98,24 @@ export class BaseMockBackend {
                             list.splice(list.indexOf(item), 1, new_item);
                             this.updateOtherEndpoints(list);
                             return new_item;
+                        }
+                    }
+                }
+                return null;
+            }
+        } as MockHttpRequestHandlerOptions);
+        // Mock for show PUT
+        window.control.handlers.push({
+            path: `${base_url}/:id`,
+            metadata: list,
+            method: 'DELETE',
+            callback: (event) => {
+                if (event && event.route_params && event.route_params.id) {
+                    for (const item of list) {
+                        if (item.id === event.route_params.id) {
+                            list.splice(list.indexOf(item), 1);
+                            this.updateOtherEndpoints(list);
+                            return {};
                         }
                     }
                 }

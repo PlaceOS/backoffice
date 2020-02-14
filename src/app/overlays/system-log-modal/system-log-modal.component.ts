@@ -1,10 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { OverlayItem } from '@acaprojects/ngx-overlays';
+import { Component, OnInit, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
 import { IEngineLogEntry } from 'src/app/services/data/logs.service';
-import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
+
+export interface SystemLogModalData {
+    /** ID of the system to show the logs for */
+    sys_id: string;
+}
 
 @Component({
     selector: 'system-log-modal',
@@ -20,24 +24,30 @@ export class SystemLogModalComponent extends BaseDirective implements OnInit {
     public loading: boolean;
     /**  */
     public name: string;
+    /** Whether the modal is closing */
+    public closing: boolean;
 
-    constructor(private _item: OverlayItem, private _service: ApplicationService) {
+    constructor(
+        private _dialog: MatDialogRef<SystemLogModalComponent>,
+        @Inject(MAT_DIALOG_DATA) private _data: SystemLogModalData,
+        private _service: ApplicationService
+    ) {
         super();
     }
 
     public ngOnInit(): void {
-        this.id = this._item.data.sys_id;
+        this.id = this._data.sys_id;
         if (this.id) {
             this.loading = true;
             this._service.SystemLogs.query({ limit: 500, id: this.id }).then((list: IEngineLogEntry[]) => {
                 this.logs = list.sort((a, b) => b.created - a.created);
             }, () => {
+                this._dialog.close();
                 this._service.notifyError('Error loading logs for system');
             });
         } else {
-            this._item.close();
+            this._dialog.close();
         }
     }
 }
 
-OVERLAY_REGISTER.push({ id: 'system-logs', config: { content: SystemLogModalComponent, config: 'modal' } });

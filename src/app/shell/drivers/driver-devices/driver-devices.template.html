@@ -1,12 +1,21 @@
-<div class="container">
+<div class="container" *ngIf="item">
     <div class="settings">
         <section class="select">
-            <div class="btn">
-                <input placeholder="Filter devices">
-            </div>
+            <mat-form-field appearance="outline">
+                <div class="prefix" matPrefix>
+                    <app-icon [icon]="{ class: 'backoffice-magnifying-glass' }"></app-icon>
+                </div>
+                <input
+                    matInput
+                    [(ngModel)]="search_str"
+                    (ngModelChange)="search$.next($event)"
+                    name="search-filter"
+                    placeholder="Filter Devices"
+                />
+            </mat-form-field>
         </section>
         <section class="list">
-            <table *ngIf="model.list && model.list.length > 0">
+            <table *ngIf="device_list && device_list.length > 0">
                 <thead>
                     <td class="small"></td>
                     <td class="flex">Name</td>
@@ -14,23 +23,26 @@
                     <td class="small"></td>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let item of model.list">
+                    <tr *ngFor="let item of device_list">
                         <td class="small">
                             <div class="state" [class.active]="item.enabled"></div>
+                            <i binding [(model)]="item.enabled" [sys]="item.system.id" [mod]="item.module_name" bind="connected"></i>
                         </td>
-                        <td class="flex"><a (touchrelease)="goto(item)">{{item.name}}</a></td>
+                        <td class="flex">
+                            <a [routerLink]="['/modules', item.id]">{{item.name}}</a>
+                        </td>
                         <td class="system">
-                            <a (touchrelease)="goto(item.system)">
+                            <a [routerLink]="['/systems', item.system.id]">
                                 {{item.system?.name}} (<span class="id">{{item.system?.id}}</span>)
                             </a>
                         </td>
                         <td class="small">
-                            <div class="action"><i class="material-icons">delete</i></div>
+                            <button mat-icon-button (tapped)="removeDevice(item)"><i class="backoffice-trash"></i></button>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <div class="info-block" *ngIf="!model.list || model.list.length <= 0">
+            <div class="info-block" *ngIf="!device_list || device_list.length <= 0">
                 <div class="text">No devices with driver</div>
             </div>
         </section>

@@ -1,10 +1,21 @@
-
-import { Component, OnInit } from '@angular/core';
-import { OverlayItem } from '@acaprojects/ngx-overlays';
+import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
-import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
+import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { generateTriggerActionForm } from 'src/app/shared/utilities/data/triggers.utilities';
+import { EngineTrigger, EngineSystem, TriggerMailer, TriggerFunction } from '@acaengine/ts-client';
+import { FormGroup } from '@angular/forms';
+
+export interface TriggerActionModalData {
+    /** Item to add/update the trigger on */
+    system: EngineSystem;
+    /** Trigger to add/update */
+    trigger: EngineTrigger;
+    /** Trigger Condition to edit */
+    action?: TriggerMailer | TriggerFunction;
+}
 
 @Component({
     selector: 'trigger-action-modal',
@@ -12,80 +23,97 @@ import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
     styleUrls: ['./trigger-action-modal.styles.scss']
 })
 export class TriggerActionModalComponent extends BaseDirective implements OnInit {
+    /** Emitter for events on the modal */
+    @Output() public event = new EventEmitter<DialogEvent>();
+    /** Whether actions are loading */
+    public loading: boolean;
+    /** Form fields for trigger condition */
+    public form: FormGroup;
 
-    public model: any = {};
+    /** Whether the triggers is new or not */
+    public get is_new(): boolean {
+        return !!this._data.action;
+    }
 
-    constructor(private _item: OverlayItem, private _service: ApplicationService) {
+    /** Template system to use for status variable bindings */
+    public get system(): EngineSystem {
+        return this._data.system;
+    }
+
+    /** Template system to use for status variable bindings */
+    public get trigger(): EngineTrigger {
+        return this._data.trigger;
+    }
+
+    constructor(
+        private _dialog: MatDialogRef<TriggerActionModalComponent>,
+        @Inject(MAT_DIALOG_DATA) private _data: TriggerActionModalData,
+        private _service: ApplicationService
+    ) {
         super();
     }
 
     public ngOnInit() {
-        this.model.form = {};
-        this.model.errors = {};
-        this.model.action_types = [
-            { id: 'exec', name: 'Run command' },
-            { id: 'email', name: 'Send email' }
-        ];
+        this.form = generateTriggerActionForm(this._data.action).form;
     }
 
-    public init() {
-        if (this.model.item) {
-            this.model.form = {
-                name: this.model.item.name,
-                tags: this.model.item.tags,
-                description: this.model.item.description,
-                settings: JSON.parse(JSON.stringify(this.model.item.settings || {}))
-            };
+    public save() {
+        this.form.markAllAsTouched();
+        if (
+            (this.form.controls.action_type.value === 'emails' && !this.form.valid) ||
+            (this.form.controls.action_type.value === 'function' && !this.form.value.method_call)
+        ) {
+            return;
         }
-    }
-
-    public validate() {
-        this.model.errors = {};
-        const form = this.model.form || {};
-        this.model.has_errors = Object.keys(this.model.errors).length > 0;
-    }
-
-    public new() {
-        if (this.model.loading) { return; }
-        setTimeout(() => {
-            this.model.loading = true;
-            this._service.Zones.add(this.model.form).then((item) => {
-                this._service.notifySuccess('Successfully added new zone');
-                this.model.id = item.id;
-                this._item.post('event', 'Success');
-            }, () => {
-                this._service.notifyError('Failed to add new zone');
-                this.model.loading = false;
-            });
-        }, 300);
-    }
-
-    public edit() {
-        if (!this.model.item || this.model.loading) { return; }
-        setTimeout(() => {
-            const form = {};
-            for (const k in this.model.form) {
-                if (k === 'settings' && JSON.stringify(this.model.form[k] || {}) !== JSON.stringify(this.model.item[k] || {})) {
-                    form[k] = this.model.form[k];
-                } else if (this.model.form.hasOwnProperty(k) && this.model.form[k] !== this.model.item[k]) {
-                    form[k] = this.model.form[k];
-                }
+        this.loading = true;
+        if (this.form.controls.action_type.value === 'emails') {
+            this.updateMailers();
+        } else {
+            this.updateFunctions();
+        }
+        this.trigger.save().then(
+            item => {
+                this.event.emit({ reason: 'done', metadata: { trigger: item } });
+                this._service.notifySuccess(`Successfully ${this.is_new ? 'added' : 'updated'} condition to trigger`);
+                this._dialog.close();
+            },
+            err => {
+                this.trigger.clearPendingChanges();
+                this.loading = false;
+                this._service.notifyError(
+                    `Error ${this.is_new ? 'adding' : 'updating'} condition to trigger. Error: ${err.message || err}`
+                );
             }
-            if (Object.keys(form).length <= 0) {
-                this._service.notifyInfo('No changes have been made');
-            } else {
-                this.model.loading = true;
-                this._service.Zones.update(this.model.item.id, form).then((item) => {
-                    this._service.notifySuccess(`Successfully updated zone "${this.model.item.id}"`);
-                    this.model.id = item.id;
-                    this._item.post('event', 'Success');
-                }, () => {
-                    this._service.notifyError(`Failed to update zone "${this.model.item.id}"`);
-                    this.model.loading = false;
-                });
-            }
-        }, 300);
+        );
+    }
+
+    private updateMailers() {
+        const mailers = this.trigger.actions.mailers;
+        const new_mailer = {
+            emails: this.form.value.emails,
+            content: this.form.value.content
+        };
+        if (this._data.action) {
+            const old_mailer = JSON.stringify(this._data.action);
+            const index = mailers.findIndex(
+                a_mailer => JSON.stringify(a_mailer) === old_mailer
+            );
+            mailers.splice(index, 1, new_mailer);
+        } else {
+            mailers.push(new_mailer);
+        }
+        this.trigger.storePendingChange('actions', { ...this.trigger.actions, mailers });
+    }
+
+    private updateFunctions() {
+        const functions = this.trigger.actions.functions;
+        if (this._data.action) {
+            const old_function = JSON.stringify(this._data.action);
+            const index = functions.findIndex(fn => JSON.stringify(fn) === old_function);
+            functions.splice(index, 1, this.form.value.method_call);
+        } else {
+            functions.push(this.form.value.method_call);
+        }
+        this.trigger.storePendingChange('actions', { ...this.trigger.actions, functions });
     }
 }
-
-OVERLAY_REGISTER.push({ id: 'trigger-action', config: { content: TriggerActionModalComponent, config: 'modal' } });

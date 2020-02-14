@@ -1,10 +1,17 @@
-
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { EngineModule } from '@acaprojects/ts-composer';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { EngineModule } from '@acaengine/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
+import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
+import {
+    ConfirmModalComponent,
+    ConfirmModalData,
+    CONFIRM_METADATA
+} from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
     selector: 'app-devices',
@@ -14,21 +21,102 @@ import { BaseRootComponent } from '../../shared/components/base-root.component';
 export class DevicesComponent extends BaseRootComponent<EngineModule> {
     /** Number of systems for the active device */
     public system_count: number;
+    /** Whether the list of devices should show only the disconnected devices */
+    public only_disconnected: boolean;
 
-    constructor(protected service: ApplicationService, protected route: ActivatedRoute) {
-        super(service, route);
-        (this as any).type = 'device';
-        (this as any).service_name = 'Modules';
-        (this as any).cmp_route = 'devices';
+    constructor(
+        protected _service: ApplicationService,
+        protected _route: ActivatedRoute,
+        protected _router: Router,
+        private _dialog: MatDialog
+    ) {
+        super(_service, _route, _router);
+        this.service = this._service.Modules;
     }
 
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, module_id: this.item.id };
-            // Get system count
-        this.service.Systems.query(query)
-            .then(() => {
-                this.system_count = this.service.Systems.last_total;
-                console.log('Last total:', this.system_count);
+        // Get system count
+        this._service.Systems.query(query).then(() => {
+            this.system_count = this._service.Systems.last_total;
+        });
+    }
+
+    /**
+     * Open the modal to create a new system
+     */
+    protected new() {
+        const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+            height: 'auto',
+            width: 'auto',
+            maxHeight: 'calc(100vh - 2em)',
+            maxWidth: 'calc(100vw - 2em)',
+            data: {
+                item: new EngineModule(this._service.Modules, {}),
+                service: this._service.Modules
+            }
+        });
+        ref.componentInstance.event.subscribe((event) => {
+            if (event.reason === 'done') {
+                this._router.navigate(['/devices', event.metadata.item.id]);
+            }
+        });
+    }
+
+    /**
+     * Open the modal to create a new system
+     */
+    protected edit() {
+        if (this.item) {
+            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+                height: 'auto',
+                width: 'auto',
+                maxHeight: 'calc(100vh - 2em)',
+                maxWidth: 'calc(100vw - 2em)',
+                data: {
+                    item: this.item,
+                    service: this._service.Modules
+                }
             });
+
+        }
+    }
+
+    protected delete() {
+        if (this.item) {
+            const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+                ConfirmModalComponent,
+                {
+                    ...CONFIRM_METADATA,
+                    data: {
+                        title: `Delete device`,
+                        content: `<p>Are you sure you want delete this device?</p><p>Deleting this will device <strong>immediately</strong> remove it from any system associated with it</p>`,
+                        icon: { type: 'icon', class: 'backoffice-trash' }
+                    }
+                }
+            );
+            this.subscription(
+                'delete_confirm',
+                ref.componentInstance.event.subscribe((event: DialogEvent) => {
+                    if (event.reason === 'done') {
+                        ref.componentInstance.loading = 'Deleting device...';
+                        this.item.delete().then(
+                            () => {
+                                this._service.notifySuccess(
+                                    `Successfully deleted device "${this.item.name}".`
+                                );
+                                this._router.navigate(['/modules']);
+                                ref.close();
+                                this.unsub('delete_confirm');
+                            },
+                            err => {
+                                ref.componentInstance.loading = null;
+                                this._service.notifyError(`Error deleting device. Error: ${err}`);
+                            }
+                        );
+                    }
+                })
+            );
+        }
     }
 }
