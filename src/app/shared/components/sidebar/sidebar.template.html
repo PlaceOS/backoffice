@@ -33,12 +33,12 @@
             />
         </div>
     </section>
-    <section class="content">
+    <section class="content" [class.scroll]="is_scrolled">
         <ng-content></ng-content>
     </section>
     <section class="list">
         <ng-container *ngIf="list">
-            <cdk-virtual-scroll-viewport itemSize="48" (scrolledIndexChange)="atBottom()">
+            <cdk-virtual-scroll-viewport itemSize="48" (scroll)="is_scrolled" (scrolledIndexChange)="atBottom()">
                 <ng-container *cdkVirtualFor="let item of items | async; trackBy:trackByFn">
                     <a [routerLink]="[route, item.id]" routerLinkActive="active">
                         <div

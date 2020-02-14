@@ -61,6 +61,18 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     @ViewChild(CdkVirtualScrollViewport)
     private viewport: CdkVirtualScrollViewport;
 
+
+    /** Whether list is has been scrolled from the top */
+    public get is_scrolled(): boolean {
+        if (this.viewport) {
+            const element = this.viewport.elementRef.nativeElement;
+            if (element) {
+                return element.scrollTop > 0;
+            }
+        }
+        return false;
+    }
+
     /** Whether new items for the active module can be created */
     public get new(): boolean {
         if (this.module) {

@@ -80,6 +80,8 @@ section.search {
     padding: .5em 1em;
     width: 100%;
     min-height: 3em;
+    background-color: $background;
+    z-index: 1;
     .input {
         flex: 1;
     }
@@ -89,6 +91,12 @@ section.content {
     width: 100%;
     border-bottom: 2px solid rgba(#fff, .54);
     padding-bottom: .5em;
+    transition: box-shadow 200ms;
+    z-index: 0;
+
+    &.scroll {
+        box-shadow: rgba(0, 0, 0, .60) 0px 2px 6px 0px;
+    }
 }
 
 input {
