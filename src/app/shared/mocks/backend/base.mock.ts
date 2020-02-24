@@ -86,23 +86,31 @@ export class BaseMockBackend {
             }
         } as MockHttpRequestHandlerOptions);
         // Mock for show PUT
+        const handleUpdate = (event) => {
+            if (event && event.route_params && event.route_params.id) {
+                for (const item of list) {
+                    if (item.id === event.route_params.id) {
+                        const new_item = { ...item, ...event.body };
+                        list.splice(list.indexOf(item), 1, new_item);
+                        this.updateOtherEndpoints(list);
+                        return new_item;
+                    }
+                }
+            }
+            return null;
+        };
         window.control.handlers.push({
             path: `${base_url}/:id`,
             metadata: list,
             method: 'PUT',
-            callback: (event) => {
-                if (event && event.route_params && event.route_params.id) {
-                    for (const item of list) {
-                        if (item.id === event.route_params.id) {
-                            const new_item = { ...item, ...event.body };
-                            list.splice(list.indexOf(item), 1, new_item);
-                            this.updateOtherEndpoints(list);
-                            return new_item;
-                        }
-                    }
-                }
-                return null;
-            }
+            callback: handleUpdate
+        } as MockHttpRequestHandlerOptions);
+        // Mock for show PATCH
+        window.control.handlers.push({
+            path: `${base_url}/:id`,
+            metadata: list,
+            method: 'PATCH',
+            callback: handleUpdate
         } as MockHttpRequestHandlerOptions);
         // Mock for show PUT
         window.control.handlers.push({
