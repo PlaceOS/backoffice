@@ -10,7 +10,7 @@ export const ROUTES: Routes = [
     {
         path: ':id', component: DriversComponent, children: [
             { path: 'about', component: DriverAboutComponent },
-            { path: 'about', component: DriverDevicesComponent },
+            { path: 'devices', component: DriverDevicesComponent },
             { path: '**',      redirectTo: 'about' }
         ]
     },
