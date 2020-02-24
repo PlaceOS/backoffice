@@ -1,6 +1,6 @@
 <div class="container" [class.uat]="env !== 'prod'">
     <div class="login-container">
-        <header>ACAEngine Login</header>
+        <header><div class="text">Login</div></header>
         <div class="form" *ngIf="!loading; else load_state">
             <login-form
                 *ngIf="show === 'login'"

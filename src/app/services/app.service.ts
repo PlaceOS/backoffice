@@ -455,6 +455,7 @@ export class ApplicationService extends BaseClass {
         const url = settings.use_domain ? `${protocol}//${host}:${port}` : location.origin;
         const route = settings.route || '';
         const mock = this.setting('mock');
+        const login_locally = location.search.indexOf('login=true') >= 0;
         // Generate configuration object
         const config: ACAEngineOptions = {
             scope: 'public',
@@ -462,7 +463,7 @@ export class ApplicationService extends BaseClass {
             auth_uri: `${url}/auth/oauth/authorize`,
             token_uri: `${url}/auth/token`,
             redirect_uri: `${location.origin}${route}/oauth-resp.html`,
-            handle_login: !settings.local_login,
+            handle_login: !settings.local_login && !login_locally,
             mock
         };
         console.log('Config:', config);

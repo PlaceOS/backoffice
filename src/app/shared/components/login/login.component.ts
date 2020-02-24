@@ -29,9 +29,11 @@ export class LoginComponent extends BaseDirective implements OnInit {
     public ngOnInit() {
         this.show = 'login';
         this.loading = true;
+        const remembered_name = localStorage.getItem('BACKOFFICE.username');
         this.login_form = new FormGroup({
-            username: new FormControl(''),
-            password: new FormControl('')
+            username: new FormControl(remembered_name || ''),
+            password: new FormControl(''),
+            remember: new FormControl(!!remembered_name)
         });
         this._service.initialised.pipe(first(_ => _)).subscribe(() => this.init());
     }
@@ -62,9 +64,20 @@ export class LoginComponent extends BaseDirective implements OnInit {
     }
 
     public login() {
-        this._service.Users.login(this.login_form.value).then(
-            () => null,
-            err => this.login_form.controls.password.setErrors({ invalid: true })
+        const form_values = this.login_form.value;
+        this._service.Users.login({
+            email: form_values.username,
+            password: form_values.password
+        }).then(
+            () => {
+                if (form_values.remember) {
+                    localStorage.setItem('BACKOFFICE.username', form_values.username);
+                }
+            },
+            err => {
+                console.log('Error:', err);
+                this.login_form.controls.password.setErrors({ invalid: true });
+            }
         );
     }
 

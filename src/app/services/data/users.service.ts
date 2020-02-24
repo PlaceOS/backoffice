@@ -129,26 +129,24 @@ export class BackofficeUsersService extends EngineUsersService {
      */
     public login(fields: any = {}) {
         return new Promise((resolve, reject) => {
-            this._subjects.state.next('loading');
+            this.state.next('loading');
             const query = toQueryString(fields);
             let headers = new HttpHeaders();
             headers = headers.append('Content-Type', 'application/x-www-form-urlencoded');
-            this.http_unauth.post('/auth/jwt/callback', query, { headers }).subscribe(
+            this.http_unauth.post('/auth/signin', query, { headers }).subscribe(
                 (res: any) => {
-                    if (res.status >= 200 && res.status < 400) {
-                        if (sessionStorage) {
-                            const clientId = Md5.hashStr(`${location.origin}/oauth-resp.html`);
-                            sessionStorage.setItem(`${clientId}_login`, 'true');
-                        }
-                        this._composer.auth.authorise();
-                    } else {
-                        this._subjects.state.next('invalid');
+                    if (sessionStorage) {
+                        const clientId = Md5.hashStr(`${location.origin}/oauth-resp.html`);
+                        sessionStorage.setItem(`${clientId}_login`, 'true');
                     }
-                    resolve();
+                    this._composer.auth.authorise().then((token) => {
+                        console.log('Token:', token);
+                        resolve();
+                    });
                 },
                 err => {
                     if (err.status >= 400) {
-                        this._subjects.state.next('error');
+                        this.state.next('error');
                     } else {
                         if (sessionStorage) {
                             const clientId = Md5.hashStr(`${location.origin}/oauth-resp.html`);
@@ -209,48 +207,5 @@ export class BackofficeUsersService extends EngineUsersService {
                 })
             );
         });
-    }
-
-    /**
-     * Get form fields for the given item
-     * @param item
-     */
-    public getFormFields(item: ServiceItem) {
-        // const fields: ADynamicFormField<any>[] = ([
-        //     { key: 'name', label: 'Name', value: '', type: 'input' },
-        //     {
-        //         key: 'email',
-        //         label: 'Email',
-        //         attributes: { type: 'email' },
-        //         value: '',
-        //         type: 'input',
-        //         required: true,
-        //         validators: [Validators.email]
-        //     },
-        //     { key: 'card_number', label: 'Card Number', value: '', type: 'input' },
-        //     { key: 'sys_admin', label: 'System Admin', value: '', type: 'checkbox' },
-        //     { key: 'support', label: 'Support', value: '', type: 'checkbox' },
-        //     {
-        //         key: 'password',
-        //         label: 'Password',
-        //         attributes: { type: 'password' },
-        //         value: '',
-        //         type: 'input'
-        //     },
-        //     {
-        //         key: 'confirm_password',
-        //         label: 'Confirm Password',
-        //         attributes: { type: 'password' },
-        //         metadata: { match: 'password' },
-        //         value: '',
-        //         type: 'input'
-        //     }
-        // ] as IFormFieldOptions[]).map(i => new ADynamicFormField(i));
-        // /** Initialise fields and change listeners */
-        // for (const field of fields) {
-        //     field.control.setValue(item[field.key]);
-        //     field.control.valueChanges.subscribe(i => (item[field.key] = i));
-        // }
-        // return fields;
     }
 }

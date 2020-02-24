@@ -5,10 +5,7 @@ form {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: .5em;
-    width: 18em;
-    margin: auto;
-    max-width: calc(100vw - 2em);
+    padding: 1em;
 }
 
 .fieldset {
@@ -76,7 +73,9 @@ settings-form-field {
 }
 
 mat-checkbox {
-    margin: .25em;
+    margin: .5em 1em;
+    width: 100%;
+    font-size: 1rem;
 }
 
 input {

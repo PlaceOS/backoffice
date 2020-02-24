@@ -8,14 +8,16 @@
             <label
                 for="username"
                 [class.error]="form.controls.username.invalid && form.controls.username.touched"
-                >Email<span>*</span>:</label
+                >Email:</label
             >
             <mat-form-field appearance="outline">
+                <!-- <app-icon matPrefix [icon]="{ class: 'backoffice-user' }"></app-icon> -->
                 <input
                     matInput
                     name="username"
                     placeholder="Email/Username"
                     formControlName="username"
+                    autocomplete="username"
                 />
             </mat-form-field>
         </div>
@@ -26,12 +28,14 @@
                 >Password:</label
             >
             <mat-form-field appearance="outline">
+                <!-- <app-icon matPrefix [icon]="{ class: 'backoffice-key' }"></app-icon> -->
                 <input
                     matInput
                     name="password"
                     [type]="show_password ? 'text' : 'password'"
                     placeholder="Password"
                     formControlName="password"
+                    autocomplete="current-password"
                 />
                 <app-icon
                     matSuffix
@@ -44,11 +48,12 @@
                 >
             </mat-form-field>
         </div>
-        <div class="forgot" *ngIf="settings.forgotten_password" (tapped)="forgot.emit()">
+        <!-- <mat-checkbox formControlName="remember">Remember username</mat-checkbox> -->
+        <div class="forgot" *ngIf="settings?.forgotten_password" (tapped)="forgot.emit()">
             Forgot?
         </div>
         <div class="options">
-            <button mat-button type="submit" (tapped)="submitted.emit()">Login</button>
+            <button mat-button type="submit" (tapped)="submitted.emit()">Submit</button>
         </div>
     </form>
 </div>
