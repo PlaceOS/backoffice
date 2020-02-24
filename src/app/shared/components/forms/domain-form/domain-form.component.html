@@ -3,27 +3,27 @@
         <div class="fieldset">
             <div class="field" *ngIf="form.controls.name">
                 <label
-                    for="system-name"
+                    for="domain-name"
                     [class.error]="form.controls.name.invalid && form.controls.name.touched"
                     >Name<span>*</span>:</label
                 >
                 <mat-form-field appearance="outline">
                     <input
                         matInput
-                        name="system-name"
-                        placeholder="System Name"
+                        name="domain-name"
+                        placeholder="Domain Name"
                         formControlName="name"
                         required
                     />
                     <mat-error *ngIf="form.controls.name.invalid"
-                        >System name is required</mat-error
+                        >Domain name is required</mat-error
                     >
                 </mat-form-field>
             </div>
-            <div class="field" *ngIf="form.controls.domain">
+            <div class="field" *ngIf="form.controls.dom">
                 <label
                     for="domain"
-                    [class.error]="form.controls.domain.invalid && form.controls.domain.touched"
+                    [class.error]="form.controls.dom.invalid && form.controls.dom.touched"
                     >Domain:</label
                 >
                 <mat-form-field appearance="outline">
@@ -31,9 +31,9 @@
                         matInput
                         name="domain"
                         placeholder="Domain e.g localhost"
-                        formControlName="domain"
+                        formControlName="dom"
                     />
-                    <mat-error *ngIf="form.controls.domain.invalid"
+                    <mat-error *ngIf="form.controls.dom.invalid"
                         >A valid Domain is required</mat-error
                     >
                 </mat-form-field>
