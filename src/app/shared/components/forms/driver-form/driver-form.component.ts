@@ -1,8 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
     EncryptionLevel,
-    EngineDriver,
     EngineRepositoryCommit,
     EngineRepository,
     EngineRepositoriesService
@@ -17,7 +16,7 @@ import { ApplicationService } from 'src/app/services/app.service';
     templateUrl: './driver-form.component.html',
     styleUrls: ['./driver-form.component.scss']
 })
-export class DriverFormComponent extends BaseDirective {
+export class DriverFormComponent extends BaseDirective implements OnChanges {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
     /** Levels of encyption available for the system's settings */
@@ -56,18 +55,23 @@ export class DriverFormComponent extends BaseDirective {
         super();
     }
 
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes.form) {
+            this.initDriver();
+        }
+    }
+
     /**
      * Update the list of available drivers
      * @param repo Repository to grab the drivers for
      */
-    public updateDriverList(repo: EngineRepository) {
-        this._service.Repositories.listDrivers(repo.id).then(list => {
-            this.driver_list = (list || []).map(driver => ({
-                id: driver,
-                name: driver.replace(/\//g, ' > ')
-            }));
-            this.commit_list = [];
-        });
+    public async updateDriverList(repo: EngineRepository) {
+        const list = await this._service.Repositories.listDrivers(repo.id);
+        this.driver_list = (list || []).map(driver => ({
+            id: driver,
+            name: driver.replace(/\//g, ' > ')
+        }));
+        this.commit_list = [];
     }
 
     /**
@@ -100,5 +104,22 @@ export class DriverFormComponent extends BaseDirective {
             this.form.controls.settings_string.setValue(driver.default_settings || '');
             this.form.controls.description.setValue(driver.description || '');
         });
+    }
+
+    /**
+     * Initialise the driver details if set
+     */
+    private initDriver(): void {
+        if (this.form.controls.discovery && this.form.controls.discovery.value) {
+            const value = this.form.controls.discovery.value;
+            this.base_repo = value.repo;
+            this.updateDriverList(this.base_repo).then(() => {
+                this.base_driver =
+                    typeof value.driver === 'string'
+                        ? { id: value.driver, name: value.driver.split('/').join(' > ') }
+                        : value.driver;
+                this.updateCommitList(this.base_driver);
+            });
+        }
     }
 }

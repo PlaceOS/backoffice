@@ -24,7 +24,7 @@ import {
 import { ApplicationService } from 'src/app/services/app.service';
 import { generateModuleFormFields } from 'src/app/shared/utilities/data/modules.utilities';
 import { generateZoneFormFields } from 'src/app/shared/utilities/data/zones.utilites';
-import { generateDriverFormFields } from 'src/app/shared/utilities/data/drivers.utilities';
+import { generateDriverFormFields, DriverInitData } from 'src/app/shared/utilities/data/drivers.utilities';
 import { generateUserFormFields } from 'src/app/shared/utilities/data/users.utilities';
 import { generateDomainFormFields } from 'src/app/shared/utilities/data/domains.utilities';
 import { generateApplicationFormFields } from 'src/app/shared/utilities/data/applications.utilities';
@@ -40,11 +40,13 @@ export interface CreateEditModalData {
     /** Item being worked on */
     item: EngineResource<any>;
     /** Form fields for item */
-    form: any[];
+    form?: any[];
     /** Name of the type of item being worked on */
-    name: string;
+    name?: string;
     /** Whether saving the form details will be handled outside the modal */
     external_save?: boolean;
+    /** Initialisation details for new drivers */
+    discovery?: DriverInitData;
 }
 
 @Component({
@@ -114,7 +116,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
         } else if (this.item instanceof EngineZone) {
             details = generateZoneFormFields(this.item);
         } else if (this.item instanceof EngineDriver) {
-            details = generateDriverFormFields(this.item);
+            details = generateDriverFormFields(this.item, this._data.discovery || null);
         } else if (this.item instanceof EngineUser) {
             details = generateUserFormFields(this.item);
         } else if (this.item instanceof EngineDomain) {

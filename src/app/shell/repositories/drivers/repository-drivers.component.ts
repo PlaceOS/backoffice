@@ -1,8 +1,13 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { EngineRepository } from '@acaengine/ts-client';
+import { EngineRepository, EngineDriver } from '@acaengine/ts-client';
+import { MatDialog } from '@angular/material/dialog';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
+import {
+    ItemCreateUpdateModalComponent,
+    CreateEditModalData
+} from 'src/app/overlays/item-modal/item-modal.component';
 
 @Component({
     selector: 'repository-drivers',
@@ -15,7 +20,7 @@ export class RepositoryDriversComponent extends BaseDirective implements OnChang
     /** List of drivers available in the repository */
     public driver_list: string[] = [];
 
-    constructor(private _service: ApplicationService) {
+    constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
@@ -45,5 +50,27 @@ export class RepositoryDriversComponent extends BaseDirective implements OnChang
             },
             () => null
         );
+    }
+
+    public newDriver(driver: string) {
+        if (this.item.id) {
+            const ref = this._dialog.open<ItemCreateUpdateModalComponent, CreateEditModalData>(
+                ItemCreateUpdateModalComponent,
+                {
+                    height: 'auto',
+                    width: 'auto',
+                    maxHeight: 'calc(100vh - 2em)',
+                    maxWidth: 'calc(100vw - 2em)',
+                    data: {
+                        item: new EngineDriver(this._service.Drivers, {}),
+                        service: this._service.Drivers,
+                        discovery: {
+                            repo: this.item,
+                            driver: driver as any
+                        }
+                    }
+                }
+            );
+        }
     }
 }

@@ -1,16 +1,21 @@
 
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { EngineDriver, EncryptionLevel } from '@acaengine/ts-client';
+import { EngineDriver, EngineRepository, EncryptionLevel } from '@acaengine/ts-client';
 
 import { FormDetails, validateYAML } from './systems.utilities';
 import { HashMap } from '../types.utilities';
 
-export function generateDriverFormFields(driver: EngineDriver): FormDetails {
+export interface DriverInitData {
+    repo: EngineRepository;
+    driver: EngineDriver;
+}
+
+export function generateDriverFormFields(driver: EngineDriver, discovery: DriverInitData = null): FormDetails {
     if (!driver) {
         throw Error('No Driver passed to generate form fields');
     }
     const fields: HashMap<FormControl> = {
-        discovery: new FormControl(null),
+        discovery: new FormControl(discovery),
         name: new FormControl(driver.name || '', [Validators.required]),
         role: new FormControl(driver.role || 99),
         module_name: new FormControl(driver.module_name || '', [Validators.required]),
