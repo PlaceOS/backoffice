@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { AppShellComponent } from './shell/shell.component';
-import { AppAboutComponent } from './shell/about/about.component';
 
 const routes: Routes = [
     { path: '', component: AppShellComponent, children: [
@@ -15,7 +14,7 @@ const routes: Routes = [
         { path: 'triggers', loadChildren: () => import('./shell/triggers/triggers.module').then(m => m.AppTriggersModule) },
         { path: 'users', loadChildren: () => import('./shell/users/users.module').then(m => m.AppUsersModule) },
         { path: 'zones', loadChildren: () => import('./shell/zones/zones.module').then(m => m.AppZonesModule) },
-        { path: 'about', component: AppAboutComponent },
+        { path: 'engine', loadChildren: () => import('./shell/engine/engine.module').then(m => m.AppEngineModule) },
         { path: '**',      redirectTo: 'systems' }
     ] },
     { path: '**',      redirectTo: 'systems' },

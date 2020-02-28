@@ -1,0 +1,15 @@
+<div class="container">
+    <main>
+        <item-display
+            name="test"
+            route="engine"
+            [item]="{ name: 'Engine Admin' }"
+            [has_change]="false"
+            [tabs]="[
+                { id: 'about', name: 'About', icon: { class: 'backoffice-info' } },
+                { id: 'database', name: 'Database', icon: { class: 'backoffice-database' } }
+            ]"
+        >
+        </item-display>
+    </main>
+</div>

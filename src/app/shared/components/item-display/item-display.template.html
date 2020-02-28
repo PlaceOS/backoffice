@@ -29,11 +29,11 @@
         </div>
     </header>
     <main>
-        <div class="tabs" *ngIf="tabs && tabs.length > 1">
+        <div class="tabs">
             <nav mat-tab-nav-bar [class.scroll]="is_scrolled">
                 <a class="tab" mat-tab-link
                     *ngFor="let link of tabs"
-                    [routerLink]="['/' + route, item.id, link.id]"
+                    [routerLink]="item.id ? ['/' + route, item.id, link.id] : ['/' + route, link.id]"
                     routerLinkActive #rla="routerLinkActive"
                     [active]="rla.isActive"
                 >

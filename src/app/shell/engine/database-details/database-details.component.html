@@ -1,0 +1,13 @@
+<div class="">
+    <button mat-button [disabled]="reindexing" (tapped)="reindex()">
+        <ng-container *ngIf="!reindexing; else spinner">Re-index</ng-container>
+    </button>
+</div>
+<div class="">
+    <button mat-button [disabled]="backfilling" (tapped)="backfill()">
+        <ng-container *ngIf="!backfilling; else spinner">Backfill</ng-container>
+    </button>
+</div>
+<ng-template #spinner>
+    <mat-spinner diameter="16"></mat-spinner>
+</ng-template>

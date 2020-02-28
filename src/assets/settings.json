@@ -111,6 +111,15 @@
                         "class": "backoffice-browser",
                         "content": ""
                     }
+                },
+                {
+                    "name": "Engine",
+                    "route": "/engine",
+                    "icon": {
+                        "type": "icon",
+                        "class": "backoffice-classic-computer",
+                        "content": ""
+                    }
                 }
             ],
             "global_search": true
@@ -139,5 +148,6 @@
         "repositories": {
             "can_create": true
         }
-    }
+    },
+    "mock": true
 }

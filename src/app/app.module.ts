@@ -24,6 +24,7 @@ import './shared/mocks';
     declarations: [
         AppComponent,
         ...APP_COMPONENTS
+
     ],
     imports: [
         BrowserModule,
