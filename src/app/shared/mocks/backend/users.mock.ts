@@ -59,8 +59,9 @@ export class MockUsersBackend extends BaseMockBackend {
             id: 'current',
             name: 'ACA Test Robot',
             avatar_url: '',
-            email: 'robot@acaprojects.com'
-        })
+            email: 'robot@acaprojects.com',
+            sys_admin: true
+        });
         this.model.users.sort((a, b) => a.name.localeCompare(b.name));
         this.setupBasicHandlers('api/engine/v2/users', this.model.users, 'user');
         this.state.next(true);
