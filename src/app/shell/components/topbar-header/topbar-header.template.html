@@ -6,10 +6,7 @@
         <div class="block">
             <div *ngIf="logo" class="logo" (tapped)="logo()">
                 <a [routerLink]="['/']">
-                    <img *ngIf="logo.type==='image' || logo.type==='img'" [src]="logo.src" />
-                    <i *ngIf="logo.type !== 'image' && logo.type!=='img'" [class]="logo.class"
-                        >{{logo.content}}</i
-                    >
+                    Place<span>OS</span>
                 </a>
             </div>
         </div>
