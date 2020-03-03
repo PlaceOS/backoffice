@@ -8,3 +8,10 @@ button {
     min-width: 10em;
     margin: .25em;
 }
+
+.spinner {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: .25em 0;
+}
