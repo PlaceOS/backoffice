@@ -51,7 +51,7 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineDriver(this._service.Drivers, {}),
+                item: new EngineDriver(this._service.Drivers, { name: '', module_name: '' }),
                 service: this._service.Drivers
             }
         });

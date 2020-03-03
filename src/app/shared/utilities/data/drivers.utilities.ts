@@ -10,12 +10,15 @@ export interface DriverInitData {
     driver: EngineDriver;
 }
 
-export function generateDriverFormFields(driver: EngineDriver, discovery: DriverInitData = null): FormDetails {
+export function generateDriverFormFields(driver: EngineDriver): FormDetails {
     if (!driver) {
         throw Error('No Driver passed to generate form fields');
     }
     const fields: HashMap<FormControl> = {
-        discovery: new FormControl(discovery),
+        id: new FormControl(driver.id || ''),
+        repository_id: new FormControl(driver.repository_id),
+        file_name: new FormControl(driver.file_name),
+        commit: new FormControl(driver.commit),
         name: new FormControl(driver.name || '', [Validators.required]),
         role: new FormControl(driver.role || 99),
         module_name: new FormControl(driver.module_name || '', [Validators.required]),
@@ -29,6 +32,7 @@ export function generateDriverFormFields(driver: EngineDriver, discovery: Driver
     const subscriptions = [];
     for (const key in fields) {
         if (fields[key] && key.indexOf('settings') < 0) {
+            console.log('Key:', key);
             subscriptions.push(
                 fields[key].valueChanges.subscribe(value =>
                     driver.storePendingChange(key as any, value)
@@ -50,7 +54,6 @@ export function generateDriverFormFields(driver: EngineDriver, discovery: Driver
         );
         fields.settings_encryption_level.setValue(EncryptionLevel.None);
     } else {
-        delete fields.discovery;
         delete fields.class_name;
         delete fields.role;
         delete fields.settings_encryption_level;

@@ -46,6 +46,10 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     /** List of available commits for the active driver */
     public commit_list: Identity[] = [];
 
+    public get editing(): boolean {
+        return this.form.controls.id && this.form.controls.id.value;
+    }
+
     /** Service for handling driver discovery */
     public get discovery_service(): EngineRepositoriesService {
         return this._service.Repositories;
@@ -66,12 +70,15 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
      * @param repo Repository to grab the drivers for
      */
     public async updateDriverList(repo: EngineRepository) {
+        this.form.controls.repository_id.setValue(repo.id);
+        this.base_repo = repo;
         const list = await this._service.Repositories.listDrivers(repo.id);
         this.driver_list = (list || []).map(driver => ({
             id: driver,
             name: driver.replace(/\//g, ' > ')
         }));
         this.commit_list = [];
+        console.log('Update driver list');
     }
 
     /**
@@ -79,6 +86,8 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
      * @param driver Driver to grab commits for
      */
     public updateCommitList(driver: Identity) {
+        this.form.controls.file_name.setValue(driver.id);
+        this.base_driver = driver;
         this._service.Repositories.listCommits(this.base_repo.id, {
             driver: `${driver.id}`
         }).then((list: any[]) => {
@@ -86,6 +95,10 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                 id: commit.commit,
                 name: `${commit.commit} - ${commit.subject}`
             }));
+            if (this.form.controls.commit) {
+                this.base_commit = this.commit_list.find(commit => commit.id === this.form.controls.commit.value) as any;
+            }
+            console.log('Update commit list');
         });
     }
 
@@ -94,32 +107,40 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
      * @param driver
      */
     public setDriverBase(event: Identity) {
+        this.form.controls.commit.setValue(event.id);
+        this.base_commit = event as any;
         this._service.Repositories.driverDetails(this.base_repo.id, {
             driver: `${this.base_driver.id}`,
             commit: `${event.id}`
         }).then(driver => {
-            this.form.controls.name.setValue(driver.descriptive_name);
-            this.form.controls.module_name.setValue(driver.generic_name);
-            this.form.controls.class_name.setValue(this.base_driver);
-            this.form.controls.settings_string.setValue(driver.default_settings || '');
-            this.form.controls.description.setValue(driver.description || '');
+            if (!this.form.controls.id.value) {
+                console.log('Set:', driver);
+                this.form.controls.name.setValue(driver.descriptive_name || '');
+                this.form.controls.module_name.setValue(driver.generic_name || '');
+                this.form.controls.class_name.setValue(this.base_driver.id || '');
+                this.form.controls.settings_string.setValue(driver.default_settings || '');
+                this.form.controls.description.setValue(driver.description || '');
+            }
+            console.log('Set driver base list');
         });
     }
 
     /**
      * Initialise the driver details if set
      */
-    private initDriver(): void {
-        if (this.form.controls.discovery && this.form.controls.discovery.value) {
-            const value = this.form.controls.discovery.value;
-            this.base_repo = value.repo;
-            this.updateDriverList(this.base_repo).then(() => {
-                this.base_driver =
-                    typeof value.driver === 'string'
-                        ? { id: value.driver, name: value.driver.split('/').join(' > ') }
-                        : value.driver;
-                this.updateCommitList(this.base_driver);
-            });
+    private async initDriver() {
+        if (this.form.controls.repository_id && this.form.controls.repository_id.value) {
+            const value = this.form.controls.repository_id.value;
+            const repo = await this.discovery_service.show(value);
+            this.base_repo = repo;
+            await this.updateDriverList(this.base_repo);
+            const driver = this.form.controls.file_name.value;
+            this.base_driver =
+                typeof driver === 'string'
+                    ? { id: driver, name: driver.split('/').join(' > ') }
+                    : driver;
+            console.log('Base Driver:', this.base_driver);
+            this.updateCommitList(this.base_driver);
         }
     }
 }
