@@ -34,11 +34,9 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
 
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, dependency_id: this.item.id };
-        this._service.Modules.query(query).then(
-            () => {
-                (this.device_count = this._service.Modules.last_total || 0)
-            }
-        );
+        this._service.Modules.query(query).then(list => {
+            this.device_count = this._service.Modules.last_total || list.length || 0;
+        });
     }
 
     /**
@@ -55,7 +53,7 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
                 service: this._service.Drivers
             }
         });
-        ref.componentInstance.event.subscribe((event) => {
+        ref.componentInstance.event.subscribe(event => {
             if (event.reason === 'done') {
                 this._router.navigate(['/drivers', event.metadata.item.id]);
             }

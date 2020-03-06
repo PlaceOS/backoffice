@@ -36,7 +36,7 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
         const query: any = { offset: 0, limit: 1, sys_id: this.item.id };
         // Get trigger count
         this._service.SystemTriggers.query(query).then(
-            () => (this.trigger_count = this._service.SystemTriggers.last_total)
+            (list) => (this.trigger_count = this._service.SystemTriggers.last_total || list.length || 0)
         );
         // Get device count
         this.device_count = (this.item.modules || []).length;

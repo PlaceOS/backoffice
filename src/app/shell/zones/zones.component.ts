@@ -38,12 +38,12 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
         const query: any = { offset: 0, limit: 1, zone_id: this.item.id };
         // Get system count
         this._service.Systems.query(query).then(
-            () => (this.system_count = this._service.Systems.last_total)
+            list => (this.system_count = this._service.Systems.last_total || list.length || 0)
         );
         const tquery: any = { offset: 0, limit: 1, zone_id: this.item.id };
         // Get trigger count
         this._service.SystemTriggers.query(tquery).then(
-            () => (this.trigger_count = this._service.SystemTriggers.last_total)
+            list => (this.trigger_count = this._service.SystemTriggers.last_total || list.length || 0)
         );
     }
 
@@ -61,7 +61,7 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
                 service: this._service.Zones
             }
         });
-        ref.componentInstance.event.subscribe((event) => {
+        ref.componentInstance.event.subscribe(event => {
             console.log('Event:', event);
             if (event.reason === 'done') {
                 this._router.navigate(['/zones', event.metadata.item.id]);

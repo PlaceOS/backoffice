@@ -37,8 +37,8 @@ export class DevicesComponent extends BaseRootComponent<EngineModule> {
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, module_id: this.item.id };
         // Get system count
-        this._service.Systems.query(query).then(() => {
-            this.system_count = this._service.Systems.last_total;
+        this._service.Systems.query(query).then((list) => {
+            this.system_count = this._service.Systems.last_total || list.length || 0;
         });
     }
 
