@@ -180,6 +180,11 @@ a-dynamic-form {
 mat-dialog-container.mat-dialog-container {
     padding: 0;
 
+    mat-dialog-content {
+        margin: 0;
+        padding: 0;
+    }
+
     header {
         display: flex;
         align-items: center;
