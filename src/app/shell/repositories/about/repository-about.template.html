@@ -1,4 +1,17 @@
 <div class="container" *ngIf="item">
+    <section class="actions">
+        <mat-card>
+            <mat-card-content>
+                Pull the latest commit for<br>
+                this repository
+            </mat-card-content>
+            <mat-card-actions>
+                <button mat-button [disabled]="pulling" (tapped)="pullLatestCommit()">
+                    <ng-container *ngIf="!pulling; else spinner">Pull</ng-container>
+                </button>
+            </mat-card-actions>
+        </mat-card>
+    </section>
     <section class="details">
         <div class="field">
             <label>Type:</label>
@@ -18,3 +31,8 @@
         </div>
     </section>
 </div>
+<ng-template #spinner>
+    <div class="spinner">
+        <mat-spinner diameter="32"></mat-spinner>
+    </div>
+</ng-template>

@@ -11,9 +11,10 @@ import { ApplicationService } from '../../../services/app.service';
     styleUrls: ['./repository-about.styles.scss']
 })
 export class RepositoryAboutComponent extends BaseDirective implements OnInit {
+    /** Repository to display details about */
     @Input() public item: EngineRepository;
-
-    public model: any = {};
+    /** Whether the latest commit is being pulled on the server */
+    public pulling: boolean;
 
     constructor(private _service: ApplicationService) {
         super();
@@ -28,8 +29,19 @@ export class RepositoryAboutComponent extends BaseDirective implements OnInit {
         );
     }
 
-    public select(system) {
-        this.model.selected_system = system;
+    /**
+     * Send request to server to pull the latest commit for the active repository
+     */
+    public pullLatestCommit() {
+        this.pulling = true;
+        this._service.Repositories.pullCommit(this.item.id)
+            .then(
+                () => this.pulling = false,
+                err => {
+                    this.pulling = false;
+                    this._service.notifyError(`Error pulling latest commit. Error: ${err.message | err}`);
+                }
+            );
     }
 
 }
