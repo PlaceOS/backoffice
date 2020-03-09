@@ -10,13 +10,19 @@ import { SharedContentModule } from 'src/app/shared/shared.module';
 import { EngineComponent } from './engine.component';
 import { EngineDatabaseDetailsComponent } from './database-details/database-details.component';
 import { EngineDetailsComponent } from './details/details.component';
+import { EngineClusterDetailsComponent } from './cluster-details/cluster-details.component';
+import { EngineClusterItemComponent } from './cluster-details/item/item.component';
+import { EngineClusterTaskListComponent } from './cluster-details/task-list/task-list.component';
 
 
 @NgModule({
     declarations: [
         EngineComponent,
         EngineDatabaseDetailsComponent,
-        EngineDetailsComponent
+        EngineDetailsComponent,
+        EngineClusterDetailsComponent,
+        EngineClusterItemComponent,
+        EngineClusterTaskListComponent
     ],
     imports: [
         CommonModule,

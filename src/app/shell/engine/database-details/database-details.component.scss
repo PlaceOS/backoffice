@@ -2,6 +2,8 @@
 
 :host {
     padding: 1em;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 button {
@@ -14,4 +16,9 @@ button {
     justify-content: center;
     width: 100%;
     margin: .25em 0;
+}
+
+mat-card {
+    margin: .5em;
+    text-align: center;
 }

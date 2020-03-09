@@ -1,0 +1,41 @@
+
+<div class="header">
+    <button mat-icon-button (tapped)="close.emit()">
+        <app-icon [icon]="{ type: 'icon', class: 'backoffice-arrow-left' }"></app-icon>
+    </button>
+    <h3>Cluster - {{cluster?.hostname}}</h3>
+</div>
+<table cdk-table [dataSource]="process_list">
+    <ng-container cdkColumnDef="id">
+        <th cdk-header-cell *cdkHeaderCellDef>Name</th>
+        <td cdk-cell *cdkCellDef="let element" [innerHTML]="element.id | driverFormat"></td>
+    </ng-container>
+    <ng-container cdkColumnDef="cpu_usage">
+        <th cdk-header-cell *cdkHeaderCellDef>CPU %</th>
+        <td cdk-cell *cdkCellDef="let element">{{ element.cpu_usage.toFixed(2) }}%</td>
+    </ng-container>
+    <ng-container cdkColumnDef="memory_usage">
+        <th cdk-header-cell *cdkHeaderCellDef>Memory</th>
+        <td cdk-cell *cdkCellDef="let element">{{ element.used_memory }}</td>
+    </ng-container>
+    <ng-container cdkColumnDef="module_instances">
+        <th cdk-header-cell *cdkHeaderCellDef>Instances</th>
+        <td cdk-cell *cdkCellDef="let element">{{ element.module_instances }}</td>
+    </ng-container>
+    <ng-container cdkColumnDef="running">
+        <th cdk-header-cell *cdkHeaderCellDef class="button"></th>
+        <td cdk-cell *cdkCellDef="let element" class="button">
+            <button mat-icon-button (tapped)="confirmKillProcess(element)">
+                <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+            </button>
+        </td>
+    </ng-container>
+    <tr cdk-header-row *cdkHeaderRowDef="column_list"></tr>
+    <tr cdk-row *cdkRowDef="let row; columns: column_list;"></tr>
+</table>
+<div class="info-block center" *ngIf="!process_list || !process_list.length">
+    <div class="icon">
+        <app-icon [icon]="{ class: 'backoffice-cross' }"></app-icon>
+    </div>
+    <div class="text">No tasks running on cluster</div>
+</div>

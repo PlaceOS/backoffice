@@ -26,6 +26,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatCardModule } from '@angular/material/card';
+import { CdkTableModule } from '@angular/cdk/table';
 
 import { BaseDirective } from './globals/base.directive';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
@@ -128,7 +130,9 @@ const MATERIAL_MODULES: any[] = [
     MatCheckboxModule,
     MatSlideToggleModule,
     MatChipsModule,
-    MatTabsModule
+    MatTabsModule,
+    MatCardModule,
+    CdkTableModule
 ];
 
 @NgModule({

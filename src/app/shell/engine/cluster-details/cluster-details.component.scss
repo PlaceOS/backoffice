@@ -1,0 +1,28 @@
+
+:host {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+mat-card {
+    margin: .5em;
+    text-align: center;
+}
+
+mat-header {
+    * {
+        text-transform: capitalize;
+    }
+}
+
+.info-block {
+    .icon {
+        font-size: 3em;
+    }
+}
+
+.spinner {
+    position: absolute;
+    bottom: .5em;
+    right: .5em;
+}

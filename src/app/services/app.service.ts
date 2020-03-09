@@ -132,6 +132,11 @@ export class ApplicationService extends BaseClass {
         return this._composer.domains;
     }
 
+    /** Engine Cluster service */
+    public get Clusters() {
+        return this._composer.clusters;
+    }
+
     /** Drivers service */
     public get Drivers() {
         return this._composer.drivers;

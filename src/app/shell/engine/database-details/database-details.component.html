@@ -1,13 +1,26 @@
-<div class="">
-    <button mat-button [disabled]="reindexing" (tapped)="reindex()">
-        <ng-container *ngIf="!reindexing; else spinner">Re-index</ng-container>
-    </button>
-</div>
-<div class="">
-    <button mat-button [disabled]="backfilling" (tapped)="backfill()">
-        <ng-container *ngIf="!backfilling; else spinner">Backfill</ng-container>
-    </button>
-</div>
+
+<mat-card>
+    <mat-card-content>
+        Re-index elasticsearch for the
+        <br>current state of the database
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-button [disabled]="reindexing" (tapped)="reindex()">
+            <ng-container *ngIf="!reindexing; else spinner">Re-index</ng-container>
+        </button>
+    </mat-card-actions>
+</mat-card>
+<mat-card>
+    <mat-card-content>
+        Backfill elasticsearch with the<br>
+        current state of the database
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-button [disabled]="backfilling" (tapped)="backfill()">
+            <ng-container *ngIf="!backfilling; else spinner">Backfill</ng-container>
+        </button>
+    </mat-card-actions>
+</mat-card>
 <ng-template #spinner>
     <div class="spinner">
         <mat-spinner diameter="32"></mat-spinner>
