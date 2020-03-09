@@ -88,6 +88,8 @@ export interface ApplicationInternalLink {
     query_params?: HashMap<string | number | boolean>;
     /** Icon associated with the tile */
     icon: ApplicationIcon;
+    /** Name of the user role required by the user for this link to show */
+    needs_role?: string;
     /** List of sub-links */
     children?: ApplicationLink[];
 }

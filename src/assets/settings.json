@@ -115,6 +115,7 @@
                 {
                     "name": "Engine",
                     "route": "/engine",
+                    "needs_role": "sys_admin",
                     "icon": {
                         "type": "icon",
                         "class": "backoffice-classic-computer",

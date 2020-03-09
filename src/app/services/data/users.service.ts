@@ -50,6 +50,9 @@ export class BackofficeUsersService extends EngineUsersService {
             if (state) {
                 this.http = this._composer.http;
                 sub.unsubscribe();
+                this.current().then((user) => {
+                    this.user.next(user);
+                })
             }
         });
     }

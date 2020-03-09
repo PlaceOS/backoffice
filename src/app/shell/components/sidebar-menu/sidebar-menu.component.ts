@@ -33,6 +33,7 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
 
     public init() {
         this.menu_items = this._service.setting('app.general.menu');
+        const user = this._service.Users.user.getValue();
         /** Only allow metrics if a URL has be set */
         if (!this._composer.auth.authority.metrics) {
             this.menu_items = this.menu_items.filter(item => item.route && item.route.indexOf('metrics') < 0);
@@ -40,6 +41,8 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
                 this.router.navigate([]);
             }
         }
+        /** Filter out items with insufficient permissions */
+        this.menu_items = this.menu_items.filter(item => !item.needs_role || !!(user as any)[item.needs_role]);
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
