@@ -39,7 +39,8 @@ export class MockDriversBackend extends BaseMockBackend {
                 }
                 funcs[`exec${k}`] = {
                     arity: optional ? -(acount - (optional)) - 1 : acount,
-                    params
+                    params: { ...params } as any,
+                    order: Object.keys(params)
                 };
             }
             driver_list.push({

@@ -23,17 +23,17 @@
     <div class="row function" *ngIf="active_method">
         <div class="fn-input">
             <div class="bracket">{{active_method.name}}(</div>
-            <div class="arg" *ngFor="let arg of active_method.params; let i = index">
-                <span class="seperator" [class.solid]="arg[0] === 'req' || fields[arg[1]]"
+            <div class="arg" *ngFor="let arg of param_list; let i = index">
+                <span class="seperator" [class.solid]="arg[2] !== undefined || fields[arg[0]]"
                     >{{(i > 0 ? ',&nbsp;' : '')}}</span
                 >
                 <input
                     #argument
-                    [(ngModel)]="fields[arg[1]]"
+                    [(ngModel)]="fields[arg[0]]"
                     (ngModelChange)="checkFields()"
-                    [class.error]="error && error[arg[1]]"
-                    [style.width]="(.6 * (fields[arg[1]] || (arg[0] === 'opt' ? '[' + arg[1] + ']' : arg[1])).length + .3) + 'em'"
-                    [placeholder]="arg[0] === 'opt' ? '[' + arg[1] + ']' : arg[1]"
+                    [class.error]="error && error[arg[0]]"
+                    [style.width]="(.6 * (fields[arg[0]] || (arg[2] === undefined ? '[' + arg[0] + ']' : arg[0])).length + .3) + 'em'"
+                    [placeholder]="arg[2] === undefined ? '[' + arg[0] + ']' : arg[0]"
                     (keyup.enter)="nextField($event)"
                     (keydown.,)="nextField($event)"
                     (keyup.arrowright)="nextField($event)"

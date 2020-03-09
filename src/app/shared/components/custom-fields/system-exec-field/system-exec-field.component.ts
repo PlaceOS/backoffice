@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import {
-    EngineModule,
     EngineModuleFunction,
     HashMap,
     TriggerFunction,
@@ -99,6 +98,11 @@ export class SystemExecFieldComponent extends BaseDirective
         };
     }
 
+    public get param_list(): Array<[string, string, any?]> {
+        return Object.keys(this.active_method.params)
+                .map(i => [i, ...this.active_method.params[i]] as any)
+    }
+
     constructor(private service: ApplicationService) {
         super();
     }
@@ -171,6 +175,7 @@ export class SystemExecFieldComponent extends BaseDirective
     public selectFunction(fn: ModuleFunction) {
         this.active_method = fn;
         this.checkFields();
+        console.log('Finished selecting function');
     }
 
     /**
@@ -181,20 +186,22 @@ export class SystemExecFieldComponent extends BaseDirective
         this.fields_valid = !!this.active_method;
         this.error = {};
         if (this.active_method) {
-            for (const arg of this.active_method.params) {
-                if (arg[0] === 'req' && !this.fields[arg[1]]) {
+            const params = this.param_list;
+            for (const arg of (params || [])) {
+                if (arg[2] === undefined && !this.fields[arg[0]]) {
                     this.fields_valid = false;
                     return;
                 } else {
                     try {
-                        JSON.parse(`[${this.fields[arg[1]] || '""'}]`);
+                        JSON.parse(`[${this.fields[arg[0]] || '""'}]`);
                     } catch (e) {
-                        this.error[arg[1]] = true;
+                        this.error[arg[0]] = true;
                         this.fields_valid = false;
                     }
                 }
             }
         }
+        console.log('Finished checking fields');
         // Update field state
         const args = this.arg_list.toArray();
         if (args && args.length > 0) {
@@ -202,7 +209,9 @@ export class SystemExecFieldComponent extends BaseDirective
             this.field_pos = current.nativeElement.selectionEnd;
             this.timeout('field', () => (this.field_value = current.nativeElement.value));
         }
+        console.log('Updating field values');
         this.setValue(this.function_value);
+        console.log('Finished updating field values');
     }
 
     /**
@@ -315,8 +324,8 @@ export class SystemExecFieldComponent extends BaseDirective
      */
     private processArguments(): any[] {
         const arg_list = [];
-        for (const arg of this.active_method.params) {
-            arg_list.push(this.fields[arg[1]] || null);
+        for (const arg of this.active_method.order) {
+            arg_list.push(this.fields[arg] || null);
         }
         if (this.active_method.arity < 0) {
             const len = arg_list.length;
@@ -385,7 +394,8 @@ export class SystemExecFieldComponent extends BaseDirective
                 this.active_method = {
                     name,
                     arity: Object.keys(args).length - 1,
-                    params: Object.keys(args).map(key => ['req', key]) as any
+                    params: Object.keys(args).map(key => ['req', key]) as any,
+                    order: Object.keys(args)
                 };
                 this.methods.unshift(this.active_method);
             } else {
