@@ -5,7 +5,7 @@ import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { generateTriggerActionForm } from 'src/app/shared/utilities/data/triggers.utilities';
-import { EngineTrigger, EngineSystem, TriggerMailer, TriggerFunction } from '@acaengine/ts-client';
+import { EngineTrigger, EngineSystem, TriggerMailer, TriggerFunction } from '@placeos/ts-client';
 import { FormGroup } from '@angular/forms';
 
 export interface TriggerActionModalData {

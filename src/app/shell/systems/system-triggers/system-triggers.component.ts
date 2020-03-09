@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { EngineSystem, EngineTrigger } from '@acaengine/ts-client';
+import { EngineSystem, EngineTrigger } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -14,7 +14,7 @@ import {
     ConfirmModalComponent,
     ConfirmModalData
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-import { ComposerService } from '@acaengine/composer';
+import { ComposerService } from '@placeos/composer';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 
 @Component({

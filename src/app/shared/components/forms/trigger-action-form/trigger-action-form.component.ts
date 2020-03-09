@@ -2,7 +2,7 @@ import { Component, Input, ViewChild, SimpleChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ENTER, COMMA, SPACE } from '@angular/cdk/keycodes';
 import { MatChipList } from '@angular/material/chips';
-import { EngineSystem } from '@acaengine/ts-client';
+import { EngineSystem } from '@placeos/ts-client';
 
 import { Identity } from 'src/app/shared/utilities/types.utilities';
 

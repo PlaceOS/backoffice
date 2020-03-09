@@ -1,6 +1,6 @@
 
 import { Component, Input, SimpleChanges, OnChanges, OnInit } from '@angular/core';
-import { EngineModule, EngineDriver, EngineSystem } from '@acaengine/ts-client';
+import { EngineModule, EngineDriver, EngineSystem } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';

@@ -5,8 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
-import { ComposerModule } from '@acaengine/composer';
-
 import { ROUTES } from './triggers.routes';
 
 import { TriggersComponent } from './triggers.component';
@@ -24,7 +22,6 @@ import { SharedContentModule } from 'src/app/shared/shared.module';
     imports: [
         CommonModule,
         FormsModule,
-        ComposerModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule,
         DragDropModule

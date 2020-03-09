@@ -6,7 +6,7 @@ import {
     EngineOAuthSource,
     EngineLDAPSource,
     EngineSAMLSource
-} from '@acaengine/ts-client';
+} from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';

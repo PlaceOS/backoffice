@@ -5,7 +5,7 @@ import {
     TriggerMailer,
     TriggerConditionOperator,
     TriggerTimeConditionType
-} from '@acaengine/ts-client';
+} from '@placeos/ts-client';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero, randomInt } from '../../utilities/general.utilities';
@@ -111,7 +111,7 @@ export function generateTriggerMailer(): TriggerMailer {
                 i =>
                     `${faker.name
                         .firstName()
-                        .toLowerCase()}.${faker.name.lastName().toLowerCase()}@acaengine.com`
+                        .toLowerCase()}.${faker.name.lastName().toLowerCase()}@placeos.com`
             ),
         content: faker.lorem.paragraph()
     };

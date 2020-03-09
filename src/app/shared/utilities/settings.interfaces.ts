@@ -12,13 +12,13 @@ export interface SettingsOptions {
 }
 
 export interface ComposerOptions {
-    /** Host name of the ACAEngine server */
+    /** Host name of the PlaceOS server */
     domain: string;
-    /** Port number used on the ACAEngine server */
+    /** Port number used on the PlaceOS server */
     port: string;
     /** Route that the root of the application lies */
     route: string;
-    /** Protocol used by the ACAEngine server */
+    /** Protocol used by the PlaceOS server */
     protocol: 'http:' | 'https:';
     /** Whether login is handled locally inside the application */
     local_login?: boolean;

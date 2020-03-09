@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChange, OnInit } from '@angular/core';
-import { EngineZone, EngineTrigger } from '@acaengine/ts-client';
+import { EngineZone, EngineTrigger } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';

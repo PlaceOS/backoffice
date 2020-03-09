@@ -1,4 +1,4 @@
-import { EngineOAuthSource, EngineLDAPSource, EngineSAMLSource } from '@acaengine/ts-client';
+import { EngineOAuthSource, EngineLDAPSource, EngineSAMLSource } from '@placeos/ts-client';
 
 import { FormDetails } from './systems.utilities';
 import { HashMap } from '../types.utilities';

@@ -1,7 +1,7 @@
 
 import { Injectable } from '@angular/core';
-import { ComposerService } from '@acaengine/composer';
-import { EngineSystem, EngineUser } from '@acaengine/ts-client';
+import { ComposerService } from '@placeos/composer';
+import { EngineSystem, EngineUser } from '@placeos/ts-client';
 
 import { BaseAPIService } from './base.service';
 

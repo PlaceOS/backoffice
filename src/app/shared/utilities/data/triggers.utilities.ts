@@ -10,7 +10,7 @@ import {
     TriggerCronTimeCondition,
     TriggerFunction,
     TriggerMailer
-} from '@acaengine/ts-client';
+} from '@placeos/ts-client';
 
 import { FormDetails } from './systems.utilities';
 

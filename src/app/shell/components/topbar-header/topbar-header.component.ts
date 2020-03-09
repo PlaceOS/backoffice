@@ -5,7 +5,7 @@ import { ApplicationService } from '../../../services/app.service';
 import { ApplicationLink, ApplicationIcon, ApplicationActionLink } from 'src/app/shared/utilities/settings.interfaces';
 import { MatDialog } from '@angular/material/dialog';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
-import { EngineSystem, EngineZone } from '@acaengine/ts-client';
+import { EngineSystem, EngineZone } from '@placeos/ts-client';
 
 @Component({
     selector: 'topbar-header',
@@ -72,7 +72,7 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
                 name: 'Profile',
                 icon: { type: 'icon', class: 'backoffice-user' }
             },
-            { link: '/logout', name: 'Logout', icon: { type: 'icon', class: 'backoffice-logout' } }
+            { link: '/logout', name: 'Logout', icon: { type: 'icon', class: 'backoffice-log-out' } }
         ];
     }
     /**

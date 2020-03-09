@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Identity } from 'src/app/shared/utilities/types.utilities';
-import { EngineRepositoryType } from '@acaengine/ts-client';
+import { EngineRepositoryType } from '@placeos/ts-client';
 
 @Component({
     selector: 'repository-form',

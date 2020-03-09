@@ -5,7 +5,7 @@ import {
     EngineRepositoryCommit,
     EngineRepository,
     EngineRepositoriesService
-} from '@acaengine/ts-client';
+} from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { Identity } from 'src/app/shared/utilities/types.utilities';

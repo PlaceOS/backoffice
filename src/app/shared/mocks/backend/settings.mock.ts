@@ -1,5 +1,5 @@
 
-import { MockHttpRequestHandler, MockHttpRequest } from '@acaengine/ts-client';
+import { MockHttpRequestHandler, MockHttpRequest } from '@placeos/ts-client';
 import { API } from '../common.mock';
 import { initialiseGlobals } from './base.mock';
 

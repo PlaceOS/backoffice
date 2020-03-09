@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { EngineDriver, EngineModule } from '@acaengine/ts-client';
+import { EngineDriver, EngineModule } from '@placeos/ts-client';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';

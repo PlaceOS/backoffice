@@ -18,7 +18,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^9.0.0",
-    "@angular/cdk": "~9.0.0",
+    "@angular/cdk": "^9.0.0",
     "@angular/common": "^9.0.0",
     "@angular/compiler": "^9.0.0",
     "@angular/core": "^9.0.0",
@@ -28,6 +28,7 @@
     "@angular/platform-browser-dynamic": "^9.0.0",
     "@angular/router": "^9.0.0",
     "@angular/service-worker": "^9.0.0",
+    "@placeos/composer": "^1.1.2",
     "@sentry/browser": "^5.11.1",
     "monaco-editor": "^0.18.1",
     "rxjs": "~6.5.4",
@@ -35,7 +36,6 @@
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
-    "@acaengine/composer": "^3.1.0",
     "@acaprojects/ngx-custom-events": "^1.0.5",
     "@acaprojects/ngx-google-analytics": "^1.0.1",
     "@acaprojects/ngx-pipes": "^1.0.0",
@@ -87,7 +87,7 @@
     "ts-md5": "^1.2.7",
     "ts-node": "~7.0.0",
     "tslint": "~5.15.0",
-    "typescript": "^3.7.5",
+    "typescript": "~3.7.5",
     "watch-object": "^1.1.2",
     "webpack": "^4.41.5",
     "xterm": "^4.3.0"

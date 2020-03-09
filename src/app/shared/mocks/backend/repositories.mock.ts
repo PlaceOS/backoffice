@@ -1,4 +1,4 @@
-import { MockHttpRequestHandler } from '@acaengine/ts-client';
+import { MockHttpRequestHandler } from '@placeos/ts-client';
 
 import { padZero, randomInt } from '../../utilities/general.utilities';
 import { API } from '../common.mock';
@@ -17,7 +17,7 @@ export function generateMockRepository(overrides: any = {}) {
         name: `${product}`,
         folder_name: `${company}/${product}`,
         description: faker.lorem.paragraph(),
-        uri: `https://github.com/acaengine/${company}-drivers`,
+        uri: `https://github.com/placeos/${company}-drivers`,
         commit_hash: 'HEAD',
         type: Math.floor(Math.random() * 999_999_999) % 2,
         ...overrides

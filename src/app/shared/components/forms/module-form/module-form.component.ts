@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { EncryptionLevel } from '@acaengine/ts-client';
+import { EncryptionLevel } from '@placeos/ts-client';
 
 import { Identity, EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
 import { ApplicationService } from 'src/app/services/app.service';

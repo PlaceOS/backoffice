@@ -3,8 +3,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-
-import { ComposerModule } from '@acaengine/composer';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { ROUTES } from './systems.routes';
@@ -27,7 +25,6 @@ import { SharedContentModule } from 'src/app/shared/shared.module';
     imports: [
         CommonModule,
         FormsModule,
-        ComposerModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule,
         DragDropModule

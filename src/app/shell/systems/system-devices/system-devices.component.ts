@@ -1,9 +1,9 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineSystem, EngineModule, HashMap } from '@acaengine/ts-client';
+import { EngineSystem, EngineModule, HashMap } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
-import { ComposerService } from '@acaengine/composer';
+import { ComposerService } from '@placeos/composer';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';

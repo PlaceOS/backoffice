@@ -1,5 +1,5 @@
 
-import { MockHttpRequestHandler } from '@acaengine/ts-client';
+import { MockHttpRequestHandler } from '@placeos/ts-client';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';
@@ -92,6 +92,22 @@ export class MockSystemsBackend extends BaseMockBackend {
                 return null;
             }
         } as MockHttpRequestHandler);
+        window.control.handlers.push({
+            path: 'api/engine/v2/systems/:id/functions/:mod',
+            metadata: this.model.systems,
+            method: 'GET',
+            callback: (event) => {
+                if (event.route_params.mod) {
+                    for (const item of this.model.systems) {
+                        if (item.id === event.route_params.id) {
+                            const parts = event.route_params.mod.split('_');
+                            return item.funcs[item.modules[+parts[parts.length - 1] - 1]];
+                        }
+                    }
+                }
+                throw { status: 404, message: 'Module not found' }
+            }
+        } as MockHttpRequestHandler)
         this.state.next(true);
     }
 

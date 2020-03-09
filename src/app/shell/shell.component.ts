@@ -8,7 +8,7 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { EngineUser } from '@acaengine/ts-client';
+import { EngineUser } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
 
 import { ApplicationLink } from '../shared/utilities/settings.interfaces';

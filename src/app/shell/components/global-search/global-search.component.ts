@@ -22,7 +22,7 @@ import {
     EngineModule,
     EngineZone,
     HashMap
-} from '@acaengine/ts-client';
+} from '@placeos/ts-client';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 import { unique } from 'src/app/shared/utilities/general.utilities';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';

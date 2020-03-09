@@ -4,8 +4,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { ComposerModule } from '@acaengine/composer';
-
 import { ROUTES } from './zones.routes';
 
 import { ZonesComponent } from './zones.component';
@@ -25,7 +23,6 @@ import { SharedContentModule } from 'src/app/shared/shared.module';
     imports: [
         CommonModule,
         FormsModule,
-        ComposerModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule
     ]

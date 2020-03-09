@@ -7,7 +7,7 @@ import {
     TriggerTimeCondition,
     TriggerFunction,
     TriggerMailer
-} from '@acaengine/ts-client';
+} from '@placeos/ts-client';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';

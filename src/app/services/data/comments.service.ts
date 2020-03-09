@@ -1,9 +1,9 @@
 
 import { Injectable } from '@angular/core';
-import { EngineUser } from '@acaengine/ts-client';
+import { EngineUser } from '@placeos/ts-client';
 
 import { BaseAPIService } from './base.service';
-import { ComposerService } from '@acaengine/composer';
+import { ComposerService } from '@placeos/composer';
 
 export interface IComment {
     id: string;

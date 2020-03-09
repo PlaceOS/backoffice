@@ -1,4 +1,4 @@
-import { ComposerService } from '@acaengine/composer';
+import { ComposerService } from '@placeos/composer';
 import { Injectable } from '@angular/core';
 
 import { BaseClass } from 'src/app/shared/globals/base.class';

@@ -52,7 +52,7 @@ export function generateOAuthAuthSource(domain_list: any[]) {
                 name: 'name',
                 email: 'email'
             },
-            site: `https://${randomInt(99999)}.acaengine.com`,
+            site: `https://${randomInt(99999)}.placeos.com`,
             authorize_url: 'oauth/authorise',
             token_method: 'post',
             auth_scheme: randomInt(9999) % 2 === 0 ? 'request_body' : 'basic_auth',
@@ -75,8 +75,8 @@ export function generateLDAPAuthSource(domain_list: any[]) {
             port: randomInt(65535, 1000),
             auth_method: num === 0 ? 'plain' : num === 1 ? 'ssl' : 'tls',
             uid: `${padZero(randomInt(999_999_999), 10)}`,
-            base: 'acaengine.com',
-            bind_dn: 'another.acaengine.com',
+            base: 'placeos.com',
+            bind_dn: 'another.placeos.com',
             password: `${padZero(randomInt(999_999_999), 10)}`
         };
     });
@@ -89,7 +89,7 @@ export function generateSAMLAuthSource(domain_list: any[]) {
             id: `auth-${padZero(counter++, 4)}`,
             name: `SAML Source ${_ + 1}`,
             authority_id: domain_list[randomInt(domain_list.length)].id,
-            issuer: 'sso.acaengine.com',
+            issuer: 'sso.placeos.com',
             idp_sso_target_url_runtime_params: {},
             name_identifier_format: '',
             uid_attribute: '',

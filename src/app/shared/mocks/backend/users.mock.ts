@@ -5,7 +5,7 @@
  * @Last Modified time: 2018-09-02 20:25:07
  */
 
-import { MockHttpRequestHandlerOptions } from '@acaengine/ts-client';
+import { MockHttpRequestHandlerOptions } from '@placeos/ts-client';
 
 import { BaseMockBackend } from './base.mock';
 

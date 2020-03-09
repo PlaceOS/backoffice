@@ -17,7 +17,7 @@ import {
     HashMap,
     TriggerFunction,
     EngineSystem
-} from '@acaengine/ts-client';
+} from '@placeos/ts-client';
 
 import { ApplicationService } from '../../../../services/app.service';
 import { BaseDirective } from '../../../globals/base.directive';
@@ -279,6 +279,7 @@ export class SystemExecFieldComponent extends BaseDirective
             };
             this.service.Systems.execute(
                 this.system.id,
+                details.method,
                 details.module,
                 details.index,
                 details.args

@@ -1,4 +1,4 @@
-import { EngineModule } from '@acaengine/ts-client';
+import { EngineModule } from '@placeos/ts-client';
 
 import { HashMap } from "./types.utilities";
 

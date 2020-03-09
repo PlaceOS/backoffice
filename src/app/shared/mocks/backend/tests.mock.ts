@@ -1,5 +1,5 @@
 
-import { MockHttpRequestHandlerOptions } from '@acaengine/ts-client';
+import { MockHttpRequestHandlerOptions } from '@placeos/ts-client';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';

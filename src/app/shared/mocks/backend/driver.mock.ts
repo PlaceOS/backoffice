@@ -1,5 +1,5 @@
 
-import { EngineModuleFunction, HashMap, MockHttpRequestHandler } from '@acaengine/ts-client';
+import { EngineModuleFunction, HashMap, MockHttpRequestHandler } from '@placeos/ts-client';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';

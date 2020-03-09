@@ -8,6 +8,7 @@ import { RouterModule } from '@angular/router';
 import { ASpinnerModule } from '@acaprojects/ngx-spinners';
 import { APipesModule } from '@acaprojects/ngx-pipes';
 import { ACustomEventsModule } from '@acaprojects/ngx-custom-events';
+import { ComposerModule } from '@placeos/composer';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -146,6 +147,7 @@ const MATERIAL_MODULES: any[] = [
         ReactiveFormsModule,
         ACustomEventsModule,
         ScrollingModule,
+        ComposerModule,
         ...MATERIAL_MODULES,
         RouterModule.forChild([])
     ],
@@ -153,6 +155,7 @@ const MATERIAL_MODULES: any[] = [
         ASpinnerModule,
         APipesModule,
         ACustomEventsModule,
+        ComposerModule,
         ...COMPONENTS,
         ...PIPES,
         ...ENTRY_COMPONENT,

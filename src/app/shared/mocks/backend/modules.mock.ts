@@ -1,4 +1,4 @@
-import { MockHttpRequest, MockHttpRequestHandler } from '@acaengine/ts-client';
+import { MockHttpRequest, MockHttpRequestHandler } from '@placeos/ts-client';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';

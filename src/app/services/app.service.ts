@@ -6,8 +6,8 @@ import { first } from 'rxjs/operators';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { ComposerService } from '@acaengine/composer';
-import { ACAEngineOptions } from '@acaengine/ts-client';
+import { ComposerService } from '@placeos/composer';
+import { PlaceOSOptions } from '@placeos/ts-client';
 import { GoogleAnalyticsService } from '@acaprojects/ngx-google-analytics';
 
 import { Observable, BehaviorSubject, Subject, Subscription } from 'rxjs';
@@ -457,7 +457,7 @@ export class ApplicationService extends BaseClass {
         const mock = this.setting('mock');
         const login_locally = location.search.indexOf('login=true') >= 0;
         // Generate configuration object
-        const config: ACAEngineOptions = {
+        const config: PlaceOSOptions = {
             scope: 'public',
             host: `${host}:${port}`,
             auth_uri: `${url}/auth/oauth/authorize`,

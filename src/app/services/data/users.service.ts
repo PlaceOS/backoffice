@@ -1,9 +1,9 @@
-import { ComposerService } from '@acaengine/composer';
+import { ComposerService } from '@placeos/composer';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineUsersService, EngineUser, EngineUserQueryOptions } from '@acaengine/ts-client';
+import { EngineUsersService, EngineUser, EngineUserQueryOptions } from '@placeos/ts-client';
 import { BehaviorSubject } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
 

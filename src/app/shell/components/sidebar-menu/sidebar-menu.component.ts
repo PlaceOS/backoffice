@@ -1,7 +1,7 @@
 
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
-import { ComposerService } from '@acaengine/composer';
+import { ComposerService } from '@placeos/composer';
 import { first } from 'rxjs/operators';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
