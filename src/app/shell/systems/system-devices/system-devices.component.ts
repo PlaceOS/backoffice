@@ -19,6 +19,16 @@ import {
     ModuleStateModalData
 } from 'src/app/overlays/view-module-state/view-module-state.component';
 
+import * as dayjs from 'dayjs';
+
+const TERMINAL_COLOURS = {
+    debug: '\u001b[34m',
+    info: '\u001b[32m',
+    warn: '\u001b[33m',
+    error: '\u001b[31m',
+    fatal: '\u001b[31m'
+};
+
 @Component({
     selector: 'system-devices',
     templateUrl: './system-devices.template.html',
@@ -86,7 +96,11 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
                 'debug_events',
                 this._composer.realtime.debug_events.subscribe(event => {
                     if (this.item.modules.find(id => id === event.module)) {
-                        this.device_logs += '\n\n' + event.message;
+                        this.device_logs += `\n\n${TERMINAL_COLOURS[event.level]}${dayjs().format(
+                            'h:mm A'
+                        )}, ${event.module}, [${event.level.toUpperCase()}]\u001b[0m ${
+                            event.message
+                        }`;
                     }
                 })
             );
@@ -104,7 +118,9 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
      * @param offset Offset to load
      */
     public loadDevices(offset: number = 0) {
-        if (!this.item) { return; }
+        if (!this.item) {
+            return;
+        }
         this._service.Modules.query({ system_id: this.item.id, offset }).then(
             list => {
                 list.sort(
