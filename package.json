@@ -44,9 +44,12 @@
     "@angular-devkit/build-angular": "~0.900.1",
     "@angular-devkit/core": "^9.0.1",
     "@angular-devkit/schematics": "^9.0.1",
+    "@angular-extensions/lint-rules": "^1.1.1",
     "@angular/cli": "^9.0.1",
     "@angular/compiler-cli": "^9.0.0",
     "@angular/language-service": "^9.0.0",
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
     "@compodoc/compodoc": "^1.1.11",
     "@cypress/webpack-preprocessor": "^4.1.1",
     "@schematics/angular": "^8.3.25",
@@ -71,6 +74,7 @@
     "gulp-sftp-clean": "^0.1.7",
     "gulp-string-replace": "^1.1.2",
     "gulp-util": "^3.0.8",
+    "husky": "^4.2.3",
     "jasmine-core": "~3.4.0",
     "jasmine-spec-reporter": "~4.2.1",
     "js-yaml": "^3.13.1",
@@ -91,5 +95,10 @@
     "watch-object": "^1.1.2",
     "webpack": "^4.41.5",
     "xterm": "^4.3.0"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
   }
 }
