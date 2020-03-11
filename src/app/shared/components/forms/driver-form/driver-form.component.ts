@@ -96,7 +96,9 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                 name: `${commit.commit} - ${commit.subject}`
             }));
             if (this.form.controls.commit) {
-                this.base_commit = this.commit_list.find(commit => commit.id === this.form.controls.commit.value) as any;
+                this.base_commit = this.commit_list.find(
+                    commit => commit.id === this.form.controls.commit.value
+                ) as any;
             }
             console.log('Update commit list');
         });
@@ -104,7 +106,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
 
     /**
      *
-     * @param driver
+     * @param event Details of the driver selected
      */
     public setDriverBase(event: Identity) {
         this.form.controls.commit.setValue(event.id);

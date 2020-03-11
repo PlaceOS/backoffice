@@ -61,7 +61,6 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     @ViewChild(CdkVirtualScrollViewport)
     private viewport: CdkVirtualScrollViewport;
 
-
     /** Whether list is has been scrolled from the top */
     public get is_scrolled(): boolean {
         if (this.viewport) {
@@ -119,7 +118,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             }
             this.subscription(
                 'active_item',
-                this._service.listen('BACKOFFICE.active_item', (item) => this.replaceActiveItem(item))
+                this._service.listen('BACKOFFICE.active_item', item => this.replaceActiveItem(item))
             );
             this.subscription(
                 'up',
@@ -195,7 +194,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
 
     /**
      * Update the list displayed on the sidebar
-     * @param offset
+     * @param offset Page offset for the list
      */
     public searching(offset: number = 0) {
         this.loading = true;
@@ -238,12 +237,14 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
      * @param active_item New active item
      */
     private replaceActiveItem(active_item: Identity) {
-        if (!active_item) { return; }
+        if (!active_item) {
+            return;
+        }
         const list = this.items.getValue() || [];
         const index = list.findIndex(item => item.id === active_item.id);
         if (index >= 0) {
             list.splice(index, 1, active_item);
         }
-        this.items.next([ ...list ]);
+        this.items.next([...list]);
     }
 }

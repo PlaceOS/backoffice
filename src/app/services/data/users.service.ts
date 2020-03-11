@@ -1,7 +1,6 @@
 import { ComposerService } from '@placeos/composer';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EngineUsersService, EngineUser, EngineUserQueryOptions } from '@placeos/ts-client';
 import { BehaviorSubject } from 'rxjs';
@@ -9,15 +8,14 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { FilterFn, DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { toQueryString } from 'src/app/shared/utilities/api.utilities';
-
-import * as dayjs from 'dayjs';
-import * as Sentry from '@sentry/browser';
-
 import {
     ConfirmModalComponent,
     ConfirmModalData,
     CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+
+import * as dayjs from 'dayjs';
+import * as Sentry from '@sentry/browser';
 
 type ServiceItem = EngineUser;
 
@@ -26,19 +24,19 @@ type ServiceItem = EngineUser;
 })
 export class BackofficeUsersService extends EngineUsersService {
     /** Name for a single user */
-    readonly singular: string = 'user';
+    public readonly singular: string = 'user';
     /** Behavior subject with the currently available list of users */
-    readonly listing = new BehaviorSubject<ServiceItem[]>([]);
+    public readonly listing = new BehaviorSubject<ServiceItem[]>([]);
     /** Active User */
-    readonly user = new BehaviorSubject<ServiceItem>(null);
+    public readonly user = new BehaviorSubject<ServiceItem>(null);
     /** State of loading the user */
-    readonly state = new BehaviorSubject<string>('');
-    /** Default method for filtering the available list */
-    private _filter_fn: FilterFn<ServiceItem> = _ => true;
+    public readonly state = new BehaviorSubject<string>('');
     /** Application Service */
     public parent: any;
-    readonly can_create: boolean = false;
-    readonly can_edit: boolean = true;
+    public readonly can_create: boolean = false;
+    public readonly can_edit: boolean = true;
+    /** Default method for filtering the available list */
+    private _filter_fn: FilterFn<ServiceItem> = _ => true;
 
     constructor(
         private _composer: ComposerService,
@@ -50,9 +48,9 @@ export class BackofficeUsersService extends EngineUsersService {
             if (state) {
                 this.http = this._composer.http;
                 sub.unsubscribe();
-                this.current().then((user) => {
+                this.current().then(user => {
                     this.user.next(user);
-                })
+                });
             }
         });
     }
@@ -92,7 +90,7 @@ export class BackofficeUsersService extends EngineUsersService {
                 user => {
                     if (user) {
                         this.user.next(user);
-                        Sentry.configureScope((scope) => scope.setUser({ email: user.email }));
+                        Sentry.configureScope(scope => scope.setUser({ email: user.email }));
                         this.state.next('success');
                         resolve();
                     } else {
@@ -142,7 +140,7 @@ export class BackofficeUsersService extends EngineUsersService {
                         const clientId = Md5.hashStr(`${location.origin}/oauth-resp.html`);
                         sessionStorage.setItem(`${clientId}_login`, 'true');
                     }
-                    this._composer.auth.authorise().then((token) => {
+                    this._composer.auth.authorise().then(token => {
                         console.log('Token:', token);
                         resolve();
                     });
@@ -161,7 +159,7 @@ export class BackofficeUsersService extends EngineUsersService {
                 },
                 () => this.load()
             );
-        })
+        });
     }
 
     /**

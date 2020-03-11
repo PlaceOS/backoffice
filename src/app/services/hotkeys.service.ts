@@ -20,7 +20,7 @@ export class HotkeysService {
     /** List of registered hotkey combinations */
     private registered_combos: string[][] = [];
     /** Counter for the number of keydown events. Used for checking order of key presses */
-    private counter: number = 0;
+    private counter = 0;
     /** Last key code to be pressed */
     private last_down: string;
 
@@ -55,7 +55,7 @@ export class HotkeysService {
      * @param next Callback for combination presses
      */
     public listen(combo: string | string[], next: () => void): Subscription {
-        combo = (combo instanceof Array ? combo : combo.split('+'));
+        combo = combo instanceof Array ? combo : combo.split('+');
         const combination: string[] = combo.map(i => this.mapKey(i.toLowerCase()));
         if (combination.length > 0 && this.validCombination(combination)) {
             this.registered_combos.push(combination);
@@ -65,7 +65,7 @@ export class HotkeysService {
                 this.keydown_observers[last_key] = this.keydown_states[last_key].asObservable();
             }
             this.updateCombinationEndList();
-            return this.keydown_observers[last_key].subscribe((count) => {
+            return this.keydown_observers[last_key].subscribe(count => {
                 if (count) {
                     const presses: number[] = [];
                     if (combination.length > 1) {
@@ -76,7 +76,9 @@ export class HotkeysService {
                         }
                         // Check that keys are pressed in the correct order
                         for (let i = 0; i < combination.length - 1; i++) {
-                            if (presses[i] > presses[i + 1]) { return; }
+                            if (presses[i] > presses[i + 1]) {
+                                return;
+                            }
                         }
                     }
                     next();
@@ -98,7 +100,8 @@ export class HotkeysService {
     }
 
     /**
-     * Update the list of the last keys in combinations to allow for prevent default actions on pre-existing hotkeys
+     * Update the list of the last keys in combinations to allow for
+     * prevent default actions on pre-existing hotkeys
      */
     private updateCombinationEndList(): void {
         const key_list = [];

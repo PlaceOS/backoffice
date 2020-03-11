@@ -1,4 +1,3 @@
-
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { ComposerService } from '@placeos/composer';
@@ -23,7 +22,11 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
     /** Route of the shown tooltip */
     public tooltip: string;
 
-    constructor(private _service: ApplicationService, private _composer: ComposerService, private router: Router) {
+    constructor(
+        private _service: ApplicationService,
+        private _composer: ComposerService,
+        private router: Router
+    ) {
         super();
     }
 
@@ -36,13 +39,17 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
         const user = this._service.Users.user.getValue();
         /** Only allow metrics if a URL has be set */
         if (!this._composer.auth.authority.metrics) {
-            this.menu_items = this.menu_items.filter(item => item.route && item.route.indexOf('metrics') < 0);
+            this.menu_items = this.menu_items.filter(
+                item => item.route && item.route.indexOf('metrics') < 0
+            );
             if (this.router.url.indexOf('metrics') >= 0) {
                 this.router.navigate([]);
             }
         }
         /** Filter out items with insufficient permissions */
-        this.menu_items = this.menu_items.filter(item => !item.needs_role || !!(user as any)[item.needs_role]);
+        this.menu_items = this.menu_items.filter(
+            item => !item.needs_role || !!(user as any)[item.needs_role]
+        );
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -55,10 +62,14 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
      * Delayed close of the sidebar menu. Mobile Only
      */
     public close() {
-        this.timeout('close', () => {
-            this.show = false;
-            this.showChange.emit(this.show);
-        }, 100);
+        this.timeout(
+            'close',
+            () => {
+                this.show = false;
+                this.showChange.emit(this.show);
+            },
+            100
+        );
     }
 
     /**

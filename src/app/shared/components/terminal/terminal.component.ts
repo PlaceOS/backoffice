@@ -1,12 +1,21 @@
-import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef, SimpleChanges, OnChanges } from "@angular/core";
+import {
+    Component,
+    OnInit,
+    Input,
+    OnDestroy,
+    ViewChild,
+    ElementRef,
+    SimpleChanges,
+    OnChanges
+} from '@angular/core';
 import { Terminal } from 'xterm';
 
 import { BaseDirective } from '../../globals/base.directive';
 
 @Component({
-    selector: "a-terminal",
-    templateUrl: "./terminal.component.html",
-    styleUrls: ["./terminal.component.scss"]
+    selector: 'a-terminal',
+    templateUrl: './terminal.component.html',
+    styleUrls: ['./terminal.component.scss']
 })
 export class TerminalComponent extends BaseDirective implements OnInit, OnChanges, OnDestroy {
     /** Contents to display on the terminal */
@@ -49,13 +58,15 @@ export class TerminalComponent extends BaseDirective implements OnInit, OnChange
      * Resize the terminal display to fill the container element
      */
     public resizeTerminal(): void {
-        if (!this.terminal || !this.container_el) { return; }
+        if (!this.terminal || !this.container_el) {
+            return;
+        }
         const font_size = this.terminal.getOption('fontSize');
         const line_height = this.terminal.getOption('lineHeight');
         const box = this.container_el.nativeElement.getBoundingClientRect();
-        const width = Math.floor(box.width / (font_size * .6));
+        const width = Math.floor(box.width / (font_size * 0.6));
         const height = Math.floor(box.height / (line_height * font_size * 1.1));
-        console.log('Resize:', width, height, line_height );
+        console.log('Resize:', width, height, line_height);
         this.terminal.resize(width - 2, height);
     }
 
@@ -64,7 +75,9 @@ export class TerminalComponent extends BaseDirective implements OnInit, OnChange
      * @param new_content New contents to render
      */
     private updateTerminalContents(new_content: string) {
-        if (!this.terminal) { return; }
+        if (!this.terminal) {
+            return;
+        }
         this.terminal.clear();
         const lines: string[] = new_content.split('\n');
         for (const line of lines) {

@@ -1,8 +1,8 @@
-import { Component, OnInit, Output, EventEmitter, Inject } from "@angular/core";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { ApplicationIcon } from "../../shared/utilities/settings.interfaces";
-import { DialogEvent } from "../../shared/utilities/types.utilities";
+import { ApplicationIcon } from '../../shared/utilities/settings.interfaces';
+import { DialogEvent } from '../../shared/utilities/types.utilities';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 
 export interface ConfirmModalData {
@@ -17,17 +17,16 @@ export interface ConfirmModalData {
 }
 
 export const CONFIRM_METADATA = {
-
     height: 'auto',
     width: '24em',
     maxHeight: 'calc(100vh - 2em)',
-    maxWidth: 'calc(100vw - 2em)',
-}
+    maxWidth: 'calc(100vw - 2em)'
+};
 
 @Component({
-    selector: "confirm-modal",
-    templateUrl: "./confirm-modal.component.html",
-    styleUrls: ["./confirm-modal.component.scss"]
+    selector: 'confirm-modal',
+    templateUrl: './confirm-modal.component.html',
+    styleUrls: ['./confirm-modal.component.scss']
 })
 export class ConfirmModalComponent extends BaseDirective implements OnInit {
     /** Emitter for user action on the modal */
@@ -53,9 +52,9 @@ export class ConfirmModalComponent extends BaseDirective implements OnInit {
     public ngOnInit(): void {
         const data = this._data;
         if (data) {
-            this.title = data.title || "Confirm";
-            this.content = data.content || "Confirm";
-            this.action = data.action || "Ok";
+            this.title = data.title || 'Confirm';
+            this.content = data.content || 'Confirm';
+            this.action = data.action || 'Ok';
             this.icon = data.icon;
         }
     }
@@ -64,6 +63,6 @@ export class ConfirmModalComponent extends BaseDirective implements OnInit {
      * User confirmation of the content of the modal
      */
     public accept() {
-        this.event.emit({ reason: "done" });
+        this.event.emit({ reason: 'done' });
     }
 }

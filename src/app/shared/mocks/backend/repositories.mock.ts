@@ -10,8 +10,15 @@ export function generateMockRepository(overrides: any = {}) {
     if (typeof overrides !== 'object' || !overrides) {
         overrides = {};
     }
-    const company = faker.company.companyName().split(' ').join('-').toLowerCase();
-    const product = faker.commerce.productName().split(' ').join('-');
+    const company = faker.company
+        .companyName()
+        .split(' ')
+        .join('-')
+        .toLowerCase();
+    const product = faker.commerce
+        .productName()
+        .split(' ')
+        .join('-');
     return {
         id: `repo-${Math.floor(Math.random() * 999_999_999)}`,
         name: `${product}`,
@@ -24,19 +31,25 @@ export function generateMockRepository(overrides: any = {}) {
     };
 }
 
-export const MOCK_REPOSITORIES = Array(5).fill(0).map(_ => generateMockRepository());
+export const MOCK_REPOSITORIES = Array(5)
+    .fill(0)
+    .map(_ => generateMockRepository());
 
 const MOCK_DRIVERS = window.backend.model.backend.drivers.model.drivers;
 
 MOCK_REPOSITORIES.forEach(repo => {
-    repo.commits = Array(5).fill(0).map(_ => padZero(randomInt(99_999_999), 8));
-    repo.drivers = Array(randomInt(10)).fill(0).map(_ => MOCK_DRIVERS[randomInt(MOCK_DRIVERS.length)].id);
+    repo.commits = Array(5)
+        .fill(0)
+        .map(_ => padZero(randomInt(99_999_999), 8));
+    repo.drivers = Array(randomInt(10))
+        .fill(0)
+        .map(_ => MOCK_DRIVERS[randomInt(MOCK_DRIVERS.length)].id);
 });
 
 // Add handler for repositories index endpoint
 window.control.handlers.push({
     path: `${API}/repositories`,
-    metadata:  MOCK_REPOSITORIES,
+    metadata: MOCK_REPOSITORIES,
     callback: event => {
         let data = [...MOCK_REPOSITORIES];
         if (event.query_params.q) {
@@ -50,7 +63,7 @@ window.control.handlers.push({
 // Add handler for repository show endpoint
 window.control.handlers.push({
     path: `${API}/repositories/:id`,
-    metadata:  MOCK_REPOSITORIES,
+    metadata: MOCK_REPOSITORIES,
     callback: event => {
         const item = MOCK_REPOSITORIES.find(repo => repo.id === event.route_params.id);
         if (item) {
@@ -69,7 +82,7 @@ window.control.handlers.push({
     metadata: MOCK_REPOSITORIES,
     method: 'POST',
     callback: event => {
-        const new_item = { ...event.body, id: `repo-${randomInt(999_999_999)}`};
+        const new_item = { ...event.body, id: `repo-${randomInt(999_999_999)}` };
         MOCK_REPOSITORIES.push(new_item);
         return new_item;
     }
@@ -97,11 +110,15 @@ window.control.handlers.push({
 // Add handler for repository show endpoint
 window.control.handlers.push({
     path: `${API}/repositories/:id/drivers`,
-    metadata:  MOCK_REPOSITORIES,
+    metadata: MOCK_REPOSITORIES,
     callback: event => {
-        const repo = MOCK_REPOSITORIES.find(repo => repo.id === event.route_params.id);
+        const repo = MOCK_REPOSITORIES.find(a_repo => a_repo.id === event.route_params.id);
         if (repo) {
-            const driver_list = repo.drivers.map(id => MOCK_DRIVERS.find(driver => driver.id === id).name.split(' ').join('/'));
+            const driver_list = repo.drivers.map(id =>
+                MOCK_DRIVERS.find(a_driver => a_driver.id === id)
+                    .name.split(' ')
+                    .join('/')
+            );
             return driver_list;
         }
         throw {
@@ -114,18 +131,28 @@ window.control.handlers.push({
 // Add handler for repository show endpoint
 window.control.handlers.push({
     path: `${API}/repositories/:id/commits`,
-    metadata:  MOCK_REPOSITORIES,
+    metadata: MOCK_REPOSITORIES,
     callback: event => {
-        const repo = MOCK_REPOSITORIES.find(repo => repo.id === event.route_params.id);
+        const repo = MOCK_REPOSITORIES.find(a_repo => a_repo.id === event.route_params.id);
         if (repo) {
-            const driver = MOCK_DRIVERS.find(driver => driver.name.split(' ').join('/') === event.query_params.driver);
-            if (!driver) throw {  status: 404, message: `Unable to find driver with ID ${event.query_params.driver}` };
-            return repo.commits.map(hash => ({
-                commit: hash,
-                date: dayjs().subtract(randomInt(999, 10) * 20, 'm').unix(),
-                author: `${faker.name.firstName()} ${faker.name.lastName()}`,
-                subject: `chore(${driver.class}): various changes`
-            })).sort((a, b) => a.date - b.date);
+            const driver = MOCK_DRIVERS.find(
+                a_driver => a_driver.name.split(' ').join('/') === event.query_params.driver
+            );
+            if (!driver)
+                throw {
+                    status: 404,
+                    message: `Unable to find driver with ID ${event.query_params.driver}`
+                };
+            return repo.commits
+                .map(hash => ({
+                    commit: hash,
+                    date: dayjs()
+                        .subtract(randomInt(999, 10) * 20, 'm')
+                        .unix(),
+                    author: `${faker.name.firstName()} ${faker.name.lastName()}`,
+                    subject: `chore(${driver.class}): various changes`
+                }))
+                .sort((a, b) => a.date - b.date);
         }
         throw {
             status: 404,
@@ -137,12 +164,18 @@ window.control.handlers.push({
 // Add handler for repository show endpoint
 window.control.handlers.push({
     path: `${API}/repositories/:id/details`,
-    metadata:  MOCK_REPOSITORIES,
+    metadata: MOCK_REPOSITORIES,
     callback: event => {
-        const repo = MOCK_REPOSITORIES.find(repo => repo.id === event.route_params.id);
+        const repo = MOCK_REPOSITORIES.find(a_repo => a_repo.id === event.route_params.id);
         if (repo) {
-            const driver = MOCK_DRIVERS.find(driver => driver.name.split(' ').join('/') === event.query_params.driver);
-            if (!driver) throw {  status: 404, message: `Unable to find driver with ID ${event.query_params.driver}` };
+            const driver = MOCK_DRIVERS.find(
+                a_driver => a_driver.name.split(' ').join('/') === event.query_params.driver
+            );
+            if (!driver)
+                throw {
+                    status: 404,
+                    message: `Unable to find driver with ID ${event.query_params.driver}`
+                };
             return {
                 descriptive_name: driver.name,
                 generic_name: driver.module_name,

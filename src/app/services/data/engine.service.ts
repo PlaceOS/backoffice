@@ -12,7 +12,9 @@ export class EngineService extends BaseClass {
     }
 
     public async reindex(backfill: boolean = true) {
-        const url = `${this._composer.auth.api_endpoint}/reindex${backfill ? '?backfill=true' : ''}`;
+        const url = `${this._composer.auth.api_endpoint}/reindex${
+            backfill ? '?backfill=true' : ''
+        }`;
         return this._composer.http.post(url, null).toPromise();
     }
 

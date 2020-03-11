@@ -62,8 +62,10 @@ export interface SystemsModuleSettings {
     licenses: number;
 }
 
-export type ApplicationLink = ApplicationActionLink | ApplicationInternalLink | ApplicationExternalLink;
-
+export type ApplicationLink =
+    | ApplicationActionLink
+    | ApplicationInternalLink
+    | ApplicationExternalLink;
 
 export interface ApplicationActionLink {
     /** Identifier for the link */

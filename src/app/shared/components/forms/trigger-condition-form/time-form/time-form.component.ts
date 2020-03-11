@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { Identity } from 'src/app/shared/utilities/types.utilities';
@@ -49,17 +49,17 @@ export class TriggerConditionTimeFormComponent implements OnChanges {
                 .format('MMM')
         );
     /** Minute of the hour to recurr on */
-    public cron_minute: number = 0;
+    public cron_minute = 0;
     /** Hour of the day to recurr on */
-    public cron_hour: number = 0;
+    public cron_hour = 0;
     /** Hour of the day to recurr on */
-    public cron_hour_period: string = 'AM';
+    public cron_hour_period = 'AM';
     /** Hour of the day to recurr on */
-    public cron_day: string = this.days_of_week[0];
+    public cron_day = this.days_of_week[0];
     /** Hour of the day to recurr on */
-    public cron_date: number = 1;
+    public cron_date = 1;
     /** Hour of the day to recurr on */
-    public cron_month: string = this.months_of_year[0];
+    public cron_month = this.months_of_year[0];
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.form && this.form) {

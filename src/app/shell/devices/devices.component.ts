@@ -68,7 +68,7 @@ export class DevicesComponent extends BaseRootComponent<EngineModule> {
      */
     protected edit() {
         if (this.item) {
-            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+            this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
                 width: 'auto',
                 maxHeight: 'calc(100vh - 2em)',

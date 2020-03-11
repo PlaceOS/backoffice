@@ -3,19 +3,14 @@ import {
     OnChanges,
     Input,
     ViewChild,
-    ViewChildren,
     ElementRef,
-    QueryList,
     SimpleChanges,
     EventEmitter,
     Output
 } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Router, NavigationEnd } from '@angular/router';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
-
-import { BaseDirective } from '../../../shared/globals/base.directive';
-import { ApplicationService } from '../../../services/app.service';
-import { toQueryString } from 'src/app/shared/utilities/api.utilities';
-import { Subject, Observable, of } from 'rxjs';
 import {
     EngineResource,
     EngineSystem,
@@ -24,10 +19,12 @@ import {
     HashMap
 } from '@placeos/ts-client';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
+import { Subject, Observable, of } from 'rxjs';
+
+import { BaseDirective } from '../../../shared/globals/base.directive';
+import { ApplicationService } from '../../../services/app.service';
 import { unique } from 'src/app/shared/utilities/general.utilities';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
-import { MatDialog } from '@angular/material/dialog';
-import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
     selector: 'global-search',
@@ -53,7 +50,7 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
     /** Search query string */
     @Output() public searchChange = new EventEmitter<string>();
     /** Minimum number of characters needed to start a server query */
-    @Input('minLength') public min_length: number = 2;
+    @Input('minLength') public min_length = 2;
     /** Mapping of item types to routes */
     public route_map: any = {
         system: 'Systems',
@@ -71,13 +68,12 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
     /** List of item */
     public results: EngineResource<any>[];
     /** Current page offset to get the next list of items */
-    public offset: number = 0;
+    public offset = 0;
 
     /** Subject holding the value of the search */
     private search$ = new Subject<string>();
 
     @ViewChild('item_list', { static: true }) private list_el: ElementRef;
-    @ViewChildren('list_item') private item_list: QueryList<ElementRef>;
 
     constructor(
         private _service: ApplicationService,
@@ -92,14 +88,14 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
             distinctUntilChanged(),
-            switchMap(query => {
+            switchMap(query_string => {
                 this.loading = true;
                 this.offset = 20;
-                return !this.min_length || query.length >= this.min_length
-                    ? this.queryEndpoints(query)
+                return !this.min_length || query_string.length >= this.min_length
+                    ? this.queryEndpoints(query_string)
                     : Promise.resolve([]);
             }),
-            catchError(err => of([])),
+            catchError(() => of([])),
             map((list: EngineResource<any>[][]) => {
                 this.loading = false;
                 return [].concat.apply([], list);
@@ -164,7 +160,7 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
      */
     public edit(item: EngineResource<any>) {
         if (item) {
-            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+            this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
                 width: 'auto',
                 maxHeight: 'calc(100vh - 2em)',
@@ -187,14 +183,14 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
 
     /**
      * Query the multiple API endpoints
-     * @param query Filter string
+     * @param query_str Filter string
      * @param offset Returned page offset
      */
-    private queryEndpoints(query: string, offset: number = 0) {
+    private queryEndpoints(query_str: string, offset: number = 0) {
         return Promise.all([
-            this._service.Systems.query({ q: query || '', offset, cache: 60 * 1000 }),
-            this._service.Zones.query({ q: query || '', offset, cache: 60 * 1000 }),
-            this._service.Modules.query({ q: query || '', offset, cache: 60 * 1000 })
+            this._service.Systems.query({ q: query_str || '', offset, cache: 60 * 1000 }),
+            this._service.Zones.query({ q: query_str || '', offset, cache: 60 * 1000 }),
+            this._service.Modules.query({ q: query_str || '', offset, cache: 60 * 1000 })
         ]);
     }
 

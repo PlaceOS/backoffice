@@ -32,9 +32,9 @@ import { BaseDirective } from 'src/app/shared/globals/base.directive';
 export class SettingsFieldComponent extends BaseDirective
     implements OnInit, OnChanges, OnDestroy, ControlValueAccessor {
     /** Whether form field is readonly */
-    @Input() public readonly: boolean = true;
+    @Input() public readonly = true;
     /** Current value for the */
-    public settings_string: string = ' ';
+    public settings_string = ' ';
     /** Form control on change handler */
     private _onChange: (_: string) => void;
     /** Form control on touch handler */

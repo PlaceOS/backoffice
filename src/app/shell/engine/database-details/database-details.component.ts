@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { EngineService } from 'src/app/services/data/engine.service';
 import { ApplicationService } from 'src/app/services/app.service';
@@ -22,7 +22,9 @@ export class EngineDatabaseDetailsComponent {
             () => (this.reindexing = false),
             err => {
                 this.reindexing = false;
-                this._service.notifyError(`Error reindexing database. Error: ${err.message | err}`);
+                this._service.notifyError(
+                    `Error reindexing database. Error: ${err.message || err}`
+                );
             }
         );
     }
@@ -33,7 +35,9 @@ export class EngineDatabaseDetailsComponent {
             () => (this.backfilling = false),
             err => {
                 this.backfilling = false;
-                this._service.notifyError(`Error reindexing database. Error: ${err.message | err}`);
+                this._service.notifyError(
+                    `Error reindexing database. Error: ${err.message || err}`
+                );
             }
         );
     }

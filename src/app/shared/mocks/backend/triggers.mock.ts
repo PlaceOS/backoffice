@@ -36,18 +36,18 @@ export class MockTriggersBackend extends BaseMockBackend {
                 conditions: {
                     comparisons: Array(randomInt(5) + 1)
                         .fill(0)
-                        .map(i => generateTriggerComparison()),
+                        .map(() => generateTriggerComparison()),
                     time_dependents: Array(randomInt(5) + 1)
                         .fill(0)
-                        .map(i => generateTriggerTimeDependant())
+                        .map(() => generateTriggerTimeDependant())
                 },
                 actions: {
                     functions: Array(randomInt(5) + 1)
                         .fill(0)
-                        .map(i => generateTriggerFunction()),
+                        .map(() => generateTriggerFunction()),
                     mailers: Array(randomInt(5) + 1)
                         .fill(0)
-                        .map(i => generateTriggerMailer())
+                        .map(() => generateTriggerMailer())
                 },
                 created_at: dayjs()
                     .add(-Math.floor(Math.random() * 10000), 'm')

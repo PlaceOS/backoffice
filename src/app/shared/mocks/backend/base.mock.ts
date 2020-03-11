@@ -1,4 +1,3 @@
-
 import { MockHttpRequestHandlerOptions } from '@placeos/ts-client';
 import { BehaviorSubject } from 'rxjs';
 
@@ -31,7 +30,7 @@ export class BaseMockBackend {
         this.load();
     }
 
-    protected load() { }
+    protected load() {}
 
     get data() {
         return this.model;
@@ -39,14 +38,16 @@ export class BaseMockBackend {
 
     public search(data, fragment) {
         if (fragment.id) {
-            data = data.filter((a) => a.id === fragment.id);
+            data = data.filter(a => a.id === fragment.id);
         }
         if (fragment.q) {
-            data = data.filter((a) => (a.name || '').toLowerCase().indexOf(fragment.q.toLowerCase()) >= 0);
+            data = data.filter(
+                a => (a.name || '').toLowerCase().indexOf(fragment.q.toLowerCase()) >= 0
+            );
         }
         if (fragment && fragment.offset) {
-            const start = Math.min(data.length, +(fragment.offset));
-            const end = Math.min(data.length, +(fragment.offset) + (+fragment.limit || 20));
+            const start = Math.min(data.length, +fragment.offset);
+            const end = Math.min(data.length, +fragment.offset + (+fragment.limit || 20));
             return { results: data.slice(start, end), total: data.length };
         } else {
             return { results: data.slice(0, +fragment.limit || 20), total: data.length };
@@ -54,21 +55,23 @@ export class BaseMockBackend {
     }
 
     public setupBasicHandlers(base_url: string, list: any[], id_prefix: string) {
-        if (!list) { list = []; }
+        if (!list) {
+            list = [];
+        }
         initialiseGlobals();
         // Mock for index GET
         window.control.handlers.push({
             path: `${base_url}`,
             metadata: list,
             method: 'GET',
-            callback: (event) => this.search(list, event.query_params)
+            callback: event => this.search(list, event.query_params)
         } as MockHttpRequestHandlerOptions);
         // Mock for index POST
         window.control.handlers.push({
             path: `${base_url}`,
             metadata: list,
             method: 'POST',
-            callback: (event) => {
+            callback: event => {
                 list.push({ ...(event.body || {}), id: `${id_prefix}-${padZero(list.length, 4)}` });
                 return list[list.length - 1];
             }
@@ -78,15 +81,15 @@ export class BaseMockBackend {
             path: `${base_url}/:id`,
             metadata: list,
             method: 'GET',
-            callback: (event) => {
+            callback: event => {
                 if (event && event.route_params && event.route_params.id) {
-                    return list.find(i => i.id === event.route_params.id)
+                    return list.find(i => i.id === event.route_params.id);
                 }
                 return null;
             }
         } as MockHttpRequestHandlerOptions);
         // Mock for show PUT
-        const handleUpdate = (event) => {
+        const handleUpdate = event => {
             if (event && event.route_params && event.route_params.id) {
                 for (const item of list) {
                     if (item.id === event.route_params.id) {
@@ -117,7 +120,7 @@ export class BaseMockBackend {
             path: `${base_url}/:id`,
             metadata: list,
             method: 'DELETE',
-            callback: (event) => {
+            callback: event => {
                 if (event && event.route_params && event.route_params.id) {
                     for (const item of list) {
                         if (item.id === event.route_params.id) {
@@ -133,9 +136,7 @@ export class BaseMockBackend {
         return list;
     }
 
-    protected updateOtherEndpoints(list: any[]): void {
-
-    }
+    protected updateOtherEndpoints(list: any[]): void {}
 
     protected request(method, url) {
         return new Promise((resolve, reject) => {
@@ -147,14 +148,14 @@ export class BaseMockBackend {
                 } else {
                     reject({
                         status: (this as any).status,
-                        statusText: xhr.statusText,
+                        statusText: xhr.statusText
                     });
                 }
             };
             xhr.onerror = function() {
                 reject({
                     status: (this as any).status,
-                    statusText: xhr.statusText,
+                    statusText: xhr.statusText
                 });
             };
             xhr.send();

@@ -24,7 +24,7 @@ export class ZoneFormComponent extends BaseDirective {
         { id: EncryptionLevel.NeverDisplay, name: 'Never Display' }
     ];
     /** List of separator characters for tags */
-    readonly separators: number[] = [ENTER, COMMA];
+    public readonly separators: number[] = [ENTER, COMMA];
 
     /** Service for handling zones */
     public get zone_service(): EngineServiceLike {
@@ -61,7 +61,7 @@ export class ZoneFormComponent extends BaseDirective {
 
     /**
      * Remove tag from the list
-     * @param existing_tag
+     * @param existing_tag Tag to remove
      */
     public removeTag(existing_tag: string): void {
         if (!this.form || !this.form.controls.tag_list) return;

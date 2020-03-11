@@ -65,7 +65,7 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
      */
     protected edit() {
         if (this.item) {
-            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+            this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
                 width: 'auto',
                 maxHeight: 'calc(100vh - 2em)',

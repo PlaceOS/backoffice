@@ -1,4 +1,3 @@
-
 import { MockHttpRequestHandlerOptions } from '@placeos/ts-client';
 
 import { BaseMockBackend } from './base.mock';
@@ -8,7 +7,6 @@ import * as faker from 'faker';
 import * as dayjs from 'dayjs';
 
 export class MockStatsBackend extends BaseMockBackend {
-
     constructor(protected model) {
         super(model);
     }
@@ -34,13 +32,33 @@ export class MockStatsBackend extends BaseMockBackend {
             period_start: start.unix()
         };
         const value = Math.floor(Math.random() * 100);
-        this.model[name].histogram.push({ avg: value, min: value, max: value, sum: value, count: 1 });
-        this.model[name].histogram.push({ avg: value + 2, min: value + 2, max: value + 2, sum: value + 2, count: 1 });
+        this.model[name].histogram.push({
+            avg: value,
+            min: value,
+            max: value,
+            sum: value,
+            count: 1
+        });
+        this.model[name].histogram.push({
+            avg: value + 2,
+            min: value + 2,
+            max: value + 2,
+            sum: value + 2,
+            count: 1
+        });
         setInterval(() => {
             const old_value = this.model[name].histogram[this.model[name].histogram.length - 1].max;
             let new_value = old_value + Math.floor(Math.random() * 10) - 5;
-            if (new_value < 0) { new_value = 0; }
-            this.model[name].histogram.push({ avg: new_value, min: new_value, max: new_value, sum: new_value, count: 1 });
+            if (new_value < 0) {
+                new_value = 0;
+            }
+            this.model[name].histogram.push({
+                avg: new_value,
+                min: new_value,
+                max: new_value,
+                sum: new_value,
+                count: 1
+            });
         }, 5 * 60 * 1000);
     }
 
@@ -56,7 +74,9 @@ export class MockStatsBackend extends BaseMockBackend {
                 debounce_period: 0,
                 conditions: [],
                 action: [],
-                created_at: dayjs().add(-Math.floor(Math.random() * 10000), 'm').unix()
+                created_at: dayjs()
+                    .add(-Math.floor(Math.random() * 10000), 'm')
+                    .unix()
             });
         }
         this.model.states = item_list;
@@ -64,11 +84,24 @@ export class MockStatsBackend extends BaseMockBackend {
             path: 'api/engine/v2/stats/:id',
             metadata: this.model.stats,
             method: 'GET',
-            callback: (event) => {
+            callback: event => {
                 const period = event.query_params.period || 'day';
-                const interval = period === 'hour' ? 5 * 60 : (period === 'week' ? 6 * 60 * 60 : (period === 'month' ? 24 * 60 * 60 : 30 * 60));
-                if (event.route_params.id && this.model[`graph_${event.route_params.id}`] && this.model[`graph_${event.route_params.id}`].histogram) {
-                    const item = JSON.parse(JSON.stringify(this.model[`graph_${event.route_params.id}`]));
+                const interval =
+                    period === 'hour'
+                        ? 5 * 60
+                        : period === 'week'
+                        ? 6 * 60 * 60
+                        : period === 'month'
+                        ? 24 * 60 * 60
+                        : 30 * 60;
+                if (
+                    event.route_params.id &&
+                    this.model[`graph_${event.route_params.id}`] &&
+                    this.model[`graph_${event.route_params.id}`].histogram
+                ) {
+                    const item = JSON.parse(
+                        JSON.stringify(this.model[`graph_${event.route_params.id}`])
+                    );
                     item.interval = interval;
                     item.period_name = period;
                     return item;

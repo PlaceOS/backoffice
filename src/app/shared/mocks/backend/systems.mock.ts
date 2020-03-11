@@ -23,7 +23,6 @@ export class MockSystemsBackend extends BaseMockBackend {
     private loadList() {
         const count = Math.ceil(Math.floor(Math.random() * 100 + 25) * this.model.scale);
         const zones = this.model.zones || [];
-        const nodes = this.model.nodes || [];
         let i = 0;
         this.model.systems = Array(count)
             .fill(1)
@@ -65,7 +64,7 @@ export class MockSystemsBackend extends BaseMockBackend {
             keys: Object.keys(yaml.safeLoad(system.settings.settings_string)),
             updated_at: dayjs().subtract(Math.floor(Math.random() * 2000), 'm').valueOf()
         }));
-        this.model.systems.forEach(i => this.generateMockSystem(i))
+        this.model.systems.forEach(system => this.generateMockSystem(system))
         this.model.systems = this.setupBasicHandlers('api/engine/v2/systems', this.model.systems, 'sys');
         window.control.handlers.push({
             path: 'api/engine/v2/systems/:id/:opt',

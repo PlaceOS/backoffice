@@ -4,7 +4,7 @@ import { EngineResource } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
-import { EngineServiceLike, Identity } from '../utilities/types.utilities';
+import { EngineServiceLike } from '../utilities/types.utilities';
 import { first } from 'rxjs/operators';
 
 @Component({
@@ -15,7 +15,7 @@ import { first } from 'rxjs/operators';
 export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
     implements OnInit {
     /** Name of the API service assoicated with the  */
-    readonly service_name: string;
+    public readonly service_name: string;
     /** ID of the item to render */
     public id: string;
     /** Item to render on the UI */
@@ -107,7 +107,7 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
 
     /**
      * Handle actions on the active item
-     * @param event
+     * @param event User action
      */
     public itemEvent(event: any) {
         if (!event) { return; }

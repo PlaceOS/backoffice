@@ -133,7 +133,7 @@ export function generateTriggerConditionForm(
 
 /**
  * Validate form control storing a list of emails
- * @param control
+ * @param control Form control to valid
  */
 export function validateEmailList(control: AbstractControl) {
     if (control.value && control.value instanceof Array) {

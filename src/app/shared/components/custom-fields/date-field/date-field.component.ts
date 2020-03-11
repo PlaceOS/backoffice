@@ -80,7 +80,8 @@ export class DateFieldComponent extends BaseDirective implements OnInit, Control
     }
 
     /**
-     * Registers a callback function that is called when the control's value changes in the UI.
+     * Registers a callback function that is called when the
+     * control's value changes in the UI.
      * @param fn The callback function to register
      */
     public registerOnChange(fn: (_: number) => void): void {
@@ -88,7 +89,8 @@ export class DateFieldComponent extends BaseDirective implements OnInit, Control
     }
 
     /**
-     * Registers a callback function is called by the forms API on initialization to update the form model on blur.
+     * Registers a callback function is called by the forms
+     * API on initialization to update the form model on blur.
      * @param fn The callback function to register
      */
     public registerOnTouched(fn: (_: number) => void): void {

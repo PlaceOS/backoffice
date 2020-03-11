@@ -54,7 +54,7 @@ export class RepositoryDriversComponent extends BaseDirective implements OnChang
 
     public newDriver(driver: string) {
         if (this.item.id) {
-            const ref = this._dialog.open<ItemCreateUpdateModalComponent, CreateEditModalData>(
+            this._dialog.open<ItemCreateUpdateModalComponent, CreateEditModalData>(
                 ItemCreateUpdateModalComponent,
                 {
                     height: 'auto',

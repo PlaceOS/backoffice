@@ -5,7 +5,6 @@ import { switchMap, debounceTime, distinctUntilChanged, map, catchError } from '
 
 import { EngineResource } from '@placeos/ts-client';
 
-import { filterList, matchToHighlight } from 'src/app/shared/utilities/general.utilities';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
 
@@ -26,7 +25,7 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
     /** Limit available options to these */
     @Input() public options: T[];
     /** Minimum number of characters needed to start a server query */
-    @Input('minLength') public min_length: number = 0;
+    @Input('minLength') public min_length = 0;
     /** Service used for searching items */
     @Input() public service: EngineServiceLike;
     /** Currently selected item */
@@ -56,8 +55,8 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
                 return this.options && this.options.length > 0
                     ? Promise.resolve(this.options)
                     : !this.min_length || query.length >= this.min_length
-                        ? (this.service.query({ q: query || '', cache: 60 * 1000 }) as Promise<T[]>)
-                        : Promise.resolve([]);
+                    ? (this.service.query({ q: query || '', cache: 60 * 1000 }) as Promise<T[]>)
+                    : Promise.resolve([]);
             }),
             catchError(err => of([])),
             map((list: T[]) => {
@@ -77,7 +76,7 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
         );
         this.timeout('init', () => {
             this.search$.next('');
-        })
+        });
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -117,7 +116,8 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
     }
 
     /**
-     * Registers a callback function that is called when the control's value changes in the UI.
+     * Registers a callback function that is called when the
+     * control's value changes in the UI.
      * @param fn The callback function to register
      */
     public registerOnChange(fn: (_: T) => void): void {
@@ -125,7 +125,8 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
     }
 
     /**
-     * Registers a callback function is called by the forms API on initialization to update the form model on blur.
+     * Registers a callback function is called by the forms API
+     * on initialization to update the form model on blur.
      * @param fn The callback function to register
      */
     public registerOnTouched(fn: (_: T) => void): void {

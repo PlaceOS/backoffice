@@ -1,17 +1,10 @@
 
-import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ComposerService } from '@placeos/composer';
 
 import { BaseDirective } from '../../shared/globals/base.directive';
-import { ApplicationService } from '../../services/app.service';
-import { ContextMenuComponent } from '../../shared/components/context-menu/context-menu.component';
-import { isMobileDevice, copyToClipboard } from 'src/app/shared/utilities/general.utilities';
 
 import * as dayjs from 'dayjs';
-import * as Chart from 'chart.js';
-import { EngineModule, EngineSystem } from '@placeos/ts-client';
-import { ApplicationLink } from 'src/app/shared/utilities/settings.interfaces';
-import { ComposerService } from '@placeos/composer';
 
 @Component({
     selector: 'app-metrics',

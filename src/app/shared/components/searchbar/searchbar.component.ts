@@ -40,9 +40,9 @@ export class SearchbarComponent extends BaseDirective {
             return;
         }
         const win = self as any;
-        const Speech: any = win.SpeechRecognition || win.webkitSpeechRecognition;
-        if (Speech) {
-            this.model.recognition = new Speech();
+        const speech: any = win.SpeechRecognition || win.webkitSpeechRecognition;
+        if (speech) {
+            this.model.recognition = new speech();
 
             this.model.recognition.continuous = false;
             this.model.recognition.interimResults = false;

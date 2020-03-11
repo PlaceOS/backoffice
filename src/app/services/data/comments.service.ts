@@ -77,7 +77,6 @@ export class BackofficeCommentsService extends BaseAPIService<IComment> {
     /**
      * Convert raw comment dat into local format
      * @param cmt Raw comment data
-     * @return
      */
     protected process(cmt: any): IComment {
         const comment: IComment = {

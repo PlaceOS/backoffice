@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineSystem, HashMap, EngineZone } from '@placeos/ts-client';
+import { EngineSystem, EngineZone } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -11,11 +11,6 @@ import {
     ConfirmModalData,
     CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-
-import {
-    SystemLogModalComponent,
-    SystemLogModalData
-} from 'src/app/overlays/system-log-modal/system-log-modal.component';
 
 @Component({
     selector: 'system-about',
@@ -131,7 +126,9 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
      * Update the displayed settings
      */
     public updateSettings() {
-        if (!this.item) { return; }
+        if (!this.item) {
+            return;
+        }
         if (this.merged !== false) {
             this.settings = mergeYAMLSettings('', this.item.settings.settings_string || '');
             for (const zone of this.zones) {
@@ -149,7 +146,9 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
      * Load zones associated with the system to allow for merging
      */
     public loadZones() {
-        if (!this.item) { return; }
+        if (!this.item) {
+            return;
+        }
         this._service.Zones.query({ sys_id: this.item.id, offset: 0 }).then(
             list => {
                 list.sort((a, b) => this.item.zones.indexOf(b.id) - this.item.zones.indexOf(a.id));

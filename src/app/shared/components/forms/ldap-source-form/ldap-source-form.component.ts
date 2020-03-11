@@ -17,7 +17,7 @@ export class LdapSourceFormComponent {
         { id: 'tls', name: 'TLS' }
     ];
 
-    ngOnChanges(changes: SimpleChanges): void {
+    public ngOnChanges(changes: SimpleChanges): void {
         if (changes.form) {
             console.log('Form:', this.form);
         }

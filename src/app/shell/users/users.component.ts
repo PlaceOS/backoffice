@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EngineUser } from '@placeos/ts-client';
 
@@ -43,7 +43,7 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
                 service: this._service.Users
             }
         });
-        ref.componentInstance.event.subscribe((event) => {
+        ref.componentInstance.event.subscribe(event => {
             if (event.reason === 'done') {
                 this._router.navigate(['/users', event.metadata.item.id]);
             }
@@ -55,7 +55,7 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
      */
     protected edit() {
         if (this.item) {
-            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+            this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
                 width: 'auto',
                 maxHeight: 'calc(100vh - 2em)',

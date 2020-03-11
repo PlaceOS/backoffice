@@ -1,21 +1,18 @@
 import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { FormGroup } from '@angular/forms';
 
 import {
     EngineSystem,
-    EngineZone,
     EngineTrigger,
-    TriggerConditions,
     TriggerComparison,
     TriggerTimeCondition
 } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
-import { Identity, HashMap, DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
-import * as dayjs from 'dayjs';
-import { FormGroup } from '@angular/forms';
 import { generateTriggerConditionForm } from 'src/app/shared/utilities/data/triggers.utilities';
 
 export interface TriggerConditionData {

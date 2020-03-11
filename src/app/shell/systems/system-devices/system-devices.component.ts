@@ -44,7 +44,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     /** Whether a device should be listened to */
     public device_listener: HashMap<boolean> = {};
     /** List of debug logs for selected devices */
-    public device_logs: string = '';
+    public device_logs = '';
     /** Store for ID of new module to add to system */
     public new_module: string;
     /** Actions available for the context menu */
@@ -261,7 +261,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
 
     /**
      * Handle drop event for reordering the devices
-     * @param event
+     * @param event Drag drop details
      */
     public drop(event: CdkDragDrop<any[]>) {
         if (event && event.previousIndex !== event.currentIndex) {

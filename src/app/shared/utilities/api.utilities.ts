@@ -1,6 +1,6 @@
 import { EngineModule } from '@placeos/ts-client';
 
-import { HashMap } from "./types.utilities";
+import { HashMap } from './types.utilities';
 
 /**
  * Convert map into a query string
@@ -11,7 +11,7 @@ export function toQueryString(map: HashMap) {
     if (map) {
         for (const key in map) {
             if (map.hasOwnProperty(key) && map[key] !== undefined && map[key] !== null) {
-                str += `${(str ? '&' : '')}${key}=${map[key]}`;
+                str += `${str ? '&' : ''}${key}=${map[key]}`;
             }
         }
     }
@@ -26,10 +26,10 @@ export function toQueryString(map: HashMap) {
 export function calculateModuleIndex(module_list: EngineModule[], module: EngineModule): number {
     const driver = module.driver || { class_name: 'System' };
     const module_class = module.custom_name || driver.class_name;
-    const modules_with_class = module_list.filter((mod) => {
+    const modules_with_class = module_list.filter(mod => {
         const d = mod.driver || { class_name: 'System' };
         const mod_class = mod.custom_name || d.class_name;
         return mod_class === module_class;
     });
-    return Math.max(1, modules_with_class.findIndex((mod) => mod.id === module.id) + 1);
+    return Math.max(1, modules_with_class.findIndex(mod => mod.id === module.id) + 1);
 }

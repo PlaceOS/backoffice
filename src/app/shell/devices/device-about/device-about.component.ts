@@ -1,4 +1,3 @@
-
 import { Component, Input, SimpleChanges, OnChanges, OnInit } from '@angular/core';
 import { EngineModule, EngineDriver, EngineSystem } from '@placeos/ts-client';
 
@@ -47,19 +46,19 @@ export class DeviceAboutComponent extends BaseDirective implements OnChanges, On
 
     public loadDependency() {
         if (this.item && this.item.dependency_id) {
-            this._service.Drivers.show(this.item.dependency_id).then((driver) => {
+            this._service.Drivers.show(this.item.dependency_id).then(driver => {
                 this.dependency = driver;
                 this.updateSettings();
-            })
+            });
         }
     }
 
     public loadSystem() {
         if (this.item && this.item.system_id) {
-            this._service.Systems.show(this.item.system_id).then((system) => {
+            this._service.Systems.show(this.item.system_id).then(system => {
                 this.system = system;
                 this.updateSettings();
-            })
+            });
         }
     }
 
@@ -79,11 +78,13 @@ export class DeviceAboutComponent extends BaseDirective implements OnChanges, On
         if (this.merged !== false) {
             this.settings = mergeYAMLSettings('', this.item.settings.settings_string || '');
             if (this.dependency) {
-                this.settings = mergeYAMLSettings(this.settings, this.dependency.settings.settings_string || '');
+                this.settings = mergeYAMLSettings(
+                    this.settings,
+                    this.dependency.settings.settings_string || ''
+                );
             }
         } else {
             this.settings = this.item.settings.settings_string || '';
         }
     }
-
 }

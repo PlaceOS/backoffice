@@ -6,7 +6,11 @@ import { EngineRepository } from '@placeos/ts-client';
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
-import { ConfirmModalData, ConfirmModalComponent, CONFIRM_METADATA } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import {
+    ConfirmModalData,
+    ConfirmModalComponent,
+    CONFIRM_METADATA
+} from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 
 @Component({
@@ -32,7 +36,7 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
         const query: any = { offset: 0 };
         // Get repository count
         this._service.Repositories.listDrivers(this.item.id, query).then(
-            (list) => (this.driver_count = list.length)
+            list => (this.driver_count = list.length)
         );
     }
 
@@ -50,7 +54,7 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
                 service: this._service.Repositories
             }
         });
-        ref.componentInstance.event.subscribe((event) => {
+        ref.componentInstance.event.subscribe(event => {
             if (event.reason === 'done') {
                 this._router.navigate(['/repositories', event.metadata.item.id]);
             }
@@ -62,7 +66,7 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
      */
     protected edit() {
         if (this.item) {
-            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+            this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
                 width: 'auto',
                 maxHeight: 'calc(100vh - 2em)',
@@ -98,7 +102,9 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
                         ref.componentInstance.loading = 'Deleting repository...';
                         await this.item.delete().catch(err => {
                             ref.componentInstance.loading = null;
-                            this._service.notifyError(`Error deleting repository. Error: ${err.message || err}`);
+                            this._service.notifyError(
+                                `Error deleting repository. Error: ${err.message || err}`
+                            );
                             throw err;
                         });
                         this._router.navigate(['/repositories']);

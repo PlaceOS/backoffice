@@ -5,9 +5,12 @@ import { EngineTrigger } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
-import { toQueryString } from 'src/app/shared/utilities/api.utilities';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
-import { ConfirmModalData, ConfirmModalComponent, CONFIRM_METADATA } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import {
+    ConfirmModalData,
+    ConfirmModalComponent,
+    CONFIRM_METADATA
+} from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 
 @Component({
@@ -31,10 +34,10 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> {
 
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, trigger_id: this.item.id };
-        const q = `total_${toQueryString(query)}`;
         // Get trigger count
         this._service.SystemTriggers.query(query).then(
-            (list) => (this.system_count = this._service.SystemTriggers.last_total || list.length || 0)
+            list =>
+                (this.system_count = this._service.SystemTriggers.last_total || list.length || 0)
         );
     }
 
@@ -52,7 +55,7 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> {
                 service: this._service.Triggers
             }
         });
-        ref.componentInstance.event.subscribe((event) => {
+        ref.componentInstance.event.subscribe(event => {
             if (event.reason === 'done') {
                 this._router.navigate(['/triggers', event.metadata.item.id]);
             }
@@ -64,7 +67,7 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> {
      */
     protected edit() {
         if (this.item) {
-            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+            this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
                 width: 'auto',
                 maxHeight: 'calc(100vh - 2em)',
@@ -100,7 +103,9 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> {
                         ref.componentInstance.loading = 'Deleting trigger...';
                         await this.item.delete().catch(err => {
                             ref.componentInstance.loading = null;
-                            this._service.notifyError(`Error deleting trigger. Error: ${err.message || err}`);
+                            this._service.notifyError(
+                                `Error deleting trigger. Error: ${err.message || err}`
+                            );
                             throw err;
                         });
                         this._router.navigate(['/triggers']);

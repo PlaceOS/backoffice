@@ -43,7 +43,8 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
         const tquery: any = { offset: 0, limit: 1, zone_id: this.item.id };
         // Get trigger count
         this._service.SystemTriggers.query(tquery).then(
-            list => (this.trigger_count = this._service.SystemTriggers.last_total || list.length || 0)
+            list =>
+                (this.trigger_count = this._service.SystemTriggers.last_total || list.length || 0)
         );
     }
 
@@ -74,7 +75,7 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
      */
     protected edit() {
         if (this.item) {
-            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+            this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
                 width: 'auto',
                 maxHeight: 'calc(100vh - 2em)',

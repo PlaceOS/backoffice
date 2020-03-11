@@ -1,8 +1,6 @@
 
 import { BaseMockBackend } from './base.mock';
 
-import * as faker from 'faker';
-import * as dayjs from 'dayjs';
 import { padZero, randomInt } from '../../utilities/general.utilities';
 
 let counter = 0;

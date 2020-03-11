@@ -4,7 +4,10 @@ import { first } from 'rxjs/operators';
 import { ApplicationService } from 'src/app/services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmModalComponent, CONFIRM_METADATA } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import {
+    ConfirmModalComponent,
+    CONFIRM_METADATA
+} from 'src/app/overlays/confirm-modal/confirm-modal.component';
 
 @Component({
     selector: 'engine-cluster-task-list',
@@ -23,7 +26,13 @@ export class EngineClusterTaskListComponent extends BaseDirective implements OnI
     /** ID of the process being killed */
     public killing: string;
 
-    public column_list: string[] = ['id', 'cpu_usage', 'memory_usage', 'module_instances', 'running'];
+    public column_list: string[] = [
+        'id',
+        'cpu_usage',
+        'memory_usage',
+        'module_instances',
+        'running'
+    ];
 
     constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
@@ -33,7 +42,7 @@ export class EngineClusterTaskListComponent extends BaseDirective implements OnI
         this._service.initialised.pipe(first(_ => _)).subscribe(() => {
             this.loadProcesses();
             this.interval('load_tasks', () => this.loadProcesses(), 2000);
-        })
+        });
     }
 
     public confirmKillProcess(process: EngineProcess): void {
@@ -49,22 +58,29 @@ export class EngineClusterTaskListComponent extends BaseDirective implements OnI
                 icon: { type: 'icon', class: 'backoffice-trash' }
             }
         });
-        this.subscription('confirm_kil', ref.componentInstance.event.subscribe((event) => {
-            if (event.reason === 'done') {
-                this.killing = process.id;
-                ref.componentInstance.loading = 'Processing request...';
-                this.killProcess(process).then(() => {
-                    this.killing = null;
-                    ref.close();
-                }, err => {
-                    ref.componentInstance.loading = null;
-                    this.killing = null;
-                    this._service.notifyError(`Error killing process. Error: ${err.message | err}`);
-                    ref.close();
-                })
-            }
-        }))
-
+        this.subscription(
+            'confirm_kil',
+            ref.componentInstance.event.subscribe(event => {
+                if (event.reason === 'done') {
+                    this.killing = process.id;
+                    ref.componentInstance.loading = 'Processing request...';
+                    this.killProcess(process).then(
+                        () => {
+                            this.killing = null;
+                            ref.close();
+                        },
+                        err => {
+                            ref.componentInstance.loading = null;
+                            this.killing = null;
+                            this._service.notifyError(
+                                `Error killing process. Error: ${err.message || err}`
+                            );
+                            ref.close();
+                        }
+                    );
+                }
+            })
+        );
     }
 
     public killProcess(process: EngineProcess) {
@@ -73,7 +89,7 @@ export class EngineClusterTaskListComponent extends BaseDirective implements OnI
 
     private loadProcesses(): void {
         this.loading = true;
-        this._service.Clusters.show(this.cluster.id, { include_status: true } as any).then((list) => {
+        this._service.Clusters.show(this.cluster.id, { include_status: true } as any).then(list => {
             this.process_list = list || [];
             this.loading = false;
         });

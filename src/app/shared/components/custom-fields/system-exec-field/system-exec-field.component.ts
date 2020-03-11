@@ -11,12 +11,7 @@ import {
     forwardRef
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
-import {
-    EngineModuleFunction,
-    HashMap,
-    TriggerFunction,
-    EngineSystem
-} from '@placeos/ts-client';
+import { EngineModuleFunction, HashMap, TriggerFunction, EngineSystem } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../../../services/app.service';
 import { BaseDirective } from '../../../globals/base.directive';
@@ -85,7 +80,9 @@ export class SystemExecFieldComponent extends BaseDirective
 
     /** Mapping of function execution details */
     public get function_value(): TriggerFunction {
-        if (!this.fields_valid) { return null; }
+        if (!this.fields_valid) {
+            return null;
+        }
         const args = this.processArguments();
         const method = this.active_method ? this.active_method : { params: [], name: '' };
         return {
@@ -99,8 +96,9 @@ export class SystemExecFieldComponent extends BaseDirective
     }
 
     public get param_list(): Array<[string, string, any?]> {
-        return Object.keys(this.active_method.params)
-                .map(i => [i, ...this.active_method.params[i]] as any)
+        return Object.keys(this.active_method.params).map(
+            i => [i, ...this.active_method.params[i]] as any
+        );
     }
 
     constructor(private service: ApplicationService) {
@@ -116,7 +114,7 @@ export class SystemExecFieldComponent extends BaseDirective
 
     /**
      * Load the available modules for the active system
-     * @param offset
+     * @param offset Page offset of the list
      */
     public loadModules(offset: number = 0) {
         if (this.system) {
@@ -144,7 +142,10 @@ export class SystemExecFieldComponent extends BaseDirective
                                     .filter(d => d.module === device.module)
                                     .findIndex(mod => mod.id === device.id) + 1)
                     );
-                    if (this.active_module && !(this.devices || []).find(mod => mod.id === this.active_module.id)) {
+                    if (
+                        this.active_module &&
+                        !(this.devices || []).find(mod => mod.id === this.active_module.id)
+                    ) {
                         this.devices.unshift(this.active_module);
                     }
                 },
@@ -155,7 +156,7 @@ export class SystemExecFieldComponent extends BaseDirective
 
     /**
      * Load the available functions for the given module
-     * @param item
+     * @param item Module to grab function list for
      */
     public loadFunctions(item: EngineModuleLike) {
         this.methods = null;
@@ -187,7 +188,7 @@ export class SystemExecFieldComponent extends BaseDirective
         this.error = {};
         if (this.active_method) {
             const params = this.param_list;
-            for (const arg of (params || [])) {
+            for (const arg of params || []) {
                 if (arg[2] === undefined && !this.fields[arg[0]]) {
                     this.fields_valid = false;
                     return;
@@ -274,7 +275,9 @@ export class SystemExecFieldComponent extends BaseDirective
      * Execute the selected method
      */
     public execute() {
-        if (!this.executable) { return; }
+        if (!this.executable) {
+            return;
+        }
         this.checkFields();
         if (this.fields_valid) {
             // Check if any optional arguments have a value

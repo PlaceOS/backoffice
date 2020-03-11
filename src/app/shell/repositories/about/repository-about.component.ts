@@ -39,7 +39,7 @@ export class RepositoryAboutComponent extends BaseDirective implements OnInit {
                 () => this.pulling = false,
                 err => {
                     this.pulling = false;
-                    this._service.notifyError(`Error pulling latest commit. Error: ${err.message | err}`);
+                    this._service.notifyError(`Error pulling latest commit. Error: ${err.message || err}`);
                 }
             );
     }

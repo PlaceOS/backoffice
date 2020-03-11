@@ -5,7 +5,6 @@ import {
     Output,
     EventEmitter,
     OnInit,
-    SimpleChanges,
     ViewChild,
     ElementRef
 } from '@angular/core';
@@ -14,14 +13,12 @@ import { EngineResource } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
-import { copyToClipboard } from '../../utilities/general.utilities';
-import {
-    ConfirmModalComponent,
-    ConfirmModalData
-} from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from '../../utilities/types.utilities';
 import { ApplicationIcon } from '../../utilities/settings.interfaces';
-import { ItemCreateUpdateModalComponent, CreateEditModalData } from 'src/app/overlays/item-modal/item-modal.component';
+import {
+    ItemCreateUpdateModalComponent,
+    CreateEditModalData
+} from 'src/app/overlays/item-modal/item-modal.component';
 
 export interface ApplicationTab {
     id: string;
@@ -78,9 +75,7 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
         );
     }
 
-    public changeTab(direction) {
-
-    }
+    public changeTab(direction) {}
 
     /** Copy the ID of the active item to the clipboard */
     public copy() {
@@ -97,7 +92,12 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
         const ref = this._dialog.open<ItemCreateUpdateModalComponent, CreateEditModalData>(
             ItemCreateUpdateModalComponent,
             {
-                data: { service: (this.item as any)._service, item: this.item, form: [] as any, name: this.name }
+                data: {
+                    service: (this.item as any)._service,
+                    item: this.item,
+                    form: [] as any,
+                    name: this.name
+                }
             }
         );
         this.subscription(

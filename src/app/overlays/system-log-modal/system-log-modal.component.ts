@@ -39,15 +39,17 @@ export class SystemLogModalComponent extends BaseDirective implements OnInit {
         this.id = this._data.sys_id;
         if (this.id) {
             this.loading = true;
-            this._service.SystemLogs.query({ limit: 500, id: this.id }).then((list: IEngineLogEntry[]) => {
-                this.logs = list.sort((a, b) => b.created - a.created);
-            }, () => {
-                this._dialog.close();
-                this._service.notifyError('Error loading logs for system');
-            });
+            this._service.SystemLogs.query({ limit: 500, id: this.id }).then(
+                (list: IEngineLogEntry[]) => {
+                    this.logs = list.sort((a, b) => b.created - a.created);
+                },
+                () => {
+                    this._dialog.close();
+                    this._service.notifyError('Error loading logs for system');
+                }
+            );
         } else {
             this._dialog.close();
         }
     }
 }
-

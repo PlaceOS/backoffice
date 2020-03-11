@@ -6,7 +6,11 @@ import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
-import { ConfirmModalComponent, ConfirmModalData, CONFIRM_METADATA } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import {
+    ConfirmModalComponent,
+    ConfirmModalData,
+    CONFIRM_METADATA
+} from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
@@ -36,7 +40,8 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
         const query: any = { offset: 0, limit: 1, sys_id: this.item.id };
         // Get trigger count
         this._service.SystemTriggers.query(query).then(
-            (list) => (this.trigger_count = this._service.SystemTriggers.last_total || list.length || 0)
+            list =>
+                (this.trigger_count = this._service.SystemTriggers.last_total || list.length || 0)
         );
         // Get device count
         this.device_count = (this.item.modules || []).length;
@@ -58,7 +63,7 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
                 service: this._service.Systems
             }
         });
-        ref.componentInstance.event.subscribe((event) => {
+        ref.componentInstance.event.subscribe(event => {
             console.log('Event:', event);
             if (event.reason === 'done') {
                 this._router.navigate(['/systems', event.metadata.item.id]);
@@ -71,7 +76,7 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
      */
     protected edit() {
         if (this.item) {
-            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+            this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
                 width: 'auto',
                 maxHeight: 'calc(100vh - 2em)',
@@ -86,28 +91,39 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
 
     protected delete() {
         if (this.item) {
-            const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
-                ...CONFIRM_METADATA,
-                data: {
-                    title: `Delete system`,
-                    content: `<p>Are you sure you want delete this system?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>`,
-                    icon: { type: 'icon', class: 'backoffice-trash' }
+            const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+                ConfirmModalComponent,
+                {
+                    ...CONFIRM_METADATA,
+                    data: {
+                        title: `Delete system`,
+                        content: `<p>Are you sure you want delete this system?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>`,
+                        icon: { type: 'icon', class: 'backoffice-trash' }
+                    }
                 }
-            });
-            this.subscription('delete_confirm', ref.componentInstance.event.subscribe((event: DialogEvent) => {
-                if (event.reason === 'done') {
-                    ref.componentInstance.loading = 'Deleting system...';
-                    this.item.delete().then(() => {
-                        this._service.notifySuccess(`Successfully deleted system "${this.item.name}".`);
-                        this._router.navigate(['/systems']);
-                        ref.close();
-                        this.unsub('delete_confirm');
-                    }, (err) => {
-                        ref.componentInstance.loading = null;
-                        this._service.notifyError(`Error deleting system. Error: ${err}`);
-                    });
-                }
-            }));
+            );
+            this.subscription(
+                'delete_confirm',
+                ref.componentInstance.event.subscribe((event: DialogEvent) => {
+                    if (event.reason === 'done') {
+                        ref.componentInstance.loading = 'Deleting system...';
+                        this.item.delete().then(
+                            () => {
+                                this._service.notifySuccess(
+                                    `Successfully deleted system "${this.item.name}".`
+                                );
+                                this._router.navigate(['/systems']);
+                                ref.close();
+                                this.unsub('delete_confirm');
+                            },
+                            err => {
+                                ref.componentInstance.loading = null;
+                                this._service.notifyError(`Error deleting system. Error: ${err}`);
+                            }
+                        );
+                    }
+                })
+            );
         }
     }
 }

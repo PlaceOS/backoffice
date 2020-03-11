@@ -3,7 +3,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
-import { ApplicationIcon, ApplicationImageIcon } from '../../utilities/settings.interfaces';
+import { ApplicationImageIcon } from '../../utilities/settings.interfaces';
 import { first } from 'rxjs/operators';
 
 @Component({

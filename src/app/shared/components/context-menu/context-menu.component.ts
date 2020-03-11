@@ -7,7 +7,7 @@ import {
     HostListener,
     OnInit
 } from '@angular/core';
-import { MatMenuTrigger, MatMenuPanel, MatMenu } from '@angular/material/menu';
+import { MatMenuTrigger, MatMenuPanel } from '@angular/material/menu';
 
 import { BaseDirective } from '../../globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
@@ -21,9 +21,9 @@ export class ContextMenuComponent extends BaseDirective implements OnInit, After
     /** List of context menu items */
     @Input('context-menu') public menu: MatMenuPanel;
     /** Offset of the context menu on the x axis */
-    @Input() public offset_x: number = 0;
+    @Input() public offset_x = 0;
     /** Offset of the context menu on the y axis */
-    @Input() public offset_y: number = 0;
+    @Input() public offset_y = 0;
     /** Top position of the menu */
     public top: number;
     /** Whether menu show to the left of the cursor */
@@ -38,7 +38,6 @@ export class ContextMenuComponent extends BaseDirective implements OnInit, After
 
     @HostListener('contextmenu', ['$event']) public onEvent(event) {
         event.preventDefault();
-        const box = this._element.nativeElement.getBoundingClientRect();
         this.position = { top: event.clientY + this.offset_y, left: event.clientX + this.offset_x };
         if (this.trigger) {
             this.trigger.openMenu();

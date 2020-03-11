@@ -1,4 +1,4 @@
-import { Component, OnInit, forwardRef, Input } from '@angular/core';
+import { Component, forwardRef, Input } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -16,8 +16,7 @@ import { HashMap } from 'src/app/shared/utilities/types.utilities';
         }
     ]
 })
-export class ObjectListFieldComponent extends BaseDirective
-    implements ControlValueAccessor {
+export class ObjectListFieldComponent extends BaseDirective implements ControlValueAccessor {
     /** List of fields that can be populated for each object */
     @Input() public fields: string[];
     /** List of objects */
@@ -68,7 +67,8 @@ export class ObjectListFieldComponent extends BaseDirective
     }
 
     /**
-     * Registers a callback function that is called when the control's value changes in the UI.
+     * Registers a callback function that is called when the
+     * control's value changes in the UI.
      * @param fn The callback function to register
      */
     public registerOnChange(fn: (_: HashMap[]) => void): void {
@@ -76,7 +76,8 @@ export class ObjectListFieldComponent extends BaseDirective
     }
 
     /**
-     * Registers a callback function is called by the forms API on initialization to update the form model on blur.
+     * Registers a callback function is called by the forms
+     * API on initialization to update the form model on blur.
      * @param fn The callback function to register
      */
     public registerOnTouched(fn: (_: HashMap[]) => void): void {
