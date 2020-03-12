@@ -35,9 +35,9 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> {
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, trigger_id: this.item.id };
         // Get trigger count
-        this._service.SystemTriggers.query(query).then(
+        this._service.Systems.query(query).then(
             list =>
-                (this.system_count = this._service.SystemTriggers.last_total || list.length || 0)
+                (this.system_count = this._service.Systems.last_total || list.length || 0)
         );
     }
 

@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChange, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ComposerService } from '@placeos/composer';
-import { EngineTrigger, HashMap } from '@placeos/ts-client';
+import { EngineTrigger, EngineSystem, HashMap } from '@placeos/ts-client';
 
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
@@ -22,7 +22,7 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges,
     /** Active trigger */
     @Input() public item: EngineTrigger;
     /** List of systems associated with the trigger */
-    public system_trigger_list: EngineTrigger[] = [];
+    public system_trigger_list: EngineSystem[] = [];
     /** Map of systems ids to connected status */
     public connected: HashMap<boolean> = {};
 
@@ -51,7 +51,7 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges,
     }
 
     public loadSystemTriggers(offset: number = 0) {
-        this._service.SystemTriggers.query({
+        this._service.Systems.query({
             trigger_id: this.item.id,
             offset
         } as any).then(

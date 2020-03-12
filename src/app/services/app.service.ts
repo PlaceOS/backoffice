@@ -171,11 +171,6 @@ export class ApplicationService extends BaseClass {
         return this._engine_system_logs;
     }
 
-    /** System Triggers service */
-    public get SystemTriggers() {
-        return this._composer.system_triggers;
-    }
-
     /** Systems service */
     public get Systems() {
         return this._composer.systems;

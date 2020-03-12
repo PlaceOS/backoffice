@@ -49,7 +49,7 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
     }
 
     public loadZoneTriggers(offset: number = 0) {
-        this._service.SystemTriggers.query({ zone_id: this.item.id, offset } as any).then(
+        this._service.Triggers.query({ zone_id: this.item.id, offset } as any).then(
             list => {
                 this.model.triggers = list;
             },

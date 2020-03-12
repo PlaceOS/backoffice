@@ -56,7 +56,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
 
     public loadSystemTriggers(offset: number = 0): void {
         if (!this.item) { return; }
-        this._service.SystemTriggers.query({ sys_id: this.item.id, offset } as any).then(
+        this._service.Systems.task(this.item.id, 'triggers', { offset }).then(
             list => {
                 this.trigger_list = list;
             },
@@ -76,7 +76,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item: trigger,
-                    service: this._service.SystemTriggers,
+                    service: this._service.Triggers,
                     external_save: true
                 }
             });

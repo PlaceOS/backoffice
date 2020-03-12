@@ -42,9 +42,9 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
         );
         const tquery: any = { offset: 0, limit: 1, zone_id: this.item.id };
         // Get trigger count
-        this._service.SystemTriggers.query(tquery).then(
+        this._service.Triggers.query(tquery).then(
             list =>
-                (this.trigger_count = this._service.SystemTriggers.last_total || list.length || 0)
+                (this.trigger_count = this._service.Triggers.last_total || list.length || 0)
         );
     }
 
