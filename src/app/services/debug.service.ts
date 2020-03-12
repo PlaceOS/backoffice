@@ -37,7 +37,7 @@ export class EngineDebugService extends BaseClass {
         return this.events
             .map(
                 event =>
-                    `${TERMINAL_COLOURS[event.level]}${dayjs().format('h:mm A')}, ${event.module ||
+                    `${TERMINAL_COLOURS[event.level]}${dayjs().format('h:mm A')}, ${
                         this._module_names[event.mod_id] ||
                         event.mod_id ||
                         '<UNKNOWN>'}, [${event.level.toUpperCase()}]\u001b[0m ${event.message}`
@@ -80,9 +80,19 @@ export class EngineDebugService extends BaseClass {
      */
     public bind(module: EngineModule, module_name: string) {
         if (module) {
-            this.subscription(`debug_${module.id}`, module.debug());
-            this._bound_modules.push(module);
-            this._module_names[module.id] = module_name;
+            const parts = module_name.split('_');
+            const index = +parts.splice(parts.length - 1, 1);
+            const options = {
+                sys: module.system_id,
+                mod: parts.join('_'),
+                index,
+                name: 'debug'
+            };
+            this._composer.realtime.debug(options).then(() => {
+                this.subscription(`debug_${module.id}`, () => this._composer.realtime.ignore(options));
+                this._bound_modules.push(module);
+                this._module_names[module.id] = module_name;
+            });
         }
     }
 
@@ -93,7 +103,7 @@ export class EngineDebugService extends BaseClass {
     public unbind(module: EngineModule) {
         if (module) {
             this.unsub(`debug_${module.id}`);
-            this._bound_modules = this._bound_modules.filter(mod => mod.id === module.id);
+            this._bound_modules = this._bound_modules.filter(mod => mod.id !== module.id);
         }
     }
 }

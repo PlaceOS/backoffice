@@ -43,7 +43,7 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
         );
         subscriptions.push(
             fields.dependency.valueChanges.subscribe((value: EngineDriver) =>
-            module.storePendingChange('dependency_id', value.id)
+            module.storePendingChange('driver_id', value.id)
             )
         );
         subscriptions.push(

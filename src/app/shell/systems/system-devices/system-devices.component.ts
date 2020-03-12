@@ -136,11 +136,10 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
      * @param device Device to toggle the power state
      */
     public power(device: EngineModule) {
-        if (device.running) {
+        if (device.connected) {
             device.stop().then(
                 () => {
                     this._service.notifySuccess('Module successfully stopped');
-                    this.reload(device);
                 },
                 err => {
                     if (typeof err === 'string' && err.length < 64) {
@@ -160,7 +159,6 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
             device.start().then(
                 () => {
                     this._service.notifySuccess('Module successfully stopped');
-                    this.reload(device);
                 },
                 err => {
                     if (typeof err === 'string' && err.length < 64) {
@@ -221,7 +219,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
                 if (e.reason === 'done') {
                     (device.driver
                         ? device.driver.reload()
-                        : this._service.Drivers.reload(device.dependency_id)
+                        : this._service.Drivers.reload(device.driver_id)
                     ).then(
                         _ => this._service.notifySuccess('Driver successfully reloaded.'),
                         err => this._service.notifyError(err.message || err)
@@ -283,7 +281,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
                 ...CONFIRM_METADATA,
                 data: {
                     title: 'Remove module?',
-                    content: `Remove ${device.dependency_id} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
+                    content: `Remove ${device.driver_id} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
                     icon: { type: 'icon', class: 'backoffice-trash' }
                 }
             }

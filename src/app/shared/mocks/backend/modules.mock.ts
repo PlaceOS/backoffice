@@ -48,7 +48,7 @@ export class MockModulesBackend extends BaseMockBackend {
                 running: Math.floor(Math.random() * 1234321) % 2 === 0,
                 control_system_id: sys.id,
                 control_system: sys,
-                dependency_id: driver.id,
+                driver_id: driver.id,
                 dependency: driver,
                 edge_id: 'edge-0001',
                 edge: { id: 'edge-0001' },
@@ -126,8 +126,8 @@ export class MockModulesBackend extends BaseMockBackend {
                     a.control_system_id === fragment.system_id ||
                     (a.systems || []).indexOf(fragment.system_id) >= 0
             );
-        } else if (fragment.dependency_id) {
-            data = data.filter(a => a.dependency_id === fragment.dependency_id);
+        } else if (fragment.driver_id) {
+            data = data.filter(a => a.driver_id === fragment.driver_id);
         }
         if (fragment.q) {
             const search = fragment.q.toLowerCase();

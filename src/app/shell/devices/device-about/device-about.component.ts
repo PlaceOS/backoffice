@@ -45,8 +45,8 @@ export class DeviceAboutComponent extends BaseDirective implements OnChanges, On
     }
 
     public loadDependency() {
-        if (this.item && this.item.dependency_id) {
-            this._service.Drivers.show(this.item.dependency_id).then(driver => {
+        if (this.item && this.item.driver_id) {
+            this._service.Drivers.show(this.item.driver_id).then(driver => {
                 this.dependency = driver;
                 this.updateSettings();
             });

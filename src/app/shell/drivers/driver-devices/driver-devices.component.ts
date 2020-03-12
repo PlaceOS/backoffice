@@ -52,7 +52,7 @@ export class DriverDevicesComponent extends BaseDirective implements OnChanges, 
                 this.loading = true;
                 return this._service.Modules.query({
                     q: query,
-                    dependency_id: this.item.id,
+                    driver_id: this.item.id,
                     offset: 0,
                     limit: 500
                 });
@@ -86,7 +86,7 @@ export class DriverDevicesComponent extends BaseDirective implements OnChanges, 
 
     public loadDevices(offset: number = 0) {
         if (!this.item) { return; }
-        this._service.Modules.query({ dependency_id: this.item.id, offset, limit: 500 }).then(
+        this._service.Modules.query({ driver_id: this.item.id, offset, limit: 500 }).then(
             list => (this.device_list = list),
             () => null
         );

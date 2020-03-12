@@ -33,7 +33,7 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
     }
 
     protected loadValues() {
-        const query: any = { offset: 0, limit: 1, dependency_id: this.item.id };
+        const query: any = { offset: 0, limit: 1, driver_id: this.item.id };
         this._service.Modules.query(query).then(list => {
             this.device_count = this._service.Modules.last_total || list.length || 0;
         });
