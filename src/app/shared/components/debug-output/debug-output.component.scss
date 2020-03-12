@@ -1,0 +1,30 @@
+
+@import 'shared.styles';
+
+.debug-output {
+    position: absolute;
+    bottom: .5em;
+    right: .5em;
+    max-height: calc(100vh - 1em);
+    max-width: calc(100vw - 1em);
+}
+
+.content {
+    width: 48em;
+    height: 24em;
+    max-height: calc(100vh - 1em);
+    max-width: calc(100vw - 1em);
+    border-radius: 8px;
+    overflow: hidden;
+    @include box-shadow(2);
+}
+
+button {
+    position: absolute;
+    bottom: .5em;
+    right: .5em;
+    background-color: #263238;
+    color: #fff;
+    z-index: 999;
+    @include box-shadow(2);
+}

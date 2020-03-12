@@ -59,8 +59,8 @@
                     </td>
                     <td class="module">
                         <mat-checkbox
-                            [checked]="device_listener[device.id]"
-                            (change)="device_listener[device.id] = $event.checked; toggleDebugEvents(device)"
+                            [checked]="debugged_modules[device.id]"
+                            (change)="toggleDebugEvents(device)"
                         >
                             {{ device_classes[device.id] }}
                         </mat-checkbox>
@@ -97,8 +97,5 @@
         <div class="info-block" *ngIf="!devices || devices.length <= 0">
             <div class="text">No devices for system</div>
         </div>
-    </section>
-    <section class="terminal" *ngIf="is_listening">
-        <a-terminal [content]="device_logs"></a-terminal>
     </section>
 </div>

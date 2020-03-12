@@ -20,14 +20,7 @@ import {
 } from 'src/app/overlays/view-module-state/view-module-state.component';
 
 import * as dayjs from 'dayjs';
-
-const TERMINAL_COLOURS = {
-    debug: '\u001b[34m',
-    info: '\u001b[32m',
-    warn: '\u001b[33m',
-    error: '\u001b[31m',
-    fatal: '\u001b[31m'
-};
+import { EngineDebugService } from 'src/app/services/debug.service';
 
 @Component({
     selector: 'system-devices',
@@ -43,8 +36,6 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     public device_classes: HashMap<string> = {};
     /** Whether a device should be listened to */
     public device_listener: HashMap<boolean> = {};
-    /** List of debug logs for selected devices */
-    public device_logs = '';
     /** Store for ID of new module to add to system */
     public new_module: string;
     /** Actions available for the context menu */
@@ -64,20 +55,18 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
         return this._service.Modules;
     }
 
-    /** Whether the application is listening for debug messages from the server */
-    public get is_listening(): boolean {
-        for (const id in this.device_listener) {
-            if (this.device_listener.hasOwnProperty(id) && this.device_listener[id]) {
-                return true;
-            }
-        }
-        return false;
+    /** Map of modules to whether they are listening for debug messages */
+    public get debugged_modules(): HashMap<boolean> {
+        return this.devices.reduce((map, device) => {
+            map[device.id] = this._debug_service.isListening(device);
+            return map;
+        }, {});
     }
 
     constructor(
         private _service: ApplicationService,
         private _dialog: MatDialog,
-        private _composer: ComposerService
+        private _debug_service: EngineDebugService,
     ) {
         super();
     }
@@ -90,21 +79,6 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
                 this.loadDevices();
             })
         );
-        this.device_logs = '';
-        this._service.initialised.pipe(first(is_inited => is_inited)).subscribe(() => {
-            this.subscription(
-                'debug_events',
-                this._composer.realtime.debug_events.subscribe(event => {
-                    if (this.item.modules.find(id => id === event.module)) {
-                        this.device_logs += `\n\n${TERMINAL_COLOURS[event.level]}${dayjs().format(
-                            'h:mm A'
-                        )}, ${event.module}, [${event.level.toUpperCase()}]\u001b[0m ${
-                            event.message
-                        }`;
-                    }
-                })
-            );
-        });
     }
 
     public ngOnChanges(changes: any) {
@@ -371,11 +345,10 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
         if (!device) {
             return;
         }
-        console.log('Toggle Device:', device, this.device_listener[device.id]);
-        if (this.device_listener[device.id]) {
-            this.subscription(`debug_${device.id}`, device.debug());
+        if (this._debug_service.isListening(device)) {
+            this._debug_service.unbind(device);
         } else {
-            this.unsub(`debug_${device.id}`);
+            this._debug_service.bind(device, this.device_classes[device.id]);
         }
     }
 

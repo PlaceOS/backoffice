@@ -149,6 +149,5 @@
         "repositories": {
             "can_create": true
         }
-    },
-    "mock": true
+    }
 }

@@ -67,6 +67,7 @@ import { OauthSourceFormComponent } from './components/forms/oauth-source-form/o
 import { LdapSourceFormComponent } from './components/forms/ldap-source-form/ldap-source-form.component';
 import { SamlSourceFormComponent } from './components/forms/saml-source-form/saml-source-form.component';
 import { ObjectListFieldComponent } from './components/custom-fields/object-list-field/object-list-field.component';
+import { DebugOutputComponent } from './components/debug-output/debug-output.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -95,7 +96,8 @@ const COMPONENTS: Type<any>[] = [
     ...LOGIN_COMPONENTS,
     IconComponent,
     ...FORM_COMPONENTS,
-    TerminalComponent
+    TerminalComponent,
+    DebugOutputComponent,
 ];
 
 const PIPES: Type<any>[] = [

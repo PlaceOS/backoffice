@@ -32,7 +32,7 @@ export class TerminalComponent extends BaseDirective implements OnInit, OnChange
         if (this.terminal) {
             this.ngOnDestroy();
         }
-        this.terminal = new Terminal();
+        this.terminal = new Terminal({ theme: { background: `#263238` } });
         this.terminal.open(this.terminal_element.nativeElement);
         this.timeout('init', () => {
             this.resizeTerminal();
