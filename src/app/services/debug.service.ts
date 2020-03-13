@@ -84,7 +84,7 @@ export class EngineDebugService extends BaseClass {
             const index = +parts.splice(parts.length - 1, 1);
             const options = {
                 sys: module.system_id,
-                mod: parts.join('_'),
+                mod: module.id,
                 index,
                 name: 'debug'
             };
