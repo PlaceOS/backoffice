@@ -33,7 +33,7 @@
                     (ngModelChange)="checkFields()"
                     [class.error]="error && error[arg[0]]"
                     [style.width]="(.6 * (fields[arg[0]] || (arg[2] === undefined ? '[' + arg[0] + ']' : arg[0])).length + .3) + 'em'"
-                    [placeholder]="arg[2] === undefined ? '[' + arg[0] + ']' : arg[0]"
+                    [placeholder]="(arg[2] === undefined ? '[' + arg[0] + '=' + arg[2] + ']' : arg[0])"
                     (keyup.enter)="nextField($event)"
                     (keydown.,)="nextField($event)"
                     (keyup.arrowright)="nextField($event)"

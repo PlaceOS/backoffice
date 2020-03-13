@@ -69,6 +69,8 @@ export class SystemExecFieldComponent extends BaseDirective
     public last_location: number;
     /** Current value of the active input field */
     public field_value: string;
+    /** Parameter list for the active function */
+    public param_list: [string, string, any?][] = [];
 
     /** Form control on change handler */
     private _onChange: (_: TriggerFunction) => void;
@@ -84,21 +86,16 @@ export class SystemExecFieldComponent extends BaseDirective
             return null;
         }
         const args = this.processArguments();
-        const method = this.active_method ? this.active_method : { params: [], name: '' };
+        const method = this.active_method ? this.active_method : { order: [], params: {}, name: '' };
+        console.log('Method:', method, args);
         return {
             mod: `${this.active_module.module}_${this.active_module.index}`,
             method: method.name,
             args: args.reduce((map, arg, index) => {
-                map[method.params[index][1]] = arg;
+                map[method.params[method.order[index]][1]] = arg;
                 return map;
             }, {})
         };
-    }
-
-    public get param_list(): Array<[string, string, any?]> {
-        return Object.keys(this.active_method.params).map(
-            i => [i, ...this.active_method.params[i]] as any
-        );
     }
 
     constructor(private service: ApplicationService) {
@@ -175,6 +172,11 @@ export class SystemExecFieldComponent extends BaseDirective
 
     public selectFunction(fn: ModuleFunction) {
         this.active_method = fn;
+        if (fn) {
+            this.param_list = Object.keys(this.active_method.params).map(
+                i => [i, ...this.active_method.params[i]] as any
+            );
+        }
         this.checkFields();
         console.log('Finished selecting function');
     }
@@ -210,7 +212,7 @@ export class SystemExecFieldComponent extends BaseDirective
             this.field_pos = current.nativeElement.selectionEnd;
             this.timeout('field', () => (this.field_value = current.nativeElement.value));
         }
-        console.log('Updating field values');
+        console.log('Updating field values:', this.function_value);
         this.setValue(this.function_value);
         console.log('Finished updating field values');
     }
@@ -275,10 +277,13 @@ export class SystemExecFieldComponent extends BaseDirective
      * Execute the selected method
      */
     public execute() {
+        console.log('Execute:', this.executable);
         if (!this.executable) {
             return;
         }
+        console.log('Checking Fields...');
         this.checkFields();
+        console.log('Fields Valid:', this.fields_valid);
         if (this.fields_valid) {
             // Check if any optional arguments have a value
             const args = this.processArguments();
@@ -319,6 +324,8 @@ export class SystemExecFieldComponent extends BaseDirective
                     }
                 }
             );
+        } else {
+            this.service.notifyError('One or more fields are invalid.');
         }
     }
 
@@ -348,10 +355,14 @@ export class SystemExecFieldComponent extends BaseDirective
             args += `${arg}`;
         }
         args += ']';
+        console.log('Arguments:', args);
         let argument_list = [];
         try {
             argument_list = JSON.parse(args);
-        } catch (e) {}
+        } catch (e) {
+            console.error(e);
+        }
+        console.log('Arguments:', argument_list);
         return argument_list;
     }
 
