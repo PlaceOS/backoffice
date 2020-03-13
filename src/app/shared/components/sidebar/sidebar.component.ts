@@ -9,7 +9,8 @@ import {
     ElementRef,
     ViewChildren,
     QueryList,
-    ChangeDetectorRef
+    ChangeDetectorRef,
+    SimpleChanges
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { BehaviorSubject } from 'rxjs';
@@ -133,13 +134,13 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         });
     }
 
-    public ngOnChanges(changes: any) {
+    public ngOnChanges(changes: SimpleChanges) {
         if (this._service.is_initialised && (changes.list || changes.close)) {
             this.last_check = dayjs().valueOf();
             this.items.next(this.list || []);
             this.atBottom();
         }
-        if (changes.module) {
+        if (changes.module && changes.module.previousValue !== changes.module.currentValue) {
             this.searching();
         }
         if (changes.query_params && this.query_params) {
@@ -244,6 +245,10 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         const index = list.findIndex(item => item.id === active_item.id);
         if (index >= 0) {
             list.splice(index, 1, active_item);
+        } else if (list.length > 0 && list[0].constructor === active_item.constructor) {
+            list.push(active_item);
+        } else {
+            list.push(active_item);
         }
         this.items.next([...list]);
     }
