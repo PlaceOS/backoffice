@@ -49,7 +49,7 @@ export class MockModulesBackend extends BaseMockBackend {
                 control_system_id: sys.id,
                 control_system: sys,
                 driver_id: driver.id,
-                dependency: driver,
+                driver: driver,
                 edge_id: 'edge-0001',
                 edge: { id: 'edge-0001' },
                 role: sys.modules.length - 1,

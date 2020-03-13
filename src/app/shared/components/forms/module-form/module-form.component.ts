@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { EncryptionLevel } from '@placeos/ts-client';
+import { EncryptionLevel, EngineDriverRole } from '@placeos/ts-client';
 
 import { Identity, EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
@@ -30,6 +30,25 @@ export class ModuleFormComponent extends BaseDirective {
     /** Service for handling drivers */
     public get driver_service(): EngineServiceLike {
         return this._service.Drivers;
+    }
+
+    /** Role of the selected driver */
+    public get role(): string {
+        const driver = this.form.controls.driver.value;
+        if (!driver) {
+            return 'logic';
+        }
+        switch (driver.role) {
+            case EngineDriverRole.SSH:
+                return 'ssh';
+            case EngineDriverRole.Device:
+                return 'device';
+            case EngineDriverRole.Service:
+                return 'service';
+            case EngineDriverRole.Websocket:
+                return 'websocket';
+        }
+        return 'logic';
     }
 
     constructor(private _service: ApplicationService) {

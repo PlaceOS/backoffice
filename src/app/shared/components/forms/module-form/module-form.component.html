@@ -1,28 +1,28 @@
 <div class="module form" *ngIf="form">
     <form [formGroup]="form">
-        <div class="field" *ngIf="form.controls.dependency">
+        <div class="field" *ngIf="form.controls.driver">
             <label
-                for="dependency"
-                [class.error]="form.controls.dependency.invalid && form.controls.dependency.touched"
+                for="driver"
+                [class.error]="form.controls.driver.invalid && form.controls.driver.touched"
             >
-                Dependency<span>*</span>:
+                Driver<span>*</span>:
             </label>
             <item-search-field
                 [service]="driver_service"
-                formControlName="dependency"
+                formControlName="driver"
             ></item-search-field>
             <div
                 class="error"
-                *ngIf="form.controls.dependency.invalid && form.controls.dependency.touched"
+                *ngIf="form.controls.driver.invalid && form.controls.driver.touched"
             >
-                Dependency is required
+                Driver is required
             </div>
         </div>
         <div class="field" *ngIf="form.controls.system">
             <label
-                for="dependency"
+                for="driver"
                 [class.error]="form.controls.system.invalid && form.controls.system.touched"
-                >Control System<span>*</span>:
+                >Control System<span *ngIf="role === 'logic'">*</span>:
             </label>
             <item-search-field
                 [service]="system_service"
@@ -33,12 +33,12 @@
             </div>
         </div>
         <div class="fieldset">
-            <div class="field" *ngIf="form.controls.ip">
+            <div class="field" *ngIf="form.controls.ip && role !== 'logic'">
                 <label
                     for="ip"
                     [class.error]="form.controls.ip.invalid && form.controls.ip.touched"
                 >
-                    IP Address:
+                    IP Address<span *ngIf="role === 'ssh'">*</span>:
                 </label>
                 <mat-form-field appearance="outline">
                     <input matInput name="ip" placeholder="IP Address" formControlName="ip" />
@@ -47,12 +47,12 @@
                     </mat-error>
                 </mat-form-field>
             </div>
-            <div class="field" *ngIf="form.controls.port">
+            <div class="field" *ngIf="form.controls.port && role !== 'logic'">
                 <label
                     for="system-name"
                     [class.error]="form.controls.port.invalid && form.controls.port.touched"
                 >
-                    Port Number:
+                    Port Number<span *ngIf="role === 'ssh'">*</span>:
                 </label>
                 <mat-form-field appearance="outline">
                     <input
@@ -68,23 +68,23 @@
                 </mat-form-field>
             </div>
         </div>
-        <div class="field" *ngIf="form.controls.tls">
+        <div class="field" *ngIf="form.controls.tls && role !== 'logic'">
             <mat-checkbox name="tls" formControlName="tls">TLS</mat-checkbox>
         </div>
-        <div class="field" *ngIf="form.controls.udp">
+        <div class="field" *ngIf="form.controls.udp && role !== 'logic' && role !== 'websocket'">
             <mat-checkbox name="udp" formControlName="udp">UDP</mat-checkbox>
         </div>
-        <div class="field" *ngIf="form.controls.makebreak">
+        <div class="field" *ngIf="form.controls.makebreak && role !== 'logic'">
             <mat-checkbox name="makebreak" formControlName="makebreak">Makebreak</mat-checkbox>
         </div>
-        <div class="field" *ngIf="form.controls.ignore_connected">
+        <div class="field" *ngIf="form.controls.ignore_connected && role !== 'logic'">
             <mat-checkbox name="ignore-connected" formControlName="ignore_connected">
                 Ignore Connected
             </mat-checkbox>
         </div>
-        <div class="field" *ngIf="form.controls.uri">
+        <div class="field" *ngIf="form.controls.uri && role !== 'logic'">
             <label for="uri" [class.error]="form.controls.uri.invalid && form.controls.uri.touched">
-                URI:
+                URI<span *ngIf="role === 'websocket'">*</span>:
             </label>
             <mat-form-field appearance="outline">
                 <input matInput name="uri" placeholder="Device URI" formControlName="uri" />

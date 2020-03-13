@@ -20,7 +20,7 @@ const PROXY_CONFIG = [
     },
     {
         context: [
-            "/control/websocket",
+            "/api/engine/v2/systems/control",
         ],
         target: `ws${secure ? 's' : ''}://${domain}`,
         secure: valid_ssl,

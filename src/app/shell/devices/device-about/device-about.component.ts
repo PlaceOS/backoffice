@@ -13,8 +13,8 @@ import { mergeYAMLSettings } from 'src/app/shared/utilities/general.utilities';
 export class DeviceAboutComponent extends BaseDirective implements OnChanges, OnInit {
     /** Item to render */
     @Input() public item: EngineModule;
-    /** Dependency for the active item */
-    public dependency: EngineDriver;
+    /** Driver for the active item */
+    public driver: EngineDriver;
     /** Control System for the active item */
     public system: EngineSystem;
     /** Whether the local settings are merged with it's dependencies */
@@ -31,7 +31,7 @@ export class DeviceAboutComponent extends BaseDirective implements OnChanges, On
             'item',
             this._service.listen('BACKOFFICE.active_item', item => {
                 this.item = item;
-                this.loadDependency();
+                this.loadDriver();
                 this.loadSystem();
             })
         );
@@ -39,15 +39,15 @@ export class DeviceAboutComponent extends BaseDirective implements OnChanges, On
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.item) {
-            this.loadDependency();
+            this.loadDriver();
             this.loadSystem();
         }
     }
 
-    public loadDependency() {
+    public loadDriver() {
         if (this.item && this.item.driver_id) {
             this._service.Drivers.show(this.item.driver_id).then(driver => {
-                this.dependency = driver;
+                this.driver = driver;
                 this.updateSettings();
             });
         }
@@ -77,10 +77,10 @@ export class DeviceAboutComponent extends BaseDirective implements OnChanges, On
         if (!this.item) return;
         if (this.merged !== false) {
             this.settings = mergeYAMLSettings('', this.item.settings.settings_string || '');
-            if (this.dependency) {
+            if (this.driver) {
                 this.settings = mergeYAMLSettings(
                     this.settings,
-                    this.dependency.settings.settings_string || ''
+                    this.driver.settings.settings_string || ''
                 );
             }
         } else {
