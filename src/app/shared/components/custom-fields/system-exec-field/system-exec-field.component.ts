@@ -87,7 +87,6 @@ export class SystemExecFieldComponent extends BaseDirective
         }
         const args = this.processArguments();
         const method = this.active_method ? this.active_method : { order: [], params: {}, name: '' };
-        console.log('Method:', method, args);
         return {
             mod: `${this.active_module.module}_${this.active_module.index}`,
             method: method.name,
@@ -178,7 +177,6 @@ export class SystemExecFieldComponent extends BaseDirective
             );
         }
         this.checkFields();
-        console.log('Finished selecting function');
     }
 
     /**
@@ -204,7 +202,6 @@ export class SystemExecFieldComponent extends BaseDirective
                 }
             }
         }
-        console.log('Finished checking fields');
         // Update field state
         const args = this.arg_list.toArray();
         if (args && args.length > 0) {
@@ -212,9 +209,7 @@ export class SystemExecFieldComponent extends BaseDirective
             this.field_pos = current.nativeElement.selectionEnd;
             this.timeout('field', () => (this.field_value = current.nativeElement.value));
         }
-        console.log('Updating field values:', this.function_value);
         this.setValue(this.function_value);
-        console.log('Finished updating field values');
     }
 
     /**
@@ -277,13 +272,10 @@ export class SystemExecFieldComponent extends BaseDirective
      * Execute the selected method
      */
     public execute() {
-        console.log('Execute:', this.executable);
         if (!this.executable) {
             return;
         }
-        console.log('Checking Fields...');
         this.checkFields();
-        console.log('Fields Valid:', this.fields_valid);
         if (this.fields_valid) {
             // Check if any optional arguments have a value
             const args = this.processArguments();
@@ -355,14 +347,12 @@ export class SystemExecFieldComponent extends BaseDirective
             args += `${arg}`;
         }
         args += ']';
-        console.log('Arguments:', args);
         let argument_list = [];
         try {
             argument_list = JSON.parse(args);
         } catch (e) {
             console.error(e);
         }
-        console.log('Arguments:', argument_list);
         return argument_list;
     }
 

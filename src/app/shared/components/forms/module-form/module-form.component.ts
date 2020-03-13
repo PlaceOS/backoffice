@@ -34,6 +34,9 @@ export class ModuleFormComponent extends BaseDirective {
 
     /** Role of the selected driver */
     public get role(): string {
+        if (!this.form.controls.driver) {
+            return 'service';
+        }
         const driver = this.form.controls.driver.value;
         if (!driver) {
             return 'logic';
