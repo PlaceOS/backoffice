@@ -97,16 +97,38 @@
                     >
                 </mat-form-field>
             </div>
+            <div class="field" *ngIf="form.controls.default_uri">
+                <label for="default-uri">Default URI:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="default-uri"
+                        placeholder="Default URI"
+                        formControlName="default_uri"
+                    />
+                </mat-form-field>
+            </div>
             <div class="fieldset">
-                <div class="field" *ngIf="form.controls.default">
-                    <label for="default">Default:</label>
+                <div class="field" *ngIf="form.controls.default_port">
+                    <label
+                        for="default-port"
+                        [class.error]="
+                            form.controls.default_port.invalid && form.controls.default_port.touched
+                        "
+                    >
+                        Default Port Number:
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
-                            name="default"
-                            placeholder="Default"
-                            formControlName="default"
+                            name="default-port"
+                            type="number"
+                            placeholder="Port Number"
+                            formControlName="default_port"
                         />
+                        <mat-error *ngIf="form.controls.default_port.invalid">
+                            A valid port number between 1 - 65535 is required
+                        </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.ignore_connected">

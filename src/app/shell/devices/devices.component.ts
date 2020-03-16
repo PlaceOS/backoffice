@@ -63,7 +63,7 @@ export class DevicesComponent extends BaseRootComponent<EngineModule> {
         });
         ref.componentInstance.event.subscribe((event) => {
             if (event.reason === 'done') {
-                this._router.navigate(['/module', event.metadata.item.id]);
+                this._router.navigate(['/modules', event.metadata.item.id]);
             }
         });
     }

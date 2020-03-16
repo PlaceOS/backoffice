@@ -1,5 +1,9 @@
 <div class="container" *ngIf="item">
     <section>
+        <div class="field">
+            <label>Commit:</label>
+            <div class="value">{{ item.commit }}</div>
+        </div>
         <table>
             <thead>
                 <td class="flex">Module Name</td>

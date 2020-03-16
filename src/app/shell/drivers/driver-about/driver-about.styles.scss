@@ -17,6 +17,18 @@ header {
     }
 }
 
+.field {
+    padding: .5em;
+    display: flex;
+    align-items: center;
+
+    label {
+        font-size: .9em;
+        font-weight: 500;
+        margin-right: 1em;
+    }
+}
+
 section {
     padding: .5em .25em;
 }
