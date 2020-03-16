@@ -1,7 +1,7 @@
 <div class="container" *ngIf="item && !loading">
     <header>
         <div class="heading-group">
-            <div class="heading">{{ item.display_name || item.name }}</div>
+            <div class="heading">{{ item.display_name || item.name || "&lt;Unnamed&gt;" }}</div>
             <div class="info">
                 <div class="id" *ngIf="item.id" (click)="copy()">
                     <span>{{ item.id }}</span>

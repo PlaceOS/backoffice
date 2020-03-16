@@ -19,6 +19,7 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
         ignore_connected: new FormControl(module.ignore_connected || false),
         uri: new FormControl(module.uri || '', [validateURI]),
         notes: new FormControl(module.notes || ''),
+        name: new FormControl(module.name || ''),
         custom_name: new FormControl(module.custom_name || ''),
 
         settings_encryption_level: new FormControl(module.settings.encryption_level),
@@ -45,6 +46,7 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
         subscriptions.push(
             fields.driver.valueChanges.subscribe((value: EngineDriver) =>{
                 module.storePendingChange('driver_id', value.id);
+                fields.name.setValue(value.name || value.module_name);
                 fields.uri.setValue(value.default_uri);
                 fields.port.setValue(value.default_port || 1)
                 resetModuleFormValidators(fields);

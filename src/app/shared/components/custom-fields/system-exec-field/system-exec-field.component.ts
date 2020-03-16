@@ -165,7 +165,9 @@ export class SystemExecFieldComponent extends BaseDirective
                     this.setMethod(this.active_method.name, this.fields);
                 }
             },
-            () => null
+            () => {
+                this.service.notifyInfo('No executable methods returned.');
+            }
         );
     }
 

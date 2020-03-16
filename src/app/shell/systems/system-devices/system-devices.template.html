@@ -54,7 +54,7 @@
                         <a
                             [routerLink]="['/modules', device.id]"
                             routerLinkActive="router-link-active"
-                            >{{device.name}}</a
+                            >{{device.name || "&lt;Unnamed&gt;" }}</a
                         >
                     </td>
                     <td class="module">

@@ -3,7 +3,7 @@
         <mat-form-field appearance="outline">
             <mat-select #select [value]="active_module" (valueChange)="loadFunctions($event)" placeholder="Select a device">
                 <mat-option *ngFor="let option of devices || []" [value]="option">
-                    {{ option.name }}
+                    {{ option.name || "&lt;Unnamed&gt;" }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
