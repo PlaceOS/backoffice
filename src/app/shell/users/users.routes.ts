@@ -5,7 +5,6 @@ import { UserAboutComponent } from './user-about/user-about.component';
 import { UserHistoryComponent } from './user-history/user-history.component';
 
 export const ROUTES: Routes = [
-    { path: '', component: UsersComponent, children: [] },
     {
         path: ':id',
         component: UsersComponent,
@@ -15,5 +14,5 @@ export const ROUTES: Routes = [
             { path: '**', redirectTo: 'about' }
         ]
     },
-    { path: '**', redirectTo: '' }
+    { path: '**', redirectTo: '-' }
 ];

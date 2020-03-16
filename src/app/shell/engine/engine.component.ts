@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { BaseDirective } from '../../shared/globals/base.directive';
+import { ApplicationService } from 'src/app/services/app.service';
 
 @Component({
     selector: 'app-engine',

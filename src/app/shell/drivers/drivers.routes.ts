@@ -6,7 +6,6 @@ import { DriverAboutComponent } from './driver-about/driver-about.component';
 import { DriverDevicesComponent } from './driver-devices/driver-devices.component';
 
 export const ROUTES: Routes = [
-    { path: '', component: DriversComponent, children: [] },
     {
         path: ':id', component: DriversComponent, children: [
             { path: 'about', component: DriverAboutComponent },
@@ -14,5 +13,5 @@ export const ROUTES: Routes = [
             { path: '**',      redirectTo: 'about' }
         ]
     },
-    { path: '**',      redirectTo: '' }
+    { path: '**',      redirectTo: '-' }
 ];

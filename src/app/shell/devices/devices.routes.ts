@@ -6,7 +6,6 @@ import { DeviceAboutComponent } from './device-about/device-about.component';
 import { DeviceSystemsComponent } from './device-systems/device-systems.component';
 
 export const ROUTES: Routes = [
-    { path: '', component: DevicesComponent, children: [] },
     {
         path: ':id', component: DevicesComponent, children: [
             { path: 'about', component: DeviceAboutComponent },
@@ -14,5 +13,5 @@ export const ROUTES: Routes = [
             { path: '**',      redirectTo: 'about' }
         ]
     },
-    { path: '**',      redirectTo: '' }
+    { path: '**',      redirectTo: '-' }
 ];

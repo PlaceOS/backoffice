@@ -5,7 +5,6 @@ import { RepositoryAboutComponent } from './about/repository-about.component';
 import { RepositoryDriversComponent } from './drivers/repository-drivers.component';
 
 export const ROUTES: Routes = [
-    { path: '', component: RepositoriesComponent, children: [] },
     {
         path: ':id',
         component: RepositoriesComponent,
@@ -15,5 +14,5 @@ export const ROUTES: Routes = [
             { path: '**', redirectTo: 'about' }
         ]
     },
-    { path: '**', redirectTo: '' }
+    { path: '**', redirectTo: '-' }
 ];

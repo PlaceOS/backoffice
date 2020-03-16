@@ -6,7 +6,6 @@ import { DomainAuthenticationComponent } from './domain-authentication/domain-au
 import { DomainUsersComponent } from './domain-users/domain-users.component';
 
 export const ROUTES: Routes = [
-    { path: '', component: DomainsComponent, children: [] },
     {
         path: ':id', component: DomainsComponent, children: [
             { path: 'applications', component: DomainApplicationsComponent },
@@ -15,5 +14,5 @@ export const ROUTES: Routes = [
             { path: '**', redirectTo: 'applications' },
         ]
     },
-    { path: '**',      redirectTo: '' },
+    { path: '**',      redirectTo: '-' },
 ];

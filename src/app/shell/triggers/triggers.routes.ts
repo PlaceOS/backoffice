@@ -5,7 +5,6 @@ import { TriggerAboutComponent } from './trigger-about/trigger-about.component';
 import { TriggerSystemsComponent } from './trigger-systems/trigger-systems.component';
 
 export const ROUTES: Routes = [
-    { path: '', component: TriggersComponent, children: [] },
     {
         path: ':id',
         component: TriggersComponent,
@@ -15,5 +14,5 @@ export const ROUTES: Routes = [
             { path: '**', redirectTo: 'about' }
         ]
     },
-    { path: '**', redirectTo: '' }
+    { path: '**', redirectTo: '-' }
 ];
