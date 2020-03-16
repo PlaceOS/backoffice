@@ -87,7 +87,7 @@
                 URI<span *ngIf="role === 'websocket'">*</span>:
             </label>
             <mat-form-field appearance="outline">
-                <input matInput name="uri" placeholder="Device URI" formControlName="uri" />
+                <input matInput name="uri" placeholder="Module URI" formControlName="uri" />
                 <mat-error *ngIf="form.controls.uri.invalid">A valid URI is required</mat-error>
             </mat-form-field>
         </div>
@@ -97,7 +97,7 @@
                 <textarea
                     matInput
                     name="notes"
-                    placeholder="Device Notes"
+                    placeholder="Module Notes"
                     formControlName="notes"
                 ></textarea>
             </mat-form-field>

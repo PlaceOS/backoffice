@@ -8,7 +8,7 @@ import { ROUTES } from './drivers.routes';
 
 import { DriversComponent } from './drivers.component';
 import { DriverAboutComponent } from './driver-about/driver-about.component';
-import { DriverDevicesComponent } from './driver-devices/driver-devices.component';
+import { DriverModulesComponent } from './driver-devices/driver-devices.component';
 import { SharedContentModule } from 'src/app/shared/shared.module';
 
 
@@ -16,7 +16,7 @@ import { SharedContentModule } from 'src/app/shared/shared.module';
     declarations: [
         DriversComponent,
         DriverAboutComponent,
-        DriverDevicesComponent
+        DriverModulesComponent
     ],
     imports: [
         CommonModule,

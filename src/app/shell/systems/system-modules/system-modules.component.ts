@@ -23,11 +23,11 @@ import * as dayjs from 'dayjs';
 import { EngineDebugService } from 'src/app/services/debug.service';
 
 @Component({
-    selector: 'system-devices',
-    templateUrl: './system-devices.template.html',
-    styleUrls: ['./system-devices.styles.scss']
+    selector: 'system-modules',
+    templateUrl: './system-modules.template.html',
+    styleUrls: ['./system-modules.styles.scss']
 })
-export class SystemDevicesComponent extends BaseDirective implements OnInit, OnChanges {
+export class SystemModulesComponent extends BaseDirective implements OnInit, OnChanges {
     /** System to grab the devices for */
     @Input() public item: EngineSystem;
     /** List of modules associated with the system */
@@ -46,8 +46,8 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
             icon: { type: 'icon', class: 'backoffice-power-plug' }
         },
         { id: 'state', name: 'View State', icon: { type: 'icon', class: 'backoffice-eye' } },
-        { id: 'reload', name: 'Reload Device', icon: { type: 'icon', class: 'backoffice-cw' } },
-        { id: 'remove', name: 'Remove Device', icon: { type: 'icon', class: 'backoffice-trash' } }
+        { id: 'reload', name: 'Reload Module', icon: { type: 'icon', class: 'backoffice-cw' } },
+        { id: 'remove', name: 'Remove Module', icon: { type: 'icon', class: 'backoffice-trash' } }
     ];
 
     /** Service for interacting with modules */
@@ -76,14 +76,14 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
             'item',
             this._service.listen('BACKOFFICE.active_item', item => {
                 this.item = item;
-                this.loadDevices();
+                this.loadModules();
             })
         );
     }
 
     public ngOnChanges(changes: any) {
         if (changes.item) {
-            this.loadDevices();
+            this.loadModules();
         }
     }
 
@@ -91,7 +91,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
      * Load the modules for the active system
      * @param offset Offset to load
      */
-    public loadDevices(offset: number = 0) {
+    public loadModules(offset: number = 0) {
         if (!this.item) {
             return;
         }
@@ -101,7 +101,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
                     (a, b) => this.item.modules.indexOf(a.id) - this.item.modules.indexOf(b.id)
                 );
                 this.devices = list;
-                this.generateDeviceBindings();
+                this.generateModuleBindings();
             },
             () => null
         );
@@ -133,7 +133,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
 
     /**
      * Toggle the power state
-     * @param device Device to toggle the power state
+     * @param device Module to toggle the power state
      */
     public power(device: EngineModule) {
         if (device.connected) {
@@ -297,13 +297,13 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
         );
     }
 
-    public newDevice() {
+    public newModule() {
         this._service.Modules.add({
             control_system: this.item
         }).then(
             item => {
                 this._service.notifySuccess('Created new device');
-                this.joinDevice(item.id);
+                this.joinModule(item.id);
             },
             () => {
                 this._service.notifyError('Error creating new device');
@@ -311,14 +311,14 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
         );
     }
 
-    public addDevice() {
+    public addModule() {
         if (this.new_module) {
-            this.joinDevice(this.new_module);
+            this.joinModule(this.new_module);
             this.new_module = '';
         }
     }
 
-    public joinDevice(id: string) {
+    public joinModule(id: string) {
         const mod_list = [...this.item.modules];
         if (mod_list.indexOf(id) < 0) {
             mod_list.push(id);
@@ -327,7 +327,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
         this.item.save().then(
             () => {
                 this._service.notifySuccess('Successfully added device to system');
-                this.loadDevices();
+                this.loadModules();
             },
             () => {
                 this._service.notifyError('Failed to add module to system');
@@ -337,7 +337,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
 
     /**
      * Toggle debug events for a device
-     * @param device Device to listen to debug events for
+     * @param device Module to listen to debug events for
      */
     public toggleDebugEvents(device: EngineModule) {
         if (!device) {
@@ -353,7 +353,7 @@ export class SystemDevicesComponent extends BaseDirective implements OnInit, OnC
     /**
      * Generate the binding modules for each device
      */
-    private generateDeviceBindings() {
+    private generateModuleBindings() {
         const counter: HashMap<number> = {};
         for (const device of this.devices) {
             const name =

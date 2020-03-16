@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { SystemsComponent } from './systems.component';
 import { SystemAboutComponent } from './system-about/system-about.component';
-import { SystemDevicesComponent } from './system-devices/system-devices.component';
+import { SystemModulesComponent } from './system-modules/system-modules.component';
 import { SystemTriggersComponent } from './system-triggers/system-triggers.component';
 import { SystemZonesComponent } from './system-zones/system-zones.component';
 
@@ -11,7 +11,7 @@ export const ROUTES: Routes = [
         component: SystemsComponent,
         children: [
             { path: 'about', component: SystemAboutComponent },
-            { path: 'devices', component: SystemDevicesComponent },
+            { path: 'modules', component: SystemModulesComponent },
             { path: 'triggers', component: SystemTriggersComponent },
             { path: 'zones', component: SystemZonesComponent },
             { path: '**', redirectTo: 'about' }

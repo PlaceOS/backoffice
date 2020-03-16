@@ -41,7 +41,7 @@
                     }
                 },
                 {
-                    "name": "Devices",
+                    "name": "Modules",
                     "route": "/modules",
                     "icon": {
                         "type": "icon",

@@ -12,7 +12,7 @@ const routes: Routes = [
             {
                 path: 'modules',
                 loadChildren: () =>
-                    import('./shell/devices/devices.module').then(m => m.AppDevicesModule)
+                    import('./shell/modules/modules.module').then(m => m.AppModulesModule)
             },
             {
                 path: 'domains',
@@ -20,9 +20,9 @@ const routes: Routes = [
                     import('./shell/domains/domains.module').then(m => m.AppDomainsModule)
             },
             {
-                path: 'drivers',
+                path: 'modules',
                 loadChildren: () =>
-                    import('./shell/drivers/drivers.module').then(m => m.AppDriversModule)
+                    import('./shell/modules/modules.module').then(m => m.AppModulesModule)
             },
             {
                 path: 'metrics',

@@ -6,13 +6,13 @@ import { EngineUsersService, EngineUser, EngineUserQueryOptions } from '@placeos
 import { BehaviorSubject } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
 
-import { FilterFn, DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { FilterFn, DialogEvent } from '../../shared/utilities/types.utilities';
 import { toQueryString } from 'src/app/shared/utilities/api.utilities';
 import {
     ConfirmModalComponent,
     ConfirmModalData,
     CONFIRM_METADATA
-} from 'src/app/overlays/confirm-modal/confirm-modal.component';
+} from '../../overlays/confirm-modal/confirm-modal.component';
 
 import * as dayjs from 'dayjs';
 import * as Sentry from '@sentry/browser';

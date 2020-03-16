@@ -15,7 +15,7 @@ export function getItemWithKeys(keys: string[], map: HashMap) {
 /**
  * Checks whether the platform is a mobile device.
  */
-export function isMobileDevice(): boolean {
+export function isMobileModule(): boolean {
     const r = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
     return !!navigator.userAgent.match(r);
 }

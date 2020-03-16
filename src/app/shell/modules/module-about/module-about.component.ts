@@ -2,13 +2,13 @@ import { Component, Input, SimpleChanges, OnChanges, OnInit } from '@angular/cor
 import { EngineModule, EngineDriver, EngineSystem } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
-import { ApplicationService } from './node_modules/src/app/services/app.service';
-import { mergeYAMLSettings } from './node_modules/src/app/shared/utilities/general.utilities';
+import { ApplicationService } from 'src/app/services/app.service';
+import { mergeYAMLSettings } from 'src/app/shared/utilities/general.utilities';
 
 @Component({
-    selector: 'device-about',
-    templateUrl: './device-about.template.html',
-    styleUrls: ['./device-about.styles.scss']
+    selector: 'module-about',
+    templateUrl: './module-about.template.html',
+    styleUrls: ['./module-about.styles.scss']
 })
 export class ModuleAboutComponent extends BaseDirective implements OnChanges, OnInit {
     /** Item to render */

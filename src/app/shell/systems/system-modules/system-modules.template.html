@@ -1,6 +1,6 @@
 <div class="container" *ngIf="item">
     <section class="select">
-        <button mat-button (tapped)="newDevice()">Add new</button>
+        <button mat-button (tapped)="newModule()">Add new</button>
         <div class="dropdown">
             <item-search-field
                 [service]="module_service"
@@ -8,7 +8,7 @@
                 (ngModelChange)="new_module = $event.id"
             ></item-search-field>
         </div>
-        <button mat-button [disabled]="!new_module" (tapped)="addDevice()">
+        <button mat-button [disabled]="!new_module" (tapped)="addModule()">
             Add existing
         </button>
     </section>

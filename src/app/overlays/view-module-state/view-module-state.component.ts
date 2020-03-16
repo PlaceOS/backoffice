@@ -10,7 +10,7 @@ export interface ModuleStateModalData {
     system: EngineSystem;
     /** Module to expose the state of */
     module: EngineModule;
-    /** Devices associated with the system */
+    /** Modules associated with the system */
     devices: EngineModule[];
 }
 
@@ -39,7 +39,7 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
         return this._data.module;
     }
 
-    /** Devices associated with the system */
+    /** Modules associated with the system */
     public get devices(): EngineModule[] {
         return this._data.devices || [];
     }
@@ -53,14 +53,14 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
     }
 
     public ngOnInit() {
-        this.generateDeviceBindings();
+        this.generateModuleBindings();
         this.updateState();
     }
 
     /**
      * Generate the binding modules for each device
      */
-    private generateDeviceBindings() {
+    private generateModuleBindings() {
         const counter: HashMap<number> = {};
         for (const device of this.devices) {
             const name =

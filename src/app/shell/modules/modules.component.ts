@@ -14,11 +14,11 @@ import {
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
-    selector: 'app-devices',
-    templateUrl: './devices.template.html',
-    styleUrls: ['./devices.styles.scss']
+    selector: 'app-modules',
+    templateUrl: './modules.template.html',
+    styleUrls: ['./modules.styles.scss']
 })
-export class DevicesComponent extends BaseRootComponent<EngineModule> {
+export class ModulesComponent extends BaseRootComponent<EngineModule> {
     /** Number of systems for the active device */
     public system_count: number;
     /** Whether the list of devices should show only the disconnected devices */
@@ -36,7 +36,7 @@ export class DevicesComponent extends BaseRootComponent<EngineModule> {
 
     public ngOnInit(): void {
         super.ngOnInit();
-        this._service.title = 'Devices';
+        this._service.title = 'Modules';
     }
 
     protected loadValues() {

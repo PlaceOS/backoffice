@@ -4,12 +4,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { ROUTES } from './devices.routes';
+import { ROUTES } from './modules.routes';
 
-import { ModulesComponent } from './devices.component';
-import { ModuleAboutComponent } from './device-about/device-about.component';
-import { ModuleSystemsComponent } from './device-systems/device-systems.component';
-import { SharedContentModule } from './node_modules/src/app/shared/shared.module';
+import { ModulesComponent } from './modules.component';
+import { ModuleAboutComponent } from './module-about/module-about.component';
+import { ModuleSystemsComponent } from './module-systems/module-systems.component';
+import { SharedContentModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({

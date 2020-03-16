@@ -18,12 +18,12 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
     templateUrl: './driver-devices.template.html',
     styleUrls: ['./driver-devices.styles.scss']
 })
-export class DriverDevicesComponent extends BaseDirective implements OnChanges, OnInit {
+export class DriverModulesComponent extends BaseDirective implements OnChanges, OnInit {
     @Input() public item: EngineDriver;
 
     /** Filter string for the system list */
     public search_str: string;
-    /** List of Devices associated with the driver */
+    /** List of Modules associated with the driver */
     public device_list: EngineModule[] = [];
     /** List of items from an API search */
     public search_results$: Observable<EngineModule[]>;
@@ -42,7 +42,7 @@ export class DriverDevicesComponent extends BaseDirective implements OnChanges, 
             'item',
             this._service.listen('BACKOFFICE.active_item', item => {
                 this.item = item;
-                this.loadDevices();
+                this.loadModules();
             })
         );
         this.search_results$ = this.search$.pipe(
@@ -80,11 +80,11 @@ export class DriverDevicesComponent extends BaseDirective implements OnChanges, 
 
     public ngOnChanges(changes: any) {
         if (changes.item) {
-            this.loadDevices();
+            this.loadModules();
         }
     }
 
-    public loadDevices(offset: number = 0) {
+    public loadModules(offset: number = 0) {
         if (!this.item) { return; }
         this._service.Modules.query({ driver_id: this.item.id, offset, limit: 500 }).then(
             list => (this.device_list = list),
@@ -92,7 +92,7 @@ export class DriverDevicesComponent extends BaseDirective implements OnChanges, 
         );
     }
 
-    protected removeDevice(item: EngineModule) {
+    protected removeModule(item: EngineModule) {
         if (item) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
@@ -115,7 +115,7 @@ export class DriverDevicesComponent extends BaseDirective implements OnChanges, 
                                 this._service.notifySuccess(
                                     `Successfully deleted device "${item.name}".`
                                 );
-                                this.loadDevices();
+                                this.loadModules();
                                 ref.close();
                                 this.unsub('delete_confirm');
                             },

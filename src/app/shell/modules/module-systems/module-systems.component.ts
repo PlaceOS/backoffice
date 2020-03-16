@@ -7,11 +7,11 @@ import { Subject, Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 
 @Component({
-    selector: 'device-systems',
-    templateUrl: './device-systems.template.html',
-    styleUrls: ['./device-systems.styles.scss']
+    selector: 'module-systems',
+    templateUrl: './module-systems.template.html',
+    styleUrls: ['./module-systems.styles.scss']
 })
-export class DeviceSystemsComponent extends BaseDirective implements OnChanges, OnInit {
+export class ModuleSystemsComponent extends BaseDirective implements OnChanges, OnInit {
     @Input() public item: EngineModule;
     /** Filter string for the system list */
     public search_str: string;

@@ -29,7 +29,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     /** List of driver roles */
     public role_types: Identity[] = [
         { id: 0, name: 'SSH' },
-        { id: 1, name: 'Device' },
+        { id: 1, name: 'Module' },
         { id: 2, name: 'Service' },
         { id: 3, name: 'Websocket' },
         { id: 99, name: 'Logic' }

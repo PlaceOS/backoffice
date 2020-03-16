@@ -1,7 +1,7 @@
 <div class="container" [class.show]="show_sidebar">
     <div class="sidebar">
         <sidebar
-            heading="Drivers"
+            heading="Modules"
             [module]="module"
             [close]="show_sidebar"
             (event)="sidebarEvent($event)"
@@ -9,12 +9,12 @@
     </div>
     <main (touchrelease)="show_sidebar = false">
         <item-display
-            name="driver"
-            route="drivers"
+            name="module"
+            route="modules"
             [item]="item"
             [tabs]="[
                 { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
-                { id: 'devices', name: 'Devices', count: device_count, icon: { class: 'backoffice-tablet' } }
+                { id: 'devices', name: 'Modules', count: device_count, icon: { class: 'backoffice-tablet' } }
             ]"
             (event)="itemEvent($event)"
         >

@@ -10,7 +10,7 @@
                     [(ngModel)]="search_str"
                     (ngModelChange)="search$.next($event)"
                     name="search-filter"
-                    placeholder="Filter Devices"
+                    placeholder="Filter Modules"
                 />
             </mat-form-field>
         </section>
@@ -37,7 +37,7 @@
                             </a>
                         </td>
                         <td class="small">
-                            <button mat-icon-button (tapped)="removeDevice(item)"><i class="backoffice-trash"></i></button>
+                            <button mat-icon-button (tapped)="removeModule(item)"><i class="backoffice-trash"></i></button>
                         </td>
                     </tr>
                 </tbody>
