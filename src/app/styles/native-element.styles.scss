@@ -11,6 +11,7 @@ textarea {
     outline: none;
     background-color: #fff;
     color: rgba($font-dark, .87);
+    user-select: text;
 
     &:focus {
         border-bottom-color: $color-primary;
