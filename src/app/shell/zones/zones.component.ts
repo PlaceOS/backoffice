@@ -34,6 +34,11 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
         this.service = this._service.Zones;
     }
 
+    public ngOnInit(): void {
+        super.ngOnInit();
+        this._service.title = 'Zones';
+    }
+
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, zone_id: this.item.id };
         // Get system count

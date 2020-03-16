@@ -29,6 +29,11 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
         this.service = this._service.Users as any;
     }
 
+    public ngOnInit(): void {
+        super.ngOnInit();
+        this._service.title = 'Users';
+    }
+
     /**
      * Open the modal to create a new system
      */

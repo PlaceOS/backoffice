@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { EngineTrigger } from '@placeos/ts-client';
@@ -18,7 +18,7 @@ import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item
     templateUrl: './triggers.template.html',
     styleUrls: ['./triggers.styles.scss']
 })
-export class TriggersComponent extends BaseRootComponent<EngineTrigger> {
+export class TriggersComponent extends BaseRootComponent<EngineTrigger> implements OnInit {
     /** Number of system triggers */
     public system_count: number;
 
@@ -30,6 +30,11 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> {
     ) {
         super(_service, _route, _router);
         this.service = this._service.Triggers;
+    }
+
+    public ngOnInit(): void {
+        super.ngOnInit();
+        this._service.title = 'Triggers';
     }
 
     protected loadValues() {

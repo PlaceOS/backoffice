@@ -32,6 +32,11 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
         this.service = this._service.Repositories;
     }
 
+    public ngOnInit(): void {
+        super.ngOnInit();
+        this._service.title = 'Repositories';
+    }
+
     protected loadValues() {
         const query: any = { offset: 0 };
         // Get repository count

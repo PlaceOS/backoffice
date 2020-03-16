@@ -32,6 +32,11 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
         this.service = this._service.Drivers;
     }
 
+    public ngOnInit(): void {
+        super.ngOnInit();
+        this._service.title = 'Drivers';
+    }
+
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, driver_id: this.item.id };
         this._service.Modules.query(query).then(list => {

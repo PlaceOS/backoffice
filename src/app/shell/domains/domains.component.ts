@@ -36,6 +36,11 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
         this.service = this._service.Domains;
     }
 
+    public ngOnInit(): void {
+        super.ngOnInit();
+        this._service.title = 'Domains';
+    }
+
     protected loadValues() {
         let query: any = { offset: 0, limit: 1, owner: this.item.id };
         // Get application count

@@ -36,6 +36,11 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
         this.service = this._service.Systems;
     }
 
+    public ngOnInit(): void {
+        super.ngOnInit();
+        this._service.title = 'Systems';
+    }
+
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, sys_id: this.item.id };
         // Get trigger count

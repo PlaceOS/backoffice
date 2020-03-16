@@ -5,6 +5,7 @@ import { ComposerService } from '@placeos/composer';
 import { BaseDirective } from '../../shared/globals/base.directive';
 
 import * as dayjs from 'dayjs';
+import { ApplicationService } from 'src/app/services/app.service';
 
 @Component({
     selector: 'app-metrics',
@@ -31,13 +32,14 @@ export class MetricsComponent extends BaseDirective implements OnInit {
         return authority ? authority.metrics : '';
     }
 
-    constructor(private _composer: ComposerService) {
+    constructor(private _composer: ComposerService, private _service: ApplicationService) {
         super();
     }
 
     public ngOnInit() {
         this.updateTime();
         this.interval('time', () => this.updateTime(), 1000);
+        this._service.title = 'Metrics';
     }
 
     public updateTime() {

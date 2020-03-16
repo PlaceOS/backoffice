@@ -34,6 +34,11 @@ export class DevicesComponent extends BaseRootComponent<EngineModule> {
         this.service = this._service.Modules;
     }
 
+    public ngOnInit(): void {
+        super.ngOnInit();
+        this._service.title = 'Devices';
+    }
+
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, module_id: this.item.id };
         // Get system count

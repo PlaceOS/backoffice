@@ -204,7 +204,7 @@ export class ApplicationService extends BaseClass {
      */
     public set title(value: string) {
         const title_suffix = this.setting('app.title');
-        this._title.setTitle(`${value ? value + ' | ' : ''}${title_suffix || 'ACA Engine'}`);
+        this._title.setTitle(`${value ? value + ' | ' : ''}${title_suffix || 'PlaceOS'}`);
     }
 
     /**

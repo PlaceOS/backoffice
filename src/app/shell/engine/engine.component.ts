@@ -9,4 +9,11 @@ import { BaseDirective } from '../../shared/globals/base.directive';
 })
 export class EngineComponent extends BaseDirective {
 
+    constructor(private _service: ApplicationService) {
+        super();
+    }
+
+    public ngOnInit(): void {;
+        this._service.title = 'Admin';
+    }
 }

@@ -11,9 +11,9 @@
         "local_login": false
     },
     "app": {
-        "title": "ACA Engine",
-        "name": "ACA Engine",
-        "description": "ACA Engine Frontend made in Angular 8+",
+        "title": "PlaceOS",
+        "name": "PlaceOS",
+        "description": "PlaceOS Frontend made in Angular 8+",
         "short_name": "Engine",
         "code": "ENGINE",
         "login": {
