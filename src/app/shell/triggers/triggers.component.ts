@@ -114,6 +114,7 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
                             throw err;
                         });
                         this._router.navigate(['/triggers']);
+                        this._service.set('BACKOFFICE.removed', this.item.id);
                         ref.close();
                         this.unsub('delete_confirm');
                     }

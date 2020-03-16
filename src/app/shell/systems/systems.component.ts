@@ -117,6 +117,7 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
                                 this._service.notifySuccess(
                                     `Successfully deleted system "${this.item.name}".`
                                 );
+                                this._service.set('BACKOFFICE.removed', this.item.id);
                                 this._router.navigate(['/systems']);
                                 ref.close();
                                 this.unsub('delete_confirm');

@@ -9,7 +9,6 @@ import {
     ElementRef,
     ViewChildren,
     QueryList,
-    ChangeDetectorRef,
     SimpleChanges
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
@@ -108,7 +107,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         return 0;
     }
 
-    constructor(private _service: ApplicationService, private _cdr: ChangeDetectorRef) {
+    constructor(private _service: ApplicationService) {
         super();
     }
 
@@ -117,9 +116,16 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             if (!this._service.get('BACKOFFICE.active_item')) {
                 this._service.set('BACKOFFICE.active_item', null);
             }
+            if (!this._service.get('BACKOFFICE.removed')) {
+                this._service.set('BACKOFFICE.removed', '');
+            }
             this.subscription(
                 'active_item',
                 this._service.listen('BACKOFFICE.active_item', item => this.replaceActiveItem(item))
+            );
+            this.subscription(
+                'remove_item',
+                this._service.listen('BACKOFFICE.removed', id => this.removeItem(id))
             );
             this.subscription(
                 'up',
@@ -251,5 +257,21 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             list.push(active_item);
         }
         this.items.next([...list]);
+    }
+
+    /**
+     * Remove item from the list
+     * @param id
+     */
+    private removeItem(id: string): void {
+        console.log('Remove:', id);
+        if (!id) { return; }
+        console.log('Remove:', id);
+        const list = this.items.getValue() || [];
+        const index = list.findIndex(item => item.id === id);
+        if (index >= 0) {
+            list.splice(index, 1);
+            this.items.next([...list]);
+        }
     }
 }

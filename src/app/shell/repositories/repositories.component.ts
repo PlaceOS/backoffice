@@ -112,6 +112,7 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
                             );
                             throw err;
                         });
+                        this._service.set('BACKOFFICE.removed', this.item.id);
                         this._router.navigate(['/repositories']);
                         ref.close();
                         this.unsub('delete_confirm');

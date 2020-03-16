@@ -107,6 +107,7 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
                                     `Successfully deleted driver "${this.item.name}".`
                                 );
                                 this._router.navigate(['/drivers']);
+                                this._service.set('BACKOFFICE.removed', this.item.id);
                                 ref.close();
                                 this.unsub('delete_confirm');
                             },

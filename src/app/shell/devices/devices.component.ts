@@ -111,6 +111,7 @@ export class DevicesComponent extends BaseRootComponent<EngineModule> {
                                     `Successfully deleted device "${this.item.name}".`
                                 );
                                 this._router.navigate(['/modules']);
+                                this._service.set('BACKOFFICE.removed', this.item.id);
                                 ref.close();
                                 this.unsub('delete_confirm');
                             },

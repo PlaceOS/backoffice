@@ -59,6 +59,9 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
                     } else {
                         this.setActiveItem(this._service.get('BACKOFFICE.active_item'));
                     }
+                } else if (params.has('id') && params.get('id') === '-') {
+                    this.id = '-'
+                    this.setActiveItem(null);
                 }
                 this.timeout('sidebar', () => (this.show_sidebar = !this.id));
             })
@@ -154,15 +157,17 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
         console.log('Setting new item:', new_item);
         this._service.set('BACKOFFICE.active_item_id', this.id);
         this._service.set('BACKOFFICE.active_item', this.item);
-        this.subscription(
-            'item_changes',
-            (this.item as any).changeEvents.subscribe(event => {
-                if (event.type === 'item_saved') {
-                    this.setActiveItem(event.metadata as any);
-                }
-            })
-        );
-        this.loadValues();
+        if (this.item) {
+            this.subscription(
+                'item_changes',
+                (this.item as any).changeEvents.subscribe(event => {
+                    if (event.type === 'item_saved') {
+                        this.setActiveItem(event.metadata as any);
+                    }
+                })
+            );
+            this.loadValues();
+        }
         this.timeout('item', () => (this.loading_item = false));
     }
 }

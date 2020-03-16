@@ -97,6 +97,7 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
                                     `Successfully deleted user "${this.item.name}".`
                                 );
                                 this._router.navigate(['/users']);
+                                this._service.set('BACKOFFICE.removed', this.item.id);
                                 ref.close();
                                 this.unsub('delete_confirm');
                             },

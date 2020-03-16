@@ -117,6 +117,7 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
                                     `Successfully deleted device "${this.item.name}".`
                                 );
                                 this._router.navigate(['/zones']);
+                                this._service.set('BACKOFFICE.removed', this.item.id);
                                 ref.close();
                                 this.unsub('delete_confirm');
                             },

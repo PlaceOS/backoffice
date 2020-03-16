@@ -120,6 +120,7 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
                                     `Successfully deleted domain "${this.item.name}".`
                                 );
                                 this._router.navigate(['/users']);
+                                this._service.set('BACKOFFICE.removed', this.item.id);
                                 ref.close();
                                 this.unsub('delete_confirm');
                             },
