@@ -55,7 +55,7 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
                 return this.options && this.options.length > 0
                     ? Promise.resolve(this.options)
                     : !this.min_length || query.length >= this.min_length
-                    ? (this.service.query({ q: query || '', cache: 60 * 1000 }) as Promise<T[]>)
+                    ? (this.service.query({ q: query || '', cache: 5 * 1000 }) as Promise<T[]>)
                     : Promise.resolve([]);
             }),
             catchError(err => of([])),

@@ -7,6 +7,7 @@
             (ngModelChange)="search$.next($event)"
             [placeholder]="'Search for ' + (service?.name || service?._name || '') + '...'"
             [matAutocomplete]="auto"
+            (focus)="search$.next(search_str)"
             (blur)="resetSearchString()"
         />
         <div class="prefix" matPrefix>
