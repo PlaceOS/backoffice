@@ -264,9 +264,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
      * @param id
      */
     private removeItem(id: string): void {
-        console.log('Remove:', id);
         if (!id) { return; }
-        console.log('Remove:', id);
         const list = this.items.getValue() || [];
         const index = list.findIndex(item => item.id === id);
         if (index >= 0) {

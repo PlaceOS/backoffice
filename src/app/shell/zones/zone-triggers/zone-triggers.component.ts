@@ -134,7 +134,6 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
      */
     private addTrigger(trigger: EngineTrigger): void {
         const triggers = unique(this.item.triggers.concat(trigger.id));
-        console.log('Triggers:', triggers, this.item.triggers);
         this.item.storePendingChange('triggers', triggers);
         this.item.save().then(
             () => this._service.notifySuccess('Sucessfully added trigger'),

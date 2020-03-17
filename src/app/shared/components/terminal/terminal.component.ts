@@ -66,7 +66,6 @@ export class TerminalComponent extends BaseDirective implements OnInit, OnChange
         const box = this.container_el.nativeElement.getBoundingClientRect();
         const width = Math.floor(box.width / (font_size * 0.6));
         const height = Math.floor(box.height / (line_height * font_size * 1.1));
-        console.log('Resize:', width, height, line_height);
         this.terminal.resize(width - 2, height);
     }
 

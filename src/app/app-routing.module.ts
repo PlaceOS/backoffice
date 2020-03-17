@@ -20,9 +20,9 @@ const routes: Routes = [
                     import('./shell/domains/domains.module').then(m => m.AppDomainsModule)
             },
             {
-                path: 'modules',
+                path: 'drivers',
                 loadChildren: () =>
-                    import('./shell/modules/modules.module').then(m => m.AppModulesModule)
+                    import('./shell/drivers/drivers.module').then(m => m.AppDriversModule)
             },
             {
                 path: 'metrics',

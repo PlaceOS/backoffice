@@ -78,7 +78,6 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
             name: driver.replace(/\//g, ' > ')
         }));
         this.commit_list = [];
-        console.log('Update driver list');
     }
 
     /**
@@ -100,7 +99,6 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                     commit => commit.id === this.form.controls.commit.value
                 ) as any;
             }
-            console.log('Update commit list');
         });
     }
 
@@ -116,14 +114,12 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
             commit: `${event.id}`
         }).then(driver => {
             if (!this.form.controls.id.value) {
-                console.log('Set:', driver);
                 this.form.controls.name.setValue(driver.descriptive_name || '');
                 this.form.controls.module_name.setValue(driver.generic_name || '');
                 this.form.controls.class_name.setValue(this.base_driver.id || '');
                 this.form.controls.settings_string.setValue(driver.default_settings || '');
                 this.form.controls.description.setValue(driver.description || '');
             }
-            console.log('Set driver base list');
         });
     }
 
@@ -141,7 +137,6 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                 typeof driver === 'string'
                     ? { id: driver, name: driver.split('/').join(' > ') }
                     : driver;
-            console.log('Base Driver:', this.base_driver);
             this.updateCommitList(this.base_driver);
         }
     }

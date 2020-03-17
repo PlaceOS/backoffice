@@ -115,64 +115,6 @@ mat-select {
     }
 }
 
-a-dynamic-form {
-    width: 100%;
-}
-
-.dynamic-form[widget] {
-    width: 100%;
-
-    .dynamic-field,
-    a-dynamic-form-field {
-        flex: 1;
-        > div {
-            display: flex;
-            flex-wrap: wrap;
-        }
-    }
-
-    .dynamic-field {
-        &:hover {
-            background-color: rgba(#000, .05);
-            border-radius: 4px;
-        }
-    }
-
-    .checkbox > .details {
-        opacity: 0;
-        user-select: none;
-    }
-
-    .details {
-        @include respond-to(mobile) {
-            min-width: 100%;
-        }
-    }
-
-    .info {
-        &.status {
-            padding: 0;
-            margin-top: -.25em;
-        }
-    }
-
-    .input {
-        justify-content: flex-start;
-    }
-
-    .group {
-        a-dynamic-form-field {
-            padding: .25em;
-            &:first-child {
-                padding-left: 0;
-            }
-            &:last-child {
-                padding-right: 0;
-            }
-        }
-    }
-}
-
 .overlay-backdrop {
     background-color: rgba(#000, 0.6);
 }

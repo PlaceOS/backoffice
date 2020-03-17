@@ -68,7 +68,6 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
             }
         });
         ref.componentInstance.event.subscribe(event => {
-            console.log('Event:', event);
             if (event.reason === 'done') {
                 this._router.navigate(['/zones', event.metadata.item.id]);
             }

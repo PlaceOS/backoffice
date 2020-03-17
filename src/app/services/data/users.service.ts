@@ -141,7 +141,6 @@ export class BackofficeUsersService extends EngineUsersService {
                         sessionStorage.setItem(`${clientId}_login`, 'true');
                     }
                     this._composer.auth.authorise().then(token => {
-                        console.log('Token:', token);
                         resolve();
                     });
                 },

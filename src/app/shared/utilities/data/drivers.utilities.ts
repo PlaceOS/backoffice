@@ -33,7 +33,6 @@ export function generateDriverFormFields(driver: EngineDriver): FormDetails {
     const subscriptions = [];
     for (const key in fields) {
         if (fields[key] && key.indexOf('settings') < 0) {
-            console.log('Key:', key);
             subscriptions.push(
                 fields[key].valueChanges.subscribe(value =>
                     driver.storePendingChange(key as any, value)

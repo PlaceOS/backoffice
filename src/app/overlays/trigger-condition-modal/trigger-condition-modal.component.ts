@@ -102,7 +102,6 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
         if (this._data.condition) {
             const old_value = JSON.stringify(this._data.condition);
             const index = old_values.findIndex(cmp => JSON.stringify(cmp) === old_value);
-            console.log('Index:', index, old_value, old_values);
             if (index >= 0) {
                 old_values.splice(index, 1, new_value);
             }

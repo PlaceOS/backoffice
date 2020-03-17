@@ -85,7 +85,6 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
         const class_parts = class_name.split('_');
         this._service.Systems.state(this.system.id, class_parts[0], +class_parts[1]).then(
             state => {
-                console.log('State:', state);
                 this.state =
                     typeof state === 'string' ? state : JSON.stringify(state, undefined, 4);
                 this.loading = false;

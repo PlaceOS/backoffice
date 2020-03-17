@@ -140,6 +140,5 @@ export class AuthSourceModalComponent extends BaseDirective implements OnInit {
         } else if (this.item instanceof EngineLDAPSource) {
             this.form = generateLDAPSourceForm(this.item).form;
         }
-        console.log('Form:', this.form);
     }
 }

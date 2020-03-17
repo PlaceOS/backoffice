@@ -466,7 +466,6 @@ export class ApplicationService extends BaseClass {
             handle_login: !settings.local_login && !login_locally,
             mock
         };
-        console.log('Config:', config);
         this._composer.setup(config);
     }
 

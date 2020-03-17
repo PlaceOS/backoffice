@@ -1,7 +1,7 @@
 <div class="container" [class.show]="show_sidebar">
     <div class="sidebar">
         <sidebar
-            heading="Modules"
+            heading="Drivers"
             [module]="module"
             [close]="show_sidebar"
             (event)="sidebarEvent($event)"
@@ -14,7 +14,7 @@
             [item]="item"
             [tabs]="[
                 { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
-                { id: 'devices', name: 'Modules', count: device_count, icon: { class: 'backoffice-tablet' } }
+                { id: 'modules', name: 'Modules', count: device_count, icon: { class: 'backoffice-tablet' } }
             ]"
             (event)="itemEvent($event)"
         >

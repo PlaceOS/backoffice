@@ -156,7 +156,6 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
             }
             this.item.save().then(
                 item => {
-                    console.log('Item:', item);
                     this.result = item;
                     this.loading = null;
                     const settings: EngineSettings = (this.item as any).settings;

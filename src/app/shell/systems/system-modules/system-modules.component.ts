@@ -148,9 +148,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                         this._service.notifyError(
                             `Failed to stop device '${device.id}'.\nView Error?`,
                             'View',
-                            () => {
-                                // console.log('View error:', err);
-                            }
+                            () => null
                         );
                     }
                 }
@@ -167,9 +165,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                         this._service.notifyError(
                             `Failed to stop device '${device.id}'.\nView Error?`,
                             'View',
-                            () => {
-                                // console.log('View error:', err);
-                            }
+                            () => null
                         );
                     }
                 }
@@ -290,8 +286,16 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             'confirm_ref',
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
-                    ref.close();
-                    this.unsub('confirm_ref');
+                    this.item.removeModule(device.id).then(() => {
+                        this._service.notifySuccess('Succefully removed module.');
+                        this.devices.splice(this.devices.indexOf(device), 1);
+                        ref.close();
+                        this.unsub('confirm_ref');
+                    }, (err) => {
+                        this._service.notifyError(`Error removing module. Error: ${ err.message || err }`)
+                        ref.close();
+                        this.unsub('confirm_ref');
+                    })
                 }
             })
         );

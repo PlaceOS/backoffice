@@ -59,7 +59,6 @@ export class EngineClusterItemComponent implements OnInit {
                 x: dayjs(event.id).format('HH:mm:ss'),
                 y: event.value
             }));
-        console.log('Data:', data);
         this.cpu_chart = new Chart(context, {
             type: 'line',
             showXLabels: 6,
