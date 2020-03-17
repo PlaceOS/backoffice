@@ -4,6 +4,9 @@ import { EngineCluster } from '@placeos/ts-client';
 import { ApplicationService } from 'src/app/services/app.service';
 import { first } from 'rxjs/operators';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { HashMap } from 'src/app/shared/utilities/types.utilities';
+
+import * as dayjs from 'dayjs';
 
 @Component({
     selector: 'engine-cluster-details',
@@ -14,6 +17,8 @@ export class EngineClusterDetailsComponent extends BaseDirective implements OnIn
 
     /** List of available clusters on this instance of engine */
     public cluster_list: EngineCluster[] = [];
+    /** Map of clusters to CPU usage history */
+    public cpu_history: HashMap<{ id: number, value: number }[]> = {};
     /** Active cluster to show details for */
     public active_cluster: EngineCluster;
     /** Whether cluster details are being loaded */
@@ -35,6 +40,19 @@ export class EngineClusterDetailsComponent extends BaseDirective implements OnIn
         this.loading = true;
         this._service.Clusters.query({ include_status: true } as any).then((list) => {
             this.cluster_list = list || [];
+            const date = dayjs().valueOf();
+            this.cluster_list.forEach(cluster => {
+                if (!this.cpu_history[cluster.id]) {
+                    this.cpu_history[cluster.id] = []
+                }
+                this.cpu_history[cluster.id].push({
+                    id: date,
+                    value: cluster.core_cpu
+                });
+                if (this.cpu_history[cluster.id].length > 120) {
+                    this.cpu_history[cluster.id].shift();
+                }
+            })
             this.loading = false;
         });
     }
