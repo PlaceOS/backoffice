@@ -56,7 +56,8 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
     /**
      * Open the modal to create a new system
      */
-    protected new() {
+    protected newItem() {
+        if (this.modal_ref) { return; }
         const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
             width: 'auto',
@@ -67,19 +68,23 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
                 service: this._service.Zones
             }
         });
-        ref.componentInstance.event.subscribe(event => {
+        this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
             if (event.reason === 'done') {
                 this._router.navigate(['/zones', event.metadata.item.id]);
             }
+        }));
+        this.modal_ref.afterClosed().subscribe(() => {
+            this.unsub('modal_events');
+            this.modal_ref = null;
         });
     }
 
     /**
      * Open the modal to create a new system
      */
-    protected edit() {
-        if (this.item) {
-            this._dialog.open(ItemCreateUpdateModalComponent, {
+    protected editItem() {
+        if (this.item && !this.modal_ref) {
+            this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
                 width: 'auto',
                 maxHeight: 'calc(100vh - 2em)',
@@ -89,12 +94,16 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
                     service: this._service.Zones
                 }
             });
+            this.modal_ref.afterClosed().subscribe(() => {
+                this.unsub('modal_events');
+                this.modal_ref = null;
+            });
         }
     }
 
-    protected delete() {
-        if (this.item) {
-            const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+    protected deleteItem() {
+        if (this.item && !this.modal_ref) {
+            this.modal_ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
                 {
                     ...CONFIRM_METADATA,
@@ -106,10 +115,10 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
                 }
             );
             this.subscription(
-                'delete_confirm',
-                ref.componentInstance.event.subscribe((event: DialogEvent) => {
+                'modal_events',
+                this.modal_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
-                        ref.componentInstance.loading = 'Deleting device...';
+                        this.modal_ref.componentInstance.loading = 'Deleting device...';
                         this.item.delete().then(
                             () => {
                                 this._service.notifySuccess(
@@ -117,17 +126,20 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
                                 );
                                 this._router.navigate(['/zones']);
                                 this._service.set('BACKOFFICE.removed', this.item.id);
-                                ref.close();
-                                this.unsub('delete_confirm');
+                                this.modal_ref.close();
                             },
                             err => {
-                                ref.componentInstance.loading = null;
+                                this.modal_ref.componentInstance.loading = null;
                                 this._service.notifyError(`Error deleting device. Error: ${err}`);
                             }
                         );
                     }
                 })
             );
+            this.modal_ref.afterClosed().subscribe(() => {
+                this.unsub('modal_events');
+                this.modal_ref = null;
+            });
         }
     }
 }

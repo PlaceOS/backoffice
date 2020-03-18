@@ -9,7 +9,7 @@ import {
     ElementRef
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineResource } from '@placeos/ts-client';
+import { EngineResource, EngineDriver, EngineDriverRole } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
@@ -19,6 +19,7 @@ import {
     ItemCreateUpdateModalComponent,
     CreateEditModalData
 } from 'src/app/overlays/item-modal/item-modal.component';
+import { Router } from '@angular/router';
 
 export interface ApplicationTab {
     id: string;
@@ -60,7 +61,26 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
         return false;
     }
 
-    constructor(private service: ApplicationService, private _dialog: MatDialog) {
+    public get driver_type(): string {
+        const item: any = this.item;
+        if (!item.role) {
+            return '';
+        }
+        const driver: EngineDriver = item || {};
+        switch (driver.role) {
+            case EngineDriverRole.Device:
+                return 'Device';
+            case EngineDriverRole.SSH:
+                return 'SSH';
+            case EngineDriverRole.Service:
+                return 'Service';
+            case EngineDriverRole.Websocket:
+                return 'Websocket';
+        }
+        return 'Logic';
+    }
+
+    constructor(private service: ApplicationService, private _dialog: MatDialog, private _router: Router) {
         super();
     }
 
@@ -75,7 +95,16 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
         );
     }
 
-    public changeTab(direction) {}
+    public changeTab(direction) {
+        if (!this.item) { return; }
+        console.log('Item:', this.item);
+        this.timeout('change_tab', () => {
+            const index = this.tabs.findIndex(tab => this._router.url.indexOf(tab.id) >= 0);
+            if (index >= 0 && this.tabs[index + direction]) {
+                this._router.navigate([`/${this.route}`, this.item.id, this.tabs[index + direction].id]);
+            }
+        }, 100);
+    }
 
     /** Copy the ID of the active item to the clipboard */
     public copy() {

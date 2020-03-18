@@ -20,19 +20,22 @@ export class HotkeysService {
     /** List of registered hotkey combinations */
     private registered_combos: string[][] = [];
     /** Counter for the number of keydown events. Used for checking order of key presses */
-    private counter = 0;
+    private counter: number = 0;
     /** Last key code to be pressed */
     private last_down: string;
 
     constructor() {
         window.addEventListener('keydown', (event: KeyboardEvent) => {
+            if (
+                document.activeElement &&
+                (document.activeElement.tagName.toLowerCase() === 'input' ||
+                    document.activeElement.tagName.toLowerCase() === 'textarea')
+            ) {
+                return;
+            }
             const code = this.mapKey((event.code || '').toLowerCase());
             if (this.last_down !== code) {
-                if (!this.keydown_states[code]) {
-                    this.keydown_states[code] = new BehaviorSubject(null);
-                    this.keydown_observers[code] = this.keydown_states[code].asObservable();
-                }
-                this.keydown_states[code].next(this.counter++);
+                this.setKeyState(code, ++this.counter);
                 if (this.combo_end.indexOf(code) >= 0) {
                     event.preventDefault();
                 }
@@ -60,15 +63,12 @@ export class HotkeysService {
         if (combination.length > 0 && this.validCombination(combination)) {
             this.registered_combos.push(combination);
             const last_key = combination[combination.length - 1];
-            if (!this.keydown_states[last_key]) {
-                this.keydown_states[last_key] = new BehaviorSubject(null);
-                this.keydown_observers[last_key] = this.keydown_states[last_key].asObservable();
-            }
+            this.setKeyState(last_key, null);
             this.updateCombinationEndList();
             return this.keydown_observers[last_key].subscribe(count => {
                 if (count) {
                     const presses: number[] = [];
-                    if (combination.length > 1) {
+                    if (combination.length > 0) {
                         // Check that keys are pressed
                         for (const key of combination) {
                             const state = this.keydown_states[key];
@@ -81,7 +81,10 @@ export class HotkeysService {
                             }
                         }
                     }
-                    next();
+                    const total = presses.reduce((a, v) => a + (v > 0 ? 1 : -1), 0);
+                    if (total >= combination.length) {
+                        next();
+                    }
                 }
             });
         }
@@ -93,20 +96,23 @@ export class HotkeysService {
      * @param code Code to transform
      */
     private mapKey(code: string): string {
-        if (code.indexOf('alt') || code.indexOf('shift') || code.indexOf('control')) {
+        if (
+            code.indexOf('alt') >= 0 ||
+            code.indexOf('shift') >= 0 ||
+            code.indexOf('control') >= 0
+        ) {
             return code.replace('left', '').replace('right', '');
         }
         return code;
     }
 
     /**
-     * Update the list of the last keys in combinations to allow for
-     * prevent default actions on pre-existing hotkeys
+     * Update the list of the last keys in combinations to allow for prevent default actions on pre-existing hotkeys
      */
     private updateCombinationEndList(): void {
         const key_list = [];
         for (const combo of this.registered_combos) {
-            this.combo_end.push(combo[combo.length - 1]);
+            key_list.push(combo[combo.length - 1]);
         }
         this.combo_end = unique(key_list);
     }
@@ -123,5 +129,18 @@ export class HotkeysService {
             }
         }
         return non_meta > 0;
+    }
+
+    /**
+     * Update the state of a keycode
+     * @param code Code of the key
+     * @param value New state value for key
+     */
+    private setKeyState(code: string, value: number = null) {
+        if (!this.keydown_states[code]) {
+            this.keydown_states[code] = new BehaviorSubject(null);
+            this.keydown_observers[code] = this.keydown_states[code].asObservable();
+        }
+        this.keydown_states[code].next(value);
     }
 }

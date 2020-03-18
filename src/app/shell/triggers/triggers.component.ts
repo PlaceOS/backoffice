@@ -49,8 +49,9 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
     /**
      * Open the modal to create a new trigger
      */
-    protected new() {
-        const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+    protected newItem() {
+        if (this.modal_ref) { return; }
+        this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
             width: 'auto',
             maxHeight: 'calc(100vh - 2em)',
@@ -60,19 +61,23 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
                 service: this._service.Triggers
             }
         });
-        ref.componentInstance.event.subscribe(event => {
+        this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
             if (event.reason === 'done') {
                 this._router.navigate(['/triggers', event.metadata.item.id]);
             }
+        }));
+        this.modal_ref.afterClosed().subscribe(() => {
+            this.unsub('modal_events');
+            this.modal_ref = null;
         });
     }
 
     /**
      * Open the modal to create edit the active trigger
      */
-    protected edit() {
-        if (this.item) {
-            this._dialog.open(ItemCreateUpdateModalComponent, {
+    protected editItem() {
+        if (this.item && !this.modal_ref) {
+            this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
                 width: 'auto',
                 maxHeight: 'calc(100vh - 2em)',
@@ -82,15 +87,19 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
                     service: this._service.Triggers
                 }
             });
+            this.modal_ref.afterClosed().subscribe(() => {
+                this.unsub('modal_events');
+                this.modal_ref = null;
+            });
         }
     }
 
     /**
      * Delete the active trigger
      */
-    protected delete() {
-        if (this.item) {
-            const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
+    protected deleteItem() {
+        if (this.item && !this.modal_ref) {
+            this.modal_ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
                 {
                     ...CONFIRM_METADATA,
@@ -102,12 +111,12 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
                 }
             );
             this.subscription(
-                'delete_confirm',
-                ref.componentInstance.event.subscribe(async (event: DialogEvent) => {
+                'modal_events',
+                this.modal_ref.componentInstance.event.subscribe(async (event: DialogEvent) => {
                     if (event.reason === 'done') {
-                        ref.componentInstance.loading = 'Deleting trigger...';
+                        this.modal_ref.componentInstance.loading = 'Deleting trigger...';
                         await this.item.delete().catch(err => {
-                            ref.componentInstance.loading = null;
+                            this.modal_ref.componentInstance.loading = null;
                             this._service.notifyError(
                                 `Error deleting trigger. Error: ${err.message || err}`
                             );
@@ -115,11 +124,14 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
                         });
                         this._router.navigate(['/triggers']);
                         this._service.set('BACKOFFICE.removed', this.item.id);
-                        ref.close();
-                        this.unsub('delete_confirm');
+                        this.modal_ref.close();
                     }
                 })
             );
+            this.modal_ref.afterClosed().subscribe(() => {
+                this.unsub('modal_events');
+                this.modal_ref = null;
+            });
         }
     }
 }

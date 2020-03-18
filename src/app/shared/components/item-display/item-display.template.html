@@ -6,6 +6,9 @@
                 <div class="id" *ngIf="item.id" (click)="copy()">
                     <span>{{ item.id }}</span>
                 </div>
+                <div class="chip driver" *ngIf="driver_type">
+                    {{ driver_type }}
+                </div>
                 <div
                     class="chip connect"
                     *ngIf="item.connected !== null && item.connected !== undefined"
@@ -20,10 +23,10 @@
             </div>
         </div>
         <div class="options" *ngIf="has_change">
-            <button mat-icon-button (touchrelease)="edit()">
+            <button mat-icon-button (touchrelease)="edit()" matTooltip="Edit (Ctrl + Alt + V)">
                 <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
             </button>
-            <button mat-icon-button (touchrelease)="delete()">
+            <button mat-icon-button (touchrelease)="delete()" matTooltip="Delete (Ctrl + Alt + B)">
                 <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
             </button>
         </div>
@@ -31,10 +34,13 @@
     <main>
         <div class="tabs">
             <nav mat-tab-nav-bar [class.scroll]="is_scrolled">
-                <a class="tab" mat-tab-link
+                <a
+                    class="tab"
+                    mat-tab-link
                     *ngFor="let link of tabs"
                     [routerLink]="item.id ? ['/' + route, item.id, link.id] : ['/' + route, link.id]"
-                    routerLinkActive #rla="routerLinkActive"
+                    routerLinkActive
+                    #rla="routerLinkActive"
                     [active]="rla.isActive"
                 >
                     <app-icon [icon]="link.icon"></app-icon>

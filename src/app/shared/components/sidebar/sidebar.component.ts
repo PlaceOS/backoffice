@@ -21,6 +21,7 @@ import { EngineServiceLike, HashMap, Identity } from '../../utilities/types.util
 
 import * as dayjs from 'dayjs';
 import { unique } from '../../utilities/general.utilities';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'sidebar',
@@ -107,7 +108,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         return 0;
     }
 
-    constructor(private _service: ApplicationService) {
+    constructor(private _service: ApplicationService, private _router: Router) {
         super();
     }
 
@@ -229,12 +230,13 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
      */
     public changeSelected(offset: number) {
         const list = this.item_list.toArray();
+        const item_list = this.items.getValue();
         if (list && list.length > 0) {
-            let index = list.findIndex(i => i.nativeElement.classList.contains('active'));
+            let index = item_list.findIndex(item => this._router.url.indexOf(`${item.id}`) >= 0);
             index += offset;
-            if (index > 0 && index < list.length) {
+            if (index >= 0 && index < list.length) {
                 list[index].nativeElement.scrollIntoView(false);
-                this._service.navigate([this.module._api_route, this.items.getValue()[index].id]);
+                this._service.navigate([this.module._api_route, item_list[index].id]);
             }
         }
     }

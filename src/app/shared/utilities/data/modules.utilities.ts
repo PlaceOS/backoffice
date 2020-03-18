@@ -29,7 +29,7 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
     };
     const subscriptions = [];
     for (const key in fields) {
-        if (fields[key] && key.indexOf('settings') < 0) {
+        if (fields[key] && key.indexOf('settings') < 0 && key.indexOf('driver') < 0) {
             subscriptions.push(
                 fields[key].valueChanges.subscribe(value =>
                     module.storePendingChange(key as any, value)

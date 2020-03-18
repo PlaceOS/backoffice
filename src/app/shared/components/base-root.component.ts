@@ -6,6 +6,8 @@ import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
 import { EngineServiceLike } from '../utilities/types.utilities';
 import { first } from 'rxjs/operators';
+import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-base-root-component',
@@ -28,6 +30,8 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
     public total: number;
     /** Whether the sidebar should be shown on a mobile device */
     public show_sidebar: boolean;
+    /** Modal Reference */
+    public modal_ref: MatDialogRef<any>;
     /** Service to get data from */
     public service: EngineServiceLike;
 
@@ -70,6 +74,10 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
             this._service.title = this.service_name;
             this.init();
         });
+
+        this.subscription('new_item', this._service.Hotkeys.listen(['Control', 'Alt', 'KeyN'], () => this.newItem()));
+        this.subscription('edit_item', this._service.Hotkeys.listen(['Control', 'Alt', 'KeyV'], () => this.editItem()));
+        this.subscription('delete_item', this._service.Hotkeys.listen(['Control', 'Alt', 'KeyB'], () => this.deleteItem()));
     }
 
     public init() {}
@@ -83,7 +91,7 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
             'sidebar',
             () => {
                 if (event && event.type === 'new') {
-                    this.new();
+                    this.newItem();
                 } else {
                     this.toggleSidebar();
                 }
@@ -113,25 +121,25 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
                 queryParamsHandling: 'merge'
             });
         } else if (event.type === 'new') {
-            this.new();
+            this.newItem();
         } else if (event.type === 'edit') {
-            this.edit();
+            this.editItem();
         } else if (event.type === 'delete' && this.item) {
-            this.delete();
+            this.deleteItem();
         }
     }
 
     /**
      * Open create modal for a new item
      */
-    protected new() {}
+    protected newItem() {}
 
     /**
      * Open edit modal for active item
      */
-    protected edit() {}
+    protected editItem() {}
 
-    protected delete() {}
+    protected deleteItem() {}
 
     protected loadValues() {}
 

@@ -25,7 +25,7 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
     constructor(
         private _service: ApplicationService,
         private _composer: ComposerService,
-        private router: Router
+        private _router: Router
     ) {
         super();
     }
@@ -42,13 +42,21 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
             this.menu_items = this.menu_items.filter(
                 item => item.route && item.route.indexOf('metrics') < 0
             );
-            if (this.router.url.indexOf('metrics') >= 0) {
-                this.router.navigate([]);
+            if (this._router.url.indexOf('metrics') >= 0) {
+                this._router.navigate([]);
             }
         }
         /** Filter out items with insufficient permissions */
         this.menu_items = this.menu_items.filter(
             item => !item.needs_role || !!(user as any)[item.needs_role]
+        );
+        this.subscription(
+            'up',
+            this._service.Hotkeys.listen(['Control', 'Shift', 'ArrowUp'], () => this.changeSelected(-1))
+        );
+        this.subscription(
+            'down',
+            this._service.Hotkeys.listen(['Control', 'Shift', 'ArrowDown'], () => this.changeSelected(1))
         );
     }
 
@@ -77,5 +85,13 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
      */
     public cancelClose() {
         this.timeout('cancel_close', () => this.clearTimeout('close'), 10);
+    }
+
+    private changeSelected(offset: number = 1) {
+        const index = this.menu_items.findIndex(item => this._router.url.indexOf(item.route) >= 0);
+        const new_index = index + offset;
+        if (this.menu_items[new_index]) {
+            this._router.navigate([this.menu_items[new_index].route]);
+        }
     }
 }

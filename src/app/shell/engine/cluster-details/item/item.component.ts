@@ -37,14 +37,23 @@ export class EngineClusterItemComponent implements OnInit {
             legend: {
                 display: false
             },
+            elements: {
+                line: {
+                    tension: 0
+                }
+            },
             scales: {
                 yAxes: [
                     {
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'CPU Usage(%)'
+                        },
                         display: true,
                         ticks: {
                             suggestedMin: 0, // minimum will be 0, unless there is a lower value.
                             suggestedMax: 100,
-                            stepSize: 20,
+                            stepSize: 25,
                             // OR //
                             beginAtZero: true // minimum value will be 0.
                         }
@@ -64,11 +73,13 @@ export class EngineClusterItemComponent implements OnInit {
             showXLabels: 6,
             data: {
                 labels: data.map(point => point.x),
-                datasets: [{
-                    data: data.map(point => point.y),
-                    backgroundColor: ['#00695c'],
-                    borderColor: ['#00695c']
-                }]
+                datasets: [
+                    {
+                        data: data.map(point => point.y),
+                        backgroundColor: ['#00695c'],
+                        borderColor: ['#00695c']
+                    }
+                ]
             },
             options
         });

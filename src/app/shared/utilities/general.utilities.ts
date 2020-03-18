@@ -68,9 +68,10 @@ export function padZero(value: number, length: number): string {
  * @param key Key on array objects to compare for uniqueness
  */
 export function unique(array: any[], key: string = '') {
-    return array.filter(
-        (el, pos, arr) =>
-            arr.indexOf(key ? arr.find(i => i[key] === el[key]) : arr.find(i => i === el)) === pos
+    return array.filter((element, index) =>
+        (key
+            ? array.findIndex(i => i[key] === element[key])
+            : array.findIndex(item => item === element)) === index
     );
 }
 
@@ -281,7 +282,7 @@ export function copyToClipboard(value: string) {
             : false; // Mark as false to know no selection existed before
     // Select the <textarea> content
     el.select();
-     // Copy - only works as a result of a user action (e.g. click events)
+    // Copy - only works as a result of a user action (e.g. click events)
     document.execCommand('copy');
     document.body.removeChild(el); // Remove the <textarea> element
     if (selected) {
