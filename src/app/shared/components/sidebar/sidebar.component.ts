@@ -12,6 +12,7 @@ import {
     SimpleChanges
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { EngineModule, EngineDriverRole } from '@placeos/ts-client';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 
@@ -106,6 +107,26 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             return this._service.setting(`app.${this.module._api_route}.licenses`);
         }
         return 0;
+    }
+
+    /** Map of item names to their IDs */
+    public get item_name(): HashMap<string> {
+        const map = {};
+        const list = this.items.getValue() || [];
+        for (let item of list) {
+            if (item instanceof EngineModule) {
+                const detail =
+                    item.role === EngineDriverRole.Service
+                        ? item.uri
+                        : item.role === EngineDriverRole.Logic
+                            ? item.control_system_id
+                            : item.ip;
+                map[item.id] = `${item.name || '<Unnamed>'} <span class="small">${detail}<span>`;
+            } else {
+                map[item.id] = item.custom_name || item.name || '<Unnamed>';
+            }
+        }
+        return map;
     }
 
     constructor(private _service: ApplicationService, private _router: Router) {
@@ -266,7 +287,9 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
      * @param id
      */
     private removeItem(id: string): void {
-        if (!id) { return; }
+        if (!id) {
+            return;
+        }
         const list = this.items.getValue() || [];
         const index = list.findIndex(item => item.id === id);
         if (index >= 0) {

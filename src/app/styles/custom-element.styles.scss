@@ -209,3 +209,20 @@ mat-dialog-container.mat-dialog-container {
         font-size: 1.5em;
     }
 }
+
+sidebar {
+
+    span.small {
+        font-size: .8em;
+        margin: 0 .5rem;
+        color: rgba(#fff, .6);
+    }
+
+    .item {
+        span {
+            &:hover {
+                color: rgba(#fff, .85);
+            }
+        }
+    }
+}

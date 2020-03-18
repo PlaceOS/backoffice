@@ -44,9 +44,9 @@
                         <div
                             #list_item
                             class="item"
-                            [title]="item?.custom_name || item?.name || '\<Unnamed\>'"
+                            [title]=""
                         >
-                            <div class="text">{{ item?.custom_name || item?.name || "&lt;Unnamed&gt;" }}</div>
+                            <div class="text" [innerHTML]="item_name[item.id] | sanitize"></div>
                             <app-icon
                                 [icon]="{ type: 'icon', class: 'backoffice-check' }"
                             ></app-icon>

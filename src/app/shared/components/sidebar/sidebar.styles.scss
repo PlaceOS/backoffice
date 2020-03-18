@@ -141,6 +141,8 @@ input {
         background-color: rgba(#fff, .1);
     }
     .text {
+        display: flex;
+        align-items: center;
         flex: 1;
     }
 }
