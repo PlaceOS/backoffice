@@ -141,6 +141,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
         this.item = this._data.item;
         this.edit = !!this._data.item.id;
         this.form = this.generateFormData();
+        this.subscription('delete_item', this._service.Hotkeys.listen(['KeyS'], () => this.submit()));
     }
 
     /**

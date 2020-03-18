@@ -75,9 +75,9 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
             this.init();
         });
 
-        this.subscription('new_item', this._service.Hotkeys.listen(['Control', 'Alt', 'KeyN'], () => this.newItem()));
-        this.subscription('edit_item', this._service.Hotkeys.listen(['Control', 'Alt', 'KeyV'], () => this.editItem()));
-        this.subscription('delete_item', this._service.Hotkeys.listen(['Control', 'Alt', 'KeyB'], () => this.deleteItem()));
+        this.subscription('new_item', this._service.Hotkeys.listen(['KeyN'], () => this.newItem()));
+        this.subscription('edit_item', this._service.Hotkeys.listen(['KeyE'], () => this.editItem()));
+        this.subscription('delete_item', this._service.Hotkeys.listen(['KeyD'], () => this.deleteItem()));
     }
 
     public init() {}
