@@ -24,7 +24,7 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
 
         settings_encryption_level: new FormControl(module.settings.encryption_level),
         settings_string: new FormControl(module.settings.settings_string || '', [validateYAML]),
-        system: new FormControl(''),
+        system: new FormControl(module.system),
         driver: new FormControl('', [Validators.required])
     };
     const subscriptions = [];

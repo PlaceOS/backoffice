@@ -21,6 +21,7 @@ import {
 
 import * as dayjs from 'dayjs';
 import { EngineDebugService } from 'src/app/services/debug.service';
+import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 
 @Component({
     selector: 'system-modules',
@@ -302,17 +303,24 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
     }
 
     public newModule() {
-        this._service.Modules.add({
-            control_system: this.item
-        }).then(
-            item => {
-                this._service.notifySuccess('Created new device');
-                this.joinModule(item.id);
-            },
-            () => {
-                this._service.notifyError('Error creating new device');
+        const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+            height: 'auto',
+            width: 'auto',
+            maxHeight: 'calc(100vh - 2em)',
+            maxWidth: 'calc(100vw - 2em)',
+            data: {
+                item: new EngineModule(this._service.Modules, { control_system_id: this.item.id, control_system: this.item }),
+                service: this._service.Modules
             }
-        );
+        });
+        this.subscription('modal_events', ref.componentInstance.event.subscribe((event) => {
+            if (event.reason === 'done') {
+                this.timeout('reload_module_list', () => this.loadModules(), 1000);
+            }
+        }));
+        ref.afterClosed().subscribe(() => {
+            this.unsub('modal_events');
+        });
     }
 
     public addModule() {
