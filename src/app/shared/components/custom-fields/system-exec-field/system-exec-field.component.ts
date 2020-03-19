@@ -116,7 +116,7 @@ export class SystemExecFieldComponent extends BaseDirective
      */
     public loadModules(offset: number = 0) {
         if (this.system) {
-            this.service.Modules.query({ system_id: this.system.id, offset, limit: 500 }).then(
+            this.service.Modules.query({ control_system_id: this.system.id, offset, limit: 500 }).then(
                 list => {
                     this.devices = (list || []).map(device => {
                         const module_name =

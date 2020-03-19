@@ -58,7 +58,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
      */
     public loadZones(offset: number = 0) {
         if (!this.item) { return; }
-        this._service.Zones.query({ sys_id: this.item.id, offset }).then(
+        this._service.Zones.query({ control_system_id: this.item.id, offset }).then(
             list => {
                 list.sort((a, b) => this.item.zones.indexOf(a.id) - this.item.zones.indexOf(b.id));
                 this.zones = list;

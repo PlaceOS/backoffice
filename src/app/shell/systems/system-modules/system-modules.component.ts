@@ -96,7 +96,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         if (!this.item) {
             return;
         }
-        this._service.Modules.query({ system_id: this.item.id, offset }).then(
+        this._service.Modules.query({ control_system_id: this.item.id, offset }).then(
             list => {
                 list.sort(
                     (a, b) => this.item.modules.indexOf(a.id) - this.item.modules.indexOf(b.id)

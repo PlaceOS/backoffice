@@ -111,7 +111,7 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
         if (!this.system) {
             return;
         }
-        this._service.Modules.query({ system_id: this.system.id }).then(module_list => {
+        this._service.Modules.query({ control_system_id: this.system.id }).then(module_list => {
             this.modules = module_list;
             const mod_list = this.system.modules;
             this.modules.sort((a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id));
