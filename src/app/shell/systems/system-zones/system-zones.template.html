@@ -4,6 +4,7 @@
             <div class="dropdown">
                 <item-search-field
                     [service]="zone_service"
+                    [exclude]="exclude_fn"
                     [ngModel]="null"
                     (ngModelChange)="new_zone = $event.id"
                 ></item-search-field>

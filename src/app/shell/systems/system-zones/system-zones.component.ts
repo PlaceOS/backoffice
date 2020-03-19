@@ -27,6 +27,8 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
     /** ID of a zone that the user wishes to add to the system */
     public new_zone: string;
 
+    public readonly exclude_fn = (zone: EngineZone) => this.item.zones.indexOf(zone.id) >= 0
+
     /** Service for managing zone data */
     public get zone_service(): EngineZonesService {
         return this._service.Zones;
