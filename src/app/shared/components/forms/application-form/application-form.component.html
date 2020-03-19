@@ -3,15 +3,15 @@
         <div class="fieldset">
             <div class="field" *ngIf="form.controls.name">
                 <label
-                    for="system-name"
+                    for="application-name"
                     [class.error]="form.controls.name.invalid && form.controls.name.touched"
                     >Name<span>*</span>:</label
                 >
                 <mat-form-field appearance="outline">
                     <input
                         matInput
-                        name="system-name"
-                        placeholder="System Name"
+                        name="application-name"
+                        placeholder="Application Name"
                         formControlName="name"
                         required
                     />
