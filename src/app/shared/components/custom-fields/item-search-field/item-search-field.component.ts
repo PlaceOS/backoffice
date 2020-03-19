@@ -3,10 +3,10 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { Subject, Observable, of } from 'rxjs';
 import { switchMap, debounceTime, distinctUntilChanged, map, catchError } from 'rxjs/operators';
 
-import { EngineResource } from '@placeos/ts-client';
+import { EngineResource, EngineModule, EngineDriverRole } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
+import { EngineServiceLike, HashMap } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
     selector: 'item-search-field',
@@ -24,6 +24,8 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
     implements OnInit, OnChanges, ControlValueAccessor {
     /** Limit available options to these */
     @Input() public options: T[];
+    /** Function for filtering out options */
+    @Input() public exclude: (_: T) => boolean;
     /** Minimum number of characters needed to start a server query */
     @Input('minLength') public min_length = 0;
     /** Service used for searching items */
@@ -45,11 +47,31 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
     /** Form control on touch handler */
     private _onTouch: (_: T) => void;
 
+    /** Map of item names to their IDs */
+    public get item_name(): HashMap<string> {
+        const map = {};
+        const list = this.item_list || [];
+        for (let item of list) {
+            if (item instanceof EngineModule) {
+                const detail =
+                    item.role === EngineDriverRole.Service
+                        ? item.uri
+                        : item.role === EngineDriverRole.Logic
+                            ? item.control_system_id
+                            : item.ip;
+                map[item.id] = `${item.name || '<Unnamed>'} <span class="small">${detail}<span>`;
+            } else {
+                map[item.id] = (item as any).custom_name || item.name || '<Unnamed>';
+            }
+        }
+        return map;
+    }
+
     public ngOnInit(): void {
         // Listen for input changes
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
-            distinctUntilChanged((x, y) => !x || x !== y),
+            distinctUntilChanged(),
             switchMap(query => {
                 this.loading = true;
                 return this.options && this.options.length > 0
@@ -58,14 +80,16 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
                     ? (this.service.query({ q: query || '', cache: 5 * 1000 }) as Promise<T[]>)
                     : Promise.resolve([]);
             }),
-            catchError(err => of([])),
+            catchError(_ => of([])),
             map((list: T[]) => {
                 this.loading = false;
                 const search = (this.search_str || '').toLowerCase();
                 return list.filter(
-                    (item: any) =>
-                        item.name.toLowerCase().indexOf(search) >= 0 ||
-                        (item.email || '').toLowerCase().indexOf(search) >= 0
+                    (item: any) =>{
+                        const match = item.name.toLowerCase().indexOf(search) >= 0 ||
+                        (item.email || '').toLowerCase().indexOf(search) >= 0;
+                        return match && (this.exclude ? !this.exclude(item) : true)
+                    }
                 );
             })
         );

@@ -210,18 +210,19 @@ mat-dialog-container.mat-dialog-container {
     }
 }
 
-sidebar {
+sidebar,
+mat-option {
 
     span.small {
         font-size: .8em;
         margin: 0 .5rem;
-        color: rgba(#fff, .6);
+        opacity: .75;
     }
 
     .item {
         span {
             &:hover {
-                color: rgba(#fff, .85);
+                opacity: 1;
             }
         }
     }

@@ -18,6 +18,14 @@
     margin: 0;
 }
 
+.dropdown {
+    flex: 1;
+}
+
+mat-form-field {
+    flex: 1;
+}
+
 .table-row {
     .name {
         flex: 1;

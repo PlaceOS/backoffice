@@ -19,7 +19,7 @@
     </mat-form-field>
     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setValue($event.option.value)">
         <mat-option *ngFor="let option of item_list" [value]="option">
-            <div class="name">{{ option.name }}</div>
+            <div class="name" [innerHTML]="item_name[option.id] | sanitize"></div>
             <div class="email">{{ option.id }}</div>
         </mat-option>
     </mat-autocomplete>

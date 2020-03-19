@@ -12,10 +12,14 @@ app-icon {
 }
 
 .name {
-    height: 1em;
+    display: flex;
+    align-items: center;
+    height: 1.1em;
+    line-height: 1em;
 }
 
 .email {
     font-size: .6em;
     color: rgba(#000, .65);
+    line-height: 1.2em;
 }

@@ -1,9 +1,7 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineSystem, EngineModule, HashMap } from '@placeos/ts-client';
-import { first } from 'rxjs/operators';
-import { ComposerService } from '@placeos/composer';
+import { EngineSystem, EngineModule, EngineDriverRole, HashMap } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -18,8 +16,6 @@ import {
     ViewModuleStateModalComponent,
     ModuleStateModalData
 } from 'src/app/overlays/view-module-state/view-module-state.component';
-
-import * as dayjs from 'dayjs';
 import { EngineDebugService } from 'src/app/services/debug.service';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 
@@ -50,6 +46,9 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         { id: 'reload', name: 'Reload Module', icon: { type: 'icon', class: 'backoffice-cw' } },
         { id: 'remove', name: 'Remove Module', icon: { type: 'icon', class: 'backoffice-trash' } }
     ];
+    /** Function for excluding modules already within this system */
+    public readonly exclude_fn = (item: EngineModule) =>
+        item.control_system_id === this.item.id || item.role === EngineDriverRole.Logic;
 
     /** Service for interacting with modules */
     public get module_service() {
@@ -67,7 +66,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
     constructor(
         private _service: ApplicationService,
         private _dialog: MatDialog,
-        private _debug_service: EngineDebugService,
+        private _debug_service: EngineDebugService
     ) {
         super();
     }
@@ -287,16 +286,21 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             'confirm_ref',
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
-                    this.item.removeModule(device.id).then(() => {
-                        this._service.notifySuccess('Succefully removed module.');
-                        this.devices.splice(this.devices.indexOf(device), 1);
-                        ref.close();
-                        this.unsub('confirm_ref');
-                    }, (err) => {
-                        this._service.notifyError(`Error removing module. Error: ${ err.message || err }`)
-                        ref.close();
-                        this.unsub('confirm_ref');
-                    })
+                    this.item.removeModule(device.id).then(
+                        () => {
+                            this._service.notifySuccess('Succefully removed module.');
+                            this.devices.splice(this.devices.indexOf(device), 1);
+                            ref.close();
+                            this.unsub('confirm_ref');
+                        },
+                        err => {
+                            this._service.notifyError(
+                                `Error removing module. Error: ${err.message || err}`
+                            );
+                            ref.close();
+                            this.unsub('confirm_ref');
+                        }
+                    );
                 }
             })
         );
@@ -309,15 +313,21 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineModule(this._service.Modules, { control_system_id: this.item.id, control_system: this.item }),
+                item: new EngineModule(this._service.Modules, {
+                    control_system_id: this.item.id,
+                    control_system: this.item
+                }),
                 service: this._service.Modules
             }
         });
-        this.subscription('modal_events', ref.componentInstance.event.subscribe((event) => {
-            if (event.reason === 'done') {
-                this.timeout('reload_module_list', () => this.loadModules(), 1000);
-            }
-        }));
+        this.subscription(
+            'modal_events',
+            ref.componentInstance.event.subscribe(event => {
+                if (event.reason === 'done') {
+                    this.timeout('reload_module_list', () => this.loadModules(), 1000);
+                }
+            })
+        );
         ref.afterClosed().subscribe(() => {
             this.unsub('modal_events');
         });
