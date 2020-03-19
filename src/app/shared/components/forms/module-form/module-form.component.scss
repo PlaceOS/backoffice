@@ -64,6 +64,18 @@ label {
     }
 }
 
+.value {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1em;
+
+    span {
+        font-size: .8em;
+        margin: 0 1rem;
+        opacity: .75;
+    }
+}
+
 settings-form-field {
     margin-bottom: 1.5em;
 }

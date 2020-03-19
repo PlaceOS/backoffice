@@ -317,7 +317,8 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                     control_system_id: this.item.id,
                     control_system: this.item
                 }),
-                service: this._service.Modules
+                service: this._service.Modules,
+                readonly: true
             }
         });
         this.subscription(

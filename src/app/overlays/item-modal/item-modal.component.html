@@ -32,7 +32,7 @@
                 <zone-form [form]="form"></zone-form>
             </ng-container>
             <ng-container *ngSwitchCase="'module'">
-                <module-form [form]="form"></module-form>
+                <module-form [form]="form" [readonly]="readonly"></module-form>
             </ng-container>
             <ng-container *ngSwitchDefault>
                 <system-form [form]="form"></system-form>

@@ -43,6 +43,8 @@ export interface CreateEditModalData {
     form?: any[];
     /** Name of the type of item being worked on */
     name?: string;
+    /** Whether parts of the form are readonly */
+    readonly?: string;
     /** Whether saving the form details will be handled outside the modal */
     external_save?: boolean;
 }
@@ -68,6 +70,10 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
 
     public get name(): string {
         return this._data.service.name || this._data.service._name;
+    }
+
+    public get readonly(): boolean {
+        return !!this._data.readonly;
     }
 
     public get item_type(): string {

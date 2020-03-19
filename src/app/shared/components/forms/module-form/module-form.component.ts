@@ -14,6 +14,8 @@ import { BaseDirective } from 'src/app/shared/globals/base.directive';
 export class ModuleFormComponent extends BaseDirective {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
+    /** Whether system is readonly */
+    @Input() public readonly: boolean;
     /** Levels of encyption available for the system's settings */
     public encryption_levels: Identity[] = [
         { id: EncryptionLevel.None, name: 'None' },

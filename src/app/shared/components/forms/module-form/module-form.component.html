@@ -22,16 +22,21 @@
                     [class.error]="form.controls.system.invalid && form.controls.system.touched"
                     >Control System<span *ngIf="role === 'logic'">*</span>:
                 </label>
-                <item-search-field
-                    [service]="system_service"
-                    formControlName="system"
-                ></item-search-field>
-                <div
-                    class="error"
-                    *ngIf="form.controls.system.invalid && form.controls.system.touched"
-                >
-                    Control System is required
-                </div>
+                <ng-container *ngIf="!readonly; else readonly_system">
+                    <item-search-field
+                        [service]="system_service"
+                        formControlName="system"
+                    ></item-search-field>
+                    <div
+                        class="error"
+                        *ngIf="form.controls.system.invalid && form.controls.system.touched"
+                    >
+                        Control System is required
+                    </div>
+                </ng-container>
+                <ng-template #readonly_system>
+                    <div class="value">{{ form.controls.system.value?.name }} <span>{{ form.controls.system.value?.id }}</span></div>
+                </ng-template>
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.ip && role !== 'logic'">
