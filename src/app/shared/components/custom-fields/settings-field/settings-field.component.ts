@@ -33,6 +33,8 @@ export class SettingsFieldComponent extends BaseDirective
     implements OnInit, OnChanges, OnDestroy, ControlValueAccessor {
     /** Whether form field is readonly */
     @Input() public readonly = true;
+    /** Resize */
+    @Input() public resize: boolean;
     /** Current value for the */
     public settings_string = ' ';
     /** Form control on change handler */
@@ -52,6 +54,9 @@ export class SettingsFieldComponent extends BaseDirective
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.readonly && this.editor) {
             this.editor.updateOptions({ readOnly: !!this.readonly });
+        }
+        if (changes.resize) {
+            this.resizeEditor();
         }
     }
 
@@ -106,11 +111,20 @@ export class SettingsFieldComponent extends BaseDirective
         this._onTouch = fn;
     }
 
+    /** Update sizing of the editor after window has resized */
+    public resizeEditor() {
+        this.timeout('resize', () => this.createEditor(), 100);
+    }
+
     /**
      * Create and render the monaco editor to the component
      */
     private createEditor() {
         if (this.element && this.element.nativeElement) {
+            if (this.editor) {
+                this.editor.dispose();
+                this.editor = null;
+            }
             // monaco.languages.register(monaco_yaml);
             this.editor = monaco.editor.create(this.element.nativeElement, {
                 value: this.settings_string || '',
