@@ -11,10 +11,12 @@ import {
     forwardRef
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { EngineModuleFunction, HashMap, TriggerFunction, EngineSystem } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../../../services/app.service';
 import { BaseDirective } from '../../../globals/base.directive';
+import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal/view-response-modal.component';
 
 interface EngineModuleLike {
     id: string;
@@ -97,7 +99,7 @@ export class SystemExecFieldComponent extends BaseDirective
         };
     }
 
-    constructor(private service: ApplicationService) {
+    constructor(private service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
@@ -299,9 +301,7 @@ export class SystemExecFieldComponent extends BaseDirective
                     this.service.notifySuccess(
                         'Command successful executed.\nView Response?',
                         'View',
-                        () => {
-                            console.log('View response:', result);
-                        }
+                        () => this.viewDetails(result)
                     );
                 },
                 err => {
@@ -311,9 +311,7 @@ export class SystemExecFieldComponent extends BaseDirective
                         this.service.notifyError(
                             `Executing '${this.active_method.name}' failed.\nView Error?`,
                             'View',
-                            () => {
-                                console.log('View error:', err);
-                            }
+                            () => this.viewDetails(err.response)
                         );
                     }
                 }
@@ -408,6 +406,13 @@ export class SystemExecFieldComponent extends BaseDirective
                 this.active_method = method;
             }
         }
+    }
+
+    /** View Results of the execute */
+    private viewDetails(content: any) {
+        this._dialog.open<ViewResponseModalComponent>(ViewResponseModalComponent, {
+            data: { content }
+        });
     }
 
     /**

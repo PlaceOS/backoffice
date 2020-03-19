@@ -1,0 +1,9 @@
+<header>
+    <div class="text">Exec Request Results</div>
+    <button mat-icon-button mat-dialog-close>
+        <app-icon [icon]="{ class: 'material-icons', content: 'close' }"></app-icon>
+    </button>
+</header>
+<mat-dialog-content>
+    <settings-form-field [ngModel]="content_string" [readonly]="true"></settings-form-field>
+</mat-dialog-content>
