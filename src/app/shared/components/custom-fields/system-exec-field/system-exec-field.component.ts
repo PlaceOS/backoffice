@@ -99,6 +99,14 @@ export class SystemExecFieldComponent extends BaseDirective
         };
     }
 
+    public get placeholder(): HashMap<string> {
+        const map = {};
+        for (const arg of this.param_list) {
+            map[arg[0]] = (arg[2] !== undefined ? '[' + arg[0] + (arg[2] ? '=' + arg[2] : '') + ']' : arg[0])
+        }
+        return map;
+    }
+
     constructor(private service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
@@ -125,7 +133,7 @@ export class SystemExecFieldComponent extends BaseDirective
                         return {
                             id: device.id,
                             name: device.name,
-                            module: module_name,
+                            module: module_name || device.name,
                             index: 1
                         };
                     });
@@ -198,7 +206,7 @@ export class SystemExecFieldComponent extends BaseDirective
                     return;
                 } else {
                     try {
-                        JSON.parse(`[${this.fields[arg[0]] || '""'}]`);
+                        JSON.parse(`[${this.fields[arg[0]] || 'null'}]`);
                     } catch (e) {
                         this.error[arg[0]] = true;
                         this.fields_valid = false;
@@ -210,8 +218,10 @@ export class SystemExecFieldComponent extends BaseDirective
         const args = this.arg_list.toArray();
         if (args && args.length > 0) {
             const current = args[this.active_field];
-            this.field_pos = current.nativeElement.selectionEnd;
-            this.timeout('field', () => (this.field_value = current.nativeElement.value));
+            if (current) {
+                this.field_pos = current.nativeElement.selectionEnd;
+                this.timeout('field', () => (this.field_value = current.nativeElement.value));
+            }
         }
         this.setValue(this.function_value);
     }
