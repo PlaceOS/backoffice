@@ -186,6 +186,10 @@ export class ApplicationService extends BaseClass {
         return this._composer.zones;
     }
 
+    public get EngineSettings() {
+        return this._composer.settings;
+    }
+
     /**
      * Get a setting from the settings service
      * @param key Name of the setting. i.e. nested items can be grabbed using `.` to seperate key names
