@@ -1,9 +1,10 @@
 import { Component, Input, SimpleChanges, OnChanges, OnInit } from '@angular/core';
-import { EngineModule, EngineDriver, EngineSystem } from '@placeos/ts-client';
+import { EngineModule, EngineDriver, EngineSystem, EncryptionLevel } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
 import { mergeYAMLSettings } from 'src/app/shared/utilities/general.utilities';
+import { Identity } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
     selector: 'module-about',
@@ -19,8 +20,30 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
     public system: EngineSystem;
     /** Whether the local settings are merged with it's dependencies */
     public merged: boolean;
-    /** Settings for the item */
-    public settings: string;
+    /** Settings level to display details for */
+    public encryption_level: EncryptionLevel = EncryptionLevel.NeverDisplay;
+
+    public readonly available_levels: Identity[] = this.levels;
+
+    /** Displayable encryption levels for settings */
+    public get levels(): Identity[] {
+        const user = this._service.Users.user.getValue();
+        const levels = [
+            { id: EncryptionLevel.NeverDisplay, name: 'Merged' },
+            { id: EncryptionLevel.None, name: 'Unencrypted' }
+        ];
+        if (user.support || user.sys_admin) {
+            levels.push({ id: EncryptionLevel.Support, name: 'Support' });
+        }
+        if (user.sys_admin) {
+            levels.push({ id: EncryptionLevel.Admin, name: 'Admin' });
+        }
+        return levels;
+    }
+
+    public get settings(): string {
+        return (this.item.settings[this.encryption_level as any] || {}).settings_string || '';
+    }
 
     constructor(private _service: ApplicationService) {
         super();
@@ -48,7 +71,6 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
         if (this.item && this.item.driver_id) {
             this._service.Drivers.show(this.item.driver_id).then(driver => {
                 this.driver = driver;
-                this.updateSettings();
             });
         }
     }
@@ -57,34 +79,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
         if (this.item && this.item.system_id) {
             this._service.Systems.show(this.item.system_id).then(system => {
                 this.system = system;
-                this.updateSettings();
             });
-        }
-    }
-
-    /**
-     * Toggle whether the settings are merged
-     */
-    public toggleSettings() {
-        this.merged = this.merged === false ? true : false;
-        this.updateSettings();
-    }
-
-    /**
-     * Update the displayed settings
-     */
-    public updateSettings() {
-        if (!this.item) return;
-        if (this.merged !== false) {
-            this.settings = mergeYAMLSettings('', this.item.settings.settings_string || '');
-            if (this.driver) {
-                this.settings = mergeYAMLSettings(
-                    this.settings,
-                    this.driver.settings.settings_string || ''
-                );
-            }
-        } else {
-            this.settings = this.item.settings.settings_string || '';
         }
     }
 }

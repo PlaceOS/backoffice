@@ -1,11 +1,12 @@
 
 import { Component, Input, SimpleChanges, OnInit, OnChanges, SimpleChange } from '@angular/core';
-import { EngineZone, EngineSystem } from '@placeos/ts-client';
+import { EngineZone, EngineSystem, EncryptionLevel } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
 
 import * as marked from 'marked';
+import { Identity } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
     selector: 'zone-about',
@@ -19,6 +20,25 @@ export class ZoneAboutComponent extends BaseDirective implements OnInit, OnChang
     public system_list: EngineSystem[];
     /** Selected system */
     public active_system: EngineSystem;
+    /** Settings level to display details for */
+    public encryption_level: EncryptionLevel = EncryptionLevel.None;
+
+    public readonly available_levels: Identity[] = this.levels;
+
+    /** Displayable encryption levels for settings */
+    public get levels(): Identity[] {
+        const user = this._service.Users.user.getValue();
+        const levels = [
+            { id: EncryptionLevel.None, name: 'Unencrypted' }
+        ];
+        if (user.support || user.sys_admin) {
+            levels.push({ id: EncryptionLevel.Support, name: 'Support' });
+        }
+        if (user.sys_admin) {
+            levels.push({ id: EncryptionLevel.Admin, name: 'Admin' });
+        }
+        return levels;
+    }
 
     constructor(private _service: ApplicationService) {
         super();
@@ -41,7 +61,7 @@ export class ZoneAboutComponent extends BaseDirective implements OnInit, OnChang
     }
 
     public get settings(): string {
-        return this.item.settings.settings_string;
+        return (this.item.settings[this.encryption_level as any] || {}).settings_string || '';
     }
 
     public get parsed_description() {

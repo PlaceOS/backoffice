@@ -124,29 +124,6 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="field" *ngIf="form.controls.settings_string">
-                <label
-                    for="settings"
-                    [class.error]="
-                        form.controls.settings_string.invalid &&
-                        form.controls.settings_string.touched
-                    "
-                    >Settings:</label
-                >
-                <settings-form-field
-                    formControlName="settings_string"
-                    [readonly]="false"
-                ></settings-form-field>
-                <div
-                    class="error"
-                    *ngIf="
-                        form.controls.settings_string.invalid &&
-                        form.controls.settings_string.touched
-                    "
-                >
-                    Settings must be valid YAML
-                </div>
-            </div>
             <div class="field" *ngIf="form.controls.custom_name">
                 <label for="uri">Custom Name:</label>
                 <mat-form-field appearance="outline">

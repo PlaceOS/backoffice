@@ -1,6 +1,5 @@
-
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { EngineZone, EncryptionLevel } from '@placeos/ts-client';
+import { EngineZone, EngineSettings, EncryptionLevel } from '@placeos/ts-client';
 
 import { FormDetails, validateYAML } from './systems.utilities';
 import { HashMap } from '../types.utilities';
@@ -13,8 +12,6 @@ export function generateZoneFormFields(zone: EngineZone): FormDetails {
         name: new FormControl(zone.name || '', [Validators.required]),
         tag_list: new FormControl(((zone as any).tags || '').split('') || []),
         description: new FormControl(zone.description || ''),
-        settings_encryption_level: new FormControl(zone.settings.encryption_level),
-        settings_string: new FormControl(zone.settings.settings_string || '', [validateYAML]),
     };
     const subscriptions = [];
     for (const key in fields) {
@@ -31,22 +28,6 @@ export function generateZoneFormFields(zone: EngineZone): FormDetails {
             zone.storePendingChange('tags', value.join(','))
         )
     );
-    subscriptions.push(
-        fields.settings_string.valueChanges.subscribe((value: string) => {
-            zone.settings.storePendingChange('settings_string', value);
-        }
-        )
-    );
-    if (!zone.id) {
-        subscriptions.push(
-            fields.settings_encryption_level.valueChanges.subscribe((value: EncryptionLevel) =>{
-                zone.settings.storePendingChange('encryption_level', value);
-            })
-        );
-        fields.settings_encryption_level.setValue(EncryptionLevel.None);
-    } else {
-        delete fields.settings_encryption_level;
-    }
     return {
         form: new FormGroup(fields),
         subscriptions

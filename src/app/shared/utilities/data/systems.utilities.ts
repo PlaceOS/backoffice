@@ -39,8 +39,6 @@ export function generateSystemsFormFields(system: EngineSystem): FormDetails {
         capacity: new FormControl(system.capacity || 0, [Validators.pattern('[0-9]*')]),
         bookable: new FormControl(system.bookable || false),
         description: new FormControl(system.description || ''),
-        settings_encryption_level: new FormControl(system.settings.encryption_level),
-        settings_string: new FormControl(system.settings.settings_string || '', [validateYAML]),
         zone: new FormControl('', [Validators.required])
     };
     const subscriptions = [];
@@ -59,21 +57,8 @@ export function generateSystemsFormFields(system: EngineSystem): FormDetails {
                 system.storePendingChange('zones', [value.id])
             )
         );
-        subscriptions.push(
-            fields.settings_encryption_level.valueChanges.subscribe((value: EncryptionLevel) =>{
-                system.settings.storePendingChange('encryption_level', value);
-            })
-        );
-        subscriptions.push(
-            fields.settings_string.valueChanges.subscribe((value: string) => {
-                system.settings.storePendingChange('settings_string', value);
-            }
-            )
-        );
-        fields.settings_encryption_level.setValue(EncryptionLevel.None);
     } else {
         delete fields.zone;
-        delete fields.settings_encryption_level;
     }
     return {
         form: new FormGroup(fields),

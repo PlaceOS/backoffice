@@ -1,11 +1,10 @@
 import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineSystem, EngineZone } from '@placeos/ts-client';
+import { EngineSystem, EngineZone, EncryptionLevel } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
-import { mergeYAMLSettings } from 'src/app/shared/utilities/general.utilities';
+import { DialogEvent, Identity } from 'src/app/shared/utilities/types.utilities';
 import {
     ConfirmModalComponent,
     ConfirmModalData,
@@ -22,14 +21,40 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
     @Input() public item: EngineSystem;
     /** Whether to show the settings merged with zone and modules */
     public merged: boolean;
-    /** Settings map for the item */
-    public settings: string;
     /** List of zones for the active system */
     public zones: EngineZone[];
+    /** Encryption level of the settings to display */
+    public encryption_level: EncryptionLevel = EncryptionLevel.NeverDisplay;
+
+    public readonly available_levels: Identity[] = this.levels;
+
+    /** Displayable encryption levels for settings */
+    public get levels(): Identity[] {
+        const user = this._service.Users.user.getValue();
+        const levels = [
+            { id: EncryptionLevel.NeverDisplay, name: 'Merged' },
+            { id: EncryptionLevel.None, name: 'Unencrypted' }
+        ];
+        if (user.support || user.sys_admin) {
+            levels.push({ id: EncryptionLevel.Support, name: 'Support' });
+        }
+        if (user.sys_admin) {
+            levels.push({ id: EncryptionLevel.Admin, name: 'Admin' });
+        }
+        return levels;
+    }
+
+    public get level_index(): number {
+        return this.available_levels.findIndex(level => level.id === this.encryption_level);
+    }
 
     /** List of module ids associated with the system */
     public modules(): string[] {
         return [...this.item.modules];
+    }
+
+    public get settings() {
+        return (this.item.settings[this.encryption_level as any] || {}).settings_string || '';
     }
 
     constructor(private _service: ApplicationService, private _dialog: MatDialog) {
@@ -115,34 +140,6 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
     }
 
     /**
-     * Toggle whether the settings are merged
-     */
-    public toggleSettings() {
-        this.merged = this.merged === false ? true : false;
-        this.updateSettings();
-    }
-
-    /**
-     * Update the displayed settings
-     */
-    public updateSettings() {
-        if (!this.item) {
-            return;
-        }
-        if (this.merged !== false) {
-            this.settings = mergeYAMLSettings('', this.item.settings.settings_string || '');
-            for (const zone of this.zones) {
-                this.settings = mergeYAMLSettings(
-                    this.settings,
-                    zone.settings.settings_string || ''
-                );
-            }
-        } else {
-            this.settings = this.item.settings.settings_string || '';
-        }
-    }
-
-    /**
      * Load zones associated with the system to allow for merging
      */
     public loadZones() {
@@ -153,7 +150,6 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
             list => {
                 list.sort((a, b) => this.item.zones.indexOf(b.id) - this.item.zones.indexOf(a.id));
                 this.zones = list;
-                this.updateSettings();
             },
             () => null
         );

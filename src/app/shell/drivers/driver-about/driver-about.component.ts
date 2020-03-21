@@ -1,11 +1,11 @@
 
 import { Component, Input } from '@angular/core';
-import { EngineDriver } from '@placeos/ts-client';
+import { EngineDriver, EncryptionLevel } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmModalComponent, ConfirmModalData, CONFIRM_METADATA } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, Identity } from 'src/app/shared/utilities/types.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
 
 @Component({
@@ -16,13 +16,32 @@ import { ApplicationService } from 'src/app/services/app.service';
 export class DriverAboutComponent extends BaseDirective {
     /** Item to render */
     @Input() public item: EngineDriver;
+    /** Settings level to display details for */
+    public encryption_level: EncryptionLevel = EncryptionLevel.None;
+
+    public readonly available_levels: Identity[] = this.levels;
+
+    /** Displayable encryption levels for settings */
+    public get levels(): Identity[] {
+        const user = this._service.Users.user.getValue();
+        const levels = [
+            { id: EncryptionLevel.None, name: 'Unencrypted' }
+        ];
+        if (user.support || user.sys_admin) {
+            levels.push({ id: EncryptionLevel.Support, name: 'Support' });
+        }
+        if (user.sys_admin) {
+            levels.push({ id: EncryptionLevel.Admin, name: 'Admin' });
+        }
+        return levels;
+    }
 
     constructor(private _dialog: MatDialog, private _service: ApplicationService) {
         super();
     }
 
     public get settings(): string {
-        return this.item.settings.settings_string;
+        return (this.item.settings[this.encryption_level as any] || {}).settings_string || '';
     }
 
     public ngOnInit(): void {

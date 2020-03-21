@@ -21,9 +21,6 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
         notes: new FormControl(module.notes || ''),
         name: new FormControl(module.name || ''),
         custom_name: new FormControl(module.custom_name || ''),
-
-        settings_encryption_level: new FormControl(module.settings.encryption_level),
-        settings_string: new FormControl(module.settings.settings_string || '', [validateYAML]),
         system: new FormControl(module.system),
         driver: new FormControl('', [Validators.required])
     };
@@ -65,22 +62,9 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
                 }
             })
         );
-        subscriptions.push(
-            fields.settings_encryption_level.valueChanges.subscribe((value: EncryptionLevel) =>{
-                module.settings.storePendingChange('encryption_level', value);
-            })
-        );
-        subscriptions.push(
-            fields.settings_string.valueChanges.subscribe((value: string) => {
-                module.settings.storePendingChange('settings_string', value);
-            }
-            )
-        );
-        fields.settings_encryption_level.setValue(EncryptionLevel.None);
     } else {
         delete fields.system;
         delete fields.driver;
-        delete fields.settings_encryption_level;
     }
     return {
         form: new FormGroup(fields),

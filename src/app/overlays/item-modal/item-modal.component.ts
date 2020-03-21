@@ -165,44 +165,11 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
                 item => {
                     this.result = item;
                     this.loading = null;
-                    const settings: EngineSettings = (this.item as any).settings;
-                    if (
-                        settings &&
-                        settings instanceof EngineSettings &&
-                        Object.keys(settings.changes).length &&
-                        (settings.changes.encryption_level !== settings.encryption_level ||
-                            settings.changes.settings_string)
-                    ) {
-                        (settings as any).parent_id = item.id;
-                        this.loading = `Saving settings for ${item.name}`;
-                        ((this.item as any).settings as EngineSettings).save().then(
-                            () => {
-                                this.loading = null;
-                                this.event.emit({ reason: 'done', metadata: { item } });
-                                this._dialog.close();
-                                this._service.notifySuccess(
-                                    `Successfully ${this.item.id ? 'updated' : 'added'} ${
-                                        this.name
-                                    }`
-                                );
-                            },
-                            err => {
-                                this.loading = null;
-                                this._service.notifyWarn(
-                                    `Successfully ${this.item.id ? 'updated' : 'added'} ${
-                                        this.name
-                                    }. Error saving settings. Error: ${err.message || err}`
-                                );
-                                this._dialog.close();
-                            }
-                        );
-                    } else {
-                        this.event.emit({ reason: 'done', metadata: { item } });
-                        this._service.notifySuccess(
-                            `Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`
-                        );
-                        this._dialog.close();
-                    }
+                    this.event.emit({ reason: 'done', metadata: { item } });
+                    this._service.notifySuccess(
+                        `Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`
+                    );
+                    this._dialog.close();
                 },
                 err => {
                     this.loading = null;

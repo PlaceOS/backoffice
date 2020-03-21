@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EngineResource } from '@placeos/ts-client';
+import {
+    EngineResource,
+    EngineSystem,
+    EngineZone,
+    EngineDriver,
+    EngineModule
+} from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
@@ -14,8 +20,7 @@ import { MatDialogRef } from '@angular/material/dialog';
     template: '',
     styles: []
 })
-export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
-    implements OnInit {
+export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective implements OnInit {
     /** Name of the API service assoicated with the  */
     public readonly service_name: string;
     /** ID of the item to render */
@@ -64,7 +69,7 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
                         this.setActiveItem(this._service.get('BACKOFFICE.active_item'));
                     }
                 } else if (params.has('id') && params.get('id') === '-') {
-                    this.id = '-'
+                    this.id = '-';
                     this.setActiveItem(null);
                 }
                 this.timeout('sidebar', () => (this.show_sidebar = !this.id));
@@ -75,9 +80,18 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
             this.init();
         });
 
-        this.subscription('new_item', this._service.Hotkeys.listen(['KeyN'], () => this.newItem()));
-        this.subscription('edit_item', this._service.Hotkeys.listen(['KeyE'], () => this.editItem()));
-        this.subscription('delete_item', this._service.Hotkeys.listen(['KeyD'], () => this.deleteItem()));
+        this.subscription(
+            'new_item',
+            this._service.Hotkeys.listen(['KeyN'], () => this.newItem())
+        );
+        this.subscription(
+            'edit_item',
+            this._service.Hotkeys.listen(['KeyE'], () => this.editItem())
+        );
+        this.subscription(
+            'delete_item',
+            this._service.Hotkeys.listen(['KeyD'], () => this.deleteItem())
+        );
     }
 
     public init() {}
@@ -113,7 +127,9 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
      * @param event User action
      */
     public itemEvent(event: any) {
-        if (!event) { return; }
+        if (!event) {
+            return;
+        }
         if (event.type === 'tab' && this.item && event.value) {
             this._router.navigate([], {
                 relativeTo: this._route,
@@ -174,7 +190,29 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective
                 })
             );
             this.loadValues();
+            this.loadSettings();
         }
         this.timeout('item', () => (this.loading_item = false));
+    }
+
+    protected loadSettings(): void {
+        if (
+            this.item instanceof EngineSystem ||
+            this.item instanceof EngineZone ||
+            this.item instanceof EngineDriver ||
+            this.item instanceof EngineModule
+        ) {
+            this._service.EngineSettings.query({ parent_id: this.item.id }).then(
+                list => {
+                    for (const settings of list) {
+                        (this.item as any).settings[settings.encryption_level] = settings;
+                    }
+                },
+                err =>
+                    this._service.notifyError(
+                        `Error loading settings. Error: ${err.message || err}`
+                    )
+            );
+        }
     }
 }
