@@ -124,16 +124,16 @@ export class SystemExecFieldComponent extends BaseDirective
      */
     public loadModules(offset: number = 0) {
         if (this.system) {
-            this.service.Modules.query({ control_system_id: this.system.id, offset, limit: 500 }).then(
+            this.service.Modules.query({ control_system_id: this.system.id, offset, limit: 500, complete: true } as any).then(
                 list => {
                     this.devices = (list || []).map(device => {
                         const module_name =
                             device.custom_name ||
-                            (device.driver ? device.driver.module_name : 'System');
+                            device.name
                         return {
                             id: device.id,
                             name: device.name,
-                            module: module_name || device.name,
+                            module: module_name,
                             index: 1
                         };
                     });
