@@ -22,9 +22,6 @@
     </section>
     <header>Settings</header>
     <section>
-        <mat-tab-group [selectedIndex]="level_index" (selectedIndexChange)="encryption_level = available_levels[$event].id">
-            <mat-tab *ngFor="let option of available_levels" [label]="option.name"></mat-tab>
-        </mat-tab-group>
-        <settings-form-field [ngModel]="settings" [readonly]="true"></settings-form-field>
+        <a-settings-form [id]="item.id" [settings]="item.settings"></a-settings-form>
     </section>
 </div>

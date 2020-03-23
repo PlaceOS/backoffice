@@ -6,7 +6,9 @@
     <section class="details">
         <div class="field" *ngIf="item.support_url">
             <label>Support URL:</label>
-            <div class="value"> <a [href]="item.support_url" target="_blank">{{item.support_url}}</a></div>
+            <div class="value">
+                <a [href]="item.support_url" target="_blank">{{item.support_url}}</a>
+            </div>
         </div>
         <div class="field" *ngIf="item.bookable">
             <label>Bookable Room:</label>
@@ -25,13 +27,12 @@
             <div class="value">{{item.installed_ui_devices}}</div>
         </div>
     </section>
-    <header *ngIf="item && item.id && item.modules">Execute command</header>
-    <system-exec-field [system]="item"></system-exec-field>
+    <ng-container *ngIf="item.id && item.modules">
+        <header>Execute command</header>
+        <system-exec-field [system]="item"></system-exec-field>
+    </ng-container>
     <header>Settings</header>
     <section>
-        <mat-tab-group [selectedIndex]="level_index" (selectedIndexChange)="encryption_level = available_levels[$event].id">
-            <mat-tab *ngFor="let option of available_levels" [label]="option.name"></mat-tab>
-        </mat-tab-group>
-        <settings-form-field [ngModel]="settings" [readonly]="true"></settings-form-field>
+        <a-settings-form [id]="item.id" [merge]="true" [settings]="item.settings" [merge_settings]="[]"></a-settings-form>
     </section>
 </div>

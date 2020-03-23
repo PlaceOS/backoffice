@@ -68,6 +68,7 @@ import { LdapSourceFormComponent } from './components/forms/ldap-source-form/lda
 import { SamlSourceFormComponent } from './components/forms/saml-source-form/saml-source-form.component';
 import { ObjectListFieldComponent } from './components/custom-fields/object-list-field/object-list-field.component';
 import { DebugOutputComponent } from './components/debug-output/debug-output.component';
+import { SettingsFormComponent } from './components/forms/settings-form/settings-form.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -85,6 +86,7 @@ const FORM_COMPONENTS: Type<any>[] = [
     OauthSourceFormComponent,
     LdapSourceFormComponent,
     SamlSourceFormComponent,
+    SettingsFormComponent,
 ];
 
 const COMPONENTS: Type<any>[] = [

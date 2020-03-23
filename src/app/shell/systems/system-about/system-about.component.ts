@@ -26,28 +26,6 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
     /** Encryption level of the settings to display */
     public encryption_level: EncryptionLevel = EncryptionLevel.NeverDisplay;
 
-    public readonly available_levels: Identity[] = this.levels;
-
-    /** Displayable encryption levels for settings */
-    public get levels(): Identity[] {
-        const user = this._service.Users.user.getValue();
-        const levels = [
-            { id: EncryptionLevel.NeverDisplay, name: 'Merged' },
-            { id: EncryptionLevel.None, name: 'Unencrypted' }
-        ];
-        if (user.support || user.sys_admin) {
-            levels.push({ id: EncryptionLevel.Support, name: 'Support' });
-        }
-        if (user.sys_admin) {
-            levels.push({ id: EncryptionLevel.Admin, name: 'Admin' });
-        }
-        return levels;
-    }
-
-    public get level_index(): number {
-        return this.available_levels.findIndex(level => level.id === this.encryption_level);
-    }
-
     /** List of module ids associated with the system */
     public modules(): string[] {
         return [...this.item.modules];

@@ -13,13 +13,14 @@ export interface FormDetails {
 
 export function validateYAML(control: AbstractControl) {
     const value = control.value || '';
-    let valid = true;
+    let message = '';
     try {
-        console.log('YAML:', yaml.safeLoad(value, { strict: true }));
+        yaml.safeLoad(value, { strict: true });
     } catch (e) {
-        valid = false;
+        console.error(e);
+        message = e.message;
     }
-    return !valid ? { yaml: { value: control.value } } : null;
+    return message ? { yaml: message } : null;
 }
 
 export const URL_PATTERN =
