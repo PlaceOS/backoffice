@@ -1,5 +1,5 @@
 import { Component, Input, SimpleChanges, OnChanges, OnInit } from '@angular/core';
-import { EngineModule, EngineDriver, EngineSystem, EncryptionLevel } from '@placeos/ts-client';
+import { EngineModule, EngineDriver, EngineSystem, EngineSettings, EncryptionLevel } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
@@ -18,12 +18,12 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
     public driver: EngineDriver;
     /** Control System for the active item */
     public system: EngineSystem;
-    /** Whether the local settings are merged with it's dependencies */
-    public merged: boolean;
     /** Settings level to display details for */
     public encryption_level: EncryptionLevel = EncryptionLevel.NeverDisplay;
 
     public readonly available_levels: Identity[] = this.levels;
+    /** List of settings for associated modules, drivers and zones */
+    public other_settings: EngineSettings[] = [];
 
     /** Displayable encryption levels for settings */
     public get levels(): Identity[] {
@@ -56,6 +56,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
                 this.item = item;
                 this.loadDriver();
                 this.loadSystem();
+                this.loadSettings();
             })
         );
     }
@@ -64,6 +65,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
         if (changes.item) {
             this.loadDriver();
             this.loadSystem();
+            this.loadSettings();
         }
     }
 
@@ -81,5 +83,12 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
                 this.system = system;
             });
         }
+    }
+
+    public async loadSettings() {
+        if (!this.item) {
+            return;
+        }
+        this.other_settings = await this._service.Systems.settings(this.item.id);
     }
 }

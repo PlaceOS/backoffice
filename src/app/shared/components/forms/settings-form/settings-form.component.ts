@@ -131,7 +131,7 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.merge) {
             this.encryption_level = this.merge
-                ? EncryptionLevel.NeverDisplay
+                ? EncryptionLevel.NeverDisplay + 1
                 : EncryptionLevel.None;
             this.available_levels = this.levels;
         }
@@ -247,10 +247,11 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
             for (const key of setting.keys) {
                 obj[key] = '<MASKED>';
             }
+            const settings_string = (setting.keys || []).length ? yaml.safeDump(obj) : '';
             return new EngineSettings(this._service.EngineSettings, {
                 ...setting.toJSON(),
                 parent_id: this.id,
-                settings_string: yaml.safeDump(obj)
+                settings_string
             });
         }
         return new EngineSettings(this._service.EngineSettings, { ...setting, parent_id: this.id });
@@ -265,8 +266,9 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
             item => yaml.safeLoad(item.settings_string) || {}
         );
         const merged_settings = merge.all(remote_settings.concat(local_settings));
+        const settings_string = Object.keys(merged_settings).length ? yaml.safeDump(merged_settings, { strict: true }) : '';
         return new EngineSettings(null, {
-            settings_string: yaml.safeDump(merged_settings, { strict: true }),
+            settings_string,
             parent_id: this.id,
             keys: Object.keys(merged_settings)
         });

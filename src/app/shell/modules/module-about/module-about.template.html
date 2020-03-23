@@ -6,7 +6,7 @@
         </section>
         <header>Settings <span (touchrelease)="toggleSettings()">{{ merged === false ? 'This module' : 'Merged' }}</span></header>
         <section>
-            <a-settings-form [id]="item.id" [merge]="true" [settings]="item.settings" [merge_settings]="[]"></a-settings-form>
+            <a-settings-form [id]="item.id" [merge]="true" [settings]="item.settings" [merge_settings]="other_settings || []"></a-settings-form>
         </section>
     </div>
 </div>

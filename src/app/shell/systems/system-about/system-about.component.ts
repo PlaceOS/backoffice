@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineSystem, EngineZone, EncryptionLevel } from '@placeos/ts-client';
+import { EngineSystem, EngineZone, EngineSettings, EncryptionLevel } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -19,12 +19,12 @@ import {
 export class SystemAboutComponent extends BaseDirective implements OnChanges, OnInit {
     /** System to render */
     @Input() public item: EngineSystem;
-    /** Whether to show the settings merged with zone and modules */
-    public merged: boolean;
     /** List of zones for the active system */
     public zones: EngineZone[];
     /** Encryption level of the settings to display */
     public encryption_level: EncryptionLevel = EncryptionLevel.NeverDisplay;
+    /** List of settings for associated modules, drivers and zones */
+    public other_settings: EngineSettings[] = [];
 
     /** List of module ids associated with the system */
     public modules(): string[] {
@@ -45,6 +45,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
             this._service.listen('BACKOFFICE.active_item', item => {
                 this.item = item;
                 this.loadZones();
+                this.loadSettings();
             })
         );
     }
@@ -52,6 +53,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.item && this.item) {
             this.loadZones();
+            this.loadSettings();
         }
     }
 
@@ -131,5 +133,12 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
             },
             () => null
         );
+    }
+
+    public async loadSettings() {
+        if (!this.item) {
+            return;
+        }
+        this.other_settings = await this._service.Systems.settings(this.item.id);
     }
 }
