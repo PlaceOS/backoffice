@@ -51,6 +51,13 @@
             <div class="text">{{item.name}}</div>
         </a>
     </ng-container>
+    <div class="item" mat-menu-item role="menuitemcheckbox">
+        <app-icon [icon]="{ class: 'backoffice-moon' }"></app-icon>
+        <div class="text">Dark Mode</div>
+        <div class="toggle"(click) = "$event.stopPropagation()">
+            <mat-slide-toggle [(ngModel)]="dark_mode"></mat-slide-toggle>
+        </div>
+    </div>
 </mat-menu>
 <mat-menu #more_actions="matMenu">
     <button mat-menu-item *ngFor="let action of extra_action_list" (tapped)="action.callback()">

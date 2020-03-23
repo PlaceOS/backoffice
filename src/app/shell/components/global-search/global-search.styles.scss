@@ -13,6 +13,10 @@
     align-content: flex-start;
     flex-direction: column;
     padding: .5em;
+
+    &.dark-mode {
+        background-color: rgba(#000, .3);
+    }
 }
 
 .item {
@@ -48,6 +52,17 @@
         }
     }
 
+}
+
+.dark-mode {
+    .item {
+        background-color: #424242;
+        border: 1px solid rgba(#fff, .54);
+        &:hover {
+            border-color: rgba(#fff, .2);
+            background-color: #323232;
+        }
+    }
 }
 
 .name {

@@ -26,6 +26,14 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
     /** Whether user tooltip should be shown */
     public show: boolean;
 
+    /** Whether dark mode is enabled */
+    public get dark_mode(): boolean {
+        return this._service.Users.dark_mode;
+    }
+    public set dark_mode(state: boolean) {
+        this._service.Users.dark_mode = state;
+    }
+
     public extra_action_list: ApplicationActionLink[] = [
         {
             name: 'New System',

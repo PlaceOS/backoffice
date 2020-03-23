@@ -63,6 +63,11 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     @ViewChild(CdkVirtualScrollViewport)
     private viewport: CdkVirtualScrollViewport;
 
+    /** Whether dark mode is enabled */
+    public get dark_mode(): boolean {
+        return this._service.Users.dark_mode;
+    }
+
     /** Whether list is has been scrolled from the top */
     public get is_scrolled(): boolean {
         if (this.viewport) {

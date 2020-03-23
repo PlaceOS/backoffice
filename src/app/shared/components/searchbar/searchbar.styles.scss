@@ -9,10 +9,10 @@ searchbar:host {
 .searchbar {
     position: relative;
     width: 100%;
-    min-height: $height + .5em;
+    min-height: $height + 0.5em;
     display: flex;
     align-items: center;
-    font-size: .9em;
+    font-size: 0.9em;
 }
 
 .field {
@@ -21,7 +21,7 @@ searchbar:host {
     align-items: center;
     justify-content: flex-end;
     padding: 2px 0;
-    background-color: rgba(#000, .2);
+    background-color: rgba(#000, 0.2);
     caret-color: $color-primary;
     color: #fff;
     min-height: $height;
@@ -41,15 +41,14 @@ searchbar:host {
     }
 
     input {
-
         &::placeholder {
             transition: color 300ms;
-            color: rgba(#fff, .35);
+            color: rgba(#fff, 0.35);
         }
     }
 
     &.focus {
-        color: rgba(#000, .87);
+        color: rgba(#000, 0.87);
         background-color: #fff;
         @include box-shadow;
 
@@ -57,8 +56,8 @@ searchbar:host {
             position: absolute;
             right: 0;
             width: calc(100vw - 5em);
-            min-height: $height - .25em;
-            height: $height - .25em;
+            min-height: $height - 0.25em;
+            height: $height - 0.25em;
         }
         .input {
             @include respond-to(mobile) {
@@ -67,9 +66,8 @@ searchbar:host {
         }
 
         input {
-
             &::placeholder {
-                color: rgba(#000, .54);
+                color: rgba(#000, 0.54);
             }
         }
 
@@ -91,8 +89,21 @@ input {
     font-size: 1em;
     background: none;
     outline: none;
-    color: rgba(#000, .87);
+    color: rgba(#000, 0.87);
     border: none;
     width: 100%;
-    padding: .5em 0;
+    padding: 0.5em 0;
+}
+
+.dark-mode {
+    .field.focus {
+        background-color: #424242;
+        color: $font-light;
+        input {
+            color: $font-light;
+            &::placeholder {
+                color: rgba(#fff, 0.54);
+            }
+        }
+    }
 }

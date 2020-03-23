@@ -157,5 +157,8 @@ a {
         flex: 1;
         min-width: 50%;
         margin-left: .5em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }

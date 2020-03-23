@@ -1,4 +1,4 @@
-<div class="container" #item_list [@listAnimation]="results ? results.length : 0" (scroll)="atBottom()">
+<div class="container" [class.dark-mode]="dark_mode" #item_list [@listAnimation]="results ? results.length : 0" (scroll)="atBottom()">
     <ng-container *ngIf="!loading" >
         <div class="item" #list_item *ngFor="let item of (results || [])" [title]="item.name">
             <a class="name" [routerLink]="['/' + item.type, item.id]">{{item.name}}</a>

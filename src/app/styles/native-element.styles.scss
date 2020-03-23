@@ -33,8 +33,8 @@ table {
 }
 
 thead {
-    color: rgba(#000, .85);
-    background-color: rgba(#000, .1);
+    opacity: .85;
+    background-color: rgba(#000, .15);
 }
 
 tr {
@@ -66,5 +66,5 @@ td {
 }
 
 a {
-    color: rgba($font-dark, .87);
+    color: inherit;
 }

@@ -1,4 +1,4 @@
-<div class="searchbar" widget>
+<div class="searchbar" [class.dark-mode]="dark_mode" widget>
     <div class="field" [class.focus]="model.focus || filter || model.dictate">
         <button mat-icon-button (touchrelease)="focusInput()">
             <app-icon [icon]="{ class: 'backoffice-magnifying-glass' }"></app-icon>

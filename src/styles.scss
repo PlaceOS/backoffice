@@ -30,6 +30,17 @@ $ngx-backoffice-theme: mat-light-theme($ngx-backoffice-primary, $ngx-backoffice-
 
 /* You can add global styles to this file, and also import other style files */
 
+// Our dark theme
+.dark-mode {
+    color: $light-primary-text;
+    $dark-primary: mat-palette($mat-red);
+    $dark-accent: mat-palette($mat-amber, A400, A100, A700);
+    $dark-warn: mat-palette($mat-yellow);
+    $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
+
+    @include angular-material-theme($dark-theme);
+}
+
 html,
 body {
     height: 100%;

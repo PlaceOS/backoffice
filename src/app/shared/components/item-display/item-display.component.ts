@@ -54,6 +54,11 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
 
     @ViewChild('content') public content_el: ElementRef<HTMLDivElement>;
 
+    /** Whether dark mode is enabled */
+    public get dark_mode(): boolean {
+        return this._service.Users.dark_mode;
+    }
+
     public get is_scrolled() {
         if (this.content_el) {
             return this.content_el.nativeElement.scrollTop > 0;
@@ -80,18 +85,18 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
         return 'Logic';
     }
 
-    constructor(private service: ApplicationService, private _dialog: MatDialog, private _router: Router) {
+    constructor(private _service: ApplicationService, private _dialog: MatDialog, private _router: Router) {
         super();
     }
 
     public ngOnInit() {
         this.subscription(
             'right',
-            this.service.Hotkeys.listen(['ArrowRight'], () => this.changeTab(1))
+            this._service.Hotkeys.listen(['ArrowRight'], () => this.changeTab(1))
         );
         this.subscription(
             'left',
-            this.service.Hotkeys.listen(['ArrowLeft'], () => this.changeTab(-1))
+            this._service.Hotkeys.listen(['ArrowLeft'], () => this.changeTab(-1))
         );
     }
 
@@ -110,7 +115,7 @@ export class ItemDisplayComponent extends BaseDirective implements OnInit {
     public copy() {
         if (this.item && this.item.id) {
             document.execCommand('copy');
-            this.service.notifyInfo('ID copied to clipboard');
+            this._service.notifyInfo('ID copied to clipboard');
         }
     }
 

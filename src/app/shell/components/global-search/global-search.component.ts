@@ -75,6 +75,11 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
 
     @ViewChild('item_list', { static: true }) private list_el: ElementRef;
 
+    /** Whether dark mode is enabled */
+    public get dark_mode(): boolean {
+        return this._service.Users.dark_mode;
+    }
+
     constructor(
         private _service: ApplicationService,
         private _dialog: MatDialog,

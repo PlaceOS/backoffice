@@ -18,7 +18,7 @@
     }
 }
 
-button.mat-button,
+button[mat-button].mat-button,
 a[button] {
     background-color: $color-primary;
     border: 1px solid $color-primary;
@@ -30,8 +30,9 @@ a[button] {
     }
 
     &[disabled] {
-        background-color: #ccc;
-        border-color: #aaa;
+        background-color: rgba(#000, 0.12);
+        color: rgba(#000, 0.2);
+        border-color: rgba(#000, 0.2);
         pointer-events: none;
     }
 }
@@ -224,6 +225,15 @@ mat-option {
             &:hover {
                 opacity: 1;
             }
+        }
+    }
+}
+
+.dark-mode {
+    button[mat-button].mat-button {
+        &[disabled] {
+            background-color: rgba(#fff, 0.35);
+            border-color: rgba(#fff, 0.2);
         }
     }
 }

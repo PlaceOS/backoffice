@@ -474,7 +474,7 @@ export class ApplicationService extends BaseClass {
     }
 
     private loadActiveUser() {
-        this.Users.show('current').then(user => this.set('user', user));
+        this.Users.load();
     }
 
     /**

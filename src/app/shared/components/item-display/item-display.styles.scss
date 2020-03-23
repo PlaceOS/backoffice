@@ -7,6 +7,11 @@
     height: 100%;
     width: 100%;
     flex-direction: column;
+
+    &.dark-mode {
+        background-color: #424242;
+        color: $font-light;
+    }
 }
 
 header {
@@ -29,7 +34,7 @@ header {
     }
 
     .id {
-        color: rgba(#000, .54);
+        opacity: .6;
         margin-right: .5em;
         span {
             user-select: all;

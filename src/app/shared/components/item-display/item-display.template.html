@@ -1,5 +1,5 @@
-<div class="container" *ngIf="item && !loading">
-    <header>
+<div class="container" [class.dark-mode]="dark_mode" >
+    <header *ngIf="item && !loading">
         <div class="heading-group">
             <div class="heading">{{ item.display_name || item.name || "&lt;Unnamed&gt;" }}</div>
             <div class="info">
@@ -31,7 +31,7 @@
             </button>
         </div>
     </header>
-    <main>
+    <main *ngIf="item && !loading">
         <div class="tabs">
             <nav mat-tab-nav-bar [class.scroll]="is_scrolled">
                 <a

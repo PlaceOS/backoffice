@@ -1,4 +1,4 @@
-<div class="container" [class.uat]="env !== 'prod'" *ngIf="user && !loading">
+<div class="container" [class.uat]="env !== 'prod'" [class.dark-mode]="dark_mode" *ngIf="user && !loading">
     <div class="header">
         <topbar-header [(showMenu)]="show" [(filter)]="filter"></topbar-header>
     </div>

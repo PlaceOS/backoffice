@@ -1,6 +1,7 @@
 
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { BaseDirective } from '../../globals/base.directive';
+import { ApplicationService } from 'src/app/services/app.service';
 
 
 @Component({
@@ -22,7 +23,12 @@ export class SearchbarComponent extends BaseDirective {
 
     @ViewChild('input', { static: true }) private input: ElementRef;
 
-    constructor() {
+    /** Whether dark mode is enabled */
+    public get dark_mode(): boolean {
+        return this._service.Users.dark_mode;
+    }
+
+    constructor(private _service: ApplicationService) {
         super();
         const win = window as any;
         this.model.speech = !!(win.SpeechRecognition || win.webkitSpeechRecognition);

@@ -42,6 +42,11 @@ export class AppShellComponent extends BaseDirective implements OnInit {
         return this._service.setting('app.tiles') || [];
     }
 
+    /** Whether dark mode is enabled */
+    public get dark_mode(): boolean {
+        return this._service.Users.dark_mode;
+    }
+
     constructor(private _service: ApplicationService) {
         super();
     }
