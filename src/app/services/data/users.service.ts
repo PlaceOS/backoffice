@@ -38,7 +38,18 @@ export class BackofficeUsersService extends EngineUsersService {
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
-        return ((this.user.getValue() || {}) as any).ui_theme === 'dark' || localStorage.getItem('BACKOFFICE.theme') === 'dark';
+        if (
+            !((this.user.getValue() || {}) as any).ui_theme &&
+            !localStorage.getItem('BACKOFFICE.theme') &&
+            window.matchMedia &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches
+        ) {
+            return true;
+        }
+        return (
+            ((this.user.getValue() || {}) as any).ui_theme === 'dark' ||
+            localStorage.getItem('BACKOFFICE.theme') === 'dark'
+        );
     }
     public set dark_mode(state: boolean) {
         if (state) {
@@ -46,7 +57,7 @@ export class BackofficeUsersService extends EngineUsersService {
             this.parent.set('dark_mode', state);
             document.body.classList.add('dark-mode');
         } else {
-            localStorage.removeItem('BACKOFFICE.theme');
+            localStorage.setItem('BACKOFFICE.theme', 'light');
             document.body.classList.remove('dark-mode');
         }
     }
@@ -99,7 +110,7 @@ export class BackofficeUsersService extends EngineUsersService {
     }
 
     public load(): Promise<void> {
-        console.log('Load user')
+        console.log('Load user');
         return new Promise(resolve => {
             this.state.next('loading');
             this.show('current').then(
