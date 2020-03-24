@@ -126,7 +126,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
                         : item.role === EngineDriverRole.Logic
                             ? item.control_system_id
                             : item.ip;
-                map[item.id] = `${item.name || '<Unnamed>'} <span class="small">${detail}<span>`;
+                map[item.id] = `${item.custom_name || item.name || '<Unnamed>'} <span class="small">${detail}<span>`;
             } else {
                 map[item.id] = item.custom_name || item.name || '<Unnamed>';
             }
@@ -275,6 +275,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         if (!active_item) {
             return;
         }
+        console.log('Replace:', active_item);
         const list = this.items.getValue() || [];
         const index = list.findIndex(item => item.id === active_item.id);
         if (index >= 0) {
@@ -285,6 +286,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             list.push(active_item);
         }
         this.items.next([...list]);
+        console.log('Replaced');
     }
 
     /**
