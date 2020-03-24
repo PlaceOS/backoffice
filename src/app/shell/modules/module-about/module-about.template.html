@@ -1,12 +1,21 @@
 <div class="container" *ngIf="item">
     <div class="settings">
+        <header *ngIf="item.driver">Driver:&nbsp;<span>{{item.driver?.name}}</span></header>
         <header>Logic for system:&nbsp;<span>{{system?.name}}</span></header>
         <section>
             <button mat-button>Stop Module</button>
         </section>
-        <header>Settings <span (touchrelease)="toggleSettings()">{{ merged === false ? 'This module' : 'Merged' }}</span></header>
-        <section>
+        <header>Settings</header>
+        <section *ngIf="!loading_settings; else load_state">
             <a-settings-form [id]="item.id" [merge]="true" [settings]="item.settings" [merge_settings]="other_settings || []"></a-settings-form>
         </section>
     </div>
 </div>
+<ng-template #load_state>
+    <div class="info-block">
+        <div class="icon">
+            <mat-spinner diameter="48"></mat-spinner>
+        </div>
+        <div class="text">Loading module settings...</div>
+    </div>
+</ng-template>

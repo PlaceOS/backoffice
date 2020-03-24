@@ -18,12 +18,13 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
     public driver: EngineDriver;
     /** Control System for the active item */
     public system: EngineSystem;
-    /** Settings level to display details for */
-    public encryption_level: EncryptionLevel = EncryptionLevel.NeverDisplay;
-
-    public readonly available_levels: Identity[] = this.levels;
     /** List of settings for associated modules, drivers and zones */
     public other_settings: EngineSettings[] = [];
+
+    /** Whether application is loading settings for item */
+    public get loading_settings(): boolean {
+        return this._service.get('loading_settings');
+    }
 
     /** Displayable encryption levels for settings */
     public get levels(): Identity[] {
@@ -39,10 +40,6 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
             levels.push({ id: EncryptionLevel.Admin, name: 'Admin' });
         }
         return levels;
-    }
-
-    public get settings(): string {
-        return (this.item.settings[this.encryption_level as any] || {}).settings_string || '';
     }
 
     constructor(private _service: ApplicationService) {

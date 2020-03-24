@@ -17,6 +17,8 @@ import {
 export class RepositoryDriversComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active repository */
     @Input() public item: EngineRepository;
+    /** Whether driver list is loading */
+    public loading: boolean;
     /** List of drivers available in the repository */
     public driver_list: string[] = [];
 
@@ -44,11 +46,13 @@ export class RepositoryDriversComponent extends BaseDirective implements OnChang
         if (!this.item) {
             return;
         }
+        this.loading = true;
         this._service.Repositories.listDrivers(this.item.id, { offset } as any).then(
             list => {
+                this.loading = false;
                 this.driver_list = list || [];
             },
-            () => null
+            () => this.loading = false
         );
     }
 

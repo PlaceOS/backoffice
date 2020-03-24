@@ -21,8 +21,6 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
     @Input() public item: EngineSystem;
     /** List of zones for the active system */
     public zones: EngineZone[];
-    /** Encryption level of the settings to display */
-    public encryption_level: EncryptionLevel = EncryptionLevel.NeverDisplay;
     /** List of settings for associated modules, drivers and zones */
     public other_settings: EngineSettings[] = [];
 
@@ -31,8 +29,9 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
         return [...this.item.modules];
     }
 
-    public get settings() {
-        return (this.item.settings[this.encryption_level as any] || {}).settings_string || '';
+    /** Whether application is loading settings for item */
+    public get loading_settings(): boolean {
+        return this._service.get('loading_settings');
     }
 
     constructor(private _service: ApplicationService, private _dialog: MatDialog) {

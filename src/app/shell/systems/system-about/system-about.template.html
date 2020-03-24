@@ -32,7 +32,15 @@
         <system-exec-field [system]="item"></system-exec-field>
     </ng-container>
     <header>Settings</header>
-    <section>
+    <section *ngIf="!loading_settings; else load_state">
         <a-settings-form [id]="item.id" [merge]="true" [settings]="item.settings" [merge_settings]="other_settings || []"></a-settings-form>
     </section>
 </div>
+<ng-template #load_state>
+    <div class="info-block">
+        <div class="icon">
+            <mat-spinner diameter="48"></mat-spinner>
+        </div>
+        <div class="text">Loading system settings...</div>
+    </div>
+</ng-template>

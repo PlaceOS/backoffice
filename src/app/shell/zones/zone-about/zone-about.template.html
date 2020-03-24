@@ -21,7 +21,15 @@
         </div>
     </section>
     <header>Settings</header>
-    <section>
-        <a-settings-form [id]="item.id" [settings]="item.settings"></a-settings-form>
+    <section *ngIf="!loading_settings; else load_state">
+        <a-settings-form [merge]="true" [id]="item.id" [settings]="item.settings"></a-settings-form>
     </section>
 </div>
+<ng-template #load_state>
+    <div class="info-block">
+        <div class="icon">
+            <mat-spinner diameter="48"></mat-spinner>
+        </div>
+        <div class="text">Loading zone settings...</div>
+    </div>
+</ng-template>

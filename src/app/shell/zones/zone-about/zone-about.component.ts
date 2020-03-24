@@ -20,24 +20,10 @@ export class ZoneAboutComponent extends BaseDirective implements OnInit, OnChang
     public system_list: EngineSystem[];
     /** Selected system */
     public active_system: EngineSystem;
-    /** Settings level to display details for */
-    public encryption_level: EncryptionLevel = EncryptionLevel.None;
 
-    public readonly available_levels: Identity[] = this.levels;
-
-    /** Displayable encryption levels for settings */
-    public get levels(): Identity[] {
-        const user = this._service.Users.user.getValue();
-        const levels = [
-            { id: EncryptionLevel.None, name: 'Unencrypted' }
-        ];
-        if (user.support || user.sys_admin) {
-            levels.push({ id: EncryptionLevel.Support, name: 'Support' });
-        }
-        if (user.sys_admin) {
-            levels.push({ id: EncryptionLevel.Admin, name: 'Admin' });
-        }
-        return levels;
+    /** Whether application is loading settings for item */
+    public get loading_settings(): boolean {
+        return this._service.get('loading_settings');
     }
 
     constructor(private _service: ApplicationService) {
@@ -58,10 +44,6 @@ export class ZoneAboutComponent extends BaseDirective implements OnInit, OnChang
         if (changes.item && this.item) {
             this.loadSystems();
         }
-    }
-
-    public get settings(): string {
-        return (this.item.settings[this.encryption_level as any] || {}).settings_string || '';
     }
 
     public get parsed_description() {

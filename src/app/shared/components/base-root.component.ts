@@ -202,16 +202,20 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective im
             this.item instanceof EngineDriver ||
             this.item instanceof EngineModule
         ) {
+            this._service.set('loading_settings', true);
             this._service.EngineSettings.query({ parent_id: this.item.id }).then(
                 list => {
+                    this._service.set('loading_settings', false);
                     for (const settings of list) {
                         (this.item as any).settings[settings.encryption_level] = settings;
                     }
                 },
-                err =>
+                err => {
+                    this._service.set('loading_settings', false);
                     this._service.notifyError(
                         `Error loading settings. Error: ${err.message || err}`
-                    )
+                    );
+                }
             );
         }
     }
