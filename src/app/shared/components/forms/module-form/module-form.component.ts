@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { EncryptionLevel, EngineDriverRole } from '@placeos/ts-client';
 
@@ -11,18 +11,11 @@ import { BaseDirective } from 'src/app/shared/globals/base.directive';
     templateUrl: './module-form.component.html',
     styleUrls: ['./module-form.component.scss']
 })
-export class ModuleFormComponent extends BaseDirective {
+export class ModuleFormComponent extends BaseDirective implements OnDestroy {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
     /** Whether system is readonly */
     @Input() public readonly: boolean;
-    /** Levels of encyption available for the system's settings */
-    public encryption_levels: Identity[] = [
-        { id: EncryptionLevel.None, name: 'None' },
-        { id: EncryptionLevel.Support, name: 'Support' },
-        { id: EncryptionLevel.Admin, name: 'Admin' },
-        { id: EncryptionLevel.NeverDisplay, name: 'Never Display' }
-    ];
 
     /** Service for handling system */
     public get system_service(): EngineServiceLike {

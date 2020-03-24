@@ -45,7 +45,9 @@ export class HotkeysService {
 
         window.addEventListener('keyup', (event: KeyboardEvent) => {
             const code = this.mapKey((event.code || '').toLowerCase());
-            this.keydown_states[code].next(null);
+            if (this.keydown_states[code]) {
+                this.keydown_states[code].next(null);
+            }
             if (this.last_down === code) {
                 this.last_down = null;
             }

@@ -38,6 +38,8 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     public driver_list: Identity[] = [];
     /** List of available commits for the active driver */
     public commit_list: Identity[] = [];
+    /** Whether driver details are being loaded */
+    public loading: boolean;
 
     public get editing(): boolean {
         return this.form.controls.id && this.form.controls.id.value;
@@ -102,10 +104,12 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     public setDriverBase(event: Identity) {
         this.form.controls.commit.setValue(event.id);
         this.base_commit = event as any;
+        this.loading = true;
         this._service.Repositories.driverDetails(this.base_repo.id, {
             driver: `${this.base_driver.id}`,
             commit: `${event.id}`
         }).then(driver => {
+            this.loading = false;
             if (!this.form.controls.id.value) {
                 this.form.controls.name.setValue(driver.descriptive_name || '');
                 this.form.controls.module_name.setValue(driver.generic_name || '');
@@ -113,7 +117,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                 this.form.controls.settings_string.setValue(driver.default_settings || '');
                 this.form.controls.description.setValue(driver.description || '');
             }
-        });
+        }, () => this.loading = false);
     }
 
     /**

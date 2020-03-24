@@ -34,6 +34,7 @@
             ></item-search-field>
         </div>
     </div>
+    <ng-container *ngIf="!loading; else load_state">
     <form [formGroup]="form">
         <ng-container *ngIf="(form.controls.commit && form.controls.commit.value) || base_commit">
             <div class="field" *ngIf="form.controls.name">
@@ -149,4 +150,13 @@
             </div>
         </ng-container>
     </form>
+    </ng-container>
 </div>
+<ng-template #load_state>
+    <div class="info-block">
+        <div class="icon">
+            <mat-spinner diameter="48"></mat-spinner>
+        </div>
+        <div class="text">Loading driver details for commit...</div>
+    </div>
+</ng-template>

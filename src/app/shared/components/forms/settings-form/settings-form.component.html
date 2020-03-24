@@ -7,7 +7,7 @@
             *ngFor="let option of available_levels"
             [label]="
                 option.name +
-                (option.id !== 3 && used_settings[option.id]?.changes?.settings_string !== undefined
+                (option.id !== 4 && used_settings[option.id]?.changes?.settings_string !== undefined
                     ? ' *'
                     : '')
             "
@@ -15,7 +15,7 @@
         </mat-tab>
     </mat-tab-group>
     <ng-container *ngFor="let option of available_levels">
-        <ng-container *ngIf="encryption_level === option.id">
+        <ng-container *ngIf="encryption_level === option.id && form.controls['settings' + option.id]">
             <settings-form-field
                 [formControlName]="'settings' + option.id"
                 [readonly]="!option.active || this.saving[option.id]"
