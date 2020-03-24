@@ -5,6 +5,8 @@ import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
 import { mergeYAMLSettings } from 'src/app/shared/utilities/general.utilities';
 import { Identity } from 'src/app/shared/utilities/types.utilities';
+import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal/view-response-modal.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'module-about',
@@ -20,6 +22,8 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
     public system: EngineSystem;
     /** List of settings for associated modules, drivers and zones */
     public other_settings: EngineSettings[] = [];
+    /** Whether module is being stopped */
+    public stopping: boolean;
 
     /** Whether application is loading settings for item */
     public get loading_settings(): boolean {
@@ -42,7 +46,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
         return levels;
     }
 
-    constructor(private _service: ApplicationService) {
+    constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
@@ -87,5 +91,58 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
             return;
         }
         this.other_settings = await this._service.Systems.settings(this.item.id);
+    }
+
+    public stopModule() {
+        this.stopping = true;
+        this.item.stop().then(
+            () => {
+                this.stopping = false;
+                this._service.notifySuccess('Module successfully stopped');
+                (this.item as any).connected = false;
+            },
+            err => {
+                this.stopping = false;
+                if (typeof err === 'string' && err.length < 64) {
+                    this._service.notifyError(err);
+                } else {
+                    this._service.notifyError(
+                        `Failed to stop device '${this.item.id}'.\nView Error?`,
+                        'View',
+                        () => this.viewDetails(err)
+                    );
+                }
+            }
+        );
+    }
+
+    public startModule() {
+        this.stopping = true;
+        this.item.start().then(
+            () => {
+                this.stopping = false;
+                this._service.notifySuccess('Module successfully started');
+                (this.item as any).connected = true;
+            },
+            err => {
+                this.stopping = false;
+                if (typeof err === 'string' && err.length < 64) {
+                    this._service.notifyError(err);
+                } else {
+                    this._service.notifyError(
+                        `Failed to start device '${this.item.id}'.\nView Error?`,
+                        'View',
+                        () => this.viewDetails(err)
+                    );
+                }
+            }
+        );
+    }
+
+    /** View Results of the execute */
+    private viewDetails(content: any) {
+        this._dialog.open<ViewResponseModalComponent>(ViewResponseModalComponent, {
+            data: { content }
+        });
     }
 }

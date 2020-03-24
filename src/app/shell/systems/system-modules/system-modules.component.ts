@@ -18,6 +18,7 @@ import {
 } from 'src/app/overlays/view-module-state/view-module-state.component';
 import { EngineDebugService } from 'src/app/services/debug.service';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
+import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal/view-response-modal.component';
 
 @Component({
     selector: 'system-modules',
@@ -140,6 +141,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             device.stop().then(
                 () => {
                     this._service.notifySuccess('Module successfully stopped');
+                    (device as any).connected = false;
                 },
                 err => {
                     if (typeof err === 'string' && err.length < 64) {
@@ -148,7 +150,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                         this._service.notifyError(
                             `Failed to stop device '${device.id}'.\nView Error?`,
                             'View',
-                            () => null
+                            () => this.viewDetails(err)
                         );
                     }
                 }
@@ -157,6 +159,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             device.start().then(
                 () => {
                     this._service.notifySuccess('Module successfully stopped');
+                    (device as any).connected = true;
                 },
                 err => {
                     if (typeof err === 'string' && err.length < 64) {
@@ -165,7 +168,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                         this._service.notifyError(
                             `Failed to stop device '${device.id}'.\nView Error?`,
                             'View',
-                            () => null
+                            () => this.viewDetails(err)
                         );
                     }
                 }
@@ -225,6 +228,13 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                 }
             })
         );
+    }
+
+    /** View Results of the execute */
+    private viewDetails(content: any) {
+        this._dialog.open<ViewResponseModalComponent>(ViewResponseModalComponent, {
+            data: { content }
+        });
     }
 
     /**

@@ -1,9 +1,12 @@
 <div class="container" *ngIf="item">
     <div class="settings">
-        <header *ngIf="item.driver">Driver:&nbsp;<span>{{item.driver?.name}}</span></header>
+        <header *ngIf="item.driver">Driver:&nbsp;<span>{{item.driver.name || '&lt;Unnamed&gt;'}}</span></header>
         <header>Logic for system:&nbsp;<span>{{system?.name}}</span></header>
         <section>
-            <button mat-button>Stop Module</button>
+            <button mat-button [disabled]="stopping" (tapped)="item.connected ? stopModule(): startModule()">
+                <div class="text" *ngIf="!stopping">{{ item.connected ? 'Stop' : 'Start' }} Module</div>
+                <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
+            </button>
         </section>
         <header>Settings</header>
         <section *ngIf="!loading_settings; else load_state">
