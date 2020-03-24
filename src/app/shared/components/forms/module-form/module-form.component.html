@@ -44,7 +44,7 @@
                         for="ip"
                         [class.error]="form.controls.ip.invalid && form.controls.ip.touched"
                     >
-                        IP Address<span *ngIf="role === 'ssh'">*</span>:
+                        IP Address<span *ngIf="role === 'ssh' || role === 'device'">*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input matInput name="ip" placeholder="IP Address" formControlName="ip" />

@@ -38,13 +38,7 @@ export function generateDriverFormFields(driver: EngineDriver): FormDetails {
             );
         }
     }
-    if (!driver.id) {
-        subscriptions.push(
-            fields.settings_encryption_level.valueChanges.subscribe((value: EncryptionLevel) =>{
-                (driver.settings as any).storePendingChange('encryption_level', value);
-            })
-        );
-    } else {
+    if (driver.id) {
         delete fields.class_name;
         delete fields.role;
     }

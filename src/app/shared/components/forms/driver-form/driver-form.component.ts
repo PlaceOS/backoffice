@@ -1,10 +1,10 @@
 import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
-    EncryptionLevel,
     EngineRepositoryCommit,
     EngineRepository,
-    EngineRepositoriesService
+    EngineRepositoriesService,
+    EngineDriverRole
 } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -19,20 +19,13 @@ import { ApplicationService } from 'src/app/services/app.service';
 export class DriverFormComponent extends BaseDirective implements OnChanges {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
-    /** Levels of encyption available for the system's settings */
-    public encryption_levels: Identity[] = [
-        { id: EncryptionLevel.None, name: 'None' },
-        { id: EncryptionLevel.Support, name: 'Support' },
-        { id: EncryptionLevel.Admin, name: 'Admin' },
-        { id: EncryptionLevel.NeverDisplay, name: 'Never Display' }
-    ];
     /** List of driver roles */
     public role_types: Identity[] = [
-        { id: 0, name: 'SSH' },
-        { id: 1, name: 'Module' },
-        { id: 2, name: 'Service' },
-        { id: 3, name: 'Websocket' },
-        { id: 99, name: 'Logic' }
+        { id: EngineDriverRole.SSH, name: 'SSH' },
+        { id: EngineDriverRole.Device, name: 'Device' },
+        { id: EngineDriverRole.Service, name: 'Service' },
+        { id: EngineDriverRole.Websocket, name: 'Websocket' },
+        { id: EngineDriverRole.Logic, name: 'Logic' }
     ];
 
     /** Driver used as a template for the new driver being created */
