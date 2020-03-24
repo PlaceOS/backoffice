@@ -1,6 +1,6 @@
 <header>
     <h3 mat-dialog-title>{{ item && edit ? 'Edit' : 'New' }} {{ name }}</h3>
-    <button mat-icon-button mat-dialog-close>
+    <button mat-icon-button mat-dialog-close *ngIf="!loading">
         <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
     </button>
 </header>

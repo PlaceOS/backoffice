@@ -101,7 +101,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
     }
 
     constructor(
-        private _dialog: MatDialogRef<ItemCreateUpdateModalComponent>,
+        private _dialog_ref: MatDialogRef<ItemCreateUpdateModalComponent>,
         @Inject(MAT_DIALOG_DATA) private _data: CreateEditModalData,
         private _service: ApplicationService
     ) {
@@ -157,6 +157,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
         this.form.markAllAsTouched();
         if (this.item && this.form.valid) {
             this.loading = `${this.item.id ? 'Updating' : 'Creating'} ${this.name}...`;
+            this._dialog_ref.disableClose = true;
             if (this._data.external_save) {
                 this.event.emit({ reason: 'action', metadata: this.form.value });
                 return;
@@ -164,15 +165,16 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
             this.item.save().then(
                 item => {
                     this.result = item;
-                    this.loading = null;
+                    this._dialog_ref.disableClose = false;
                     this.event.emit({ reason: 'done', metadata: { item } });
                     this._service.notifySuccess(
                         `Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`
                     );
-                    this._dialog.close();
+                    this._dialog_ref.close();
                 },
                 err => {
                     this.loading = null;
+                    this._dialog_ref.disableClose = false;
                     this._service.notifyError(
                         `Error ${this.item.id ? 'editing' : 'adding new'} ${
                             this.name
@@ -187,6 +189,6 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
      * Close the modal
      */
     public close() {
-        this._dialog.close();
+        this._dialog_ref.close();
     }
 }
