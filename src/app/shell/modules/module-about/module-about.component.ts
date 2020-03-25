@@ -90,7 +90,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
         if (!this.item) {
             return;
         }
-        this.other_settings = await this._service.Systems.settings(this.item.id);
+        this.other_settings = await this._service.Modules.settings(this.item.id);
     }
 
     public stopModule() {
