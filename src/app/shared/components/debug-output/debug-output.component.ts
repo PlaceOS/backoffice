@@ -15,10 +15,14 @@ export class DebugOutputComponent extends BaseDirective implements OnInit {
     public show_content: boolean = true;
     /** Display string for debug logs */
     public logs: string;
+    /**  */
+    public height: number;
+    /**  */
+    public width: number;
 
     /** Whether user is listening for debug information */
     public get is_enabled(): boolean {
-        return this._service.is_listening || true;
+        return this._service.is_listening;
     }
     constructor(private _service: EngineDebugService) {
         super();

@@ -238,4 +238,11 @@ mat-option {
             border-color: rgba(#fff, 0.2);
         }
     }
+
+    system-modules,
+    driver-devices {
+        .state {
+            background-color: #fff;
+        }
+    }
 }
