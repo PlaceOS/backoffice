@@ -50,6 +50,7 @@ searchbar:host {
     &.focus {
         color: rgba(#000, 0.87);
         background-color: #fff;
+        z-index: 200;
         @include box-shadow;
 
         @include respond-to(mobile) {

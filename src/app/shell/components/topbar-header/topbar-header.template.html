@@ -1,5 +1,5 @@
 <div class="container">
-    <div class="topbar" [class.uat]="env !== 'prod'">
+    <div class="topbar">
         <button mat-icon-button class="mobile-only" (tapped)="toggleMenu()">
             <app-icon [icon]="{ class: 'backoffice-' + (show_menu ? 'cross' : 'menu') }"></app-icon>
         </button>
@@ -9,6 +9,9 @@
                     Place<span>OS</span>
                 </a>
             </div>
+        </div>
+        <div class="uat" *ngIf="env !== 'prod'">
+            {{ env }}
         </div>
         <div class="search">
             <searchbar

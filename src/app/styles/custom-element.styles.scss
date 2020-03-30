@@ -23,6 +23,7 @@ a[button] {
     background-color: $color-primary;
     border: 1px solid $color-primary;
     color: $font-light;
+    font-weight: 300;
 
     &.inverse {
         background-color: #fff;

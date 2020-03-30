@@ -51,7 +51,11 @@
     }
 
     span {
-        color: #db0066;
+        color: $color-primary;
+    }
+
+    * {
+        font-family: $heading-font;
     }
 }
 
@@ -64,7 +68,7 @@ a {
     position: relative;
     height: $header-height;
     min-height: $header-height;
-    background: $color-primary;
+    background: $header-color;
     color: $font-light;
     border-bottom: 1px solid #f0f0f0;
     width: 100%;
@@ -74,11 +78,6 @@ a {
     align-items: center;
     border-bottom: 1px solid rgba(#000, .12);
     box-shadow: 0 0 5px 0 rgba(#000, .35);
-    // z-index: 1;
-
-    &.uat {
-        background-color: $color-develop;
-    }
 
     i {
         font-size: 2.5em;
@@ -99,6 +98,29 @@ a {
         font-size: .9em;
         text-decoration: underline;
         cursor: pointer;
+    }
+}
+
+.uat {
+    position: absolute;
+    top: .55em;
+    left: 10em;
+    transform: rotate(30deg);
+    background-color: #b71c1c;
+    color: #fff;
+    font-weight: 500;
+    border-radius: 4px;
+    padding: .25em .5em;
+    font-size: .8em;
+    z-index: 100;
+    text-transform: uppercase;
+    @include box-shadow;
+
+    @include respond-to(mobile) {
+        top: 2.75em;
+        left: 15.5em;
+        font-size: .7em;
+        transform: rotate(0);
     }
 }
 

@@ -126,6 +126,10 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
             'save_all',
             this._service.Hotkeys.listen(['KeyA'], () => this.saveAll())
         );
+        this.subscription(
+            'clear_all',
+            this._service.Hotkeys.listen(['KeyC'], () => this.clearChanges())
+        );
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -206,6 +210,14 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
                 }
             );
         }
+    }
+
+    public clearChanges() {
+        if (this.edited_count < 1) {
+            return;
+        }
+        this.used_settings = this.processSettings(this.settings || []);
+        this.initForm();
     }
 
     private initForm() {
