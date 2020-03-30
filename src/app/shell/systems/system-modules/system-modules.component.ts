@@ -47,6 +47,15 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         { id: 'reload', name: 'Reload Module', icon: { type: 'icon', class: 'backoffice-cw' } },
         { id: 'remove', name: 'Remove Module', icon: { type: 'icon', class: 'backoffice-trash' } }
     ];
+
+    public offline_options: ApplicationActionLink[] = [
+        {
+            id: 'power',
+            name: 'Toggle Power',
+            icon: { type: 'icon', class: 'backoffice-power-plug' }
+        },
+        { id: 'remove', name: 'Remove Module', icon: { type: 'icon', class: 'backoffice-trash' } }
+    ];
     /** Function for excluding modules already within this system */
     public readonly exclude_fn = (item: EngineModule) =>
         item.control_system_id === this.item.id || item.role === EngineDriverRole.Logic;

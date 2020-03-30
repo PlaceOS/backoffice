@@ -84,7 +84,7 @@
                         <mat-menu #menu="matMenu">
                             <button
                                 mat-menu-item
-                                *ngFor="let item of menu_options"
+                                *ngFor="let item of (device.running ? menu_options : offline_options)"
                                 (tapped)="handleContextEvent(item, device)"
                             >
                                 <app-icon [icon]="item.icon"></app-icon>
