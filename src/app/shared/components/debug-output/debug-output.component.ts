@@ -18,7 +18,7 @@ export class DebugOutputComponent extends BaseDirective implements OnInit {
 
     /** Whether user is listening for debug information */
     public get is_enabled(): boolean {
-        return this._service.is_listening;
+        return this._service.is_listening || true;
     }
     constructor(private _service: EngineDebugService) {
         super();

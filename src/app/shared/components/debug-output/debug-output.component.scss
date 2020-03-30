@@ -9,6 +9,14 @@
     max-width: calc(100vw - 1em);
 }
 
+.header {
+    width: 100%;
+    color: #fff;
+    padding: .5em;
+    font-family: $heading-font;
+    background-color: rgba(#fff, .05);
+}
+
 .content {
     width: 48em;
     height: 24em;

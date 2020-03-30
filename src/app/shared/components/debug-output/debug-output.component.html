@@ -1,6 +1,7 @@
 <ng-container *ngIf="is_enabled">
     <div class="debug-output">
         <div class="content" [@show]="show_content ? 'show' : 'hide'">
+            <div class="header">Debug Console</div>
             <a-terminal [content]="logs"></a-terminal>
         </div>
         <button mat-icon-button (tapped)="show_content = !show_content">

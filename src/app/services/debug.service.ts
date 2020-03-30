@@ -61,7 +61,7 @@ export class EngineDebugService extends BaseClass {
         super();
         this._composer.realtime.debug_events.subscribe(event => {
             if (this._bound_modules.find(mod => mod.id === event.mod_id)) {
-                const event_list = this.events;
+                const event_list = this.event_list;
                 event_list.push(event);
                 this._events.next(event_list);
             }
