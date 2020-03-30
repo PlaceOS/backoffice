@@ -16,7 +16,7 @@
             </div>
         </div>
         <ng-container *ngIf="!form.controls.driver || form.controls.driver.value">
-            <div class="field" *ngIf="form.controls.system">
+            <div class="field" *ngIf="form.controls.system && role === 'logic'">
                 <label
                     for="driver"
                     [class.error]="form.controls.system.invalid && form.controls.system.touched"
