@@ -1,4 +1,4 @@
-import { HashMap } from './types.utilities';
+import { HashMap, Point } from './types.utilities';
 
 import * as dayjs from 'dayjs';
 import * as merge from 'deepmerge';
@@ -291,5 +291,22 @@ export function copyToClipboard(value: string) {
         document.getSelection().removeAllRanges();
         // Restore the original selection
         document.getSelection().addRange(selected);
+    }
+}
+
+/**
+ * Grab point details from mouse or touch event
+ * @param event Event to grab details from
+ */
+export function eventToPoint(event: MouseEvent | TouchEvent): Point {
+    if (!event) {
+        return { x: -1, y: -1 };
+    }
+    if (event instanceof MouseEvent) {
+        return { x: event.clientX, y: event.clientY };
+    } else {
+        return event.touches && event.touches.length > 0
+            ? { x: event.touches[0].clientX, y: event.touches[0].clientY }
+            : { x: -1, y: -1 };
     }
 }

@@ -1,8 +1,26 @@
 <ng-container *ngIf="is_enabled">
     <div class="debug-output">
-        <div class="content" [@show]="show_content ? 'show' : 'hide'">
-            <div class="header">Debug Console</div>
-            <a-terminal [content]="logs"></a-terminal>
+        <div class="content" [@show]="show_content ? 'show' : 'hide'" [style.height]="height + 'px'" [style.width]="width + 'px'">
+            <div class="header">
+                <div class="text">Debug Console</div>
+                <button mat-button (tapped)="clearDebugMessages()">Clear</button>
+            </div>
+            <a-terminal [content]="logs" [resize]="resize"></a-terminal>
+            <div
+                class="resize-bar top"
+                (mousedown)="startResize($event, 'y')"
+                (touchstart)="startResize($event, 'y')"
+            ></div>
+            <div
+                class="resize-bar left"
+                (mousedown)="startResize($event, 'x')"
+                (touchstart)="startResize($event, 'x')"
+            ></div>
+            <div
+                class="resize-bar top-left"
+                (mousedown)="startResize($event, 'xy')"
+                (touchstart)="startResize($event, 'xy')"
+            ></div>
         </div>
         <button mat-icon-button (tapped)="show_content = !show_content">
             <app-icon

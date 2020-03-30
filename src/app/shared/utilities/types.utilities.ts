@@ -53,3 +53,11 @@ export interface DialogEvent {
     reason: 'action' | 'close' | 'reset' | 'loading' | 'done' | 'other',
     metadata?: any;
 }
+
+/** Coordinates pair for the map */
+export interface Point {
+    /** Coordinate on the X axis */
+    readonly x: number;
+    /** Coordinate on the Y axis */
+    readonly y: number;
+}

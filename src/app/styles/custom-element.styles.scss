@@ -245,4 +245,15 @@ mat-option {
             background-color: #fff;
         }
     }
+
+    app-debug-output {
+        .header {
+            color: #fff;
+            background-color: #424242;
+        }
+
+        .content {
+            border: 1px solid #999;
+        }
+    }
 }

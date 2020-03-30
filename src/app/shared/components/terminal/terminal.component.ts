@@ -65,7 +65,7 @@ export class TerminalComponent extends BaseDirective implements OnInit, OnChange
         const line_height = this.terminal.getOption('lineHeight');
         const box = this.container_el.nativeElement.getBoundingClientRect();
         const width = Math.floor(box.width / (font_size * 0.6));
-        const height = Math.floor(box.height / (line_height * font_size * 1.1));
+        const height = Math.floor(box.height / (line_height * font_size * 1.28));
         this.terminal.resize(width - 2, height);
     }
 
@@ -82,6 +82,6 @@ export class TerminalComponent extends BaseDirective implements OnInit, OnChange
         for (const line of lines) {
             this.terminal.writeln(line);
         }
-        this.terminal.scrollToBottom();
+        this.timeout('scroll', () => this.terminal.scrollToBottom(), 50);
     }
 }
