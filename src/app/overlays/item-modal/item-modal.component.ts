@@ -11,7 +11,8 @@ import {
     EngineApplication,
     EngineSettings,
     EngineTrigger,
-    EngineRepository
+    EngineRepository,
+    EncryptionLevel
 } from '@placeos/ts-client';
 import { FormGroup } from '@angular/forms';
 
@@ -147,7 +148,10 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
         this.item = this._data.item;
         this.edit = !!this._data.item.id;
         this.form = this.generateFormData();
-        this.subscription('delete_item', this._service.Hotkeys.listen(['KeyS'], () => this.submit()));
+        this.subscription(
+            'delete_item',
+            this._service.Hotkeys.listen(['KeyS'], () => this.submit())
+        );
     }
 
     /**
@@ -170,7 +174,11 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
                     this._service.notifySuccess(
                         `Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`
                     );
-                    this._dialog_ref.close();
+                    if (!this.form.value.id && this.form.controls.settings) {
+                        this.newSettings(item, this.form.controls.settings.value);
+                    } else {
+                        this._dialog_ref.close();
+                    }
                 },
                 err => {
                     this.loading = null;
@@ -183,6 +191,26 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
                 }
             );
         }
+    }
+
+    /**
+     * Save initial settings for resources
+     */
+    private async newSettings(item: EngineResource<any>, setting_string: string) {
+        const new_settings = new EngineSettings(this._service.EngineSettings, {
+            parent_id: item.id,
+            setting_string,
+            encryption_level: EncryptionLevel.None
+        });
+        const settings = await new_settings
+            .save()
+            .catch(err =>
+                this._service.notifyError(
+                    `Error saving settings for ${item.name || item.id}. Error: ${err.message ||
+                        err}`
+                )
+            );
+        (item as any).settings[EncryptionLevel.None] = settings;
     }
 
     /**

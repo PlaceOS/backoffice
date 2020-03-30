@@ -108,16 +108,28 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
         this._service.Repositories.driverDetails(this.base_repo.id, {
             driver: `${this.base_driver.id}`,
             commit: `${event.id}`
-        }).then(driver => {
-            this.loading = false;
-            if (!this.form.controls.id.value) {
-                this.form.controls.name.setValue(driver.descriptive_name || '');
-                this.form.controls.module_name.setValue(driver.generic_name || '');
-                this.form.controls.class_name.setValue(this.base_driver.id || '');
-                this.form.controls.settings_string.setValue(driver.default_settings || '');
-                this.form.controls.description.setValue(driver.description || '');
-            }
-        }, () => this.loading = false);
+        }).then(
+            driver => {
+                this.loading = false;
+                if (!this.form.controls.id.value) {
+                    this.form.controls.name.setValue(driver.descriptive_name || '');
+                    this.form.controls.module_name.setValue(driver.generic_name || '');
+                    this.form.controls.class_name.setValue(this.base_driver.id || '');
+                    this.form.controls.default_port.setValue(driver.tcp_port || driver.udp_port || '');
+                    this.form.controls.default_uri.setValue(driver.uri_base || '');
+                    this.form.controls.role.setValue(
+                        driver.tcp_port || driver.udp_port
+                            ? EngineDriverRole.Device
+                            : driver.uri_base
+                                ? EngineDriverRole.Service
+                                : EngineDriverRole.Logic
+                    );
+                    this.form.controls.settings.setValue(driver.default_settings || '');
+                    this.form.controls.description.setValue(driver.description || '');
+                }
+            },
+            () => (this.loading = false)
+        );
     }
 
     /**

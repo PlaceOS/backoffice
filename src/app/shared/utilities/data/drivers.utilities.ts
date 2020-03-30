@@ -1,8 +1,8 @@
 
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { EngineDriver, EngineRepository, EncryptionLevel } from '@placeos/ts-client';
+import { EngineDriver, EngineRepository, EngineDriverRole } from '@placeos/ts-client';
 
-import { FormDetails, validateYAML } from './systems.utilities';
+import { FormDetails } from './systems.utilities';
 import { HashMap } from '../types.utilities';
 
 export interface DriverInitData {
@@ -20,13 +20,14 @@ export function generateDriverFormFields(driver: EngineDriver): FormDetails {
         file_name: new FormControl(driver.file_name),
         commit: new FormControl(driver.commit),
         name: new FormControl(driver.name || '', [Validators.required]),
-        role: new FormControl(driver.role || 99),
+        role: new FormControl(driver.role || EngineDriverRole.Logic),
         module_name: new FormControl(driver.module_name || '', [Validators.required]),
         default_uri: new FormControl(driver.default_uri || ''),
         default_port: new FormControl(driver.default_port || 1, [Validators.min(1), Validators.max(65535)]),
         class_name: new FormControl(driver.class_name || ''),
         description: new FormControl(driver.description || ''),
         ignore_connected: new FormControl(driver.ignore_connected || false),
+        settings: new FormControl('')
     };
     const subscriptions = [];
     for (const key in fields) {
