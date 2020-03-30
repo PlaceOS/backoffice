@@ -82,5 +82,6 @@ export class TerminalComponent extends BaseDirective implements OnInit, OnChange
         for (const line of lines) {
             this.terminal.writeln(line);
         }
+        this.terminal.scrollToBottom();
     }
 }

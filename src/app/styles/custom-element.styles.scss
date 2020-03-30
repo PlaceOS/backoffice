@@ -24,6 +24,7 @@ a[button] {
     border: 1px solid $color-primary;
     color: $font-light;
     font-weight: 300;
+    border-radius: 0;
 
     &.inverse {
         background-color: #fff;

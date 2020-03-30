@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { EngineDebugService } from 'src/app/services/debug.service';
 import { ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR } from '../../globals/angular-animations';
+import { BaseDirective } from '../../globals/base.directive';
 
 @Component({
     selector: 'app-debug-output',
@@ -9,21 +10,23 @@ import { ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR } from '../../globals/angular-anim
     styleUrls: ['./debug-output.component.scss'],
     animations: [ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR]
 })
-export class DebugOutputComponent implements OnInit {
+export class DebugOutputComponent extends BaseDirective implements OnInit {
     /** Whether display output is shown */
     public show_content: boolean = true;
+    /** Display string for debug logs */
+    public logs: string;
 
     /** Whether user is listening for debug information */
     public get is_enabled(): boolean {
         return this._service.is_listening;
     }
-
-    /** String of debug event details */
-    public get logs(): string {
-        return this._service.terminal_string;
+    constructor(private _service: EngineDebugService) {
+        super();
     }
 
-    constructor(private _service: EngineDebugService) {}
-
-    public ngOnInit() {}
+    public ngOnInit() {
+        this.subscription('changes', this._service.events.subscribe((_) => {
+            this.logs = this._service.terminal_string;
+        }));
+    }
 }
