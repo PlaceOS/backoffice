@@ -5,12 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { ROUTES } from './zones.routes';
+import { SharedContentModule } from 'src/app/shared/shared.module';
 
 import { ZonesComponent } from './zones.component';
 import { ZoneAboutComponent } from './zone-about/zone-about.component';
 import { ZoneSystemsComponent } from './zone-systems/zone-systems.component';
 import { ZoneTriggersComponent } from './zone-triggers/zone-triggers.component';
-import { SharedContentModule } from 'src/app/shared/shared.module';
+import { ZoneChildrenComponent } from './zone-children/zone-children.component';
 
 
 @NgModule({
@@ -18,7 +19,8 @@ import { SharedContentModule } from 'src/app/shared/shared.module';
         ZonesComponent,
         ZoneAboutComponent,
         ZoneSystemsComponent,
-        ZoneTriggersComponent
+        ZoneTriggersComponent,
+        ZoneChildrenComponent
     ],
     imports: [
         CommonModule,

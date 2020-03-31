@@ -1,5 +1,17 @@
 <div class="zone form" *ngIf="form">
     <form [formGroup]="form">
+        <div class="field" *ngIf="form.controls.parent_zone">
+            <label
+                for="parent-zone"
+                >Parent Zone:
+            </label>
+            <item-search-field
+                name="parent-zone"
+                [service]="zone_service"
+                [exclude]="exclude"
+                formControlName="parent_zone"
+            ></item-search-field>
+        </div>
         <div class="field" *ngIf="form.controls.name">
             <label
                 for="zone-name"

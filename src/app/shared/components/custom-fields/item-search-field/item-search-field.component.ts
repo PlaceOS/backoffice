@@ -84,6 +84,7 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
             map((list: T[]) => {
                 this.loading = false;
                 const search = (this.search_str || '').toLowerCase();
+                console.log('List:', list);
                 return list.filter(
                     (item: any) =>{
                         const match = item.name.toLowerCase().indexOf(search) >= 0 ||

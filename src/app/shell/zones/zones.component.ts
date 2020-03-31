@@ -23,6 +23,8 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
     public system_count: number;
     /** Number of triggers associated with the active zone */
     public trigger_count: number;
+    /** Number of zones associated with the active zone */
+    public child_count: number;
 
     constructor(
         protected _service: ApplicationService,
@@ -50,6 +52,12 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
         this._service.Triggers.query(tquery).then(
             list =>
                 (this.trigger_count = this._service.Triggers.last_total || list.length || 0)
+        );
+        const cquery: any = { offset: 0, limit: 1, parent: this.item.id };
+        // Get child zone count
+        this._service.Zones.query(cquery).then(
+            list =>
+                (this.child_count = this._service.Zones.last_total || list.length || 0)
         );
     }
 

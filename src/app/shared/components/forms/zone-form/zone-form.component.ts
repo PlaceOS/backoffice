@@ -1,10 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { EncryptionLevel } from '@placeos/ts-client';
+import { EngineZone } from '@placeos/ts-client';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 
-import { Identity, EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
+import { EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 
@@ -16,15 +16,10 @@ import { BaseDirective } from 'src/app/shared/globals/base.directive';
 export class ZoneFormComponent extends BaseDirective {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
-    /** Levels of encyption available for the system's settings */
-    public encryption_levels: Identity[] = [
-        { id: EncryptionLevel.None, name: 'None' },
-        { id: EncryptionLevel.Support, name: 'Support' },
-        { id: EncryptionLevel.Admin, name: 'Admin' },
-        { id: EncryptionLevel.NeverDisplay, name: 'Never Display' }
-    ];
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA];
+    /** Function to exclude zones */
+    public readonly exclude = (zone: EngineZone) => zone.id === this.form.controls.id.value
 
     /** Service for handling zones */
     public get zone_service(): EngineServiceLike {
@@ -37,6 +32,12 @@ export class ZoneFormComponent extends BaseDirective {
 
     constructor(private _service: ApplicationService) {
         super();
+    }
+
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes.form) {
+            this.updateZone();
+        }
     }
 
     /**
@@ -71,6 +72,15 @@ export class ZoneFormComponent extends BaseDirective {
         if (index >= 0) {
             tag_list.splice(index, 1);
             this.form.controls.tag_list.setValue(tag_list);
+        }
+    }
+
+    /** Update parent zone details if set */
+    private async updateZone() {
+        const parent_id = this.form.controls.parent_id ? this.form.controls.parent_id.value : '';
+        if (parent_id) {
+            const zone = await this._service.Zones.show(parent_id);
+            this.form.controls.parent_zone.setValue(zone);
         }
     }
 }

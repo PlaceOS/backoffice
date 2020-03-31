@@ -1,0 +1,42 @@
+<div class="container" *ngIf="item">
+    <div class="btn">
+        <mat-form-field appearance="outline">
+            <div class="prefix" matPrefix>
+                <app-icon [icon]="{ class: 'backoffice-magnifying-glass' }"></app-icon>
+            </div>
+            <input
+                matInput
+                [(ngModel)]="search_str"
+                (ngModelChange)="search$.next($event)"
+                name="search-filter"
+                placeholder="Filter Zones"
+            />
+        </mat-form-field>
+    </div>
+    <div class="list" *ngIf="zone_list && zone_list.length > 0; else empty_state">
+        <table>
+            <thead>
+                <td class="flex">Name</td>
+                <td class="description">Description</td>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of zone_list">
+                    <td class="flex">
+                        <a
+                            [routerLink]="['/zone', item.id]"
+                            routerLinkActive="router-link-active"
+                        >
+                            {{item.name}} (<span class="id">{{item.id}}</span>)
+                        </a>
+                    </td>
+                    <td class="description">{{item.description}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<ng-template #empty_state>
+    <div class="info-block">
+        <div class="text">No child zones found</div>
+    </div>
+</ng-template>

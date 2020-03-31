@@ -1,7 +1,7 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { EngineZone, EngineSettings, EncryptionLevel } from '@placeos/ts-client';
+import { EngineZone } from '@placeos/ts-client';
 
-import { FormDetails, validateYAML } from './systems.utilities';
+import { FormDetails } from './systems.utilities';
 import { HashMap } from '../types.utilities';
 
 export function generateZoneFormFields(zone: EngineZone): FormDetails {
@@ -9,16 +9,20 @@ export function generateZoneFormFields(zone: EngineZone): FormDetails {
         throw Error('No Zone passed to generate form fields');
     }
     const fields: HashMap<FormControl> = {
+        id: new FormControl(zone.id),
         name: new FormControl(zone.name || '', [Validators.required]),
         tag_list: new FormControl(((zone as any).tags || '').split('') || []),
         description: new FormControl(zone.description || ''),
+        parent_zone: new FormControl(null),
+        parent_id: new FormControl(zone.parent_id)
     };
     const subscriptions = [];
     for (const key in fields) {
-        if (fields[key] && key.indexOf('settings') < 0) {
+        if (fields[key] && zone.hasOwnProperty(key) && key.indexOf('settings') < 0) {
             subscriptions.push(
                 fields[key].valueChanges.subscribe(value =>
-                    zone.storePendingChange(key as any, value)
+                    {
+                        zone.storePendingChange(key as any, value)}
                 )
             );
         }
@@ -26,6 +30,14 @@ export function generateZoneFormFields(zone: EngineZone): FormDetails {
     subscriptions.push(
         fields.tag_list.valueChanges.subscribe((value: string[]) =>
             zone.storePendingChange('tags', value.join(','))
+        )
+    );
+    subscriptions.push(
+        fields.parent_zone.valueChanges.subscribe((zone: EngineZone) =>
+            {
+                console.log('Zone:', zone);
+                fields.parent_id.setValue(zone.id);
+            }
         )
     );
     return {
