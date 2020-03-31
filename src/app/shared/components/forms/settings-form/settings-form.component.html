@@ -1,4 +1,25 @@
 <form *ngIf="form && used_settings && used_settings.length" [formGroup]="form">
+    <div class="actions">
+        <button mat-button *ngIf="edited_count > 0" (tapped)="clearChanges()">
+            <div class="text" *ngIf="!saving[shown_option.id]; else spinner">Clear Changes [C]</div>
+        </button>
+        <button
+            mat-button
+            *ngIf="active_edited"
+            [disabled]="has_errors && !saving[shown_option.id]"
+            (tapped)="save(shown_option.id)"
+        >
+            <div class="text" *ngIf="!saving[shown_option.id]; else spinner">Save [S]</div>
+        </button>
+        <button
+            mat-button
+            *ngIf="edited_count > 1"
+            [disabled]="has_errors && !saving[shown_option.id]"
+            (tapped)="saveAll()"
+        >
+            <div class="text" *ngIf="!saving[shown_option.id]; else spinner">Save All [A]</div>
+        </button>
+    </div>
     <mat-tab-group
         [selectedIndex]="level_index"
         (selectedIndexChange)="encryption_level = available_levels[$event].id"
@@ -29,27 +50,6 @@
             </div>
         </ng-container>
     </ng-container>
-    <div class="actions">
-        <button mat-button *ngIf="edited_count > 0" (tapped)="clearChanges()">
-            <div class="text" *ngIf="!saving[shown_option.id]; else spinner">Clear Changes [C]</div>
-        </button>
-        <button
-            mat-button
-            *ngIf="active_edited"
-            [disabled]="has_errors && !saving[shown_option.id]"
-            (tapped)="save(shown_option.id)"
-        >
-            <div class="text" *ngIf="!saving[shown_option.id]; else spinner">Save [S]</div>
-        </button>
-        <button
-            mat-button
-            *ngIf="edited_count > 1"
-            [disabled]="has_errors && !saving[shown_option.id]"
-            (tapped)="saveAll()"
-        >
-            <div class="text" *ngIf="!saving[shown_option.id]; else spinner">Save All [A]</div>
-        </button>
-    </div>
 </form>
 <ng-template #spinner>
     <mat-spinner diameter="32"></mat-spinner>
