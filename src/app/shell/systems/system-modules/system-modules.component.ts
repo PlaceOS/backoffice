@@ -150,7 +150,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             device.stop().then(
                 () => {
                     this._service.notifySuccess('Module successfully stopped');
-                    (device as any).connected = false;
+                    (device as any).running = false;
                 },
                 err => {
                     if (typeof err === 'string' && err.length < 64) {
@@ -168,7 +168,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             device.start().then(
                 () => {
                     this._service.notifySuccess('Module successfully stopped');
-                    (device as any).connected = true;
+                    (device as any).running = true;
                 },
                 err => {
                     if (typeof err === 'string' && err.length < 64) {
