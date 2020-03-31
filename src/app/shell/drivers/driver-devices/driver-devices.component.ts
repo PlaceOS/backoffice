@@ -99,8 +99,8 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
                 {
                     ...CONFIRM_METADATA,
                     data: {
-                        title: `Delete device`,
-                        content: `<p>Are you sure you want delete this device?</p><p>Deleting this will device <strong>immediately</strong> remove it from any system associated with it</p>`,
+                        title: `Delete module`,
+                        content: `<p>Are you sure you want delete this module?</p><p>Deleting this will module <strong>immediately</strong> remove it from any system associated with it</p>`,
                         icon: { type: 'icon', class: 'backoffice-trash' }
                     }
                 }
@@ -109,11 +109,11 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
                 'delete_confirm',
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
-                        ref.componentInstance.loading = 'Deleting device...';
+                        ref.componentInstance.loading = 'Deleting module...';
                         item.delete().then(
                             () => {
                                 this._service.notifySuccess(
-                                    `Successfully deleted device "${item.name}".`
+                                    `Successfully deleted module "${item.name}".`
                                 );
                                 this.loadModules();
                                 ref.close();
@@ -121,7 +121,7 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
                             },
                             err => {
                                 ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error deleting device. Error: ${err}`);
+                                this._service.notifyError(`Error deleting module. Error: ${err}`);
                             }
                         );
                     }

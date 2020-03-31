@@ -157,7 +157,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                         this._service.notifyError(err);
                     } else {
                         this._service.notifyError(
-                            `Failed to stop device '${device.id}'.\nView Error?`,
+                            `Failed to stop module '${device.id}'.\nView Error?`,
                             'View',
                             () => this.viewDetails(err)
                         );
@@ -175,7 +175,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                         this._service.notifyError(err);
                     } else {
                         this._service.notifyError(
-                            `Failed to stop device '${device.id}'.\nView Error?`,
+                            `Failed to start module '${device.id}'.\nView Error?`,
                             'View',
                             () => this.viewDetails(err)
                         );
@@ -267,7 +267,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                 'confirm_ref',
                 ref.componentInstance.event.subscribe((e: DialogEvent) => {
                     if (e.reason === 'done') {
-                        ref.componentInstance.loading = 'Updating device order...';
+                        ref.componentInstance.loading = 'Updating module order...';
                         const list: string[] = [...this.item.modules];
                         moveItemInArray(list, event.previousIndex, event.currentIndex);
                         this.item.storePendingChange('modules', list);
@@ -279,7 +279,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                             err => {
                                 ref.componentInstance.loading = null;
                                 this._service.notifyError(
-                                    `Error reording devices. Error: ${err.message || err}`
+                                    `Error reording modules. Error: ${err.message || err}`
                                 );
                             }
                         );

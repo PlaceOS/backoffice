@@ -14,7 +14,7 @@ export class MockModulesBackend extends BaseMockBackend {
     }
 
     protected load() {
-        this.model.log('DEVICES', 'Loading mock data for modules...');
+        this.model.log('Modules', 'Loading mock data for modules...');
         this.loadList();
     }
 

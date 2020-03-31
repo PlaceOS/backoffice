@@ -124,7 +124,7 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
                     ...CONFIRM_METADATA,
                     data: {
                         title: `Delete auth source`,
-                        content: `<p>Are you sure you want delete this auth source?</p><p>Deleting this will device <strong>immediately</strong> remove it from any system associated with it</p>`,
+                        content: `<p>Are you sure you want delete this auth source?</p><p>Deleting this will remove this auth source <strong>immediately</strong></p>`,
                         icon: { type: 'icon', class: 'backoffice-trash' }
                     }
                 }

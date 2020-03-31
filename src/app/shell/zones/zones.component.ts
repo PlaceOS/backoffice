@@ -126,11 +126,11 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
                 'modal_events',
                 this.modal_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
-                        this.modal_ref.componentInstance.loading = 'Deleting device...';
+                        this.modal_ref.componentInstance.loading = 'Deleting zone...';
                         this.item.delete().then(
                             () => {
                                 this._service.notifySuccess(
-                                    `Successfully deleted device "${this.item.name}".`
+                                    `Successfully deleted zone "${this.item.name}".`
                                 );
                                 this._router.navigate(['/zones']);
                                 this._service.set('BACKOFFICE.removed', this.item.id);
@@ -138,7 +138,7 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
                             },
                             err => {
                                 this.modal_ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error deleting device. Error: ${err}`);
+                                this._service.notifyError(`Error deleting zone. Error: ${err}`);
                             }
                         );
                     }

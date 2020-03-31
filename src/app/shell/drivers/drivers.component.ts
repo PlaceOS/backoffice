@@ -100,7 +100,7 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
                     ...CONFIRM_METADATA,
                     data: {
                         title: `Delete driver`,
-                        content: `<p>Are you sure you want delete this driver?</p><p>All devices that rely on this driver will be <strong>immediately</strong> removed.</p>`,
+                        content: `<p>Are you sure you want delete this driver?</p><p>All modules that rely on this driver will be <strong>immediately</strong> removed.</p>`,
                         icon: { type: 'icon', class: 'backoffice-trash' }
                     }
                 }
