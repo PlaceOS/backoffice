@@ -146,7 +146,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
      * @param device Module to toggle the power state
      */
     public power(device: EngineModule) {
-        if (device.connected) {
+        if (device.running) {
             device.stop().then(
                 () => {
                     this._service.notifySuccess('Module successfully stopped');

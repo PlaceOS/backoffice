@@ -28,14 +28,14 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
     @Input() public exclude: (_: T) => boolean;
     /** Minimum number of characters needed to start a server query */
     @Input('minLength') public min_length = 0;
+    /** Whether item list is loading */
+    @Input() public loading: boolean;
     /** Service used for searching items */
     @Input() public service: EngineServiceLike;
     /** Currently selected item */
     public active_item: T;
     /** Item list to display */
     public item_list: T[];
-    /** Whether item list is loading */
-    public loading: boolean;
     /** Current display value of the search input field  */
     public search_str: string;
     /** List of items from an API search */

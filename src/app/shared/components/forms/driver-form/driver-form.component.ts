@@ -10,6 +10,8 @@ import {
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { Identity } from 'src/app/shared/utilities/types.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
+import { of, Subject, Observable } from 'rxjs';
 
 @Component({
     selector: 'driver-form',
@@ -38,8 +40,20 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     public driver_list: Identity[] = [];
     /** List of available commits for the active driver */
     public commit_list: Identity[] = [];
+    /** List of items from an API search */
+    public driver_list$: Observable<Identity[]>;
+    /** List of items from an API search */
+    public commit_list$: Observable<Identity[]>;
+    /** Subject holding the value of the search */
+    public readonly repo$ = new Subject<string>();
+    /** Subject holding the value of the search */
+    public readonly driver$ = new Subject<string>();
     /** Whether driver details are being loaded */
     public loading: boolean;
+    /** Whether driver listings are being loaded */
+    public loading_drivers: boolean;
+    /** Whether driver commits are being loaded */
+    public loading_commits: boolean;
 
     public get editing(): boolean {
         return this.form.controls.id && this.form.controls.id.value;
@@ -52,6 +66,53 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
 
     constructor(private _service: ApplicationService) {
         super();
+    }
+
+    public ngOnInit(): void {
+        this.driver_list$ = this.repo$.pipe(
+            debounceTime(100),
+            distinctUntilChanged(),
+            switchMap(repo_id => {
+                this.loading_drivers = true;
+                this.driver_list = [];
+                return this._service.Repositories.listDrivers(repo_id)
+            }),
+            catchError(_ => of([])),
+            map((list: any[]) => {
+                this.loading_drivers = false;
+                this.commit_list = [];
+                return (list || []).map(driver => ({
+                    id: driver,
+                    name: driver.replace(/\//g, ' > ')
+                }));
+            })
+        );
+        this.subscription('driver_list', this.driver_list$.subscribe((list) => this.driver_list = list));
+        this.commit_list$ = this.driver$.pipe(
+            debounceTime(100),
+            distinctUntilChanged(),
+            switchMap(driver_id => {
+                this.loading_commits = true;
+                this.commit_list = [];
+                return this._service.Repositories.listCommits(this.base_repo.id, {
+                    driver: `${driver_id}`
+                })
+            }),
+            catchError(_ => of([])),
+            map((list: any[]) => {
+                this.loading_commits = false;
+                if (this.form.controls.commit) {
+                    this.base_commit = this.commit_list.find(
+                        commit => commit.id === this.form.controls.commit.value
+                    ) as any;
+                }
+                return (list || []).map((commit: EngineRepositoryCommit) => ({
+                    id: commit.commit,
+                    name: `${commit.commit} - ${commit.subject}`
+                }));
+            })
+        );
+        this.subscription('commit_list', this.commit_list$.subscribe((list) => this.commit_list = list));
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -67,12 +128,8 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     public async updateDriverList(repo: EngineRepository) {
         this.form.controls.repository_id.setValue(repo.id);
         this.base_repo = repo;
-        const list = await this._service.Repositories.listDrivers(repo.id);
-        this.driver_list = (list || []).map(driver => ({
-            id: driver,
-            name: driver.replace(/\//g, ' > ')
-        }));
-        this.commit_list = [];
+        this.repo$.next(repo.id);
+        return await this.driver_list$.toPromise();
     }
 
     /**
@@ -82,19 +139,8 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     public updateCommitList(driver: Identity) {
         this.form.controls.file_name.setValue(driver.id);
         this.base_driver = driver;
-        this._service.Repositories.listCommits(this.base_repo.id, {
-            driver: `${driver.id}`
-        }).then((list: any[]) => {
-            this.commit_list = (list || []).map((commit: EngineRepositoryCommit) => ({
-                id: commit.commit,
-                name: `${commit.commit} - ${commit.subject}`
-            }));
-            if (this.form.controls.commit) {
-                this.base_commit = this.commit_list.find(
-                    commit => commit.id === this.form.controls.commit.value
-                ) as any;
-            }
-        });
+        this.driver$.next(`${driver.id}`);
+        return this.commit_list$.toPromise();
     }
 
     /**

@@ -17,6 +17,7 @@
             <item-search-field
                 name="driver"
                 [options]="driver_list"
+                [loading]="loading_drivers"
                 [ngModel]="base_driver"
                 (ngModelChange)="updateCommitList($event)"
             ></item-search-field>
@@ -29,6 +30,7 @@
             <item-search-field
                 name="commit"
                 [options]="commit_list"
+                [loading]="loading_commits"
                 [ngModel]="base_commit"
                 (ngModelChange)="setDriverBase($event)"
             ></item-search-field>
