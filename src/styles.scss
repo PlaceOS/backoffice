@@ -35,7 +35,7 @@ $ngx-backoffice-theme: mat-light-theme($ngx-backoffice-primary, $ngx-backoffice-
     color: $light-primary-text;
     $dark-primary: mat-palette($mat-pink);
     $dark-accent: mat-palette($mat-blue, A400, A100, A700);
-    $dark-warn: mat-palette($mat-yellow);
+    $dark-warn: mat-palette($mat-red);
     $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 
     @include angular-material-theme($dark-theme);
