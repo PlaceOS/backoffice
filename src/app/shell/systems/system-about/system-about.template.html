@@ -27,10 +27,6 @@
             <div class="value">{{item.installed_ui_devices}}</div>
         </div>
     </section>
-    <ng-container *ngIf="item.id && item.modules">
-        <header>Execute command</header>
-        <system-exec-field [system]="item"></system-exec-field>
-    </ng-container>
     <hr />
     <header class="settings">Settings</header>
     <section *ngIf="!loading_settings; else load_state">

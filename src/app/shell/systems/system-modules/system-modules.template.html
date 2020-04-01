@@ -13,7 +13,14 @@
         </button>
         <button mat-button (tapped)="newModule()">Add new</button>
     </section>
+    <ng-container *ngIf="item.id && item.modules">
+        <section class="exec">
+            <h3>Execute command</h3>
+            <system-exec-field [system]="item"></system-exec-field>
+        </section>
+    </ng-container>
     <section class="device-list">
+        <h3>Module List</h3>
         <table *ngIf="devices && devices.length > 0">
             <thead>
                 <td class="small"></td>
