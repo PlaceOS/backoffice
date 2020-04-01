@@ -105,7 +105,11 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         if (!this.item) {
             return;
         }
-        this._service.Modules.query({ control_system_id: this.item.id, complete: true, offset } as any).then(
+        this._service.Modules.query({
+            control_system_id: this.item.id,
+            complete: true,
+            offset
+        } as any).then(
             list => {
                 list.sort(
                     (a, b) => this.item.modules.indexOf(a.id) - this.item.modules.indexOf(b.id)
@@ -346,6 +350,11 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                 if (event.reason === 'done') {
                     this._service.Systems.addModule(this.item.id, event.metadata.item.id).then(
                         () => {
+                            this.item = new EngineSystem(this._service.Systems, {
+                                ...this.item,
+                                modules: this.item.modules.concat(event.metadata.item.id),
+                                version: (this.item as any)._version++
+                            });
                             this.timeout('reload_module_list', () => this.loadModules(), 1000);
                         }
                     );
@@ -370,8 +379,13 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             mod_list.push(id);
         }
         this.item.storePendingChange('modules', mod_list);
-        this.item.save().then(
+        this._service.Systems.addModule(this.item.id, id).then(
             () => {
+                this.item = new EngineSystem(this._service.Systems, {
+                    ...this.item,
+                    modules: this.item.modules.concat(id),
+                    version: (this.item as any)._version++
+                });
                 this._service.notifySuccess('Successfully added device to system');
                 this.loadModules();
             },
@@ -402,10 +416,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
     private generateModuleBindings() {
         const counter: HashMap<number> = {};
         for (const device of this.devices) {
-            const name =
-                device.custom_name ||
-                device.name ||
-                'Blank';
+            const name = device.custom_name || device.name || 'Blank';
             if (!counter[name]) {
                 counter[name] = 0;
             }
