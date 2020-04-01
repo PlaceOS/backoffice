@@ -47,6 +47,10 @@ export class AppShellComponent extends BaseDirective implements OnInit {
         return this._service.Users.dark_mode;
     }
 
+    public get is_fools_day(): boolean {
+        return dayjs().format('D MMM') === '1 Apr' && !localStorage.getItem('I\'M NO FOOL!!!');
+    }
+
     constructor(private _service: ApplicationService) {
         super();
     }

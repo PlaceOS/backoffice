@@ -1,11 +1,13 @@
 import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { EngineSystem, EngineZone } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 import { ApplicationLink, ApplicationIcon, ApplicationActionLink } from 'src/app/shared/utilities/settings.interfaces';
-import { MatDialog } from '@angular/material/dialog';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
-import { EngineSystem, EngineZone } from '@placeos/ts-client';
+
+import * as dayjs from 'dayjs';
 
 @Component({
     selector: 'topbar-header',
@@ -32,6 +34,10 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
     }
     public set dark_mode(state: boolean) {
         this._service.Users.dark_mode = state;
+    }
+
+    public get is_fools_day(): boolean {
+        return dayjs().format('D MMM') === '1 Apr' && !localStorage.getItem('I\'M NO FOOL!!!');
     }
 
     public extra_action_list: ApplicationActionLink[] = [
@@ -83,6 +89,11 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
             { link: '/logout', name: 'Logout', icon: { type: 'icon', class: 'backoffice-log-out' } }
         ];
     }
+
+    public notAFool() {
+        localStorage.setItem('I\'M NO FOOL!!!', 'true');
+    }
+
     /**
      * Open the modal to create a new engine resource
      */

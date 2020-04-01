@@ -1,0 +1,47 @@
+<div class="container" *ngIf="item">
+    <button mat-button (tapped)="newMetadata()">Add new Metadata Field</button>
+    <div class="list" *ngIf="metadata && metadata.length > 0; else empty_state">
+        <mat-accordion>
+            <ng-container *ngFor="let item of metadata">
+                <mat-expansion-panel [class.no-padding]="true" [formGroup]="form_map[item.name]">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <div
+                                class="text"
+                                [matTooltip]="form_map[item.name].controls.description.value"
+                                (click)="editMetadataDetails(item); $event.stopPropagation()"
+                            >
+                                {{ form_map[item.name].controls.name.value }}
+                                <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+                            </div>
+                            <ng-container *ngIf="edited[item.name]">
+                                <button
+                                    mat-button
+                                    *ngIf="!loading[item.name]; else load_state"
+                                    (tapped)="saveMetadata(item)"
+                                >
+                                    Save
+                                </button>
+                            </ng-container>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="settings">
+                        <settings-form-field
+                            formControlName="details"
+                            lang="json"
+                            [readonly]="false"
+                        ></settings-form-field>
+                    </div>
+                </mat-expansion-panel>
+            </ng-container>
+        </mat-accordion>
+    </div>
+</div>
+<ng-template #empty_state>
+    <div class="info-block">
+        <div class="text">No zone metadata found</div>
+    </div>
+</ng-template>
+<ng-template #load_state>
+    <mat-spinner diameter="32"></mat-spinner>
+</ng-template>

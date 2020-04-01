@@ -35,6 +35,8 @@ export class SettingsFieldComponent extends BaseDirective
     @Input() public readonly = true;
     /** Resize */
     @Input() public resize: boolean;
+    /** Input language for syntax highlighting and error checking */
+    @Input() public lang = 'yaml';
     /** Current value for the */
     public settings_string = ' ';
     /** Form control on change handler */
@@ -54,6 +56,9 @@ export class SettingsFieldComponent extends BaseDirective
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.readonly && this.editor) {
             this.editor.updateOptions({ readOnly: !!this.readonly });
+        }
+        if (changes.lang && this.editor) {
+            this.editor.updateOptions({ language: this.lang || 'yaml' });
         }
         if (changes.resize) {
             this.resizeEditor();
@@ -128,7 +133,7 @@ export class SettingsFieldComponent extends BaseDirective
             // monaco.languages.register(monaco_yaml);
             this.editor = monaco.editor.create(this.element.nativeElement, {
                 value: this.settings_string || '',
-                language: 'yaml',
+                language: this.lang || 'yaml',
                 fontFamily: `"Fira Code", monospace`,
 
                 lineNumbers: 'on',

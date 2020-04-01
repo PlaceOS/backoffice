@@ -27,6 +27,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { CdkTableModule } from '@angular/cdk/table';
 
 import { BaseDirective } from './globals/base.directive';
@@ -136,6 +137,7 @@ const MATERIAL_MODULES: any[] = [
     MatChipsModule,
     MatTabsModule,
     MatCardModule,
+    MatExpansionModule,
     CdkTableModule
 ];
 

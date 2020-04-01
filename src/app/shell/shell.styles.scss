@@ -34,6 +34,10 @@
     &.login {
         z-index: 999;
     }
+
+    &.joke {
+        filter: invert(1);
+    }
 }
 
 .body {

@@ -1,0 +1,49 @@
+<header>
+    <div class="heading">Update metadata details</div>
+    <button mat-icon-button mat-dialog-close>
+        <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
+    </button>
+</header>
+<mat-dialog-content>
+    <main [formGroup]="form">
+        <div class="field" *ngIf="form.controls.name">
+            <label
+                for="property-name"
+                [class.error]="form.controls.name.invalid && form.controls.name.touched"
+                >Name<span>*</span>:</label
+            >
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="property-name"
+                    placeholder="Property Name"
+                    formControlName="name"
+                    required
+                />
+                <mat-error *ngIf="form.controls.name.invalid">{{
+                    form.controls.name.errors.name
+                        ? 'Property name must be unique'
+                        : 'Property name is required'
+                }}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.description">
+            <label for="description">Description:</label>
+            <mat-form-field appearance="outline">
+                <textarea
+                    matInput
+                    name="description"
+                    placeholder="Description"
+                    formControlName="description"
+                ></textarea>
+            </mat-form-field>
+        </div>
+    </main>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <footer>
+        <button [disabled]="!form.controls.name.valid" mat-button (tapped)="updateDetails()">
+            Update
+        </button>
+    </footer>
+</mat-dialog-actions>

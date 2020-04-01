@@ -43,7 +43,7 @@ export class ZoneChildrenComponent extends BaseDirective implements OnChanges, O
                 this.loading = true;
                 return this._service.Zones.query({
                     q: query,
-                    parent: this.item.parent_id,
+                    parent: this.item.id,
                     offset: 0
                 });
             }),
@@ -76,7 +76,7 @@ export class ZoneChildrenComponent extends BaseDirective implements OnChanges, O
     }
 
     public loadChildren(offset: number = 0) {
-        this._service.Zones.query({ offset, parent: this.item.parent_id, limit: 500 }).then(
+        this._service.Zones.query({ offset, parent: this.item.id, limit: 500 }).then(
             list => (this.zone_list = list)
         );
     }

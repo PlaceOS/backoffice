@@ -231,6 +231,20 @@ mat-option {
     }
 }
 
+mat-expansion-panel {
+    &.no-padding {
+        .mat-expansion-panel-body {
+            padding: 0 !important;
+        }
+    }
+
+    mat-expansion-panel-header {
+        .mat-content {
+            overflow: visible;
+        }
+    }
+}
+
 .dark-mode {
     button[mat-button].mat-button {
         &[disabled] {

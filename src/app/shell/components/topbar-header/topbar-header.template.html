@@ -4,10 +4,11 @@
             <app-icon [icon]="{ class: 'backoffice-' + (show_menu ? 'cross' : 'menu') }"></app-icon>
         </button>
         <div class="block">
-            <div *ngIf="logo" class="logo" (tapped)="logo()">
-                <a [routerLink]="['/']">
+            <div *ngIf="logo" class="logo">
+                <a [routerLink]="['/']" *ngIf="!is_fools_day; else fools_day">
                     Place<span>OS</span>
                 </a>
+
             </div>
         </div>
         <div class="uat" *ngIf="env !== 'prod'">
@@ -68,3 +69,6 @@
         <div class="text">{{action.name}}</div>
     </button>
 </mat-menu>
+<ng-template #fools_day>
+    <a href="https://en.wikipedia.org/wiki/April_Fools%27_Day" (click)="notAFool()">April <span>Fools</span></a>
+</ng-template>
