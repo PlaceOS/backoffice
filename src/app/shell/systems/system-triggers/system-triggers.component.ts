@@ -56,7 +56,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
 
     public loadSystemTriggers(offset: number = 0): void {
         if (!this.item) { return; }
-        this._service.Systems.task(this.item.id, 'triggers', { offset }).then(
+        this._service.Systems.listTriggers(this.item.id).then(
             list => {
                 this.trigger_list = list;
             },
@@ -181,7 +181,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
      * @param trigger Trigger to add to system
      */
     private addTrigger(trigger: EngineTrigger): void {
-        this._service.Systems.task(this.item.id, 'triggers', {
+        this._service.Systems.addTrigger(this.item.id, {
             control_system_id: this.item.id,
             enabled: true,
             important: false,

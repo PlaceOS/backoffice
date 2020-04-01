@@ -44,7 +44,7 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, sys_id: this.item.id };
         // Get trigger count
-        this._service.Systems.task(this.item.id, 'triggers').then(
+        this._service.Systems.listTriggers(this.item.id).then(
             list =>
                 (this.trigger_count = list.length || 0)
         );
