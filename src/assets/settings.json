@@ -113,8 +113,8 @@
                     }
                 },
                 {
-                    "name": "Engine",
-                    "route": "/engine",
+                    "name": "Admin",
+                    "route": "/admin",
                     "needs_role": "sys_admin",
                     "icon": {
                         "type": "icon",

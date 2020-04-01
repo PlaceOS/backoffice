@@ -55,7 +55,7 @@ const routes: Routes = [
                 loadChildren: () => import('./shell/zones/zones.module').then(m => m.AppZonesModule)
             },
             {
-                path: 'engine',
+                path: 'admin',
                 loadChildren: () =>
                     import('./shell/engine/engine.module').then(m => m.AppEngineModule),
                 canLoad: [AuthorisedAdminGuard]
