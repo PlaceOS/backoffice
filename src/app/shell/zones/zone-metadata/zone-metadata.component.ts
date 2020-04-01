@@ -8,6 +8,10 @@ import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/fo
 import { validateJSONString } from 'src/app/shared/utilities/validation.utilities';
 import { MatDialog } from '@angular/material/dialog';
 import { MetadataDetailsModalComponent } from 'src/app/overlays/metadata-details-modal/metadata-details-modal.component';
+import {
+    ConfirmModalComponent,
+    CONFIRM_METADATA
+} from 'src/app/overlays/confirm-modal/confirm-modal.component';
 
 @Component({
     selector: 'zone-metadata',
@@ -55,8 +59,9 @@ export class ZoneMetadataComponent extends BaseDirective implements OnChanges, O
         this.metadata.push({
             name: `new_field_${Math.floor(Math.random() * 999_999_999)}`,
             description: '',
+            new: true,
             details: {}
-        });
+        } as any);
         this.generateForms();
     }
 
@@ -68,6 +73,45 @@ export class ZoneMetadataComponent extends BaseDirective implements OnChanges, O
                 form
             }
         });
+    }
+
+    /**
+     * Delete the given metadata field
+     * @param field Name of the field to remove
+     */
+    public deleteMetadata(field: string) {
+        const ref = this._dialog.open(ConfirmModalComponent, {
+            ...CONFIRM_METADATA,
+            data: {
+                title: `Kill process`,
+                content: `
+                    <p>Are you sure you want delete the metadata property "${field}"?</p>
+                `,
+                icon: { type: 'icon', class: 'backoffice-trash' }
+            }
+        });
+        this.subscription(
+            'confirm',
+            ref.componentInstance.event.subscribe(event => {
+                if (event.reason === 'done') {
+                    this._service.Zones.deleteMetadata(this.item.id, { name: field }).then(
+                        () => {
+                            this._service.notifySuccess(
+                                `Successfully removed "${field}" metadata.`
+                            );
+                            this.metadata = this.metadata.filter(prop => prop.name !== field);
+                            this.generateForms();
+                        },
+                        err =>
+                            this._service.notifyError(
+                                `Error removing old "${field}" metadata. Error: ${err.message ||
+                                    err}`
+                            )
+                    );
+                }
+                ref.close();
+            })
+        );
     }
 
     public saveMetadata(field: EngineZoneMetadata) {
@@ -87,20 +131,22 @@ export class ZoneMetadataComponent extends BaseDirective implements OnChanges, O
                     if (field.name !== item.name) {
                         this._service.Zones.deleteMetadata(this.item.id, field).catch(err =>
                             this._service.notifyError(
-                                `Error removing old "${field.name}" metadata. Error: ${err.message ||
-                                    err}`
+                                `Error removing old "${
+                                    field.name
+                                }" metadata. Error: ${err.message || err}`
                             )
                         );
                     }
                     if (index >= 0) {
-                        this.metadata.splice(index, 1, item);
+                        this.metadata.splice(index, 1, { ...item, new: false } as any);
                     }
-                    this._service.notifySuccess(`Saved "${field.name}" metadata.`);
+                    this._service.notifySuccess(`Saved "${value.name}" metadata.`);
+                    this.generateForms();
                 },
                 err => {
                     this.loading[field.name] = false;
                     this._service.notifyError(
-                        `Error saving "${field.name}" metadata. Error: ${err.message || err}`
+                        `Error saving "${value.name}" metadata. Error: ${err.message || err}`
                     );
                 }
             );
