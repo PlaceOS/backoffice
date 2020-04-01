@@ -175,7 +175,9 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
                         `Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`
                     );
                     if (!this.form.value.id && this.form.controls.settings) {
-                        this.newSettings(item, this.form.controls.settings.value);
+                        this.newSettings(item, this.form.controls.settings.value).then(() =>
+                            this._dialog_ref.close()
+                        );
                     } else {
                         this._dialog_ref.close();
                     }
@@ -199,17 +201,16 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
     private async newSettings(item: EngineResource<any>, setting_string: string) {
         const new_settings = new EngineSettings(this._service.EngineSettings, {
             parent_id: item.id,
-            setting_string,
+            setting_string: '',
             encryption_level: EncryptionLevel.None
         });
-        const settings = await new_settings
-            .save()
-            .catch(err =>
-                this._service.notifyError(
-                    `Error saving settings for ${item.name || item.id}. Error: ${err.message ||
-                        err}`
-                )
+        new_settings.storePendingChange('settings_string', setting_string);
+        const settings = await new_settings.save().catch(err => {
+            this.loading = null;
+            this._service.notifyError(
+                `Error saving settings for ${item.name || item.id}. Error: ${err.message || err}`
             );
+        });
         (item as any).settings[EncryptionLevel.None] = settings;
     }
 
