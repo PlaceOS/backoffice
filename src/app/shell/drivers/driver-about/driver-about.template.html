@@ -4,18 +4,10 @@
             <label>Commit:</label>
             <div class="value">{{ item.commit }}</div>
         </div>
-        <table>
-            <thead>
-                <td class="flex">Module Name</td>
-                <td class="class">Class</td>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="flex">{{item?.module_name}}</td>
-                    <td class="class mono">{{item?.class_name}}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="field">
+            <label>Module Name:</label>
+            <div class="value">{{ item?.module_name }}</div>
+        </div>
     </section>
     <section>
         <button mat-button (tapped)="reloadDriver()">Reload Modules</button>
