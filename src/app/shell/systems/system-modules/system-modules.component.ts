@@ -167,7 +167,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         } else {
             device.start().then(
                 () => {
-                    this._service.notifySuccess('Module successfully stopped');
+                    this._service.notifySuccess('Module successfully started');
                     (device as any).running = true;
                 },
                 err => {

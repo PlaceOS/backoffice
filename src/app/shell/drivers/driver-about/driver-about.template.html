@@ -20,7 +20,8 @@
     <section>
         <button mat-button (tapped)="reloadDriver()">Reload Modules</button>
     </section>
-    <header>Settings</header>
+    <hr />
+    <header class="settings">Settings</header>
     <section *ngIf="!loading_settings; else load_state">
         <a-settings-form [merge]="true" [id]="item.id" [settings]="item.settings"></a-settings-form>
     </section>

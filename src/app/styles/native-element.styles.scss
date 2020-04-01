@@ -13,8 +13,23 @@ textarea {
     color: rgba($font-dark, .87);
     user-select: text;
 
+    &::placeholder {
+        color: rgba(#000, .35);
+    }
+
     &:focus {
         border-bottom-color: $color-primary;
+    }
+}
+
+.dark-mode {
+    input,
+    textarea {
+        color: rgba($font-light, .87);
+
+        &::placeholder {
+            color: rgba(#fff, .35);
+        }
     }
 }
 

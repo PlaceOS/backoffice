@@ -8,7 +8,8 @@
                 <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
             </button>
         </section>
-        <header>Settings</header>
+        <hr />
+        <header class="settings">Settings</header>
         <section *ngIf="!loading_settings; else load_state">
             <a-settings-form [id]="item.id" [merge]="true" [settings]="item.settings" [merge_settings]="other_settings || []"></a-settings-form>
         </section>

@@ -60,15 +60,14 @@ input {
     background: none;
     outline: none;
     font-size: 1em;
-    color: rgba(#000, .87);
     padding: 0;
     border-radius: 0;
 
     &.error {
         border-bottom-color: $error;
     }
+}
 
-    &::placeholder {
-        color: rgba(#000, .2);
-    }
+.info-block {
+    display: inline-block;
 }
