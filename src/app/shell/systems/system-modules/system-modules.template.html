@@ -13,7 +13,7 @@
         </button>
         <button mat-button (tapped)="newModule()">Add new</button>
     </section>
-    <ng-container *ngIf="item.id && item.modules">
+    <ng-container *ngIf="item.id && item.modules && !hide_exec">
         <section class="exec">
             <h3>Execute command</h3>
             <system-exec-field [system]="item"></system-exec-field>

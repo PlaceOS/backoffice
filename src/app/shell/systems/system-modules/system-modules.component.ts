@@ -36,6 +36,8 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
     public device_listener: HashMap<boolean> = {};
     /** Store for ID of new module to add to system */
     public new_module: string;
+    /** Whether to show exec block */
+    public hide_exec: boolean;
     /** Actions available for the context menu */
     public menu_options: ApplicationActionLink[] = [
         {
@@ -150,13 +152,16 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
      * @param device Module to toggle the power state
      */
     public power(device: EngineModule) {
+        this.hide_exec = true;
         if (device.running) {
             device.stop().then(
                 () => {
+                    this.hide_exec = false;
                     this._service.notifySuccess('Module successfully stopped');
                     (device as any).running = false;
                 },
                 err => {
+                    this.hide_exec = false;
                     if (typeof err === 'string' && err.length < 64) {
                         this._service.notifyError(err);
                     } else {
@@ -171,10 +176,12 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         } else {
             device.start().then(
                 () => {
+                    this.hide_exec = false;
                     this._service.notifySuccess('Module successfully started');
                     (device as any).running = true;
                 },
                 err => {
+                    this.hide_exec = false;
                     if (typeof err === 'string' && err.length < 64) {
                         this._service.notifyError(err);
                     } else {
@@ -271,16 +278,19 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                 'confirm_ref',
                 ref.componentInstance.event.subscribe((e: DialogEvent) => {
                     if (e.reason === 'done') {
+                        this.hide_exec = true;
                         ref.componentInstance.loading = 'Updating module order...';
                         const list: string[] = [...this.item.modules];
                         moveItemInArray(list, event.previousIndex, event.currentIndex);
                         this.item.storePendingChange('modules', list);
                         this.item.save().then(
                             () => {
+                                this.hide_exec = false;
                                 ref.close();
                                 this.unsub('confirm_ref');
                             },
                             err => {
+                                this.hide_exec = false;
                                 ref.componentInstance.loading = null;
                                 this._service.notifyError(
                                     `Error reording modules. Error: ${err.message || err}`
@@ -309,14 +319,17 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             'confirm_ref',
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
+                    this.hide_exec = true;
                     this.item.removeModule(device.id).then(
                         () => {
+                            this.hide_exec = false;
                             this._service.notifySuccess('Succefully removed module.');
                             this.devices.splice(this.devices.indexOf(device), 1);
                             ref.close();
                             this.unsub('confirm_ref');
                         },
                         err => {
+                            this.hide_exec = false;
                             this._service.notifyError(
                                 `Error removing module. Error: ${err.message || err}`
                             );
@@ -348,14 +361,19 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             'modal_events',
             ref.componentInstance.event.subscribe(event => {
                 if (event.reason === 'done') {
+                    this.hide_exec = true;
                     this._service.Systems.addModule(this.item.id, event.metadata.item.id).then(
                         () => {
+                            this.hide_exec = false;
                             this.item = new EngineSystem(this._service.Systems, {
                                 ...this.item,
                                 modules: this.item.modules.concat(event.metadata.item.id),
                                 version: (this.item as any)._version++
                             });
                             this.timeout('reload_module_list', () => this.loadModules(), 1000);
+                        },
+                        err => {
+                            this.hide_exec = false;
                         }
                     );
                 }
@@ -378,9 +396,11 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         if (mod_list.indexOf(id) < 0) {
             mod_list.push(id);
         }
+        this.hide_exec = true;
         this.item.storePendingChange('modules', mod_list);
         this._service.Systems.addModule(this.item.id, id).then(
             () => {
+                this.hide_exec = false;
                 this.item = new EngineSystem(this._service.Systems, {
                     ...this.item,
                     modules: this.item.modules.concat(id),
@@ -390,6 +410,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                 this.loadModules();
             },
             () => {
+                this.hide_exec = false;
                 this._service.notifyError('Failed to add module to system');
             }
         );
