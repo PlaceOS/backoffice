@@ -19,6 +19,6 @@ export const ANIMATION_SHOW_CONTRACT_EXPAND = trigger('show', [
 
 export const ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR = trigger('show', [
     state('show', style({ opacity: 1, height: '*', width: '*' })),
-    state('hide', style({ opacity: 0, height: 0, width: 0, 'pointer-events': 'none' })),
+    state('hide', style({ opacity: 0, height: 0, width: 0 })),
     transition('show <=> hide', animate('200ms ease-in'))
 ]);

@@ -16,7 +16,12 @@
         background-color: #263238 !important;
         color: #fff;
         z-index: 999;
+        pointer-events: auto;
         @include box-shadow(2);
+    }
+
+    &.disabled {
+        pointer-events: none;
     }
 }
 
