@@ -2,7 +2,7 @@ import { Validators, AbstractControl } from '@angular/forms';
 
 export const validateIpAddress = ctrl =>
     /^(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)$/g.test(
-        ctrl.value || ''
+        ctrl.value || '1.1.1.1'
     )
         ? null
         : { pattern: true };
