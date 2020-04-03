@@ -45,7 +45,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
 
     public loadApplications(offset: number = 0) {
         if (!this.item) { return; }
-        this._service.Applications.query({ owner: this.item.id, offset } as any).then(
+        this._service.Applications.query({ authority: this.item.id, offset } as any).then(
             list => {
                 if (!offset) {
                     this.application_list = [];

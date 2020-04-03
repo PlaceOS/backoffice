@@ -14,8 +14,8 @@
                 <tbody>
                     <tr *ngFor="let item of application_list">
                         <td class="name">{{item.name}}</td>
-                        <td class="flex">{{item.redirect}}</td>
-                        <td class="scope">{{item.scope}}</td>
+                        <td class="flex"><a [href]="item.redirect_uri">{{item.redirect_uri}}</a></td>
+                        <td class="scope">{{item.scopes}}</td>
                         <td class="duo">
                             <button mat-icon-button (tapped)="editApplication(item)">
                                 <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
