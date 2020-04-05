@@ -16,9 +16,9 @@ import { EngineServiceLike, HashMap } from 'src/app/shared/utilities/types.utili
         {
             provide: NG_VALUE_ACCESSOR,
             useExisting: forwardRef(() => ItemSearchFieldComponent),
-            multi: true
-        }
-    ]
+            multi: true,
+        },
+    ],
 })
 export class ItemSearchFieldComponent<T extends EngineResource<any> = any> extends BaseDirective
     implements OnInit, OnChanges, ControlValueAccessor {
@@ -57,8 +57,8 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
                     item.role === EngineDriverRole.Service
                         ? item.uri
                         : item.role === EngineDriverRole.Logic
-                            ? item.control_system_id
-                            : item.ip;
+                        ? item.control_system_id
+                        : item.ip;
                 map[item.id] = `${item.name || '<Unnamed>'} <span class="small">${detail}<span>`;
             } else {
                 map[item.id] = (item as any).custom_name || item.name || '<Unnamed>';
@@ -72,7 +72,7 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
             distinctUntilChanged(),
-            switchMap(query => {
+            switchMap((query) => {
                 this.loading = true;
                 return this.options && this.options.length > 0
                     ? Promise.resolve(this.options)
@@ -80,24 +80,23 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
                     ? (this.service.query({ q: query || '', cache: 5 * 1000 }) as Promise<T[]>)
                     : Promise.resolve([]);
             }),
-            catchError(_ => of([])),
+            catchError((_) => of([])),
             map((list: T[]) => {
                 this.loading = false;
                 const search = (this.search_str || '').toLowerCase();
                 console.log('List:', list);
-                return list.filter(
-                    (item: any) =>{
-                        const match = item.name.toLowerCase().indexOf(search) >= 0 ||
+                return list.filter((item: any) => {
+                    const match =
+                        item.name.toLowerCase().indexOf(search) >= 0 ||
                         (item.email || '').toLowerCase().indexOf(search) >= 0;
-                        return match && (this.exclude ? !this.exclude(item) : true)
-                    }
-                );
+                    return match && (this.exclude ? !this.exclude(item) : true);
+                });
             })
         );
         // Process API results
         this.subscription(
             'search_results',
-            this.search_results$.subscribe(list => (this.item_list = list))
+            this.search_results$.subscribe((list) => (this.item_list = list))
         );
         this.timeout('init', () => {
             this.search$.next('');
@@ -114,9 +113,15 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
      * Reset the search string back to the name of the active item
      */
     public resetSearchString() {
-        if (this.active_item) {
-            this.search_str = this.active_item.name;
-        }
+        this.timeout(
+            'value',
+            () => {
+                if (this.active_item) {
+                    this.search_str = this.active_item.name || this.search_str;
+                }
+            },
+            10
+        );
     }
 
     /**
@@ -136,6 +141,7 @@ export class ItemSearchFieldComponent<T extends EngineResource<any> = any> exten
      * @param value The new value for the component
      */
     public writeValue(value: T) {
+        console.log('Value:', value);
         this.active_item = value;
         this.resetSearchString();
     }

@@ -77,7 +77,10 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                 this.driver_list = [];
                 return this._service.Repositories.listDrivers(repo_id)
             }),
-            catchError(_ => of([])),
+            catchError(_ => {
+                this._service.notifyError(`Error loading driver list. Error: ${_.message || _}`);
+                return of([])
+            }),
             map((list: any[]) => {
                 this.loading_drivers = false;
                 this.commit_list = [];
@@ -98,7 +101,10 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                     driver: `${driver_id}`
                 })
             }),
-            catchError(_ => of([])),
+            catchError(_ => {
+                this._service.notifyError(`Error loading driver's commit list. Error: ${_.message || _}`);
+                return of([])
+            }),
             map((list: any[]) => {
                 this.loading_commits = false;
                 if (this.form.controls.commit) {
