@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnInit, Renderer2, ViewChild, ElementRef } from '@angular/core';
 
 import { EngineDebugService } from 'src/app/services/debug.service';
 import { ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR } from '../../globals/angular-animations';
@@ -25,6 +25,8 @@ export class DebugOutputComponent extends BaseDirective implements OnInit {
     public resize: boolean;
     /** Start point for resizing the console box */
     private _resize_start: Point;
+
+    @ViewChild('content', { static: false }) private _content_el: ElementRef<HTMLDivElement>;
 
     /** Whether user is listening for debug information */
     public get is_enabled(): boolean {
@@ -60,6 +62,9 @@ export class DebugOutputComponent extends BaseDirective implements OnInit {
                 this._renderer.listen('window', 'mouseup', _ => {
                     this.unsub('resize_move');
                     this.unsub('resize_end');
+                    const box = this._content_el.nativeElement.getBoundingClientRect();
+                    this.height = box.height;
+                    this.width = box.width;
                 })
             );
         } else {
@@ -72,6 +77,9 @@ export class DebugOutputComponent extends BaseDirective implements OnInit {
                 this._renderer.listen('window', 'touchend', _ => {
                     this.unsub('resize_move');
                     this.unsub('resize_end');
+                    const box = this._content_el.nativeElement.getBoundingClientRect();
+                    this.height = box.height;
+                    this.width = box.width;
                 })
             );
         }

@@ -1,6 +1,6 @@
 <ng-container *ngIf="is_enabled">
     <div class="debug-output" [class.disabled]="!show_content">
-        <div class="content" [@show]="show_content ? 'show' : 'hide'" [style.height]="height + 'px'" [style.width]="width + 'px'">
+        <div class="content" #content [@show]="show_content ? 'show' : 'hide'" [style.height]="height + 'px'" [style.width]="width + 'px'">
             <div class="header">
                 <div class="text">Debug Console</div>
                 <button mat-button (tapped)="clearDebugMessages()">Clear</button>
