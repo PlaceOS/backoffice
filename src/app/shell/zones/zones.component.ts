@@ -25,6 +25,8 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
     public trigger_count: number;
     /** Number of zones associated with the active zone */
     public child_count: number;
+    /** Number of metadata properties associated with the active zone */
+    public metadata_count: number;
 
     constructor(
         protected _service: ApplicationService,
@@ -58,6 +60,10 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
         this._service.Zones.query(cquery).then(
             list =>
                 (this.child_count = this._service.Zones.last_total || list.length || 0)
+        );
+        // Get metadata
+        this._service.Zones.listMetadata(this.item.id).then(
+            map => this.metadata_count = Object.keys(map).length
         );
     }
 
