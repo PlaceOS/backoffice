@@ -34,8 +34,8 @@
                             <a [routerLink]="['/modules', item.id]">{{item.name}}</a>
                         </td>
                         <td class="system">
-                            <a [routerLink]="['/systems', item.system.id]">
-                                {{item.system?.name}} (<span class="id">{{item.system?.id}}</span>)
+                            <a [routerLink]="['/systems', item.control_system_id]">
+                                {{item.system?.name}} (<span class="id">{{item.control_system_id}}</span>)
                             </a>
                         </td>
                         <td class="small">

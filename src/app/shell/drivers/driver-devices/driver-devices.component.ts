@@ -53,9 +53,10 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
                 return this._service.Modules.query({
                     q: query,
                     driver_id: this.item.id,
+                    complete: true,
                     offset: 0,
                     limit: 500
-                });
+                } as any);
             }),
             catchError(err => {
                 console.error(err);
