@@ -134,8 +134,9 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     public async updateDriverList(repo: EngineRepository) {
         this.form.controls.repository_id.setValue(repo.id);
         this.base_repo = repo;
+        const promise = this.driver_list$.toPromise();
         this.repo$.next(repo.id);
-        return await this.driver_list$.toPromise();
+        return await promise;
     }
 
     /**
@@ -145,8 +146,9 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     public updateCommitList(driver: Identity) {
         this.form.controls.file_name.setValue(driver.id);
         this.base_driver = driver;
+        const promise = this.commit_list$.toPromise()
         this.driver$.next(`${driver.id}`);
-        return this.commit_list$.toPromise();
+        return promise;
     }
 
     /**
@@ -192,7 +194,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
             const value = this.form.controls.repository_id.value;
             const repo = await this.discovery_service.show(value);
             this.base_repo = repo;
-            await this.updateDriverList(this.base_repo);
+            this.updateDriverList(this.base_repo);
             const driver = this.form.controls.file_name.value;
             this.base_driver =
                 typeof driver === 'string'
