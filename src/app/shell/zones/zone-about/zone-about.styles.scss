@@ -17,6 +17,15 @@ header {
     }
 }
 
+mat-form-field {
+    height: 3.25em;
+    overflow: hidden;
+
+    @include respond-to(mobile) {
+        width: 100%;
+    }
+}
+
 section {
     padding: .5em .25em;
 }

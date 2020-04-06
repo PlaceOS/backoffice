@@ -32,6 +32,7 @@ header {
         font-family: $heading-font;
         overflow: hidden;
         text-overflow: ellipsis;
+        width: 100%;
     }
 
     .id {
@@ -46,7 +47,6 @@ header {
     .options {
         display: flex;
         justify-content: flex-end;
-        flex: 1;
     }
 
     .option {
@@ -126,6 +126,8 @@ nav {
 .heading-group {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-width: 50%;
 }
 
 .info {

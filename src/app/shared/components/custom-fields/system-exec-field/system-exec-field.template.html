@@ -21,6 +21,9 @@
                 </mat-select>
             </mat-form-field>
         </ng-container>
+        <button *ngIf="active_method && executable" [class.not-mobile]="true" mat-button [disabled]="!fields_valid" (tapped)="execute()">
+            Execute
+        </button>
     </div>
     <div class="row function" *ngIf="active_method">
         <div class="fn-input">
@@ -46,12 +49,10 @@
             </div>
             <div class="bracket">)</div>
         </div>
-        <div class="send" *ngIf="active_method && executable">
-            <button mat-button [disabled]="!fields_valid" (tapped)="execute()">
-                Send
-            </button>
-        </div>
     </div>
+    <button *ngIf="active_method && executable" [class.mobile-only]="true" mat-button [disabled]="!fields_valid" (tapped)="execute()">
+        Execute
+    </button>
 </section>
 <ng-template #empty_state>
     <div class="info-block">
