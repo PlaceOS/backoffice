@@ -1,17 +1,38 @@
 <div class="container" *ngIf="item">
     <div class="settings">
-        <header *ngIf="item.driver">Driver:&nbsp;<span>{{item.driver.name || '&lt;Unnamed&gt;'}}</span></header>
-        <header>Logic for system:&nbsp;<span>{{system?.name}}</span></header>
+        <header *ngIf="item.driver">
+            Driver:&nbsp;<span>
+                <a [routerLink]="['/drivers', item.driver_id]"
+                    >{{item.driver.name || '&lt;Unnamed&gt;'}}</a
+                >
+            </span>
+        </header>
+        <header>
+            Logic for system:&nbsp;<span *ngIf="system">
+                <a [routerLink]="['/systems', system.id]">{{system?.name}}</a>
+            </span>
+        </header>
         <section>
-            <button mat-button [disabled]="stopping" (tapped)="item.connected ? stopModule(): startModule()">
-                <div class="text" *ngIf="!stopping">{{ item.connected ? 'Stop' : 'Start' }} Module</div>
+            <button
+                mat-button
+                [disabled]="stopping"
+                (tapped)="item.connected ? stopModule(): startModule()"
+            >
+                <div class="text" *ngIf="!stopping">
+                    {{ item.connected ? 'Stop' : 'Start' }} Module
+                </div>
                 <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
             </button>
         </section>
         <hr />
         <header class="settings">Settings</header>
         <section *ngIf="!loading_settings; else load_state">
-            <a-settings-form [id]="item.id" [merge]="true" [settings]="item.settings" [merge_settings]="other_settings || []"></a-settings-form>
+            <a-settings-form
+                [id]="item.id"
+                [merge]="true"
+                [settings]="item.settings"
+                [merge_settings]="other_settings || []"
+            ></a-settings-form>
         </section>
     </div>
 </div>
