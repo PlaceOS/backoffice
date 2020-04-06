@@ -176,7 +176,7 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective im
         );
     }
 
-    private setActiveItem(new_item: T) {
+    protected setActiveItem(new_item: T) {
         this.item = new_item;
         this._service.set('BACKOFFICE.active_item_id', this.id);
         this._service.set('BACKOFFICE.active_item', this.item);

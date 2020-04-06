@@ -72,7 +72,7 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
      */
     protected newItem() {
         if (this.modal_ref) { return; }
-        const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+        this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
             width: 'auto',
             maxHeight: 'calc(100vh - 2em)',
