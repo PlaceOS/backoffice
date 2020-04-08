@@ -370,6 +370,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                                 modules: this.item.modules.concat(event.metadata.item.id),
                                 version: (this.item as any)._version++
                             });
+                            this._service.set('BACKOFFICE.active_item', this.item);
                             this.timeout('reload_module_list', () => this.loadModules(), 1000);
                         },
                         err => {
