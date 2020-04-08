@@ -31,7 +31,7 @@
                             <div class="state" [class.active]="trigger.enabled"></div>
                         </td>
                         <td class="flex">
-                            <a [routerLink]="['/triggers', trigger.id]">{{trigger.name}}</a>
+                            <a [routerLink]="['/triggers', trigger.id]" [matTooltip]="trigger.id">{{trigger.name}}</a>
                         </td>
                         <td class="count">{{ trigger.activated_count || '0' }}</td>
                         <td class="added">{{ (+trigger.created_at * 1000) | dateFrom }}</td>

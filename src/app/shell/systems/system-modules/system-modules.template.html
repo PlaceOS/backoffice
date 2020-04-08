@@ -62,7 +62,7 @@
                     <td class="name">
                         <a
                             [routerLink]="['/modules', device.id]"
-                            routerLinkActive="router-link-active"
+                            routerLinkActive="router-link-active" [matTooltip]="device.id"
                             >{{device.driver?.name || "&lt;Unnamed&gt;" }}</a
                         >
                     </td>

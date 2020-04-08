@@ -31,7 +31,7 @@
                             <i binding [(model)]="item.connected" [sys]="item.system.id" [mod]="item.module_name" bind="connected"></i>
                         </td>
                         <td class="flex">
-                            <a [routerLink]="['/modules', item.id]">{{item.name}}</a>
+                            <a [routerLink]="['/modules', item.id]" [matTooltip]="item.id">{{item.name}}</a>
                         </td>
                         <td class="system">
                             <a [routerLink]="['/systems', item.control_system_id]">

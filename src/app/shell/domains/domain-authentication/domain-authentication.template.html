@@ -12,7 +12,7 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let item of auth_sources">
-                        <td class="name">{{item.name}}</td>
+                        <td class="name" [matTooltip]="item.id">{{item.name}}</td>
                         <td class="flex">{{source_types[item.id]}}</td>
                         <td class="duo">
                             <button mat-icon-button (tapped)="editAuthSource(item)">

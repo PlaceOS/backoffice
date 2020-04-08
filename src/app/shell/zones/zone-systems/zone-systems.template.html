@@ -26,8 +26,9 @@
                         <a
                             [routerLink]="['/systems', item.id]"
                             routerLinkActive="router-link-active"
+                            [matTooltip]="item.id"
                         >
-                            {{item.name}} (<span class="id">{{item.id}}</span>)
+                            {{item.name}}
                         </a>
                     </td>
                     <td class="devices align-right">{{item.installed_ui_devices}}</td>

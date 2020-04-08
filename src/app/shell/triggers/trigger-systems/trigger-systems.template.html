@@ -13,8 +13,8 @@
                         <div class="state" [class.active]="trigger.enabled"></div>
                     </td>
                     <td class="flex">
-                        <a *ngIf="trigger.system_id" [routerLink]="['/systems', trigger.system_id]">
-                            {{trigger.system_name}} (<span class="id">{{trigger.system_id}}</span>)
+                        <a *ngIf="trigger.system_id" [routerLink]="['/systems', trigger.system_id]" [matTooltip]="trigger.system_id">
+                            {{trigger.system_name}}
                         </a>
                     </td>
                     <td>{{ +(trigger.created_at) * 1000 | dateFrom }}</td>

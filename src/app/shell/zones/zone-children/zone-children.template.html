@@ -25,6 +25,7 @@
                         <a
                             [routerLink]="['/zone', item.id]"
                             routerLinkActive="router-link-active"
+                            [matTooltip]="item.id"
                         >
                             {{item.name}} (<span class="id">{{item.id}}</span>)
                         </a>

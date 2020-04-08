@@ -20,7 +20,7 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let trigger of model.triggers">
-                            <td class="name"><a [routerLink]="['/triggers', trigger.id]">{{trigger.name}}</a></td>
+                            <td class="name"><a [routerLink]="['/triggers', trigger.id]" [matTooltip]="trigger.id">{{trigger.name}}</a></td>
                             <td class="flex description">{{trigger.description}}</td>
                             <td class="small">
                                 <button mat-icon-button (tapped)="deleteTrigger(trigger)">
