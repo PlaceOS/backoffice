@@ -17,7 +17,7 @@ export interface ModuleStateModalData {
 @Component({
     selector: 'view-module-state-modal',
     templateUrl: './view-module-state.template.html',
-    styleUrls: ['./view-module-state.styles.scss']
+    styleUrls: ['./view-module-state.styles.scss'],
 })
 export class ViewModuleStateModalComponent extends BaseDirective implements OnInit {
     /** Current state of the selected module */
@@ -83,12 +83,18 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
         this.loading = true;
         const class_parts = class_name.split('_');
         this._service.Systems.state(this.system.id, class_parts[0], +class_parts[1]).then(
-            state => {
-                this.state =
-                    typeof state === 'string' ? state : JSON.stringify(state, undefined, 4);
+            (state) => {
+                const pre_state =
+                typeof state === 'string'
+                    ? JSON.parse(state)
+                    : state;
+                Object.keys(pre_state).forEach(key => {
+                    pre_state[key] = JSON.parse(pre_state[key]);
+                });
+                this.state = JSON.stringify(pre_state, undefined, 4);
                 this.loading = false;
             },
-            err => {
+            (err) => {
                 this._service.notifyError(err.message || err);
                 this.loading = false;
             }
