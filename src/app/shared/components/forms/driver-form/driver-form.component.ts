@@ -114,7 +114,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                 }
                 return (list || []).map((commit: EngineRepositoryCommit) => ({
                     id: commit.commit,
-                    name: `${commit.commit} - ${commit.subject}`
+                    name: `${commit.subject}`
                 }));
             })
         );

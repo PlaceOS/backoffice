@@ -11,11 +11,12 @@ form {
 .fieldset {
     display: flex;
     flex-wrap: wrap;
+    max-width: 36em;
 
     .field {
         width: auto;
         flex: 1;
-        min-width: 30%;
+        min-width: 40%;
         margin: 0 .25em;
 
         @include respond-to(mobile) {
