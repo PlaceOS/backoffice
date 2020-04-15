@@ -64,7 +64,7 @@
     "codelyzer": "^5.1.2",
     "cron-builder": "^0.3.0",
     "cypress": "^3.8.3",
-    "dayjs": "^1.8.16",
+    "dayjs": "^1.8.24",
     "deepmerge": "^3.3.0",
     "durable-json-lint": "0.0.3",
     "faker": "^4.1.0",
