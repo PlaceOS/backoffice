@@ -7,6 +7,11 @@
     height: 100%;
     width: 100%;
     flex-direction: column;
+
+    &.dark-mode {
+        background-color: #424242;
+        color: $font-light;
+    }
 }
 
 header {
@@ -24,12 +29,14 @@ header {
         font-size: 1.8em;
         height: 1.5em;
         white-space: nowrap;
+        font-family: $heading-font;
         overflow: hidden;
         text-overflow: ellipsis;
+        width: 100%;
     }
 
     .id {
-        color: rgba(#000, .54);
+        opacity: .6;
         margin-right: .5em;
         span {
             user-select: all;
@@ -40,7 +47,6 @@ header {
     .options {
         display: flex;
         justify-content: flex-end;
-        flex: 1;
     }
 
     .option {
@@ -65,17 +71,30 @@ header {
 }
 
 main {
+    position: relative;
     display: flex;
     flex: 1;
     align-items: center;
     width: 100%;
     flex-direction: column;
+    min-height: 50%;
 }
 
 .tabs {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+nav {
+    width: 100%;
+    transition: box-shadow 200ms;
+
+    &.scroll {
+        box-shadow: rgba(0, 0, 0, 0.45) 0px 2px 6px 0px;
+    }
 }
 
 .tab {
@@ -97,9 +116,18 @@ main {
     }
 }
 
+.content {
+    overflow: auto;
+    width: 100%;
+    flex: 1;
+    min-height: 50%;
+}
+
 .heading-group {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-width: 50%;
 }
 
 .info {
@@ -138,9 +166,9 @@ main {
 
 .chip {
     font-size: .9em;
-    padding: 0 .75em;
-    height: 1.5em;
-    border-radius: .8em;
+    padding: 0 1em;
+    height: 1.75em;
+    border-radius: 0.9em;
     background-color: #ccc;
     margin: 0 .5em;
     display: flex;
@@ -160,6 +188,11 @@ main {
         &.active {
             background-color: $success;
         }
+    }
+
+    &.driver {
+        background-color: #1976d2;
+        color: #fff;
     }
 
     .icon {

@@ -1,0 +1,48 @@
+
+@import 'shared.styles';
+
+.container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    @include respond-to(mobile) {
+        flex-direction: column;
+    }
+
+    &.show {
+        .sidebar {
+            @include respond-to(mobile) {
+                height: 100%;
+            }
+        }
+        main {
+            @include respond-to(mobile) {
+                height: 0%;
+            }
+        }
+    }
+}
+
+.sidebar {
+    height: 100%;
+    width: 20em;
+    @include respond-to(mobile) {
+        height: 3em;
+        min-height: 3em;
+        width: 100%;
+        transition: height 300ms;
+    }
+}
+
+main {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    flex: 1;
+    background-color: #f0f0f0;
+    @include respond-to(mobile) {
+        transition: height 300ms;
+        width: 100%;
+    }
+}

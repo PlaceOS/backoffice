@@ -1,23 +1,20 @@
-<div class="searchbar" widget>
+<div class="searchbar" [class.dark-mode]="dark_mode" widget>
     <div class="field" [class.focus]="model.focus || filter || model.dictate">
-        <div class="icon" (touchrelease)="focusInput()">
-            <i class="material-icons">search</i>
-        </div>
+        <button mat-icon-button (touchrelease)="focusInput()">
+            <app-icon [icon]="{ class: 'backoffice-magnifying-glass' }"></app-icon>
+        </button>
         <div class="input">
             <input #input [(ngModel)]="filter" (ngModelChange)="post()"
                 (focus)="model.focus = true; focus.emit($event)"
                 (blur)="model.focus = false; blur.emit($event)"
                 [placeholder]="placeholder">
         </div>
-        <div class="icon" *ngIf="model.speech && dictation" [class.active]="model.dictate" (tapped)="startDictation()">
-            <i class="material-icons">mic</i>
-        </div>
-        <div class="icon close not-mobile" *ngIf="filter && clearable" (tapped)="clear()">
-            <i class="material-icons">close</i>
-        </div>
-        <div class="icon close mobile-only" (tapped)="clear()">
-            <i class="material-icons">close</i>
-        </div>
+        <button mat-icon-button *ngIf="model.speech && dictation" [class.active]="model.dictate" (tapped)="startDictation()">
+            <app-icon [icon]="{ class: 'backoffice-mic' }"></app-icon>
+        </button>
+        <button mat-icon-button class="close" *ngIf="filter && clearable" (tapped)="clear()">
+            <app-icon [icon]="{ class: 'backoffice-cross' }"></app-icon>
+        </button>
         <ng-content></ng-content>
     </div>
 </div>

@@ -1,0 +1,45 @@
+<div class="container">
+    <div class="btn">
+        <mat-form-field appearance="outline">
+            <div class="prefix" matPrefix>
+                <app-icon [icon]="{ class: 'backoffice-magnifying-glass' }"></app-icon>
+            </div>
+            <input
+                matInput
+                [(ngModel)]="search_str"
+                (ngModelChange)="search$.next($event)"
+                name="search-filter"
+                placeholder="Filter Systems"
+            />
+        </mat-form-field>
+    </div>
+    <div class="list" *ngIf="system_list && system_list.length > 0; else empty_state">
+        <table>
+            <thead>
+                <td class="flex">Name</td>
+                <td class="devices">No. Modules</td>
+                <td class="created">Created</td>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of system_list">
+                    <td class="flex">
+                        <a
+                            [routerLink]="['/systems', item.id]"
+                            routerLinkActive="router-link-active"
+                            [matTooltip]="item.id"
+                        >
+                            {{item.name}}
+                        </a>
+                    </td>
+                    <td class="devices">{{item.modules?.length}}</td>
+                    <td class="created">{{item.display?.created}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<ng-template #empty_state>
+    <div class="info-block">
+        <div class="text">No matching systems found</div>
+    </div>
+</ng-template>

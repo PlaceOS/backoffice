@@ -1,43 +1,31 @@
 <div class="container" [class.show]="show_sidebar">
-    <div class="sidebar" (tapped)="showSidebar()">
+    <div class="sidebar">
         <sidebar
             heading="Zones"
-            [total]="total"
             [module]="module"
-            [list]="list"
-            (searchChange)="search($event)"
-            [loading]="loading"
             [close]="show_sidebar"
             (event)="sidebarEvent($event)"
         ></sidebar>
     </div>
-    <main (touchrelease)="showSidebar(false)">
+    <main (touchrelease)="show_sidebar = false">
         <item-display
-            [item]="item"
             name="zone"
-            [active]="tab"
+            route="zones"
+            [item]="item"
             [tabs]="[
-                { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
+                { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
                 {
                     id: 'systems',
                     name: 'Systems',
-                    template: systems,
                     count: system_count,
-                    icon: { class: 'material-icons', value: 'account_balance' }
+                    icon: { class: 'backoffice-documents' }
                 },
-                { id: 'triggers', name: 'Triggers', template: triggers, count: trigger_count, icon: { class: 'material-icons', value: 'timer' } }
+                { id: 'triggers', name: 'Triggers', count: trigger_count, icon: { class: 'backoffice-stopwatch' } },
+                { id: 'metadata', name: 'Metadata', count: metadata_count, icon: { class: 'backoffice-gist' } },
+                { id: 'children', name: 'Children', count: child_count, icon: { class: 'backoffice-flow-tree' } }
             ]"
             (event)="itemEvent($event)"
         >
-            <ng-template #about>
-                <zone-about [item]="item"></zone-about>
-            </ng-template>
-            <ng-template #systems>
-                <zone-systems [item]="item"></zone-systems>
-            </ng-template>
-            <ng-template #triggers>
-                <zone-triggers [item]="item"></zone-triggers>
-            </ng-template>
         </item-display>
     </main>
 </div>

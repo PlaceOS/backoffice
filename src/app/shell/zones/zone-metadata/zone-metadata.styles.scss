@@ -1,0 +1,59 @@
+@import 'shared.styles';
+
+.container {
+    padding: 1em;
+}
+
+.text {
+    display: flex;
+    align-items: center;
+
+    app-icon {
+        opacity: 0;
+        transition: opacity 200ms;
+    }
+
+    &:hover {
+        app-icon {
+            opacity: 1;
+        }
+    }
+}
+
+.list {
+    margin-top: 0.5em;
+}
+
+mat-panel-title {
+    display: flex;
+    align-items: center;
+    height: 1.2em;
+    overflow: visible;
+
+    button {
+        font-size: 0.8em;
+        background: none;
+        border: none;
+        text-decoration: underline;
+        color: inherit;
+    }
+}
+
+mat-form-field {
+    height: 3em;
+}
+
+.settings {
+    width: 100%;
+    height: 24em;
+}
+
+.contents {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
+    min-width: 2em;
+    button {
+        text-decoration: none;
+    }
+}

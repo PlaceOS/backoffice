@@ -1,14 +1,59 @@
-<div class="container">
-    <form name="login">
-        <div class="field">
-            <input [(ngModel)]="form.user" [placeholder]="model.user_field || 'Email'">
+<div
+    class="container"
+    (window:mouseup)="show_password = false"
+    (window:touchend)="show_password = false"
+>
+    <form name="login" *ngIf="form" [formGroup]="form">
+        <div class="field" *ngIf="form.controls.username">
+            <label
+                for="username"
+                [class.error]="form.controls.username.invalid && form.controls.username.touched"
+                >Email:</label
+            >
+            <mat-form-field appearance="outline">
+                <!-- <app-icon matPrefix [icon]="{ class: 'backoffice-user' }"></app-icon> -->
+                <input
+                    matInput
+                    name="username"
+                    placeholder="Email/Username"
+                    formControlName="username"
+                    autocomplete="username"
+                />
+            </mat-form-field>
         </div>
-        <div class="field">
-            <input [type]="model.show_pass ? 'text' : 'password'" [(ngModel)]="form.pass" [placeholder]="model.user_field || 'Password'">
+        <div class="field password" *ngIf="form.controls.password">
+            <label
+                for="password"
+                [class.error]="form.controls.password.invalid && form.controls.password.touched"
+                >Password:</label
+            >
+            <mat-form-field appearance="outline">
+                <!-- <app-icon matPrefix [icon]="{ class: 'backoffice-key' }"></app-icon> -->
+                <input
+                    matInput
+                    name="password"
+                    [type]="show_password ? 'text' : 'password'"
+                    placeholder="Password"
+                    formControlName="password"
+                    autocomplete="current-password"
+                />
+                <app-icon
+                    matSuffix
+                    [icon]="{ class: show_password ? 'backoffice-eye' : 'backoffice-eye' }"
+                    (mousedown)="show_password = true"
+                    (touchstart)="show_password = true"
+                ></app-icon>
+                <mat-error *ngIf="form.controls.password.invalid"
+                    >Invalid Username or Password</mat-error
+                >
+            </mat-form-field>
         </div>
-        <div class="forgot" *ngIf="!model.settings || model.settings.forgot !== false" (tapped)="forgot()">Forgot?</div>
+        <!-- <mat-checkbox formControlName="remember">Remember username</mat-checkbox> -->
+        <div class="forgot" *ngIf="settings?.forgotten_password" (tapped)="forgot.emit()">
+            Forgot?
+        </div>
         <div class="options">
-            <button widget type="submit" (tapped)="login()">Login</button>
+            <button mat-button type="submit" (tapped)="submitted.emit()">Submit</button>
         </div>
     </form>
 </div>

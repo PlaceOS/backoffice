@@ -1,0 +1,110 @@
+<div class="container" *ngIf="item">
+    <section class="select">
+        <div class="dropdown">
+            <item-search-field
+                [service]="module_service"
+                [exclude]="exclude_fn"
+                [ngModel]="null"
+                (ngModelChange)="new_module = $event.id"
+            ></item-search-field>
+        </div>
+        <button mat-button [disabled]="!new_module" (tapped)="addModule()">
+            Add existing
+        </button>
+        <button mat-button (tapped)="newModule()">Add new</button>
+    </section>
+    <ng-container *ngIf="item.id && item.modules && !hide_exec">
+        <section class="exec">
+            <h3>Execute command</h3>
+            <system-exec-field [system]="item"></system-exec-field>
+        </section>
+    </ng-container>
+    <section class="device-list">
+        <h3>Module List</h3>
+        <table *ngIf="devices && devices.length > 0">
+            <thead>
+                <td class="small"></td>
+                <td class="small">State</td>
+                <td class="name">Name</td>
+                <td class="module">Class</td>
+                <td class="ip">IP</td>
+                <td class="small"></td>
+            </thead>
+            <tbody cdkDropList (cdkDropListDropped)="drop($event)">
+                <tr
+                    *ngFor="let device of (devices || [])"
+                    [context-menu]="menu"
+                    [offset_y]="-64"
+                    (contextAction)="handleContextEvent($event, device)"
+                    cdkDrag
+                >
+                    <td class="small">
+                        <div class="action grab" cdkDragHandle>
+                            <i class="backoffice-select-arrows"></i>
+                        </div>
+                    </td>
+                    <td class="small">
+                        <i
+                            *ngIf="device && item.id"
+                            binding
+                            [(model)]="device.connected"
+                            [sys]="item.id"
+                            [mod]="device_classes[device.id]"
+                            bind="connected"
+                        ></i>
+                        <div
+                            class="state"
+                            [class.active]="device.running && device.connected"
+                            [class.inactive]="device.running && !device.connected"
+                            (tapped)="power(device)"
+                        ></div>
+                    </td>
+                    <td class="name">
+                        <a
+                            [routerLink]="['/modules', device.id]"
+                            routerLinkActive="router-link-active" [matTooltip]="device.id"
+                            >{{device.driver?.name || "&lt;Unnamed&gt;" }}</a
+                        >
+                    </td>
+                    <td class="module">
+                        <mat-checkbox
+                            [checked]="debugged_modules[device.id]"
+                            (change)="toggleDebugEvents(device)"
+                        >
+                            {{ device_classes[device.id] }}
+                        </mat-checkbox>
+                    </td>
+                    <td class="ip">
+                        <div class="lock">
+                            <i class="backoffice-lock" *ngIf="device.tls"></i>
+                        </div>
+                        <a [href]="(device.tls ? 'https://' : 'http://') + device.ip"
+                            >{{device.ip}}</a
+                        >
+                    </td>
+                    <td class="small" touchrelease>
+                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                            <app-icon
+                                [icon]="{ class: 'backoffice-dots-three-vertical' }"
+                            ></app-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button
+                                mat-menu-item
+                                *ngFor="let item of (device.running ? menu_options : offline_options)"
+                                (tapped)="handleContextEvent(item, device)"
+                            >
+                                <app-icon [icon]="item.icon"></app-icon>
+                                <div class="text">{{ item.name }}</div>
+                            </button>
+                        </mat-menu>
+                    </td>
+                    <td class="placeholder" colspan="6" *cdkDragPlaceholder></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="info-block" *ngIf="!devices || devices.length <= 0">
+            <div class="text">No devices for system</div>
+        </div>
+    </section>
+</div>

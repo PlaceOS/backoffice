@@ -18,39 +18,93 @@
     }
 }
 
-button[widget] {
-    outline: none;
-    &.default {
-        background-color: $color-primary;
-    }
+button[mat-button].mat-button,
+a[button] {
+    background-color: $color-primary;
+    border: 1px solid $color-primary;
+    color: $font-light;
+    font-weight: 300;
+    border-radius: 4px;
 
-    &.action {
-        height: 2em;
-        width: 2em;
-        border-radius: 100%;
+    &.inverse {
         background-color: #fff;
-        color: rgba(#000, 0.87);
-        border: 2px solid rgba(#000, 0.87);
-        box-shadow: 0 0 0 2px #fff;
-        font-size: 1.5em;
-
-        &:hover {
-            box-shadow: 0 0 0 2px rgba(#fff, 0.6);
-        }
-
-        .wrapper {
-            height: 100%;
-            padding: 0;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            width: 100%;
-        }
+        color: $color-primary;
     }
 
     &[disabled] {
-        background-color: #ccc;
+        background-color: rgba(#000, 0.12);
+        color: rgba(#000, 0.2);
+        border-color: rgba(#000, 0.2);
         pointer-events: none;
+    }
+}
+
+.mat-icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2em;
+    width: 2em;
+    font-size: 1em;
+
+    .mat-button-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    app-icon {
+        font-size: 1.5em;
+    }
+}
+
+mat-form-field {
+    &.mat-form-field-appearance-outline.mat-focused {
+        .mat-form-field-outline-thick {
+            color: $color-primary;
+        }
+    }
+
+    &.metrics {
+        .mat-form-field-wrapper {
+            padding: 0;
+        }
+
+        .mat-form-field-outline {
+            border-radius: 4px;
+
+            * {
+                color: #fff;
+                border-color: #fff;
+            }
+        }
+
+        .mat-select-value {
+            color: #fff;
+        }
+    }
+}
+
+.mat-form-field-infix {
+    border-top: none;
+    top: .1em !important;
+}
+
+.mat-select-panel {
+    .mat-option {
+        &.mat-selected {
+            &:not(.mat-option-disabled) {
+                color: $color-primary;
+            }
+        }
+    }
+}
+
+mat-select {
+    .mat-select-trigger {
+        .mat-select-arrow-wrapper {
+            transform: none;
+        }
     }
 }
 
@@ -59,25 +113,8 @@ button[widget] {
         min-height: 1px;
         max-height: calc(100vh - 13em);
     }
-}
-
-.dropdown[widget] {
-    &.default {
-        width: 9.5em;
-    }
-}
-
-.dynamic-field[widget] {
-    .details {
-        min-width: 100%;
-    }
-
-    label {
-        margin-left: 0;
-    }
-
-    .control {
-        min-width: 10em;
+    .tab-headers {
+        width: 100%;
     }
 }
 
@@ -85,114 +122,152 @@ button[widget] {
     background-color: rgba(#000, 0.6);
 }
 
-.modal[widget] {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    background-color: #fff;
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px 0 rgba(#000, 0.2), 0 1px 1px 0 rgba(#000, 0.14), 0 2px 1px -1px rgba(#000, 0.12);
-    max-width: 95vw;
-    max-height: 90vh;
+mat-dialog-container.mat-dialog-container {
+    padding: 0;
 
-    & > .header {
-        width: 100%;
+    mat-dialog-content {
+        margin: 0;
+        padding: 0;
+    }
+
+    header {
         display: flex;
         align-items: center;
-        height: 2.5em;
-        background-color: #f0f0f0;
+        padding: .5em 1em;
+        width: 100%;
+        background-color: $color-primary;
+        color: $font-light;
 
-        .text {
-            padding: 0.75em;
-            min-width: 10em;
+        h1, h2, h3, h4 {
             flex: 1;
-            font-weight: 500;
+            min-width: 50%;
         }
 
-        .close {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            width: 1.8em;
-            font-size: 1.25em;
+        > * {
+            margin: 0;
         }
     }
 
-    & > .body {
-        width: 100%;
-        min-height: 4em;
-        flex: 1;
-        overflow: auto;
-        padding: 0.5em;
+    .body,
+    main {
+        padding: 1em;
+        pointer-events: auto;
+        overflow: hidden auto;
     }
 
-    & > .footer {
-        width: 100%;
+    mat-dialog-actions {
         display: flex;
         align-items: center;
         justify-content: center;
-        border-top: 1px solid #ccc;
+        margin-bottom: 0;
+    }
+}
 
-        button {
-            min-width: 6em;
+.mat-simple-snackbar {
+    button.mat-button {
+        background: none;
+        border: none;
+    }
+}
+
+.mat-snack-bar-container {
+    &.success {
+        background-color: $success;
+        color: #fff;
+    }
+    &.warn {
+        background-color: $pending;
+        color: #fff;
+    }
+    &.error {
+        background-color: $error;
+        color: #fff;
+    }
+    &.info {
+        background-color: $color-secondary;
+        color: #fff;
+    }
+
+    span {
+        white-space: pre-line;
+    }
+}
+
+.mat-tooltip {
+    background-color: $background-dark;
+    font-size: .8em;
+    white-space: pre-line;
+}
+
+.formatted-driver-name {
+    display: flex;
+    align-items: center;
+
+    .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 1.2em;
+        width: 1.2em;
+        font-size: 1.5em;
+    }
+}
+
+sidebar,
+mat-option {
+
+    span.small {
+        font-size: .8em;
+        margin: 0 .5rem;
+        opacity: .75;
+    }
+
+    .item {
+        span {
+            &:hover {
+                opacity: 1;
+            }
         }
     }
 }
 
-.notification[widget] {
-    .content > .text {
-        display: flex;
-        align-items: center;
-    }
-
-    .icon {
-        height: 1.25em;
-        width: 1.25em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2em;
-        margin-right: .3em;
-    }
-
-    @mixin notify-style($back, $fore, $icon) {
-        .item {
-            background-color: $back !important;
-            color: $fore;
-
-            i:after {
-                content: $icon;
-            }
+mat-expansion-panel {
+    &.no-padding {
+        .mat-expansion-panel-body {
+            padding: 0 !important;
         }
     }
 
-    .action {
-        margin: 0 .5em;
-        .icon {
-            background: none;
-            margin: 0;
-            &:after {
-                font-family: "Material Icons";
-                content: 'close';
-            }
+    mat-expansion-panel-header {
+        .mat-content {
+            overflow: visible;
+        }
+    }
+}
+
+.dark-mode {
+    button[mat-button].mat-button {
+        &[disabled] {
+            background-color: rgba(#fff, 0.35);
+            border-color: rgba(#fff, 0.2);
         }
     }
 
-    &.error {
-        @include notify-style($error, #fff, 'error');
+    system-modules,
+    driver-devices {
+        .state {
+            background-color: #fff;
+        }
     }
 
-    &.warn {
-        @include notify-style($pending, #fff, 'warning');
-    }
+    app-debug-output {
+        .header {
+            color: #fff;
+            background-color: #424242;
+        }
 
-    &.info {
-        @include notify-style($color-develop, #fff, 'info');
-    }
-
-    &.success {
-        @include notify-style($success, rgb(102, 90, 90), 'done');
+        .content {
+            border: 1px solid #999;
+        }
     }
 }

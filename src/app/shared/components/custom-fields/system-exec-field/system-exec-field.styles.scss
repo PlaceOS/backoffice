@@ -1,0 +1,88 @@
+@import 'shared.styles';
+
+.execute {}
+
+.row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+dropdown {
+    flex: 1;
+}
+
+.function {
+    margin-top: .5em;
+    margin-bottom: .5em;
+    padding: 0 1em;
+}
+
+.fn-input {
+    flex-grow: 2;
+    min-width: 10em;
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+
+    * {
+        font-family: $mono-font;
+    }
+}
+
+mat-form-field {
+    margin: 0 .25em;
+    height: 3.25em;
+    overflow: hidden;
+
+    &:first-child {
+        margin-left: 0;
+    }
+    &:last-child {
+        margin-right: 0;
+    }
+
+    @include respond-to(mobile) {
+        margin: 0;
+        width: 100%;
+    }
+}
+
+button {
+    @include respond-to(mobile) {
+        margin-top: .25em;
+        width: 100%;
+    }
+}
+
+.arg {
+    display: flex;
+    align-items: center;
+}
+
+.seperator {
+    color: rgba(#000, .2);
+
+    &.solid {
+        color: rgba(#000, .87);
+    }
+}
+
+input {
+    margin-top: 2px;
+    border: none;
+    border-bottom: 2px dashed rgba(#000, 0);
+    background: none;
+    outline: none;
+    font-size: 1em;
+    padding: 0;
+    border-radius: 0;
+
+    &.error {
+        border-bottom-color: $error;
+    }
+}
+
+.info-block {
+    display: inline-block;
+}

@@ -1,34 +1,110 @@
+import { Component, OnInit, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { HashMap, EngineModule, EngineSystem } from '@placeos/ts-client';
 
-import { Component, OnInit } from '@angular/core';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { OverlayItem } from '@acaprojects/ngx-overlays';
 import { ApplicationService } from 'src/app/services/app.service';
-import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
+
+export interface ModuleStateModalData {
+    /** System Data to show the details for */
+    system: EngineSystem;
+    /** Module to expose the state of */
+    module: EngineModule;
+    /** Modules associated with the system */
+    devices: EngineModule[];
+}
 
 @Component({
     selector: 'view-module-state-modal',
     templateUrl: './view-module-state.template.html',
-    styleUrls: ['./view-module-state.styles.scss']
+    styleUrls: ['./view-module-state.styles.scss'],
 })
 export class ViewModuleStateModalComponent extends BaseDirective implements OnInit {
+    /** Current state of the selected module */
+    public state: string;
+    /** Whether the module state is being loaded */
+    public loading: boolean;
+    /** Whether the modal is closing */
+    public closing: boolean;
+    /** Mapping of devices to the module bindings */
+    public device_classes: HashMap<string> = {};
 
-    public model: any = {};
+    /** System of the selected module */
+    public get system(): EngineSystem {
+        return this._data.system;
+    }
 
-    constructor(private _item: OverlayItem, private _service: ApplicationService) {
+    /** Module to view the state of */
+    public get module(): EngineModule {
+        return this._data.module;
+    }
+
+    /** Modules associated with the system */
+    public get devices(): EngineModule[] {
+        return this._data.devices || [];
+    }
+
+    constructor(
+        private _dialog: MatDialogRef<ViewModuleStateModalComponent>,
+        @Inject(MAT_DIALOG_DATA) private _data: ModuleStateModalData,
+        private _service: ApplicationService
+    ) {
         super();
     }
 
     public ngOnInit() {
+        this.generateModuleBindings();
         this.updateState();
     }
 
-    public updateState() {
-        if (this.model.system && this.model.module) {
-            this._service.Systems.state(this.model.system.id, this.model.module.dependency.module_name, this.model.module.role + 1)
-                .then((state) => this.model.state = state, (err) => this._service.notifyError(err.message || err));
+    /**
+     * Generate the binding modules for each device
+     */
+    private generateModuleBindings() {
+        const counter: HashMap<number> = {};
+        for (const device of this.devices) {
+            const name = device.custom_name || device.name || 'Blank';
+            if (!counter[name]) {
+                counter[name] = 0;
+            }
+            this.device_classes[device.id] = `${name}_${++counter[name]}`;
         }
     }
 
-}
+    /** Update the state of the module */
+    public updateState() {
+        if (!this.system || !this.module) {
+            return;
+        }
+        const class_name = this.device_classes[this.module.id];
+        if (!class_name) {
+            return;
+        }
+        this.loading = true;
+        const class_parts = class_name.split('_');
+        this._service.Systems.state(this.system.id, class_parts[0], +class_parts[1]).then(
+            (state) => {
+                const pre_state =
+                typeof state === 'string'
+                    ? JSON.parse(state)
+                    : state;
+                Object.keys(pre_state).forEach(key => {
+                    pre_state[key] = JSON.parse(pre_state[key]);
+                });
+                this.state = JSON.stringify(pre_state, undefined, 4);
+                this.loading = false;
+            },
+            (err) => {
+                this._service.notifyError(err.message || err);
+                this.loading = false;
+            }
+        );
+    }
 
-OVERLAY_REGISTER.push({ id: 'view-module-state', config: { content: ViewModuleStateModalComponent, config: 'modal' } });
+    /**
+     * Close the modal
+     */
+    public close() {
+        this._dialog.close();
+    }
+}

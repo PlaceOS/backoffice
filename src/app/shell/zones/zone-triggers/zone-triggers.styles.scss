@@ -9,17 +9,15 @@
     margin-top: .5em;
 }
 
-.table-row {
-    .name {
-        width: 12em;
-    }
+.name {
+    min-width: 10em;
 }
 
 .state {
     height: 1.5em;
     width: 1.5em;
     margin: .25em;
-    background-color: #000;
+    background-color: #d32f2f;
     border-radius: .8em;
     transition: margin 250ms, height 250ms, width 250ms, background-color 300ms;
     &.active {
@@ -30,11 +28,25 @@
     }
 }
 
+.description {
+    font-size: .8em;
+    padding: .5em;
+}
 
 .select {
     display: flex;
     align-items: center;
-    .btn {
+
+    mat-form-field {
         flex: 1;
+        min-width: 50%;
+    }
+
+    button {
+        margin: 0 .25em 1.5em;
+    }
+
+    app-icon {
+        font-size: 1.25em;
     }
 }

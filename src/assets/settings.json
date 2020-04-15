@@ -4,19 +4,16 @@
     "env": "dev",
     "debug": true,
     "composer": {
-        "domain": "localhost:4200",
+        "domain": "",
         "route": "",
         "protocol": "http:",
-        "use_domain": true,
+        "use_domain": false,
         "local_login": false
     },
-    "licenses": {
-        "systems": 100
-    },
     "app": {
-        "title": "ACA Engine",
-        "name": "ACA Engine",
-        "description": "ACA Engine Frontend made in Angular 8+",
+        "title": "PlaceOS",
+        "name": "PlaceOS",
+        "description": "PlaceOS Frontend made in Angular 8+",
         "short_name": "Engine",
         "code": "ENGINE",
         "login": {
@@ -26,13 +23,12 @@
             "enabled": false,
             "tracking_id": ""
         },
-        "logo": {
+        "logo_light": {
             "type": "img",
             "src": "assets/img/logo.svg",
             "background": ""
         },
         "copyright": "Copyright 2018 ACA Projects",
-        "global_search": true,
         "general": {
             "menu": [
                 {
@@ -40,17 +36,17 @@
                     "route": "/systems",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "account_balance"
+                        "class": "backoffice-documents",
+                        "content": ""
                     }
                 },
                 {
-                    "name": "Devices",
-                    "route": "/devices",
+                    "name": "Modules",
+                    "route": "/modules",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "devices_other"
+                        "class": "backoffice-tablet",
+                        "content": ""
                     }
                 },
                 {
@@ -58,8 +54,8 @@
                     "route": "/zones",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "device_hub"
+                        "class": "backoffice-layers",
+                        "content": ""
                     }
                 },
                 {
@@ -67,8 +63,17 @@
                     "route": "/drivers",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "settings"
+                        "class": "backoffice-tools",
+                        "content": ""
+                    }
+                },
+                {
+                    "name": "Repos",
+                    "route": "/repositories",
+                    "icon": {
+                        "type": "icon",
+                        "class": "backoffice-package",
+                        "content": ""
                     }
                 },
                 {
@@ -76,8 +81,8 @@
                     "route": "/triggers",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "timer"
+                        "class": "backoffice-stopwatch",
+                        "content": ""
                     }
                 },
                 {
@@ -85,8 +90,8 @@
                     "route": "/metrics",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "timeline"
+                        "class": "backoffice-line-graph",
+                        "content": ""
                     }
                 },
                 {
@@ -94,8 +99,8 @@
                     "route": "/users",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "account_circle"
+                        "class": "backoffice-users",
+                        "content": ""
                     }
                 },
                 {
@@ -103,21 +108,46 @@
                     "route": "/domains",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "web_asset"
+                        "class": "backoffice-browser",
+                        "content": ""
                     }
                 },
                 {
-                    "name": "Testing",
-                    "route": "/tests",
+                    "name": "Admin",
+                    "route": "/admin",
+                    "needs_role": "sys_admin",
                     "icon": {
                         "type": "icon",
-                        "class": "material-icons",
-                        "content": "developer_board"
+                        "class": "backoffice-classic-computer",
+                        "content": ""
                     }
                 }
-            ]
+            ],
+            "global_search": true
+        },
+        "systems": {
+            "can_create": true
+        },
+        "modules": {
+            "can_create": true
+        },
+        "zones": {
+            "can_create": true
+        },
+        "drivers": {
+            "can_create": true
+        },
+        "users": {
+            "can_create": true
+        },
+        "domains": {
+            "can_create": true
+        },
+        "triggers": {
+            "can_create": true
+        },
+        "repositories": {
+            "can_create": true
         }
-    },
-    "mock": true
+    }
 }

@@ -1,0 +1,66 @@
+
+@import 'shared.styles';
+// @import 'mixin.styles';
+
+:host {
+    margin-bottom: 1em;
+    height: 2.75em;
+}
+
+.date-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 2.75em;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 0 0 1px #fff;
+    padding: .5em .25em;
+    transition: border 200ms, box-shadow 200ms;
+
+    &:hover {
+        box-shadow: inset 0 0 0 1px #464646;
+        border-color: #464646;
+    }
+
+    &:focus {
+        box-shadow: inset 0 0 0 1px $color-primary;
+        border-color: $color-primary;
+    }
+}
+
+.display {
+    flex: 1;
+    min-width: 50%;
+    padding: .5em;
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2em;
+    width: 2em;
+    min-height: 100%;
+}
+
+app-icon {
+    font-size: 1.5em;
+}
+
+.tooltip {
+    position: absolute;
+    bottom: -.5em;
+    left: 0;
+    transform: translateY(100%);
+    background-color: #fff;
+    padding: .5em;
+    border-radius: 4px;
+    @include box-shadow;
+    z-index: 999;
+    outline: none;
+    @include respond-to(mobile) {
+        transform: translate(-1.75em, 100%);
+    }
+}

@@ -1,0 +1,55 @@
+<div class="application form" *ngIf="form">
+    <form [formGroup]="form">
+        <div class="fieldset">
+            <div class="field" *ngIf="form.controls.name">
+                <label
+                    for="application-name"
+                    [class.error]="form.controls.name.invalid && form.controls.name.touched"
+                    >Name<span>*</span>:</label
+                >
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="application-name"
+                        placeholder="Application Name"
+                        formControlName="name"
+                        required
+                    />
+                    <mat-error *ngIf="form.controls.name.invalid"
+                        >Application name is required</mat-error
+                    >
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.scopes">
+                <label
+                    for="scopes"
+                    >Scopes:</label
+                >
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="scopes"
+                        placeholder="Access Scopes"
+                        formControlName="scopes"
+                    />
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="field" *ngIf="form.controls.skip_authorization">
+            <mat-checkbox name="skip-authorization" formControlName="skip_authorization"
+                >Skip Authorization</mat-checkbox
+            >
+        </div>
+        <div class="field" *ngIf="form.controls.redirect_uri">
+            <label for="redirect-uri">Login URL:</label>
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="redirect-uri"
+                    placeholder="Redirect URI e.g. http://localhost:4200/oauth-resp.html"
+                    formControlName="redirect_uri"
+                />
+            </mat-form-field>
+        </div>
+    </form>
+</div>

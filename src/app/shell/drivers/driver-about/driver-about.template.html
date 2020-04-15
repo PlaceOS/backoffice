@@ -1,23 +1,36 @@
-<div class="container">
+<div class="container" *ngIf="item">
     <section>
-        <table>
-            <thead>
-                <td class="flex">Module Name</td>
-                <td class="class">Class</td>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="flex">{{item?.module_name}}</td>
-                    <td class="class mono">{{item?.class_name}}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="field">
+            <label>Compiled:</label>
+            <div class="value">{{ compiled || 'false' }}</div>
+        </div>
+        <div class="field">
+            <label>Commit:</label>
+            <div class="value">{{ item.commit }}</div>
+        </div>
+        <div class="field">
+            <label>File Name:</label>
+            <div class="value">{{ item.file_name }}</div>
+        </div>
+        <div class="field">
+            <label>Module Name:</label>
+            <div class="value">{{ item?.module_name }}</div>
+        </div>
     </section>
     <section>
-        <button widget>Reload Modules</button>
+        <button mat-button (tapped)="reloadDriver()">Reload Modules</button>
     </section>
-    <header>Settings</header>
-    <section>
-        <settings-display [model]="item?.settings"></settings-display>
+    <hr />
+    <header class="settings">Settings</header>
+    <section *ngIf="!loading_settings; else load_state">
+        <a-settings-form [merge]="true" [id]="item.id" [settings]="item.settings"></a-settings-form>
     </section>
 </div>
+<ng-template #load_state>
+    <div class="info-block">
+        <div class="icon">
+            <mat-spinner diameter="48"></mat-spinner>
+        </div>
+        <div class="text">Loading driver settings...</div>
+    </div>
+</ng-template>

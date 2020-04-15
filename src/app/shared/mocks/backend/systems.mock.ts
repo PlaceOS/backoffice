@@ -1,11 +1,13 @@
 
-import { MockHttpRequestHandlerOptions } from '@acaprojects/ts-composer';
+import { MockHttpRequestHandler } from '@placeos/ts-client';
 
 import { BaseMockBackend } from './base.mock';
 import { padZero } from '../../utilities/general.utilities';
 
 import * as faker from 'faker';
 import * as dayjs from 'dayjs';
+import * as yaml from 'js-yaml';
+import { MOCK_SETTINGS } from './settings.mock';
 
 export class MockSystemsBackend extends BaseMockBackend {
 
@@ -21,7 +23,6 @@ export class MockSystemsBackend extends BaseMockBackend {
     private loadList() {
         const count = Math.ceil(Math.floor(Math.random() * 100 + 25) * this.model.scale);
         const zones = this.model.zones || [];
-        const nodes = this.model.nodes || [];
         let i = 0;
         this.model.systems = Array(count)
             .fill(1)
@@ -49,43 +50,69 @@ export class MockSystemsBackend extends BaseMockBackend {
                     email: `sys-${padZero(i, 4)}@room.tools`,
                     features: ``, installed_ui_devices: 0, support_url: '', modules: [], funcs: {},
                     zones: zone_list,
-                    settings: this.generateSettings(),
+                    settings: {
+                        settings_string: this.generateSettings()
+                    },
                     created_at: dayjs().add(-Math.floor(Math.random() * 10000), 'm').unix()
                 };
             });
-        this.model.systems = this.setupBasicHandlers('api/engine/v1/systems', this.model.systems, 'sys');
+        this.model.systems.forEach(system => MOCK_SETTINGS.push({
+            id: `setting-${Math.floor(Math.random() * 999_999_999)}`,
+            parent_id: system.id,
+            encryption_level: Math.floor(Math.random() * 4),
+            settings_string: system.settings.settings_string,
+            keys: Object.keys(yaml.safeLoad(system.settings.settings_string)),
+            updated_at: dayjs().subtract(Math.floor(Math.random() * 2000), 'm').valueOf()
+        }));
+        this.model.systems.forEach(system => this.generateMockSystem(system))
+        this.model.systems = this.setupBasicHandlers('api/engine/v2/systems', this.model.systems, 'sys');
         window.control.handlers.push({
-            path: 'api/engine/v1/systems/:id/:opt',
+            path: 'api/engine/v2/systems/:id/:opt',
             metadata: this.model.systems,
             method: 'GET',
             callback: (event) => {
-                if (event && event.params && event.params.id) {
-                    if (!event.params.opt) {
-                        for (const item of event.data) {
-                            if (item.id === event.params.id) {
+                if (event && event.route_params && event.route_params.id) {
+                    if (!event.route_params.opt) {
+                        for (const item of this.model.systems) {
+                            if (item.id === event.route_params.id) {
                                 return item;
                             }
                         }
-                    } else if (event.params.opt === 'funcs') {
-                        for (const item of event.data) {
-                            if (item.id === event.params.id) {
-                                return item.funcs[item.modules[+event.fragment.index - 1]];
+                    } else if (event.route_params.opt === 'funcs') {
+                        for (const item of this.model.systems) {
+                            if (item.id === event.route_params.id) {
+                                return item.funcs[item.modules[+event.query_params.index - 1]];
                             }
                         }
-                    } else if (event.params.opt === 'state') {
-                        return this.generateSettings();
+                    } else if (event.route_params.opt === 'state') {
+                        return yaml.safeLoad(this.generateSettings());
                     }
                 }
                 return null;
             }
-        });
+        } as MockHttpRequestHandler);
+        window.control.handlers.push({
+            path: 'api/engine/v2/systems/:id/functions/:mod',
+            metadata: this.model.systems,
+            method: 'GET',
+            callback: (event) => {
+                if (event.route_params.mod) {
+                    for (const item of this.model.systems) {
+                        if (item.id === event.route_params.id) {
+                            const parts = event.route_params.mod.split('_');
+                            return item.funcs[item.modules[+parts[parts.length - 1] - 1]];
+                        }
+                    }
+                }
+                throw { status: 404, message: 'Module not found' }
+            }
+        } as MockHttpRequestHandler)
         this.state.next(true);
     }
 
     public updateOtherEndpoints(list) {
         this.model.zones.forEach(i => i.systems = []);
         this.model.modules.forEach(i => i.systems = []);
-        console.log('List:', list);
         for (const system of list) {
             for (const zone_id of system.zones) {
                 const zone = this.model.zones.find(i => i.id === zone_id);
@@ -93,7 +120,6 @@ export class MockSystemsBackend extends BaseMockBackend {
                     zone.systems.push(system.id);
                 }
             }
-            console.log('Mod list:', system.id, system.modules);
             for (const mod_id of system.modules) {
                 const mod = this.model.modules.find(i => i.id === mod_id);
                 if (mod) {
@@ -101,7 +127,6 @@ export class MockSystemsBackend extends BaseMockBackend {
                 }
             }
         }
-        console.log('Zones:', this.model.modules);
     }
 
     public search(data, fragment) {
@@ -135,6 +160,15 @@ export class MockSystemsBackend extends BaseMockBackend {
                     break;
             }
         }
-        return data;
+        const output = yaml.safeDump(data, { indent: 4 });
+        return output;
+    }
+
+    private generateMockSystem(data) {
+        window.control.systems[data.id] = {
+            System: [{
+                connected: Math.floor(Math.random() * 999999) % 3 === 0
+            }]
+        }
     }
 }

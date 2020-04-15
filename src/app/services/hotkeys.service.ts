@@ -26,13 +26,16 @@ export class HotkeysService {
 
     constructor() {
         window.addEventListener('keydown', (event: KeyboardEvent) => {
+            if (
+                document.activeElement &&
+                (document.activeElement.tagName.toLowerCase() === 'input' ||
+                    document.activeElement.tagName.toLowerCase() === 'textarea')
+            ) {
+                return;
+            }
             const code = this.mapKey((event.code || '').toLowerCase());
             if (this.last_down !== code) {
-                if (!this.keydown_states[code]) {
-                    this.keydown_states[code] = new BehaviorSubject(null);
-                    this.keydown_observers[code] = this.keydown_states[code].asObservable();
-                }
-                this.keydown_states[code].next(this.counter++);
+                this.setKeyState(code, ++this.counter);
                 if (this.combo_end.indexOf(code) >= 0) {
                     event.preventDefault();
                 }
@@ -42,7 +45,9 @@ export class HotkeysService {
 
         window.addEventListener('keyup', (event: KeyboardEvent) => {
             const code = this.mapKey((event.code || '').toLowerCase());
-            this.keydown_states[code].next(null);
+            if (this.keydown_states[code]) {
+                this.keydown_states[code].next(null);
+            }
             if (this.last_down === code) {
                 this.last_down = null;
             }
@@ -55,20 +60,17 @@ export class HotkeysService {
      * @param next Callback for combination presses
      */
     public listen(combo: string | string[], next: () => void): Subscription {
-        combo = (combo instanceof Array ? combo : combo.split('+'));
+        combo = combo instanceof Array ? combo : combo.split('+');
         const combination: string[] = combo.map(i => this.mapKey(i.toLowerCase()));
         if (combination.length > 0 && this.validCombination(combination)) {
             this.registered_combos.push(combination);
             const last_key = combination[combination.length - 1];
-            if (!this.keydown_states[last_key]) {
-                this.keydown_states[last_key] = new BehaviorSubject(null);
-                this.keydown_observers[last_key] = this.keydown_states[last_key].asObservable();
-            }
+            this.setKeyState(last_key, null);
             this.updateCombinationEndList();
-            return this.keydown_observers[last_key].subscribe((count) => {
+            return this.keydown_observers[last_key].subscribe(count => {
                 if (count) {
                     const presses: number[] = [];
-                    if (combination.length > 1) {
+                    if (combination.length > 0) {
                         // Check that keys are pressed
                         for (const key of combination) {
                             const state = this.keydown_states[key];
@@ -76,10 +78,15 @@ export class HotkeysService {
                         }
                         // Check that keys are pressed in the correct order
                         for (let i = 0; i < combination.length - 1; i++) {
-                            if (presses[i] > presses[i + 1]) { return; }
+                            if (presses[i] > presses[i + 1]) {
+                                return;
+                            }
                         }
                     }
-                    next();
+                    const total = presses.reduce((a, v) => a + (v > 0 ? 1 : -1), 0);
+                    if (total >= combination.length) {
+                        next();
+                    }
                 }
             });
         }
@@ -91,7 +98,11 @@ export class HotkeysService {
      * @param code Code to transform
      */
     private mapKey(code: string): string {
-        if (code.indexOf('alt') || code.indexOf('shift') || code.indexOf('control')) {
+        if (
+            code.indexOf('alt') >= 0 ||
+            code.indexOf('shift') >= 0 ||
+            code.indexOf('control') >= 0
+        ) {
             return code.replace('left', '').replace('right', '');
         }
         return code;
@@ -103,7 +114,7 @@ export class HotkeysService {
     private updateCombinationEndList(): void {
         const key_list = [];
         for (const combo of this.registered_combos) {
-            this.combo_end.push(combo[combo.length - 1]);
+            key_list.push(combo[combo.length - 1]);
         }
         this.combo_end = unique(key_list);
     }
@@ -120,5 +131,18 @@ export class HotkeysService {
             }
         }
         return non_meta > 0;
+    }
+
+    /**
+     * Update the state of a keycode
+     * @param code Code of the key
+     * @param value New state value for key
+     */
+    private setKeyState(code: string, value: number = null) {
+        if (!this.keydown_states[code]) {
+            this.keydown_states[code] = new BehaviorSubject(null);
+            this.keydown_observers[code] = this.keydown_states[code].asObservable();
+        }
+        this.keydown_states[code].next(value);
     }
 }

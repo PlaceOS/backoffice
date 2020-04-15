@@ -1,31 +1,43 @@
-<div class="container">
+<div class="container" *ngIf="item">
     <section class="select">
-        <button widget (tapped)="start()">Start System</button>
-        <button widget (tapped)="stop()">Stop System</button>
-        <button widget (tapped)="logs()">Access Logs</button>
+        <button mat-button (tapped)="start()">Start System</button>
+        <button mat-button (tapped)="stop()">Stop System</button>
     </section>
     <section class="details">
         <div class="field" *ngIf="item.support_url">
-            <div class="label">Support URL:</div>
-            <div class="value">{{item.support_url}}</div>
+            <label>Support URL:</label>
+            <div class="value">
+                <a [href]="item.support_url" target="_blank">{{item.support_url}}</a>
+            </div>
         </div>
         <div class="field" *ngIf="item.bookable">
-            <div class="label">Bookable Room:</div>
-            <div class="value">{{item.bookable ? 'Yes' : 'No'}} {{item.email ? '(' + item.email + ')' : ''}}</div>
+            <label>Bookable Room:</label>
+            <div class="value">{{item.bookable ? 'Yes' : 'No'}}</div>
+        </div>
+        <div class="field" *ngIf="item.bookable && item.email">
+            <label>Email:&nbsp;</label>
+            <a *ngIf="item.email" [href]="'mailto:' + item.email" target="_blank">{{item.email}}</a>
         </div>
         <div class="field" *ngIf="item.capacity">
-            <div class="label">Capacity:</div>
+            <label>Capacity:</label>
             <div class="value">{{item.capacity}}</div>
         </div>
         <div class="field" *ngIf="item.installed_ui_devices">
-            <div class="label">Installed Touch Panels:</div>
+            <label>Installed Touch Panels:</label>
             <div class="value">{{item.installed_ui_devices}}</div>
         </div>
     </section>
-    <header *ngIf="model.modules && model.modules.length > 0">Execute command</header>
-    <system-exec [system_id]="item?.id"></system-exec>
-    <header>Settings <span (touchrelease)="toggleSettings()">{{ model.merged === false ? 'This system' : 'Merged' }}</span></header>
-    <section>
-        <settings-display [model]="model?.settings || {}"></settings-display>
+    <hr />
+    <header class="settings">Settings</header>
+    <section *ngIf="!loading_settings; else load_state">
+        <a-settings-form [id]="item.id" [merge]="true" [settings]="item.settings" [merge_settings]="other_settings || []"></a-settings-form>
     </section>
 </div>
+<ng-template #load_state>
+    <div class="info-block">
+        <div class="icon">
+            <mat-spinner diameter="48"></mat-spinner>
+        </div>
+        <div class="text">Loading system settings...</div>
+    </div>
+</ng-template>

@@ -1,0 +1,35 @@
+<div class="container" *ngIf="item">
+    <h3>Available Drivers</h3>
+    <div class="settings" *ngIf="!loading; else load_state">
+        <table *ngIf="driver_list && driver_list.length > 0">
+            <thead>
+                <td class="flex">Name</td>
+                <td>
+
+                </td>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of driver_list">
+                    <td [innerHTML]="item | driverFormat">
+                    </td>
+                    <td class="small">
+                        <button mat-icon-button (tapped)="newDriver(item)">
+                            <app-icon [icon]="{ class: 'material-icons', content: 'add' }"></app-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="info-block" *ngIf="!driver_list || driver_list.length <= 0">
+            <div class="text">No drivers for repository</div>
+        </div>
+    </div>
+</div>
+<ng-template #load_state>
+    <div class="info-block center">
+        <div class="icon">
+            <mat-spinner diameter="48"></mat-spinner>
+        </div>
+        <div class="text">Loading driver list...</div>
+    </div>
+</ng-template>

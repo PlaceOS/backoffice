@@ -1,20 +1,21 @@
-<div class="container" [class.uat]="model.env !== 'prod'" *ngIf="model.user && !model.loading">
+<div class="container" [class.uat]="env !== 'prod'" [class.dark-mode]="dark_mode" [class.joke]="is_fools_day" *ngIf="user && !loading">
     <div class="header">
-        <topbar-header (filter)="model.filter = $event"></topbar-header>
+        <topbar-header [(showMenu)]="show" [(filter)]="filter"></topbar-header>
     </div>
-    <div class="body" [class.filtered]="model.filter">
+    <div class="body" [class.filtered]="filter">
         <div class="sidebar-menu">
-            <sidebar-menu></sidebar-menu>
+            <sidebar-menu [(show)]="show"></sidebar-menu>
         </div>
         <div class="content">
             <router-outlet></router-outlet>
         </div>
     </div>
-    <div class="search-results" *ngIf="model.filter">
-        <global-search [search]="model.filter"></global-search>
+    <div class="search-results" *ngIf="filter">
+        <global-search [(search)]="filter"></global-search>
     </div>
+    <app-debug-output></app-debug-output>
 </div>
-<div class="container loader" [class.uat]="model.env !== 'prod'" *ngIf="model.loading">
+<div class="container loader" [class.uat]="env !== 'prod'" *ngIf="loading">
     <div class="info-block">
         <div class="icon">
             <a-spinner circle-ring color="#fff"></a-spinner>
@@ -22,6 +23,6 @@
         <div class="text">Loading application data...</div>
     </div>
 </div>
-<div class="container login" [class.uat]="model.env !== 'prod'" *ngIf="!model.user">
+<div class="container login" [class.uat]="env !== 'prod'" *ngIf="!user">
     <login-display></login-display>
 </div>

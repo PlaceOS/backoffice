@@ -1,10 +1,21 @@
-
 import { Routes } from '@angular/router';
 import { SystemsComponent } from './systems.component';
+import { SystemAboutComponent } from './system-about/system-about.component';
+import { SystemModulesComponent } from './system-modules/system-modules.component';
+import { SystemTriggersComponent } from './system-triggers/system-triggers.component';
+import { SystemZonesComponent } from './system-zones/system-zones.component';
 
 export const ROUTES: Routes = [
-    { path: '', component: SystemsComponent, children: [] },
-    { path: ':id', component: SystemsComponent, children: [] },
-    { path: ':id/:tab', component: SystemsComponent, children: [] },
-    { path: '**',      redirectTo: '' },
+    {
+        path: ':id',
+        component: SystemsComponent,
+        children: [
+            { path: 'about', component: SystemAboutComponent },
+            { path: 'modules', component: SystemModulesComponent },
+            { path: 'triggers', component: SystemTriggersComponent },
+            { path: 'zones', component: SystemZonesComponent },
+            { path: '**', redirectTo: 'about' }
+        ]
+    },
+    { path: '**', redirectTo: '-' }
 ];

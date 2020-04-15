@@ -1,0 +1,49 @@
+<header>
+    <h3 mat-dialog-title>{{!is_new ? 'Edit' : 'New'}} Auth Source</h3>
+    <button mat-icon-button mat-dialog-close>
+        <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
+    </button>
+</header>
+<mat-dialog-content>
+    <div class="body" *ngIf="!loading; else load_state">
+        <div class="field type" *ngIf="is_new">
+            <label for="type">Auth Source Type: </label>
+            <mat-form-field appearance="outline">
+                <mat-select name="type" [(ngModel)]="active_type" (ngModelChange)="setType($event)" placeholder="Select auth type">
+                    <mat-option *ngFor="let type of source_types" [value]="type.id">
+                        {{ type.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <ng-container *ngIf="item">
+            <ng-container [ngSwitch]="type">
+                <ng-container *ngSwitchCase="'saml'">
+                    <saml-source-form [form]="form"></saml-source-form>
+                </ng-container>
+                <ng-container *ngSwitchCase="'ldap'">
+                    <ldap-source-form [form]="form"></ldap-source-form>
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                    <oauth-source-form [form]="form"></oauth-source-form>
+                </ng-container>
+            </ng-container>
+        </ng-container>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions *ngIf="!loading">
+    <button mat-button class="inverse" mat-dialog-close>Cancel</button>
+    <button mat-button type="button" [disabled]="!active_type" (tapped)="save()">
+        {{ is_new ? 'Save' : 'Add' }}
+    </button>
+</mat-dialog-actions>
+<ng-template #load_state>
+    <div class="body">
+        <div class="info-block">
+            <div class="icon">
+                <a-spinner circle-ring color="#000"></a-spinner>
+            </div>
+            <div class="text">Processing request...</div>
+        </div>
+    </div>
+</ng-template>

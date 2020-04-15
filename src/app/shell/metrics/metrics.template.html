@@ -1,14 +1,6 @@
-<div class="container" [class.fullscreen]="fullscreen" (window:resize)="updateContextList()">
+<div class="container" [class.fullscreen]="fullscreen">
     <div class="header">
         <div class="heading">Metrics</div>
-        <div class="options">
-            <div class="type not-mobile">
-                <a-dropdown [items]="options" [(ngModel)]="index" (ngModelChange)="changePeriod($event)"></a-dropdown>
-            </div>
-            <div class="menu" a-context-item [content]="context_menu" (event)="event($event)" touchrelease>
-                <i class="material-icons">more_vert</i>
-            </div>
-        </div>
         <div class="time-display">
             <div class="clock">
                 <div class="hand hour" [style.transform]="'translateX(-50%) rotate(' + hour_angle + 'deg)'"></div>
@@ -23,44 +15,6 @@
         </div>
     </div>
     <div class="body">
-        <div class="count" *ngIf="offline_devices && offline_devices.length > 0">
-            There are {{offline_devices.length}} devices offline
-        </div>
-        <div class="issues">
-            <div class="item" *ngFor="let system of (systems || [])">
-                <div class="system">
-                    <div class="name hover" (touchrelease)="goto(system, 'systems')">{{system.name}}</div>
-                    <div class="id hover" *ngIf="system.id" (touchrelease)="goto(system, 'systems')">({{system.id}})</div>
-                </div>
-                <div class="modules" *ngIf="system_map && system_map[system.id]">
-                    <div class="device" *ngFor="let item of (system_map[system.id] || [])" [class.connected]="item.connected">
-                        <div class="module-class hover" (touchrelease)="goto(item, 'devices')">{{item.dependency?.module_name}}</div>
-                        <div class="name hover" (touchrelease)="goto(item, 'devices')">{{item.name}}</div>
-                        <div class="ip hover" (touchrelease)="goto({ link: 'http://' + item.ip })">{{item.ip}}</div>
-                        <div class="created">{{item.display?.created}}</div>
-                        <div class="action">
-                            <i class="material-icons">done</i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="info-block" center *ngIf="!systems || systems.length <= 0">
-                <div class="icon">
-                    <i class="material-icons">close</i>
-                </div>
-                <div class="text">No connection issues</div>
-            </div>
-        </div>
-        <div class="graphs">
-            <div class="connected">
-                <canvas #connected_graph></canvas>
-            </div>
-            <div class="offline">
-                <canvas #offline_graph></canvas>
-            </div>
-            <div class="triggers">
-                <canvas #triggers_graph></canvas>
-            </div>
-        </div>
+        <iframe [src]="metrics_url | safe:'resource'"></iframe>
     </div>
 </div>

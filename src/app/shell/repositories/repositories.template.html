@@ -1,0 +1,24 @@
+<div class="container" [class.show]="show_sidebar">
+    <div class="sidebar">
+        <sidebar
+            heading="Repositories"
+            [module]="module"
+            [close]="show_sidebar"
+            (event)="sidebarEvent($event)"
+        ></sidebar>
+    </div>
+    <main (touchrelease)="show_sidebar = false">
+        <item-display
+            name="repository"
+            route="repositories"
+            [item]="item"
+            [loading]="loading_item"
+            [tabs]="[
+                { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
+                { id: 'drivers', name: 'Drivers', count: driver_count, icon: { class: 'backoffice-documents' } }
+            ]"
+            (event)="itemEvent($event)"
+        >
+        </item-display>
+    </main>
+</div>

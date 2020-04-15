@@ -3,7 +3,7 @@
 
 .container {
     position: absolute;
-    top: 0;
+    top: .5em;
     left: 0;
     right: 0;
     bottom: 0;
@@ -13,28 +13,37 @@
     align-content: flex-start;
     flex-direction: column;
     padding: .5em;
+
+    &.dark-mode {
+        background-color: rgba(#000, .3);
+    }
 }
 
 .item {
     width: 100%;
-    min-height: 2em;
-    height: 2em;
+    min-height: 2.5em;
+    height: 2.5em;
     background-color: #fff;
     border: 1px solid #ccc;
     margin: 1px auto;
     padding: .5em;
-    box-shadow: 0 1px 3px 0 rgba(#000,0), 0 1px 1px 0 rgba(#000,0), 0 2px 1px -1px rgba(#000,0);
+    @include box-shadow(0);
     transition: box-shadow 200ms, border 200ms, background-color 200ms, border-radius 200ms;
     overflow: hidden;
     display: flex;
     align-items: center;
+    border-radius: 4px;
+    > * {
+        padding: 1em .5em;
+    }
+
     @include respond-to(mobile) {
         min-width: 90%;
     }
     &:hover {
         border-color: #f0f0f0;
         background-color: #f0f0f0;
-        box-shadow: 0 1px 3px 0 rgba(#000,.2), 0 1px 1px 0 rgba(#000,.14), 0 2px 1px -1px rgba(#000,.12);
+        @include box-shadow;
         .options {
             display: flex;
             @include respond-to(mobile) {
@@ -43,6 +52,17 @@
         }
     }
 
+}
+
+.dark-mode {
+    .item {
+        background-color: #424242;
+        border: 1px solid rgba(#fff, .54);
+        &:hover {
+            border-color: rgba(#fff, .2);
+            background-color: #323232;
+        }
+    }
 }
 
 .name {
@@ -71,6 +91,7 @@
     justify-content: flex-end;
     font-size: .8em;
     flex: 1;
+    text-decoration: none;
 }
 
 .options {
@@ -109,6 +130,8 @@
     box-shadow: 0 1px 3px 0 rgba(#000,.2), 0 1px 1px 0 rgba(#000,.14), 0 2px 1px -1px rgba(#000,.12);
     font-weight: 500;
     text-transform: capitalize;
+    text-decoration: none;
+
     &:first-child {
         margin-left: 0;
     }
@@ -127,27 +150,27 @@
         }
     }
 
-    &.system {
+    &.systems {
         background-color: #9C27B0;
         color: #fff;
     }
 
-    &.device {
+    &.devices {
         background-color: #3F51B5;
         color: #fff;
     }
 
-    &.trigger {
+    &.triggers {
         background-color: #00BCD4;
         color: #fff;
     }
 
-    &.user {
+    &.users {
         background-color: #43A047;
         color: #fff;
     }
 
-    &.zone {
+    &.zones {
         background-color: #F4511E;
         color: #fff;
     }
@@ -172,4 +195,10 @@
     bottom: 1em;
     right: 1em;
     font-size: .5em;
+}
+
+.mat-icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

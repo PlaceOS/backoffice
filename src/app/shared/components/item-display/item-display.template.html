@@ -1,61 +1,76 @@
-<div class="container" *ngIf="item && !loading">
-    <header>
+<div class="container" [class.dark-mode]="dark_mode" >
+    <header *ngIf="item && !loading">
         <div class="heading-group">
-            <div class="heading">{{ item.display_name || item.name }}</div>
+            <div class="heading">{{ item.display_name || item.custom_name || item.name || "&lt;Unnamed&gt;" }}</div>
             <div class="info">
-                <div class="id" *ngIf="item.id" (dblclick)="copy()">
+                <div class="id" *ngIf="item.id" (click)="copy()">
                     <span>{{ item.id }}</span>
                 </div>
-                <div class="chip connect" *ngIf="item.connected !== null && item.connected !== undefined" [class.active]="item.connected">
+                <div class="chip driver" *ngIf="driver_type">
+                    {{ driver_type }}
+                </div>
+                <div
+                    class="chip connect"
+                    *ngIf="item.connected !== null && item.connected !== undefined"
+                    [class.active]="item.connected"
+                >
                     {{ item.connected ? 'Online' : 'Offline' }}
                 </div>
                 <div class="chip secure" *ngIf="item.tls">
-                    <div class="icon"><i class="material-icons">lock</i></div>
+                    <div class="icon"><i class="backoffice-lock"></i></div>
                     <div class="text">Secure</div>
                 </div>
             </div>
         </div>
         <div class="options" *ngIf="has_change">
-            <div class="option" click-responder (touchrelease)="event.emit({ type: 'edit' })">
-                <i class="material-icons">edit</i>
-            </div>
-            <div class="option" click-responder (touchrelease)="event.emit({ type: 'delete' })">
-                <i class="material-icons">delete</i>
-            </div>
+            <button mat-icon-button (touchrelease)="edit()" matTooltip="Edit [E]">
+                <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+            </button>
+            <button mat-icon-button (touchrelease)="delete()" matTooltip="Delete [D]">
+                <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+            </button>
         </div>
     </header>
-    <main>
-        <div class="tabs" *ngIf="tabs && tabs.length > 1">
-            <a-tab-group>
-                <a-tab
-                    *ngFor="let tab of tabs"
-                    [id]="tab.id"
-                    [active]="active === tab.id"
-                    (activeChange)="active = tab.id; event.emit({ type: 'tab', value: tab.id })"
-                    [content]="tab.template"
-                    [style.width]="100 / tabs.length + '%'"
+    <main *ngIf="item && !loading">
+        <div class="tabs">
+            <nav mat-tab-nav-bar [class.scroll]="is_scrolled">
+                <a
+                    class="tab"
+                    mat-tab-link
+                    *ngFor="let link of tabs"
+                    [routerLink]="item.id ? ['/' + route, item.id, link.id] : ['/' + route, link.id]"
+                    routerLinkActive
+                    #rla="routerLinkActive"
+                    [active]="rla.isActive"
                 >
-                    <div class="tab">
-                        <i [class]="tab.icon?.class">{{ tab.icon?.value }}</i>
-                        <div class="name">{{ tab.name }}&nbsp;</div>
-                        <div class="count" *ngIf="tab.count || tab.count === 0">({{ tab.count || '0' }})</div>
+                    <app-icon [icon]="link.icon"></app-icon>
+                    <div class="name">{{ link.name }}&nbsp;</div>
+                    <div class="count" *ngIf="link.count || link.count === 0">
+                        ({{ link.count || '0' }})
                     </div>
-                </a-tab>
-            </a-tab-group>
+                </a>
+            </nav>
+            <div class="content" #content (scroll)="is_scrolled">
+                <router-outlet></router-outlet>
+            </div>
         </div>
     </main>
 </div>
-<div class="info-block not-mobile center" *ngIf="!item && !loading">
-    <div class="icon">
-        <i class="material-icons">arrow_back</i>
+<div class="not-mobile center" *ngIf="!item && !loading">
+    <div class="info-block">
+        <div class="icon">
+            <i class="backoffice-arrow-left"></i>
+        </div>
+        <div class="text">Select a {{ name }} from the sidebar</div>
     </div>
-    <div class="text">Select a {{ name }} from the sidebar</div>
 </div>
-<div class="info-block mobile-only center" *ngIf="!item && !loading">
-    <div class="icon">
-        <i class="material-icons">arrow_upward</i>
+<div class="mobile-only center" *ngIf="!item && !loading">
+    <div class="info-block">
+        <div class="icon">
+            <i class="backoffice-arrow-up"></i>
+        </div>
+        <div class="text">Select a {{ name }} from the search bar</div>
     </div>
-    <div class="text">Select a {{ name }} from the search bar</div>
 </div>
 <div class="info-block center" *ngIf="loading">
     <div class="icon">

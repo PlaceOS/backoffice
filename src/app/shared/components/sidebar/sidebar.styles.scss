@@ -10,8 +10,10 @@
     align-items: center;
     flex-direction: column;
     color: #fff;
-    box-shadow: 0 1px 3px 0 rgba(#000,.2), 0 1px 1px 0 rgba(#000,.14), 0 2px 1px -1px rgba(#000,.12);
     overflow: hidden;
+    @include box-shadow;
+    z-index: 10;
+    border-right: 1px solid rgba(#fff, .12);
 }
 
 header {
@@ -27,6 +29,7 @@ header {
 
     .heading {
         font-size: 1.5em;
+        font-family: $heading-font;
     }
 
     .count {
@@ -80,6 +83,8 @@ section.search {
     padding: .5em 1em;
     width: 100%;
     min-height: 3em;
+    background-color: $background;
+    z-index: 1;
     .input {
         flex: 1;
     }
@@ -89,16 +94,22 @@ section.content {
     width: 100%;
     border-bottom: 2px solid rgba(#fff, .54);
     padding-bottom: .5em;
+    transition: box-shadow 200ms;
+    z-index: 0;
+
+    &.scroll {
+        box-shadow: rgba(0, 0, 0, .60) 0px 2px 6px 0px;
+    }
 }
 
 input {
     background-color: rgba(#fff, .1);
     color: #fff;
     border: 1px solid #fff;
-    border-radius: 1em;
+    border-radius: 1.25em;
     font-size: 1em;
     width: 100%;
-    padding: .25em 1em;
+    padding: 0.5em .75em;
     outline: none;
     &::placeholder {
         color: rgba(#fff, .54);
@@ -133,6 +144,8 @@ input {
         background-color: rgba(#fff, .1);
     }
     .text {
+        display: flex;
+        align-items: center;
         flex: 1;
     }
 }
@@ -200,3 +213,25 @@ a {
 cdk-virtual-scroll-viewport {
     min-height: 100%;
 }
+
+.tooltip {
+    font-size: .6em;
+    padding: .5em;
+    margin: .5em;
+    white-space: nowrap;
+    text-align: center;
+    font-weight: 400;
+    color: $font-light;
+    background-color: $background-light;
+    border-radius: 4px;
+    @include box-shadow;
+    pointer-events: none;
+}
+
+.info-block {
+    button {
+        width: 12em;
+        margin-top: 2em;
+    }
+}
+

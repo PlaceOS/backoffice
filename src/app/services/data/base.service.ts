@@ -1,6 +1,6 @@
-
 import { BehaviorSubject, Observable, Subscription, Subscriber, Subject } from 'rxjs';
-import { EngineHttpClient, EngineResource } from '@acaprojects/ts-composer';
+import { EngineHttpClient } from '@placeos/ts-client';
+import { first } from 'rxjs/operators';
 
 import { BaseClass } from '../../shared/globals/base.class';
 import { ApplicationService } from '../app.service';
@@ -9,12 +9,14 @@ import { toQueryString } from '../../shared/utilities/api.utilities';
 
 export interface IEngineResponse {
     results: HashMap[];
-    total: number
+    total: number;
 }
 
 export class BaseAPIService<T extends {}> extends BaseClass {
     /** Application service */
     public parent: ApplicationService;
+    /** List of available items */
+    public readonly listing = new BehaviorSubject<T[]>([]);
     /** Display name of the service */
     protected _name: string;
     /** Name of a single item from the service */
@@ -29,12 +31,11 @@ export class BaseAPIService<T extends {}> extends BaseClass {
     protected _subscribers: { [key: string]: Subscriber<any> } = {};
     /** Map of promises for Service */
     protected _promises: { [key: string]: Promise<any> } = {};
-    /** Whether the service has initialised or not */
-    protected _initialised: boolean;
     /** Comparison function for service items */
-    protected _compare: (a: T, b: T) => boolean = (a, b) => a === b || (a as any).id === (b as any).id;
+    protected _compare: (a: T, b: T) => boolean = (a, b) =>
+        a === b || (a as any).id === (b as any).id;
     /** Default filter function for list method */
-    protected _list_filter: (a: T) => boolean = (a) => !!a;
+    protected _list_filter: (a: T) => boolean = a => !!a;
 
     constructor(protected http: EngineHttpClient) {
         super();
@@ -44,17 +45,16 @@ export class BaseAPIService<T extends {}> extends BaseClass {
         this.set('list', []);
     }
 
-    /** Whether service has been initialised */
-    public get initialised() { return this._initialised; }
-
     /**
      * Initailise service
      */
     public init() {
-        if (!this.parent || !this.parent.is_ready) {
+        if (!this.parent) {
             return this.timeout('init', () => this.init());
         }
-        this.load().then(_ => this._initialised = true);
+        this.parent.initialised.pipe(first(_ => _)).subscribe(() => {
+            this.load().then(_ => this._initialised.next(true));
+        });
     }
 
     /**
@@ -62,7 +62,11 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      * @param engine Whether endpoint is using the application API or engine API
      */
     public route(engine: boolean = false) {
-        const endpoint = this.parent ? (engine ? this.parent.engine_endpoint : this.parent.endpoint) : '/api';
+        const endpoint = this.parent
+            ? engine
+                ? this.parent.engine_endpoint
+                : this.parent.endpoint
+            : '/api';
         return `${endpoint}${this._api_route}`;
     }
     /** API Route of the service */
@@ -87,7 +91,6 @@ export class BaseAPIService<T extends {}> extends BaseClass {
             ? (this._subjects[name] as BehaviorSubject<U>).getValue()
             : null;
     }
-
 
     /**
      * Listen to value change of the named property
@@ -118,7 +121,12 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      */
     public list(filterFn: (a: T) => boolean = this._list_filter): T[] {
         const list = this.get('list') || [];
-        return list.reduce((a, i) => { if (filterFn(i)) { a.push(i); } return a; }, []);
+        return list.reduce((a, i) => {
+            if (filterFn(i)) {
+                a.push(i);
+            }
+            return a;
+        }, []);
     }
 
     /**
@@ -151,18 +159,25 @@ export class BaseAPIService<T extends {}> extends BaseClass {
                 let result: T[] | HashMap[] = [];
                 this.http.get(url).subscribe(
                     (d: IEngineResponse | HashMap[]) => {
-                        result = d && d instanceof Array
-                            ? d.map(i => this.process(i))
-                            : (d && !(d instanceof Array) && d.results
-                                ? d.results as HashMap[]
-                                : []);
-                    }, e => {
+                        result =
+                            d && d instanceof Array
+                                ? d.map(i => this.process(i))
+                                : d && !(d instanceof Array) && d.results
+                                ? (d.results as HashMap[])
+                                : [];
+                    },
+                    e => {
                         reject(e);
                         this._promises.new_item = null;
                     },
                     () => {
-                        if ((!query || (query_params && query_params.update_list)) && result.length > 0 && result[0] instanceof Object) {
+                        if (
+                            (!query || (query_params && query_params.update_list)) &&
+                            result.length > 0 &&
+                            result[0] instanceof Object
+                        ) {
                             this.set('list', this.updateList(this.get('list'), result as T[]));
+                            this.listing.next(this.get('list') || []);
                         }
                         resolve(result);
                         this.timeout(key, () => (this._promises[key] = null), cache);
@@ -191,7 +206,7 @@ export class BaseAPIService<T extends {}> extends BaseClass {
                 const url = `${this.route(engine)}${query ? '?' + query : ''}`;
                 let result: T = null;
                 this.http.get(url).subscribe(
-                    d => result = this.process(d),
+                    d => (result = this.process(d)),
                     e => {
                         reject(e);
                         this._promises[key] = null;
@@ -208,17 +223,16 @@ export class BaseAPIService<T extends {}> extends BaseClass {
 
     /**
      * Open modal for new item
-     * @param data
      */
-    public create(prefill?: { [name: string]: any }): Promise<T> {
+    public openNewModal(prefill?: { [name: string]: any }): Promise<T> {
         return new Promise((resolve, reject) => {
-            this.parent.Overlay.open(`item-view`, { data: { service: this, item: prefill } }, (e) => {
-                if (e.type === 'Success') {
-                    resolve(e.data.result);
-                } else {
-                    reject();
-                }
-            });
+            // this.parent.Overlay.open('edit-item', { data: { service: this, item: prefill } }, (e) => {
+            //     if (e.type === 'finish') {
+            //         resolve(e.data.item as T);
+            //     } else {
+            //         reject();
+            //     }
+            // });
         });
     }
 
@@ -267,16 +281,22 @@ export class BaseAPIService<T extends {}> extends BaseClass {
                 const url = `${this.route(form_data.engine)}/${id}/${task_name}`;
                 let result = null;
                 this.http.post(url, post_data).subscribe(
-                    d => result = d,
+                    d => (result = d),
                     e => {
                         reject(e);
-                        this.analyticsEvent(`${this._name.toLowerCase()}-task-${task_name}-failed`, id);
+                        this.analyticsEvent(
+                            `${this._name.toLowerCase()}-task-${task_name}-failed`,
+                            id
+                        );
                         this._promises[key] = null;
                     },
                     () => {
                         resolve(result as U);
-                        this.analyticsEvent(`${this._name.toLowerCase()}-task-${task_name}-success`, id);
-                        this.timeout(key, () => this._promises[key] = null, 1000);
+                        this.analyticsEvent(
+                            `${this._name.toLowerCase()}-task-${task_name}-success`,
+                            id
+                        );
+                        this.timeout(key, () => (this._promises[key] = null), 1000);
                     }
                 );
             });
@@ -290,7 +310,11 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      * @param query_params Map of query paramaters to add to the polled URL
      * @param delay Delay between each poll event
      */
-    public poll(id?: string, query_params: HashMap = {}, delay: number = 5000): Observable<T | T[]> {
+    public poll(
+        id?: string,
+        query_params: HashMap = {},
+        delay: number = 5000
+    ): Observable<T | T[]> {
         const key = `poll|${id || ''}|${toQueryString(query_params) || ''}`;
         this.stopPoll(id, query_params);
         this._subjects[key] = new Subject<T | T[]>();
@@ -298,23 +322,43 @@ export class BaseAPIService<T extends {}> extends BaseClass {
         const sub = this._subjects[key];
         const query = { ...(query_params || {}), _poll: true };
         if (id) {
-            this.show(id, query).then((d) => sub.next(d), e => sub.error(e));
-            this.interval(key, () => {
-                this.show(id, query).then((d) => sub.next(d), e => sub.error(e));
-            }, delay);
+            this.show(id, query).then(
+                d => sub.next(d),
+                e => sub.error(e)
+            );
+            this.interval(
+                key,
+                () => {
+                    this.show(id, query).then(
+                        d => sub.next(d),
+                        e => sub.error(e)
+                    );
+                },
+                delay
+            );
         } else {
-            this.query(query).then((d) => sub.next(d), e => sub.error(e));
-            this.interval(key, () => {
-                this.query(query).then((d) => sub.next(d), e => sub.error(e));
-            }, delay);
+            this.query(query).then(
+                d => sub.next(d),
+                e => sub.error(e)
+            );
+            this.interval(
+                key,
+                () => {
+                    this.query(query).then(
+                        d => sub.next(d),
+                        e => sub.error(e)
+                    );
+                },
+                delay
+            );
         }
         return this._observers[key];
     }
 
     /**
      * Destroy poller
-     * @param id
-     * @param query_params
+     * @param id ID of the polling event
+     * @param query_params Associtated query parameters of the poll request
      */
     public stopPoll(id?: string, query_params: HashMap = {}) {
         const key = `poll|${id || ''}|${toQueryString(query_params) || ''}`;
@@ -347,7 +391,12 @@ export class BaseAPIService<T extends {}> extends BaseClass {
                     },
                     () => {
                         resolve(result);
-                        this.set('list', this.updateList(this.removeItem(this.get('list'), { id } as any), [result]));
+                        this.set(
+                            'list',
+                            this.updateList(this.removeItem(this.get('list'), { id } as any), [
+                                result
+                            ])
+                        );
                         this.analyticsEvent(`update-${this._name.toLowerCase()}-success`, id);
                         this._promises[key] = null;
                     }
@@ -370,7 +419,7 @@ export class BaseAPIService<T extends {}> extends BaseClass {
                     _ => null,
                     e => reject(e),
                     () => {
-                        this.set('list', this.removeItem(this.get('list'), ({ id } as any)));
+                        this.set('list', this.removeItem(this.get('list'), { id } as any));
                         resolve();
                     }
                 );
@@ -385,7 +434,11 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      * @param data Raw API data for the new item
      * @param type Adder type
      */
-    public addFrom(id: string, data: HashMap, type: 'class' | 'service' | 'other' = 'other'): string {
+    public addFrom(
+        id: string,
+        data: HashMap,
+        type: 'class' | 'service' | 'other' = 'other'
+    ): string {
         const new_item = this.process(data);
         this.set('list', this.updateList(this.get('list'), [new_item]));
         return (new_item as any).id;
@@ -397,15 +450,17 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      * @param remove_ids List of item IDs to remove
      * @param type Remover type
      */
-    public removeFrom(id: string, remove_ids: string[], type: 'class' | 'service' | 'other' = 'other') {
-
-    }
+    public removeFrom(
+        id: string,
+        remove_ids: string[],
+        type: 'class' | 'service' | 'other' = 'other'
+    ) {}
 
     /**
      * Load initial data for the service
      */
     protected load(): Promise<void> {
-        return new Promise<void>((resolve) => {
+        return new Promise<void>(resolve => {
             resolve();
         });
     }
@@ -416,7 +471,11 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      */
     protected analyticsEvent(action: string, label?: string) {
         if (this.parent && this.parent.Analytics) {
-            this.parent.Analytics.event(this._name, `${this.parent.name.toLowerCase()}-${action}`, label);
+            this.parent.Analytics.event(
+                this._name,
+                `${this.parent.name.toLowerCase()}-${action}`,
+                label
+            );
         }
     }
 
@@ -434,11 +493,19 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      * @param list List of updated items
      * @param compareFn Function to compare items to remove duplicates
      */
-    protected updateList(old_list: T[], list: T[], compareFn: (a: T, b: T) => boolean = this._compare): T[] {
-        if (!list || list.length === 0) { return old_list; }
+    protected updateList(
+        old_list: T[],
+        list: T[],
+        compareFn: (a: T, b: T) => boolean = this._compare
+    ): T[] {
+        if (!list || list.length === 0) {
+            return old_list;
+        }
         const new_list: T[] = [];
         const mixed_list = [...list, ...old_list];
-        if (!compareFn) { compareFn = this._compare; }
+        if (!compareFn) {
+            compareFn = this._compare;
+        }
         for (const item of mixed_list) {
             const found = new_list.find(i => compareFn(i, item));
             if (!found) {
@@ -456,8 +523,10 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      */
     protected removeItem(list: T[], item: T, compareFn?: (a: T, b: T) => boolean) {
         const new_list = [];
-        if (!compareFn) { compareFn = this._compare; }
-        list.forEach(i => compareFn(item, i) ? null : new_list.push(i));
+        if (!compareFn) {
+            compareFn = this._compare;
+        }
+        list.forEach(i => (compareFn(item, i) ? null : new_list.push(i)));
         return new_list;
     }
 }

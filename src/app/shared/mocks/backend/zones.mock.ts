@@ -1,9 +1,11 @@
 
 import { BaseMockBackend } from './base.mock';
+import { padZero } from '../../utilities/general.utilities';
+import { MOCK_SETTINGS } from './settings.mock';
 
 import * as faker from 'faker';
 import * as dayjs from 'dayjs';
-import { padZero } from '../../utilities/general.utilities';
+import * as yaml from 'js-yaml';
 
 export class MockZonesBackend extends BaseMockBackend {
 
@@ -23,22 +25,35 @@ export class MockZonesBackend extends BaseMockBackend {
             zone_list.push({
                 id: `zone-${padZero(i, 4)}`,
                 name: `Test Zone ${i + 1}`,
-                description: faker.lorem.paragraph(),
+                description: `### Test Title\n\n${faker.lorem.paragraph()}`,
                 tags: `test zone`,
                 created_at: dayjs().add(-Math.floor(Math.random() * 10000), 'm').unix(),
                 triggers: [],
+                systems: [],
                 trigger_data: [],
-                settings: this.generateSettings()
+                settings: {
+                    settings_string: this.generateSettings()
+                }
             });
         }
+        zone_list.forEach(zone => MOCK_SETTINGS.push({
+            id: `setting-${Math.floor(Math.random() * 999_999_999)}`,
+            parent_id: zone.id,
+            encryption_level: Math.floor(Math.random() * 4),
+            settings_string: zone.settings.settings_string,
+            keys: Object.keys(yaml.safeLoad(zone.settings.settings_string)),
+            updated_at: dayjs().subtract(Math.floor(Math.random() * 2000), 'm').valueOf()
+        }));
         this.model.zones = zone_list;
-        this.setupBasicHandlers('api/engine/v1/zones', this.model.zones, 'zone');
+        this.setupBasicHandlers('api/engine/v2/zones', this.model.zones, 'zone');
         this.state.next(true);
     }
 
     public search(data, fragment) {
         if (fragment.sys_id) {
-            data = data.filter((a) => (a.systems || []).indexOf(fragment.sys_id) >= 0);
+            data = data.filter((a) => {
+                return (a.systems || []).indexOf(fragment.sys_id) >= 0;
+            });
         }
         return super.search(data, fragment);
     }
@@ -65,6 +80,6 @@ export class MockZonesBackend extends BaseMockBackend {
                     break;
             }
         }
-        return data;
+        return yaml.safeDump(data);
     }
 }

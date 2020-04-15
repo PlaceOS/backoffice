@@ -1,41 +1,74 @@
-
 <div class="container">
-    <div class="topbar" [class.uat]="model.env !== 'prod'" >
-        <div class="menu" (tapped)="toggleMenu()">
-            <i class="material-icons">{{model.show_menu ? 'close' : 'menu'}}</i>
-        </div>
+    <div class="topbar">
+        <button mat-icon-button class="mobile-only" (tapped)="toggleMenu()">
+            <app-icon [icon]="{ class: 'backoffice-' + (show_menu ? 'cross' : 'menu') }"></app-icon>
+        </button>
         <div class="block">
-            <div *ngIf="model.logo" class="logo" (tapped)="logo()">
-                <img *ngIf="model.logo.type==='image' || model.logo.type==='img'" [src]="model.logo.src">
-                <i *ngIf="model.logo.type !== 'image' && model.logo.type!=='img'" [class]="model.logo.class">{{model.logo.value}}</i>
+            <div *ngIf="logo" class="logo">
+                <a [routerLink]="['/']" *ngIf="!is_fools_day; else fools_day">
+                    Place<span>OS</span>
+                </a>
+
             </div>
+        </div>
+        <div class="uat" *ngIf="env !== 'prod'">
+            {{ env }}
         </div>
         <div class="search">
-            <searchbar *ngIf="model.has_search" [(filter)]="model.filter" (filterChange)="postFilter()"></searchbar>
+            <searchbar
+                *ngIf="has_search"
+                [(filter)]="filter"
+                (filterChange)="postFilter()"
+            ></searchbar>
         </div>
         <div class="block end">
+            <button mat-icon-button class="more-actions not-mobile" [matMenuTriggerFor]="more_actions">
+                <app-icon [icon]="{ class: 'material-icons', content: 'more_vert' }"></app-icon>
+            </button>
             <!-- TODO Add user details display -->
-            <div class="avatar" [title]="model.user?.name" a-tooltip position="bottom" offset="end" [content]="options" [(show)]="model.show" (touchrelease)="model.show = true">
-                <div class="img" [style.background-image]="('url(' + (model.user?.image || 'https://www.gravatar.com/avatar/' + model.user?.gravatar_hash) + ')') | safe:'style'"></div>
-            </div>
-            <ng-template #options>
-                <div class="user-options">
-                    <div class="details">
-                        <div class="name">{{model.user?.name || 'Guest'}}</div>
-                        <div class="avatar" a-tooltip position="bottom" offset="end" [content]="options">
-                            <div class="img" [style.background-image]="('url(' + (model.user?.image || 'https://www.gravatar.com/avatar/' + model.user?.gravatar_hash) + ')') | safe:'style'"></div>
-                        </div>
-                    </div>
-                    <div class="list" *ngIf="model.options">
-                        <div class="item" *ngFor="let item of model.options" click-responder (touchrelease)="select(item)">
-                            <div class="icon">
-                                <i [class]="item.icon?.class">{{item.icon?.value}}</i>
-                            </div>
-                            <div class="text">{{item.name}}</div>
-                        </div>
-                    </div>
-                </div>
-            </ng-template>
+            <button mat-icon-button class="avatar" [title]="user?.name" [matMenuTriggerFor]="menu">
+                <div
+                    class="img"
+                    [style.background-image]="('url(' + (user?.image || 'https://www.gravatar.com/avatar/' + user?.gravatar_hash) + ')') | safe:'style'"
+                ></div>
+            </button>
         </div>
     </div>
 </div>
+<mat-menu #menu="matMenu">
+    <a mat-menu-item>
+        <div class="avatar" [routerLink]="['/profile']" routerLinkActive="active">
+            <div
+                class="img"
+                [style.background-image]="('url(' + (user?.image || 'https://www.gravatar.com/avatar/' + user?.gravatar_hash) + ')') | safe:'style'"
+            ></div>
+        </div>
+        <div class="text">{{user?.name || 'Guest'}}</div>
+    </a>
+    <ng-container *ngFor="let item of options">
+        <a *ngIf="item.link" mat-menu-item [href]="item.link">
+            <app-icon [icon]="item.icon"></app-icon>
+            <div class="text">{{item.name}}</div>
+        </a>
+        <a *ngIf="item.route" mat-menu-item [routerLink]="[item.route]" routerLinkActive="active">
+            <app-icon [icon]="item.icon"></app-icon>
+            <div class="text">{{item.name}}</div>
+        </a>
+    </ng-container>
+    <div class="item" mat-menu-item role="menuitemcheckbox">
+        <app-icon [icon]="{ class: 'backoffice-moon' }"></app-icon>
+        <div class="text">Dark Mode</div>
+        <div class="toggle"(click) = "$event.stopPropagation()">
+            <mat-slide-toggle [(ngModel)]="dark_mode"></mat-slide-toggle>
+        </div>
+    </div>
+</mat-menu>
+<mat-menu #more_actions="matMenu">
+    <button mat-menu-item *ngFor="let action of extra_action_list" (tapped)="action.callback()">
+        <app-icon [icon]="action.icon"></app-icon>
+        <div class="text">{{action.name}}</div>
+    </button>
+</mat-menu>
+<ng-template #fools_day>
+    <a href="http://www.nyan.cat/" (click)="notAFool()">April <span>Fools</span></a>
+</ng-template>

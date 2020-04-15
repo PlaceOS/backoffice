@@ -4,13 +4,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { ComposerModule } from '@acaprojects/ngx-composer';
-
 import { ROUTES } from './drivers.routes';
 
 import { DriversComponent } from './drivers.component';
 import { DriverAboutComponent } from './driver-about/driver-about.component';
-import { DriverDevicesComponent } from './driver-devices/driver-devices.component';
+import { DriverModulesComponent } from './driver-devices/driver-devices.component';
 import { SharedContentModule } from 'src/app/shared/shared.module';
 
 
@@ -18,12 +16,11 @@ import { SharedContentModule } from 'src/app/shared/shared.module';
     declarations: [
         DriversComponent,
         DriverAboutComponent,
-        DriverDevicesComponent
+        DriverModulesComponent
     ],
     imports: [
         CommonModule,
         FormsModule,
-        ComposerModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule
     ]

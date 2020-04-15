@@ -5,8 +5,6 @@
  * @Last Modified time: 2018-09-02 20:25:07
  */
 
-import { MockHttpRequestHandlerOptions } from '@acaprojects/ts-composer';
-
 import { BaseMockBackend } from './base.mock';
 
 import * as faker from 'faker';
@@ -32,6 +30,8 @@ export class MockUsersBackend extends BaseMockBackend {
                 department: `${faker.company.companyName()}`,
                 phone: Math.floor(Math.random() * 8999 + 1000).toString(),
                 email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${this.model.domain}`,
+                support: Math.floor(Math.random() * 999_999_999) % 5 === 0,
+                sys_admin: Math.floor(Math.random() * 999_999_999) % 5 === 0,
                 name: `${firstName} ${lastName}`,
                 id: `user-${Math.floor(Math.random() * 899999 + 100000).toString()}`,
                 avatar_url: '',
@@ -46,6 +46,8 @@ export class MockUsersBackend extends BaseMockBackend {
                 email: `${split[0].toLowerCase()}.${split[1].toLowerCase()}@${this.model.domain}`,
                 name,
                 id: `user-${Math.floor(Math.random() * 899999 + 100000).toString()}`,
+                support: true,
+                sys_admin: Math.floor(Math.random() * 999_999_999) % 5 === 0,
                 avatar_url: '',
                 organisation_id: 12,
                 organisation_name: 'ACA'
@@ -55,10 +57,11 @@ export class MockUsersBackend extends BaseMockBackend {
             id: 'current',
             name: 'ACA Test Robot',
             avatar_url: '',
-            email: 'robot@acaprojects.com'
-        })
+            email: 'robot@acaprojects.com',
+            sys_admin: true
+        });
         this.model.users.sort((a, b) => a.name.localeCompare(b.name));
-        this.setupBasicHandlers('api/engine/v1/users', this.model.users, 'user');
+        this.setupBasicHandlers('api/engine/v2/users', this.model.users, 'user');
         this.state.next(true);
     }
 

@@ -3,32 +3,92 @@ import { NgModule, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { RouterModule } from '@angular/router';
 
-import { ADropdownsModule } from '@acaprojects/ngx-dropdown';
 import { ASpinnerModule } from '@acaprojects/ngx-spinners';
-import { AButtonsModule } from '@acaprojects/ngx-buttons';
 import { APipesModule } from '@acaprojects/ngx-pipes';
-import { AOverlayModule } from '@acaprojects/ngx-overlays';
-import { ADynamicFormsModule } from '@acaprojects/ngx-dynamic-forms';
 import { ACustomEventsModule } from '@acaprojects/ngx-custom-events';
-import { ACheckboxModule } from '@acaprojects/ngx-checkbox';
-import { ATabsModule } from '@acaprojects/ngx-tabs';
+import { ComposerModule } from '@placeos/composer';
+
+import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+// import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { CdkTableModule } from '@angular/cdk/table';
 
 import { BaseDirective } from './globals/base.directive';
-import { CustomDropdownFieldComponent } from './components/custom-fields/item-dropdown-field/item-dropdown-field.component';
-import { CustomSettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
 import { ItemDisplayComponent } from './components/item-display/item-display.component';
 import { LOGIN_COMPONENTS } from './components/login';
 import { SearchbarComponent } from './components/searchbar/searchbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { SystemExecComponent } from './components/system-exec/system-exec.component';
-import { SettingsDisplayComponent } from './components/settings-display/settings-display.component';
-import { EngineItemDropdownComponent } from './components/item-dropdown/item-dropdown.component';
-import { CronOptionsComponent } from './components/cron-options/cron-options.component';
 import { BaseRootComponent } from './components/base-root.component';
 import { IconComponent } from './components/icon/icon.component';
-import { RouterModule } from '@angular/router';
+import { TerminalComponent } from './components/terminal/terminal.component';
+
+import { SettingsFieldComponent } from './components/custom-fields/settings-field/settings-field.component';
+import { ItemSearchFieldComponent } from './components/custom-fields/item-search-field/item-search-field.component';
+import { DateFieldComponent } from './components/custom-fields/date-field/date-field.component';
+import { TimeFieldComponent } from './components/custom-fields/time-field/time-field.component';
+import { SystemExecFieldComponent } from './components/custom-fields/system-exec-field/system-exec-field.component';
+
+import { SystemFormComponent } from './components/forms/system-form/system-form.component';
+import { ModuleFormComponent } from './components/forms/module-form/module-form.component';
+import { ZoneFormComponent } from './components/forms/zone-form/zone-form.component';
+import { DriverFormComponent } from './components/forms/driver-form/driver-form.component';
+import { UserFormComponent } from './components/forms/user-form/user-form.component';
+import { DomainFormComponent } from './components/forms/domain-form/domain-form.component';
+import { ApplicationFormComponent } from './components/forms/application-form/application-form.component';
+import { RepositoryFormComponent } from './components/forms/repository-form/repository-form.component';
+import { TriggerFormComponent } from './components/forms/trigger-form/trigger-form.component';
+import { TriggerConditionFormComponent } from './components/forms/trigger-condition-form/trigger-condition-form.component';
+import { TriggerConditionComparisonFormComponent } from './components/forms/trigger-condition-form/comparison-form/comparison-form.component';
+import { TriggerConditionTimeFormComponent } from './components/forms/trigger-condition-form/time-form/time-form.component';
+import { TriggerActionFormComponent } from './components/forms/trigger-action-form/trigger-action-form.component';
+import { SystemTriggerFormComponent } from './components/forms/system-trigger-form/system-trigger-form.component';
+
+import { DriverFormatPipe } from './pipes/driver-format.pipe';
+import { DateFromPipe } from './pipes/date-from.pipe';
+import { FormatListPipe } from './pipes/format-list.pipe';
+import { OauthSourceFormComponent } from './components/forms/oauth-source-form/oauth-source-form.component';
+import { LdapSourceFormComponent } from './components/forms/ldap-source-form/ldap-source-form.component';
+import { SamlSourceFormComponent } from './components/forms/saml-source-form/saml-source-form.component';
+import { ObjectListFieldComponent } from './components/custom-fields/object-list-field/object-list-field.component';
+import { DebugOutputComponent } from './components/debug-output/debug-output.component';
+import { SettingsFormComponent } from './components/forms/settings-form/settings-form.component';
+
+const FORM_COMPONENTS: Type<any>[] = [
+    SystemFormComponent,
+    ModuleFormComponent,
+    ZoneFormComponent,
+    DriverFormComponent,
+    UserFormComponent,
+    DomainFormComponent,
+    ApplicationFormComponent,
+    TriggerFormComponent,
+    RepositoryFormComponent,
+    TriggerConditionFormComponent,
+    TriggerActionFormComponent,
+    SystemTriggerFormComponent,
+    OauthSourceFormComponent,
+    LdapSourceFormComponent,
+    SamlSourceFormComponent,
+    SettingsFormComponent,
+];
 
 const COMPONENTS: Type<any>[] = [
     BaseDirective,
@@ -36,56 +96,80 @@ const COMPONENTS: Type<any>[] = [
     ItemDisplayComponent,
     SearchbarComponent,
     SidebarComponent,
-    SystemExecComponent,
-    SettingsDisplayComponent,
     ...LOGIN_COMPONENTS,
-    EngineItemDropdownComponent,
-    CronOptionsComponent,
-    IconComponent
+    IconComponent,
+    ...FORM_COMPONENTS,
+    TerminalComponent,
+    DebugOutputComponent,
+];
+
+const PIPES: Type<any>[] = [
+    DriverFormatPipe,
+    DateFromPipe,
+    FormatListPipe,
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [
-    CustomDropdownFieldComponent,
-    CustomSettingsFieldComponent,
+    ItemSearchFieldComponent,
+    SettingsFieldComponent,
+    DateFieldComponent,
+    TimeFieldComponent,
     ContextMenuComponent,
-]
+    SystemExecFieldComponent,
+    ObjectListFieldComponent,
+];
+
+const MATERIAL_MODULES: any[] = [
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatSnackBarModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    // MatProgressBarModule,
+    MatAutocompleteModule,
+    MatSelectModule,
+    MatTooltipModule,
+    MatMenuModule,
+    MatCheckboxModule,
+    MatSlideToggleModule,
+    MatChipsModule,
+    MatTabsModule,
+    MatCardModule,
+    MatExpansionModule,
+    CdkTableModule
+];
 
 @NgModule({
     declarations: [
         ...COMPONENTS,
+        ...PIPES,
         ...ENTRY_COMPONENT,
+        TriggerConditionComparisonFormComponent,
+        TriggerConditionTimeFormComponent,
     ],
     imports: [
         CommonModule,
-        ADropdownsModule,
         ASpinnerModule,
-        AButtonsModule,
-        AOverlayModule,
         FormsModule,
         APipesModule,
         ReactiveFormsModule,
         ACustomEventsModule,
-        ADynamicFormsModule,
-        ATabsModule,
         ScrollingModule,
+        ComposerModule,
+        ...MATERIAL_MODULES,
         RouterModule.forChild([])
     ],
     exports: [
-        ADropdownsModule,
         ASpinnerModule,
-        AButtonsModule,
         APipesModule,
-        AOverlayModule,
         ACustomEventsModule,
-        ADynamicFormsModule,
-        ACheckboxModule,
-        ATabsModule,
+        ComposerModule,
         ...COMPONENTS,
-        ...ENTRY_COMPONENT
-    ],
-    entryComponents: [
-        ...COMPONENTS,
-        ...ENTRY_COMPONENT
+        ...PIPES,
+        ...ENTRY_COMPONENT,
+        ...MATERIAL_MODULES
     ]
 })
 export class SharedContentModule {}

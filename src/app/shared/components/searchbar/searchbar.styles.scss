@@ -9,10 +9,10 @@ searchbar:host {
 .searchbar {
     position: relative;
     width: 100%;
-    min-height: $height + .5em;
+    min-height: $height + 0.5em;
     display: flex;
     align-items: center;
-    font-size: .9em;
+    font-size: 0.9em;
 }
 
 .field {
@@ -20,14 +20,14 @@ searchbar:host {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: .1em .75em;
-    background-color: rgba(#000, .2);
+    padding: 2px 0;
+    background-color: rgba(#fff, 0.1);
     caret-color: $color-primary;
     color: #fff;
     min-height: $height;
     height: $height;
     border-radius: 4px;
-    box-shadow: 0 1px 3px 0 rgba(#000, 0), 0 1px 1px 0 rgba(#000, 0), 0 2px 1px -1px rgba(#000, 0);
+    @include box-shadow(0);
     transition: width 300ms, color 300ms, background-color 300ms, box-shadow 300ms;
 
     @include respond-to(mobile) {
@@ -41,24 +41,24 @@ searchbar:host {
     }
 
     input {
-
         &::placeholder {
             transition: color 300ms;
-            color: rgba(#fff, .2);
+            color: rgba(#fff, 0.35);
         }
     }
 
     &.focus {
-        color: rgba(#000, .87);
+        color: rgba(#000, 0.87);
         background-color: #fff;
-        box-shadow: 0 1px 3px 0 rgba(#000, .2), 0 1px 1px 0 rgba(#000, .14), 0 2px 1px -1px rgba(#000, .12);
+        z-index: 200;
+        @include box-shadow;
 
         @include respond-to(mobile) {
             position: absolute;
             right: 0;
             width: calc(100vw - 5em);
-            min-height: $height - .5em;
-            height: $height - .5em;
+            min-height: $height - 0.25em;
+            height: $height - 0.25em;
         }
         .input {
             @include respond-to(mobile) {
@@ -67,9 +67,8 @@ searchbar:host {
         }
 
         input {
-
             &::placeholder {
-                color: rgba(#000, .54);
+                color: rgba(#000, 0.54);
             }
         }
 
@@ -91,48 +90,21 @@ input {
     font-size: 1em;
     background: none;
     outline: none;
-    color: rgba(#000, .87);
+    color: rgba(#000, 0.87);
     border: none;
     width: 100%;
-    padding: .5em;
+    padding: 0.5em 0;
 }
 
-img {
-    position: absolute;
-    top: .4em;
-    left: .4em;
-    height: 1.5em;
-    width: 1.5em;
-}
-
-.icon {
-    height: 1.2em;
-    width: 1.2em;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5em;
-
-    &:not(:first-child) {
-        @include respond-to(mobile) {
-            display: none;
+.dark-mode {
+    .field.focus {
+        background-color: #424242;
+        color: $font-light;
+        input {
+            color: $font-light;
+            &::placeholder {
+                color: rgba(#fff, 0.54);
+            }
         }
-    }
-
-    &.close {
-        color: rgba(#000, .54);
-
-        &:hover {
-            color: rgba(#000, .87);
-        }
-    }
-
-    .active {
-        color: $color-primary;
-    }
-
-    &.active {
-        color: $color-primary;
     }
 }

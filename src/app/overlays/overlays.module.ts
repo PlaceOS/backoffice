@@ -12,7 +12,10 @@ import { SystemLogModalComponent } from './system-log-modal/system-log-modal.com
 import { TriggerActionModalComponent } from './trigger-action-modal/trigger-action-modal.component';
 import { TriggerConditionModalComponent } from './trigger-condition-modal/trigger-condition-modal.component';
 import { ViewModuleStateModalComponent } from './view-module-state/view-module-state.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AuthSourceModalComponent } from './auth-source-modal/auth-source-modal.component';
+import { ViewResponseModalComponent } from './view-response-modal/view-response-modal.component';
+import { MetadataDetailsModalComponent } from './metadata-details-modal/metadata-details-modal.component';
 
 
 const OVERLAYS: Type<any>[] = [
@@ -23,7 +26,10 @@ const OVERLAYS: Type<any>[] = [
     SystemLogModalComponent,
     TriggerActionModalComponent,
     TriggerConditionModalComponent,
-    ViewModuleStateModalComponent
+    ViewModuleStateModalComponent,
+    AuthSourceModalComponent,
+    ViewResponseModalComponent,
+    MetadataDetailsModalComponent
 ];
 
 @NgModule({
@@ -33,12 +39,10 @@ const OVERLAYS: Type<any>[] = [
     imports: [
         CommonModule,
         FormsModule,
+        ReactiveFormsModule,
         SharedContentModule
     ],
     exports: [
-        ...OVERLAYS
-    ],
-    entryComponents: [
         ...OVERLAYS
     ]
 })

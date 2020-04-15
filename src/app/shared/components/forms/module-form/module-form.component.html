@@ -1,0 +1,140 @@
+<div class="module form" *ngIf="form">
+    <form [formGroup]="form">
+        <div class="field" *ngIf="form.controls.driver">
+            <label
+                for="driver"
+                [class.error]="form.controls.driver.invalid && form.controls.driver.touched"
+            >
+                Driver<span>*</span>:
+            </label>
+            <item-search-field
+                [service]="driver_service"
+                formControlName="driver"
+            ></item-search-field>
+            <div class="error" *ngIf="form.controls.driver.invalid && form.controls.driver.touched">
+                Driver is required
+            </div>
+        </div>
+        <ng-container *ngIf="!form.controls.driver || form.controls.driver.value">
+            <div class="field" *ngIf="form.controls.system && role === 'logic'">
+                <label
+                    for="driver"
+                    [class.error]="form.controls.system.invalid && form.controls.system.touched"
+                    >Control System<span *ngIf="role === 'logic'">*</span>:
+                </label>
+                <ng-container *ngIf="!readonly; else readonly_system">
+                    <item-search-field
+                        [service]="system_service"
+                        formControlName="system"
+                    ></item-search-field>
+                    <div
+                        class="error"
+                        *ngIf="form.controls.system.invalid && form.controls.system.touched"
+                    >
+                        Control System is required
+                    </div>
+                </ng-container>
+                <ng-template #readonly_system>
+                    <div class="value">{{ form.controls.system.value?.name }} <span>{{ form.controls.system.value?.id }}</span></div>
+                </ng-template>
+            </div>
+            <div class="fieldset">
+                <div class="field" *ngIf="form.controls.ip && role !== 'logic'">
+                    <label
+                        for="ip"
+                        [class.error]="form.controls.ip.invalid && form.controls.ip.touched"
+                    >
+                        IP Address<span *ngIf="role === 'ssh' || role === 'device'">*</span>:
+                    </label>
+                    <mat-form-field appearance="outline">
+                        <input matInput name="ip" placeholder="IP Address" formControlName="ip" />
+                        <mat-error *ngIf="form.controls.ip.invalid">
+                            A valid IP address is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="field" *ngIf="form.controls.port && role !== 'logic'">
+                    <label
+                        for="system-name"
+                        [class.error]="form.controls.port.invalid && form.controls.port.touched"
+                    >
+                        Port Number<span *ngIf="role === 'ssh'">*</span>:
+                    </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="system-name"
+                            type="number"
+                            placeholder="Port Number"
+                            formControlName="port"
+                        />
+                        <mat-error *ngIf="form.controls.port.invalid">
+                            A valid port number between 1 - 65535 is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="field" *ngIf="form.controls.tls && role !== 'logic'">
+                <mat-checkbox name="tls" formControlName="tls">TLS</mat-checkbox>
+            </div>
+            <div
+                class="field"
+                *ngIf="form.controls.udp && role !== 'logic' && role !== 'websocket'"
+            >
+                <mat-checkbox name="udp" formControlName="udp">UDP</mat-checkbox>
+            </div>
+            <div class="field" *ngIf="form.controls.makebreak && role !== 'logic'">
+                <mat-checkbox name="makebreak" formControlName="makebreak">Makebreak</mat-checkbox>
+            </div>
+            <div class="field" *ngIf="form.controls.ignore_connected && role !== 'logic'">
+                <mat-checkbox name="ignore-connected" formControlName="ignore_connected">
+                    Ignore Connected
+                </mat-checkbox>
+            </div>
+            <div class="field" *ngIf="form.controls.uri && role !== 'logic'">
+                <label
+                    for="uri"
+                    [class.error]="form.controls.uri.invalid && form.controls.uri.touched"
+                >
+                    URI<span *ngIf="role === 'websocket'">*</span>:
+                </label>
+                <mat-form-field appearance="outline">
+                    <input matInput name="uri" placeholder="Module URI" formControlName="uri" />
+                    <mat-error *ngIf="form.controls.uri.invalid">A valid URI is required</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.notes">
+                <label for="notes">Notes:</label>
+                <mat-form-field appearance="outline">
+                    <textarea
+                        matInput
+                        name="notes"
+                        placeholder="Module Notes"
+                        formControlName="notes"
+                    ></textarea>
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.settings_encryption_level">
+                <label for="encryption-level">Settings Encryption Level: </label>
+                <mat-form-field appearance="outline">
+                    <mat-select name="encryption-level" formControlName="settings_encryption_level">
+                        <mat-option *ngFor="let type of encryption_levels" [value]="type.id">
+                            {{ type.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.custom_name">
+                <label for="uri">Custom Name:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="uri"
+                        placeholder="Custom Name"
+                        formControlName="custom_name"
+                    />
+                </mat-form-field>
+            </div>
+        </ng-container>
+    </form>
+</div>

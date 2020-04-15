@@ -1,34 +1,24 @@
 <div class="container" [class.show]="show_sidebar">
-    <div class="sidebar" (tapped)="showSidebar()">
+    <div class="sidebar">
         <sidebar
             heading="Users"
-            [total]="total"
             [module]="module"
-            [list]="list"
-            (searchChange)="search($event)"
-            [loading]="loading"
             [close]="show_sidebar"
             (event)="sidebarEvent($event)"
         ></sidebar>
     </div>
-    <main (touchrelease)="showSidebar(false)">
+    <main (touchrelease)="show_sidebar = false">
         <item-display
+            name="user"
+            route="users"
             [item]="item"
             [loading]="loading_item"
-            name="user"
-            [active]="tab"
             [tabs]="[
-                { id: 'about', name: 'About', template: about, icon: { class: 'material-icons', value: 'info' } },
-                { id: 'history', name: 'History', template: history, icon: { class: 'material-icons', value: 'list' } }
+                { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
+                { id: 'history', name: 'History', icon: { class: 'backoffice-list' } }
             ]"
             (event)="itemEvent($event)"
         >
-            <ng-template #about>
-                <user-about [item]="item"></user-about>
-            </ng-template>
-            <ng-template #history>
-                <user-history [item]="item"></user-history>
-            </ng-template>
         </item-display>
     </main>
 </div>

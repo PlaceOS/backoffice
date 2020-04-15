@@ -1,5 +1,5 @@
 
-import { EngineUser } from '@acaprojects/ts-composer';
+import { EngineUser } from '@placeos/ts-client';
 
 import { humaniseDuration } from './general.utilities';
 

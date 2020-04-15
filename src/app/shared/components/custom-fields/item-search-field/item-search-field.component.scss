@@ -1,0 +1,25 @@
+
+:host,
+mat-form-field {
+    width: 100%;
+}
+
+app-icon {
+    font-size: 1.5em;
+    position: relative;
+    top: .15em;
+    left: -.15em;
+}
+
+.name {
+    display: flex;
+    align-items: center;
+    height: 1.1em;
+    line-height: 1em;
+}
+
+.email {
+    font-size: .6em;
+    opacity: .65;
+    line-height: 1.2em;
+}

@@ -1,0 +1,164 @@
+<div class="driver form" *ngIf="form">
+    <div class="fieldset">
+        <div class="field discovery" *ngIf="form.controls.repository_id && !editing">
+            <label for="repo">Repository: </label>
+            <item-search-field
+                name="repo"
+                [service]="discovery_service"
+                [ngModel]="base_repo"
+                (ngModelChange)="updateDriverList($event)"
+            ></item-search-field>
+        </div>
+        <div
+            class="field discovery"
+            *ngIf="form.controls.file_name && driver_list && driver_list.length && !editing"
+        >
+            <label for="driver">Driver Base: </label>
+            <item-search-field
+                name="driver"
+                [options]="driver_list"
+                [loading]="loading_drivers"
+                [ngModel]="base_driver"
+                (ngModelChange)="updateCommitList($event)"
+            ></item-search-field>
+        </div>
+        <div
+            class="field discovery"
+            *ngIf="form.controls.commit && commit_list && commit_list.length"
+        >
+            <label for="commit">Driver Commit: </label>
+            <item-search-field
+                name="commit"
+                [options]="commit_list"
+                [loading]="loading_commits"
+                [ngModel]="base_commit"
+                (ngModelChange)="setDriverBase($event)"
+            ></item-search-field>
+        </div>
+    </div>
+    <ng-container *ngIf="!loading; else load_state">
+    <form [formGroup]="form">
+        <ng-container *ngIf="(form.controls.commit && form.controls.commit.value) || base_commit">
+            <div class="field" *ngIf="form.controls.name">
+                <label
+                    for="driver-name"
+                    [class.error]="form.controls.name.invalid && form.controls.name.touched"
+                    >Name<span>*</span>:</label
+                >
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="driver-name"
+                        placeholder="Driver Name"
+                        formControlName="name"
+                        required
+                    />
+                    <mat-error *ngIf="form.controls.name.invalid"
+                        >Driver name is required</mat-error
+                    >
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.role">
+                <label for="role">Role: </label>
+                <mat-form-field appearance="outline">
+                    <mat-select name="role" formControlName="role">
+                        <mat-option *ngFor="let type of role_types" [value]="type.id">
+                            {{ type.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.description">
+                <label for="description">Description:</label>
+                <mat-form-field appearance="outline">
+                    <textarea
+                        matInput
+                        name="description"
+                        placeholder="Description"
+                        formControlName="description"
+                    ></textarea>
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.module_name">
+                <label
+                    for="module-name"
+                    [class.error]="
+                        form.controls.module_name.invalid && form.controls.module_name.touched
+                    "
+                    >Module Name<span>*</span>:</label
+                >
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="module-name"
+                        placeholder="Module Name"
+                        formControlName="module_name"
+                        required
+                    />
+                    <mat-error *ngIf="form.controls.module_name.invalid"
+                        >Module name is required</mat-error
+                    >
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.default_uri">
+                <label for="default-uri">Default URI:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="default-uri"
+                        placeholder="Default URI"
+                        formControlName="default_uri"
+                    />
+                </mat-form-field>
+            </div>
+            <div class="fieldset">
+                <div class="field" *ngIf="form.controls.default_port">
+                    <label
+                        for="default-port"
+                        [class.error]="
+                            form.controls.default_port.invalid && form.controls.default_port.touched
+                        "
+                    >
+                        Default Port Number:
+                    </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="default-port"
+                            type="number"
+                            placeholder="Port Number"
+                            formControlName="default_port"
+                        />
+                        <mat-error *ngIf="form.controls.default_port.invalid">
+                            A valid port number between 1 - 65535 is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="field" *ngIf="form.controls.ignore_connected">
+                    <mat-checkbox name="ignore-connected" formControlName="ignore_connected"
+                        >Ignore Connected</mat-checkbox
+                    >
+                </div>
+            </div>
+            <div class="field" *ngIf="form.controls.settings_encryption_level">
+                <label for="encryption-level">Settings Encryption Level: </label>
+                <mat-form-field appearance="outline">
+                    <mat-select name="encryption-level" formControlName="settings_encryption_level">
+                        <mat-option *ngFor="let type of encryption_levels" [value]="type.id">
+                            {{ type.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </ng-container>
+    </form>
+    </ng-container>
+</div>
+<ng-template #load_state>
+    <div class="info-block">
+        <div class="icon">
+            <mat-spinner diameter="48"></mat-spinner>
+        </div>
+        <div class="text">Loading driver details for commit...</div>
+    </div>
+</ng-template>

@@ -1,0 +1,66 @@
+<section class="execute" *ngIf="system && system.id && devices && devices.length > 0; else empty_state">
+    <div class="row">
+        <mat-form-field appearance="outline">
+            <mat-select #select [value]="active_module" (valueChange)="loadFunctions($event)" placeholder="Select a device">
+                <mat-option *ngFor="let option of devices || []" [value]="option">
+                    {{ option.module || option.name || "&lt;Unnamed&gt;" }} {{ option.index ? option.index : '' }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <ng-container *ngIf="active_module">
+            <mat-form-field appearance="outline" *ngIf="methods && methods.length; else empty_function_state">
+                <mat-select
+                    #select
+                    [value]="active_method"
+                    (valueChange)="selectFunction($event)"
+                    placeholder="Select a function"
+                >
+                    <mat-option *ngFor="let option of methods || []" [value]="option">
+                        {{ option.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </ng-container>
+        <button *ngIf="active_method && executable" [class.not-mobile]="true" mat-button [disabled]="!fields_valid" (tapped)="execute()">
+            Execute
+        </button>
+    </div>
+    <div class="row function" *ngIf="active_method">
+        <div class="fn-input">
+            <div class="bracket">{{active_method.name}}(</div>
+            <div class="arg" *ngFor="let arg of param_list; let i = index">
+                <span class="seperator" [class.solid]="arg[2] !== undefined || fields[arg[0]]"
+                    >{{(i > 0 ? ',&nbsp;' : '')}}</span
+                >
+                <input
+                    #argument
+                    [(ngModel)]="fields[arg[0]]"
+                    (ngModelChange)="checkFields()"
+                    [class.error]="error && error[arg[0]]"
+                    [style.width]="(.6 * (fields[arg[0]] || placeholder[arg[0]]).length + .3) + 'em'"
+                    [placeholder]="placeholder[arg[0]]"
+                    (keyup.enter)="nextField($event)"
+                    (keydown.,)="nextField($event)"
+                    (keyup.arrowright)="nextField($event)"
+                    (keyup.backspace)="previousField($event)"
+                    (keyup.arrowleft)="previousField($event)"
+                    (focus)="focused(i)"
+                />
+            </div>
+            <div class="bracket">)</div>
+        </div>
+    </div>
+    <button *ngIf="active_method && executable" [class.mobile-only]="true" mat-button [disabled]="!fields_valid" (tapped)="execute()">
+        Execute
+    </button>
+</section>
+<ng-template #empty_state>
+    <div class="info-block">
+        <div class="text">No running modules on the system</div>
+    </div>
+</ng-template>
+<ng-template #empty_function_state>
+    <div class="info-block">
+        <div class="text">No executable methods on the selected module</div>
+    </div>
+</ng-template>

@@ -8,6 +8,13 @@
 header {
     font-weight: bold;
     font-size: 1.1em;
+    margin-bottom: .5em;
+
+    &.settings {
+        position: relative;
+        top: .75em;
+        margin: 0;
+    }
 }
 
 .table-row {
@@ -15,6 +22,22 @@ header {
         width: 12em;
         min-width: 12em;
     }
+}
+
+.field {
+    padding: .5em;
+    display: flex;
+    align-items: center;
+
+    label {
+        font-size: .9em;
+        font-weight: 500;
+        margin-right: 1em;
+    }
+}
+
+.value {
+    user-select: all;
 }
 
 section {

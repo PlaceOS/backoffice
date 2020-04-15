@@ -3,15 +3,13 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-
-import { ComposerModule } from '@acaprojects/ngx-composer';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { ROUTES } from './systems.routes';
 
 import { SystemsComponent } from './systems.component';
 import { SystemAboutComponent } from './system-about/system-about.component';
-import { SystemDevicesComponent } from './system-devices/system-devices.component';
+import { SystemModulesComponent } from './system-modules/system-modules.component';
 import { SystemTriggersComponent } from './system-triggers/system-triggers.component';
 import { SystemZonesComponent } from './system-zones/system-zones.component';
 import { SharedContentModule } from 'src/app/shared/shared.module';
@@ -20,14 +18,13 @@ import { SharedContentModule } from 'src/app/shared/shared.module';
     declarations: [
         SystemsComponent,
         SystemAboutComponent,
-        SystemDevicesComponent,
+        SystemModulesComponent,
         SystemTriggersComponent,
         SystemZonesComponent,
     ],
     imports: [
         CommonModule,
         FormsModule,
-        ComposerModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule,
         DragDropModule

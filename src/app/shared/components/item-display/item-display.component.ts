@@ -1,9 +1,33 @@
-
-import { Component, Input, TemplateRef, Output, EventEmitter, OnInit, SimpleChanges } from '@angular/core';
+import {
+    Component,
+    Input,
+    TemplateRef,
+    Output,
+    EventEmitter,
+    OnInit,
+    ViewChild,
+    ElementRef
+} from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { EngineResource, EngineDriver, EngineDriverRole } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
-import { copyToClipboard } from '../../utilities/general.utilities';
+import { DialogEvent } from '../../utilities/types.utilities';
+import { ApplicationIcon } from '../../utilities/settings.interfaces';
+import {
+    ItemCreateUpdateModalComponent,
+    CreateEditModalData
+} from 'src/app/overlays/item-modal/item-modal.component';
+import { Router } from '@angular/router';
+
+export interface ApplicationTab {
+    id: string;
+    name: string;
+    icon: ApplicationIcon;
+    template: TemplateRef<any>;
+    count?: number;
+}
 
 @Component({
     selector: 'item-display',
@@ -11,48 +35,119 @@ import { copyToClipboard } from '../../utilities/general.utilities';
     styleUrls: ['./item-display.styles.scss']
 })
 export class ItemDisplayComponent extends BaseDirective implements OnInit {
+    /** Name of the type of item being shown */
     @Input() public name: string;
-    @Input() public item: any;
+    /** Base route of parent component */
+    @Input() public route: string;
+    /** Resource to display details of */
+    @Input() public item: EngineResource<any>;
+    /** Whether resouce data is being loaded */
     @Input() public loading: boolean;
+    /** Whether item is allowed to be edited and deleted */
     @Input() public has_change = true;
-    @Input() public tabs: { id: string, name: string, icon: { class: string, value: string }, template: TemplateRef<any> }[] = [];
-    @Input() public active = 'about';
+    /** Tabs available to the item type */
+    @Input() public tabs: ApplicationTab[] = [];
+    /** Emitter for events on the item display */
     @Output() public event = new EventEmitter();
+    /** ID of the active tab */
+    public active_tab: string;
 
-    constructor(private service: ApplicationService) {
+    @ViewChild('content') public content_el: ElementRef<HTMLDivElement>;
+
+    /** Whether dark mode is enabled */
+    public get dark_mode(): boolean {
+        return this._service.Users.dark_mode;
+    }
+
+    public get is_scrolled() {
+        if (this.content_el) {
+            return this.content_el.nativeElement.scrollTop > 0;
+        }
+        return false;
+    }
+
+    public get driver_type(): string {
+        const item: any = this.item;
+        if (!item.role) {
+            return '';
+        }
+        const driver: EngineDriver = item || {};
+        switch (driver.role) {
+            case EngineDriverRole.Device:
+                return 'Device';
+            case EngineDriverRole.SSH:
+                return 'SSH';
+            case EngineDriverRole.Service:
+                return 'Service';
+            case EngineDriverRole.Websocket:
+                return 'Websocket';
+        }
+        return 'Logic';
+    }
+
+    constructor(private _service: ApplicationService, private _dialog: MatDialog, private _router: Router) {
         super();
     }
 
     public ngOnInit() {
-        this.subscription('right', this.service.Hotkeys.listen(['ArrowRight'], () => this.changeTab(1)));
-        this.subscription('left', this.service.Hotkeys.listen(['ArrowLeft'], () => this.changeTab(-1)));
+        this.subscription(
+            'right',
+            this._service.Hotkeys.listen(['ArrowRight'], () => this.changeTab(1))
+        );
+        this.subscription(
+            'left',
+            this._service.Hotkeys.listen(['ArrowLeft'], () => this.changeTab(-1))
+        );
     }
 
-    public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.tabs) {
-            this.tabs.forEach((i, idx) => i.id = i.id || `${idx}`);
-        }
-    }
-
-    public changeTab(offset: number) {
-        if (!this.tabs || this.tabs.length === 0) { return; }
-        let index = 0;
-        for (const tab of this.tabs) {
-            if (tab.id === this.active) {
-                index = this.tabs.indexOf(tab);
+    public changeTab(direction) {
+        if (!this.item) { return; }
+        console.log('Item:', this.item);
+        this.timeout('change_tab', () => {
+            const index = this.tabs.findIndex(tab => this._router.url.indexOf(tab.id) >= 0);
+            if (index >= 0 && this.tabs[index + direction]) {
+                this._router.navigate([`/${this.route}`, this.item.id, this.tabs[index + direction].id]);
             }
-        }
-        index += offset;
-        if (index >= this.tabs.length) { index = this.tabs.length - 1; }
-        if (index < 0) { index = 0; }
-        this.active = this.tabs[index].id;
-        this.event.emit({ type: 'tab', value: this.active });
+        }, 100);
     }
 
+    /** Copy the ID of the active item to the clipboard */
     public copy() {
         if (this.item && this.item.id) {
-            copyToClipboard(this.item.id);
-            this.service.notifyInfo('ID copied to clipboard');
+            document.execCommand('copy');
+            this._service.notifyInfo('ID copied to clipboard');
         }
+    }
+
+    /**
+     * Open modal to edit the active item
+     */
+    public edit() {
+        const ref = this._dialog.open<ItemCreateUpdateModalComponent, CreateEditModalData>(
+            ItemCreateUpdateModalComponent,
+            {
+                data: {
+                    service: (this.item as any)._service,
+                    item: this.item,
+                    form: [] as any,
+                    name: this.name
+                }
+            }
+        );
+        this.subscription(
+            'confirm_ref',
+            ref.componentInstance.event.subscribe((e: DialogEvent) => {
+                if (e.reason === 'done') {
+                    this.item = e.metadata.item;
+                }
+            })
+        );
+    }
+
+    /**
+     * Delete the active item
+     */
+    public delete() {
+        this.event.emit({ type: 'delete' });
     }
 }

@@ -27,8 +27,8 @@ describe('SettingsService', () => {
     });
 
     it('should initialise settings from "assets/settings.json"', (done) => {
-        service.isSetup(state => {
-            expect(service.setup).toBe(state);
+        service.initialised.subscribe(state => {
+            expect(service.is_initialised).toBe(state);
             if (state) {
                 expect(service.get('test')).toBe(test_data.test);
                 expect(service.app_name).toBe(test_data.app.name);
@@ -38,7 +38,7 @@ describe('SettingsService', () => {
     });
 
     it('should get nested settings', (done) => {
-        service.isSetup(state => {
+        service.initialised.subscribe(state => {
             if (state) {
                 expect(service.get('nest_test')).toBe(test_data.nest_test);
                 expect(service.get('nest_test.level_1')).toBe(test_data.nest_test.level_1);
@@ -51,7 +51,7 @@ describe('SettingsService', () => {
     it('should get localStorage settings', (done) => {
         localStorage.setItem('test_key', 'a-value');
         localStorage.setItem('test_key2', `${Math.floor(Math.random() * 999999)}`);
-        service.isSetup(state => {
+        service.initialised.subscribe(state => {
             if (state) {
                 expect(service.get('local.test_key')).toBe(localStorage.getItem('test_key'));
                 expect(service.get('local.test_key2')).toBe(localStorage.getItem('test_key2'));
@@ -63,7 +63,7 @@ describe('SettingsService', () => {
     it('should get sessionStorage settings', (done) => {
         sessionStorage.setItem('test_key', 'a-value');
         sessionStorage.setItem('test_key2', `${Math.floor(Math.random() * 999999)}`);
-        service.isSetup(state => {
+        service.initialised.subscribe(state => {
             if (state) {
                 expect(service.get('session.test_key')).toBe(sessionStorage.getItem('test_key'));
                 expect(service.get('session.test_key2')).toBe(sessionStorage.getItem('test_key2'));
@@ -73,7 +73,7 @@ describe('SettingsService', () => {
     });
 
     it('should set debug if exists', (done) => {
-        service.isSetup(state => {
+        service.initialised.subscribe(state => {
             if (state) {
                 expect(service.get('nest_test')).toBe(test_data.nest_test);
                 expect(service.get('nest_test.level_1')).toBe(test_data.nest_test.level_1);
@@ -84,7 +84,7 @@ describe('SettingsService', () => {
     });
 
     it('should return `null` for non-existing settings', (done) => {
-        service.isSetup(state => {
+        service.initialised.subscribe(state => {
             if (state) {
                 expect(service.get('test_something_non_existent')).toBe(null);
                 done();

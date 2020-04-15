@@ -8,5 +8,6 @@ import { BaseDirective } from '../../globals/base.directive';
     styleUrls: ['./icon.component.scss']
 })
 export class IconComponent extends BaseDirective {
+    /** Icon to display */
     @Input() public icon: ApplicationIcon;
 }

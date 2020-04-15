@@ -1,14 +1,39 @@
-<div class="container">
-    <header>Execute Command</header>
-    <section>{{item?.name}}</section>
+<div class="container" *ngIf="item">
+    <header *ngIf="item.description">Description</header>
+    <section class="description" *ngIf="item.description" [innerHTML]="parsed_description"></section>
+    <header *ngIf="system_list && system_list.length">Execute Command</header>
+    <section *ngIf="system_list && system_list.length">
+        <mat-form-field appearance="outline">
+            <mat-select [(ngModel)]="active_system" placeholder="Select system">
+                <mat-option *ngFor="let system of system_list" [value]="system">
+                {{system.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <system-exec-field *ngIf="active_system && active_system.id" [system]="active_system"></system-exec-field>
+    </section>
     <section class="tags" *ngIf="item && tag_list">
-        <div class="label">Tags:</div>
-        <div class="value">
-            <div class="tag" *ngFor="let item of tag_list">{{item}}</div>
+        <label for="tags">Tags:</label>
+        <div class="value" *ngIf="tag_list && tag_list.length; else empty_tag_state">
+            <mat-chip-list name="tags">
+                <mat-chip *ngFor="let tag of tag_list">{{ tag }}</mat-chip>
+            </mat-chip-list>
         </div>
     </section>
-    <header>Settings</header>
-    <section>
-        <settings-display [model]="item?.settings"></settings-display>
+    <hr />
+    <header class="settings">Settings</header>
+    <section *ngIf="!loading_settings; else load_state">
+        <a-settings-form [merge]="true" [id]="item.id" [settings]="item.settings"></a-settings-form>
     </section>
 </div>
+<ng-template #load_state>
+    <div class="info-block">
+        <div class="icon">
+            <mat-spinner diameter="48"></mat-spinner>
+        </div>
+        <div class="text">Loading zone settings...</div>
+    </div>
+</ng-template>
+<ng-template #empty_tag_state>
+    <div class="value padded">&lt;No Tags&gt;</div>
+</ng-template>

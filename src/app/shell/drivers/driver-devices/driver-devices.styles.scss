@@ -5,6 +5,14 @@
     padding: 1em;
 }
 
+mat-form-field {
+    width: 100%;
+
+    app-icon {
+        font-size: 1.25em;
+    }
+}
+
 .list {
     margin-top: .5em;
 }
@@ -37,6 +45,11 @@
     background-color: #000;
     border-radius: .8em;
     transition: margin 250ms, height 250ms, width 250ms, background-color 300ms;
+
+    &.inactive {
+        background-color: $error;
+    }
+
     &.active {
         background-color: $success;
         height: .75em;

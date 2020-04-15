@@ -1,34 +1,34 @@
-<div class="container" #item_list [@listAnimation]="model.list ? model.list.length : 0" (scroll)="atBottom()">
-    <ng-container *ngIf="!model.searching" >
-        <div class="item" #list_item *ngFor="let item of (model.list || [])" [title]="item.name">
-            <div class="name" (touchrelease)="goto(item)">{{item.name}}</div>
-            <div class="details">
-                <div [class]="'chip ' + item.type" (touchrelease)="goto(item)">{{item.type}}</div>
-                <div class="id" (touchrelease)="goto(item)">{{item.id}}</div>
-            </div>
+<div class="container" [class.dark-mode]="dark_mode" #item_list [@listAnimation]="results ? results.length : 0" (scroll)="atBottom()">
+    <ng-container *ngIf="!loading" >
+        <div class="item" #list_item *ngFor="let item of (results || [])" [title]="item.name">
+            <a class="name" [routerLink]="['/' + item.type, item.id]">{{item.name}}</a>
+            <a class="details" [routerLink]="['/' + item.type, item.id]">
+                <div [class]="'chip ' + item.type">{{item.type}}</div>
+                <div class="id">{{item.id}}</div>
+            </a>
             <div class="options">
-                <div class="icon" (touchrelease)="edit(item)">
-                    <i class="material-icons">edit</i>
-                </div>
-                <div class="icon" (touchrelease)="goto(item)">
-                    <i class="material-icons">visibility</i>
-                </div>
+                <button mat-icon-button (touchrelease)="edit(item)">
+                    <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+                </button>
+                <a mat-icon-button [routerLink]="['/' + item.type, item.id]">
+                    <app-icon [icon]="{ class: 'backoffice-eye' }"></app-icon>
+                </a>
             </div>
         </div>
     </ng-container>
-    <div class="info-block" center *ngIf="model.searching">
+    <div class="info-block" center *ngIf="loading">
         <div class="icon">
             <a-spinner circle-ring color="#F44336"></a-spinner>
         </div>
         <div class="text">Searching...</div>
     </div>
-    <div class="info-block" center *ngIf="!model.searching && (!model.list || model.list.length <= 0)">
+    <div class="info-block" center *ngIf="!loading && (!results || results.length <= 0)">
         <div class="icon">
-            <i class="material-icons">close</i>
+            <i class="backoffice-cross"></i>
         </div>
         <div class="text">No matches found</div>
     </div>
-    <div class="more" *ngIf="model.getting_more">
+    <div class="more" *ngIf="loading">
         <a-spinner double-circle-ring color="#F44336"></a-spinner>
     </div>
 </div>

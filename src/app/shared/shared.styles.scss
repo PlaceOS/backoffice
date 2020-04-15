@@ -14,32 +14,34 @@ $pending: #ff8f00;
 $pending-light: #ffc046;
 $pending-dark: #c56000;
 
-$error: #d32f2f;
+$error: #f44336;
 $error-light: #ff6f60;
 $error-dark: #ab000d;
 
-$color-primary: #b71c1c;
-$color-primary-light: #f05545;
-$color-primary-dark: #7f0000;
+$color-primary: #C92366;
+$color-primary-light: #cd568a;
+$color-primary-dark: #b6005d;
 
-$color-secondary: #37474f;
-$color-secondary-light: #62727b;
-$color-secondary-dark: #102027;
+$color-secondary: #5C64FF;
+$color-secondary-light: #7272e7;
+$color-secondary-dark: #5557d1;
 
-$color-develop: #1976d2;
-$color-develop-light: #63a4ff;
-$color-develop-dark: #004ba0;
+$color-develop: #f0f0f0;
+$color-develop-light: #fff;
+$color-develop-dark: #e0e0e0;
 
 $background: #263238;
-$background-light: #4f5b62;
-$background-dark: #000a12;
+$background-light: #455a64;
+$background-dark: #202632;
+
+$header-color: #0A0D2E;
 
 /*===========*\
 ||   Fonts   ||
 \*===========*/
 
-$font: "Roboto Slab", "Roboto", "Verdana", "Helvetica Neue", Arial, sans-serif;
-$heading-font: $font;
+$font: "Roboto", "Verdana", "Helvetica Neue", Arial, sans-serif;
+$heading-font: "Young", $font;
 $mono-font: "Fira Code", monospace;
 
 $base-size: 16px;
@@ -56,6 +58,12 @@ $header-height: 4em;
 /*============*\
 ||   Mixins   ||
 \*============*/
+
+@mixin hide-text-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 @mixin box-shadow($depth: 1, $spread: 1) {
     box-shadow: 0 (1px * $spread) (3px * $spread) 0 rgba(#000, .2 * $depth),

@@ -3,7 +3,7 @@
 
 .container {
     position: relative;
-    background-color: $color-secondary;
+    background-color: $background-dark;
     height: 100%;
     box-shadow: 0 1px 3px 0 rgba(#000,.2), 0 1px 1px 0 rgba(#000,.14), 0 2px 1px -1px rgba(#000,.12);
     z-index: 999;
@@ -20,20 +20,6 @@
             pointer-events: auto;
         }
     }
-}
-
-.tooltip {
-    font-size: .6em;
-    padding: .5em;
-    margin: .5em;
-    white-space: nowrap;
-    text-align: center;
-    font-weight: 400;
-    color: $font-light;
-    background-color: $background-light;
-    border-radius: 4px;
-    @include box-shadow;
-    pointer-events: none;
 }
 
 .item {
@@ -62,7 +48,7 @@
         width: 0px;
         opacity: 0;
         transition: opacity 200ms, width 200ms;
-        background-color: $success-dark;
+        background-color: $color-primary-dark;
     }
 
     &:hover {

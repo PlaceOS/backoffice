@@ -1,23 +1,25 @@
-<div class="container" [class.loader]="loading" [class.edit]="item">
-    <div class="header">
-        <div class="text">Add {{name}}</div>
-        <div class="close" (touchrelease)="fn.close()">
-            <i class="material-icons">close</i>
-        </div>
-    </div>
-    <div class="body">
+<header>
+    <h3 mat-dialog-title>Add {{ name }}</h3>
+    <button mat-icon-button mat-dialog-close>
+        <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
+    </button>
+</header>
+<mat-dialog-content>
+    <div class="body" *ngIf="!loading; else load_state">
         <div class="content">
-            <engine-item-dropdown [service]="service" [label]="'Select ' + name" [(model)]="item"></engine-item-dropdown>
-        </div>
-        <div class="footer">
-            <button widget (tapped)="fn.close()">Cancel</button>
-            <button widget name="inverse" type="submit" [disabled]="!item" (tapped)="submit()">{{ 'Add' }}</button>
+            <item-search-field [service]="service" [(ngModel)]="item"></item-search-field>
         </div>
     </div>
+</mat-dialog-content>
+<mat-dialog-actions *ngIf="!loading">
+    <button mat-button class="inverse" mat-dialog-close>Cancel</button>
+    <button mat-button type="submit" (tapped)="submit()" [disabled]="!item">Add</button>
+</mat-dialog-actions>
+<ng-template #load_state>
     <div class="info-block">
         <div class="icon">
             <a-spinner circle-ring color="rgba(0,0,0, .54)"></a-spinner>
         </div>
         <div class="text">Processing request...</div>
     </div>
-</div>
+</ng-template>

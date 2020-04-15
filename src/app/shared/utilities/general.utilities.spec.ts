@@ -1,4 +1,4 @@
-import { isAndroidChrome, isMobileSafari, isMobileDevice, unique, humaniseDuration, filterList, matchToHighlight } from "./general.utilities";
+import { isAndroidChrome, isMobileSafari, isMobileModule, unique, humaniseDuration, filterList, matchToHighlight } from "./general.utilities";
 
 describe('General Utilities', () => {
 
@@ -15,14 +15,14 @@ describe('General Utilities', () => {
         }
     }
 
-    it('isMobileDevice should return true if user agent contain correct text', () => {
+    it('isMobileModule should return true if user agent contain correct text', () => {
         const devices = 'Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini'.split('|');
         for (const device of devices) {
             setUserAgent(window, device);
-            expect(isMobileDevice()).toBeTruthy();
+            expect(isMobileModule()).toBeTruthy();
         }
         setUserAgent(window, 'Chrome');
-        expect(isMobileDevice()).toBeFalsy();
+        expect(isMobileModule()).toBeFalsy();
     });
 
     it('isMobileSafari should return true if user agent contain correct text', () => {

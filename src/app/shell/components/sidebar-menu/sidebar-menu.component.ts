@@ -1,10 +1,11 @@
-
-import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
+import { ComposerService } from '@placeos/composer';
+import { first } from 'rxjs/operators';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
-import { ApplicationLink } from 'src/app/shared/utilities/settings.interfaces';
+import { ApplicationInternalLink } from 'src/app/shared/utilities/settings.interfaces';
 
 @Component({
     selector: 'sidebar-menu',
@@ -12,40 +13,71 @@ import { ApplicationLink } from 'src/app/shared/utilities/settings.interfaces';
     styleUrls: ['./sidebar-menu.styles.scss']
 })
 export class SidebarMenuComponent extends BaseDirective implements OnInit {
-    /** List of available menu items for the application */
-    public menu_items: ApplicationLink[];
     /** Whether the sidebar menu should be shown */
-    public show: boolean;
+    @Input() public show: boolean;
+    /** Emitter for changes to the sidebar show state */
+    @Output() public showChange = new EventEmitter<boolean>();
+    /** List of available menu items for the application */
+    public menu_items: ApplicationInternalLink[];
     /** Route of the shown tooltip */
     public tooltip: string;
 
-    constructor(private service: ApplicationService, private router: Router) {
+    constructor(
+        private _service: ApplicationService,
+        private _composer: ComposerService,
+        private _router: Router
+    ) {
         super();
     }
 
     public ngOnInit() {
-        this.init();
+        this._service.initialised.pipe(first(_ => _)).subscribe(() => this.init());
     }
 
     public init() {
-        if (!this.service.is_ready) {
-            return this.timeout('init', () => this.init());
+        this.menu_items = this._service.setting('app.general.menu');
+        const user = this._service.Users.user.getValue();
+        /** Only allow metrics if a URL has be set */
+        if (!this._composer.auth.authority.metrics) {
+            this.menu_items = this.menu_items.filter(
+                item => item.route && item.route.indexOf('metrics') < 0
+            );
+            if (this._router.url.indexOf('metrics') >= 0) {
+                this._router.navigate([]);
+            }
         }
-        this.menu_items = this.service.setting('app.general.menu');
-        this.subscription('show', this.service.listen('APP.show_menu', (state) => {
-            this.show = state;
-            this.timeout('cancel_close', () => this.clearTimeout('close'), 50);
-        }));
+        /** Filter out items with insufficient permissions */
+        this.menu_items = this.menu_items.filter(
+            item => !item.needs_role || !!(user as any)[item.needs_role]
+        );
+        this.subscription(
+            'up',
+            this._service.Hotkeys.listen(['Control', 'Shift', 'ArrowUp'], () => this.changeSelected(-1))
+        );
+        this.subscription(
+            'down',
+            this._service.Hotkeys.listen(['Control', 'Shift', 'ArrowDown'], () => this.changeSelected(1))
+        );
+    }
+
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes.show) {
+            this.clearTimeout('close');
+        }
     }
 
     /**
      * Delayed close of the sidebar menu. Mobile Only
      */
     public close() {
-        this.timeout('close', () => {
-            this.show = false;
-            this.service.set('APP.show_menu', this.show);
-        }, 100);
+        this.timeout(
+            'close',
+            () => {
+                this.show = false;
+                this.showChange.emit(this.show);
+            },
+            100
+        );
     }
 
     /**
@@ -53,5 +85,13 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
      */
     public cancelClose() {
         this.timeout('cancel_close', () => this.clearTimeout('close'), 10);
+    }
+
+    private changeSelected(offset: number = 1) {
+        const index = this.menu_items.findIndex(item => this._router.url.indexOf(item.route) >= 0);
+        const new_index = index + offset;
+        if (this.menu_items[new_index]) {
+            this._router.navigate([this.menu_items[new_index].route]);
+        }
     }
 }

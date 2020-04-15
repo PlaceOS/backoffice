@@ -1,11 +1,28 @@
-import { Component, OnInit } from '@angular/core';
-import { OverlayItem } from '@acaprojects/ngx-overlays';
+import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { FormGroup } from '@angular/forms';
+
+import {
+    EngineSystem,
+    EngineTrigger,
+    TriggerComparison,
+    TriggerTimeCondition
+} from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
+import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
-import * as dayjs from 'dayjs';
-import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
+import { generateTriggerConditionForm } from 'src/app/shared/utilities/data/triggers.utilities';
+
+export interface TriggerConditionData {
+    /** Item to add/update the trigger on */
+    system: EngineSystem;
+    /** Trigger to add/update */
+    trigger: EngineTrigger;
+    /** Trigger Condition to edit */
+    condition?: TriggerComparison | TriggerTimeCondition;
+}
 
 @Component({
     selector: 'trigger-condition-modal',
@@ -13,112 +30,116 @@ import { OVERLAY_REGISTER } from 'src/app/shared/globals/overlay-register';
     styleUrls: ['./trigger-condition-modal.styles.scss']
 })
 export class TriggerConditionModalComponent extends BaseDirective implements OnInit {
+    /** Emitter for events on the modal */
+    @Output() public event = new EventEmitter<DialogEvent>();
+    /** Whether actions are loading */
+    public loading: boolean;
+    /** Form fields for trigger condition */
+    public form: FormGroup;
 
-    public model: any = {};
+    /** Whether the triggers is new or not */
+    public get is_new(): boolean {
+        return !!this._data.condition;
+    }
 
-    constructor(private _item: OverlayItem, private _service: ApplicationService) {
+    /** Template system to use for status variable bindings */
+    public get system(): EngineSystem {
+        return this._data.system;
+    }
+
+    /** Template system to use for status variable bindings */
+    public get trigger(): EngineTrigger {
+        return this._data.trigger;
+    }
+
+    constructor(
+        private _dialog: MatDialogRef<TriggerConditionModalComponent>,
+        @Inject(MAT_DIALOG_DATA) private _data: TriggerConditionData,
+        private _service: ApplicationService
+    ) {
         super();
     }
 
     public ngOnInit() {
-        this.model.form = {};
-        this.model.errors = {};
-        this.model.condition_types = [
-            { id: 'webhook', name: 'Webhook' },
-            { id: 'compare', name: 'Compare values' },
-            { id: 'cron', name: 'Particular time' }
-        ];
-        this.model.webhook_types = [
-            { id: 'ignore', name: 'Ignore payload(most secure)' },
-            { id: 'execute_before', name: 'Execute payload before running actions' },
-            { id: 'execute_after', name: 'Execute payload after running actions' },
-            { id: 'payload_only', name: 'Execute payload only(actions never run)' },
-        ];
-        this.model.time_types = ['minute', 'hour', 'day', 'week', 'month', 'year'];
-        const date = dayjs().month(0).date(1);
-        const end = date.add(1, 'M');
-        this.model.days_of_month = [];
-        for (; date.isBefore(end, 'd'); date.add(1, 'd')) {
-            this.model.days_of_month.push(date.format('Do'));
+        this.form = generateTriggerConditionForm(this._data.condition).form;
+    }
+
+    public save() {
+        this.form.markAllAsTouched();
+        if (!this.form.valid) {
+            return;
         }
-        date.month(0).date(1);
-        end.month(0).date(1).add(1, 'y');
-        this.model.months = [];
-        for (; date.isBefore(end, 'd'); date.add(1, 'M')) {
-            this.model.months.push(date.format('MMMM'));
+        this.loading = true;
+        if (this.form.controls.condition_type.value === 'compare') {
+            this.updateComparisons();
+        } else {
+            this.updateTimeDependents();
         }
-        this.model.compare_types = [
-            { id: 'equal', name: 'equal to' },
-            { id: 'not_equal', name: 'not equal to' },
-            { id: 'greater_than', name: 'greater than' },
-            { id: 'greater_or_equal', name: 'greater than or equal' },
-            { id: 'less_than', name: 'less than' },
-            { id: 'less_or_equal', name: 'less than or equal' },
-            { id: 'and', name: 'truthy AND' },
-            { id: 'or', name: 'truthy OR' },
-            { id: 'xor', name: 'truthy XOR' },
-        ];
-    }
-
-    public init() {
-        if (this.model.item) {
-            this.model.form = {
-                name: this.model.item.name,
-                tags: this.model.item.tags,
-                description: this.model.item.description,
-                settings: JSON.parse(JSON.stringify(this.model.item.settings || {}))
-            };
-        }
-    }
-
-    public validate() {
-        this.model.errors = {};
-        const form = this.model.form || {};
-        this.model.has_errors = Object.keys(this.model.errors).length > 0;
-    }
-
-    public new() {
-        if (this.model.loading) { return; }
-        setTimeout(() => {
-            this.model.loading = true;
-            this._service.Zones.add(this.model.form).then((item) => {
-                this._service.notifySuccess('Successfully added new zone');
-                this.model.id = item.id;
-                this._item.post('event', 'Success');
-            }, () => {
-                this._service.notifyError('Failed to add new zone');
-                this.model.loading = false;
-            });
-        }, 300);
-    }
-
-    public edit() {
-        if (!this.model.item || this.model.loading) { return; }
-        setTimeout(() => {
-            const form = {};
-            for (const k in this.model.form) {
-                if (k === 'settings' && JSON.stringify(this.model.form[k] || {}) !== JSON.stringify(this.model.item[k] || {})) {
-                    form[k] = this.model.form[k];
-                } else if (this.model.form.hasOwnProperty(k) && this.model.form[k] !== this.model.item[k]) {
-                    form[k] = this.model.form[k];
-                }
+        this.trigger.save().then(
+            item => {
+                this.event.emit({ reason: 'done', metadata: { trigger: item } });
+                this._service.notifySuccess(`Successfully ${this.is_new ? 'added' : 'updated'} condition to trigger`);
+                this._dialog.close();
+            },
+            err => {
+                this.trigger.clearPendingChanges();
+                this.loading = false;
+                this._service.notifyError(`Error ${this.is_new ? 'adding' : 'updating'} condition to trigger. Error: ${err.message || err}`);
             }
-            if (Object.keys(form).length <= 0) {
-                this._service.notifyInfo('No changes have been made');
-            } else {
-                this.model.loading = true;
-                this._service.Zones.update(this.model.item.id, form).then((item) => {
-                    this._service.notifySuccess(`Successfully updated zone "${this.model.item.id}"`);
-                    this.model.id = item.id;
-                    this._item.post('event', 'Success');
-                }, () => {
-                    this._service.notifyError(`Failed to update zone "${this.model.item.id}"`);
-                    this.model.loading = false;
-                });
-            }
+        );
+    }
 
-        }, 300);
+    /**
+     * Update the comparison list by replace an exisiting item or add a new item
+     */
+    private updateComparisons() {
+        const old_values = [...this.trigger.conditions.comparisons];
+        const new_value: TriggerComparison = {
+            left: this.form.controls.left.value,
+            operator: this.form.controls.operator.value,
+            right: this.form.controls.right.value
+        };
+        if (this._data.condition) {
+            const old_value = JSON.stringify(this._data.condition);
+            const index = old_values.findIndex(cmp => JSON.stringify(cmp) === old_value);
+            if (index >= 0) {
+                old_values.splice(index, 1, new_value);
+            }
+        } else {
+            old_values.push(new_value);
+        }
+        const updated_conditions = {
+            ...this.trigger.conditions,
+            comparisons: old_values
+        };
+        this.trigger.storePendingChange('conditions', updated_conditions);
+    }
+
+
+    /**
+     * Update the time dependent list by replace an exisiting item or add a new item
+     */
+    private updateTimeDependents() {
+        const old_values = [...this.trigger.conditions.time_dependents] || [];
+        const new_value = {
+            type: this.form.controls.time_type.value,
+            time: +(this.form.controls.time.value / 1000).toFixed(0),
+            cron: this.form.controls.cron.value
+        };
+        new_value.cron ? delete new_value.time : delete new_value.cron;
+        if (this._data.condition) {
+            const old_value = JSON.stringify(this._data.condition);
+            const index = old_values.findIndex(time => JSON.stringify(time) === old_value);
+            if (index >= 0) {
+                old_values.splice(index, 1, new_value);
+            }
+        } else {
+            old_values.push(new_value);
+        }
+        const updated_conditions = {
+            ...this.trigger.conditions,
+            time_dependents: old_values
+        };
+        this.trigger.storePendingChange('conditions', updated_conditions);
     }
 }
-
-OVERLAY_REGISTER.push({ id: 'trigger-condition', config: { content: TriggerConditionModalComponent, config: 'modal' } });
