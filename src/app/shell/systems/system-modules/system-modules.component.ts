@@ -9,12 +9,12 @@ import { ApplicationActionLink } from 'src/app/shared/utilities/settings.interfa
 import {
     ConfirmModalComponent,
     ConfirmModalData,
-    CONFIRM_METADATA
+    CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import {
     ViewModuleStateModalComponent,
-    ModuleStateModalData
+    ModuleStateModalData,
 } from 'src/app/overlays/view-module-state/view-module-state.component';
 import { EngineDebugService } from 'src/app/services/debug.service';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
@@ -23,7 +23,7 @@ import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal
 @Component({
     selector: 'system-modules',
     templateUrl: './system-modules.template.html',
-    styleUrls: ['./system-modules.styles.scss']
+    styleUrls: ['./system-modules.styles.scss'],
 })
 export class SystemModulesComponent extends BaseDirective implements OnInit, OnChanges {
     /** System to grab the devices for */
@@ -43,20 +43,30 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         {
             id: 'power',
             name: 'Toggle Power',
-            icon: { type: 'icon', class: 'backoffice-power-plug' }
+            icon: { type: 'icon', class: 'backoffice-power-plug' },
         },
         { id: 'state', name: 'View State', icon: { type: 'icon', class: 'backoffice-eye' } },
         { id: 'reload', name: 'Reload Module', icon: { type: 'icon', class: 'backoffice-cw' } },
-        { id: 'remove', name: 'Remove Module', icon: { type: 'icon', class: 'backoffice-trash' } }
+        { id: 'remove', name: 'Remove Module', icon: { type: 'icon', class: 'backoffice-trash' } },
+        {
+            id: 'load',
+            name: 'Load Module',
+            icon: { type: 'icon', class: 'backoffice-arrow-with-circle-up' },
+        },
     ];
 
     public offline_options: ApplicationActionLink[] = [
         {
             id: 'power',
             name: 'Toggle Power',
-            icon: { type: 'icon', class: 'backoffice-power-plug' }
+            icon: { type: 'icon', class: 'backoffice-power-plug' },
         },
-        { id: 'remove', name: 'Remove Module', icon: { type: 'icon', class: 'backoffice-trash' } }
+        { id: 'remove', name: 'Remove Module', icon: { type: 'icon', class: 'backoffice-trash' } },
+        {
+            id: 'load',
+            name: 'Load Module',
+            icon: { type: 'icon', class: 'backoffice-arrow-with-circle-up' },
+        },
     ];
     /** Function for excluding modules already within this system */
     public readonly exclude_fn = (item: EngineModule) =>
@@ -86,7 +96,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item', item => {
+            this._service.listen('BACKOFFICE.active_item', (item) => {
                 this.item = item;
                 this.loadModules();
             })
@@ -110,9 +120,9 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         this._service.Modules.query({
             control_system_id: this.item.id,
             complete: true,
-            offset
+            offset,
         } as any).then(
-            list => {
+            (list) => {
                 list.sort(
                     (a, b) => this.item.modules.indexOf(a.id) - this.item.modules.indexOf(b.id)
                 );
@@ -143,6 +153,9 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                 case 'remove':
                     this.remove(device);
                     break;
+                case 'load':
+                    this.loadModule(device);
+                    break;
             }
         }
     }
@@ -160,7 +173,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                     this._service.notifySuccess('Module successfully stopped');
                     (device as any).running = false;
                 },
-                err => {
+                (err) => {
                     this.hide_exec = false;
                     if (typeof err === 'string' && err.length < 64) {
                         this._service.notifyError(err);
@@ -180,7 +193,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                     this._service.notifySuccess('Module successfully started');
                     (device as any).running = true;
                 },
-                err => {
+                (err) => {
                     this.hide_exec = false;
                     if (typeof err === 'string' && err.length < 64) {
                         this._service.notifyError(err);
@@ -202,7 +215,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
      */
     public reload(device: EngineModule) {
         this._service.Modules.show(device.id).then(
-            item => {
+            (item) => {
                 for (const k in item) {
                     if (item.hasOwnProperty(k)) {
                         device[k] = item[k];
@@ -228,8 +241,8 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                 data: {
                     title: 'Reload module?',
                     content: `New driver code will be loaded and the device settings will be reloaded.`,
-                    icon: { type: 'icon', class: 'backoffice-install' }
-                }
+                    icon: { type: 'icon', class: 'backoffice-install' },
+                },
             }
         );
         this.subscription(
@@ -240,8 +253,8 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                         ? device.driver.reload()
                         : this._service.Drivers.reload(device.driver_id)
                     ).then(
-                        _ => this._service.notifySuccess('Driver successfully reloaded.'),
-                        err => this._service.notifyError(err.message || err)
+                        (_) => this._service.notifySuccess('Driver successfully reloaded.'),
+                        (err) => this._service.notifyError(err.message || err)
                     );
                     ref.close();
                     this.unsub('confirm_ref');
@@ -250,10 +263,20 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         );
     }
 
+    public loadModule(device: EngineModule) {
+        this._service.Modules.load(device.id).then(
+            () =>
+                this._service.notifySuccess(
+                    `Successfully loaded module "${device.name || device.id}"`
+                ),
+            (err) => this._service.notifyError(`Error loading module. Error: ${err.message || err}`)
+        );
+    }
+
     /** View Results of the execute */
     private viewDetails(content: any) {
         this._dialog.open<ViewResponseModalComponent>(ViewResponseModalComponent, {
-            data: { content }
+            data: { content },
         });
     }
 
@@ -270,8 +293,8 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                     data: {
                         title: 'Change order?',
                         content: `Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.`,
-                        icon: { type: 'icon', class: 'backoffice-layers' }
-                    }
+                        icon: { type: 'icon', class: 'backoffice-layers' },
+                    },
                 }
             );
             this.subscription(
@@ -289,7 +312,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                                 ref.close();
                                 this.unsub('confirm_ref');
                             },
-                            err => {
+                            (err) => {
                                 this.hide_exec = false;
                                 ref.componentInstance.loading = null;
                                 this._service.notifyError(
@@ -311,8 +334,8 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                 data: {
                     title: 'Remove module?',
                     content: `Remove ${device.driver_id} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
-                    icon: { type: 'icon', class: 'backoffice-trash' }
-                }
+                    icon: { type: 'icon', class: 'backoffice-trash' },
+                },
             }
         );
         this.subscription(
@@ -328,7 +351,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                             ref.close();
                             this.unsub('confirm_ref');
                         },
-                        err => {
+                        (err) => {
                             this.hide_exec = false;
                             this._service.notifyError(
                                 `Error removing module. Error: ${err.message || err}`
@@ -351,15 +374,15 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             data: {
                 item: new EngineModule(this._service.Modules, {
                     control_system_id: this.item.id,
-                    control_system: this.item
+                    control_system: this.item,
                 }),
                 service: this._service.Modules,
-                readonly: true
-            }
+                readonly: true,
+            },
         });
         this.subscription(
             'modal_events',
-            ref.componentInstance.event.subscribe(event => {
+            ref.componentInstance.event.subscribe((event) => {
                 if (event.reason === 'done') {
                     this.hide_exec = true;
                     this._service.Systems.addModule(this.item.id, event.metadata.item.id).then(
@@ -368,12 +391,12 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                             this.item = new EngineSystem(this._service.Systems, {
                                 ...this.item,
                                 modules: this.item.modules.concat(event.metadata.item.id),
-                                version: (this.item as any)._version++
+                                version: (this.item as any)._version++,
                             });
                             this._service.set('BACKOFFICE.active_item', this.item);
                             this.timeout('reload_module_list', () => this.loadModules(), 1000);
                         },
-                        err => {
+                        (err) => {
                             this.hide_exec = false;
                         }
                     );
@@ -405,7 +428,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                 this.item = new EngineSystem(this._service.Systems, {
                     ...this.item,
                     modules: this.item.modules.concat(id),
-                    version: (this.item as any)._version++
+                    version: (this.item as any)._version++,
                 });
                 this._service.notifySuccess('Successfully added device to system');
                 this.loadModules();
