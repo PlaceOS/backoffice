@@ -36,6 +36,10 @@ header {
     }
 }
 
+.value {
+    user-select: all;
+}
+
 section {
     padding: .5em .25em;
 }

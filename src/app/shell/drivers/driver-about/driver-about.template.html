@@ -1,8 +1,16 @@
 <div class="container" *ngIf="item">
     <section>
         <div class="field">
+            <label>Compiled:</label>
+            <div class="value">{{ compiled || 'false' }}</div>
+        </div>
+        <div class="field">
             <label>Commit:</label>
             <div class="value">{{ item.commit }}</div>
+        </div>
+        <div class="field">
+            <label>File Name:</label>
+            <div class="value">{{ item.file_name }}</div>
         </div>
         <div class="field">
             <label>Module Name:</label>

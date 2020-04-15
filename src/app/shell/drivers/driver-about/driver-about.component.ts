@@ -16,6 +16,8 @@ import { ApplicationService } from 'src/app/services/app.service';
 export class DriverAboutComponent extends BaseDirective {
     /** Item to render */
     @Input() public item: EngineDriver;
+    /** Whether driver has a compiled binary on the server */
+    public compiled: boolean;
 
     /** Whether application is loading settings for item */
     public get loading_settings(): boolean {
@@ -33,6 +35,8 @@ export class DriverAboutComponent extends BaseDirective {
                 this.item = item;
             })
         );
+        this._service.Drivers.isCompiled(this.item.id)
+            .then(_ => this.compiled = true, _ => this.compiled = false)
     }
 
     public reloadDriver() {
