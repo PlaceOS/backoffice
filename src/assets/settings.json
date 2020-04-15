@@ -13,7 +13,7 @@
     "app": {
         "title": "PlaceOS",
         "name": "PlaceOS",
-        "description": "PlaceOS Frontend made in Angular 8+",
+        "description": "PlaceOS Frontend made in Angular 9+",
         "short_name": "Engine",
         "code": "ENGINE",
         "login": {
