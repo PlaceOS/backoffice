@@ -58,7 +58,7 @@ d_gulp.task('check:flags', () => {
 d_gulp.task('settings:update', () => {
     const s = JSON.parse(JSON.stringify(settings));
     s.composer.route = argv.route ? argv.route : baseHref;
-    if (argv.demo) {
+    if (argv.demo || argv.mock) {
         prod_settings.mock = true;
     }
     return fs.outputJson('./dist/assets/settings.json', merge(s, prod_settings), { spaces: 4 })

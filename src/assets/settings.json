@@ -3,6 +3,7 @@
     "build": "local-dev",
     "env": "dev",
     "debug": true,
+    "mock": true,
     "composer": {
         "domain": "",
         "route": "",
