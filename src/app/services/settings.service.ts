@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 
 import { BaseClass } from '../shared/globals/base.class';
 import { HashMap } from '../shared/utilities/types.utilities';
+import { VERSION } from 'src/environments/version';
 import { getItemWithKeys } from '../shared/utilities/general.utilities';
-import { version, build, core_version } from '../shared/globals/application';
 
 import * as dayjs from 'dayjs';
 
@@ -27,6 +27,7 @@ export type ConsoleStream = 'debug' | 'warn' | 'log' | 'error';
     providedIn: 'root'
 })
 export class SettingsService extends BaseClass {
+
     /** Map of settings */
     private _settings: SettingsMap = { api: {}, local: {}, session: {} };
     /** Store for promises */
@@ -37,11 +38,10 @@ export class SettingsService extends BaseClass {
     constructor(private http: HttpClient) {
         super();
         const now = dayjs();
-        const built = now.isSame(build, 'd')
-            ? `Today at ${build.format('h:mmA')}`
-            : build.format('D MMM YYYY, h:mmA');
-        this.log('CORE', `${core_version}`, null, 'debug', true);
-        this.log('APP', `${version} | Built: ${built}`, null, 'debug', true);
+        const build = dayjs(VERSION.time);
+        const built = now.isSame(build, 'd') ? `Today at ${build.format('h:mmA')}` : build.format('D MMM YYYY, h:mmA');
+        this.log('CORE', `${VERSION.core_version}`, null, 'debug', true);
+        this.log('APP', `${VERSION.version} - ${VERSION.hash} | Built: ${built}`, null, 'debug', true);
         this.init();
     }
 
@@ -63,9 +63,7 @@ export class SettingsService extends BaseClass {
     }
 
     /** Whether settings service has initialised */
-    public get app_name() {
-        return this._app_name;
-    }
+    public get app_name() { return this._app_name; }
 
     /**
      * Log data to the browser console
@@ -75,13 +73,7 @@ export class SettingsService extends BaseClass {
      * @param stream Stream to emit the console on. 'debug', 'log', 'warn' or 'error'
      * @param force Whether to force message to be emitted when debug is disabled
      */
-    public log(
-        type: string,
-        msg: string,
-        args?: any,
-        stream: ConsoleStream = 'debug',
-        force: boolean = false
-    ) {
+    public log(type: string, msg: string, args?: any, stream: ConsoleStream = 'debug', force: boolean = false) {
         if (window.debug || force) {
             const colors: string[] = ['color: #E91E63', 'color: #3F51B5', 'color: default'];
             if (args) {
@@ -106,8 +98,7 @@ export class SettingsService extends BaseClass {
             keys.shift();
             value = getItemWithKeys(keys, this._settings.local);
         } else {
-            value =
-                getItemWithKeys(keys, this._settings.api) ||
+            value = getItemWithKeys(keys, this._settings.api) ||
                 getItemWithKeys(keys, this._settings.session) ||
                 getItemWithKeys(keys, this._settings.local);
         }
@@ -124,9 +115,7 @@ export class SettingsService extends BaseClass {
             for (let i = 0; i < store.length; i++) {
                 const key = store.key(i);
                 const item = store.getItem(key);
-                if (item) {
-                    this._settings[name][key] = item;
-                }
+                if (item) { this._settings[name][key] = item; }
             }
         }
     }
@@ -136,30 +125,34 @@ export class SettingsService extends BaseClass {
      * @param name Namespace to add file data to
      * @param file URL to file to load setting data from
      */
-    private async loadFromFile(
-        name: string,
-        file: string = 'assets/settings.json',
-        tries: number = 0
-    ) {
+    private async loadFromFile(name: string, file: string = 'assets/settings.json', tries: number = 0) {
         if (file !== 'assets/settings.json' && tries > 5) {
+            return Promise.resolve();
+        }
+        const file_name = file.split('/')[file.split('/').length - 1];
+        console.log('File name:', file_name, window[file_name]);
+        // Check if data has been loaded into the global space
+        if (window[file_name] instanceof Object) {
+            this._settings[name] = { ...(this._settings[name] || {}), ...window[file_name] };
             return Promise.resolve();
         }
         const key = `load|${name}|${file}`;
         if (!this._promises[key]) {
             this._promises[key] = new Promise<void>((resolve, reject) => {
                 this.http.get(file).subscribe(
-                    data => {
+                    (data) => {
                         this._settings[name] = { ...(this._settings[name] || {}), ...(data || {}) };
-                    },
-                    e => {
+                    }, (e) => {
                         this.log('Settings', `Failed to load settings from "${file}"`);
                         this._promises[key] = null;
-                        this.loadFromFile(name, file, ++tries).then(() => resolve());
-                    },
-                    () => resolve()
+                        this.timeout(`load_${file_name}`, () => {
+                            this.loadFromFile(name, file, ++tries).then(() => resolve());
+                        }, 2000);
+                    }, () => resolve()
                 );
             });
         }
         return this._promises[key];
     }
+
 }
