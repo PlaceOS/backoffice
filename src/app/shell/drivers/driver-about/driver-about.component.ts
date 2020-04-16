@@ -35,8 +35,7 @@ export class DriverAboutComponent extends BaseDirective {
                 this.item = item;
             })
         );
-        this._service.Drivers.isCompiled(this.item.id)
-            .then(_ => this.compiled = true, _ => this.compiled = false)
+        this.checkCompiled();
     }
 
     public reloadDriver() {
@@ -74,6 +73,14 @@ export class DriverAboutComponent extends BaseDirective {
                 })
             );
         }
+    }
+
+    public checkCompiled() {
+        this._service.Drivers.isCompiled(this.item.id)
+            .then(_ => this.compiled = true, _ => {
+                this.compiled = false;
+                this.timeout('compiled', () => this.checkCompiled(), 1000)
+            })
     }
 
 }

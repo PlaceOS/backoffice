@@ -3,6 +3,7 @@
         <div class="field">
             <label>Compiled:</label>
             <div class="value">{{ compiled || 'false' }}</div>
+            <mat-spinner diameter="32" *ngIf="!compiled"></mat-spinner>
         </div>
         <div class="field">
             <label>Commit:</label>
