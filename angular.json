@@ -94,10 +94,6 @@
                 ],
                 "serviceWorker": true,
                 "ngswConfigPath": "ngsw-config.json"
-            },
-            "dev": {
-                "serviceWorker": true,
-                "ngswConfigPath": "ngsw-config.json"
             }
           }
         },
