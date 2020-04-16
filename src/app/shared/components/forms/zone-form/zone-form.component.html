@@ -67,15 +67,5 @@
                 ></textarea>
             </mat-form-field>
         </div>
-        <div class="field" *ngIf="form.controls.settings_encryption_level">
-            <label for="encryption-level">Settings Encryption Level: </label>
-            <mat-form-field appearance="outline">
-                <mat-select name="encryption-level" formControlName="settings_encryption_level">
-                    <mat-option *ngFor="let type of encryption_levels" [value]="type.id">
-                    {{type.name}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
     </form>
 </div>

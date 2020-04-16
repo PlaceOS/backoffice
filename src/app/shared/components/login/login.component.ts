@@ -14,7 +14,7 @@ import { first } from 'rxjs/operators';
 export class LoginComponent extends BaseDirective implements OnInit {
     public login_form: FormGroup;
     /** Name of the component contents to show */
-    public show: 'login' | 'forgot';
+    public show: 'login' | 'forgot' | 'register';
     /** Whether a user action is being processed */
     public loading: boolean;
     /** Logo of the application/organisation */

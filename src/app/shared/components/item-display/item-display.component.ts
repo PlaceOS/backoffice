@@ -13,7 +13,7 @@ import { EngineResource, EngineDriver, EngineDriverRole } from '@placeos/ts-clie
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
-import { DialogEvent } from '../../utilities/types.utilities';
+import { DialogEvent, Identity } from '../../utilities/types.utilities';
 import { ApplicationIcon } from '../../utilities/settings.interfaces';
 import {
     ItemCreateUpdateModalComponent,
@@ -34,13 +34,13 @@ export interface ApplicationTab {
     templateUrl: './item-display.template.html',
     styleUrls: ['./item-display.styles.scss']
 })
-export class ItemDisplayComponent extends BaseDirective implements OnInit {
+export class ItemDisplayComponent<T extends Identity = any> extends BaseDirective implements OnInit {
     /** Name of the type of item being shown */
     @Input() public name: string;
     /** Base route of parent component */
     @Input() public route: string;
     /** Resource to display details of */
-    @Input() public item: EngineResource<any>;
+    @Input() public item: T;
     /** Whether resouce data is being loaded */
     @Input() public loading: boolean;
     /** Whether item is allowed to be edited and deleted */

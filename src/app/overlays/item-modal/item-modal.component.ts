@@ -17,7 +17,7 @@ import {
 import { FormGroup } from '@angular/forms';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { DialogEvent, EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, EngineServiceLike, Identity } from 'src/app/shared/utilities/types.utilities';
 import {
     generateSystemsFormFields,
     FormDetails
@@ -35,11 +35,11 @@ import {
 } from 'src/app/shared/utilities/data/triggers.utilities';
 import { generateRepositoryFormFields } from 'src/app/shared/utilities/data/repositories.utilities';
 
-export interface CreateEditModalData {
+export interface CreateEditModalData<T extends Identity = any> {
     /** Service associated with the item being created/edited */
     service: EngineServiceLike;
     /** Item being worked on */
-    item: EngineResource<any>;
+    item: T;
     /** Form fields for item */
     form?: any[];
     /** Name of the type of item being worked on */

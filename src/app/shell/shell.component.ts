@@ -31,6 +31,8 @@ export class AppShellComponent extends BaseDirective implements OnInit {
     public user: EngineUser;
     /** Global search filter string */
     public filter: string;
+    /** Whether sidebar menu should be shown */
+    public show: boolean;
 
     /** Active environment */
     public get env(): string {

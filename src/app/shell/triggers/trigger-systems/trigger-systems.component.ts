@@ -63,7 +63,7 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges,
     /**
      * Delete the trigger from system
      */
-    protected delete(trigger: EngineTrigger) {
+    public delete(trigger: EngineTrigger) {
         if (trigger) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,

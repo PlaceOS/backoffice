@@ -100,7 +100,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
         }
     }
 
-    protected deleteApplication(item: EngineApplication) {
+    public deleteApplication(item: EngineApplication) {
         if (item) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,

@@ -93,7 +93,7 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
         );
     }
 
-    protected removeModule(item: EngineModule) {
+    public removeModule(item: EngineModule) {
         if (item) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,

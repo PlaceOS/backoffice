@@ -34,6 +34,8 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
     public used_settings: EngineSettings[] = [];
     /** List of available settings to view */
     public available_levels = this.levels;
+    /** Index of the active settings tab */
+    public level_index: number;
 
     /** Current user */
     public get user(): EngineUser {
@@ -51,7 +53,7 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
     }
 
     /** Currently shown settings */
-    public get shown_option(): Identity {
+    public get shown_option(): { id: EncryptionLevel, name: string, active?: boolean } {
         return this.available_levels.find(i => i.id === this.encryption_level);
     }
 
@@ -88,7 +90,7 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
     }
 
     /** Displayable encryption levels for settings */
-    public get levels(): Identity[] {
+    public get levels(): any[] {
         const levels: Identity[] = [
             { id: EncryptionLevel.None, name: 'Unencrypted', active: true },
             {

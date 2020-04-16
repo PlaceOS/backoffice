@@ -70,6 +70,7 @@ import { SamlSourceFormComponent } from './components/forms/saml-source-form/sam
 import { ObjectListFieldComponent } from './components/custom-fields/object-list-field/object-list-field.component';
 import { DebugOutputComponent } from './components/debug-output/debug-output.component';
 import { SettingsFormComponent } from './components/forms/settings-form/settings-form.component';
+import { ADatePickerModule } from '@acaprojects/ngx-date-picker';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -156,6 +157,7 @@ const MATERIAL_MODULES: any[] = [
         APipesModule,
         ReactiveFormsModule,
         ACustomEventsModule,
+        ADatePickerModule,
         ScrollingModule,
         ComposerModule,
         ...MATERIAL_MODULES,
@@ -165,6 +167,7 @@ const MATERIAL_MODULES: any[] = [
         ASpinnerModule,
         APipesModule,
         ACustomEventsModule,
+        ADatePickerModule,
         ComposerModule,
         ...COMPONENTS,
         ...PIPES,

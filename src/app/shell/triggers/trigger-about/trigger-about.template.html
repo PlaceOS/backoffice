@@ -30,7 +30,7 @@
                 <div class="group comparisons">
                     <div
                         class="item"
-                        *ngFor="let comparison of comparisons; let i = index; trackBy:i"
+                        *ngFor="let comparison of comparisons"
                     >
                         <div class="handle"></div>
                         <div class="details">
@@ -53,7 +53,7 @@
                 <div class="group time-dependents">
                     <div
                         class="item"
-                        *ngFor="let time of time_dependents; let i = index; trackBy:i"
+                        *ngFor="let time of time_dependents"
                     >
                         <div class="handle"></div>
                         <div class="details">
@@ -92,7 +92,7 @@
                 >
                     <div
                         class="item"
-                        *ngFor="let action of functions; let i = index; trackBy:i"
+                        *ngFor="let action of functions"
                         cdkDrag
                     >
                         <div class="handle" cdkDragHandle>
@@ -122,7 +122,7 @@
                 >
                     <div
                         class="item"
-                        *ngFor="let action of mailers; let i = index; trackBy:i"
+                        *ngFor="let action of mailers"
                         cdkDrag
                     >
                         <div class="handle" cdkDragHandle>
