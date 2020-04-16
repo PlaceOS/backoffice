@@ -4,10 +4,16 @@ const { resolve, relative } = require('path');
 const { writeFileSync } = require('fs-extra');
 const dayjs = require('dayjs');
 
-const gitInfo = gitDescribeSync({
-    dirtyMark: false,
-    dirtySemver: false
-});
+let gitInfo = {};
+
+try {
+    gitInfo = gitDescribeSync({
+        dirtyMark: false,
+        dirtySemver: false
+    });
+} catch (e) {
+    gitInfo.hash = 'Unknown';
+}
 
 gitInfo.version = version;
 gitInfo.core_version = core_version;
