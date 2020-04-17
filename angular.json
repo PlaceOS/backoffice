@@ -38,6 +38,11 @@
                 "glob": "**/*",
                 "input": "node_modules/monaco-editor/min/",
                 "output": "./assets/monaco/"
+              },
+              {
+                "input": "src/environments/dev",
+                "output": "/assets",
+                "glob": "*.js"
               }
             ],
             "styles": [
@@ -51,10 +56,22 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "assets": [
+                "src/favicon.ico",
+                "src/assets",
+                "src/manifest.webmanifest",
+                "src/oauth-resp.html",
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/monaco-editor/min/",
+                  "output": "./assets/monaco/"
                 },
                 {
-                    "replace": "src/assets/settings.js",
-                    "with": "src/environments/settings.prod.js"
+                  "input": "src/environments/prod",
+                  "output": "/assets",
+                  "glob": "*.js"
                 }
               ],
               "baseHref": "/backoffice/",
@@ -86,11 +103,23 @@
                     {
                         "replace": "src/environments/environment.ts",
                         "with": "src/environments/environment.prod.ts"
-                    },
-                    {
-                        "replace": "src/assets/settings.js",
-                        "with": "src/environments/settings.staging.js"
                     }
+                ],
+                "assets": [
+                  "src/favicon.ico",
+                  "src/assets",
+                  "src/manifest.webmanifest",
+                  "src/oauth-resp.html",
+                  {
+                    "glob": "**/*",
+                    "input": "node_modules/monaco-editor/min/",
+                    "output": "./assets/monaco/"
+                  },
+                  {
+                    "input": "src/environments/staging",
+                    "output": "/assets",
+                    "glob": "*.js"
+                  }
                 ],
                 "serviceWorker": true,
                 "ngswConfigPath": "ngsw-config.json"
@@ -136,6 +165,11 @@
                 "glob": "**/*",
                 "input": "node_modules/monaco-editor/min/",
                 "output": "./assets/monaco/"
+              },
+              {
+                "input": "src/environments/dev",
+                "output": "/assets",
+                "glob": "*.js"
               }
             ],
             "styles": [

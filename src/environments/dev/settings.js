@@ -1,7 +1,7 @@
 var SETTINGS = {
     env: 'dev',
     debug: true,
-    mock: true,
+    mock: false,
     composer: {},
     app: {},
 };

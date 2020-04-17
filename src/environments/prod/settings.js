@@ -12,7 +12,7 @@ const SETTINGS = {
 
 SETTINGS.composer = {
     domain: '',
-    route: '/backoffice/',
+    route: '/backoffice',
     protocol: '',
     use_domain: false,
     local_login: false,
