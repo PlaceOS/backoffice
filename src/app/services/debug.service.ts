@@ -28,6 +28,8 @@ export class EngineDebugService extends BaseClass {
     private _bound_modules: EngineModule[] = [];
     /** Mapping of module IDs to display names */
     private _module_names: HashMap<string> = {};
+    /** Whether debug console is enabled */
+    private _enabled: boolean;
 
     /** Current list of debug events */
     public get event_list(): EngineDebugEvent[] {
@@ -54,7 +56,7 @@ export class EngineDebugService extends BaseClass {
 
     /** Whether there are modules listening for debug messages */
     public get is_listening(): boolean {
-        return this._bound_modules.length > 0;
+        return this._enabled;
     }
 
     constructor(private _composer: ComposerService) {
@@ -95,6 +97,7 @@ export class EngineDebugService extends BaseClass {
                 index,
                 name: 'debug'
             };
+            this._enabled = true;
             this._composer.realtime.debug(options).then(() => {
                 this.subscription(`debug_${module.id}`, () => this._composer.realtime.ignore(options));
                 this._bound_modules.push(module);
