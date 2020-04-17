@@ -11,7 +11,7 @@ export function generateZoneFormFields(zone: EngineZone): FormDetails {
     const fields: HashMap<FormControl> = {
         id: new FormControl(zone.id),
         name: new FormControl(zone.name || '', [Validators.required]),
-        tag_list: new FormControl(((zone as any).tags || '').split('') || []),
+        tag_list: new FormControl(zone.tags ? zone.tags.split(',') : []),
         description: new FormControl(zone.description || ''),
         parent_zone: new FormControl(null),
         parent_id: new FormControl(zone.parent_id)
