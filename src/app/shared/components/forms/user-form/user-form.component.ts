@@ -9,4 +9,8 @@ import { FormGroup } from '@angular/forms';
 export class UserFormComponent {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
+    /** Whether password should be visible in plaintext */
+    public show_password: boolean;
+    /** Whether password confirm should be visible in plaintext */
+    public show_confirm: boolean;
 }

@@ -25,8 +25,8 @@ export function generateUserFormFields(user: EngineUser): FormDetails {
         staff_id: new FormControl(user.staff_id || ''),
         support: new FormControl(user.support || false),
         sys_admin: new FormControl(user.sys_admin || false),
-        password: new FormControl(undefined),
-        confirm_password: new FormControl(undefined, [validateMatch('password')]),
+        password: new FormControl('', !user.id ? [Validators.required] : undefined),
+        confirm_password: new FormControl('', [validateMatch('password')]),
     };
     const subscriptions = [];
     for (const key in fields) {
@@ -38,6 +38,9 @@ export function generateUserFormFields(user: EngineUser): FormDetails {
             );
         }
     }
+    subscriptions.push(fields.password.valueChanges.subscribe(() => {
+        fields.confirm_password.updateValueAndValidity();
+    }));
     return {
         form: new FormGroup(fields),
         subscriptions
