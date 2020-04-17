@@ -60,7 +60,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
      */
     public loadZones(offset: number = 0) {
         if (!this.item) { return; }
-        this._service.Zones.query({ control_system_id: this.item.id, offset }).then(
+        this._service.Systems.listZones(this.item.id).then(
             list => {
                 list.sort((a, b) => this.item.zones.indexOf(a.id) - this.item.zones.indexOf(b.id));
                 this.zones = list;
@@ -131,7 +131,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                                 this.loading.emit(false);
                                 this.item = item;
                                 this._service.notifySuccess(
-                                    `Remove zone "${this.new_zone}" from system`
+                                    `Remove zone "${zone.name}" from system`
                                 );
                                 ref.close();
                                 this.unsub('confirm_ref');
@@ -139,7 +139,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                             err => {
                                 this.loading.emit(false);
                                 this._service.notifySuccess(
-                                    `Error removing "${this.new_zone}" from system. Error: ${err}`
+                                    `Error removing "${zone.name}" from system. Error: ${err}`
                                 );
                                 ref.close();
                                 this.unsub('confirm_ref');
@@ -173,7 +173,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                         if (e.reason === 'done') {
                             ref.componentInstance.loading = 'Adding zone to system...';
                             this._service.Systems.update(this.item.id, {
-                                ...this.item,
+                                ...this.item.toJSON(),
                                 zones: new_list
                             }).then(
                                 item => {
@@ -187,11 +187,11 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                                     ref.close();
                                     this.unsub('confirm_ref');
                                 },
-                                () => {
+                                (err) => {
                                     ref.componentInstance.loading = null;
                                     this.loading.emit(false);
                                     this._service.notifyError(
-                                        `Error adding zone "${this.new_zone}"`
+                                        `Error adding zone "${this.new_zone}". Error: ${err.message || err}`
                                     );
                                 }
                             );
