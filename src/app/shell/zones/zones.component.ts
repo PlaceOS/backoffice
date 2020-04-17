@@ -43,28 +43,23 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
         this._service.title = 'Zones';
     }
 
-    protected loadValues() {
-        const query: any = { offset: 0, limit: 1, zone_id: this.item.id };
+    protected async loadValues() {
         // Get system count
-        this._service.Systems.query(query).then(
-            list => (this.system_count = this._service.Systems.last_total || list.length || 0)
-        );
-        const tquery: any = { offset: 0, limit: 1, zone_id: this.item.id };
+        const query: any = { offset: 0, limit: 1, zone_id: this.item.id };
+        let list: any[] = await this._service.Systems.query(query);
+        this.system_count = this._service.Systems.last_total || list.length || 0;
         // Get trigger count
-        this._service.Triggers.query(tquery).then(
-            list =>
-                (this.trigger_count = this._service.Triggers.last_total || list.length || 0)
-        );
-        const cquery: any = { offset: 0, limit: 1, parent: this.item.id };
+        const tquery: any = { offset: 0, limit: 1, zone_id: this.item.id };
+        list = await this._service.Triggers.query(tquery);
+        console.log('Triggers:', this._service.Triggers.last_total);
+        this.trigger_count = this._service.Triggers.last_total || list.length || 0;
         // Get child zone count
-        this._service.Zones.query(cquery).then(
-            list =>
-                (this.child_count = this._service.Zones.last_total || list.length || 0)
-        );
+        const cquery: any = { offset: 0, limit: 1, parent: this.item.id };
+        list = await this._service.Zones.query(cquery);
+        this.child_count = this._service.Zones.last_total || list.length || 0;
         // Get metadata
-        this._service.Zones.listMetadata(this.item.id).then(
-            map => this.metadata_count = Object.keys(map).length
-        );
+        const map = await this._service.Zones.listMetadata(this.item.id);
+        this.metadata_count = Object.keys(map).length;
     }
 
     /**
