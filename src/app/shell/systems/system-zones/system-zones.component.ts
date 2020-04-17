@@ -11,6 +11,7 @@ import {
     CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { unique } from 'src/app/shared/utilities/general.utilities';
 
 @Component({
     selector: 'system-zones',
@@ -117,7 +118,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                     data: {
                         title: 'Remove zone?',
                         content: `<p>Are you sure you want remove zone "${zone.name}" from the system?</p>Configuration will be updated immediately.`,
-                        icon: { type: 'icon', class: 'backoffice-export' }
+                        icon: { type: 'icon', class: 'backoffice-trash' }
                     }
                 }
             );
@@ -126,8 +127,9 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                 ref.componentInstance.event.subscribe((e: DialogEvent) => {
                     if (e.reason === 'done') {
                         this.loading.emit(true);
-                        this.item.removeZone(zone.id).then(
-                            item => {
+                        this.item.storePendingChange('zones', this.item.zones.filter(id => id !== zone.id));
+                        this.item.save().then(
+                            (item: any) => {
                                 this.loading.emit(false);
                                 this.item = item;
                                 this._service.notifySuccess(
@@ -154,7 +156,6 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
     public joinZone() {
         if (this.new_zone) {
             if (this.item.zones.indexOf(this.new_zone) < 0) {
-                const new_list = [...this.item.zones, this.new_zone].filter(i => !!i);
                 this.loading.emit(true);
                 const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                     ConfirmModalComponent,
@@ -172,12 +173,9 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                     ref.componentInstance.event.subscribe((e: DialogEvent) => {
                         if (e.reason === 'done') {
                             ref.componentInstance.loading = 'Adding zone to system...';
-                            this._service.Systems.update(this.item.id, {
-                                ...this.item.toJSON(),
-                                zones: new_list
-                            }).then(
-                                item => {
-                                    this.new_zone = null;
+                            this.item.storePendingChange('zones', unique([...this.item.zones, this.new_zone]));
+                            this.item.save().then(
+                                (item: any) => {
                                     this.loading.emit(false);
                                     this._service.notifySuccess(
                                         `Added zone "${this.new_zone}" to system`
@@ -186,6 +184,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                                     this.loadZones();
                                     ref.close();
                                     this.unsub('confirm_ref');
+                                    this.new_zone = null;
                                 },
                                 (err) => {
                                     ref.componentInstance.loading = null;
