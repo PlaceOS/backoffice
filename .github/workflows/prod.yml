@@ -67,3 +67,11 @@ jobs:
         commit_message: >
           build(backoffice): CI build from $GITHUB_SHA
         github_pat: ${{ secrets.API_GITHUB_TOKEN }}
+
+    - name: Google Chat Notification
+      uses: Co-qn/google-chat-notification@releases/v1
+      with:
+        name: Build
+        url: ${{ secrets.GOOGLE_CHAT_WEBHOOK }}
+        status: ${{ job.status }}
+      if: always()
