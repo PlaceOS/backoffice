@@ -40,9 +40,6 @@ jobs:
     - name: Install node modules
       run: npm ci && npm i -g @angular/cli
 
-    - name: Update application version
-      run: npm run semantic-release && npm run postinstall
-
     - name: Builds the application
       run: ng build --configuration=staging --aot
 
