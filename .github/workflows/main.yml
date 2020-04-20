@@ -21,7 +21,9 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    - uses: mayur-rawte/github-angular-actions@latest
+
+    - name: Add Angular Github Actions
+      uses: mayur-rawte/github-angular-actions@latest
 
     - name: Update application version
       run: npm run semantic-release && npm run postinstall
