@@ -30,7 +30,7 @@ jobs:
       env:
         cache-name: cache-node-modules
       with:
-        path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+        path: node_modules
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-build-${{ env.cache-name }}-
@@ -38,18 +38,7 @@ jobs:
           ${{ runner.os }}-
 
     - name: Install node modules
-      run: npm ci && npm i -g @angular/cli
-
-    - name: Cache angular resources
-      uses: actions/cache@v1
-      env:
-        cache-name: cache-angular-build-assets
-      with:
-        path: node_modules/.cache
-        key: ${{ runner.os }}-angular-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-angular-${{ env.cache-name }}-
-          ${{ runner.os }}-angular-
+      run: npm install && npm i -g @angular/cli
 
     - name: Update application version
       run: npm run semantic-release && npm run postinstall
