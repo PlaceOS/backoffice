@@ -1,6 +1,7 @@
 # ACA Angular Backoffice UI
 
-[![pipeline status](https://gitlab.com/aca-engine/frontend-base/ngx-backoffice/badges/master/pipeline.svg)](https://gitlab.com/aca-engine/frontend-base/ngx-backoffice/commits/master)
+![PROD](https://github.com/PlaceOS/backoffice/workflows/PROD/badge.svg)
+![UAT](https://github.com/PlaceOS/backoffice/workflows/UAT/badge.svg)
 
 ## Setup
 
