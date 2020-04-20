@@ -13,6 +13,11 @@ import { ApplicationService } from 'src/app/services/app.service';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 import { of, Subject, Observable } from 'rxjs';
 
+import * as dayjs from 'dayjs';
+import * as relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
+
 @Component({
     selector: 'driver-form',
     templateUrl: './driver-form.component.html',
@@ -114,7 +119,8 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                 }
                 return (list || []).map((commit: EngineRepositoryCommit) => ({
                     id: commit.commit,
-                    name: `${commit.subject}`
+                    name: `${commit.subject}`,
+                    extra: dayjs(commit.date).fromNow()
                 }));
             })
         );

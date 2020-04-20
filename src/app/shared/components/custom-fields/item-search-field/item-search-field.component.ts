@@ -6,7 +6,7 @@ import { switchMap, debounceTime, distinctUntilChanged, map, catchError } from '
 import { EngineResource, EngineModule, EngineDriverRole } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { EngineServiceLike, HashMap } from 'src/app/shared/utilities/types.utilities';
+import { EngineServiceLike, HashMap, Identity } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
     selector: 'item-search-field',
@@ -20,7 +20,7 @@ import { EngineServiceLike, HashMap } from 'src/app/shared/utilities/types.utili
         },
     ],
 })
-export class ItemSearchFieldComponent<T extends EngineResource<any> = any> extends BaseDirective
+export class ItemSearchFieldComponent<T extends Identity = any> extends BaseDirective
     implements OnInit, OnChanges, ControlValueAccessor {
     /** Limit available options to these */
     @Input() public options: T[];
