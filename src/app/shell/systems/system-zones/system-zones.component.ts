@@ -26,7 +26,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
     /** List of zones assoicated with the active item */
     public zones: EngineZone[];
     /** ID of a zone that the user wishes to add to the system */
-    public new_zone: string;
+    public new_zone: EngineZone;
 
     public readonly exclude_fn = (zone: EngineZone) => this.item.zones.indexOf(zone.id) >= 0
 
@@ -155,7 +155,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
 
     public joinZone() {
         if (this.new_zone) {
-            if (this.item.zones.indexOf(this.new_zone) < 0) {
+            if (this.item.zones.indexOf(this.new_zone.id) < 0) {
                 this.loading.emit(true);
                 const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                     ConfirmModalComponent,
@@ -163,7 +163,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                         ...CONFIRM_METADATA,
                         data: {
                             title: 'Add zone',
-                            content: `Add zone "${this.new_zone}" to system "${this.item.name}"`,
+                            content: `Add zone "${this.new_zone.name}" to system "${this.item.name}"`,
                             icon: { type: 'icon', class: 'backoffice-upload-to-cloud' }
                         }
                     }
@@ -173,12 +173,12 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                     ref.componentInstance.event.subscribe((e: DialogEvent) => {
                         if (e.reason === 'done') {
                             ref.componentInstance.loading = 'Adding zone to system...';
-                            this.item.storePendingChange('zones', unique([...this.item.zones, this.new_zone]));
+                            this.item.storePendingChange('zones', unique([...this.item.zones, this.new_zone.id]));
                             this.item.save().then(
                                 (item: any) => {
                                     this.loading.emit(false);
                                     this._service.notifySuccess(
-                                        `Added zone "${this.new_zone}" to system`
+                                        `Added zone "${this.new_zone.name}" to system`
                                     );
                                     this.item = item;
                                     this.loadZones();
@@ -190,7 +190,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                                     ref.componentInstance.loading = null;
                                     this.loading.emit(false);
                                     this._service.notifyError(
-                                        `Error adding zone "${this.new_zone}". Error: ${err.message || err}`
+                                        `Error adding zone "${this.new_zone.name}". Error: ${err.message || err}`
                                     );
                                 }
                             );

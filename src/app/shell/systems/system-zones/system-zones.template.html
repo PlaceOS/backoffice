@@ -6,7 +6,7 @@
                     [service]="zone_service"
                     [exclude]="exclude_fn"
                     [ngModel]="null"
-                    (ngModelChange)="new_zone = $event.id"
+                    (ngModelChange)="new_zone = $event"
                 ></item-search-field>
             </div>
             <button mat-button [disabled]="!new_zone" (tapped)="joinZone()">Join zone</button>
