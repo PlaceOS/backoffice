@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/PlaceOS/backoffice/compare/v1.0.0...v1.0.1) (2020-04-20)
+
+
+### Bug Fixes
+
+* **systems:** fix displayed confirm modal zone to use name instead of id ([723298b](https://github.com/PlaceOS/backoffice/commit/723298be56accee19f0f62c26c23cce0dc3e4bd7)), closes [#40](https://github.com/PlaceOS/backoffice/issues/40)
+
 # 1.0.0 (2020-04-20)
 
 
