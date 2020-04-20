@@ -37,7 +37,7 @@ jobs:
     - name: Deploy the application
       uses: seanmiddleditch/gha-publish-to-git@v1
       with:
-        repository: https://github.com/placeos/www-core
+        repository: placeos/www-core
         branch: master
         source_folder: dist
         target_folder: backoffice
