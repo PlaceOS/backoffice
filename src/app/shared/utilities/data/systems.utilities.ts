@@ -37,9 +37,11 @@ export function generateSystemsFormFields(system: EngineSystem): FormDetails {
         installed_ui_devices: new FormControl(system.installed_ui_devices || 0, [
             Validators.pattern('[0-9]*')
         ]),
+        feature_list: new FormControl(system.features ? system.features.split(' ') : []),
         capacity: new FormControl(system.capacity || 0, [Validators.pattern('[0-9]*')]),
         bookable: new FormControl(system.bookable || false),
         description: new FormControl(system.description || ''),
+        map_id: new FormControl(system.map_id || ''),
         zone: new FormControl('', [Validators.required])
     };
     const subscriptions = [];

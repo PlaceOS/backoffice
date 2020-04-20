@@ -134,14 +134,42 @@
                 ></textarea>
             </mat-form-field>
         </div>
-        <div class="field" *ngIf="form.controls.settings_encryption_level">
-            <label for="encryption-level">Settings Encryption Level: </label>
+        <div class="field" *ngIf="form.controls.tag_list">
+            <label
+                for="system-email"
+                [class.error]="form.controls.tag_list.invalid && form.controls.tag_list.touched"
+                >Features:</label
+            >
             <mat-form-field appearance="outline">
-                <mat-select name="encryption-level" formControlName="settings_encryption_level">
-                    <mat-option *ngFor="let type of encryption_levels" [value]="type.id">
-                    {{type.name}}
-                    </mat-option>
-                </mat-select>
+                <mat-chip-list #chipList aria-label="Zone Tags">
+                    <mat-chip
+                        *ngFor="let feature of feature_list"
+                        [selectable]="true"
+                        [removable]="true"
+                        (removed)="removeFeature(feature)"
+                    >
+                        {{ feature }}
+                        <app-icon matChipRemove [icon]="{ class: 'backoffice-cross' }"></app-icon>
+                    </mat-chip>
+                    <input
+                        placeholder="Features..."
+                        [matChipInputFor]="chipList"
+                        [matChipInputSeparatorKeyCodes]="separators"
+                        [matChipInputAddOnBlur]="true"
+                        (matChipInputTokenEnd)="addFeature($event)"
+                    />
+                </mat-chip-list>
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.map_id">
+            <label for="map_id">Map ID:</label>
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="map_id"
+                    placeholder="Map SVG ID selector e.g. area-01.10-status"
+                    formControlName="map_id"
+                />
             </mat-form-field>
         </div>
     </form>

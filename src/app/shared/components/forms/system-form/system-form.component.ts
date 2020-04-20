@@ -1,10 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { EncryptionLevel } from '@placeos/ts-client';
+import { SPACE, ENTER } from '@angular/cdk/keycodes';
 
 import { ApplicationService } from 'src/app/services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { EngineServiceLike, Identity } from 'src/app/shared/utilities/types.utilities';
+import { MatChipInputEvent } from '@angular/material/chips';
 
 @Component({
     selector: 'system-form',
@@ -22,6 +24,13 @@ export class SystemFormComponent extends BaseDirective {
         { id: EncryptionLevel.NeverDisplay, name: 'Never Display' }
     ]
 
+    /** List of separator characters for features */
+    public readonly separators: number[] = [ENTER, SPACE];
+
+    public get feature_list(): string[] {
+        return this.form.controls.feature_list.value;
+    }
+
     /** Service for handling zones */
     public get zone_service(): EngineServiceLike {
         return this._service.Zones;
@@ -29,5 +38,40 @@ export class SystemFormComponent extends BaseDirective {
 
     constructor(private _service: ApplicationService) {
         super();
+    }
+
+    /**
+     * Add a feature to the list of features for the item
+     * @param event Input event
+     */
+    public addFeature(event: MatChipInputEvent): void {
+        if (!this.form || !this.form.controls.feature_list) return;
+        const input = event.input;
+        const value = event.value;
+        const feature_list = this.feature_list;
+        if ((value || '').trim()) {
+            feature_list.push(value);
+            this.form.controls.feature_list.setValue(feature_list);
+        }
+
+        // Reset the input value
+        if (input) {
+            input.value = '';
+        }
+    }
+
+    /**
+     * Remove feature from the list
+     * @param existing_feature Feature to remove
+     */
+    public removeFeature(existing_feature: string): void {
+        if (!this.form || !this.form.controls.feature_list) return;
+        const feature_list = this.feature_list;
+        const index = feature_list.indexOf(existing_feature);
+
+        if (index >= 0) {
+            feature_list.splice(index, 1);
+            this.form.controls.feature_list.setValue(feature_list);
+        }
     }
 }
