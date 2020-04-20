@@ -41,5 +41,6 @@ jobs:
         branch: master
         source_folder: dist
         target_folder: backoffice
-        commit_message: build(backoffice) CI build at `date +'%Y-%m-%d %H:%M:%S'`
+        commit_message: >
+          build(backoffice): CI build at $(date +'%Y-%m-%d %H:%M:%S')
         github_pat: ${{ secrets.API_GITHUB_TOKEN }}
