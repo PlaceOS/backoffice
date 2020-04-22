@@ -11,7 +11,7 @@
 
 ## Development
 
-To run the dev server use the command `ng server`
+To run the dev server use the command `ng serve`
 
 By default the dev web server proxies all requests to the set live system, if you wish to use a mock system change `mock` to true in `src/assets/settings.js`
 

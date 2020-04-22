@@ -90,7 +90,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                             () => null,
                             err => {
                                 ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error updating trigger settings. Error: ${err.message || err}`);
+                                this._service.notifyError(`Error updating trigger settings. Error: ${JSON.stringify(err.response || err.message || err)}`);
                             },
                             () => {
                                 this._service.notifySuccess(
@@ -133,7 +133,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                             () => null,
                             err => {
                                 ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error removing trigger. Error: ${err.message || err}`);
+                                this._service.notifyError(`Error removing trigger. Error: ${JSON.stringify(err.response || err.message || err)}`);
                             },
                             () => {
                                 this._service.notifySuccess(

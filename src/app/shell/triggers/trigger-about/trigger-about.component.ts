@@ -199,7 +199,7 @@ export class TriggerAboutComponent extends BaseDirective implements OnChanges, O
             () => this._service.notifySuccess('Successfully removed trigger condition.'),
             err =>
                 this._service.notifyError(
-                    `Error removing trigger condition. Error: ${err.message || err}`
+                    `Error removing trigger condition. Error: ${JSON.stringify(err.response || err.message || err)}`
                 )
         );
     }
@@ -256,7 +256,7 @@ export class TriggerAboutComponent extends BaseDirective implements OnChanges, O
             () => this._service.notifySuccess('Successfully removed trigger action.'),
             err =>
                 this._service.notifyError(
-                    `Error removing trigger action. Error: ${err.message || err}`
+                    `Error removing trigger action. Error: ${JSON.stringify(err.response || err.message || err)}`
                 )
         );
     }
@@ -306,7 +306,7 @@ export class TriggerAboutComponent extends BaseDirective implements OnChanges, O
             () => this._service.notifySuccess(`Successfully re-ordered trigger ${type} action.`),
             err =>
                 this._service.notifyError(
-                    `Error re-ordered trigger ${type} action. Error: ${err.message || err}`
+                    `Error re-ordered trigger ${type} action. Error: ${JSON.stringify(err.response || err.message || err)}`
                 )
         );
     }

@@ -77,7 +77,7 @@ export class EngineDetailsComponent extends BaseDirective implements OnInit {
                 details => (this.api_details = details as any),
                 err =>
                     this._service.notifyError(
-                        `Error loading API details. Error: ${err.message || err}`
+                        `Error loading API details. Error: ${JSON.stringify(err.response || err.message || err)}`
                     )
             );
     }

@@ -143,7 +143,7 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
                             },
                             err => {
                                 this._service.notifyError(
-                                    `Error deleting auth source. Error ${err.message || err}`
+                                    `Error deleting auth source. Error ${JSON.stringify(err.response || err.message || err)}`
                                 );
                                 ref.componentInstance.loading = null;
                             }

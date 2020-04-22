@@ -66,7 +66,7 @@ export class DriverAboutComponent extends BaseDirective {
                             },
                             err => {
                                 ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error reloading driver. Error: ${err}`);
+                                this._service.notifyError(`Error reloading driver. Error: ${JSON.stringify(err.response || err.message || err)}`);
                             }
                         );
                     }

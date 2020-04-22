@@ -99,7 +99,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                             err => {
                                 ref.componentInstance.loading = null;
                                 this._service.notifyError(
-                                    `Error reording zones. Error: ${err.message || err}`
+                                    `Error reording zones. Error: ${JSON.stringify(err.response || err.message || err)}`
                                 );
                             }
                         );
@@ -141,7 +141,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                             err => {
                                 this.loading.emit(false);
                                 this._service.notifySuccess(
-                                    `Error removing "${zone.name}" from system. Error: ${err}`
+                                    `Error removing "${zone.name}" from system. Error: ${JSON.stringify(err.response || err.message || err)}`
                                 );
                                 ref.close();
                                 this.unsub('confirm_ref');
@@ -190,7 +190,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                                     ref.componentInstance.loading = null;
                                     this.loading.emit(false);
                                     this._service.notifyError(
-                                        `Error adding zone "${this.new_zone.name}". Error: ${err.message || err}`
+                                        `Error adding zone "${this.new_zone.name}". Error: ${JSON.stringify(err.response || err.message || err)}`
                                     );
                                 }
                             );

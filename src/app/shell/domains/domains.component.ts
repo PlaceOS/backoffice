@@ -134,7 +134,7 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
                             },
                             err => {
                                 this.modal_ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error deleting domain. Error: ${err}`);
+                                this._service.notifyError(`Error deleting domain. Error: ${JSON.stringify(err.response || err.message || err)}`);
                             }
                         );
                     }

@@ -84,7 +84,7 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges,
                         await this.deleteTrigger(trigger).catch(err => {
                             ref.componentInstance.loading = null;
                             this._service.notifyError(
-                                `Error removing trigger. Error: ${err.message || err}`
+                                `Error removing trigger. Error: ${JSON.stringify(err.response || err.message || err)}`
                             );
                             throw err;
                         });

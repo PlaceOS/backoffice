@@ -73,7 +73,7 @@ export class EngineClusterTaskListComponent extends BaseDirective implements OnI
                             ref.componentInstance.loading = null;
                             this.killing = null;
                             this._service.notifyError(
-                                `Error killing process. Error: ${err.message || err}`
+                                `Error killing process. Error: ${JSON.stringify(err.response || err.message || err)}`
                             );
                             ref.close();
                         }

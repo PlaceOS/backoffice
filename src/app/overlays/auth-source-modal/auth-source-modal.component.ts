@@ -120,7 +120,7 @@ export class AuthSourceModalComponent extends BaseDirective implements OnInit {
                 this._service.notifyError(
                     `Error ${
                         this.is_new ? 'adding' : 'updating'
-                    } auth source. Error: ${err.message || err}`
+                    } auth source. Error: ${JSON.stringify(err.response || err.message || err)}`
                 );
             }
         );

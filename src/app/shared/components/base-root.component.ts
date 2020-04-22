@@ -213,7 +213,7 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective im
                 err => {
                     this._service.set('loading_settings', false);
                     this._service.notifyError(
-                        `Error loading settings. Error: ${err.message || err}`
+                        `Error loading settings. Error: ${JSON.stringify(err.response || err.message || err)}`
                     );
                 }
             );

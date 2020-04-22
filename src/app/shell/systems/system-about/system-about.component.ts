@@ -79,7 +79,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
                         result => null,
                         err =>
                             this._service.notifyError(
-                                `Failed to start system: ${err.message || err}`
+                                `Failed to start system: ${JSON.stringify(err.response || err.message || err)}`
                             )
                     );
                 }
@@ -110,7 +110,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
                         result => null,
                         err =>
                             this._service.notifyError(
-                                `Failed to stop system: ${err.message || err}`
+                                `Failed to stop system: ${JSON.stringify(err.response || err.message || err)}`
                             )
                     );
                 }

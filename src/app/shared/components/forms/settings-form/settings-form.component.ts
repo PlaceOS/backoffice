@@ -168,7 +168,7 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
                 err => {
                     this.saving[level] = false;
                     this._service.notifyError(
-                        `Error updating settings. Error: ${err.message || err}`
+                        `Error updating settings. Error: ${JSON.stringify(err.response || err.message || err)}`
                     );
                 }
             );
@@ -207,7 +207,7 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
                         this.saving[i] = false;
                     }
                     this._service.notifyError(
-                        `Error updating settings. Error: ${err.message || err}`
+                        `Error updating settings. Error: ${JSON.stringify(err.response || err.message || err)}`
                     );
                 }
             );

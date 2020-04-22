@@ -104,7 +104,7 @@ export class ZoneMetadataComponent extends BaseDirective implements OnChanges, O
                         },
                         err =>
                             this._service.notifyError(
-                                `Error removing old "${field}" metadata. Error: ${err.message ||
+                                `Error removing old "${field}" metadata. Error: ${err.response || err.message ||
                                     err}`
                             )
                     );
@@ -133,7 +133,7 @@ export class ZoneMetadataComponent extends BaseDirective implements OnChanges, O
                             this._service.notifyError(
                                 `Error removing old "${
                                     field.name
-                                }" metadata. Error: ${err.message || err}`
+                                }" metadata. Error: ${JSON.stringify(err.response || err.message || err)}`
                             )
                         );
                     }
@@ -146,7 +146,7 @@ export class ZoneMetadataComponent extends BaseDirective implements OnChanges, O
                 err => {
                     this.loading[field.name] = false;
                     this._service.notifyError(
-                        `Error saving "${value.name}" metadata. Error: ${err.message || err}`
+                        `Error saving "${value.name}" metadata. Error: ${JSON.stringify(err.response || err.message || err)}`
                     );
                 }
             );

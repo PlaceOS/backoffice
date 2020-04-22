@@ -139,7 +139,7 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
                             },
                             err => {
                                 this.modal_ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error deleting zone. Error: ${err}`);
+                                this._service.notifyError(`Error deleting zone. Error: ${JSON.stringify(err.response || err.message || err)}`);
                             }
                         );
                     }

@@ -81,7 +81,7 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
                 this.trigger.clearPendingChanges();
                 this.loading = false;
                 this._service.notifyError(
-                    `Error ${this.is_new ? 'adding' : 'updating'} condition to trigger. Error: ${err.message || err}`
+                    `Error ${this.is_new ? 'adding' : 'updating'} condition to trigger. Error: ${JSON.stringify(err.response || err.message || err)}`
                 );
             }
         );

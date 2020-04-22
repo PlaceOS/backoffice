@@ -122,7 +122,7 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
                             },
                             err => {
                                 ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error deleting module. Error: ${err}`);
+                                this._service.notifyError(`Error deleting module. Error: ${JSON.stringify(err.response || err.message || err)}`);
                             }
                         );
                     }

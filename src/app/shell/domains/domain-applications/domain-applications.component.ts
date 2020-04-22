@@ -130,7 +130,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
                             err => {
                                 ref.componentInstance.loading = null;
                                 this._service.notifyError(
-                                    `Error deleting application. Error: ${err}`
+                                    `Error deleting application. Error: ${JSON.stringify(err.response || err.message || err)}`
                                 );
                             }
                         );

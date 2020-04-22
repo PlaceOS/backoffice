@@ -90,7 +90,7 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
                             () => this._service.notifySuccess('Sucessfully removed trigger'),
                             err =>
                                 this._service.notifyError(
-                                    `Error removing trigger. Error: ${err.message || err}`
+                                    `Error removing trigger. Error: ${JSON.stringify(err.response || err.message || err)}`
                                 )
                         );
                         ref.close();
@@ -137,7 +137,7 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
         this.item.storePendingChange('triggers', triggers);
         this.item.save().then(
             () => this._service.notifySuccess('Sucessfully added trigger'),
-            err => this._service.notifyError(`Error adding trigger. Error: ${err.message || err}`)
+            err => this._service.notifyError(`Error adding trigger. Error: ${JSON.stringify(err.response || err.message || err)}`)
         );
     }
 }

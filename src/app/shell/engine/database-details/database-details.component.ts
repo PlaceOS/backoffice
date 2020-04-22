@@ -23,7 +23,7 @@ export class EngineDatabaseDetailsComponent {
             err => {
                 this.reindexing = false;
                 this._service.notifyError(
-                    `Error reindexing database. Error: ${err.message || err}`
+                    `Error reindexing database. Error: ${JSON.stringify(err.response || err.message || err)}`
                 );
             }
         );
@@ -36,7 +36,7 @@ export class EngineDatabaseDetailsComponent {
             err => {
                 this.backfilling = false;
                 this._service.notifyError(
-                    `Error reindexing database. Error: ${err.message || err}`
+                    `Error reindexing database. Error: ${JSON.stringify(err.response || err.message || err)}`
                 );
             }
         );

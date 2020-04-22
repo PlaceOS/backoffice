@@ -121,7 +121,7 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
                             },
                             err => {
                                 this.modal_ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error deleting driver. Error: ${err}`);
+                                this._service.notifyError(`Error deleting driver. Error: ${JSON.stringify(err.response || err.message || err)}`);
                             }
                         );
                     }

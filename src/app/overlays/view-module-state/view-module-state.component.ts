@@ -95,7 +95,7 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
                 this.loading = false;
             },
             (err) => {
-                this._service.notifyError(err.message || err);
+                this._service.notifyError(JSON.stringify(err.response || err.message || err));
                 this.loading = false;
             }
         );

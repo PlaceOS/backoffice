@@ -117,7 +117,7 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
                         await this.item.delete().catch(err => {
                             this.modal_ref.componentInstance.loading = null;
                             this._service.notifyError(
-                                `Error deleting repository. Error: ${err.message || err}`
+                                `Error deleting repository. Error: ${JSON.stringify(err.response || err.message || err)}`
                             );
                             throw err;
                         });

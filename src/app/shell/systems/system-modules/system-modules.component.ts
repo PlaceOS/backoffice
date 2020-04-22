@@ -254,7 +254,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                         : this._service.Drivers.reload(device.driver_id)
                     ).then(
                         (_) => this._service.notifySuccess('Driver successfully reloaded.'),
-                        (err) => this._service.notifyError(err.message || err)
+                        (err) => this._service.notifyError(JSON.stringify(err.response || err.message || err))
                     );
                     ref.close();
                     this.unsub('confirm_ref');
@@ -269,7 +269,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                 this._service.notifySuccess(
                     `Successfully loaded module "${device.name || device.id}"`
                 ),
-            (err) => this._service.notifyError(`Error loading module. Error: ${err.message || err}`)
+            (err) => this._service.notifyError(`Error loading module. Error: ${JSON.stringify(err.response || err.message || err)}`)
         );
     }
 
@@ -316,7 +316,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                                 this.hide_exec = false;
                                 ref.componentInstance.loading = null;
                                 this._service.notifyError(
-                                    `Error reording modules. Error: ${err.message || err}`
+                                    `Error reording modules. Error: ${JSON.stringify(err.response || err.message || err)}`
                                 );
                             }
                         );
@@ -354,7 +354,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                         (err) => {
                             this.hide_exec = false;
                             this._service.notifyError(
-                                `Error removing module. Error: ${err.message || err}`
+                                `Error removing module. Error: ${JSON.stringify(err.response || err.message || err)}`
                             );
                             ref.close();
                             this.unsub('confirm_ref');

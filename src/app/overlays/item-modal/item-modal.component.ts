@@ -188,7 +188,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
                     this._service.notifyError(
                         `Error ${this.item.id ? 'editing' : 'adding new'} ${
                             this.name
-                        }. Error: ${err.message || err}`
+                        }. Error: ${JSON.stringify(err.response || err.message || err)}`
                     );
                 }
             );
@@ -208,7 +208,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
         const settings = await new_settings.save().catch(err => {
             this.loading = null;
             this._service.notifyError(
-                `Error saving settings for ${item.name || item.id}. Error: ${err.message || err}`
+                `Error saving settings for ${item.name || item.id}. Error: ${JSON.stringify(err.response || err.message || err)}`
             );
         });
         (item as any).settings[EncryptionLevel.None] = settings;

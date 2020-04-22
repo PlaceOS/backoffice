@@ -241,7 +241,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
                     this.loading = false;
                 },
                 err => {
-                    this._service.notifyError(`Error updating ${this.module._name} list. ${err}`);
+                    this._service.notifyError(`Error updating ${this.module._name} list. Error: ${JSON.stringify(err.response || err.message || err)}`);
                     this.loading = false;
                 }
             );

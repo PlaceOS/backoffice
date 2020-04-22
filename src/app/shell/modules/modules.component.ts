@@ -124,7 +124,7 @@ export class ModulesComponent extends BaseRootComponent<EngineModule> {
                             },
                             err => {
                                 this.modal_ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error deleting module. Error: ${err}`);
+                                this._service.notifyError(`Error deleting module. Error: ${JSON.stringify(err.response || err.message || err)}`);
                             }
                         );
                     }
