@@ -1,6 +1,4 @@
 <div class="container" *ngIf="item">
-    <header *ngIf="item.description">Description</header>
-    <section class="description" *ngIf="item.description" [innerHTML]="parsed_description"></section>
     <header *ngIf="system_list && system_list.length">Execute Command</header>
     <section *ngIf="system_list && system_list.length">
         <mat-form-field appearance="outline">
@@ -12,6 +10,36 @@
         </mat-form-field>
         <system-exec-field *ngIf="active_system && active_system.id" [system]="active_system"></system-exec-field>
     </section>
+    <section class="details">
+        <div class="field" *ngIf="item.location">
+            <label>Location:</label>
+            <div class="value">{{item.location}}</div>
+        </div>
+        <div class="field" *ngIf="item.code">
+            <label>Code:</label>
+            <div class="value">{{item.code}}</div>
+        </div>
+        <div class="field" *ngIf="item.type">
+            <label>Type:&nbsp;</label>
+            <div class="value">{{item.type}}</div>
+        </div>
+        <div class="field" *ngIf="item.count">
+            <label>Count:</label>
+            <div class="value">{{item.count}}</div>
+        </div>
+        <div class="field" *ngIf="item.capacity">
+            <label>Capacity:</label>
+            <div class="value">{{item.capacity}}</div>
+        </div>
+        <div class="field" *ngIf="item.map_id">
+            <label>Map:</label>
+            <div class="value">
+                <a [href]="item.map_id">{{ item.map_id }}</a>
+            </div>
+        </div>
+    </section>
+    <header *ngIf="item.description">Description</header>
+    <section class="description" *ngIf="item.description" [innerHTML]="parsed_description"></section>
     <section class="tags" *ngIf="item && tag_list">
         <label for="tags">Tags:</label>
         <div class="value" *ngIf="tag_list && tag_list.length; else empty_tag_state">

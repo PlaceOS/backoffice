@@ -14,7 +14,14 @@ export function generateZoneFormFields(zone: EngineZone): FormDetails {
         tag_list: new FormControl(zone.tags ? zone.tags.split(',') : []),
         description: new FormControl(zone.description || ''),
         parent_zone: new FormControl(null),
-        parent_id: new FormControl(zone.parent_id)
+        parent_id: new FormControl(zone.parent_id),
+        location: new FormControl(zone.location),
+        display_name: new FormControl(zone.display_name),
+        code: new FormControl(zone.display_name),
+        type: new FormControl(zone.display_name),
+        count: new FormControl(zone.count),
+        capacity: new FormControl(zone.capacity),
+        map_id: new FormControl(zone.map_id)
     };
     const subscriptions = [];
     for (const key in fields) {

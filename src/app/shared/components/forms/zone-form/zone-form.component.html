@@ -1,10 +1,7 @@
 <div class="zone form" *ngIf="form">
     <form [formGroup]="form">
         <div class="field" *ngIf="form.controls.parent_zone">
-            <label
-                for="parent-zone"
-                >Parent Zone:
-            </label>
+            <label for="parent-zone">Parent Zone: </label>
             <item-search-field
                 name="parent-zone"
                 [service]="zone_service"
@@ -26,7 +23,7 @@
                     formControlName="name"
                     required
                 />
-                <mat-error *ngIf="form.controls.name.invalid">Zone name is required</mat-error>
+                <mat-error>Zone name is required</mat-error>
             </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.tag_list">
@@ -65,6 +62,73 @@
                     placeholder="Description"
                     formControlName="description"
                 ></textarea>
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.location">
+            <label for="location">Location:</label>
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="location"
+                    placeholder="Geo-location details for zone. <lat, long>"
+                    formControlName="location"
+                />
+            </mat-form-field>
+        </div>
+        <div class="fieldset">
+            <div class="field" *ngIf="form.controls.code">
+                <label for="code">Code:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="code"
+                        placeholder="Organisation Code"
+                        formControlName="code"
+                    />
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.location">
+                <label for="type">Type:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="type"
+                        placeholder="Organisational Categorisation"
+                        formControlName="type"
+                    />
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="fieldset">
+            <div class="field" *ngIf="form.controls.count">
+                <label for="count">Count:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="count"
+                        type="number"
+                        placeholder="Resource count. Desks, Hardware, etc."
+                        formControlName="count"
+                    />
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.capacity">
+                <label for="capacity">Capacity:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="capacity"
+                        type="number"
+                        placeholder="Physical capacity of the zone"
+                        formControlName="capacity"
+                    />
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="field" *ngIf="form.controls.map_id">
+            <label for="map">Map:</label>
+            <mat-form-field appearance="outline">
+                <input matInput name="map" placeholder="Map ID or URL" formControlName="map_id" />
             </mat-form-field>
         </div>
     </form>
