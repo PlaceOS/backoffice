@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/PlaceOS/backoffice/compare/v1.0.1...v1.0.2) (2020-04-22)
+
+
+### Bug Fixes
+
+* **error:** fix error messages to properly display service messages ([10bdd91](https://github.com/PlaceOS/backoffice/commit/10bdd9152c814aac9fae797a3b069866f85b46e4))
+
 ## [1.0.1](https://github.com/PlaceOS/backoffice/compare/v1.0.0...v1.0.1) (2020-04-20)
 
 
