@@ -19,6 +19,9 @@ const FILTER_FN = (item: any, q: HashMap) => {
             (item.control_system_id === q.control_system_id ||
                 (system && system.modules.includes(item.id)));
     }
+    if (q.driver_id) {
+        match = match && item.driver_id === q.driver_id;
+    }
     return match;
 };
 
