@@ -1,118 +1,20 @@
-import {
-    TriggerComparison,
-    TriggerTimeCondition,
-    TriggerFunction,
-    TriggerMailer,
-    TriggerConditionOperator,
-    TriggerTimeConditionType
-} from '@placeos/ts-client';
 
-import { BaseMockBackend } from './base.mock';
-import { padZero, randomInt } from '../../utilities/general.utilities';
+import { generateBasicHandlers, API } from '../common.mock';
+import { HashMap } from '../../utilities/types.utilities';
 
-import * as faker from 'faker';
-import * as dayjs from 'dayjs';
-
-export class MockTriggersBackend extends BaseMockBackend {
-    constructor(protected model) {
-        super(model);
+const FILTER_FN = (item: any, q: HashMap) => {
+    if (!q || Object.keys(q).length <= 0) {
+        return true;
     }
-
-    protected load() {
-        this.model.log('TRIGGERS', 'Loading mock data for triggers...');
-        this.loadList();
+    let match = true;
+    if (q.q) {
+        match = match && (item.name || '').toLowerCase().indexOf((q.q || '').toLowerCase()) >= 0;
     }
+    return match;
+};
 
-    private loadList() {
-        const item_list = [];
-        const count = Math.ceil(Math.floor(Math.random() * 10 + 5) * this.model.scale);
-        for (let i = 0; i < count; i++) {
-            item_list.push({
-                id: `trigger-${padZero(i, 4)}`,
-                name: `Test Trigger ${i + 1}`,
-                description: faker.lorem.paragraph(),
-                important: Math.floor(Math.random() * 124631) % 5,
-                debounce_period: 0,
-                conditions: {
-                    comparisons: Array(randomInt(5) + 1)
-                        .fill(0)
-                        .map(() => generateTriggerComparison()),
-                    time_dependents: Array(randomInt(5) + 1)
-                        .fill(0)
-                        .map(() => generateTriggerTimeDependant())
-                },
-                actions: {
-                    functions: Array(randomInt(5) + 1)
-                        .fill(0)
-                        .map(() => generateTriggerFunction()),
-                    mailers: Array(randomInt(5) + 1)
-                        .fill(0)
-                        .map(() => generateTriggerMailer())
-                },
-                created_at: dayjs()
-                    .add(-Math.floor(Math.random() * 10000), 'm')
-                    .unix()
-            });
-        }
-        this.model.triggers = item_list;
-        this.setupBasicHandlers('api/engine/v2/triggers', this.model.triggers, 'trigger');
-        this.setupBasicHandlers('api/engine/v2/system-triggers', this.model.triggers, 'trigger');
-        this.state.next(true);
-    }
-}
+const TRIGGER_DATA = [];
 
-const OP_MAP = [];
-for (const n in TriggerConditionOperator) {
-    if (typeof TriggerConditionOperator[n] === 'string') {
-        OP_MAP.push({ id: TriggerConditionOperator[n] as any, name: n });
-    }
-}
+/** Add basic API handlers for systems */
+generateBasicHandlers(`${API}/triggers`, TRIGGER_DATA, FILTER_FN);
 
-export function generateTriggerComparison(): TriggerComparison {
-    return {
-        left: {
-            mod: `${faker.commerce.department()}_${randomInt(9, 1)}`,
-            status: `power`,
-            keys: []
-        },
-        operator: OP_MAP[randomInt(OP_MAP.length)].id as any,
-        right: randomInt(999_999_999)
-    };
-}
-
-export function generateTriggerTimeDependant(): TriggerTimeCondition {
-    return randomInt(999) % 2 === 0
-        ? {
-              type: TriggerTimeConditionType.CRON,
-              cron: `${randomInt(12) * 5 || '*'} ${randomInt(24) || '*'} ${randomInt(31) ||
-                  '*'} ${randomInt(12) || '*'} ${randomInt(7) || '*'}`
-          }
-        : {
-              type: TriggerTimeConditionType.AT,
-              time: dayjs()
-                  .add(randomInt(999_999) + 10, 'm')
-                  .unix()
-          };
-}
-
-export function generateTriggerFunction(): TriggerFunction {
-    return {
-        mod: `${faker.commerce.department()}_${randomInt(9, 1)}`,
-        method: `power`,
-        args: {}
-    };
-}
-
-export function generateTriggerMailer(): TriggerMailer {
-    return {
-        emails: Array(randomInt(15, 1))
-            .fill(0)
-            .map(
-                i =>
-                    `${faker.name
-                        .firstName()
-                        .toLowerCase()}.${faker.name.lastName().toLowerCase()}@placeos.com`
-            ),
-        content: faker.lorem.paragraph()
-    };
-}

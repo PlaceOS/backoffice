@@ -1,78 +1,57 @@
-import { MockHttpRequestHandler, MockHttpRequest } from '@placeos/ts-client';
-import { API } from '../common.mock';
-import { initialiseGlobals } from './base.mock';
 
-export const MOCK_SETTINGS: any[] = [];
+import { generateBasicHandlers, API, listenToHandlerChanges, generateID } from '../common.mock';
+import { HashMap } from '../../utilities/types.utilities';
 
-initialiseGlobals();
+import { EncryptionLevel } from '@placeos/ts-client';
 
-// Add handler for users index
-window.control.handlers.push({
-    path: `${API}/settings`,
-    metadata: MOCK_SETTINGS,
-    callback: event => {
-        if (event.query_params.parent_id) {
-            return MOCK_SETTINGS.filter(item => item.parent_id === event.query_params.parent_id);
-        }
-        return [];
+const FILTER_FN = (item: any, q: HashMap) => {
+    if (!q || Object.keys(q).length <= 0) {
+        return true;
     }
-} as MockHttpRequestHandler);
-
-const handlerCreateEdit = (event: MockHttpRequest) => {
-    const old_version = event.route_params.id
-        ? MOCK_SETTINGS.filter(item => item.id === event.route_params.id)[0]
-        : null;
-    if (!old_version && !event.body && !event.body.parent_id) {
-        throw { status: 400, message: 'Settings require a parent' };
+    let match = true;
+    if (q.q) {
+        match = match && (item.name || '').toLowerCase().indexOf((q.q || '').toLowerCase()) >= 0;
     }
-    const version =
-        MOCK_SETTINGS.filter(item => item.parent_id === event.body.parent_id).length + 1;
-    MOCK_SETTINGS.push(
-        old_version ? { ...old_version, ...event.body, version } : { ...event.body, version }
-    );
-    return '';
+    if (q.parent_id) {
+        match = match && item.parent_id === q.parent_id;
+    }
+    return match;
 };
 
-// Add handler for settings index
-window.control.handlers.push({
-    path: `${API}/settings`,
-    metadata: MOCK_SETTINGS,
-    method: 'POST',
-    callback: handlerCreateEdit
-} as MockHttpRequestHandler);
+const SETTINGS_DATA = [];
 
-// Add handler for settings show
-window.control.handlers.push({
-    path: `${API}/settings/:id`,
-    metadata: MOCK_SETTINGS,
-    method: 'GET',
-    callback: _ => {
-        throw { status: 400, message: 'Endpoint does not resolve' };
-    }
-});
-
-// Add handler for users index
-window.control.handlers.push({
-    path: `${API}/settings/:id`,
-    metadata: MOCK_SETTINGS,
-    method: 'PUT',
-    callback: handlerCreateEdit
-} as MockHttpRequestHandler);
-
-// Add handler for users index
-window.control.handlers.push({
-    path: `${API}/settings/:id`,
-    metadata: MOCK_SETTINGS,
-    method: 'DELETE',
-    callback: event => {
-        const settings = MOCK_SETTINGS.find(item => item.id === event.route_params.id);
-        if (!settings) {
-            throw {
-                status: 404,
-                message: `Setting with the ID ${event.route_params.id} not found`
-            };
+const handle_items_fn = (list) => {
+    list.forEach(item => {
+        if (item.settings && !SETTINGS_DATA.find(s => s.parent_id === item.id)) {
+            SETTINGS_DATA.push({
+                id: `setting-${generateID()}`,
+                parent_id: item.id,
+                encryption_level: EncryptionLevel.None,
+                settings_string: item.settings instanceof Object ? JSON.stringify(item.settings) : item.settings
+            });
         }
-        MOCK_SETTINGS.splice(MOCK_SETTINGS.indexOf(settings), 1);
-        return '';
-    }
-} as MockHttpRequestHandler);
+    });
+    console.log('Settings:', SETTINGS_DATA);
+};
+
+let obs = listenToHandlerChanges(`${API}/systems`);
+if (obs) {
+    obs.subscribe(handle_items_fn);
+}
+obs = listenToHandlerChanges(`${API}/modules`);
+if (obs) {
+    obs.subscribe(handle_items_fn);
+}
+obs = listenToHandlerChanges(`${API}/zones`);
+if (obs) {
+    obs.subscribe(handle_items_fn);
+}
+obs = listenToHandlerChanges(`${API}/drivers`);
+if (obs) {
+    obs.subscribe(handle_items_fn);
+}
+
+/** Add basic API handlers for systems */
+generateBasicHandlers(`${API}/settings`, SETTINGS_DATA, FILTER_FN);
+
+

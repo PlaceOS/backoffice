@@ -1,6 +1,9 @@
 
+import * as DRIVER_DATA from '../data/drivers.json';
 import { generateBasicHandlers, API } from '../common.mock';
 import { HashMap } from '../../utilities/types.utilities';
+
+import { MockHttpRequestHandler } from '@placeos/ts-client';
 
 const FILTER_FN = (item: any, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
@@ -13,8 +16,13 @@ const FILTER_FN = (item: any, q: HashMap) => {
     return match;
 };
 
-const DOMAIN_DATA = [];
-
 /** Add basic API handlers for systems */
-generateBasicHandlers(`${API}/domains`, DOMAIN_DATA, FILTER_FN);
+generateBasicHandlers(`${API}/drivers`, (DRIVER_DATA as any).default, FILTER_FN);
+
+window.control.handlers.push({
+    path: `${API}/drivers/:id/compiled`,
+    metadata: (DRIVER_DATA as any).default,
+    method: 'GET',
+    callback: (event) => true,
+} as MockHttpRequestHandler);
 

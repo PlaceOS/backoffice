@@ -1,7 +1,5 @@
 
 import './system.mockup';
-import './backend/settings.mock';
-import './backend.mock';
-import './backend/repositories.mock';
+import './backend';
 
 export * from './system.mockup';
