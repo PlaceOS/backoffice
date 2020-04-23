@@ -61,6 +61,22 @@ jobs:
       uses: Co-qn/google-chat-notification@releases/v1
       with:
         name: Build
-        url: ${{ secrets.GOOGLE_CHAT_WEBHOOK }}
+        url: ${{ secrets.CHAT_SUCCESS }}
         status: ${{ job.status }}
-      if: always()
+      if: success()
+
+    - name: Google Chat Notification
+      uses: Co-qn/google-chat-notification@releases/v1
+      with:
+        name: Build
+        url: ${{ secrets.CHAT_ERROR }}
+        status: ${{ job.status }}
+      if: failure()
+
+    - name: Google Chat Notification
+      uses: Co-qn/google-chat-notification@releases/v1
+      with:
+        name: Build
+        url: ${{ secrets.CHAT_ERROR }}
+        status: ${{ job.status }}
+      if: cancelled()
