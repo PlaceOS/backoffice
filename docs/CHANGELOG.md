@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/PlaceOS/backoffice/compare/v1.0.2...v1.1.0) (2020-04-27)
+
+
+### Features
+
+* **workflows:** develop commits to alpha branch ([02dc0fd](https://github.com/PlaceOS/backoffice/commit/02dc0fd4179fcee033e7fe4802c09e834fb13514))
+
 ## [1.0.2](https://github.com/PlaceOS/backoffice/compare/v1.0.1...v1.0.2) (2020-04-22)
 
 
