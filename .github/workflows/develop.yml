@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: BETA
+name: DEVELOP
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -47,7 +47,7 @@ jobs:
       uses: seanmiddleditch/gha-publish-to-git@v1
       with:
         repository: placeos/www-core
-        branch: beta
+        branch: alpha
         source_folder: dist
         target_folder: backoffice
         commit_message: >
