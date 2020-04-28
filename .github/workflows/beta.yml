@@ -16,13 +16,14 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    env:
-        hash: $(git rev-parse --short ${{ github.sha }})
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+
+    - uses: benjlevesque/short-sha
+        id: short-sha
 
     - name: Setup Node.js environment
       uses: actions/setup-node@v1.4.1
@@ -53,5 +54,5 @@ jobs:
         source_folder: dist
         target_folder: backoffice
         commit_message: >
-          build(backoffice): CI build from ${{ env.hash }}
+          build(backoffice): CI build from ${{ env.SHA }}
         github_pat: ${{ secrets.API_GITHUB_TOKEN }}
