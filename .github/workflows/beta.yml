@@ -51,5 +51,5 @@ jobs:
         source_folder: dist
         target_folder: backoffice
         commit_message: >
-          build(backoffice): CI build from $GITHUB_SHA
+          build(backoffice): CI build from ${{ GITHUB_SHA }}
         github_pat: ${{ secrets.API_GITHUB_TOKEN }}
