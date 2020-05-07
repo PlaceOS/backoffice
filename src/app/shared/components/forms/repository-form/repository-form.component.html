@@ -1,5 +1,18 @@
 <div class="repository form" *ngIf="form">
     <form [formGroup]="form">
+        <div
+            class="field commit"
+            *ngIf="is_edit && can_change_commit"
+        >
+            <label for="commit" i18n="@@repoCommitLabel">Repository Commit: </label>
+            <item-search-field
+                name="commit"
+                [options]="commit_list"
+                [loading]="loading_commits"
+                [ngModel]="base_commit"
+                (ngModelChange)="form.controls.commit_hash.setValue($event.id)"
+            ></item-search-field>
+        </div>
         <div class="field" *ngIf="form.controls.name">
             <label
                 for="repository-name"
@@ -74,10 +87,10 @@
                 <mat-error *ngIf="form.controls.uri.invalid" i18n="@@repoUriError">URI is required</mat-error>
             </mat-form-field>
         </div>
-        <div class="field" *ngIf="form.controls.type">
+        <div class="field" *ngIf="!is_edit && form.controls.repo_type">
             <label for="type"i18n="@@repoTypeLabel">Repository Type: </label>
             <mat-form-field appearance="outline">
-                <mat-select name="type" formControlName="type">
+                <mat-select name="type" formControlName="repo_type">
                     <mat-option *ngFor="let type of repo_types" [value]="type.id" i18n="@@repoType">
                         { type.name, select, Driver { Driver } Interface { Interface } other { Other } }
                     </mat-option>

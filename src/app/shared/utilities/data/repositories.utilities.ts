@@ -13,11 +13,13 @@ export function generateRepositoryFormFields(repository: EngineRepository): Form
         throw Error('No Zone passed to generate form fields');
     }
     const fields: HashMap<FormControl> = {
+        id: new FormControl(repository.id || ''),
+        commit_hash: new FormControl(repository.commit_hash || ''),
         name: new FormControl(repository.name || '', [Validators.required]),
         folder_name: new FormControl(repository.folder_name || '', [Validators.required]),
         description: new FormControl(repository.description || ''),
         uri: new FormControl(repository.uri || '', [Validators.required]),
-        type: new FormControl(repository.type || EngineRepositoryType.Driver),
+        repo_type: new FormControl(repository.repo_type || EngineRepositoryType.Driver),
     };
     const subscriptions = [];
     for (const key in fields) {
@@ -32,7 +34,7 @@ export function generateRepositoryFormFields(repository: EngineRepository): Form
     if (!repository.id) {
         repository.storePendingChange('commit_hash', 'head');
     } else {
-        delete fields.type;
+        delete fields.repo_type;
         delete fields.folder_name;
     }
     return {
