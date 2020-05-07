@@ -63,6 +63,10 @@
             <mat-slide-toggle [(ngModel)]="dark_mode"></mat-slide-toggle>
         </div>
     </div>
+    <button mat-menu-item [matMenuTriggerFor]="language_menu" *ngIf="languages.length > 1">
+        <app-icon [icon]="{ class: 'backoffice-globe' }"></app-icon>
+        <div class="text" i18n="@@languageAction">Language</div>
+    </button>
     <a mat-menu-item [href]="'https://github.com/PlaceOS/backoffice/issues/new?title=Issue on page ' + title" target="_blank">
         <app-icon [icon]="{ class: 'backoffice-github' }"></app-icon>
         <div class="text" i18n="@@reportAction">Report an Issue</div>
@@ -81,3 +85,9 @@
 <ng-template #fools_day>
     <a href="http://www.nyan.cat/" (click)="notAFool()">April <span>Fools</span></a>
 </ng-template>
+<mat-menu #language_menu="matMenu">
+    <a mat-menu-item [href]="'/backoffice/' + language.locale" (tapped)="newSystem()" *ngFor="let language of languages">
+        <app-icon [icon]="language.icon"></app-icon>
+        <div class="text">{{ language.name }}</div>
+    </a>
+</mat-menu>

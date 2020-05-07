@@ -41,6 +41,13 @@ SETTINGS.app = {
         src: 'assets/img/logo.svg',
         background: '',
     },
+    languages: [
+        {
+            name: 'English',
+            locale: 'en-US',
+            icon: { class: '', content: '🇬🇧' }
+        }
+    ]
 };
 
 /*==========================*\

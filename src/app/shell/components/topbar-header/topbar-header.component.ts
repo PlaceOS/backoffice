@@ -54,6 +54,11 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
         return this._service.setting('app.general.global_search');
     }
 
+    /** Whether global search is enabled */
+    public get languages(): { name: string, locale: string, icon: ApplicationIcon }[] {
+        return this._service.setting('app.languages');
+    }
+
     /** Active user */
     public get user(): any {
         return this._service.Users.user.getValue();
