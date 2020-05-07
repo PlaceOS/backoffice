@@ -10,15 +10,16 @@
                 (ngModelChange)="search$.next($event)"
                 name="search-filter"
                 placeholder="Filter Systems"
+                i18n-placeholder="@@systemTableFilter"
             />
         </mat-form-field>
     </div>
     <div class="list" *ngIf="system_list && system_list.length > 0; else empty_state">
         <table>
             <thead>
-                <td class="flex">Name</td>
-                <td class="devices">No. Modules</td>
-                <td class="created">Created</td>
+                <td class="flex"  i18n="@@systemTableName">Name</td>
+                <td class="devices" i18n="@@systemTablePanelCount">No. Modules</td>
+                <td class="created" i18n="@@systemTableCreated">Created</td>
             </thead>
             <tbody>
                 <tr *ngFor="let item of system_list">
@@ -40,6 +41,6 @@
 </div>
 <ng-template #empty_state>
     <div class="info-block">
-        <div class="text">No matching systems found</div>
+        <div class="text" i18n="@@systemTableEmpty">No matching systems found</div>
     </div>
 </ng-template>

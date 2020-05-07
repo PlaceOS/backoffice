@@ -3,13 +3,13 @@
 </div>
 <div class="memory-utilisation">
     <div class="field">
-        <label>Memory Used</label>
+        <label  i18n="@@cluserMemoryUsed">Memory Used</label>
         <div class="value">
             {{ cluster?.used_memory }} / {{ cluster?.total_memory }} ({{ cluster?.memory_percentage.toFixed(2) }}%)
         </div>
     </div>
     <div class="field">
-        <label>CPU Usage</label>
+        <label i18n="@@clusterCpuUsage">CPU Usage</label>
         <div class="value">
             {{ cluster?.total_cpu }}%
         </div>

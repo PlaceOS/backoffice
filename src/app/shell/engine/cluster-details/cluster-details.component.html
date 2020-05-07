@@ -9,7 +9,7 @@
                     <engine-cluster-item [cluster]="cluster" [cpu_history]="cpu_history[cluster.id] || []"></engine-cluster-item>
                 </mat-card-content>
                 <mat-card-actions>
-                    <button mat-button (tapped)="active_cluster = cluster">View Processes</button>
+                    <button mat-button (tapped)="active_cluster = cluster" i18n="@@viewClusterProcesses">View Processes</button>
                 </mat-card-actions>
             </mat-card>
         </ng-container>
@@ -20,7 +20,7 @@
         <div class="icon">
             <app-icon [icon]="{ class: 'backoffice-cross' }"></app-icon>
         </div>
-        <div class="text">No Cluster details to show</div>
+        <div class="text" i18n="@@clusterListEmpty">No Cluster details to show</div>
     </div>
 </ng-template>
 <ng-template #process_state>

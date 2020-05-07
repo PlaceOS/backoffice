@@ -8,26 +8,26 @@
                 (ngModelChange)="new_module = $event.id"
             ></item-search-field>
         </div>
-        <button mat-button [disabled]="!new_module" (tapped)="addModule()">
+        <button mat-button [disabled]="!new_module" (tapped)="addModule()"  i18n="@@addExistingAction">
             Add existing
         </button>
-        <button mat-button (tapped)="newModule()">Add new</button>
+        <button mat-button (tapped)="newModule()" i18n="@@newAction">Add new</button>
     </section>
     <ng-container *ngIf="item.id && item.modules && !hide_exec">
         <section class="exec">
-            <h3>Execute command</h3>
+            <h3 i18n="@@execHeader">Execute command</h3>
             <system-exec-field [system]="item"></system-exec-field>
         </section>
     </ng-container>
     <section class="device-list">
-        <h3>Module List</h3>
+        <h3 i18n="@@moduleListHeader">Module List</h3>
         <table *ngIf="devices && devices.length > 0">
             <thead>
                 <td class="small"></td>
-                <td class="small">State</td>
-                <td class="name">Name</td>
-                <td class="module">Class</td>
-                <td class="ip">IP</td>
+                <td class="small" i18n="@@moduleStateLabel">State</td>
+                <td class="name" i18n="@@moduleNameLabel">Name</td>
+                <td class="module" i18n="@@moduleClassLabel">Class</td>
+                <td class="ip" i18n="@@moduleIpLabel">IP</td>
                 <td class="small"></td>
             </thead>
             <tbody cdkDropList (cdkDropListDropped)="drop($event)">
@@ -104,7 +104,7 @@
             </tbody>
         </table>
         <div class="info-block" *ngIf="!devices || devices.length <= 0">
-            <div class="text">No devices for system</div>
+            <div class="text" i18n="@@moduleListEmpty">No devices for system</div>
         </div>
     </section>
 </div>

@@ -1,14 +1,14 @@
 <div class="container" *ngIf="item">
     <section class="select">
-        <button mat-button (tapped)="newApplication()">Add new</button>
+        <button mat-button (tapped)="newApplication()" i18n="@@newAction">Add new</button>
     </section>
     <section>
         <div class="list" *ngIf="application_list && application_list.length > 0">
             <table>
                 <thead>
-                    <td class="name">Name</td>
-                    <td class="flex">Redirect</td>
-                    <td class="scope">Scope</td>
+                    <td class="name" i18n="@@applicationTableName">Name</td>
+                    <td class="flex" i18n="@@applicationTableRedirect">Redirect</td>
+                    <td class="scope" i18n="@@applicationTableScope">Scope</td>
                     <td class="duo"></td>
                 </thead>
                 <tbody>
@@ -29,7 +29,7 @@
             </table>
         </div>
         <div class="info-block" *ngIf="!application_list || application_list.length <= 0">
-            <div class="text">No applications found</div>
+            <div class="text" i18n="@@applicationTableEmpty">No applications found</div>
         </div>
     </section>
 </div>

@@ -10,14 +10,15 @@
                 (ngModelChange)="search$.next($event)"
                 name="search-filter"
                 placeholder="Filter Zones"
+                i18n-placeholder="@@zoneChildrenTableFilter"
             />
         </mat-form-field>
     </div>
     <div class="list" *ngIf="zone_list && zone_list.length > 0; else empty_state">
         <table>
             <thead>
-                <td class="flex">Name</td>
-                <td class="description">Description</td>
+                <td class="flex" i18n="@@zoneChildrenTableName">Name</td>
+                <td class="description" i18n="@@descriptionLabel">Description</td>
             </thead>
             <tbody>
                 <tr *ngFor="let item of zone_list">
@@ -38,6 +39,6 @@
 </div>
 <ng-template #empty_state>
     <div class="info-block">
-        <div class="text">No child zones found</div>
+        <div class="text" i18n="@@zoneChildrenTableEmpty">No child zones found</div>
     </div>
 </ng-template>

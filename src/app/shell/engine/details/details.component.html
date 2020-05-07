@@ -1,31 +1,31 @@
 
-<h3>Backoffice</h3>
+<h3  i18n="@@backoffice">Backoffice</h3>
 <section>
     <div class="field">
-        <label for="version">Version:</label>
+        <label for="version"  i18n="@@version">Version:</label>
         <div class="value">{{ backoffice_version }}</div>
     </div>
     <div class="field">
-        <label for="version">Build:</label>
+        <label for="version" i18n="@@buildTime">Build:</label>
         <div class="value">{{ backoffice_build }}</div>
     </div>
 </section>
-<h3>API</h3>
+<h3 i18n="@@apiHeader">API</h3>
 <section>
     <div class="field">
-        <label for="version">Application Name:</label>
+        <label for="version" i18n="@@apiName">Application Name:</label>
         <div class="value">{{ api_details?.app }}</div>
     </div>
     <div class="field">
-        <label for="version">Version:</label>
+        <label for="version" i18n="@@version">Version:</label>
         <div class="value">{{ api_details?.version }}</div>
     </div>
     <div class="field">
-        <label for="version">Build:</label>
+        <label for="version" i18n="@@buildTime">Build:</label>
         <div class="value">{{ api_build }}</div>
     </div>
     <div class="field">
-        <label for="version">Commit Hash:</label>
+        <label for="version" i18n="@@commitHash">Commit Hash:</label>
         <div class="value">{{ api_details?.commit || 'HEAD' }}</div>
     </div>
 </section>

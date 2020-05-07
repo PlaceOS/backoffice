@@ -5,6 +5,7 @@
                 <label
                     for="driver"
                     matTooltip="System to use for available status variables and function calls"
+                    i18n="@@triggerTemplateSystemLabel"
                     >Template System:
                 </label>
                 <item-search-field
@@ -19,14 +20,14 @@
                     <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
                 </button>
             </div>
-            <div class="text">Conditions</div>
+            <div class="text"  i18n="@@triggerConditionsHeader">Conditions</div>
         </header>
         <section>
             <div
                 class="list"
                 *ngIf="comparisons.length || time_dependents.length; else no_conditions"
             >
-                <div class="header">Variable Comparison Condtions</div>
+                <div class="header" i18n="@@triggerComparisonLabel">Variable Comparison Condtions</div>
                 <div class="group comparisons">
                     <div
                         class="item"
@@ -49,7 +50,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="header">Time Dependent Conditions</div>
+                <div class="header" i18n="@@triggerTimeLabel">Time Dependent Conditions</div>
                 <div class="group time-dependents">
                     <div
                         class="item"
@@ -80,11 +81,11 @@
                     <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
                 </button>
             </div>
-            <div class="text">Actions</div>
+            <div class="text" i18n="@@triggerActionsHeader">Actions</div>
         </header>
         <section>
             <div class="list" *ngIf="functions.length || mailers.length; else no_actions">
-                <div class="header">Function Call Actions</div>
+                <div class="header" i18n="@@triggerFunctionsLabel">Function Call Actions</div>
                 <div
                     class="group functions"
                     cdkDropList
@@ -114,7 +115,7 @@
                         <div class="placeholder" *cdkDragPlaceholder></div>
                     </div>
                 </div>
-                <div class="header">Email Actions</div>
+                <div class="header" i18n="@@triggerEmailsLabel">Email Actions</div>
                 <div
                     class="group emails"
                     cdkDropList
@@ -129,9 +130,8 @@
                             <app-icon [icon]="{ class: 'backoffice-select-arrows'}"></app-icon>
                         </div>
                         <div class="details">
-                            <span [matTooltip]="action.emails | formatList"
-                                >{{ action.emails.length }} Address{{ action.emails.length === 1 ?
-                                '' : 'es' }}</span
+                            <span [matTooltip]="action.emails | formatList" i18n="@@emailCountDisplay"
+                                >{{ action.emails.length }} { action.emails.length, plural, =1 { Address } other { Addresses } }</span
                             >
                             | Body Length: {{ action.content.length }}
                         </div>
@@ -154,11 +154,11 @@
 </div>
 <ng-template #no_conditions>
     <div class="info-block">
-        <div class="text">No condtions for trigger</div>
+        <div class="text" i18n="@@triggerConditionsEmpty">No condtions for trigger</div>
     </div>
 </ng-template>
 <ng-template #no_actions>
     <div class="info-block">
-        <div class="text">No actions for trigger</div>
+        <div class="text" i18n="@@triggerActionsEmpty">No actions for trigger</div>
     </div>
 </ng-template>

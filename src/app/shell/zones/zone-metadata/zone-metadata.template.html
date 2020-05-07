@@ -1,5 +1,5 @@
 <div class="container" *ngIf="item">
-    <button mat-button (tapped)="newMetadata()">Add new Metadata Field</button>
+    <button mat-button (tapped)="newMetadata()" i18n="@@addMetadataAction">Add new Metadata Field</button>
     <div class="list" *ngIf="metadata && metadata.length > 0; else empty_state">
         <mat-accordion>
             <ng-container *ngFor="let item of metadata">
@@ -20,6 +20,7 @@
                                     *ngIf="!loading[item.name]; else load_state"
                                     (click)="$event.stopPropagation()"
                                     (tapped)="saveMetadata(item)"
+                                    i18n="@@saveAction"
                                 >
                                     Save
                                 </button>
@@ -45,7 +46,7 @@
 </div>
 <ng-template #empty_state>
     <div class="info-block">
-        <div class="text">No zone metadata found</div>
+        <div class="text" i18n="@@zoneMetadataEmpty">No zone metadata found</div>
     </div>
 </ng-template>
 <ng-template #load_state>

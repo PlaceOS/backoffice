@@ -1,32 +1,32 @@
 <div class="container" *ngIf="item">
     <section class="actions">
         <mat-card>
-            <mat-card-content>
+            <mat-card-content  i18n="@@repoPullActionDetails">
                 Pull the latest commit for<br>
                 this repository
             </mat-card-content>
             <mat-card-actions>
                 <button mat-button [disabled]="pulling" (tapped)="pullLatestCommit()">
-                    <ng-container *ngIf="!pulling; else spinner">Pull</ng-container>
+                    <ng-container *ngIf="!pulling; else spinner" i18n="@@repoPullAction">Pull</ng-container>
                 </button>
             </mat-card-actions>
         </mat-card>
     </section>
     <section class="details">
         <div class="field">
-            <label>Type:</label>
-            <div class="value">{{ item.type ? 'Interface' : 'Driver' }} Repository</div>
+            <label i18n="@@repoTypeLabel">Type:</label>
+            <div class="value" i18n="@@driverListEmpty">{ item.type, select, Interface { Interface Repository } Driver { Driver Repository } } </div>
         </div>
         <div class="field">
-            <label>Folder name:</label>
+            <label i18n="@@repoFolderNameLabel">Folder name:</label>
             <div class="value">{{ item.folder_name || 'No folder set' }}</div>
         </div>
         <div class="field">
-            <label>Repository URI:</label>
+            <label i18n="@@repoUriLabel">Repository URI:</label>
             <div class="value"><a [href]="item.uri | safe:'url'">{{ item.uri || 'No URI set' }}</a></div>
         </div>
         <div class="field">
-            <label>Description:</label>
+            <label i18n="@@descriptionLabel">Description:</label>
             <div class="value">{{ item.description || 'No description' }}</div>
         </div>
     </section>
