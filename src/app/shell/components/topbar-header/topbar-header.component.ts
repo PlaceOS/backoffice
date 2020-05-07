@@ -36,24 +36,13 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
         this._service.Users.dark_mode = state;
     }
 
+    public get title() {
+        return document.title.split(' | ')[0];
+    }
+
     public get is_fools_day(): boolean {
         return dayjs().format('D MMM') === '1 Apr' && !localStorage.getItem('I\'M NO FOOL!!!');
     }
-
-    public extra_action_list: ApplicationActionLink[] = [
-        {
-            name: 'New System',
-            icon: { type: 'icon', class: 'backoffice-plus' },
-            callback: () =>
-                this.new(new EngineSystem(this._service.Systems, {}), this._service.Systems)
-        },
-        {
-            name: 'New Zone',
-            icon: { type: 'icon', class: 'backoffice-plus' },
-            callback: () =>
-                this.new(new EngineZone(this._service.Zones, {}), this._service.Zones)
-        }
-    ];
 
     /** Application logo */
     public get logo(): ApplicationIcon {
@@ -79,19 +68,18 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
         super();
     }
 
-    public ngOnInit() {
-        this.options = [
-            {
-                route: '/profile',
-                name: 'Profile',
-                icon: { type: 'icon', class: 'backoffice-user' }
-            },
-            { link: '/logout', name: 'Logout', icon: { type: 'icon', class: 'backoffice-log-out' } }
-        ];
-    }
+    public ngOnInit() {}
 
     public notAFool() {
         localStorage.setItem('I\'M NO FOOL!!!', 'true');
+    }
+
+    public newSystem() {
+        this.new(new EngineSystem(this._service.Systems, {}), this._service.Systems);
+    }
+
+    public newZone() {
+        this.new(new EngineZone(this._service.Zones, {}), this._service.Zones);
     }
 
     /**
