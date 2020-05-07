@@ -1,6 +1,4 @@
-
 @import 'shared.styles';
-// @import 'mixin.styles';
 
 :host {
     margin-bottom: 1em;
@@ -16,7 +14,7 @@
     border-radius: 4px;
     border: 1px solid #ccc;
     box-shadow: inset 0 0 0 1px #fff;
-    padding: .5em .25em;
+    padding: 0.5em 0.25em;
     transition: border 200ms, box-shadow 200ms;
 
     &:hover {
@@ -24,16 +22,26 @@
         border-color: #464646;
     }
 
-    &:focus {
+    &:focus,
+    &.active {
         box-shadow: inset 0 0 0 1px $color-primary;
         border-color: $color-primary;
+
+        .icon {
+            color: $color-primary;
+        }
     }
+}
+
+[disabled="true"] {
+    pointer-events: none;
+    opacity: .35;
 }
 
 .display {
     flex: 1;
     min-width: 50%;
-    padding: .5em;
+    padding: 0.5em;
 }
 
 .icon {
@@ -49,18 +57,9 @@ app-icon {
     font-size: 1.5em;
 }
 
-.tooltip {
-    position: absolute;
-    bottom: -.5em;
-    left: 0;
-    transform: translateY(100%);
-    background-color: #fff;
-    padding: .5em;
-    border-radius: 4px;
-    @include box-shadow;
-    z-index: 999;
-    outline: none;
-    @include respond-to(mobile) {
-        transform: translate(-1.75em, 100%);
+.date-picker {
+    height: 26.5em;
+    &:hover {
+        background: none;
     }
 }

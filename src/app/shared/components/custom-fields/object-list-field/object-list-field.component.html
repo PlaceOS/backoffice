@@ -12,6 +12,7 @@
                     matInput
                     [name]="field"
                     [placeholder]="field"
+                    i18n-placeholder
                     [(ngModel)]="item[field]"
                     (ngModelChange)="setValue(active_list)"
                 />
@@ -25,7 +26,7 @@
         <button mat-button type="button" (tapped)="addRow()">
             <div class="contents">
                 <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
-                <div class="text">New Item</div>
+                <div class="text" i18n="@@newItem">New Item</div>
             </div>
         </button>
     </div>

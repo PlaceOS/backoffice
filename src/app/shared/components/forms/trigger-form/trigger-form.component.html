@@ -4,6 +4,7 @@
             <label
                 for="trigger-name"
                 [class.error]="form.controls.name.invalid && form.controls.name.touched"
+                i18n="@@nameLabel"
                 >Name<span>*</span>:</label
             >
             <mat-form-field appearance="outline">
@@ -11,25 +12,27 @@
                     matInput
                     name="trigger-name"
                     placeholder="Trigger Name"
+                    i18n-placeholder="@@triggerNamePlaceholder"
                     formControlName="name"
                     required
                 />
-                <mat-error *ngIf="form.controls.name.invalid">Trigger name is required</mat-error>
+                <mat-error i18n="@@triggerError">Trigger name is required</mat-error>
             </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.description">
-            <label for="description">Description:</label>
+            <label for="description" i18n="@@descriptionLabel">Description:</label>
             <mat-form-field appearance="outline">
                 <textarea
                     matInput
                     name="description"
                     placeholder="Description"
+                    i18n-placeholder="@@descriptionPlaceholder"
                     formControlName="description"
                 ></textarea>
             </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.enable_webhook">
-            <mat-checkbox name="enable-webhook" formControlName="enable_webhook">
+            <mat-checkbox name="enable-webhook" formControlName="enable_webhook" i18n="@@enableWebhooklabel">
                 Enable Webhook
             </mat-checkbox>
         </div>

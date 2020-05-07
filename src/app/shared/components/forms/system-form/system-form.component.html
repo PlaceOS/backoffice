@@ -4,13 +4,16 @@
             <label
                 for="zone"
                 [class.error]="form.controls.zone.invalid && form.controls.zone.touched"
-                >Zone<span>*</span>:
+                i18n="@@zoneLabel"
+            >
+                Zone<span>*</span>:
             </label>
-            <item-search-field
-                [service]="zone_service"
-                formControlName="zone"
-            ></item-search-field>
-            <div class="error" *ngIf="form.controls.zone.invalid && form.controls.zone.touched">
+            <item-search-field [service]="zone_service" formControlName="zone"></item-search-field>
+            <div
+                class="error"
+                *ngIf="form.controls.zone.invalid && form.controls.zone.touched"
+                i18n="@@zoneError"
+            >
                 Zone is required
             </div>
         </div>
@@ -19,17 +22,20 @@
                 <label
                     for="system-name"
                     [class.error]="form.controls.name.invalid && form.controls.name.touched"
-                    >Name<span>*</span>:</label
+                    i18n="@@nameLabel"
                 >
+                    Name<span>*</span>:
+                </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="system-name"
                         placeholder="System Name"
+                        i18n-placeholder="@@systemNamePlaceholder"
                         formControlName="name"
                         required
                     />
-                    <mat-error *ngIf="form.controls.name.invalid"
+                    <mat-error *ngIf="form.controls.name.invalid" i18n="@@systemNameError"
                         >System name is required</mat-error
                     >
                 </mat-form-field>
@@ -38,20 +44,21 @@
                 <label
                     for="system-email"
                     [class.error]="form.controls.email.invalid && form.controls.email.touched"
-                    >Email:</label
+                    i18n="@@emailLabel"
                 >
+                    Email:
+                </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="system-email"
                         placeholder="System Email"
+                        i18n-placeholder="@@systemEmailPlaceholder"
                         formControlName="email"
                     />
-                    <mat-error *ngIf="form.controls.email.invalid">{{
-                        form.controls.email.hasError('email')
-                            ? 'A valid email is required'
-                            : 'Email is invalid'
-                    }}</mat-error>
+                    <mat-error *ngIf="form.controls.email.invalid" i18n="@@emailError"
+                        >A valid email is required</mat-error
+                    >
                 </mat-form-field>
             </div>
         </div>
@@ -61,20 +68,21 @@
                 [class.error]="
                     form.controls.support_url.invalid && form.controls.support_url.touched
                 "
-                >Support URL:</label
+                i18n="@@supportUrlLabel"
             >
+                Support URL:
+            </label>
             <mat-form-field appearance="outline">
                 <input
                     matInput
                     name="support-url"
                     placeholder="Support URL"
+                    i18n-placeholder="@@suportUrlPlaceholder"
                     formControlName="support_url"
                 />
-                <mat-error *ngIf="form.controls.support_url.invalid">{{
-                    form.controls.support_url.hasError('pattern')
-                        ? 'A valid URL is required'
-                        : 'Support URL is invalid'
-                }}</mat-error>
+                <mat-error *ngIf="form.controls.support_url.invalid" i18n="@@urlError">
+                    A valid URL is required
+                </mat-error>
             </mat-form-field>
         </div>
         <div class="fieldset">
@@ -85,51 +93,63 @@
                         form.controls.installed_ui_devices.invalid &&
                         form.controls.installed_ui_devices.touched
                     "
-                    >Number of Touch Panels:</label
+                    i18n="@@panelCountLabel"
                 >
+                    Number of Touch Panels:
+                </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="ui-devices"
                         type="number"
                         placeholder="Number of Touch Panels"
+                        i18n-placeholder="@@panelCountPlaceholder"
                         formControlName="installed_ui_devices"
                     />
-                    <mat-error *ngIf="form.controls.installed_ui_devices.invalid"
-                        >A valid positive number is required</mat-error
+                    <mat-error
+                        *ngIf="form.controls.installed_ui_devices.invalid"
+                        i18n="@@panelCountError"
                     >
+                        A valid positive number is required
+                    </mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.capacity">
                 <label
                     for="capacity"
                     [class.error]="form.controls.capacity.invalid && form.controls.capacity.touched"
-                    >Capacity:</label
+                    i18n="@@capacityLabel"
                 >
+                    Capacity:
+                </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="capacity"
                         type="number"
                         placeholder="Capacity"
+                        i18n-placeholder="@@capacityPlaceholder"
                         formControlName="capacity"
                     />
-                    <mat-error *ngIf="form.controls.capacity.invalid"
-                        >A valid positive number is required</mat-error
-                    >
+                    <mat-error *ngIf="form.controls.capacity.invalid" i18n="@@capacityError">
+                        A valid positive number is required
+                    </mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.bookable">
-                <mat-checkbox name="bookable" formControlName="bookable">Bookable</mat-checkbox>
+                <mat-checkbox name="bookable" formControlName="bookable" i18n="@@bookableLabel">
+                    Bookable
+                </mat-checkbox>
             </div>
         </div>
         <div class="field" *ngIf="form.controls.description">
-            <label for="description">Description:</label>
+            <label for="description" i18n="@@descriptionLabel">Description:</label>
             <mat-form-field appearance="outline">
                 <textarea
                     matInput
                     name="description"
                     placeholder="Description"
+                    i18n="@@descriptionPlaceholder"
                     formControlName="description"
                 ></textarea>
             </mat-form-field>
@@ -138,8 +158,10 @@
             <label
                 for="system-email"
                 [class.error]="form.controls.tag_list.invalid && form.controls.tag_list.touched"
-                >Features:</label
+                i18n="@@featuresLabel"
             >
+                Features:
+            </label>
             <mat-form-field appearance="outline">
                 <mat-chip-list #chipList aria-label="Zone Tags">
                     <mat-chip
@@ -153,6 +175,7 @@
                     </mat-chip>
                     <input
                         placeholder="Features..."
+                        i18n-placeholder="@@featuresPlaceholder"
                         [matChipInputFor]="chipList"
                         [matChipInputSeparatorKeyCodes]="separators"
                         [matChipInputAddOnBlur]="true"
@@ -162,11 +185,12 @@
             </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.map_id">
-            <label for="map_id">Map ID:</label>
+            <label for="map_id" i18n="@@mapIdLabel">Map ID:</label>
             <mat-form-field appearance="outline">
                 <input
                     matInput
                     name="map_id"
+                    i18n-placeholder="@@mapIdPlaceholder"
                     placeholder="Map SVG ID selector e.g. area-01.10-status"
                     formControlName="map_id"
                 />

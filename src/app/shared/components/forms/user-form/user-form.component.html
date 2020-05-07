@@ -6,55 +6,79 @@
         <label
             for="system-name"
             [class.error]="form.controls.name.invalid && form.controls.name.touched"
-            >Name<span>*</span>:</label
+            i18n="@@nameLabel"
         >
+            Name<span>*</span>:
+        </label>
         <mat-form-field appearance="outline">
-            <input matInput name="name" placeholder="Name" formControlName="name" required />
-            <mat-error>User's name is required</mat-error>
+            <input
+                matInput
+                name="name"
+                placeholder="Name"
+                i18n-placeholder="@@namePlaceholder"
+                formControlName="name"
+                required
+            />
+            <mat-error i18n="@@userNameError">User's name is required</mat-error>
         </mat-form-field>
     </div>
     <div class="field" *ngIf="form.controls.email">
         <label
             for="useremail"
             [class.error]="form.controls.email.invalid && form.controls.email.touched"
-            >Email<span>*</span>:</label
+            i18n="@@emailLabel"
         >
+            Email<span>*</span>:
+        </label>
         <mat-form-field appearance="outline">
             <input
                 matInput
                 name="useremail"
                 placeholder="Email"
+                i18n-placeholder="@@emailPlaceholder"
                 formControlName="email"
                 autocomplete="nope"
             />
-            <mat-error>A valid email is required</mat-error>
+            <mat-error i18n="@@emailError">A valid email is required</mat-error>
         </mat-form-field>
     </div>
     <div class="field" *ngIf="form.controls.staff_id">
         <label
             for="staff-id"
             [class.error]="form.controls.staff_id.invalid && form.controls.staff_id.touched"
-            >Card Number:</label
+            i18n="@@cardNumberLabel"
         >
+            Card Number:
+        </label>
         <mat-form-field appearance="outline">
-            <input matInput name="staff-id" placeholder="Card Number" formControlName="staff_id" />
-            <mat-error *ngIf="form.controls.staff_id.invalid"
-                >A valid Card Number is required</mat-error
-            >
+            <input
+                matInput
+                name="staff-id"
+                placeholder="Card Number"
+                i18n-placeholder="@@cardNumberPlaceholder"
+                formControlName="staff_id"
+            />
+            <mat-error i18n="@@cardNumberError">A valid Card Number is required</mat-error>
         </mat-form-field>
     </div>
     <div class="field" *ngIf="form.controls.support">
-        <mat-checkbox name="support" formControlName="support">Support</mat-checkbox>
+        <mat-checkbox name="support" formControlName="support" i18n="@@supportLabel"
+            >Support</mat-checkbox
+        >
     </div>
     <div class="field" *ngIf="form.controls.sys_admin">
-        <mat-checkbox name="sys_admin" formControlName="sys_admin">System Admin</mat-checkbox>
+        <mat-checkbox name="sys_admin" formControlName="sys_admin" i18n="@@adminLabel"
+            >System Admin</mat-checkbox
+        >
     </div>
     <div class="field" *ngIf="form.controls.staff_id">
         <label
             for="new-password"
             [class.error]="form.controls.password.invalid && form.controls.password.touched"
-            >Password:</label
+            i18n="@@passwordLabel"
         >
+            Password:
+        </label>
         <mat-form-field appearance="outline">
             <input
                 matInput
@@ -62,6 +86,7 @@
                 autocomplete="new-password"
                 [type]="show_password ? 'text' : 'password'"
                 placeholder="Password"
+                i18n-placeholder="@@passwordPlaceholder"
                 formControlName="password"
             />
             <app-icon
@@ -72,7 +97,7 @@
                 (touchstart)="show_password = true"
                 (window:touchend)="show_password = false"
             ></app-icon>
-            <mat-error>A valid password is required</mat-error>
+            <mat-error i18n="@@passordError">A valid password is required</mat-error>
         </mat-form-field>
     </div>
     <div class="field" *ngIf="form.controls.confirm_password">
@@ -82,14 +107,17 @@
                 form.controls.confirm_password.invalid && form.controls.confirm_password.touched
             "
             minlength="1"
-            >Confirm Pasword:</label
+            i18n="@@checkPasswordLabel"
         >
+            Confirm Pasword:
+        </label>
         <mat-form-field appearance="outline">
             <input
                 matInput
                 [type]="show_confirm ? 'text' : 'password'"
                 name="confirm-password"
                 placeholder="Confirm Password"
+                i18n-placeholder="@@checkPasswordPlaceholder"
                 formControlName="confirm_password"
                 minlength="1"
             />
@@ -101,7 +129,7 @@
                 (touchstart)="show_confirm = true"
                 (window:touchend)="show_confirm = false"
             ></app-icon>
-            <mat-error>Passwords don't match</mat-error>
+            <mat-error i18n="@@checkPasswordError">Passwords don't match</mat-error>
         </mat-form-field>
     </div>
 </form>

@@ -2,11 +2,11 @@
     <ng-container
         *ngTemplateOutlet="status_variable_form; context: { side: 'left' }"
     ></ng-container>
-    <div *ngIf="form.controls.left.touched && form.controls.left.errors" class="error">
+    <div *ngIf="form.controls.left.touched && form.controls.left.errors" class="error" i18n="@@statusVarError">
         A module status variable is required
     </div>
     <div class="field" *ngIf="form.controls.operator">
-        <label for="operator" hidden>Operation:</label>
+        <label for="operator" hidden i18n="@@operationLabel">Operation:</label>
         <mat-form-field appearance="outline">
             <mat-select name="operator" formControlName="operator" placeholder="Select comparison operator">
                 <mat-option *ngFor="let operation of compare_types" [value]="operation.id">
@@ -16,7 +16,7 @@
         </mat-form-field>
     </div>
     <div class="field" *ngIf="form.controls.operator">
-        <label for="compared-to" hidden>Compared to:</label>
+        <label for="compared-to" hidden i18n="@@comparedLabel">Compared to:</label>
         <mat-form-field appearance="outline">
             <mat-select
                 name="compared-to"
@@ -31,17 +31,18 @@
         </mat-form-field>
     </div>
     <div class="field" *ngIf="rhs_type === 'constant' && form.controls.right; else rhs_status_var">
-        <label for="constant" hidden>Compared to:</label>
+        <label for="constant" hidden i18n="@@comparedLabel">Compared to:</label>
         <mat-form-field appearance="outline">
             <input
                 matInput
                 name="constant"
                 formControlName="right"
                 placeholder="true/false, 'string', 123.456"
+                i18n-placeholder="@@comparedValue"
             />
         </mat-form-field>
     </div>
-    <div *ngIf="form.controls.right.touched && form.controls.right.errors" class="error">
+    <div *ngIf="form.controls.right.touched && form.controls.right.errors" class="error"  i18n="@@statusValueError">
         A module status variable or value is required
     </div>
 </div>
@@ -53,7 +54,7 @@
 <ng-template #status_variable_form let-side="side">
     <div class="fieldset">
         <div class="field">
-            <label for="type">Module:</label>
+            <label for="type"  i18n="@@moduleLabel">Module:</label>
             <mat-form-field appearance="outline">
                 <mat-select
                     name="type"
@@ -72,7 +73,7 @@
             class="field"
             *ngIf="this[side + '_status_variables'] && this[side + '_status_variables'].length"
         >
-            <label [for]="side + '-status-var'">Status Variable:</label>
+            <label [for]="side + '-status-var'" i18n="@@statusVarLabel">Status Variable:</label>
             <mat-form-field appearance="outline">
                 <mat-select
                     [name]="side + '-status-var'"
@@ -80,6 +81,7 @@
                     (ngModelChange)="updateFormForSide(side)"
                     [ngModelOptions]="{ standalone: true }"
                     placeholder="Select status variable"
+                    i18n-placeholder="@@statusVarPlaceholder"
                 >
                     <mat-option
                         *ngFor="let mod of this[side + '_status_variables']"
@@ -95,7 +97,7 @@
         class="field"
         *ngIf="this[side + '_status_variables'] && this[side + '_status_variables'].length"
     >
-        <label [for]="side + '-subkeys'">Subkeys:</label>
+        <label [for]="side + '-subkeys'"  i18n="@@subkeysLabel">Subkeys:</label>
         <mat-form-field appearance="outline">
             <input
                 matInput
@@ -103,6 +105,7 @@
                 (ngModelChange)="this[side + '_side'].keys = $event.split(','); updateFormForSide(side);"
                 [name]="side + '-subkeys'"
                 placeholder="Status variable subkeys..."
+                i18n-placeholder="@@subkeysPlaceholder"
             />
         </mat-form-field>
     </div>

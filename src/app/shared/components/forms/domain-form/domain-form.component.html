@@ -5,37 +5,43 @@
                 <label
                     for="domain-name"
                     [class.error]="form.controls.name.invalid && form.controls.name.touched"
-                    >Name<span>*</span>:</label
+                    i18n="@@nameLabel"
                 >
+                    Name<span>*</span>:
+                </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="domain-name"
                         placeholder="Domain Name"
+                        i18n-placeholder="@@domainNamePlaceholder"
                         formControlName="name"
                         required
                     />
-                    <mat-error *ngIf="form.controls.name.invalid"
-                        >Domain name is required</mat-error
-                    >
+                    <mat-error *ngIf="form.controls.name.invalid" i18n="@@domainNameError">
+                        Domain name is required
+                    </mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.dom">
                 <label
                     for="domain"
                     [class.error]="form.controls.dom.invalid && form.controls.dom.touched"
-                    >Domain:</label
+                    i18n="@@domainLabel"
                 >
+                    Domain:
+                </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="domain"
                         placeholder="Domain e.g localhost"
+                        i18n="@@domainPlaceholder"
                         formControlName="dom"
                     />
-                    <mat-error *ngIf="form.controls.dom.invalid"
-                        >A valid Domain is required</mat-error
-                    >
+                    <mat-error *ngIf="form.controls.dom.invalid" i18n="@@domainError">
+                        A valid Domain is required
+                    </mat-error>
                 </mat-form-field>
             </div>
         </div>
@@ -43,49 +49,52 @@
             <label
                 for="login-url"
                 [class.error]="form.controls.login_url.invalid && form.controls.login_url.touched"
-                >Login URL:</label
+                i18n="@@loginUrlLabel"
             >
+                Login URL:
+            </label>
             <mat-form-field appearance="outline">
                 <input
                     matInput
                     name="login-url"
                     placeholder="Login URL"
+                    i18n="@@loginUrlPlaceholder"
                     formControlName="login_url"
                 />
-                <mat-error *ngIf="form.controls.login_url.invalid">{{
-                    form.controls.login_url.hasError('pattern')
-                        ? 'A valid Login URL is required'
-                        : 'Login URL is invalid'
-                }}</mat-error>
+                <mat-error *ngIf="form.controls.login_url.invalid" i18n="@@loginUrlError">
+                    A valid Login URL is required
+                </mat-error>
             </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.logout_url">
             <label
                 for="logout-url"
                 [class.error]="form.controls.logout_url.invalid && form.controls.logout_url.touched"
-                >Logout URL:</label
+                i18n="@@logoutUrlLabel"
             >
+                Logout URL:
+            </label>
             <mat-form-field appearance="outline">
                 <input
                     matInput
                     name="logout-url"
                     placeholder="Logout URL"
+                    i18n-placeholder="@@logoutUrlPlaceholder"
                     formControlName="logout_url"
                 />
-                <mat-error *ngIf="form.controls.logout_url.invalid">{{
-                    form.controls.logout_url.hasError('pattern')
-                        ? 'A valid Logout URL is required'
-                        : 'Logout URL is invalid'
-                }}</mat-error>
+                <mat-error *ngIf="form.controls.logout_url.invalid" i18n="@@logoutUrlError">
+                    A valid Logout URL is required
+                </mat-error>
             </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.description">
-            <label for="description">Description:</label>
+            <label for="description" i18n="@@descriptionLabel">Description:</label>
             <mat-form-field appearance="outline">
                 <textarea
                     matInput
                     name="description"
                     placeholder="Description"
+                    i18n="@@descriptionPlaceholder"
                     formControlName="description"
                 ></textarea>
             </mat-form-field>

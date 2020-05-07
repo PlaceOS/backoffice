@@ -1,32 +1,46 @@
-<div class="container" [class.dark-mode]="dark_mode" >
+<div class="container" [class.dark-mode]="dark_mode">
     <header *ngIf="item && !loading">
         <div class="heading-group">
-            <div class="heading">{{ item.display_name || item.custom_name || item.name || "&lt;Unnamed&gt;" }}</div>
+            <div class="heading">
+                {{ item.display_name || item.custom_name || item.name || "&lt;Unnamed&gt;" }}
+            </div>
             <div class="info">
                 <div class="id" *ngIf="item.id" (click)="copy()">
                     <span>{{ item.id }}</span>
                 </div>
-                <div class="chip driver" *ngIf="driver_type">
-                    {{ driver_type }}
+                <div class="chip driver" *ngIf="driver_type" i18n="@@driverType">
+                    { driver_type, select, Device { Device } Logic { Logic } SSH { SSH } Websocket {
+                    Websocket } Service { Service } other { Other } }
                 </div>
                 <div
                     class="chip connect"
                     *ngIf="item.connected !== null && item.connected !== undefined"
                     [class.active]="item.connected"
+                    i18n="@@onlineState"
                 >
-                    {{ item.connected ? 'Online' : 'Offline' }}
+                    { item.connected, select, true { Online } false { Offline } other { Other } }
                 </div>
                 <div class="chip secure" *ngIf="item.tls">
                     <div class="icon"><i class="backoffice-lock"></i></div>
-                    <div class="text">Secure</div>
+                    <div class="text" i18n="@@secure">Secure</div>
                 </div>
             </div>
         </div>
         <div class="options" *ngIf="has_change">
-            <button mat-icon-button (touchrelease)="edit()" matTooltip="Edit [E]">
+            <button
+                mat-icon-button
+                (touchrelease)="edit()"
+                matTooltip="Edit [E]"
+                i18n-matTooltip="@@editAction"
+            >
                 <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
             </button>
-            <button mat-icon-button (touchrelease)="delete()" matTooltip="Delete [D]">
+            <button
+                mat-icon-button
+                (touchrelease)="delete()"
+                matTooltip="Delete [D]"
+                i18n-matTooltip="@@deleteAction"
+            >
                 <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
             </button>
         </div>
@@ -44,7 +58,13 @@
                     [active]="rla.isActive"
                 >
                     <app-icon [icon]="link.icon"></app-icon>
-                    <div class="name">{{ link.name }}&nbsp;</div>
+                    <div class="name" i18n="@@tabNames">
+                        { link.name, select, About { About } Modules { Modules } Zones { Zones }
+                        Triggers { Triggers } Systems { Systems } Metadata { Metadata } Children {
+                        Children } Drivers { Drivers } History { History } Applications {
+                        Applications } Authenication { Authenication } Users { Users } Database {
+                        Database } Clusters { Clusters } other { Other }} &nbsp;
+                    </div>
                     <div class="count" *ngIf="link.count || link.count === 0">
                         ({{ link.count || '0' }})
                     </div>
@@ -61,7 +81,11 @@
         <div class="icon">
             <i class="backoffice-arrow-left"></i>
         </div>
-        <div class="text">Select a {{ name }} from the sidebar</div>
+        <div class="text" i18n="@@selectItem">
+            Select a { name, select, system { system } module { module } driver { driver }
+            repository { repository } zone { zone } trigger { trigger } user { user } domain {
+            domain } other { other } } from the sidebar
+        </div>
     </div>
 </div>
 <div class="mobile-only center" *ngIf="!item && !loading">
@@ -69,12 +93,20 @@
         <div class="icon">
             <i class="backoffice-arrow-up"></i>
         </div>
-        <div class="text">Select a {{ name }} from the search bar</div>
+        <div class="text" i18n="@@selectItemMobile">
+            Select a { name, select, system { system } module { module } driver { driver }
+            repository { repository } zone { zone } trigger { trigger } user { user } domain {
+            domain } other { other } } from the search bar
+        </div>
     </div>
 </div>
 <div class="info-block center" *ngIf="loading">
     <div class="icon">
         <a-spinner circle-ring></a-spinner>
     </div>
-    <div class="text">Loading {{ name }}...</div>
+    <div class="text" i18n="@@itemLoading">
+        Loading { name, select, system { system } module { module } driver { driver } repository {
+        repository } zone { zone } trigger { trigger } user { user } domain { domain } other { other
+        } }...
+    </div>
 </div>

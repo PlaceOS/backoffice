@@ -6,6 +6,7 @@
             [(ngModel)]="search_str"
             (ngModelChange)="search$.next($event)"
             [placeholder]="'Search for ' + (service?.name || service?._name || '') + '...'"
+            i18n-placeholder
             [matAutocomplete]="auto"
             (focus)="search_str = ''; search$.next(' ')"
             (blur)="resetSearchString()"

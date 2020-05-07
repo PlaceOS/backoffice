@@ -1,19 +1,20 @@
-<div class="container" *ngIf="menu_items" [class.show]="show" (mouseleave)="tooltip = 'false'" (tapped)="cancelClose()" (window:click)="close()">
+<div
+    class="container"
+    *ngIf="menu_items"
+    [class.show]="show"
+    (mouseleave)="tooltip = 'false'"
+    (tapped)="cancelClose()"
+    (window:click)="close()"
+>
     <ng-container *ngFor="let item of menu_items">
-        <div
-            class="item"
-            [title]="item.name"
-            [matTooltip]="item.name"
-            matTooltipPosition="right"
-        >
-            <a *ngIf="item.link" [href]="item.link">
+        <div class="item" [title]="item.name" [matTooltip]="item.name" i18n-matTooltip matTooltipPosition="right">
+            <a [routerLink]="[item.route]" routerLinkActive="active">
                 <app-icon [icon]="item?.icon"></app-icon>
-                <div class="text" *ngIf="!item?.hide_name">{{ item?.name }}</div>
-                <div class="bar"></div>
-            </a>
-            <a *ngIf="!item.link" [routerLink]="[item.route]" routerLinkActive="active">
-                <app-icon [icon]="item?.icon"></app-icon>
-                <div class="text" *ngIf="!item?.hide_name">{{ item?.name }}</div>
+                <div class="text" *ngIf="!item?.hide_name" i18n>
+                    { item.name, select, Systems { Systems } Modules { Modules } Zones { Zones }
+                    Drivers { Drivers } Repos { Repos } Triggers { Triggers } Users { Users }
+                    Domains { Domains } Admin { Admin } other { Other } }
+                </div>
                 <div class="bar"></div>
             </a>
         </div>

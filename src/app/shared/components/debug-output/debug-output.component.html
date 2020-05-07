@@ -2,8 +2,8 @@
     <div class="debug-output" [class.disabled]="!show_content">
         <div class="content" #content [@show]="show_content ? 'show' : 'hide'" [style.height]="height + 'px'" [style.width]="width + 'px'">
             <div class="header">
-                <div class="text">Debug Console</div>
-                <button mat-button (tapped)="clearDebugMessages()">Clear</button>
+                <div class="text" i18n="@@debugConsole">Debug Console</div>
+                <button mat-button (tapped)="clearDebugMessages()" i18n="@@clear">Clear</button>
             </div>
             <a-terminal [content]="logs" [resize]="resize"></a-terminal>
             <div

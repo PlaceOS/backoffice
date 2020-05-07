@@ -16,6 +16,7 @@
                     <label
                         for="description"
                         [class.error]="form.controls.emails.touched && form.controls.emails.errors"
+                        i18n="@@emailAddressesLabel"
                     >
                         Email Addresses<span>*</span>:
                     </label>
@@ -37,6 +38,7 @@
                                 [(ngModel)]="new_email"
                                 [ngModelOptions]="{ standalone: true }"
                                 placeholder="New email..."
+                                i18n-placeholder="@@addEmailPlaceholder"
                                 [matChipInputFor]="chipList"
                                 [matChipInputSeparatorKeyCodes]="separators"
                                 [matChipInputAddOnBlur]="true"
@@ -51,12 +53,13 @@
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.content">
-                    <label for="content">Email Body:</label>
+                    <label for="content" i18n="@@emailBodyLabel">Email Body:</label>
                     <mat-form-field appearance="outline">
                         <textarea
                             matInput
                             name="content"
                             placeholder="Email body contents..."
+                            i18n-placeholder="@@emailBodyPlacholder"
                             formControlName="content"
                         ></textarea>
                     </mat-form-field>
@@ -64,7 +67,7 @@
             </ng-container>
             <ng-container *ngSwitchDefault>
                 <div class="field" *ngIf="form.controls.method_call">
-                    <label for="content">Select method to execute:</label>
+                    <label for="content" i18n="@@selectExecLabel">Select method to execute:</label>
                     <system-exec-field
                         formControlName="method_call"
                         [system]="system"
