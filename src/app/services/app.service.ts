@@ -392,8 +392,8 @@ export class ApplicationService extends BaseClass {
      * @param name Property name
      * @param next Callback for value changes
      */
-    public listen<U = any>(name: string, next: (_: U) => void): Subscription {
-        return this._observers[name] ? this._observers[name].subscribe(next) : null;
+    public listen<U = any>(name: string): Observable<U> {
+        return this._observers[name] ? this._observers[name] : null;
     }
 
     /**

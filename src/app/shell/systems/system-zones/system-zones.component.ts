@@ -42,7 +42,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item', item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
                 this.item = item;
                 this.loadZones();
             })

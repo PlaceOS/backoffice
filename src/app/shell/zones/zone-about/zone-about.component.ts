@@ -33,7 +33,7 @@ export class ZoneAboutComponent extends BaseDirective implements OnInit, OnChang
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item', item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
                 this.item = item;
                 this.ngOnChanges({ item: new SimpleChange(null, this.item, false) });
             })

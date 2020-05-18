@@ -148,11 +148,11 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             }
             this.subscription(
                 'active_item',
-                this._service.listen('BACKOFFICE.active_item', item => this.replaceActiveItem(item))
+                this._service.listen('BACKOFFICE.active_item').subscribe(item => this.replaceActiveItem(item))
             );
             this.subscription(
                 'remove_item',
-                this._service.listen('BACKOFFICE.removed', id => this.removeItem(id))
+                this._service.listen('BACKOFFICE.removed').subscribe(id => this.removeItem(id))
             );
             this.subscription(
                 'up',
