@@ -16,6 +16,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthSourceModalComponent } from './auth-source-modal/auth-source-modal.component';
 import { ViewResponseModalComponent } from './view-response-modal/view-response-modal.component';
 import { MetadataDetailsModalComponent } from './metadata-details-modal/metadata-details-modal.component';
+import { BulkItemModalComponent } from './bulk-item-modal/bulk-item-modal.component';
+import { CsvUploadComponent } from './bulk-item-modal/csv-upload/csv-upload.component';
+import { MatchFieldsComponent } from './bulk-item-modal/match-fields/match-fields.component';
+import { ListComponent } from './bulk-item-modal/list/list.component';
+import { StatusListComponent } from './bulk-item-modal/status-list/status-list.component';
 
 
 const OVERLAYS: Type<any>[] = [
@@ -29,12 +34,17 @@ const OVERLAYS: Type<any>[] = [
     ViewModuleStateModalComponent,
     AuthSourceModalComponent,
     ViewResponseModalComponent,
-    MetadataDetailsModalComponent
+    MetadataDetailsModalComponent,
+    BulkItemModalComponent,
 ];
 
 @NgModule({
     declarations: [
-        ...OVERLAYS
+        ...OVERLAYS,
+        CsvUploadComponent,
+        MatchFieldsComponent,
+        ListComponent,
+        StatusListComponent
     ],
     imports: [
         CommonModule,

@@ -1,0 +1,22 @@
+<div
+    class="upload-box"
+    *ngIf="!loading; else load_state"
+    [class.hover]="dragging"
+    (dragenter)="dragging = true"
+    (dragleave)="dragging = false"
+    (dragend)="dragging = false"
+>
+    <app-icon [icon]="{ class: 'backoffice-upload' }"></app-icon>
+    <div class="text" i18n="uploadCSVAction">Select or drop CSV file to begin</div>
+    <input type="file" (change)="loadCSVData($event)"/>
+</div>
+<ng-template #load_state>
+    <div class="load-state">
+        <div class="info-block">
+            <div class="icon">
+                <mat-spinner diameter="32"></mat-spinner>
+            </div>
+            <div class="text" i81n="@@loadingCSV">Process CSV data...</div>
+        </div>
+    </div>
+</ng-template>

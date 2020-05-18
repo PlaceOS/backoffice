@@ -1,0 +1,54 @@
+
+@import 'shared.styles';
+
+.upload-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 24em;
+    width: 24em;
+    border: 4px dashed rgba(#000, 1);
+    border-radius: 8px;
+    opacity: .35;
+    transform: opacity 200ms, color 200ms, border-color 200ms, background-color 200ms;
+
+    &:hover {
+        opacity: .6;
+    }
+
+    &.hover {
+        background-color: rgba(#000, .35);
+        border-color: $color-primary;
+        color: $color-primary;
+        opacity: 1;
+    }
+}
+
+app-icon {
+    font-size: 4em;
+}
+
+.text {
+    font-size: 1.2em;
+    margin-top: .75em;
+}
+
+input[type="file"] {
+    position: absolute;
+    opacity: .001;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.load-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 24em;
+    width: 24em;
+}

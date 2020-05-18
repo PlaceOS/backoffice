@@ -1,0 +1,28 @@
+<header>
+    <h3 mat-dialog-title>Bulk Add {{ type }}</h3>
+    <button mat-icon-button mat-dialog-close *ngIf="!loading">
+        <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
+    </button>
+</header>
+<mat-dialog-content>
+    <main>
+        <div [ngSwitch]="flow_step">
+            <div *ngSwitchCase="'status'">
+                <bulk-item-status-list [list]="item_list" (done)="done()"></bulk-item-status-list>
+            </div>
+            <div *ngSwitchCase="'list'">
+                <bulk-item-list [(list)]="item_list" (save)="showStatus()"></bulk-item-list>
+            </div>
+            <div *ngSwitchCase="'match-fields'">
+                <bulk-item-match-fields
+                    [list]="data_list"
+                    [field_list]="available_fields"
+                    (list)="handleList($event, true)"
+                ></bulk-item-match-fields>
+            </div>
+            <div *ngSwitchDefault>
+                <bulk-item-csv-upload (list)="handleList($event)"></bulk-item-csv-upload>
+            </div>
+        </div>
+    </main>
+</mat-dialog-content>

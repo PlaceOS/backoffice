@@ -295,6 +295,37 @@ export function copyToClipboard(value: string) {
 }
 
 /**
+ * Parse raw CSV data into a JSON object
+ * @param csv CSV data to parse
+ */
+export function csvToJson(csv: string) {
+    const lines = csv.split('\n');
+    let fields = lines.splice(0, 1)[0].split(',');
+    fields = fields.map(v => v.replace('\r', ''));
+    const list: any[] = [];
+    for (const line of lines) {
+        let parts = line.split(',');
+        parts = parts.map(v => v.replace('\r', ''));
+        /* istanbul ignore else */
+        if (parts.length >= fields.length) {
+            const item: any = {};
+            for (let i = 0; i <= parts.length; i++) {
+                let part = null;
+                part = parts[i];
+                /* istanbul ignore else */
+                if (part !== undefined) {
+                    item[(fields[i] || '').split(' ').join('_').toLowerCase()] = part;
+
+                }
+            }
+            list.push(item);
+        }
+    }
+
+    return list;
+}
+
+/**
  * Grab point details from mouse or touch event
  * @param event Event to grab details from
  */

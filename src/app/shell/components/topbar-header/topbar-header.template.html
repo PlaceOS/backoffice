@@ -73,13 +73,35 @@
     </a>
 </mat-menu>
 <mat-menu #more_actions="matMenu">
-    <button mat-menu-item (tapped)="newSystem()">
+    <button mat-menu-item [matMenuTriggerFor]="type_menu" (mouseenter)="bulk = false" (click)="bulk = false">
         <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
-        <div class="text" i18n="@@newSystemAction">New System</div>
+        <div class="text" i18n="@@newAction">New</div>
+    </button>
+    <button mat-menu-item [matMenuTriggerFor]="type_menu" (mouseenter)="bulk = true" (click)="bulk = true">
+        <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
+        <div class="text" i18n="@@bulkNewAction">Bulk New</div>
+    </button>
+</mat-menu>
+<mat-menu #type_menu="matMenu">
+    <button mat-menu-item (tapped)="newSystem()">
+        <app-icon [icon]="{ class: 'backoffice-documents' }"></app-icon>
+        <div class="text" i18n="@@newSystemAction">{ bulk, select, true { Systems } false { System } }</div>
     </button>
     <button mat-menu-item (tapped)="newZone()">
-        <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
-        <div class="text" i18n="@@newZoneAction">New Zone</div>
+        <app-icon [icon]="{ class: 'backoffice-layers' }"></app-icon>
+        <div class="text" i18n="@@newZoneAction">{ bulk, select, true { Zones } false { Zone } }</div>
+    </button>
+    <button mat-menu-item (tapped)="newDriver()">
+        <app-icon [icon]="{ class: 'backoffice-tools' }"></app-icon>
+        <div class="text" i18n="@@newDriverAction">{ bulk, select, true { Drivers } false { Driver } }</div>
+    </button>
+    <button mat-menu-item (tapped)="newModule()">
+        <app-icon [icon]="{ class: 'backoffice-tablet' }"></app-icon>
+        <div class="text" i18n="@@newModuleAction">{ bulk, select, true { Modules } false { Module } }</div>
+    </button>
+    <button mat-menu-item (tapped)="newUser()">
+        <app-icon [icon]="{ class: 'backoffice-users' }"></app-icon>
+        <div class="text" i18n="@@newUserAction">{ bulk, select, true { Users } false { User } }</div>
     </button>
 </mat-menu>
 <ng-template #fools_day>

@@ -1,6 +1,6 @@
-import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input, Type } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineSystem, EngineZone } from '@placeos/ts-client';
+import { EngineSystem, EngineZone, EngineDriver, EngineModule, EngineUser } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -8,6 +8,7 @@ import { ApplicationLink, ApplicationIcon, ApplicationActionLink } from 'src/app
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 
 import * as dayjs from 'dayjs';
+import { BulkItemModalComponent } from 'src/app/overlays/bulk-item-modal/bulk-item-modal.component';
 
 @Component({
     selector: 'topbar-header',
@@ -27,6 +28,8 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
     public options: ApplicationLink[];
     /** Whether user tooltip should be shown */
     public show: boolean;
+    /** Whether the user wishes to bulk add items */
+    public bulk: boolean = false;
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
@@ -87,20 +90,45 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
         this.new(new EngineZone(), this._service.Zones);
     }
 
+    public newModule() {
+        this.newItem(new EngineModule(), this._service.Modules, EngineModule);
+    }
+
+    public newDriver() {
+        this.newItem(new EngineDriver(), this._service.Drivers, EngineDriver);
+    }
+
+    public newUser() {
+        this.newItem(new EngineUser(), this._service.Users, EngineUser);
+    }
+
     /**
      * Open the modal to create a new engine resource
      */
-    protected new(item: any, service: any) {
-        this._dialog.open(ItemCreateUpdateModalComponent, {
-            height: 'auto',
-            width: 'auto',
-            maxHeight: 'calc(100vh - 2em)',
-            maxWidth: 'calc(100vw - 2em)',
-            data: {
-                item,
-                service
-            }
-        });
+    protected newItem<T = any>(item: any, service: any, constr: Type<T>) {
+        if (this.bulk) {
+            this._dialog.open(BulkItemModalComponent, {
+                height: 'auto',
+                width: 'auto',
+                maxHeight: 'calc(100vh - 2em)',
+                maxWidth: 'calc(100vw - 2em)',
+                data: {
+                    constr,
+                    service
+                }
+            });
+        } else {
+            this._dialog.open(ItemCreateUpdateModalComponent, {
+                height: 'auto',
+                width: 'auto',
+                maxHeight: 'calc(100vh - 2em)',
+                maxWidth: 'calc(100vw - 2em)',
+                data: {
+                    item,
+                    service
+                }
+            });
+        }
     }
 
     /** Toggle the show state of the sidebar menu */
