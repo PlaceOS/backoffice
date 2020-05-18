@@ -76,7 +76,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineApplication(this._service.Applications, {}),
+                item: new EngineApplication(),
                 service: this._service.Applications
             }
         });

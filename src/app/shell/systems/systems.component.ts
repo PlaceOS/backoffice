@@ -65,7 +65,7 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineSystem(this._service.Systems, {}),
+                item: new EngineSystem(),
                 service: this._service.Systems
             }
         });

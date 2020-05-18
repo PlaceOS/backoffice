@@ -102,8 +102,8 @@ export class BackofficeCommentsService extends BaseAPIService<IComment> {
             }
         }
         this.parent.Users.query({ q: cmt.name }).then((list) => {
-            comment.user = list[0] || new EngineUser(this.parent.Users, cmt);
-        }, (err) => comment.user = new EngineUser(this.parent.Users, cmt));
+            comment.user = list[0] || new EngineUser(cmt);
+        }, (err) => comment.user = new EngineUser(cmt));
         return comment;
     }
 

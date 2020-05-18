@@ -262,13 +262,13 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
                 obj[key] = '<MASKED>';
             }
             const settings_string = (setting.keys || []).length ? yaml.safeDump(obj) : '';
-            return new EngineSettings(this._service.EngineSettings, {
+            return new EngineSettings({
                 ...setting.toJSON(),
                 parent_id: this.id,
                 settings_string
             });
         }
-        return new EngineSettings(this._service.EngineSettings, { ...setting, parent_id: this.id });
+        return new EngineSettings({ ...setting, parent_id: this.id });
     }
 
     /** Genereate merged settings from all available settings */
@@ -281,7 +281,8 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
         );
         const merged_settings = merge.all(remote_settings.concat(local_settings));
         const settings_string = Object.keys(merged_settings).length ? yaml.safeDump(merged_settings, { strict: true }) : '';
-        return new EngineSettings(null, {
+        return new EngineSettings({
+            id: 'merged',
             settings_string,
             parent_id: this.id,
             keys: Object.keys(merged_settings)

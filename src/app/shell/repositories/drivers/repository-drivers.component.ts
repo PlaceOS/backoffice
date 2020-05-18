@@ -66,7 +66,7 @@ export class RepositoryDriversComponent extends BaseDirective implements OnChang
                     maxHeight: 'calc(100vh - 2em)',
                     maxWidth: 'calc(100vw - 2em)',
                     data: {
-                        item: new EngineDriver(this._service.Drivers, {
+                        item: new EngineDriver({
                             name: '',
                             module_name: '',
                             repository_id: this.item.id,

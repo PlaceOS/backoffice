@@ -80,11 +80,11 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
     }
 
     public newSystem() {
-        this.new(new EngineSystem(this._service.Systems, {}), this._service.Systems);
+        this.new(new EngineSystem(), this._service.Systems);
     }
 
     public newZone() {
-        this.new(new EngineZone(this._service.Zones, {}), this._service.Zones);
+        this.new(new EngineZone(), this._service.Zones);
     }
 
     /**

@@ -58,7 +58,7 @@ export class ModulesComponent extends BaseRootComponent<EngineModule> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineModule(this._service.Modules, {}),
+                item: new EngineModule(),
                 service: this._service.Modules
             }
         });

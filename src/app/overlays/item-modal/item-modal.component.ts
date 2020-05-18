@@ -199,7 +199,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
      * Save initial settings for resources
      */
     private async newSettings(item: EngineResource<any>, setting_string: string) {
-        const new_settings = new EngineSettings(this._service.EngineSettings, {
+        const new_settings = new EngineSettings({
             parent_id: item.id,
             setting_string: '',
             encryption_level: EncryptionLevel.None

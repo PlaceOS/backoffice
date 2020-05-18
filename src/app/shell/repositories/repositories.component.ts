@@ -61,7 +61,7 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineRepository(this._service.Repositories, {}),
+                item: new EngineRepository(),
                 service: this._service.Repositories
             }
         });

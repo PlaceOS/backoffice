@@ -68,7 +68,7 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineDomain(this._service.Domains, {}),
+                item: new EngineDomain(),
                 service: this._service.Domains
             }
         });

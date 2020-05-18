@@ -45,7 +45,7 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineUser(this._service.Users, {}),
+                item: new EngineUser(),
                 service: this._service.Users
             }
         });
