@@ -10,14 +10,15 @@ import * as dayjs from 'dayjs';
 
 const TERMINAL_COLOURS = {
     debug: '\u001b[34m',
+    verbose: '\u001b[34m',
     info: '\u001b[32m',
-    warn: '\u001b[33m',
+    warning: '\u001b[33m',
     error: '\u001b[31m',
-    fatal: '\u001b[31m'
+    fatal: '\u001b[31m',
 };
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class EngineDebugService extends BaseClass {
     /** List of the current state of events */
@@ -45,11 +46,12 @@ export class EngineDebugService extends BaseClass {
     public get terminal_string(): string {
         return this.event_list
             .map(
-                event =>
-                    `${TERMINAL_COLOURS[event.level]}${dayjs().format('h:mm A')}, ${
-                        this._module_names[event.mod_id] ||
-                        event.mod_id ||
-                        '<UNKNOWN>'}, [${event.level.toUpperCase()}]\u001b[0m ${event.message}`
+                (event) =>
+                    `${TERMINAL_COLOURS[event.level] || TERMINAL_COLOURS.debug}${dayjs().format(
+                        'h:mm A'
+                    )}, ${
+                        this._module_names[event.mod_id] || event.mod_id || '<UNKNOWN>'
+                    }, [${event.level.toUpperCase()}]\u001b[0m ${event.message}`
             )
             .join('\n');
     }
@@ -61,8 +63,8 @@ export class EngineDebugService extends BaseClass {
 
     constructor(private _composer: ComposerService) {
         super();
-        this._composer.realtime.debug_events.subscribe(event => {
-            if (this._bound_modules.find(mod => mod.id === event.mod_id)) {
+        this._composer.realtime.debug_events.subscribe((event) => {
+            if (this._bound_modules.find((mod) => mod.id === event.mod_id)) {
                 const event_list = this.event_list;
                 event_list.push(event);
                 this._events.next(event_list);
@@ -79,7 +81,7 @@ export class EngineDebugService extends BaseClass {
      * Whether module is listening for debug events
      */
     public isListening(module: EngineModule): boolean {
-        return !!this._bound_modules.find(mod => mod.id === module.id);
+        return !!this._bound_modules.find((mod) => mod.id === module.id);
     }
 
     /**
@@ -95,11 +97,13 @@ export class EngineDebugService extends BaseClass {
                 sys: module.system_id,
                 mod: module.id,
                 index,
-                name: 'debug'
+                name: 'debug',
             };
             this._enabled = true;
             this._composer.realtime.debug(options).then(() => {
-                this.subscription(`debug_${module.id}`, () => this._composer.realtime.ignore(options));
+                this.subscription(`debug_${module.id}`, () =>
+                    this._composer.realtime.ignore(options)
+                );
                 this._bound_modules.push(module);
                 this._module_names[module.id] = module_name;
             });
@@ -113,7 +117,7 @@ export class EngineDebugService extends BaseClass {
     public unbind(module: EngineModule) {
         if (module) {
             this.unsub(`debug_${module.id}`);
-            this._bound_modules = this._bound_modules.filter(mod => mod.id !== module.id);
+            this._bound_modules = this._bound_modules.filter((mod) => mod.id !== module.id);
         }
     }
 }
