@@ -46,7 +46,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             icon: { type: 'icon', class: 'backoffice-power-plug' },
         },
         { id: 'state', name: 'View State', icon: { type: 'icon', class: 'backoffice-eye' } },
-        { id: 'reload', name: 'Reload Module', icon: { type: 'icon', class: 'backoffice-cw' } },
+        { id: 'reload', name: 'Recompile Driver', icon: { type: 'icon', class: 'backoffice-cw' } },
         { id: 'remove', name: 'Remove Module', icon: { type: 'icon', class: 'backoffice-trash' } },
         {
             id: 'load',
