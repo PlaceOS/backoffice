@@ -59,7 +59,7 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
 
     /** Whether global search is enabled */
     public get languages(): { name: string, locale: string, icon: ApplicationIcon }[] {
-        return this._service.setting('app.languages');
+        return this._service.setting('app.languages') || [];
     }
 
     /** Active user */
