@@ -17,11 +17,12 @@
                 <bulk-item-match-fields
                     [list]="data_list"
                     [field_list]="available_fields"
-                    (list)="handleList($event, true)"
+                    (mapping_done)="handleList($event, true)"
+                    (previous)="flow_step = ''"
                 ></bulk-item-match-fields>
             </div>
             <div *ngSwitchDefault>
-                <bulk-item-csv-upload (list)="handleList($event)"></bulk-item-csv-upload>
+                <bulk-item-csv-upload [template]="template" (list)="handleList($event)"></bulk-item-csv-upload>
             </div>
         </div>
     </main>

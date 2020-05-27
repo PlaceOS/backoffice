@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component, Input, SimpleChanges, EventEmitter, Output } from '@angular/core';
 
 import { HashMap, Identity } from 'src/app/shared/utilities/types.utilities';
 
@@ -12,6 +12,10 @@ export class MatchFieldsComponent {
     @Input() public list: HashMap<any>[];
     /** List of fields available for building new item */
     @Input() public field_list: Identity[] = [];
+    /** Emitter for mapped changes to list */
+    @Output() public mapping_done = new EventEmitter<HashMap<any>[]>();
+    /** Emitter user want to return to previous step in flow */
+    @Output() public previous = new EventEmitter<void>();
     /** List of fields available to be selected */
     public source_fields: Identity[] = [];
     /** Mapping of raw data fields ids to item fields ids */
@@ -29,5 +33,24 @@ export class MatchFieldsComponent {
                 }
             });
         }
+    }
+
+    /** Return to the previous step in the bulk upload flow */
+    public back(): void {
+        this.previous.emit();
+    }
+
+    /** Generated the mapped list of items and emit them */
+    public saveMapping(): void {
+        console.log('Mapping:', this.field_mapping);
+        const mapped_list = this.list.map(item => {
+            const mapped_item: any = {};
+            for (const field of this.field_list) {
+                const id = `${field.id}`;
+                mapped_item[id] = item[this.field_mapping[id]];
+            }
+            return mapped_item;
+        });
+        this.mapping_done.emit(mapped_list);
     }
 }

@@ -10,6 +10,9 @@
     <div class="text" i18n="uploadCSVAction">Select or drop CSV file to begin</div>
     <input type="file" (change)="loadCSVData($event)"/>
 </div>
+<div class="template" *ngIf="template">
+    <button mat-button (click)="downloadTemplateCSV()">Download Template</button>
+</div>
 <ng-template #load_state>
     <div class="load-state">
         <div class="info-block">
