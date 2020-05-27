@@ -9,6 +9,7 @@
                 Driver<span>*</span>:
             </label>
             <item-search-field
+                name="driver"
                 [service]="driver_service"
                 formControlName="driver"
             ></item-search-field>
@@ -23,13 +24,14 @@
         <ng-container *ngIf="!form.controls.driver || form.controls.driver.value">
             <div class="field" *ngIf="form.controls.system && role === 'logic'">
                 <label
-                    for="driver"
+                    for="system"
                     [class.error]="form.controls.system.invalid && form.controls.system.touched"
                     i18n="@@systemLabel"
                     >Control System<span *ngIf="role === 'logic'">*</span>:
                 </label>
                 <ng-container *ngIf="!readonly; else readonly_system">
                     <item-search-field
+                        name="system"
                         [service]="system_service"
                         formControlName="system"
                     ></item-search-field>
@@ -72,7 +74,7 @@
                 </div>
                 <div class="field" *ngIf="form.controls.port && role !== 'logic'">
                     <label
-                        for="system-name"
+                        for="port-number"
                         [class.error]="form.controls.port.invalid && form.controls.port.touched"
                         i18n="@@portLabel"
                     >
@@ -81,7 +83,7 @@
                     <mat-form-field appearance="outline">
                         <input
                             matInput
-                            name="system-name"
+                            name="port-number"
                             type="number"
                             placeholder="Port Number"
                             i18n-placeholder="@@portPlaceholder"
@@ -150,11 +152,11 @@
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.custom_name">
-                <label for="uri" i18n="@@customNameLabel">Custom Name:</label>
+                <label for="custom-name" i18n="@@customNameLabel">Custom Name:</label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
-                        name="uri"
+                        name="custom-name"
                         placeholder="Custom Name"
                         i18n-placholder="@@customNamePlaceholder"
                         formControlName="custom_name"
