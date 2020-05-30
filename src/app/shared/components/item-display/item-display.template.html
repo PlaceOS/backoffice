@@ -57,13 +57,13 @@
                     #rla="routerLinkActive"
                     [active]="rla.isActive"
                 >
-                    <app-icon [icon]="link.icon"></app-icon>
+                    <app-icon [icon]="link.icon"></app-icon>&nbsp;
                     <div class="name" i18n="@@tabNames">
                         { link.name, select, About { About } Modules { Modules } Zones { Zones }
                         Triggers { Triggers } Systems { Systems } Metadata { Metadata } Children {
                         Children } Drivers { Drivers } History { History } Applications {
-                        Applications } Authenication { Authenication } Users { Users } Database {
-                        Database } Clusters { Clusters } other { Other }} &nbsp;
+                        Applications } Authentication { Authentication } Users { Users } Database {
+                        Database } Clusters { Clusters } Interfaces { Interfaces } MQTT Brokers { MQTT Brokers } other { Other }} &nbsp;
                     </div>
                     <div class="count" *ngIf="link.count || link.count === 0">
                         ({{ link.count || '0' }})

@@ -5,6 +5,7 @@ import { EngineDatabaseDetailsComponent } from './database-details/database-deta
 import { EngineDetailsComponent } from './details/details.component';
 import { AuthorisedAdminGuard } from 'src/app/shared/guards/authorised-admin.guard';
 import { EngineClusterDetailsComponent } from './cluster-details/cluster-details.component';
+import { AdminInterfacesComponent } from './interfaces/interfaces.component';
 
 export const ROUTES: Routes = [
     {
@@ -15,6 +16,7 @@ export const ROUTES: Routes = [
             { path: 'about', component: EngineDetailsComponent },
             { path: 'database', component: EngineDatabaseDetailsComponent },
             { path: 'clusters', component: EngineClusterDetailsComponent },
+            { path: 'interfaces', component: AdminInterfacesComponent },
             { path: '**', redirectTo: 'about' }
         ]
     },
