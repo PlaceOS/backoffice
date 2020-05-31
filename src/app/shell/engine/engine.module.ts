@@ -14,6 +14,7 @@ import { EngineClusterDetailsComponent } from './cluster-details/cluster-details
 import { EngineClusterItemComponent } from './cluster-details/item/item.component';
 import { EngineClusterTaskListComponent } from './cluster-details/task-list/task-list.component';
 import { AdminInterfacesComponent } from './interfaces/interfaces.component';
+import { AdminBrokersComponent } from './brokers/brokers.component';
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import { AdminInterfacesComponent } from './interfaces/interfaces.component';
         EngineClusterItemComponent,
         EngineClusterTaskListComponent,
         AdminInterfacesComponent,
+        AdminBrokersComponent
     ],
     imports: [
         CommonModule,
