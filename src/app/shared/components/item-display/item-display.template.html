@@ -27,21 +27,8 @@
             </div>
         </div>
         <div class="options" *ngIf="has_change">
-            <button
-                mat-icon-button
-                (touchrelease)="edit()"
-                matTooltip="Edit [E]"
-                i18n-matTooltip="@@editAction"
-            >
-                <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
-            </button>
-            <button
-                mat-icon-button
-                (touchrelease)="delete()"
-                matTooltip="Delete [D]"
-                i18n-matTooltip="@@deleteAction"
-            >
-                <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+            <button [matMenuTriggerFor]="action_menu" mat-icon-button>
+                <app-icon [icon]="{ class: 'backoffice-dots-three-vertical' }"></app-icon>
             </button>
         </div>
     </header>
@@ -63,7 +50,8 @@
                         Triggers { Triggers } Systems { Systems } Metadata { Metadata } Children {
                         Children } Drivers { Drivers } History { History } Applications {
                         Applications } Authentication { Authentication } Users { Users } Database {
-                        Database } Clusters { Clusters } Interfaces { Interfaces } MQTT Brokers { MQTT Brokers } other { Other }} &nbsp;
+                        Database } Clusters { Clusters } Interfaces { Interfaces } MQTT Brokers {
+                        MQTT Brokers } other { Other }} &nbsp;
                     </div>
                     <div class="count" *ngIf="link.count || link.count === 0">
                         ({{ link.count || '0' }})
@@ -110,3 +98,55 @@
         } }...
     </div>
 </div>
+<mat-menu #action_menu="matMenu">
+    <button *ngIf="has_change" mat-menu-item (click)="edit()">
+        <div class="group">
+            <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+            <div class="text" i18n="@@editAction">
+                Edit { name, select, system { system } module { module } driver { driver }
+                repository { repository } zone { zone } trigger { trigger } user { user } domain {
+                domain } other { other } } [E]
+            </div>
+        </div>
+    </button>
+    <button mat-menu-item (click)="newFromItem()">
+        <div class="group">
+            <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
+            <div class="text" i18n="@@copyItemAction">
+                Create new from this { name, select, system { system } module { module } driver {
+                driver } repository { repository } zone { zone } trigger { trigger } user { user }
+                domain { domain } other { other } }
+            </div>
+        </div>
+    </button>
+    <button mat-menu-item (click)="duplicateItem()">
+        <div class="group">
+            <app-icon [icon]="{ class: 'backoffice-flow-branch' }"></app-icon>
+            <div class="text" i18n="@@duplicateAction">
+                Duplicate { name, select, system { system } module { module } driver { driver }
+                repository { repository } zone { zone } trigger { trigger } user { user } domain {
+                domain } other { other } }
+            </div>
+        </div>
+    </button>
+    <button mat-menu-item (click)="exportAsCSV()">
+        <div class="group">
+            <app-icon [icon]="{ class: 'backoffice-download' }"></app-icon>
+            <div class="text" i18n="@@exporeAction">
+                Export { name, select, system { system } module { module } driver { driver }
+                repository { repository } zone { zone } trigger { trigger } user { user } domain {
+                domain } other { other } } as CSV template
+            </div>
+        </div>
+    </button>
+    <button *ngIf="has_change" mat-menu-item (click)="delete()">
+        <div class="group">
+            <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+            <div class="text" i18n="@@deleteAction">
+                Delete { name, select, system { system } module { module } driver { driver }
+                repository { repository } zone { zone } trigger { trigger } user { user } domain {
+                domain } other { other } } [D]
+            </div>
+        </div>
+    </button>
+</mat-menu>

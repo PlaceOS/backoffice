@@ -150,4 +150,25 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
     public delete() {
         this.event.emit({ type: 'delete' });
     }
+
+    /**
+     * Delete the active item
+     */
+    public duplicateItem() {
+        this.event.emit({ type: 'duplicate' });
+    }
+
+    /**
+     * Delete the active item
+     */
+    public newFromItem() {
+        this.event.emit({ type: 'copy' });
+    }
+
+    /**
+     * Export the active item as a CSV
+     */
+    public exportAsCSV() {
+        this.event.emit({ type: 'export' });
+    }
 }
