@@ -71,6 +71,7 @@ import { ObjectListFieldComponent } from './components/custom-fields/object-list
 import { DebugOutputComponent } from './components/debug-output/debug-output.component';
 import { SettingsFormComponent } from './components/forms/settings-form/settings-form.component';
 import { ADatePickerModule } from '@acaprojects/ngx-date-picker';
+import { BrokerFormComponent } from './components/forms/broker-form/broker-form.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -89,6 +90,7 @@ const FORM_COMPONENTS: Type<any>[] = [
     LdapSourceFormComponent,
     SamlSourceFormComponent,
     SettingsFormComponent,
+    BrokerFormComponent,
 ];
 
 const COMPONENTS: Type<any>[] = [
