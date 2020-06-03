@@ -50,10 +50,10 @@ jobs:
     - name: Deploy the application
       uses: seanmiddleditch/gha-publish-to-git@v1
       with:
-        repository: placeos/www-core
-        branch: alpha
+        repository: place-labs/backoffice-alpha
+        branch: master
         source_folder: dist
-        target_folder: backoffice
+        target_folder: ./
         commit_message: >
           build(backoffice): CI build from ${{ steps.vars.outputs.sha_short }}
         github_pat: ${{ secrets.API_GITHUB_TOKEN }}
