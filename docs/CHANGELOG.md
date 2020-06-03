@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/PlaceOS/backoffice/compare/v1.1.0...v1.2.0) (2020-06-03)
+
+
+### Features
+
+* **workflow->prod:** new release home ([1450e9a](https://github.com/PlaceOS/backoffice/commit/1450e9a6a51a55b4ea0a304d939152c715528c52))
+
 # [1.1.0](https://github.com/PlaceOS/backoffice/compare/v1.0.2...v1.1.0) (2020-04-27)
 
 
