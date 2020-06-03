@@ -47,7 +47,7 @@ jobs:
       run: ng build --prod --aot
 
     - name: Deploy the application
-      uses: seanmiddleditch/gha-publish-to-git@v1
+      uses: seanmiddleditch/gha-publish-to-git
       with:
         repository: place-labs/backoffice-release
         branch: master
