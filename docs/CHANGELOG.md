@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/PlaceOS/backoffice/compare/v1.2.1...v1.2.2) (2020-06-03)
+
+
+### Bug Fixes
+
+* **prod workflow:** try empty string ([48e9f45](https://github.com/PlaceOS/backoffice/commit/48e9f45c0f3d9f454e0cc0e2f3461a2509602650))
+
 ## [1.2.1](https://github.com/PlaceOS/backoffice/compare/v1.2.0...v1.2.1) (2020-06-03)
 
 
