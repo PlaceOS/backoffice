@@ -52,7 +52,7 @@ jobs:
         repository: place-labs/backoffice-release
         branch: master
         source_folder: dist
-        target_folder: /
+        target_folder: ""
         commit_message: >
           build(backoffice): CI build from $GITHUB_SHA
         github_pat: ${{ secrets.API_GITHUB_TOKEN }}
