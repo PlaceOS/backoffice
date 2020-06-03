@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/PlaceOS/backoffice/compare/v1.2.0...v1.2.1) (2020-06-03)
+
+
+### Bug Fixes
+
+* **prod workflow:** change target folder ([9d55031](https://github.com/PlaceOS/backoffice/commit/9d5503121cd21b16e5e0049db628d38058ac33f3))
+
 # [1.2.0](https://github.com/PlaceOS/backoffice/compare/v1.1.0...v1.2.0) (2020-06-03)
 
 
