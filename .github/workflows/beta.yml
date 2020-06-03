@@ -53,7 +53,7 @@ jobs:
         repository: place-labs/backoffice-alpha
         branch: master
         source_folder: dist
-        target_folder: ./
+        target_folder: ""
         commit_message: >
           build(backoffice): CI build from ${{ steps.vars.outputs.sha_short }}
         github_pat: ${{ secrets.API_GITHUB_TOKEN }}
