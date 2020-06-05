@@ -1,5 +1,5 @@
 <div class="container" *ngIf="item">
-    <header *ngIf="system_list && system_list.length">Execute Command</header>
+    <header *ngIf="system_list && system_list.length"  i18n="@@execHeader">Execute Command</header>
     <section *ngIf="system_list && system_list.length">
         <mat-form-field appearance="outline">
             <mat-select [(ngModel)]="active_system" placeholder="Select system">
@@ -12,36 +12,36 @@
     </section>
     <section class="details">
         <div class="field" *ngIf="item.location">
-            <label>Location:</label>
+            <label i18n="@@zoneLocationLabel">Location:</label>
             <div class="value">{{item.location}}</div>
         </div>
         <div class="field" *ngIf="item.code">
-            <label>Code:</label>
+            <label i18n="@@zoneCodeLabel">Code:</label>
             <div class="value">{{item.code}}</div>
         </div>
         <div class="field" *ngIf="item.type">
-            <label>Type:&nbsp;</label>
+            <label i18n="@@zoneTypeLabel">Type:&nbsp;</label>
             <div class="value">{{item.type}}</div>
         </div>
         <div class="field" *ngIf="item.count">
-            <label>Count:</label>
+            <label i18n="@@zoneCountLabel">Count:</label>
             <div class="value">{{item.count}}</div>
         </div>
         <div class="field" *ngIf="item.capacity">
-            <label>Capacity:</label>
+            <label i18n="@@zoneCapacityLabel">Capacity:</label>
             <div class="value">{{item.capacity}}</div>
         </div>
         <div class="field" *ngIf="item.map_id">
-            <label>Map:</label>
+            <label i18n="@@zoneMapLabel">Map:</label>
             <div class="value">
                 <a [href]="item.map_id">{{ item.map_id }}</a>
             </div>
         </div>
     </section>
-    <header *ngIf="item.description">Description</header>
+    <header *ngIf="item.description" i18n="@@descriptionLabel">Description</header>
     <section class="description" *ngIf="item.description" [innerHTML]="parsed_description"></section>
     <section class="tags" *ngIf="item && tag_list">
-        <label for="tags">Tags:</label>
+        <label for="tags" i18n="@@zoneTagsLabel">Tags:</label>
         <div class="value" *ngIf="tag_list && tag_list.length; else empty_tag_state">
             <mat-chip-list name="tags">
                 <mat-chip *ngFor="let tag of tag_list">{{ tag }}</mat-chip>
@@ -49,7 +49,7 @@
         </div>
     </section>
     <hr />
-    <header class="settings">Settings</header>
+    <header class="settings" i18n="@@settingsLabel">Settings</header>
     <section *ngIf="!loading_settings; else load_state">
         <a-settings-form [merge]="true" [id]="item.id" [settings]="item.settings"></a-settings-form>
     </section>
@@ -59,9 +59,9 @@
         <div class="icon">
             <mat-spinner diameter="48"></mat-spinner>
         </div>
-        <div class="text">Loading zone settings...</div>
+        <div class="text" i18n="@@zoneLoadingLabel">Loading zone settings...</div>
     </div>
 </ng-template>
 <ng-template #empty_tag_state>
-    <div class="value padded">&lt;No Tags&gt;</div>
+    <div class="value padded" i18n="@@zoneTagsEmpty">&lt;No Tags&gt;</div>
 </ng-template>

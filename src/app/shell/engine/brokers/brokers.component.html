@@ -1,0 +1,50 @@
+
+<div class="actions">
+    <button mat-button (click)="newBroker()">
+        <div class="group">
+            <app-icon></app-icon>
+            <div class="text">Add Broker</div>
+        </div>
+    </button>
+</div>
+<table *ngIf="brokers && brokers.length; else load_state">
+    <thead>
+        <tr>
+            <td>Name</td>
+            <td>Auth Type</td>
+            <td>Description</td>
+            <td>Host</td>
+            <td>Port</td>
+            <td>TLS</td>
+            <td>Filters</td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let item of brokers">
+            <td>{{ item.name }}</td>
+            <td>{ item.auth_type, select, 0 { Certificate }, 2 { User Password }, other { No Auth }}</td>
+            <td>{{ item.description }}</td>
+            <td>{{ item.host }}</td>
+            <td>{{ item.port }}</td>
+            <td>{ item.tls, select, true { Yes }, false { No } }</td>
+            <td>{{ item.filters | json }}</td>
+            <td>
+                <button mat-icon-button (click)="editBroker(item)">
+                    <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+                </button>
+                <button mat-icon-button (click)="deleteBroker(item)">
+                    <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<ng-template #load_state>
+    <div class="info-block">
+        <div class="icon">
+            <app-icon [icon]="{ class: 'backoffice-cross' }"></app-icon>
+        </div>
+        <div class="text">No Brokers</div>
+    </div>
+</ng-template>

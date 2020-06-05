@@ -12,6 +12,7 @@ import {
     CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import * as dayjs from 'dayjs';
 
 @Component({
     selector: 'app-domains',
@@ -38,6 +39,11 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
 
     public ngOnInit(): void {
         super.ngOnInit();
+        this._service.set('APP_LIST_CHANGE', dayjs().valueOf());
+        this.subscription('changes',
+        this._service.listen('APP_LIST_CHANGE').subscribe(() => {
+            this.loadValues();
+        }))
         this._service.title = 'Domains';
     }
 
@@ -68,7 +74,7 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineDomain(this._service.Domains, {}),
+                item: new EngineDomain(),
                 service: this._service.Domains
             }
         });

@@ -1,14 +1,28 @@
 <div class="container" [class.dark-mode]="dark_mode">
     <header>
-        <div class="heading">{{ heading }}</div>
+        <div class="heading">
+            { heading, select, Systems { Systems } Modules { Modules } Zones { Zones } Drivers {
+            Drivers } Repositories { Repositories } Triggers { Triggers } Users { Users } Domains { Domains }
+            Admin { Admin } other { Other } }
+        </div>
         <div class="count">
             <div>
-                <div class="inline" [matTooltip]="heading + ' count / License count'">
+                <div
+                    class="inline"
+                    [matTooltip]="heading + ' count / License count'"
+                    i18n-matTooltip
+                >
                     {{ total || 0 }} of {{ (search ? grand_total : licenses) || '∞' }}
                 </div>
             </div>
         </div>
-        <div class="add" *ngIf="new && (total < licenses || !licenses)" (click)="post('new')" [matTooltip]="'Add ' + heading + ' [N]'">
+        <div
+            class="add"
+            *ngIf="new && (total < licenses || !licenses)"
+            (click)="post('new')"
+            [matTooltip]="'Add ' + heading + ' [N]'"
+            i18n-matTooltip
+        >
             <i class="backoffice-plus"></i>
         </div>
         <div
@@ -17,6 +31,7 @@
             matTooltip="
             Exceeded quota! No new item can be created
             until the total is below you license count."
+            i18n-matTooltip
         >
             <i class="backoffice-warning"></i>
         </div>
@@ -30,6 +45,7 @@
                 [(ngModel)]="search"
                 (ngModelChange)="searching()"
                 [placeholder]="'Filter ' + lowercase_heading"
+                i18n-placeholder
             />
         </div>
     </section>
@@ -38,14 +54,14 @@
     </section>
     <section class="list">
         <ng-container *ngIf="list">
-            <cdk-virtual-scroll-viewport itemSize="48" (scroll)="is_scrolled" (scrolledIndexChange)="atBottom()">
+            <cdk-virtual-scroll-viewport
+                itemSize="48"
+                (scroll)="is_scrolled"
+                (scrolledIndexChange)="atBottom()"
+            >
                 <ng-container *cdkVirtualFor="let item of items | async; trackBy:trackByFn">
                     <a [routerLink]="[route, item.id]" routerLinkActive="active">
-                        <div
-                            #list_item
-                            class="item"
-                            [title]=""
-                        >
+                        <div #list_item class="item" [title]="">
                             <div class="text" [innerHTML]="item_name[item.id] | sanitize"></div>
                             <app-icon
                                 [icon]="{ type: 'icon', class: 'backoffice-check' }"
@@ -61,7 +77,9 @@
             </div>
             <div class="text">{{ !search ? 'No ' + lowercase_heading : 'No matches found' }}</div>
             <div class="btn" *ngIf="new">
-                <button mat-button (click)="post('new')">Add new {{ lowercase_heading }}</button>
+                <button mat-button (click)="post('new')" i18n>
+                    Add new {{ lowercase_heading }}
+                </button>
             </div>
         </div>
     </section>

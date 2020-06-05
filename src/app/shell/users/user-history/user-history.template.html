@@ -2,9 +2,9 @@
     <div class="list" *ngIf="model.logs && model.logs.length > 0">
         <table>
             <thead>
-                <td class="start">Session Start</td>
-                <td class="end">Ended</td>
-                <td class="flex">Systems Accessed</td>
+                <td class="start" i18n="@@logEventStart">Session Start</td>
+                <td class="end" i18n="@@logEventEnd">Ended</td>
+                <td class="flex" i18n="@@logEventAction">Systems Accessed</td>
             </thead>
             <tbody>
                 <tr *ngFor="let item of model.logs">
@@ -19,6 +19,6 @@
         </table>
     </div>
     <div class="info-block" *ngIf="!model.logs || model.logs.length <= 0">
-        <div class="text">No logs found</div>
+        <div class="text" i18n="@@logTableEmpty">No logs found</div>
     </div>
 </div>

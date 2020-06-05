@@ -2,7 +2,7 @@
     <div class="settings">
         <section class="select">
             <div class="dropdown">
-                <button mat-button (tapped)="selectTriggerToAdd()">Add trigger</button>
+                <button mat-button (tapped)="selectTriggerToAdd()" i18n="@@addTriggerAction">Add trigger</button>
             </div>
             <mat-form-field appearance="outline">
                 <div class="prefix" matPrefix>
@@ -20,9 +20,9 @@
             <table *ngIf="trigger_list.length > 0; else empty_state">
                 <thead>
                     <td class="small"></td>
-                    <td class="flex">Name</td>
-                    <td class="count">Count</td>
-                    <td class="added">Added</td>
+                    <td class="flex" i18n="@@triggerTableName">Name</td>
+                    <td class="count" i18n="@@triggerTableCount">Count</td>
+                    <td class="added" i18n="@@triggerTableAddedTime">Added</td>
                     <td class="duo"></td>
                 </thead>
                 <tbody>
@@ -53,6 +53,6 @@
 </div>
 <ng-template #empty_state>
     <div class="info-block">
-        <div class="text">No triggers for system</div>
+        <div class="text" i18n="@@triggerTableEmpty">No triggers for system</div>
     </div>
 </ng-template>

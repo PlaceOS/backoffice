@@ -5,7 +5,9 @@ import {
     ViewChild,
     OnInit,
     SimpleChanges,
-    OnChanges
+    OnChanges,
+    LOCALE_ID,
+    Inject
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
@@ -15,6 +17,7 @@ import { Identity } from 'src/app/shared/utilities/types.utilities';
 import { timeFormatString } from 'src/app/shared/utilities/general.utilities';
 
 import * as dayjs from 'dayjs';
+import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'a-time-field',
@@ -42,6 +45,8 @@ export class TimeFieldComponent extends BaseDirective
     public _time_options: Identity[];
     /** Whether select field should be shown */
     public show_select: boolean;
+
+    private date_pipe: DatePipe;
     /** Form control on change handler */
     private _onChange: (_: number) => void;
     /** Form control on touch handler */
@@ -49,6 +54,11 @@ export class TimeFieldComponent extends BaseDirective
 
     /** Select field for selecting the time */
     @ViewChild('select') private select_field: MatSelect;
+
+    constructor(@Inject(LOCALE_ID) private _locale: string) {
+        super();
+        this.date_pipe = new DatePipe(this._locale);
+    }
 
     public ngOnInit(): void {
         this.show_select = true;
@@ -77,7 +87,7 @@ export class TimeFieldComponent extends BaseDirective
             !this._time_options.find(option => option.id === date.format('HH:mm'))
         ) {
             this._time_options.push({
-                name: `${date.format(timeFormatString())}`,
+                name: `${this.date_pipe.transform(date.toDate(), timeFormatString())}`,
                 id: date.format('HH:mm')
             });
             this._time_options.sort((a, b) => `${a.id}`.localeCompare(`${b.id}`));
@@ -169,7 +179,7 @@ export class TimeFieldComponent extends BaseDirective
         // Add options for the rest of the day
         while (date.isBefore(end, 'm')) {
             blocks.push({
-                name: `${date.format(timeFormatString())}`,
+                name: `${this.date_pipe.transform(date.toDate(), timeFormatString())}`,
                 id: date.format('HH:mm')
             });
             date = date.add(step, 'm');

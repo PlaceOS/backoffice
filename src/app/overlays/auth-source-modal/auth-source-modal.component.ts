@@ -86,13 +86,13 @@ export class AuthSourceModalComponent extends BaseDirective implements OnInit {
         const data = { authority_id: this._data.domain.id };
         switch (type) {
             case 'saml':
-                this.item = new EngineSAMLSource(this._service.SAMLAuthSources, data);
+                this.item = new EngineSAMLSource(data);
                 break;
             case 'ldap':
-                this.item = new EngineLDAPSource(this._service.LDAPAuthSources, data);
+                this.item = new EngineLDAPSource(data);
                 break;
             default:
-                this.item = new EngineOAuthSource(this._service.OAuthSources, data);
+                this.item = new EngineOAuthSource(data);
                 break;
         }
         this.initialiseForm();

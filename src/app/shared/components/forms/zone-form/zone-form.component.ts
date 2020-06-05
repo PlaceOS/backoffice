@@ -27,7 +27,7 @@ export class ZoneFormComponent extends BaseDirective {
     }
 
     public get tag_list(): string[] {
-        return this.form.controls.tag_list.value;
+        return this.form.controls.tags.value;
     }
 
     constructor(private _service: ApplicationService) {
@@ -45,13 +45,13 @@ export class ZoneFormComponent extends BaseDirective {
      * @param event Input event
      */
     public addTag(event: MatChipInputEvent): void {
-        if (!this.form || !this.form.controls.tag_list) return;
+        if (!this.form || !this.form.controls.tags) return;
         const input = event.input;
         const value = event.value;
         const tag_list = this.tag_list;
         if ((value || '').trim()) {
             tag_list.push(value);
-            this.form.controls.tag_list.setValue(tag_list);
+            this.form.controls.tags.setValue(tag_list);
         }
 
         // Reset the input value
@@ -65,13 +65,13 @@ export class ZoneFormComponent extends BaseDirective {
      * @param existing_tag Tag to remove
      */
     public removeTag(existing_tag: string): void {
-        if (!this.form || !this.form.controls.tag_list) return;
+        if (!this.form || !this.form.controls.tags) return;
         const tag_list = this.tag_list;
         const index = tag_list.indexOf(existing_tag);
 
         if (index >= 0) {
             tag_list.splice(index, 1);
-            this.form.controls.tag_list.setValue(tag_list);
+            this.form.controls.tags.setValue(tag_list);
         }
     }
 

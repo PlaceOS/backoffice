@@ -73,7 +73,7 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineZone(this._service.Zones, {}),
+                item: new EngineZone(),
                 service: this._service.Zones
             }
         });

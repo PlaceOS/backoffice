@@ -15,8 +15,8 @@
             <table *ngIf="zones && zones.length > 0">
                 <thead>
                     <td class="small"></td>
-                    <td class="name">Name</td>
-                    <td class="description">Description</td>
+                    <td class="name" i18n="@@zoneTableEmpty">Name</td>
+                    <td class="description" i18n="@@descriptionLabel">Description</td>
                     <td *ngIf="zones.length > 1" class="small"></td>
                 </thead>
                 <tbody cdkDropList (cdkDropListDropped)="drop($event)">
@@ -45,7 +45,7 @@
                 </tbody>
             </table>
             <div class="info-block" *ngIf="!zones || zones.length <= 0">
-                <div class="text">No zones for system</div>
+                <div class="text" i18n="@@zoneTableEmpty">No zones for system</div>
             </div>
         </section>
     </div>

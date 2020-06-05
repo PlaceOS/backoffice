@@ -109,6 +109,7 @@
                         "with": "src/environments/environment.prod.ts"
                     }
                 ],
+                "baseHref": "/backoffice/",
                 "assets": [
                   "src/favicon.ico",
                   "src/assets",

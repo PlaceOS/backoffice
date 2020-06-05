@@ -1,13 +1,13 @@
 <div class="container">
     <section class="select">
-        <button mat-button (tapped)="newAuthSource()">Add new</button>
+        <button mat-button (tapped)="newAuthSource()" i18n="@@newAction">Add new</button>
     </section>
     <section>
         <div class="list" *ngIf="auth_sources && auth_sources.length > 0; else no_auth_sources">
             <table>
                 <thead>
-                    <td class="name">Name</td>
-                    <td class="flex">Type</td>
+                    <td class="name" i18n="@@authTableName">Name</td>
+                    <td class="flex" i18n="@@authTableType">Type</td>
                     <td class="duo"></td>
                 </thead>
                 <tbody>
@@ -30,6 +30,6 @@
 </div>
 <ng-template #no_auth_sources>
     <div class="info-block">
-        <div class="text">No authentication sources found</div>
+        <div class="text" i18n="@@authTableEmpty">No authentication sources found</div>
     </div>
 </ng-template>

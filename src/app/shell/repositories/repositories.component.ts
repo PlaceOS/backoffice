@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineRepository } from '@placeos/ts-client';
+import { EngineRepository, EngineRepositoryType } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -39,10 +39,15 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
 
     protected loadValues() {
         const query: any = { offset: 0 };
-        // Get repository count
-        this._service.Repositories.listDrivers(this.item.id, query).then(
-            list => (this.driver_count = list.length)
-        );
+        console.log('Type:', this.item.type);
+        if (this.item.type === EngineRepositoryType.Driver) {
+            // Get driver count for repository
+            this._service.Repositories.listDrivers(this.item.id, query).then(
+                list => (this.driver_count = list.length)
+            );
+        } else {
+            this.driver_count = -1;
+        }
     }
 
     /**
@@ -56,7 +61,7 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineRepository(this._service.Repositories, {}),
+                item: new EngineRepository(),
                 service: this._service.Repositories
             }
         });

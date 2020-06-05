@@ -13,6 +13,8 @@ import { EngineDetailsComponent } from './details/details.component';
 import { EngineClusterDetailsComponent } from './cluster-details/cluster-details.component';
 import { EngineClusterItemComponent } from './cluster-details/item/item.component';
 import { EngineClusterTaskListComponent } from './cluster-details/task-list/task-list.component';
+import { AdminInterfacesComponent } from './interfaces/interfaces.component';
+import { AdminBrokersComponent } from './brokers/brokers.component';
 
 
 @NgModule({
@@ -22,7 +24,9 @@ import { EngineClusterTaskListComponent } from './cluster-details/task-list/task
         EngineDetailsComponent,
         EngineClusterDetailsComponent,
         EngineClusterItemComponent,
-        EngineClusterTaskListComponent
+        EngineClusterTaskListComponent,
+        AdminInterfacesComponent,
+        AdminBrokersComponent
     ],
     imports: [
         CommonModule,

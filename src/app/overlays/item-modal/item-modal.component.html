@@ -34,6 +34,9 @@
             <ng-container *ngSwitchCase="'module'">
                 <module-form [form]="form" [readonly]="readonly"></module-form>
             </ng-container>
+            <ng-container *ngSwitchCase="'broker'">
+                <broker-form [form]="form"></broker-form>
+            </ng-container>
             <ng-container *ngSwitchDefault>
                 <system-form [form]="form"></system-form>
             </ng-container>

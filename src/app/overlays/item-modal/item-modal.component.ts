@@ -12,6 +12,7 @@ import {
     EngineSettings,
     EngineTrigger,
     EngineRepository,
+    PlaceMQTTBroker,
     EncryptionLevel
 } from '@placeos/ts-client';
 import { FormGroup } from '@angular/forms';
@@ -34,6 +35,7 @@ import {
     generateTriggerSettingsFormFields
 } from 'src/app/shared/utilities/data/triggers.utilities';
 import { generateRepositoryFormFields } from 'src/app/shared/utilities/data/repositories.utilities';
+import { generateBrokerFormFields } from 'src/app/shared/utilities/data/brokers.utilities';
 
 export interface CreateEditModalData<T extends Identity = any> {
     /** Service associated with the item being created/edited */
@@ -98,6 +100,8 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
             return 'trigger';
         } else if (this.item instanceof EngineRepository) {
             return 'repository';
+        } else if (this.item instanceof PlaceMQTTBroker) {
+            return 'broker';
         }
     }
 
@@ -134,6 +138,8 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
             details = generateTriggerFormFields(this.item);
         } else if (this.item instanceof EngineRepository) {
             details = generateRepositoryFormFields(this.item);
+        } else if (this.item instanceof PlaceMQTTBroker) {
+            details = generateBrokerFormFields(this.item);
         }
         if (details) {
             details.subscriptions.forEach((sub, index) =>
@@ -199,7 +205,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
      * Save initial settings for resources
      */
     private async newSettings(item: EngineResource<any>, setting_string: string) {
-        const new_settings = new EngineSettings(this._service.EngineSettings, {
+        const new_settings = new EngineSettings({
             parent_id: item.id,
             setting_string: '',
             encryption_level: EncryptionLevel.None

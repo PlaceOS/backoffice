@@ -12,6 +12,8 @@ import {
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
+import * as dayjs from 'dayjs';
+
 @Component({
     selector: 'domain-applications',
     templateUrl: './domain-applications.template.html',
@@ -30,7 +32,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item', item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
                 this.item = item;
                 this.loadApplications();
             })
@@ -45,7 +47,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
 
     public loadApplications(offset: number = 0) {
         if (!this.item) { return; }
-        this._service.Applications.query({ authority: this.item.id, offset } as any).then(
+        this._service.Applications.query({ owner_id: this.item.id, offset } as any).then(
             list => {
                 if (!offset) {
                     this.application_list = [];
@@ -70,16 +72,22 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
      * Open the modal to create a new system
      */
     public newApplication() {
-        this._dialog.open(ItemCreateUpdateModalComponent, {
+        const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
             width: 'auto',
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineApplication(this._service.Applications, {}),
+                item: new EngineApplication(),
                 service: this._service.Applications
             }
         });
+        this.subscription('item-form', ref.componentInstance.event.subscribe((event) => {
+            if (event.reason === 'done') {
+                this.loadApplications();
+                this._service.set('APP_LIST_CHANGE', dayjs().valueOf());
+            }
+        }));
     }
 
     /**
@@ -87,7 +95,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
      */
     public editApplication(item: EngineApplication) {
         if (this.item) {
-            this._dialog.open(ItemCreateUpdateModalComponent, {
+            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
                 width: 'auto',
                 maxHeight: 'calc(100vh - 2em)',
@@ -97,6 +105,11 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
                     service: this._service.Applications
                 }
             });
+            this.subscription('item-form', ref.componentInstance.event.subscribe((event) => {
+                if (event.reason === 'done') {
+                    this.loadApplications();
+                }
+            }));
         }
     }
 

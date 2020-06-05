@@ -1,34 +1,34 @@
 <div class="container" *ngIf="item">
     <section class="select">
-        <button mat-button (tapped)="start()">Start System</button>
-        <button mat-button (tapped)="stop()">Stop System</button>
+        <button mat-button (tapped)="start()"  i18n="@@systemStartAction">Start System</button>
+        <button mat-button (tapped)="stop()" i18n="@@systemStopAction">Stop System</button>
     </section>
     <section class="details">
         <div class="field" *ngIf="item.support_url">
-            <label>Support URL:</label>
+            <label i18n="@@systemUrlLabel">Support URL:</label>
             <div class="value">
                 <a [href]="item.support_url" target="_blank">{{item.support_url}}</a>
             </div>
         </div>
         <div class="field" *ngIf="item.bookable">
-            <label>Bookable Room:</label>
+            <label i18n="@@systemBookableLabel">Bookable Room:</label>
             <div class="value">{{item.bookable ? 'Yes' : 'No'}}</div>
         </div>
         <div class="field" *ngIf="item.bookable && item.email">
-            <label>Email:&nbsp;</label>
+            <label i18n="@@emailLabel">Email:&nbsp;</label>
             <a *ngIf="item.email" [href]="'mailto:' + item.email" target="_blank">{{item.email}}</a>
         </div>
         <div class="field" *ngIf="item.capacity">
-            <label>Capacity:</label>
+            <label i18n="@@capacityLabel">Capacity:</label>
             <div class="value">{{item.capacity}}</div>
         </div>
         <div class="field" *ngIf="item.installed_ui_devices">
-            <label>Installed Touch Panels:</label>
+            <label i18n="@@systemPanelCountLabel">Installed Touch Panels:</label>
             <div class="value">{{item.installed_ui_devices}}</div>
         </div>
     </section>
     <hr />
-    <header class="settings">Settings</header>
+    <header class="settings" i18n="@@settingsLabel">Settings</header>
     <section *ngIf="!loading_settings; else load_state">
         <a-settings-form [id]="item.id" [merge]="true" [settings]="item.settings" [merge_settings]="other_settings || []"></a-settings-form>
     </section>
@@ -38,6 +38,6 @@
         <div class="icon">
             <mat-spinner diameter="48"></mat-spinner>
         </div>
-        <div class="text">Loading system settings...</div>
+        <div class="text" i18n="@@systemLoadingLabel">Loading system settings...</div>
     </div>
 </ng-template>

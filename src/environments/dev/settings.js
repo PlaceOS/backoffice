@@ -1,7 +1,7 @@
 var SETTINGS = {
     env: 'dev',
     debug: true,
-    mock: true,
+    mock: false,
     composer: {},
     app: {},
 };
@@ -41,6 +41,13 @@ SETTINGS.app = {
         src: 'assets/img/logo.svg',
         background: '',
     },
+    languages: [
+        {
+            name: 'English',
+            locale: 'en-US',
+            icon: { class: '', content: '🇬🇧' }
+        }
+    ]
 };
 
 /*==========================*\

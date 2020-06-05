@@ -1,14 +1,14 @@
 <div class="container" *ngIf="item">
     <div class="settings">
-        <header>Permissions</header>
+        <header i18n="@@permissionsHeader">Permissions</header>
         <section>
             <table>
                 <tr>
-                    <td class="field">Tech Support</td>
+                    <td class="field" i18n="@@techSupportRole">Tech Support</td>
                     <td class="flex">{{ item.support === true }}</td>
                 </tr>
                 <tr>
-                    <td class="field">System Admin</td>
+                    <td class="field" i18n="@@systemAdminRole">System Admin</td>
                     <td class="flex">{{ item.sys_admin === true }}</td>
                 </tr>
             </table>

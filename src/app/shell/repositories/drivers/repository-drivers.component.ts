@@ -29,7 +29,7 @@ export class RepositoryDriversComponent extends BaseDirective implements OnChang
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item', item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
                 this.item = item;
                 this.load();
             })
@@ -66,7 +66,7 @@ export class RepositoryDriversComponent extends BaseDirective implements OnChang
                     maxHeight: 'calc(100vh - 2em)',
                     maxWidth: 'calc(100vw - 2em)',
                     data: {
-                        item: new EngineDriver(this._service.Drivers, {
+                        item: new EngineDriver({
                             name: '',
                             module_name: '',
                             repository_id: this.item.id,

@@ -1,11 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatMenuModule } from '@angular/material/menu';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+import { ADatePickerModule } from '@acaprojects/ngx-date-picker';
 
 import { DateFieldComponent } from './date-field.component';
-import { Component } from '@angular/core';
 
 import * as dayjs from 'dayjs';
-import { FormsModule } from '@angular/forms';
-import { ADatePickerModule } from '@acaprojects/ngx-date-picker';
 
 @Component({
     selector: 'app-icon',
@@ -22,7 +25,7 @@ describe('DateFieldComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [DateFieldComponent, MockAppIconComponent],
-            imports: [FormsModule, ADatePickerModule]
+            imports: [FormsModule, ADatePickerModule, MatMenuModule, NoopAnimationsModule]
         }).compileComponents();
     }));
 
@@ -36,17 +39,13 @@ describe('DateFieldComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should allow user to select date from calendar', () => {
-        const el: HTMLElement = fixture.debugElement.nativeElement;
-        const field_element = el.querySelector('.display');
-        expect(field_element).toBeTruthy();
-        expect(el.querySelector('a-date-picker')).toBeFalsy();
-        field_element.dispatchEvent(new Event('tapped'));
+    it('should be able to be disabled', () => {
+        const compiled: HTMLElement = fixture.debugElement.nativeElement;
+        const input_el = compiled.querySelector('.date-field');
+        expect(input_el.hasAttribute('disabled')).toBeFalsy();
+        component.setDisabledState(true);
         fixture.detectChanges();
-        expect(el.querySelector('a-date-picker')).toBeTruthy();
-        field_element.dispatchEvent(new Event('tapped'));
-        fixture.detectChanges();
-        expect(el.querySelector('a-date-picker')).toBeFalsy();
+        expect(input_el.hasAttribute('disabled')).toBeTruthy();
     });
 
     it('should handler external changes to the date selected', () => {

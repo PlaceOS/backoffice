@@ -148,11 +148,11 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             }
             this.subscription(
                 'active_item',
-                this._service.listen('BACKOFFICE.active_item', item => this.replaceActiveItem(item))
+                this._service.listen('BACKOFFICE.active_item').subscribe(item => this.replaceActiveItem(item))
             );
             this.subscription(
                 'remove_item',
-                this._service.listen('BACKOFFICE.removed', id => this.removeItem(id))
+                this._service.listen('BACKOFFICE.removed').subscribe(id => this.removeItem(id))
             );
             this.subscription(
                 'up',
@@ -237,6 +237,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
                 list => {
                     this.list = offset ? this.list.concat(list) : list;
                     this.list = unique(this.list, 'id');
+                    this.list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
                     this.items.next(this.list);
                     this.loading = false;
                 },
@@ -285,6 +286,8 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         } else {
             list.push(active_item);
         }
+
+        list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
         this.items.next([...list]);
         console.log('Replaced');
     }
@@ -301,6 +304,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         const index = list.findIndex(item => item.id === id);
         if (index >= 0) {
             list.splice(index, 1);
+
             this.items.next([...list]);
         }
     }

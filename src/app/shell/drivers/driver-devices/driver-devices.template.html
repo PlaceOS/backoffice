@@ -17,9 +17,9 @@
         <section class="list">
             <table *ngIf="device_list && device_list.length > 0">
                 <thead>
-                    <td class="small">State</td>
-                    <td class="flex">Name</td>
-                    <td class="system">System</td>
+                    <td class="small" i18n="@@moduleTableState">State</td>
+                    <td class="flex" i18n="@@moduleTableName">Name</td>
+                    <td class="system" i18n="@@moduleTableSystem">System</td>
                     <td class="small"></td>
                 </thead>
                 <tbody>
@@ -45,7 +45,7 @@
                 </tbody>
             </table>
             <div class="info-block" *ngIf="!device_list || device_list.length <= 0">
-                <div class="text">No modules with driver</div>
+                <div class="text" i18n="@@moduleTableEmpty">No modules with driver</div>
             </div>
         </section>
     </div>

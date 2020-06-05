@@ -1,0 +1,22 @@
+<table *ngIf="interfaces && interfaces.length; else load_state">
+    <thead>
+        <tr>
+            <td>Repository</td>
+            <td>Commit Hash</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let item of interfaces">
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+        </tr>
+    </tbody>
+</table>
+<ng-template #load_state>
+    <div class="info-block">
+        <div class="icon">
+            <app-icon [icon]="{ class: 'backoffice-cross' }"></app-icon>
+        </div>
+        <div class="text">No interfaces</div>
+    </div>
+</ng-template>

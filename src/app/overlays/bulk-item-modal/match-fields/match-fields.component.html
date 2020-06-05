@@ -1,0 +1,18 @@
+<div class="field-list">
+    <div class="field" *ngFor="let field of field_list">
+        <label [for]="field.id">{{ field.id }}</label>
+        <div class="value">
+            <mat-form-field appearance="outline">
+                <mat-select [name]="field.id" [(ngModel)]="field_mapping[field.id]" placeholder="Select field">
+                    <mat-option *ngFor="let type of source_fields" [value]="type.id">
+                        {{ type.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+</div>
+<div class="actions">
+    <button mat-button class="inverse" (tapped)="back()">Back</button>
+    <button mat-button (click)="saveMapping()">Continue</button>
+</div>

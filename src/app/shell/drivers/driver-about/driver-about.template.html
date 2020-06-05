@@ -1,28 +1,28 @@
 <div class="container" *ngIf="item">
     <section>
         <div class="field">
-            <label>Compiled:</label>
+            <label  i18n="@@driverDetailsCompiled">Compiled:</label>
             <div class="value">{{ compiled || 'false' }}</div>
             <mat-spinner diameter="32" *ngIf="!compiled"></mat-spinner>
         </div>
         <div class="field">
-            <label>Commit:</label>
+            <label i18n="@@driverDetailsCommit">Commit:</label>
             <div class="value">{{ item.commit }}</div>
         </div>
         <div class="field">
-            <label>File Name:</label>
+            <label i18n="@@driverDetailsFileName">File Name:</label>
             <div class="value">{{ item.file_name }}</div>
         </div>
         <div class="field">
-            <label>Module Name:</label>
+            <label i18n="@@driverDetailsModuleName">Module Name:</label>
             <div class="value">{{ item?.module_name }}</div>
         </div>
     </section>
     <section>
-        <button mat-button (tapped)="reloadDriver()">Reload Modules</button>
+        <button mat-button (tapped)="recompileDriver()" i18n="@@driverReloadAction">Recompile Driver</button>
     </section>
     <hr />
-    <header class="settings">Settings</header>
+    <header class="settings" i18n="@@settingsLabel">Settings</header>
     <section *ngIf="!loading_settings; else load_state">
         <a-settings-form [merge]="true" [id]="item.id" [settings]="item.settings"></a-settings-form>
     </section>
@@ -32,6 +32,6 @@
         <div class="icon">
             <mat-spinner diameter="48"></mat-spinner>
         </div>
-        <div class="text">Loading driver settings...</div>
+        <div class="text" i18n="@@driverLoadingLabel">Loading driver settings...</div>
     </div>
 </ng-template>

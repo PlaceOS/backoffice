@@ -31,22 +31,22 @@ export class DriverAboutComponent extends BaseDirective {
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item', item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
                 this.item = item;
             })
         );
         this.checkCompiled();
     }
 
-    public reloadDriver() {
+    public recompileDriver() {
         if (this.item) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
                 {
                     ...CONFIRM_METADATA,
                     data: {
-                        title: `Reload Driver`,
-                        content: `<p>Are you sure you want reload this driver?</p><p>New driver code will be loaded and device settings will be updated.</p>`,
+                        title: `Recompile Driver`,
+                        content: `<p>Are you sure you want recompile this driver?</p><p>New driver code will be loaded and device settings will be updated.</p>`,
                         icon: { type: 'icon', class: 'backoffice-cycle' }
                     }
                 }
@@ -55,18 +55,18 @@ export class DriverAboutComponent extends BaseDirective {
                 'delete_confirm',
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
-                        ref.componentInstance.loading = 'Reloading driver...';
-                        this.item.reload().then(
+                        ref.componentInstance.loading = 'Recompiling driver...';
+                        this.item.recompile().then(
                             () => {
                                 this._service.notifySuccess(
-                                    `Successfully reloaded driver "${this.item.name}".`
+                                    `Successfully recompiled driver "${this.item.name}".`
                                 );
                                 ref.close();
                                 this.unsub('delete_confirm');
                             },
                             err => {
                                 ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error reloading driver. Error: ${JSON.stringify(err.response || err.message || err)}`);
+                                this._service.notifyError(`Error recompiling driver. Error: ${JSON.stringify(err.response || err.message || err)}`);
                             }
                         );
                     }

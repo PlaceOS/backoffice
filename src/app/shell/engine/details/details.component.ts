@@ -4,13 +4,13 @@ import { ComposerService } from '@placeos/composer';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
-import { build, version } from 'src/app/shared/globals/application';
 import {
     ChangelogModalComponent,
     ChangelogModalData
 } from 'src/app/overlays/changelog-modal/changelog-modal.component';
 
 import * as dayjs from 'dayjs';
+import { VERSION } from 'src/environments/version';
 
 export interface EngineAPIDetails {
     /** Display name for the application */
@@ -44,10 +44,11 @@ export class EngineDetailsComponent extends BaseDirective implements OnInit {
     }
 
     public get backoffice_version() {
-        return version;
+        return VERSION.semver;
     }
 
     public get backoffice_build() {
+        const build = dayjs(VERSION.time);
         return build.format('DD MMM YYYY [at] h:mma');
     }
 

@@ -46,7 +46,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             icon: { type: 'icon', class: 'backoffice-power-plug' },
         },
         { id: 'state', name: 'View State', icon: { type: 'icon', class: 'backoffice-eye' } },
-        { id: 'reload', name: 'Reload Module', icon: { type: 'icon', class: 'backoffice-cw' } },
+        { id: 'reload', name: 'Recompile Driver', icon: { type: 'icon', class: 'backoffice-cw' } },
         { id: 'remove', name: 'Remove Module', icon: { type: 'icon', class: 'backoffice-trash' } },
         {
             id: 'load',
@@ -96,7 +96,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item', (item) => {
+            this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
                 this.item = item;
                 this.loadModules();
             })
@@ -239,7 +239,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             {
                 ...CONFIRM_METADATA,
                 data: {
-                    title: 'Reload module?',
+                    title: 'Recompile module?',
                     content: `New driver code will be loaded and the device settings will be reloaded.`,
                     icon: { type: 'icon', class: 'backoffice-install' },
                 },
@@ -250,10 +250,10 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
                     (device.driver
-                        ? device.driver.reload()
-                        : this._service.Drivers.reload(device.driver_id)
+                        ? device.driver.recompile()
+                        : this._service.Drivers.recompile(device.driver_id)
                     ).then(
-                        (_) => this._service.notifySuccess('Driver successfully reloaded.'),
+                        (_) => this._service.notifySuccess('Driver successfully recompiled.'),
                         (err) => this._service.notifyError(JSON.stringify(err.response || err.message || err))
                     );
                     ref.close();
@@ -372,7 +372,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineModule(this._service.Modules, {
+                item: new EngineModule({
                     control_system_id: this.item.id,
                     control_system: this.item,
                 }),
@@ -388,7 +388,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                     this._service.Systems.addModule(this.item.id, event.metadata.item.id).then(
                         () => {
                             this.hide_exec = false;
-                            this.item = new EngineSystem(this._service.Systems, {
+                            this.item = new EngineSystem({
                                 ...this.item,
                                 modules: this.item.modules.concat(event.metadata.item.id),
                                 version: (this.item as any)._version++,
@@ -425,7 +425,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         this._service.Systems.addModule(this.item.id, id).then(
             () => {
                 this.hide_exec = false;
-                this.item = new EngineSystem(this._service.Systems, {
+                this.item = new EngineSystem({
                     ...this.item,
                     modules: this.item.modules.concat(id),
                     version: (this.item as any)._version++,

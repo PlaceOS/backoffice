@@ -3,9 +3,9 @@
         <div class="list" *ngIf="model.list && model.list.length > 0">
             <table>
                 <thead>
-                    <td class="name">Name</td>
-                    <td class="flex">Email</td>
-                    <td class="role">Role</td>
+                    <td class="name" i18n="@@userTableName">Name</td>
+                    <td class="flex" i18n="@@userTableEmail">Email</td>
+                    <td class="role" i18n="@@userTableRole">Role</td>
                 </thead>
                 <tbody>
                     <tr *ngFor="let item of model.list">
@@ -17,7 +17,7 @@
             </table>
         </div>
         <div class="info-block" *ngIf="!model.list || model.list.length <= 0">
-            <div class="text">No users found</div>
+            <div class="text" i18n="@@userTableEmpty">No users found</div>
         </div>
     </section>
 </div>

@@ -144,6 +144,19 @@ nav {
     }
 }
 
+.group {
+    display: flex;
+    align-items: center;
+
+    app-icon {
+        font-size: 1.2em;
+    }
+
+    .text {
+        margin-left: 1em;
+    }
+}
+
 .border-top {
     border-top: 1px solid #ccc;
 }

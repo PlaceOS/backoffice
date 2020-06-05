@@ -1,13 +1,13 @@
 <div class="container" *ngIf="item">
     <div class="settings">
-        <header *ngIf="item.driver">
+        <header *ngIf="item.driver"  i18n="@@moduleDetailsDriver">
             Driver:&nbsp;<span>
                 <a [routerLink]="['/drivers', item.driver_id]"
                     >{{item.driver.name || '&lt;Unnamed&gt;'}}</a
                 >
             </span>
         </header>
-        <header>
+        <header i18n="@@moduleDetailsSystem">
             Logic for system:&nbsp;<span *ngIf="system">
                 <a [routerLink]="['/systems', system.id]">{{system?.name}}</a>
             </span>
@@ -18,14 +18,14 @@
                 [disabled]="stopping"
                 (tapped)="item.connected ? stopModule(): startModule()"
             >
-                <div class="text" *ngIf="!stopping">
-                    {{ item.connected ? 'Stop' : 'Start' }} Module
+                <div class="text" *ngIf="!stopping"  i18n="@@moduleStateToggle">
+                    { item.connected, select, true { Stop Module } false { Start Module } }
                 </div>
                 <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
             </button>
         </section>
         <hr />
-        <header class="settings">Settings</header>
+        <header class="settings" i18n="@@settingsLabel">Settings</header>
         <section *ngIf="!loading_settings; else load_state">
             <a-settings-form
                 [id]="item.id"
@@ -41,6 +41,6 @@
         <div class="icon">
             <mat-spinner diameter="48"></mat-spinner>
         </div>
-        <div class="text">Loading module settings...</div>
+        <div class="text" i18n="@@moduleDetailsLoading">Loading module settings...</div>
     </div>
 </ng-template>

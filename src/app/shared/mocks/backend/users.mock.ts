@@ -48,7 +48,7 @@ const CURRENT_USER = {
     email: `admin@place.tech`,
     support: Math.floor(Math.random() * 999_999) % 10 === 0,
     sys_admin: Math.floor(Math.random() * 999_999) % 10 === 0
-}
+};
 
 /** Add basic API handlers for systems */
 generateBasicHandlers(`${API}/users`, [...USER_DATA, CURRENT_USER], FILTER_FN);

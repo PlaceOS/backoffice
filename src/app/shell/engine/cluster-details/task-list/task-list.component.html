@@ -3,23 +3,23 @@
     <button mat-icon-button (tapped)="close.emit()">
         <app-icon [icon]="{ type: 'icon', class: 'backoffice-arrow-left' }"></app-icon>
     </button>
-    <h3>Cluster - {{cluster?.hostname}}</h3>
+    <h3 i18n="@@clusterHeader">Cluster - {{cluster?.hostname}}</h3>
 </div>
 <table cdk-table [dataSource]="process_list">
     <ng-container cdkColumnDef="id">
-        <th cdk-header-cell *cdkHeaderCellDef>Name</th>
+        <th cdk-header-cell *cdkHeaderCellDef i18n="@@processTableName">Name</th>
         <td cdk-cell *cdkCellDef="let element" [innerHTML]="element.id | driverFormat"></td>
     </ng-container>
     <ng-container cdkColumnDef="cpu_usage">
-        <th cdk-header-cell *cdkHeaderCellDef>CPU %</th>
+        <th cdk-header-cell *cdkHeaderCellDef i18n="@@processTableCpuUsage">CPU %</th>
         <td cdk-cell *cdkCellDef="let element">{{ element.cpu_usage.toFixed(2) }}%</td>
     </ng-container>
     <ng-container cdkColumnDef="memory_usage">
-        <th cdk-header-cell *cdkHeaderCellDef>Memory</th>
+        <th cdk-header-cell *cdkHeaderCellDef i18n="@@processTableMemoryUsage">Memory</th>
         <td cdk-cell *cdkCellDef="let element">{{ element.used_memory }}</td>
     </ng-container>
     <ng-container cdkColumnDef="module_instances">
-        <th cdk-header-cell *cdkHeaderCellDef>Instances</th>
+        <th cdk-header-cell *cdkHeaderCellDef i18n="@@processTableInstances">Instances</th>
         <td cdk-cell *cdkCellDef="let element">{{ element.module_instances }}</td>
     </ng-container>
     <ng-container cdkColumnDef="running">
@@ -37,5 +37,5 @@
     <div class="icon">
         <app-icon [icon]="{ class: 'backoffice-cross' }"></app-icon>
     </div>
-    <div class="text">No tasks running on cluster</div>
+    <div class="text" i18n="@@processTableEmpty">No tasks running on cluster</div>
 </div>

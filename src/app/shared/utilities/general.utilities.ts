@@ -295,6 +295,72 @@ export function copyToClipboard(value: string) {
 }
 
 /**
+ * Parse raw CSV data into a JSON object
+ * @param csv CSV data to parse
+ */
+export function csvToJson(csv: string, seperator: string = ',') {
+    const lines = csv.split('\n');
+    let fields = lines.splice(0, 1)[0].split(seperator);
+    fields = fields.map(v => v.replace('\r', ''));
+    const list: any[] = [];
+    for (const line of lines) {
+        let parts = line.split(seperator);
+        parts = parts.map(v => v.replace('\r', ''));
+        /* istanbul ignore else */
+        if (parts.length >= fields.length) {
+            const item: any = {};
+            for (let i = 0; i <= parts.length; i++) {
+                let part = null;
+                part = parts[i];
+                /* istanbul ignore else */
+                if (part !== undefined) {
+                    item[(fields[i] || '').split(' ').join('_').toLowerCase()] = JSON.parse(part);
+
+                }
+            }
+            list.push(item);
+        }
+    }
+
+    return list;
+}
+
+
+/**
+ * Convert javascript array to CSV string
+ * @param json Javascript array to convert
+ */
+export function jsonToCsv(json: HashMap[], ignore_keys: string[] = [], seperator: ',' | '\t') {
+    /* istanbul ignore else */
+    if (json instanceof Array && json.length > 0) {
+        const keys = Object.keys(json[0]);
+        const valid_keys = keys.filter((key) => ignore_keys.indexOf(key) < 0 && json[0].hasOwnProperty(key));
+        return `${valid_keys.join(seperator)}\n${json
+            .map((item) => valid_keys.map((key) => JSON.stringify(item[key])).join(seperator))
+            .join('\n')}`;
+    }
+    return '';
+}
+
+/**
+ * Downloads a file to the users computer with the given filename and contents
+ * @param filename Name of the file to download
+ * @param contents Contents of the file to download
+ */
+export function downloadFile(filename: string, contents: string) {
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(contents));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
+/**
  * Grab point details from mouse or touch event
  * @param event Event to grab details from
  */

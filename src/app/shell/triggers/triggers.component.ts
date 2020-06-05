@@ -57,7 +57,7 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineTrigger(this._service.Triggers, {}),
+                item: new EngineTrigger(),
                 service: this._service.Triggers
             }
         });

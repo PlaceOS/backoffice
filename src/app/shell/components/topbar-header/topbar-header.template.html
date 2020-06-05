@@ -8,7 +8,6 @@
                 <a [routerLink]="['/']" *ngIf="!is_fools_day; else fools_day">
                     Place<span>OS</span>
                 </a>
-
             </div>
         </div>
         <div class="uat" *ngIf="env !== 'prod'">
@@ -22,7 +21,11 @@
             ></searchbar>
         </div>
         <div class="block end">
-            <button mat-icon-button class="more-actions not-mobile" [matMenuTriggerFor]="more_actions">
+            <button
+                mat-icon-button
+                class="more-actions not-mobile"
+                [matMenuTriggerFor]="more_actions"
+            >
                 <app-icon [icon]="{ class: 'material-icons', content: 'more_vert' }"></app-icon>
             </button>
             <!-- TODO Add user details display -->
@@ -45,30 +48,68 @@
         </div>
         <div class="text">{{user?.name || 'Guest'}}</div>
     </a>
-    <ng-container *ngFor="let item of options">
-        <a *ngIf="item.link" mat-menu-item [href]="item.link">
-            <app-icon [icon]="item.icon"></app-icon>
-            <div class="text">{{item.name}}</div>
-        </a>
-        <a *ngIf="item.route" mat-menu-item [routerLink]="[item.route]" routerLinkActive="active">
-            <app-icon [icon]="item.icon"></app-icon>
-            <div class="text">{{item.name}}</div>
-        </a>
-    </ng-container>
+    <a mat-menu-item [routerLink]="['/profile']" routerLinkActive="active">
+        <app-icon [icon]="{ class: 'backoffice-user' }"></app-icon>
+        <div class="text" i18n="@@profileAction">Profile</div>
+    </a>
+    <a mat-menu-item href="/logout">
+        <app-icon [icon]="{ class: 'backoffice-log-out' }"></app-icon>
+        <div class="text" i18n="@@logoutAction">Logout</div>
+    </a>
     <div class="item" mat-menu-item role="menuitemcheckbox">
         <app-icon [icon]="{ class: 'backoffice-moon' }"></app-icon>
-        <div class="text">Dark Mode</div>
-        <div class="toggle"(click) = "$event.stopPropagation()">
+        <div class="text" i18n="@@darkMode">Dark Mode</div>
+        <div class="toggle" (click)="$event.stopPropagation()">
             <mat-slide-toggle [(ngModel)]="dark_mode"></mat-slide-toggle>
         </div>
     </div>
+    <button mat-menu-item [matMenuTriggerFor]="language_menu" *ngIf="languages.length > 1">
+        <app-icon [icon]="{ class: 'backoffice-globe' }"></app-icon>
+        <div class="text" i18n="@@languageAction">Language</div>
+    </button>
+    <a mat-menu-item [href]="'https://github.com/PlaceOS/backoffice/issues/new?title=Issue on page ' + title" target="_blank">
+        <app-icon [icon]="{ class: 'backoffice-github' }"></app-icon>
+        <div class="text" i18n="@@reportAction">Report an Issue</div>
+    </a>
 </mat-menu>
 <mat-menu #more_actions="matMenu">
-    <button mat-menu-item *ngFor="let action of extra_action_list" (tapped)="action.callback()">
-        <app-icon [icon]="action.icon"></app-icon>
-        <div class="text">{{action.name}}</div>
+    <button mat-menu-item [matMenuTriggerFor]="type_menu" (mouseenter)="bulk = false" (click)="bulk = false">
+        <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
+        <div class="text" i18n="@@newAction">New</div>
+    </button>
+    <button mat-menu-item [matMenuTriggerFor]="type_menu" (mouseenter)="bulk = true" (click)="bulk = true">
+        <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
+        <div class="text" i18n="@@bulkNewAction">Bulk New</div>
+    </button>
+</mat-menu>
+<mat-menu #type_menu="matMenu">
+    <button mat-menu-item (tapped)="newSystem()">
+        <app-icon [icon]="{ class: 'backoffice-documents' }"></app-icon>
+        <div class="text" i18n="@@newSystemAction">{ bulk, select, true { Systems } false { System } }</div>
+    </button>
+    <button mat-menu-item (tapped)="newZone()">
+        <app-icon [icon]="{ class: 'backoffice-layers' }"></app-icon>
+        <div class="text" i18n="@@newZoneAction">{ bulk, select, true { Zones } false { Zone } }</div>
+    </button>
+    <button mat-menu-item (tapped)="newDriver()">
+        <app-icon [icon]="{ class: 'backoffice-tools' }"></app-icon>
+        <div class="text" i18n="@@newDriverAction">{ bulk, select, true { Drivers } false { Driver } }</div>
+    </button>
+    <button mat-menu-item (tapped)="newModule()">
+        <app-icon [icon]="{ class: 'backoffice-tablet' }"></app-icon>
+        <div class="text" i18n="@@newModuleAction">{ bulk, select, true { Modules } false { Module } }</div>
+    </button>
+    <button mat-menu-item (tapped)="newUser()">
+        <app-icon [icon]="{ class: 'backoffice-users' }"></app-icon>
+        <div class="text" i18n="@@newUserAction">{ bulk, select, true { Users } false { User } }</div>
     </button>
 </mat-menu>
 <ng-template #fools_day>
     <a href="http://www.nyan.cat/" (click)="notAFool()">April <span>Fools</span></a>
 </ng-template>
+<mat-menu #language_menu="matMenu">
+    <a mat-menu-item [href]="'/backoffice/' + language.locale" (tapped)="newSystem()" *ngFor="let language of languages">
+        <app-icon [icon]="language.icon"></app-icon>
+        <div class="text">{{ language.name }}</div>
+    </a>
+</mat-menu>

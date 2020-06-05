@@ -3,8 +3,8 @@
         <table *ngIf="system_trigger_list.length > 0; else empty_state">
             <thead>
                 <td class="small"></td>
-                <td class="flex">Name</td>
-                <td class="flex">Added</td>
+                <td class="flex" i18n="@@systemTableName">Name</td>
+                <td class="flex" i18n="@@systemTableAdded">Added</td>
                 <td class="small"></td>
             </thead>
             <tbody>
@@ -30,7 +30,7 @@
 </div>
 <ng-template #empty_state>
     <div class="info-block">
-        <div class="text">No systems with trigger</div>
+        <div class="text" i18n="@@systemTableEmpty">No systems with trigger</div>
     </div>
 </ng-template>
 
