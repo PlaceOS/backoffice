@@ -1,9 +1,6 @@
 <div class="repository form" *ngIf="form">
     <form [formGroup]="form">
-        <div
-            class="field commit"
-            *ngIf="is_edit && can_change_commit"
-        >
+        <div class="field commit" *ngIf="is_edit && can_change_commit">
             <label for="commit" i18n="@@repoCommitLabel">Repository Commit: </label>
             <item-search-field
                 name="commit"
@@ -12,6 +9,25 @@
                 [ngModel]="base_commit"
                 (ngModelChange)="form.controls.commit_hash.setValue($event.id)"
             ></item-search-field>
+        </div>
+        <div class="field" *ngIf="form.controls.branch">
+            <label
+                for="repository-name"
+                [class.error]="form.controls.branch.invalid && form.controls.branch.touched"
+                i18n="@@branchLabel"
+                >Branch<span>*</span>:</label
+            >
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="branch-name"
+                    placeholder="Branch Name"
+                    i18n-placeholder="@@repositoryBranchPlaceholder"
+                    formControlName="branch"
+                    required
+                />
+                <mat-error i18n="@@repoBranchError">Working branch name is required</mat-error>
+            </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.name">
             <label
@@ -29,11 +45,7 @@
                     formControlName="name"
                     required
                 />
-                <mat-error *ngIf="form.controls.name.invalid" i18n="@@repoNameError"
-                    >
-                    Repository name is required
-                    </mat-error
-                >
+                <mat-error i18n="@@repoNameError">Repository name is required</mat-error>
             </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.folder_name">
@@ -43,8 +55,9 @@
                     form.controls.folder_name.invalid && form.controls.folder_name.touched
                 "
                 i18n="@@folderNameLabel"
-                >Folder Name<span>*</span>:</label
             >
+                Folder Name<span>*</span>:
+            </label>
             <mat-form-field appearance="outline">
                 <input
                     matInput
@@ -54,13 +67,11 @@
                     formControlName="folder_name"
                     required
                 />
-                <mat-error *ngIf="form.controls.folder_name.invalid" i18n="@@folderNameError"
-                    >Folder name is required</mat-error
-                >
+                <mat-error i18n="@@folderNameError">Folder name is required</mat-error>
             </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.description">
-            <label for="description"i18n="@@descriptionLabel">Description:</label>
+            <label for="description" i18n="@@descriptionLabel">Description:</label>
             <mat-form-field appearance="outline">
                 <textarea
                     matInput
@@ -72,7 +83,11 @@
             </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.uri">
-            <label for="uri" [class.error]="form.controls.uri.invalid && form.controls.uri.touched" i18n="@@repoUriLabel">
+            <label
+                for="uri"
+                [class.error]="form.controls.uri.invalid && form.controls.uri.touched"
+                i18n="@@repoUriLabel"
+            >
                 Repository URI<span>*</span>:
             </label>
             <mat-form-field appearance="outline">
@@ -84,15 +99,16 @@
                     formControlName="uri"
                     required
                 />
-                <mat-error *ngIf="form.controls.uri.invalid" i18n="@@repoUriError">URI is required</mat-error>
+                <mat-error i18n="@@repoUriError">URI is required</mat-error>
             </mat-form-field>
         </div>
         <div class="field" *ngIf="!is_edit && form.controls.repo_type">
-            <label for="type"i18n="@@repoTypeLabel">Repository Type: </label>
+            <label for="type" i18n="@@repoTypeLabel">Repository Type: </label>
             <mat-form-field appearance="outline">
                 <mat-select name="type" formControlName="repo_type">
                     <mat-option *ngFor="let type of repo_types" [value]="type.id" i18n="@@repoType">
-                        { type.name, select, Driver { Driver } Interface { Interface } other { Other } }
+                        { type.name, select, Driver { Driver } Interface { Interface } other { Other
+                        } }
                     </mat-option>
                 </mat-select>
             </mat-form-field>

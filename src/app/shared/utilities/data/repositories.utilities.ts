@@ -1,4 +1,3 @@
-
 import { Validators, FormControl, FormGroup } from '@angular/forms';
 import { HashMap, EngineRepository, EngineRepositoryType } from '@placeos/ts-client';
 
@@ -15,6 +14,7 @@ export function generateRepositoryFormFields(repository: EngineRepository): Form
     const fields: HashMap<FormControl> = {
         id: new FormControl(repository.id || ''),
         commit_hash: new FormControl(repository.commit_hash || ''),
+        branch: new FormControl(repository.branch || 'master', [Validators.required]),
         name: new FormControl(repository.name || '', [Validators.required]),
         folder_name: new FormControl(repository.folder_name || '', [Validators.required]),
         description: new FormControl(repository.description || ''),
@@ -25,7 +25,7 @@ export function generateRepositoryFormFields(repository: EngineRepository): Form
     for (const key in fields) {
         if (fields[key] && key.indexOf('settings') < 0) {
             subscriptions.push(
-                fields[key].valueChanges.subscribe(value =>
+                fields[key].valueChanges.subscribe((value) =>
                     repository.storePendingChange(key as any, value)
                 )
             );
@@ -39,6 +39,6 @@ export function generateRepositoryFormFields(repository: EngineRepository): Form
     }
     return {
         form: new FormGroup(fields),
-        subscriptions
+        subscriptions,
     };
 }
