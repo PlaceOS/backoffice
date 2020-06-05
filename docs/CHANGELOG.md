@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/PlaceOS/backoffice/compare/v1.3.0...v1.3.1) (2020-06-05)
+
+
+### Bug Fixes
+
+* **repo:** fix editing commits for interface repos ([455afdf](https://github.com/PlaceOS/backoffice/commit/455afdf7ee8a38525eb14ee40de0258bd537227f))
+
 # [1.3.0](https://github.com/PlaceOS/backoffice/compare/v1.2.2...v1.3.0) (2020-06-05)
 
 
