@@ -109,7 +109,7 @@
             </div>
         </div>
     </button>
-    <button mat-menu-item (click)="newFromItem()">
+    <button mat-menu-item disabled="true" (click)="newFromItem()">
         <div class="group">
             <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
             <div class="text" i18n="@@copyItemAction">
@@ -119,7 +119,7 @@
             </div>
         </div>
     </button>
-    <button mat-menu-item (click)="duplicateItem()">
+    <button mat-menu-item disabled="true" (click)="duplicateItem()">
         <div class="group">
             <app-icon [icon]="{ class: 'backoffice-flow-branch' }"></app-icon>
             <div class="text" i18n="@@duplicateAction">
@@ -129,7 +129,7 @@
             </div>
         </div>
     </button>
-    <button mat-menu-item (click)="exportAsCSV()">
+    <button mat-menu-item disabled="true" (click)="exportAsCSV()">
         <div class="group">
             <app-icon [icon]="{ class: 'backoffice-download' }"></app-icon>
             <div class="text" i18n="@@exporeAction">
