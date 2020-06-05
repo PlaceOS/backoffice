@@ -7,6 +7,7 @@
                 [options]="commit_list"
                 [loading]="loading_commits"
                 [ngModel]="base_commit"
+                [ngModelOptions]="{ standalone: true }"
                 (ngModelChange)="form.controls.commit_hash.setValue($event.id)"
             ></item-search-field>
         </div>
@@ -102,7 +103,7 @@
                 <mat-error i18n="@@repoUriError">URI is required</mat-error>
             </mat-form-field>
         </div>
-        <div class="field" *ngIf="!is_edit && form.controls.repo_type">
+        <div class="field" *ngIf="!is_edit && form.controls.repo_type && form.controls.folder_name">
             <label for="type" i18n="@@repoTypeLabel">Repository Type: </label>
             <mat-form-field appearance="outline">
                 <mat-select name="type" formControlName="repo_type">

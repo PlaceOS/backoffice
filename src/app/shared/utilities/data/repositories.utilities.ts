@@ -34,7 +34,6 @@ export function generateRepositoryFormFields(repository: EngineRepository): Form
     if (!repository.id) {
         repository.storePendingChange('commit_hash', 'head');
     } else {
-        delete fields.repo_type;
         delete fields.folder_name;
     }
     return {
