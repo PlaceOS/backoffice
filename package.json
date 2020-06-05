@@ -21,7 +21,9 @@
     "private": true,
     "jest": {
         "preset": "jest-preset-angular",
-        "setupFilesAfterEnv": ["<rootDir>/src/test.ts"]
+        "setupFilesAfterEnv": [
+            "<rootDir>/src/test.ts"
+        ]
     },
     "dependencies": {
         "@acaprojects/ngx-date-picker": "^1.0.5",

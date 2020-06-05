@@ -11,7 +11,7 @@ export function generateZoneFormFields(zone: EngineZone): FormDetails {
     const fields: HashMap<FormControl> = {
         id: new FormControl(zone.id),
         name: new FormControl(zone.name || '', [Validators.required]),
-        tag_list: new FormControl(zone.tags ? zone.tags.split(',') : []),
+        tags: new FormControl(zone.tags || []),
         description: new FormControl(zone.description || ''),
         parent_zone: new FormControl(null),
         parent_id: new FormControl(zone.parent_id),
@@ -34,11 +34,6 @@ export function generateZoneFormFields(zone: EngineZone): FormDetails {
             );
         }
     }
-    subscriptions.push(
-        fields.tag_list.valueChanges.subscribe((value: string[]) =>
-            zone.storePendingChange('tags', value.join(','))
-        )
-    );
     subscriptions.push(
         fields.parent_zone.valueChanges.subscribe((zone: EngineZone) =>
             {

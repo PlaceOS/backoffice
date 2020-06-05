@@ -59,7 +59,7 @@ export class ZoneAboutComponent extends BaseDirective implements OnInit, OnChang
 
     /** List of tags associated with the zone */
     public get tag_list(): string[] {
-        return this.item && this.item.tags ? this.item.tags.split(',') : [];
+        return this.item ? this.item.tags : [];
     }
 
 }

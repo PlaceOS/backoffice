@@ -30,10 +30,10 @@
                 <mat-error i18n="@@zoneNameError">Zone name is required</mat-error>
             </mat-form-field>
         </div>
-        <div class="field" *ngIf="form.controls.tag_list">
+        <div class="field" *ngIf="form.controls.tags">
             <label
                 for="system-email"
-                [class.error]="form.controls.tag_list.invalid && form.controls.tag_list.touched"
+                [class.error]="form.controls.tags.invalid && form.controls.tags.touched"
                 i18n="@@tagsLabel"
                 >
                 Tags:
