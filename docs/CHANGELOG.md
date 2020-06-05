@@ -1,3 +1,28 @@
+# [1.3.0](https://github.com/PlaceOS/backoffice/compare/v1.2.2...v1.3.0) (2020-06-05)
+
+
+### Bug Fixes
+
+* **admin:** add tab for displaying broker details ([0cd31ca](https://github.com/PlaceOS/backoffice/commit/0cd31cadf6ac48a858936a70d56217e086cd612b))
+* **admin:** add tab for listing interfaces ([690d071](https://github.com/PlaceOS/backoffice/commit/690d071502338e622db3d6cba3fdb425a94300c4)), closes [#50](https://github.com/PlaceOS/backoffice/issues/50)
+* **beta workflow:** use empty string ([d4cd646](https://github.com/PlaceOS/backoffice/commit/d4cd6464144c0cd7ce595f196784de92d8937f7f))
+* **module-form:** fix names of fields and label references ([b44053e](https://github.com/PlaceOS/backoffice/commit/b44053e151114303661fba1e4fb3ed6a3bace4e1)), closes [#58](https://github.com/PlaceOS/backoffice/issues/58)
+* **settings:** fix language settings ([c1230c6](https://github.com/PlaceOS/backoffice/commit/c1230c6ee146e65e1ebc6df6bc8b45683fea8756))
+* **sidebar:** add sorting to listed items ([84feb62](https://github.com/PlaceOS/backoffice/commit/84feb62250fcb1b4f29b371cab1c8961539baf92))
+* **sys-modules:** prevent custom context menu on module link ([e430175](https://github.com/PlaceOS/backoffice/commit/e430175ed7688f1b8e084412d7730c10712cc739)), closes [#57](https://github.com/PlaceOS/backoffice/issues/57)
+* **version:** fix display of version details ([64830ca](https://github.com/PlaceOS/backoffice/commit/64830cad53d38c4666e29c80ee98179d4e684b5f))
+* **zones:** update zone tags to be array instead of string ([ed0c281](https://github.com/PlaceOS/backoffice/commit/ed0c28187cc9524665cebc9dc47be4bfe0f890c3))
+
+
+### Features
+
+* **brokers:** add logic for CRUD operations on brokers ([bca2cc9](https://github.com/PlaceOS/backoffice/commit/bca2cc90ed290d7e734c51032a588c5601cd6c05)), closes [#62](https://github.com/PlaceOS/backoffice/issues/62)
+* **bulk-add:** add components and start to hook them up ([f3042cc](https://github.com/PlaceOS/backoffice/commit/f3042ccb131428761c20991d8677d28ff0ec8b11))
+* **header:** add button to report issues with the ui ([e3526b8](https://github.com/PlaceOS/backoffice/commit/e3526b8b61aa4c481a3c6f73eaab41b7e8c2378b))
+* **i18n:** add option for changing languages to the topbar header ([2f879a9](https://github.com/PlaceOS/backoffice/commit/2f879a9cde7107d98c4fa24378ae0a72c3a4761b))
+* **localize:** start adding i18n to application ([c36d2ed](https://github.com/PlaceOS/backoffice/commit/c36d2ed8d5503e8c2947eae9377371f9b29266bf))
+* **workflows->beta:** new build repo ([3f58f31](https://github.com/PlaceOS/backoffice/commit/3f58f314017cdee8296ca7e225c490e8cd8bb558))
+
 ## [1.2.2](https://github.com/PlaceOS/backoffice/compare/v1.2.1...v1.2.2) (2020-06-03)
 
 
