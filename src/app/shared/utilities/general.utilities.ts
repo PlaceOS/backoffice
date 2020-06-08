@@ -315,7 +315,11 @@ export function csvToJson(csv: string, seperator: string = ',') {
                 part = parts[i];
                 /* istanbul ignore else */
                 if (part !== undefined) {
-                    item[(fields[i] || '').split(' ').join('_').toLowerCase()] = JSON.parse(part);
+                    console.log('Part:', fields[i], part);
+                    let value = '';
+                    try { value = JSON.parse(part) }
+                    catch (e) { value = part; }
+                    item[(fields[i] || '').split(' ').join('_').toLowerCase()] = value;
                 }
             }
             list.push(item);

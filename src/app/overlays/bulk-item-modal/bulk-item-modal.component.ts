@@ -59,7 +59,6 @@ export class BulkItemModalComponent<T = EngineResource<any>> {
      * @param data List of data to process
      */
     public handleList(data: HashMap[], is_mapped: boolean = false): void {
-        console.log('Handle List');
         if (data.length) {
             if (is_mapped) {
                 console.log('To list:', data);
@@ -78,7 +77,7 @@ export class BulkItemModalComponent<T = EngineResource<any>> {
     }
 
     public done() {
-        this._dialog_ref.close();
+        setTimeout(() => this._dialog_ref.close(), 3000);
     }
 
     private getAvailableFields(): Identity[] {
@@ -117,7 +116,7 @@ export class BulkItemModalComponent<T = EngineResource<any>> {
                     features: 'vidConf',
                     bookable: true,
                     installed_ui_devices: 4,
-                    support_url: '/support/test',
+                    support_url: 'https://place.tech/support/test',
                     modules: ['mod-123'],
                     zones: ['zone-123'],
                     map_id: 'area-123',

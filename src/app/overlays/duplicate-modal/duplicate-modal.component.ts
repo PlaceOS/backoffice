@@ -53,12 +53,10 @@ export class DuplicateModalComponent {
                 id: '',
                 name: `${item.name} (${i + 1})`,
             });
-            console.log('New item:', ItemConstructor);
             new_item.storePendingChange('id', '');
             this.status[i] = 'loading';
             const saved_item = await new_item.save().catch((err) => {
                 this.status[i] = `Error: ${err.message || err}`;
-                console.error('Err', err);
                 this._service.notifyError(this.status[i]);
             });
             list.push(saved_item);
@@ -66,12 +64,9 @@ export class DuplicateModalComponent {
                 this.status[i] = 'done';
             }
         }
-        console.log()
         const clean_list = list.filter((item) => !!item);
         this.event.emit({ reason: 'done', metadata: clean_list } as DialogEvent);
         this.done = true;
-        setTimeout(() => {
-            this._dialog_ref.close();
-        }, 5000);
+        setTimeout(() => this._dialog_ref.close(), 5000);
     }
 }

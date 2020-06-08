@@ -35,11 +35,6 @@ export class MatchFieldsComponent {
         }
     }
 
-    /** Return to the previous step in the bulk upload flow */
-    public back(): void {
-        this.previous.emit();
-    }
-
     /** Generated the mapped list of items and emit them */
     public saveMapping(): void {
         console.log('Mapping:', this.field_mapping);

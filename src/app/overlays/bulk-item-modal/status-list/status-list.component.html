@@ -1,1 +1,12 @@
-<p>status-list works!</p>
+<div class="info" *ngIf="!done">Uploading items...</div>
+<div *ngFor="let item of list; let i = index" class="item">
+    <div class="name">{{ item.name }}</div>
+    <div class="status">
+        <app-icon
+            *ngIf="status[i] !== 'loading'"
+            [class]="status[i]"
+            [icon]="{ class: status[i] === 'done' ? 'backoffice-check' : 'backoffice-cross' }"
+        ></app-icon>
+        <mat-spinner *ngIf="status[i] === 'loading'" diameter="24"></mat-spinner>
+    </div>
+</div>

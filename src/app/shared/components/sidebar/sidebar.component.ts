@@ -12,6 +12,7 @@ import {
     SimpleChanges
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { Router } from '@angular/router';
 import { EngineModule, EngineDriverRole } from '@placeos/ts-client';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -19,10 +20,9 @@ import { first } from 'rxjs/operators';
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
 import { EngineServiceLike, HashMap, Identity } from '../../utilities/types.utilities';
+import { unique } from '../../utilities/general.utilities';
 
 import * as dayjs from 'dayjs';
-import { unique } from '../../utilities/general.utilities';
-import { Router } from '@angular/router';
 
 @Component({
     selector: 'sidebar',

@@ -21,7 +21,10 @@ import {
 } from 'src/app/overlays/item-modal/item-modal.component';
 import { Router } from '@angular/router';
 import { downloadFile, jsonToCsv } from '../../utilities/general.utilities';
-import { DuplicateModalComponent, DuplicateModalData } from 'src/app/overlays/duplicate-modal/duplicate-modal.component';
+import {
+    DuplicateModalComponent,
+    DuplicateModalData,
+} from 'src/app/overlays/duplicate-modal/duplicate-modal.component';
 
 export interface ApplicationTab {
     id: string;
@@ -173,11 +176,7 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
     public duplicateItem() {
         const ref = this._dialog.open<DuplicateModalComponent, DuplicateModalData>(
             DuplicateModalComponent,
-            {
-                data: {
-                    item: this.item
-                },
-            }
+            { data: { item: this.item } }
         );
         this.subscription(
             'confirm_ref',
@@ -203,7 +202,12 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
         const item = this.item.toJSON();
         const filename = `${item.name.toLowerCase().split(' ').join('_')}.${this.name}.tsv`;
         const ignore_keys = ['module_list', 'settings', '_type', 'version'];
-        console.log('TSV:', Object.keys(item), ignore_keys, Object.keys(item).filter((key) => ignore_keys.indexOf(key) < 0))
+        console.log(
+            'TSV:',
+            Object.keys(item),
+            ignore_keys,
+            Object.keys(item).filter((key) => ignore_keys.indexOf(key) < 0)
+        );
         const csv_data = jsonToCsv(
             [item],
             Object.keys(item).filter((key) => ignore_keys.indexOf(key) < 0),

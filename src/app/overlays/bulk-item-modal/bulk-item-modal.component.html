@@ -11,7 +11,12 @@
                 <bulk-item-status-list [list]="item_list" (done)="done()"></bulk-item-status-list>
             </div>
             <div *ngSwitchCase="'list'">
-                <bulk-item-list [(list)]="item_list" (save)="showStatus()"></bulk-item-list>
+                <bulk-item-list
+                    [(list)]="item_list"
+                    [fields]="available_fields"
+                    (next)="showStatus()"
+                    (previous)="flow_step = 'match-fields'"
+                ></bulk-item-list>
             </div>
             <div *ngSwitchCase="'match-fields'">
                 <bulk-item-match-fields
@@ -22,7 +27,10 @@
                 ></bulk-item-match-fields>
             </div>
             <div *ngSwitchDefault>
-                <bulk-item-csv-upload [template]="template" (list)="handleList($event)"></bulk-item-csv-upload>
+                <bulk-item-csv-upload
+                    [template]="template"
+                    (list)="handleList($event)"
+                ></bulk-item-csv-upload>
             </div>
         </div>
     </main>
