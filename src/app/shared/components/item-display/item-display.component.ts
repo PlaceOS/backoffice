@@ -21,6 +21,7 @@ import {
 } from 'src/app/overlays/item-modal/item-modal.component';
 import { Router } from '@angular/router';
 import { downloadFile, jsonToCsv } from '../../utilities/general.utilities';
+import { DuplicateModalComponent, DuplicateModalData } from 'src/app/overlays/duplicate-modal/duplicate-modal.component';
 
 export interface ApplicationTab {
     id: string;
@@ -170,7 +171,22 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
      * Delete the active item
      */
     public duplicateItem() {
-        this.event.emit({ type: 'duplicate' });
+        const ref = this._dialog.open<DuplicateModalComponent, DuplicateModalData>(
+            DuplicateModalComponent,
+            {
+                data: {
+                    item: this.item
+                },
+            }
+        );
+        this.subscription(
+            'confirm_ref',
+            ref.componentInstance.event.subscribe((e: DialogEvent) => {
+                if (e.reason === 'done') {
+                    this.item = e.metadata[0];
+                }
+            })
+        );
     }
 
     /**
