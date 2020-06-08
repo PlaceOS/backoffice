@@ -47,7 +47,7 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
     /**
      * Open the modal to create a new system
      */
-    protected newItem() {
+    protected newItem(copy: boolean = false) {
         if (this.modal_ref) { return; }
         this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
@@ -55,8 +55,8 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineDriver({ name: '', module_name: '' }),
-                service: this._service.Drivers
+                item: copy ? new EngineDriver({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineDriver(),
+                service: this._service.Domains
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {

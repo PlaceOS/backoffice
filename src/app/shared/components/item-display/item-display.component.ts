@@ -6,7 +6,7 @@ import {
     EventEmitter,
     OnInit,
     ViewChild,
-    ElementRef
+    ElementRef,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EngineResource, EngineDriver, EngineDriverRole } from '@placeos/ts-client';
@@ -17,7 +17,7 @@ import { DialogEvent, Identity } from '../../utilities/types.utilities';
 import { ApplicationIcon } from '../../utilities/settings.interfaces';
 import {
     ItemCreateUpdateModalComponent,
-    CreateEditModalData
+    CreateEditModalData,
 } from 'src/app/overlays/item-modal/item-modal.component';
 import { Router } from '@angular/router';
 import { downloadFile, jsonToCsv } from '../../utilities/general.utilities';
@@ -33,9 +33,10 @@ export interface ApplicationTab {
 @Component({
     selector: 'item-display',
     templateUrl: './item-display.template.html',
-    styleUrls: ['./item-display.styles.scss']
+    styleUrls: ['./item-display.styles.scss'],
 })
-export class ItemDisplayComponent<T extends Identity = any> extends BaseDirective implements OnInit {
+export class ItemDisplayComponent<T extends Identity = any> extends BaseDirective
+    implements OnInit {
     /** Name of the type of item being shown */
     @Input() public name: string;
     /** Base route of parent component */
@@ -86,7 +87,11 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
         return 'Logic';
     }
 
-    constructor(private _service: ApplicationService, private _dialog: MatDialog, private _router: Router) {
+    constructor(
+        private _service: ApplicationService,
+        private _dialog: MatDialog,
+        private _router: Router
+    ) {
         super();
     }
 
@@ -102,14 +107,23 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
     }
 
     public changeTab(direction) {
-        if (!this.item) { return; }
-        console.log('Item:', this.item);
-        this.timeout('change_tab', () => {
-            const index = this.tabs.findIndex(tab => this._router.url.indexOf(tab.id) >= 0);
-            if (index >= 0 && this.tabs[index + direction]) {
-                this._router.navigate([`/${this.route}`, this.item.id, this.tabs[index + direction].id]);
-            }
-        }, 100);
+        if (!this.item) {
+            return;
+        }
+        this.timeout(
+            'change_tab',
+            () => {
+                const index = this.tabs.findIndex((tab) => this._router.url.indexOf(tab.id) >= 0);
+                if (index >= 0 && this.tabs[index + direction]) {
+                    this._router.navigate([
+                        `/${this.route}`,
+                        this.item.id,
+                        this.tabs[index + direction].id,
+                    ]);
+                }
+            },
+            100
+        );
     }
 
     /** Copy the ID of the active item to the clipboard */
@@ -131,8 +145,8 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
                     service: (this.item as any)._service,
                     item: this.item,
                     form: [] as any,
-                    name: this.name
-                }
+                    name: this.name,
+                },
             }
         );
         this.subscription(
@@ -172,7 +186,13 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
     public exportAsTSV() {
         const item = this.item.toJSON();
         const filename = `${item.name.toLowerCase().split(' ').join('_')}.${this.name}.tsv`;
-        const csv_data = jsonToCsv([item], undefined, '\t');
+        const ignore_keys = ['module_list', 'settings', '_type', 'version'];
+        console.log('TSV:', Object.keys(item), ignore_keys, Object.keys(item).filter((key) => ignore_keys.indexOf(key) < 0))
+        const csv_data = jsonToCsv(
+            [item],
+            Object.keys(item).filter((key) => ignore_keys.indexOf(key) < 0),
+            '\t'
+        );
         downloadFile(filename, csv_data);
     }
 }

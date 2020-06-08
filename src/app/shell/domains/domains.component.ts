@@ -66,7 +66,7 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
     /**
      * Open the modal to create a new system
      */
-    protected newItem() {
+    protected newItem(copy: boolean = false) {
         if (this.modal_ref) { return; }
         this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
@@ -74,7 +74,7 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineDomain(),
+                item: copy ? new EngineDomain({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineDomain(),
                 service: this._service.Domains
             }
         });

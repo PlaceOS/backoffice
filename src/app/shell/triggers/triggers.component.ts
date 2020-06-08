@@ -49,7 +49,7 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
     /**
      * Open the modal to create a new trigger
      */
-    protected newItem() {
+    protected newItem(copy: boolean = false) {
         if (this.modal_ref) { return; }
         this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
@@ -57,8 +57,8 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineTrigger(),
-                service: this._service.Triggers
+                item: copy ? new EngineTrigger({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineTrigger(),
+                service: this._service.Domains
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {

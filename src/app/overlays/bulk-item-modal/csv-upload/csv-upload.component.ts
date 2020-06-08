@@ -44,10 +44,13 @@ export class CsvUploadComponent {
     }
 
     public downloadTemplateCSV() {
-        downloadFile(
-            'bulk-upload.tsv',
-            jsonToCsv(this.template, ['module_list', 'settings', '_type', 'version'], '\t')
+        const ignore_keys = ['module_list', 'settings', '_type', 'version'];
+        const csv_data = jsonToCsv(
+            this.template,
+            Object.keys(this.template).filter((key) => ignore_keys.indexOf(key) < 0),
+            '\t'
         );
+        downloadFile('bulk-upload.tsv', csv_data);
     }
 
     private processCSVData(data: string) {
