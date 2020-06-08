@@ -20,6 +20,7 @@ import {
     CreateEditModalData
 } from 'src/app/overlays/item-modal/item-modal.component';
 import { Router } from '@angular/router';
+import { downloadFile, jsonToCsv } from '../../utilities/general.utilities';
 
 export interface ApplicationTab {
     id: string;
@@ -168,7 +169,10 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
     /**
      * Export the active item as a CSV
      */
-    public exportAsCSV() {
-        this.event.emit({ type: 'export' });
+    public exportAsTSV() {
+        const item = this.item.toJSON();
+        const filename = `${item.name.toLowerCase().split(' ').join('_')}.${this.name}.tsv`;
+        const csv_data = jsonToCsv([item], undefined, '\t');
+        downloadFile(filename, csv_data);
     }
 }

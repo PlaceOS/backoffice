@@ -129,13 +129,13 @@
             </div>
         </div>
     </button>
-    <button mat-menu-item (click)="exportAsCSV()">
+    <button mat-menu-item (click)="exportAsTSV()">
         <div class="group">
             <app-icon [icon]="{ class: 'backoffice-download' }"></app-icon>
             <div class="text" i18n="@@exporeAction">
                 Export { name, select, system { system } module { module } driver { driver }
                 repository { repository } zone { zone } trigger { trigger } user { user } domain {
-                domain } other { other } } as CSV template
+                domain } other { other } } as TSV template
             </div>
         </div>
     </button>
