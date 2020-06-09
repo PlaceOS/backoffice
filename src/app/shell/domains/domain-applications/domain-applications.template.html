@@ -8,13 +8,24 @@
                 <thead>
                     <td class="name" i18n="@@applicationTableName">Name</td>
                     <td class="flex" i18n="@@applicationTableRedirect">Redirect</td>
+                    <td class="flex" i18n="@@applicationTableClientId">Client ID</td>
+                    <td class="flex" i18n="@@applicationTableClientSecret">Secret</td>
                     <td class="scope" i18n="@@applicationTableScope">Scope</td>
                     <td class="duo"></td>
                 </thead>
                 <tbody>
                     <tr *ngFor="let item of application_list">
                         <td class="name" [matTooltip]="item.id">{{item.name}}</td>
-                        <td class="flex"><a [href]="item.redirect_uri">{{item.redirect_uri}}</a></td>
+                        <td class="flex">
+                            <a [href]="item.redirect_uri">{{item.redirect_uri}}</a>
+                        </td>
+                        <td class="id">{{item.id}}</td>
+                        <td
+                            class="secret"
+                            (click)="!show_secret[item.id] ? show_secret[item.id] = true : copySecret(item)"
+                        >
+                            {{show_secret[item.id] ? item.secret : 'Show'}}
+                        </td>
                         <td class="scope">{{item.scopes}}</td>
                         <td class="duo">
                             <button mat-icon-button (tapped)="editApplication(item)">

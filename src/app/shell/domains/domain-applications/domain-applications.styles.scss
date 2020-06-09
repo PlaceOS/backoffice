@@ -27,6 +27,17 @@
     }
 }
 
+.id,
+.secret {
+    font-family: $mono-font;
+    font-size: .8em;
+}
+
+.secret {
+    color: #1976d2;
+    text-decoration: underline;
+}
+
 .duo {
     width: 6.75em;
     display: flex;
