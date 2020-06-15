@@ -12,11 +12,11 @@ import {
     USER_MUTABLE_FIELDS,
     EngineUser,
     ZONE_MUTABLE_FIELDS,
-    EngineZone,
-    EngineDriverRole
+    EngineZone
 } from '@placeos/ts-client';
 import { HashMap, EngineServiceLike, Identity } from 'src/app/shared/utilities/types.utilities';
 import { unique } from 'src/app/shared/utilities/general.utilities';
+import { SYSTEM_TEMPLATE, MODULE_TEMPLATE, DRIVER_TEMPLATE, USER_TEMPLATE, ZONE_TEMPLATE } from './template-data';
 
 export interface BulkItemModalData<T = EngineResource<any>> {
     constr: Type<T>;
@@ -59,7 +59,6 @@ export class BulkItemModalComponent<T = EngineResource<any>> {
      * @param data List of data to process
      */
     public handleList(data: HashMap[], is_mapped: boolean = false): void {
-        console.log('Handle List');
         if (data.length) {
             if (is_mapped) {
                 console.log('To list:', data);
@@ -78,7 +77,7 @@ export class BulkItemModalComponent<T = EngineResource<any>> {
     }
 
     public done() {
-        this._dialog_ref.close();
+        setTimeout(() => this._dialog_ref.close(), 3000);
     }
 
     private getAvailableFields(): Identity[] {
@@ -109,80 +108,15 @@ export class BulkItemModalComponent<T = EngineResource<any>> {
     private generateTemplate(): HashMap[] {
         switch (this._data.constr as any) {
             case EngineSystem:
-                return [new EngineSystem({
-                    name: 'A System',
-                    description: 'A description',
-                    email: 'system@place.tech',
-                    capacity: 10,
-                    features: 'vidConf',
-                    bookable: true,
-                    installed_ui_devices: 4,
-                    support_url: '/support/test',
-                    modules: ['mod-123'],
-                    zones: ['zone-123'],
-                    map_id: 'area-123',
-                    module_data: [{ id: 'mod-001', name: 'A Module' }],
-                }).toJSON()];
+                return [new EngineSystem(SYSTEM_TEMPLATE).toJSON()];
             case EngineModule:
-                return [new EngineModule({
-                    name: 'A Module',
-                    driver_id: 'dep-001',
-                    control_system_id: 'sys-001',
-                    ip: '1.1.1.1',
-                    tls: false,
-                    udp: false,
-                    port: 32000,
-                    makebreak: false,
-                    uri: 'test.com',
-                    custom_name: 'mi-name',
-                    role: EngineDriverRole.Device,
-                    notes: 'Clone wars',
-                    ignore_connected: false,
-                }).toJSON()];
+                return [new EngineModule(MODULE_TEMPLATE).toJSON()];
             case EngineDriver:
-                return [new EngineDriver({
-                    name: 'A Driver',
-                    description: 'In a galaxy far far away...',
-                    module_name: 'SteamShip',
-                    role: EngineDriverRole.Logic,
-                    default_uri: 'Sometimes we default',
-                    default_port: 1234,
-                    ignore_connected: false,
-                    settings: { settings_string: '{ today: false, future: \'Yeah!\' }' },
-                    class_name: '::ACA::SolveProblem',
-                    repository_id: 'my-repo',
-                    file_name: 'fancy-driver.cr',
-                    commit: 'some-hash'
-                }).toJSON()];
+                return [new EngineDriver(DRIVER_TEMPLATE).toJSON()];
             case EngineUser:
-                return [new EngineUser({
-                    name: 'A User',
-                    authority_id: 'On who\'s authority',
-                    email: 'jon@place.tech',
-                    phone: '+612000000000',
-                    country: 'Australia',
-                    image: '',
-                    metadata: 'there be none',
-                    login_name: 'elitedarklord',
-                    staff_id: 'PERSON_12345',
-                    first_name: 'Bob',
-                    last_name: 'Marley'
-                })];
+                return [new EngineUser(USER_TEMPLATE)];
             case EngineZone:
-                return [new EngineZone({
-                    name: 'A Zone',
-                    description: 'In a galaxy far far away...',
-                    triggers: ['trig-001'],
-                    parent_id: 'zone-123',
-                    display_name: 'The Zone',
-                    tags: 'building,level,org',
-                    code: 'BLD-123',
-                    type: 'Client',
-                    count: 32,
-                    capacity: 2345,
-                    location: 'Somewhere close',
-                    map_id: 'a/url/to/my/map.svg'
-                })];
+                return [new EngineZone(ZONE_TEMPLATE)];
         }
     }
 }

@@ -37,7 +37,7 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
     /**
      * Open the modal to create a new system
      */
-    protected newItem() {
+    protected newItem(copy: boolean = false) {
         if (this.modal_ref) { return; }
         this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
@@ -45,8 +45,8 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineUser(),
-                service: this._service.Users
+                item: copy ? new EngineUser({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineUser(),
+                service: this._service.Domains
             }
         });
         this.modal_ref.componentInstance.event.subscribe(event => {

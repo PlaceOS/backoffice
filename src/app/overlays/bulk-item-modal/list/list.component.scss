@@ -1,0 +1,13 @@
+
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    button {
+        min-width: 8em;
+        margin: .5em .25em 0;
+    }
+}

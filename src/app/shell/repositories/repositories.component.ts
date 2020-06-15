@@ -53,7 +53,7 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
     /**
      * Open the modal to create a new repository
      */
-    protected newItem() {
+    protected newItem(copy: boolean = false) {
         if (this.modal_ref) { return; }
         this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
@@ -61,8 +61,8 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineRepository(),
-                service: this._service.Repositories
+                item: copy ? new EngineRepository({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineRepository(),
+                service: this._service.Domains
             }
         });
         this.subscription('modal_event', this.modal_ref.componentInstance.event.subscribe(event => {

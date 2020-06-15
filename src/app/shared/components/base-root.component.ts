@@ -138,6 +138,8 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective im
             });
         } else if (event.type === 'new') {
             this.newItem();
+        } else if (event.type === 'copy') {
+            this.newItem(true);
         } else if (event.type === 'edit') {
             this.editItem();
         } else if (event.type === 'delete' && this.item) {
@@ -148,7 +150,7 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective im
     /**
      * Open create modal for a new item
      */
-    protected newItem() {}
+    protected newItem(copy: boolean = false) {}
 
     /**
      * Open edit modal for active item

@@ -1,6 +1,6 @@
 
 import { FormControl, Validators, FormGroup } from '@angular/forms';
-import { EngineModule, EngineSystem, EngineDriver, EncryptionLevel, EngineDriverRole } from '@placeos/ts-client';
+import { EngineModule, EngineSystem, EngineDriver, EngineDriverRole } from '@placeos/ts-client';
 
 import { FormDetails, validateYAML } from './systems.utilities';
 import { HashMap } from '../types.utilities';
@@ -76,7 +76,7 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
 export function resetModuleFormValidators(fields: HashMap<FormControl>) {
     fields.ip.setValidators([validateIpAddress]),
     fields.port.setValidators([Validators.min(1), Validators.max(65535)]),
-    fields.uri.setValidators([Validators.pattern('\w+:(\/?\/?)[^\s]+')]),
+    fields.uri.setValidators([validateURI]),
     fields.settings_string.setValidators([validateYAML]),
     fields.system.setValidators([]),
     fields.driver.setValidators([Validators.required])

@@ -50,16 +50,16 @@ export class ModulesComponent extends BaseRootComponent<EngineModule> {
     /**
      * Open the modal to create a new system
      */
-    protected newItem() {
-        if (this.modal_ref) { return }
+    protected newItem(copy: boolean = false) {
+        if (this.modal_ref) { return; }
         this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
             width: 'auto',
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineModule(),
-                service: this._service.Modules
+                item: copy ? new EngineModule({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineModule(),
+                service: this._service.Domains
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe((event) => {

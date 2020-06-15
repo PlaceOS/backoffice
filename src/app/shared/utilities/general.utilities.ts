@@ -68,10 +68,11 @@ export function padZero(value: number, length: number): string {
  * @param key Key on array objects to compare for uniqueness
  */
 export function unique(array: any[], key: string = '') {
-    return array.filter((element, index) =>
-        (key
-            ? array.findIndex(i => i[key] === element[key])
-            : array.findIndex(item => item === element)) === index
+    return array.filter(
+        (element, index) =>
+            (key
+                ? array.findIndex((i) => i[key] === element[key])
+                : array.findIndex((item) => item === element)) === index
     );
 }
 
@@ -129,7 +130,7 @@ export function filterList<T = HashMap>(
     parts.sort((a, b) => b.word.length - a.word.length || a.word.localeCompare(b.word));
     const item_list = JSON.parse(JSON.stringify(items || []));
     if (filter) {
-        results = item_list.filter(item => {
+        results = item_list.filter((item) => {
             let match_count = 0;
             item.match_index = 65535;
             item.match = '';
@@ -139,7 +140,7 @@ export function filterList<T = HashMap>(
                 field_list[f] = {
                     value: (item[f] || '').toLowerCase(),
                     index: 65536,
-                    matched: 0
+                    matched: 0,
                 };
             }
             // Search for matches with the tokenised filter string
@@ -301,11 +302,11 @@ export function copyToClipboard(value: string) {
 export function csvToJson(csv: string, seperator: string = ',') {
     const lines = csv.split('\n');
     let fields = lines.splice(0, 1)[0].split(seperator);
-    fields = fields.map(v => v.replace('\r', ''));
+    fields = fields.map((v) => v.replace('\r', ''));
     const list: any[] = [];
     for (const line of lines) {
         let parts = line.split(seperator);
-        parts = parts.map(v => v.replace('\r', ''));
+        parts = parts.map((v) => v.replace('\r', ''));
         /* istanbul ignore else */
         if (parts.length >= fields.length) {
             const item: any = {};
@@ -314,8 +315,11 @@ export function csvToJson(csv: string, seperator: string = ',') {
                 part = parts[i];
                 /* istanbul ignore else */
                 if (part !== undefined) {
-                    item[(fields[i] || '').split(' ').join('_').toLowerCase()] = JSON.parse(part);
-
+                    console.log('Part:', fields[i], part);
+                    let value = '';
+                    try { value = JSON.parse(part) }
+                    catch (e) { value = part; }
+                    item[(fields[i] || '').split(' ').join('_').toLowerCase()] = value;
                 }
             }
             list.push(item);
@@ -325,18 +329,28 @@ export function csvToJson(csv: string, seperator: string = ',') {
     return list;
 }
 
-
 /**
  * Convert javascript array to CSV string
  * @param json Javascript array to convert
+ * @param use_keys Fields in the objects to use in the CSV output
+ * @param seperator Seperator between field values in the CSV data
  */
-export function jsonToCsv(json: HashMap[], ignore_keys: string[] = [], seperator: ',' | '\t') {
+export function jsonToCsv(json: HashMap[], use_keys?: string[], seperator = ',') {
     /* istanbul ignore else */
     if (json instanceof Array && json.length > 0) {
         const keys = Object.keys(json[0]);
-        const valid_keys = keys.filter((key) => ignore_keys.indexOf(key) < 0 && json[0].hasOwnProperty(key));
-        return `${valid_keys.join(seperator)}\n${json
-            .map((item) => valid_keys.map((key) => JSON.stringify(item[key])).join(seperator))
+        const valid_keys = keys.filter(
+            (key) => (!use_keys || use_keys.includes(key)) && json[0].hasOwnProperty(key)
+        );
+        console.log('Valid Keys:', valid_keys);
+        return `\uFEFF${valid_keys.join(seperator)}\n${json
+            .map((item) =>
+                valid_keys
+                    .map((key) =>
+                        item[key] instanceof Object ? JSON.stringify(item[key]) : item[key]
+                    )
+                    .join(seperator)
+            )
             .join('\n')}`;
     }
     return '';

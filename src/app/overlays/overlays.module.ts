@@ -21,6 +21,7 @@ import { CsvUploadComponent } from './bulk-item-modal/csv-upload/csv-upload.comp
 import { MatchFieldsComponent } from './bulk-item-modal/match-fields/match-fields.component';
 import { ListComponent } from './bulk-item-modal/list/list.component';
 import { StatusListComponent } from './bulk-item-modal/status-list/status-list.component';
+import { DuplicateModalComponent } from './duplicate-modal/duplicate-modal.component';
 
 
 const OVERLAYS: Type<any>[] = [
@@ -44,7 +45,8 @@ const OVERLAYS: Type<any>[] = [
         CsvUploadComponent,
         MatchFieldsComponent,
         ListComponent,
-        StatusListComponent
+        StatusListComponent,
+        DuplicateModalComponent
     ],
     imports: [
         CommonModule,

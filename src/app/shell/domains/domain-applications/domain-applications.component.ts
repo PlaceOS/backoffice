@@ -10,9 +10,10 @@ import {
     ConfirmModalData,
     CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, HashMap } from 'src/app/shared/utilities/types.utilities';
 
 import * as dayjs from 'dayjs';
+import { copyToClipboard } from 'src/app/shared/utilities/general.utilities';
 
 @Component({
     selector: 'domain-applications',
@@ -24,6 +25,8 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
     @Input() public item: EngineDomain;
     /** List of applications associated with the active domain */
     public application_list: EngineApplication[];
+
+    public show_secret: HashMap<boolean> = {};
 
     constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
@@ -43,6 +46,12 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
         if (changes.item) {
             this.loadApplications();
         }
+    }
+
+    public copySecret(item: EngineApplication) {
+        this.show_secret[item.id] = false;
+        copyToClipboard(item.secret);
+        this._service.notifyInfo('Copied client secret to clipboard');
     }
 
     public loadApplications(offset: number = 0) {
