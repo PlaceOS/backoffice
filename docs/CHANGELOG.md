@@ -1,3 +1,19 @@
+# [1.4.0](https://github.com/PlaceOS/backoffice/compare/v1.3.1...v1.4.0) (2020-06-15)
+
+
+### Bug Fixes
+
+* **domains:** allow viewing client id and secret on listing ([70f1256](https://github.com/PlaceOS/backoffice/commit/70f12566d0d2b4387027a892791ed04da59a8199)), closes [#64](https://github.com/PlaceOS/backoffice/issues/64)
+* **module:** fix validator for uri ([b8630ff](https://github.com/PlaceOS/backoffice/commit/b8630ffb77e98720c04cfa1dcd44ccd073f84506))
+* **repo:** fix editing commits for interface repos ([aee7dee](https://github.com/PlaceOS/backoffice/commit/aee7deebe566727767233b0ad6a6f42b1fc7a134))
+
+
+### Features
+
+* add logic to duplicate items ([103056d](https://github.com/PlaceOS/backoffice/commit/103056d065d41e208bfe59ec3849d0c343dfd423))
+* allow downloading items as tsv template files ([093d61c](https://github.com/PlaceOS/backoffice/commit/093d61c4cb22cc9af10555b124f68b8f2a24d4c8))
+* **bulk-upload:** finish basic logic for bulk upload ([2f8b243](https://github.com/PlaceOS/backoffice/commit/2f8b2434734b90f0cd9e6ce86abdf0a05ae7f11b))
+
 ## [1.3.1](https://github.com/PlaceOS/backoffice/compare/v1.3.0...v1.3.1) (2020-06-05)
 
 
