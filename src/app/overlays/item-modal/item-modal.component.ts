@@ -151,6 +151,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
     }
 
     public ngOnInit(): void {
+        console.log('form', this._data);
         this.item = this._data.item;
         this.edit = !!this._data.item.id;
         this.form = this.generateFormData();
@@ -164,6 +165,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
      * Save changes and create item if it does not exist
      */
     public submit() {
+        console.log('form 1', this.form);
         this.form.markAllAsTouched();
         if (this.item && this.form.valid) {
             this.loading = `${this.item.id ? 'Updating' : 'Creating'} ${this.name}...`;
@@ -172,8 +174,10 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
                 this.event.emit({ reason: 'action', metadata: this.form.value });
                 return;
             }
+            console.log('form 2', this.form, this.item);
             this.item.save().then(
                 item => {
+                    console.log('form 3', item);
                     this.result = item;
                     this._dialog_ref.disableClose = false;
                     this.event.emit({ reason: 'done', metadata: { item } });

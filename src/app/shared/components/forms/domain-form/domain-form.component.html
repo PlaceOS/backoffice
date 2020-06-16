@@ -23,10 +23,10 @@
                     </mat-error>
                 </mat-form-field>
             </div>
-            <div class="field" *ngIf="form.controls.dom">
+            <div class="field" *ngIf="form.controls.domain">
                 <label
                     for="domain"
-                    [class.error]="form.controls.dom.invalid && form.controls.dom.touched"
+                    [class.error]="form.controls.domain.invalid && form.controls.domain.touched"
                     i18n="@@domainLabel"
                 >
                     Domain:
@@ -37,9 +37,9 @@
                         name="domain"
                         placeholder="Domain e.g localhost"
                         i18n="@@domainPlaceholder"
-                        formControlName="dom"
+                        formControlName="domain"
                     />
-                    <mat-error *ngIf="form.controls.dom.invalid" i18n="@@domainError">
+                    <mat-error *ngIf="form.controls.domain.invalid" i18n="@@domainError">
                         A valid Domain is required
                     </mat-error>
                 </mat-form-field>

@@ -10,7 +10,7 @@ export function generateDomainFormFields(authority: EngineDomain): FormDetails {
     }
     const fields: HashMap<FormControl> = {
         name: new FormControl(authority.name || '', [Validators.required]),
-        dom: new FormControl(authority.dom || '', [Validators.required]),
+        domain: new FormControl(authority.domain || '', [Validators.required]),
         login_url: new FormControl(authority.login_url || ''),
         logout_url: new FormControl(authority.logout_url || ''),
         config: new FormControl(authority.config || ''),

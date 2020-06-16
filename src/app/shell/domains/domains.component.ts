@@ -68,6 +68,8 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
      */
     protected newItem(copy: boolean = false) {
         if (this.modal_ref) { return; }
+        console.log('form 0', this.item);
+        console.log('test form:', new EngineDomain())
         this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
             width: 'auto',
