@@ -48,6 +48,7 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
     }
 
     protected loadValues() {
+        if(!this.item){ return; }
         let query: any = { offset: 0, limit: 1, owner: this.item.id };
         // Get application count
         this._service.Applications.query(query).then(
@@ -68,8 +69,6 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
      */
     protected newItem(copy: boolean = false) {
         if (this.modal_ref) { return; }
-        console.log('form 0', this.item);
-        console.log('test form:', new EngineDomain())
         this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
             width: 'auto',
