@@ -58,7 +58,7 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
             maxWidth: 'calc(100vw - 2em)',
             data: {
                 item: copy ? new EngineTrigger({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineTrigger(),
-                service: this._service.Domains
+                service: this._service.Triggers
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {

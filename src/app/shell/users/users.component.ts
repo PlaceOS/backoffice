@@ -46,7 +46,7 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
             maxWidth: 'calc(100vw - 2em)',
             data: {
                 item: copy ? new EngineUser({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineUser(),
-                service: this._service.Domains
+                service: this._service.Users
             }
         });
         this.modal_ref.componentInstance.event.subscribe(event => {

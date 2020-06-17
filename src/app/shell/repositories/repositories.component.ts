@@ -62,7 +62,7 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
             maxWidth: 'calc(100vw - 2em)',
             data: {
                 item: copy ? new EngineRepository({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineRepository(),
-                service: this._service.Domains
+                service: this._service.Repositories
             }
         });
         this.subscription('modal_event', this.modal_ref.componentInstance.event.subscribe(event => {
