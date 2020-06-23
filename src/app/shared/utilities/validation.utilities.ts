@@ -7,9 +7,12 @@ export const validateIpAddress = (ctrl) =>
         ? null
         : { pattern: true };
 
-export const validateURI = (ctrl) =>{
-    console.log('Value:', ctrl.value);
-    return /\w+:(\/?\/?)[^\s]+?/gm.test(ctrl.value || '') ? null : { pattern: true };
+export const validateURI = (ctrl) => {
+    if (!ctrl.value) {
+        return null;
+    } else {
+        return /\w+:(\/?\/?)[^\s]+?/gm.test(ctrl.value) ? null : { pattern: true };
+    }
 }
 
 export const validateURL = Validators.pattern(

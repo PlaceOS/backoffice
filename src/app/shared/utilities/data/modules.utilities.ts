@@ -42,11 +42,13 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
             )
         );
         subscriptions.push(
-            fields.driver.valueChanges.subscribe((value: EngineDriver) =>{
+            fields.driver.valueChanges.subscribe((value: EngineDriver) => {
                 module.storePendingChange('driver_id', value.id);
                 fields.name.setValue(value.name || value.module_name);
-                fields.uri.setValue(value.default_uri);
-                fields.port.setValue(value.default_port || 1)
+                if (value.default_uri) {
+                    fields.uri.setValue(value.default_uri);
+                }
+                fields.port.setValue(value.default_port || 1);
                 resetModuleFormValidators(fields);
                 switch (value.role) {
                     case EngineDriverRole.Websocket:
@@ -58,7 +60,7 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
                         fields.port.setValidators([Validators.min(1), Validators.max(65535), Validators.required]);
                         break;
                     case EngineDriverRole.Logic:
-                        fields.system.setValidators([Validators.required])
+                        fields.system.setValidators([Validators.required]);
                         break;
                 }
             })
@@ -74,10 +76,10 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
 }
 
 export function resetModuleFormValidators(fields: HashMap<FormControl>) {
-    fields.ip.setValidators([validateIpAddress]),
-    fields.port.setValidators([Validators.min(1), Validators.max(65535)]),
-    fields.uri.setValidators([validateURI]),
-    fields.settings_string.setValidators([validateYAML]),
-    fields.system.setValidators([]),
-    fields.driver.setValidators([Validators.required])
+    fields.ip.setValidators([validateIpAddress]);
+    fields.port.setValidators([Validators.min(1), Validators.max(65535)]);
+    fields.uri.setValidators([validateURI]);
+    // fields.settings_string.setValidators([validateYAML]);
+    fields.system.setValidators([]);
+    fields.driver.setValidators([Validators.required]);
 }
