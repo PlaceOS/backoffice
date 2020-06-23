@@ -12,7 +12,7 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
     }
     const fields: HashMap<FormControl> = {
         ip: new FormControl(module.ip || '', [validateIpAddress]),
-        port: new FormControl(module.port || '', [Validators.min(1), Validators.max(65535)]),
+        port: new FormControl(module.port || null, [Validators.min(1), Validators.max(65535)]),
         tls: new FormControl(module.tls || false),
         udp: new FormControl(module.udp || false),
         makebreak: new FormControl(module.makebreak || false),
@@ -49,10 +49,12 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
                 fields.port.setValue(value.default_port || 1);
                 resetModuleFormValidators(fields);
                 switch (value.role) {
+                    case EngineDriverRole.Service:
                     case EngineDriverRole.Websocket:
                         fields.uri.setValidators([Validators.required, validateURI]);
                         fields.udp.setValue(false);
                         break;
+                    case EngineDriverRole.Device:
                     case EngineDriverRole.SSH:
                         fields.ip.setValidators([validateIpAddress, Validators.required]);
                         fields.port.setValidators([Validators.min(1), Validators.max(65535), Validators.required]);
