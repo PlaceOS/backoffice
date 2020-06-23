@@ -30,6 +30,23 @@
                 <mat-error i18n="@@zoneNameError">Zone name is required</mat-error>
             </mat-form-field>
         </div>
+        <div class="field" *ngIf="form.controls.display_name">
+            <label
+                for="zone-display"
+                [class.error]="form.controls.display_name.invalid && form.controls.display_name.touched"
+            >
+                Display Name:
+            </label>
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="zone-display"
+                    placeholder="Zone display name"
+                    i18n-placeholder="@@zoneDisplayNamePlaceholder"
+                    formControlName="display_name"
+                />
+            </mat-form-field>
+        </div>
         <div class="field" *ngIf="form.controls.tags">
             <label
                 for="system-email"

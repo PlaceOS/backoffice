@@ -19,7 +19,7 @@ export class ZoneFormComponent extends BaseDirective {
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA];
     /** Function to exclude zones */
-    public readonly exclude = (zone: EngineZone) => zone.id === this.form.controls.id.value
+    public readonly exclude = (zone: EngineZone) => zone.id === this.form.controls.id.value;
 
     /** Service for handling zones */
     public get zone_service(): EngineServiceLike {
