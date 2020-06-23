@@ -45,9 +45,7 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
             fields.driver.valueChanges.subscribe((value: EngineDriver) => {
                 module.storePendingChange('driver_id', value.id);
                 fields.name.setValue(value.name || value.module_name);
-                if (value.default_uri) {
-                    fields.uri.setValue(value.default_uri);
-                }
+                fields.uri.setValue(value.default_uri);
                 fields.port.setValue(value.default_port || 1);
                 resetModuleFormValidators(fields);
                 switch (value.role) {
