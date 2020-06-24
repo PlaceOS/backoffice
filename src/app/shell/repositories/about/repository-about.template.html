@@ -26,6 +26,10 @@
             <div class="value"><a [href]="item.uri | safe:'url'">{{ item.uri || 'No URI set' }}</a></div>
         </div>
         <div class="field">
+            <label i18n="@@repoUriLabel">Commit hash:</label>
+            <div class="value">{{ item.commit_hash || 'No Commit hash set' }}</div>
+        </div>
+        <div class="field">
             <label i18n="@@descriptionLabel">Description:</label>
             <div class="value">{{ item.description || 'No description' }}</div>
         </div>
