@@ -1,4 +1,35 @@
 <div class="container" *ngIf="item">
+    <section class="details">
+        <div class="field" *ngIf="item.notes">
+            <label i18n="@moduleNotesLabel">Notes:</label>
+            <div class="value">{{ item.notes }}</div>
+        </div>
+        <div class="field" *ngIf="item.ip">
+            <label i18n="@moduleIPLabel">IP:</label>
+            <div class="value">{{ item.ip }}</div>
+        </div>
+        <div class="field" *ngIf="item.port">
+            <label i18n="@modulePortLabel">Port:</label>
+            <div class="value">{{ item.port }}</div>
+        </div>
+        <div class="field">
+            <label i18n="@moduleTLSLabel">TLS:</label>
+            <div class="value">{{ item.tls }}</div>
+        </div>
+        <div class="field">
+            <label i18n="@moduleUDPLabel">UDP:</label>
+            <div class="value">{{ item.udp }}</div>
+        </div>
+        <div class="field" *ngIf="item.created_at">
+            <label i18n="@@moduleCreatedAtLabel">Created:</label>
+            <div class="value">{{ item.created_at * 1000 | dateFrom }}</div>
+        </div>
+        <div class="field" *ngIf="item.updated_at">
+            <label i18n="@moduleUpdatedAtLabel">Updated:</label>
+            <div class="value">{{ item.updated_at * 1000 | dateFrom }}</div>
+        </div>
+    </section>
+    <hr />
     <div class="settings">
         <header *ngIf="item.driver"  i18n="@@moduleDetailsDriver">
             Driver:&nbsp;<span>

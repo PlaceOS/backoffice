@@ -33,6 +33,14 @@
             <label i18n="@@descriptionLabel">Description:</label>
             <div class="value">{{ item.description || 'No description' }}</div>
         </div>
+        <div class="field">
+            <label i18n="@@repoCreatedAtLabel">Created:</label>
+            <div class="value">{{ item.created_at * 1000 | dateFrom }}</div>
+        </div>
+        <div class="field">
+            <label i18n="@@repoUpdatedAtLabel">Updated:</label>
+            <div class="value">{{ item.updated_at * 1000 | dateFrom }}</div>
+        </div>
     </section>
 </div>
 <ng-template #spinner>

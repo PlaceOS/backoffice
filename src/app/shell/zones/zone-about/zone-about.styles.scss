@@ -30,14 +30,29 @@ section {
     padding: .5em .25em;
 }
 
-.tags {
-    display: flex;
+.details {
+    .field {
+        display: flex;
+        align-items: center;
+        margin: .25em 0;
+
+        .value {
+            padding: 0 .5em;
+            user-select: all;
+        }
+    }
 }
 
 label {
     font-size: .8em;
     font-weight: 500;
-    padding: .75em .5em;
+}
+
+.tags {
+    display: flex;
+    label {
+        padding: .75em .5em;
+    }
 }
 
 .padded {
