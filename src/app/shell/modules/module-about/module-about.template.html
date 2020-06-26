@@ -47,10 +47,10 @@
             <button
                 mat-button
                 [disabled]="stopping"
-                (tapped)="item.running ? stopModule(): startModule()"
+                (tapped)="item.connected ? stopModule(): startModule()"
             >
                 <div class="text" *ngIf="!stopping"  i18n="@@moduleStateToggle">
-                    { item.running, select, true { Stop Module } false { Start Module } }
+                    { item.connected, select, true { Stop Module } false { Start Module } }
                 </div>
                 <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
             </button>

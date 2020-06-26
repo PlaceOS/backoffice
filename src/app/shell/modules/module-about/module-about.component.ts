@@ -99,7 +99,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
             () => {
                 this.stopping = false;
                 this._service.notifySuccess('Module successfully stopped');
-                (this.item as any).running = false;
+                (this.item as any).connected = false;
             },
             err => {
                 this.stopping = false;
@@ -122,7 +122,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
             () => {
                 this.stopping = false;
                 this._service.notifySuccess('Module successfully started');
-                (this.item as any).running = true;
+                (this.item as any).connected = true;
             },
             err => {
                 this.stopping = false;

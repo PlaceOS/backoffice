@@ -14,11 +14,11 @@
                 </div>
                 <div
                     class="chip connect"
-                    *ngIf="item.running !== null && item.running !== undefined"
-                    [class.active]="item.running"
+                    *ngIf="item.connected !== null && item.connected !== undefined"
+                    [class.active]="item.connected"
                     i18n="@@onlineState"
                 >
-                    { item.running, select, true { Online } false { Offline } other { Other } }
+                    { item.connected, select, true { Online } false { Offline } other { Other } }
                 </div>
                 <div class="chip secure" *ngIf="item.tls">
                     <div class="icon"><i class="backoffice-lock"></i></div>
