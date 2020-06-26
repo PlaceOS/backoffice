@@ -44,7 +44,7 @@ export class EngineDetailsComponent extends BaseDirective implements OnInit {
     }
 
     public get backoffice_version() {
-        return VERSION.semver.version;
+        return VERSION.semver ? VERSION.semver.version : '';
     }
 
     public get backoffice_build() {
