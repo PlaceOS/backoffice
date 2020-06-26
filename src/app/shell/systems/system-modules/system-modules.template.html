@@ -44,18 +44,10 @@
                         </div>
                     </td>
                     <td class="small">
-                        <i
-                            *ngIf="device && item.id"
-                            binding
-                            [(model)]="device.connected"
-                            [sys]="item.id"
-                            [mod]="device_classes[device.id]"
-                            bind="connected"
-                        ></i>
                         <div
                             class="state"
-                            [class.active]="device.running && device.connected"
-                            [class.inactive]="device.running && !device.connected"
+                            [class.active]="device.running"
+                            [class.inactive]="!device.running"
                             (tapped)="power(device)"
                         ></div>
                     </td>

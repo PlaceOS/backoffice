@@ -26,9 +26,8 @@
                     <tr *ngFor="let item of device_list">
                         <td class="small">
                             <div class="state"
-                            [class.active]="item.running && item.connected"
-                            [class.inactive]="item.running && !item.connected"></div>
-                            <i binding [(model)]="item.connected" [sys]="item.system.id" [mod]="item.module_name" bind="connected"></i>
+                            [class.active]="item.running"
+                            [class.inactive]="item.running"></div>
                         </td>
                         <td class="flex">
                             <a [routerLink]="['/modules', item.id]" [matTooltip]="item.id">{{item.name}}</a>
