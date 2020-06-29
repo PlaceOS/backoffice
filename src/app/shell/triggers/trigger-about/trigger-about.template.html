@@ -1,4 +1,15 @@
 <div class="container" *ngIf="item">
+    <section class="details">
+        <div class="field" *ngIf="item.created_at">
+            <label i18n="@@triggerCreatedAtLabel">Created:</label>
+            <div class="value">{{ item.created_at * 1000 | dateFrom }}</div>
+        </div>
+        <div class="field" *ngIf="item.updated_at">
+            <label i18n="@triggerUpdatedAtLabel">Updated:</label>
+            <div class="value">{{ item.updated_at * 1000 | dateFrom }}</div>
+        </div>
+    </section>
+    <hr />
     <div class="settings">
         <section>
             <div class="field">

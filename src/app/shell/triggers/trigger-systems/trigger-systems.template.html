@@ -10,11 +10,11 @@
             <tbody>
                 <tr *ngFor="let trigger of system_trigger_list">
                     <td class="small">
-                        <div class="state" [class.active]="trigger.enabled"></div>
+                        <div class="state" [class.active]="trigger.bookable"></div>
                     </td>
                     <td class="flex">
-                        <a *ngIf="trigger.system_id" [routerLink]="['/systems', trigger.system_id]" [matTooltip]="trigger.system_id">
-                            {{trigger.system_name}}
+                        <a *ngIf="trigger.id" [routerLink]="['/systems', trigger.id]" [matTooltip]="trigger.id">
+                            {{trigger.name}}
                         </a>
                     </td>
                     <td>{{ +(trigger.created_at) * 1000 | dateFrom }}</td>

@@ -1,5 +1,13 @@
 <div class="container" *ngIf="item">
     <section>
+        <div class="field" *ngIf="item.default_uri">
+            <label i18n="@@driverDefaultURILabel">Default URI:</label>
+            <div class="value">{{ item.default_uri }}</div>
+        </div>
+        <div class="field" *ngIf="item.default_port">
+            <label i18n="@@driverDefaultPortLabel">Default Port Number:</label>
+            <div class="value">{{ item.default_port }}</div>
+        </div>
         <div class="field">
             <label  i18n="@@driverDetailsCompiled">Compiled:</label>
             <div class="value">{{ compiled || 'false' }}</div>
@@ -16,6 +24,14 @@
         <div class="field">
             <label i18n="@@driverDetailsModuleName">Module Name:</label>
             <div class="value">{{ item?.module_name }}</div>
+        </div>
+        <div class="field">
+            <label i18n="@@driverCreatedAtLabel">Created:</label>
+            <div class="value">{{ item.created_at * 1000 | dateFrom }}</div>
+        </div>
+        <div class="field">
+            <label i18n="@@driverUpdatedAtLabel">Updated:</label>
+            <div class="value">{{ item.updated_at * 1000 | dateFrom }}</div>
         </div>
     </section>
     <section>

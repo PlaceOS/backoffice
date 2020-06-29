@@ -78,7 +78,7 @@
                         [class.error]="form.controls.port.invalid && form.controls.port.touched"
                         i18n="@@portLabel"
                     >
-                        Port Number<span *ngIf="role === 'ssh'">*</span>:
+                        Port Number<span *ngIf="role === 'ssh' || role === 'device'">*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -124,7 +124,7 @@
                     [class.error]="form.controls.uri.invalid && form.controls.uri.touched"
                     i18n="@@uriLabel"
                 >
-                    URI<span *ngIf="role === 'websocket'">*</span>:
+                    URI<span *ngIf="role === 'websocket' || role === 'service'">*</span>:
                 </label>
                 <mat-form-field appearance="outline">
                     <input

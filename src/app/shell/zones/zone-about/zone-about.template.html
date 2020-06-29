@@ -11,6 +11,14 @@
         <system-exec-field *ngIf="active_system && active_system.id" [system]="active_system"></system-exec-field>
     </section>
     <section class="details">
+        <div class="field" *ngIf="item.created_at">
+            <label i18n="@@zoneCreatedAtLabel">Created:</label>
+            <div class="value">{{item.created_at * 1000 | dateFrom}}</div>
+        </div>
+        <div class="field" *ngIf="item.updated_at">
+            <label i18n="@@zoneUpdatedAtLabel">Updated:</label>
+            <div class="value">{{item.updated_at * 1000 | dateFrom}}</div>
+        </div>
         <div class="field" *ngIf="item.location">
             <label i18n="@@zoneLocationLabel">Location:</label>
             <div class="value">{{item.location}}</div>

@@ -59,7 +59,7 @@ export class ModulesComponent extends BaseRootComponent<EngineModule> {
             maxWidth: 'calc(100vw - 2em)',
             data: {
                 item: copy ? new EngineModule({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineModule(),
-                service: this._service.Domains
+                service: this._service.Modules
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe((event) => {

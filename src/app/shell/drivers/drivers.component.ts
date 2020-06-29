@@ -56,7 +56,7 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
             maxWidth: 'calc(100vw - 2em)',
             data: {
                 item: copy ? new EngineDriver({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineDriver(),
-                service: this._service.Domains
+                service: this._service.Drivers
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {

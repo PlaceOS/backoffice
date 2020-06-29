@@ -39,7 +39,7 @@
         "@angular/platform-browser-dynamic": "^9.0.0",
         "@angular/router": "^9.0.0",
         "@angular/service-worker": "^9.0.0",
-        "@placeos/composer": "^2.0.0",
+        "@placeos/composer": "^2.1.2",
         "@sentry/browser": "^5.11.1",
         "monaco-editor": "^0.18.1",
         "rxjs": "~6.5.4",

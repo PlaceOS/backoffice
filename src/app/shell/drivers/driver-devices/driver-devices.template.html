@@ -26,8 +26,9 @@
                     <tr *ngFor="let item of device_list">
                         <td class="small">
                             <div class="state"
-                            [class.active]="item.running && item.connected"
-                            [class.inactive]="item.running && !item.connected"></div>
+                                [class.active]="item.running && item.connected === 'true'"
+                                [class.inactive]="item.running && item.connected === 'false'"
+                                [class.black]="!item.running"></div>
                             <i binding [(model)]="item.connected" [sys]="item.system.id" [mod]="item.module_name" bind="connected"></i>
                         </td>
                         <td class="flex">

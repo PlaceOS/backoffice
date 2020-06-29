@@ -26,6 +26,14 @@
             <label i18n="@@systemPanelCountLabel">Installed Touch Panels:</label>
             <div class="value">{{item.installed_ui_devices}}</div>
         </div>
+        <div class="field" *ngIf="item.created_at">
+            <label i18n="@@systemCreatedAtLabel">Created:</label>
+            <div class="value">{{ item.created_at * 1000 | dateFrom }}</div>
+        </div>
+        <div class="field" *ngIf="item.updated_at">
+            <label i18n="@systemUpdatedAtLabel">Updated:</label>
+            <div class="value">{{ item.updated_at * 1000 | dateFrom }}</div>
+        </div>
     </section>
     <hr />
     <header class="settings" i18n="@@settingsLabel">Settings</header>

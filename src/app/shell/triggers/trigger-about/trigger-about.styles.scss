@@ -106,3 +106,21 @@ header {
     width: 100%;
     border-radius: 4px;
 }
+
+.details {
+    .field {
+        display: flex;
+        align-items: center;
+        margin: .25em 0;
+
+        .value {
+            padding: 0 .5em;
+            user-select: all;
+        }
+    }
+
+    label {
+        font-size: .8em;
+        font-weight: 500;
+    }
+}
