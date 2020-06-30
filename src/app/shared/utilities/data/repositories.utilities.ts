@@ -33,7 +33,7 @@ export function generateRepositoryFormFields(repository: EngineRepository): Form
     }
     fields.branch.disable();
     if (!repository.id) {
-        repository.storePendingChange('commit_hash', 'head');
+        repository.storePendingChange('commit_hash', 'HEAD');
     } else {
         delete fields.folder_name;
         delete fields.uri;
