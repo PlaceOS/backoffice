@@ -4,6 +4,7 @@ import { EngineDriver, EngineRepository, EngineDriverRole } from '@placeos/ts-cl
 
 import { FormDetails } from './systems.utilities';
 import { HashMap } from '../types.utilities';
+import { validateURI } from '../validation.utilities';
 
 export interface DriverInitData {
     repo: EngineRepository;
@@ -22,7 +23,7 @@ export function generateDriverFormFields(driver: EngineDriver): FormDetails {
         name: new FormControl(driver.name || '', [Validators.required]),
         role: new FormControl(driver.role || EngineDriverRole.Logic),
         module_name: new FormControl(driver.module_name || '', [Validators.required]),
-        default_uri: new FormControl(driver.default_uri || ''),
+        default_uri: new FormControl(driver.default_uri || '', [validateURI]),
         default_port: new FormControl(driver.default_port || 1, [Validators.min(1), Validators.max(65535)]),
         class_name: new FormControl(driver.class_name || ''),
         description: new FormControl(driver.description || ''),

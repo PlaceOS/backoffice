@@ -35,3 +35,21 @@ header {
 section {
     padding: .5em .25em;
 }
+
+.details {
+    .field {
+        display: flex;
+        align-items: center;
+        margin: .25em 0;
+
+        .value {
+            padding: 0 .5em;
+            user-select: all;
+        }
+    }
+
+    label {
+        font-size: .8em;
+        font-weight: 500;
+    }
+}

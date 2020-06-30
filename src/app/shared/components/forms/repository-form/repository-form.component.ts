@@ -52,7 +52,7 @@ export class RepositoryFormComponent {
     }
 
     public async loadCommits() {
-        if (this.is_edit && this.can_change_commit) {
+        if (!this.is_edit || !this.can_change_commit) {
             return;
         }
         const id = this.form.controls.id.value;

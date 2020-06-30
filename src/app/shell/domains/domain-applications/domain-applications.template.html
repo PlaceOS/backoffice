@@ -19,7 +19,7 @@
                         <td class="flex">
                             <a [href]="item.redirect_uri">{{item.redirect_uri}}</a>
                         </td>
-                        <td class="id">{{item.id}}</td>
+                        <td class="id">{{item.uid}}</td>
                         <td
                             class="secret"
                             (click)="!show_secret[item.id] ? show_secret[item.id] = true : copySecret(item)"

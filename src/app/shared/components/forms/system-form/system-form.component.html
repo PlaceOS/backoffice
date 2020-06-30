@@ -154,16 +154,15 @@
                 ></textarea>
             </mat-form-field>
         </div>
-        <div class="field" *ngIf="form.controls.tag_list">
+        <div class="field" *ngIf="form.controls.features">
             <label
-                for="system-email"
-                [class.error]="form.controls.tag_list.invalid && form.controls.tag_list.touched"
+                [class.error]="form.controls.features.invalid && form.controls.features.touched"
                 i18n="@@featuresLabel"
             >
                 Features:
             </label>
             <mat-form-field appearance="outline">
-                <mat-chip-list #chipList aria-label="Zone Tags">
+                <mat-chip-list #chipList aria-label="System features">
                     <mat-chip
                         *ngFor="let feature of feature_list"
                         [selectable]="true"

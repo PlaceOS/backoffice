@@ -74,7 +74,7 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
             maxWidth: 'calc(100vw - 2em)',
             data: {
                 item: copy ? new EngineZone({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineZone(),
-                service: this._service.Domains
+                service: this._service.Zones
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {

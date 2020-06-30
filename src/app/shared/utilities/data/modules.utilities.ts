@@ -12,7 +12,7 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
     }
     const fields: HashMap<FormControl> = {
         ip: new FormControl(module.ip || '', [validateIpAddress]),
-        port: new FormControl(module.port || '', [Validators.min(1), Validators.max(65535)]),
+        port: new FormControl(module.port || null, [Validators.min(1), Validators.max(65535)]),
         tls: new FormControl(module.tls || false),
         udp: new FormControl(module.udp || false),
         makebreak: new FormControl(module.makebreak || false),
@@ -42,23 +42,25 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
             )
         );
         subscriptions.push(
-            fields.driver.valueChanges.subscribe((value: EngineDriver) =>{
+            fields.driver.valueChanges.subscribe((value: EngineDriver) => {
                 module.storePendingChange('driver_id', value.id);
                 fields.name.setValue(value.name || value.module_name);
                 fields.uri.setValue(value.default_uri);
-                fields.port.setValue(value.default_port || 1)
+                fields.port.setValue(value.default_port || 1);
                 resetModuleFormValidators(fields);
                 switch (value.role) {
+                    case EngineDriverRole.Service:
                     case EngineDriverRole.Websocket:
                         fields.uri.setValidators([Validators.required, validateURI]);
                         fields.udp.setValue(false);
                         break;
+                    case EngineDriverRole.Device:
                     case EngineDriverRole.SSH:
                         fields.ip.setValidators([validateIpAddress, Validators.required]);
                         fields.port.setValidators([Validators.min(1), Validators.max(65535), Validators.required]);
                         break;
                     case EngineDriverRole.Logic:
-                        fields.system.setValidators([Validators.required])
+                        fields.system.setValidators([Validators.required]);
                         break;
                 }
             })
@@ -74,10 +76,10 @@ export function generateModuleFormFields(module: EngineModule): FormDetails {
 }
 
 export function resetModuleFormValidators(fields: HashMap<FormControl>) {
-    fields.ip.setValidators([validateIpAddress]),
-    fields.port.setValidators([Validators.min(1), Validators.max(65535)]),
-    fields.uri.setValidators([validateURI]),
-    fields.settings_string.setValidators([validateYAML]),
-    fields.system.setValidators([]),
-    fields.driver.setValidators([Validators.required])
+    fields.ip.setValidators([validateIpAddress]);
+    fields.port.setValidators([Validators.min(1), Validators.max(65535)]);
+    fields.uri.setValidators([validateURI]);
+    // fields.settings_string.setValidators([validateYAML]);
+    fields.system.setValidators([]);
+    fields.driver.setValidators([Validators.required]);
 }

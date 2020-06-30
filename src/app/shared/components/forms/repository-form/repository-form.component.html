@@ -11,6 +11,22 @@
                 (ngModelChange)="form.controls.commit_hash.setValue($event.id)"
             ></item-search-field>
         </div>
+        <div class="field" *ngIf="form.controls.commit_hash && is_edit">
+            <label
+                for="repository-commit"
+                i18n="@@commitLabel"
+            >Commit Hash:</label>
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="repository-commit"
+                    placeholder="Repository Commit"
+                    i18n-placeholder="@@repositoryCommitPLaceholder"
+                    formControlName="commit_hash"
+                    readonly
+                >
+            </mat-form-field>
+        </div>
         <div class="field" *ngIf="form.controls.branch">
             <label
                 for="repository-name"

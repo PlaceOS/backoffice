@@ -48,6 +48,7 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
     }
 
     protected loadValues() {
+        if(!this.item){ return; }
         let query: any = { offset: 0, limit: 1, owner: this.item.id };
         // Get application count
         this._service.Applications.query(query).then(

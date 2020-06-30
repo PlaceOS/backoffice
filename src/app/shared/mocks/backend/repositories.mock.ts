@@ -24,7 +24,7 @@ const REPO_DATA = [
         name: 'PlaceOS Drivers',
         folder_name: 'drivers/placeos',
         uri: 'https://github.com/PlaceOS/drivers',
-        commit_hash: 'head',
+        commit_hash: 'HEAD',
         type: EngineRepositoryType.Driver,
     },
 ];

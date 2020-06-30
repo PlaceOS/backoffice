@@ -50,6 +50,10 @@ mat-form-field {
         background-color: $error;
     }
 
+    &.black {
+        background-color: #000;
+    }
+
     &.active {
         background-color: $success;
         height: .75em;

@@ -1,7 +1,7 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { EngineZone } from '@placeos/ts-client';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 
 import { EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
@@ -17,9 +17,9 @@ export class ZoneFormComponent extends BaseDirective {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
     /** List of separator characters for tags */
-    public readonly separators: number[] = [ENTER, COMMA];
+    public readonly separators: number[] = [ENTER, COMMA, SPACE];
     /** Function to exclude zones */
-    public readonly exclude = (zone: EngineZone) => zone.id === this.form.controls.id.value
+    public readonly exclude = (zone: EngineZone) => zone.id === this.form.controls.id.value;
 
     /** Service for handling zones */
     public get zone_service(): EngineServiceLike {
