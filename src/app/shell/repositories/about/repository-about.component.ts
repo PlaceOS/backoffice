@@ -36,7 +36,10 @@ export class RepositoryAboutComponent extends BaseDirective implements OnInit {
         this.pulling = true;
         this._service.Repositories.pullCommit(this.item.id)
             .then(
-                () => this.pulling = false,
+                (resp: any) => {
+                    this.pulling = false;
+                    this._service.notifyInfo(`Pulled down commit ${resp.commit_hash} for ${this.item.name}`);
+                },
                 err => {
                     this.pulling = false;
                     this._service.notifyError(`Error pulling latest commit. Error: ${JSON.stringify(err.response || err.message || err)}`);
