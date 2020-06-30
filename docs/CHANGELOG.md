@@ -1,3 +1,33 @@
+# [1.5.0](https://github.com/PlaceOS/backoffice/compare/v1.4.0...v1.5.0) (2020-06-30)
+
+
+### Bug Fixes
+
+* **device:** add not running and no connected value for state device [#61](https://github.com/PlaceOS/backoffice/issues/61) ([3c1b530](https://github.com/PlaceOS/backoffice/commit/3c1b5301c6df2674d6c38cd31fcb47111cc3c634))
+* **device:** fix state comparison, string binding ([a419b8d](https://github.com/PlaceOS/backoffice/commit/a419b8db6f491714967ad922f3e87eb52945a07b))
+* **domain:** minor fix to application id display ([15cdf39](https://github.com/PlaceOS/backoffice/commit/15cdf39b314883cbafc0e47f2bd8fb568795649c))
+* **domains:** fix showing new applications now showing after creation ([f68222f](https://github.com/PlaceOS/backoffice/commit/f68222f162d2cae17838f0fbeb8add083aa4e602)), closes [#84](https://github.com/PlaceOS/backoffice/issues/84)
+* **engine:** null state [#80](https://github.com/PlaceOS/backoffice/issues/80) ([1b6c68f](https://github.com/PlaceOS/backoffice/commit/1b6c68f12d8bf1cc5792149086117ac96d02937a))
+* **module:** fix validator for uri ([729cfba](https://github.com/PlaceOS/backoffice/commit/729cfba451b2d3b69c41a86d760be4423fc053fc))
+* **modules:** remove unnecessary code ([b7b2c38](https://github.com/PlaceOS/backoffice/commit/b7b2c38161050b1e62b2435f99898417cf1ee772))
+* **repo:** add readonly commit hash input and fix loadCommits ([2b3e021](https://github.com/PlaceOS/backoffice/commit/2b3e02186bdec2ce7a4572d9b9c3af111f7a3551))
+* domain issue fix [#65](https://github.com/PlaceOS/backoffice/issues/65) ([604e8d3](https://github.com/PlaceOS/backoffice/commit/604e8d3bf4261fbc9bc70a2cea624d2fb3a0bf01))
+* modal headers - incorrect service refs [#67](https://github.com/PlaceOS/backoffice/issues/67) ([dc2b72d](https://github.com/PlaceOS/backoffice/commit/dc2b72dbd8ffa1750321d4c43c850df1bdaee367))
+* **repo:** i18n commit hash label ([db04c0b](https://github.com/PlaceOS/backoffice/commit/db04c0bc53d81c053b70e3f7a23adb21b0dbca70))
+* **repos:** disable editing the uri field ([c18be22](https://github.com/PlaceOS/backoffice/commit/c18be221a43c2dd9242e4a0954ed7918a7319edb)), closes [#81](https://github.com/PlaceOS/backoffice/issues/81)
+* **repos:** uppercase default commit ([6dfc133](https://github.com/PlaceOS/backoffice/commit/6dfc1331b3801603b6b36930e275e4a2c4f007cd)), closes [#86](https://github.com/PlaceOS/backoffice/issues/86)
+* **system:** allow edit of features [#69](https://github.com/PlaceOS/backoffice/issues/69) ([5f99c14](https://github.com/PlaceOS/backoffice/commit/5f99c1409bcabbe1d3f3890a3f4f1b985e0a67c8))
+* **systems:** fix handling feature list that is a string not an array ([4db36ab](https://github.com/PlaceOS/backoffice/commit/4db36aba0f628152279526b2f6d209753add3174)), closes [#85](https://github.com/PlaceOS/backoffice/issues/85)
+* **trigger:** map to correct fields of trigger [#77](https://github.com/PlaceOS/backoffice/issues/77) ([2592d64](https://github.com/PlaceOS/backoffice/commit/2592d642fc0dac9193faca65fe18314e0e887706))
+* **websocket:** bumped ts-client composer version and removed extra logs ([de39ec5](https://github.com/PlaceOS/backoffice/commit/de39ec5e1bc21f0c032c60227d50559866d0804f))
+
+
+### Features
+
+* **modules:** add validators for service and device drivers ([19e7e0d](https://github.com/PlaceOS/backoffice/commit/19e7e0d68231d78d9f5a3a72121ee3617dea6da6))
+* **repo:** display commit_hash in about tab ([abde21a](https://github.com/PlaceOS/backoffice/commit/abde21a762abce7ef108ff7d19372763171638cf)), closes [#75](https://github.com/PlaceOS/backoffice/issues/75)
+* **zone:** add display_name field ([4d809fe](https://github.com/PlaceOS/backoffice/commit/4d809fe754be4135158862eaa932258862b05c39))
+
 # [1.4.0](https://github.com/PlaceOS/backoffice/compare/v1.3.1...v1.4.0) (2020-06-15)
 
 
