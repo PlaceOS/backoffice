@@ -93,7 +93,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
         });
         this.subscription('item-form', ref.componentInstance.event.subscribe((event) => {
             if (event.reason === 'done') {
-                this.loadApplications();
+                this.application_list = [...this.application_list, event.metadata.item];
                 this._service.set('APP_LIST_CHANGE', dayjs().valueOf());
             }
         }));
@@ -116,7 +116,11 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
             });
             this.subscription('item-form', ref.componentInstance.event.subscribe((event) => {
                 if (event.reason === 'done') {
-                    this.loadApplications();
+                    const index = this.application_list.findIndex(app => app.id === event.metadata.item.id);
+                    if (index >= 0) {
+                        this.application_list.splice(index, 1, event.metadata.item);
+                        this.application_list = [...this.application_list];
+                    }
                 }
             }));
         }
