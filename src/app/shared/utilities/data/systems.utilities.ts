@@ -35,20 +35,24 @@ export function generateSystemsFormFields(system: EngineSystem): FormDetails {
         email: new FormControl(system.email || '', [Validators.email]),
         support_url: new FormControl(system.support_url || '', [Validators.pattern(URL_PATTERN)]),
         installed_ui_devices: new FormControl(system.installed_ui_devices || 0, [
-            Validators.pattern('[0-9]*')
+            Validators.pattern('[0-9]*'),
         ]),
-        features: new FormControl(system.features || []),
+        features: new FormControl(
+            (typeof system.features === 'string'
+                ? (system.features as any).split(' ')
+                : system.features) || []
+        ),
         capacity: new FormControl(system.capacity || 0, [Validators.pattern('[0-9]*')]),
         bookable: new FormControl(system.bookable || false),
         description: new FormControl(system.description || ''),
         map_id: new FormControl(system.map_id || ''),
-        zone: new FormControl('', [Validators.required])
+        zone: new FormControl('', [Validators.required]),
     };
     const subscriptions = [];
     for (const key in fields) {
         if (fields[key] && key.indexOf('settings') < 0) {
             subscriptions.push(
-                fields[key].valueChanges.subscribe(value =>
+                fields[key].valueChanges.subscribe((value) =>
                     system.storePendingChange(key as any, value)
                 )
             );
@@ -65,6 +69,6 @@ export function generateSystemsFormFields(system: EngineSystem): FormDetails {
     }
     return {
         form: new FormGroup(fields),
-        subscriptions
+        subscriptions,
     };
 }
