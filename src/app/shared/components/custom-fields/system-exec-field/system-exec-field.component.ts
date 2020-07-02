@@ -93,7 +93,7 @@ export class SystemExecFieldComponent extends BaseDirective
             mod: `${this.active_module.module}_${this.active_module.index}`,
             method: method.name,
             args: args.reduce((map, arg, index) => {
-                map[method.params[method.order[index]][1]] = arg;
+                map[method.order[index]] = arg;
                 return map;
             }, {})
         };
