@@ -40,10 +40,8 @@
                 placeholder="true/false, 'string', 123.456"
                 i18n-placeholder="@@comparedValue"
             />
+            <mat-error i18n="@@statusValueError">Valid JSON is required</mat-error>
         </mat-form-field>
-    </div>
-    <div *ngIf="form.controls.right.touched && form.controls.right.errors" class="error"  i18n="@@statusValueError">
-        A module status variable or value is required
     </div>
 </div>
 <ng-template #rhs_status_var>

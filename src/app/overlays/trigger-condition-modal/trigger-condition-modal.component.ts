@@ -6,7 +6,7 @@ import {
     EngineSystem,
     EngineTrigger,
     TriggerComparison,
-    TriggerTimeCondition
+    TriggerTimeCondition,
 } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -27,7 +27,7 @@ export interface TriggerConditionData {
 @Component({
     selector: 'trigger-condition-modal',
     templateUrl: './trigger-condition-modal.template.html',
-    styleUrls: ['./trigger-condition-modal.styles.scss']
+    styleUrls: ['./trigger-condition-modal.styles.scss'],
 })
 export class TriggerConditionModalComponent extends BaseDirective implements OnInit {
     /** Emitter for events on the modal */
@@ -76,15 +76,23 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
             this.updateTimeDependents();
         }
         this.trigger.save().then(
-            item => {
+            (item) => {
                 this.event.emit({ reason: 'done', metadata: { trigger: item } });
-                this._service.notifySuccess(`Successfully ${this.is_new ? 'added' : 'updated'} condition to trigger`);
+                this._service.notifySuccess(
+                    `Successfully ${this.is_new ? 'added' : 'updated'} condition to trigger`
+                );
                 this._dialog.close();
             },
-            err => {
+            (err) => {
                 this.trigger.clearPendingChanges();
                 this.loading = false;
-                this._service.notifyError(`Error ${this.is_new ? 'adding' : 'updating'} condition to trigger. Error: ${JSON.stringify(err.response || err.message || err)}`);
+                this._service.notifyError(
+                    `Error ${
+                        this.is_new ? 'adding' : 'updating'
+                    } condition to trigger. Error: ${JSON.stringify(
+                        err.response || err.message || err
+                    )}`
+                );
             }
         );
     }
@@ -95,13 +103,19 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
     private updateComparisons() {
         const old_values = [...this.trigger.conditions.comparisons];
         const new_value: TriggerComparison = {
-            left: this.form.controls.left.value,
+            left:
+                typeof this.form.controls.left.value === 'string'
+                    ? JSON.parse(this.form.controls.left.value)
+                    : this.form.controls.left.value,
             operator: this.form.controls.operator.value,
-            right: this.form.controls.right.value
+            right:
+                typeof this.form.controls.right.value === 'string'
+                    ? JSON.parse(this.form.controls.right.value)
+                    : this.form.controls.right.value,
         };
         if (this._data.condition) {
             const old_value = JSON.stringify(this._data.condition);
-            const index = old_values.findIndex(cmp => JSON.stringify(cmp) === old_value);
+            const index = old_values.findIndex((cmp) => JSON.stringify(cmp) === old_value);
             if (index >= 0) {
                 old_values.splice(index, 1, new_value);
             }
@@ -110,11 +124,10 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
         }
         const updated_conditions = {
             ...this.trigger.conditions,
-            comparisons: old_values
+            comparisons: old_values,
         };
         this.trigger.storePendingChange('conditions', updated_conditions);
     }
-
 
     /**
      * Update the time dependent list by replace an exisiting item or add a new item
@@ -124,12 +137,12 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
         const new_value = {
             type: this.form.controls.time_type.value,
             time: +(this.form.controls.time.value / 1000).toFixed(0),
-            cron: this.form.controls.cron.value
+            cron: this.form.controls.cron.value,
         };
         new_value.cron ? delete new_value.time : delete new_value.cron;
         if (this._data.condition) {
             const old_value = JSON.stringify(this._data.condition);
-            const index = old_values.findIndex(time => JSON.stringify(time) === old_value);
+            const index = old_values.findIndex((time) => JSON.stringify(time) === old_value);
             if (index >= 0) {
                 old_values.splice(index, 1, new_value);
             }
@@ -138,7 +151,7 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
         }
         const updated_conditions = {
             ...this.trigger.conditions,
-            time_dependents: old_values
+            time_dependents: old_values,
         };
         this.trigger.storePendingChange('conditions', updated_conditions);
     }

@@ -13,6 +13,7 @@ import {
 } from '@placeos/ts-client';
 
 import { FormDetails } from './systems.utilities';
+import { validateJSONString } from '../validation.utilities';
 
 import * as dayjs from 'dayjs';
 
@@ -90,7 +91,7 @@ export function validateCompare(control: AbstractControl) {
             const value: TriggerStatusVariable = control.value;
             return !value.mod ? { module: true } : !value.status ? { status: true } : null;
         } else {
-            return !control.value ? { required: true } : null;
+            return validateJSONString(control);
         }
     }
     return null;
