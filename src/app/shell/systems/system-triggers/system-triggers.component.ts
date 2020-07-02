@@ -27,6 +27,8 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
     @Input() public item: EngineSystem;
     /** List of triggers associated with the active system */
     public trigger_list: EngineTrigger[] = [];
+    /** List of triggers associated with the active system */
+    public filtered_triggers: EngineTrigger[] = [];
     /** Filter string for listing of triggers */
     public search_str: string;
 
@@ -59,9 +61,15 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
         this._service.Systems.listTriggers(this.item.id).then(
             list => {
                 this.trigger_list = list;
+                this.filter(this.search_str);
             },
             () => null
         );
+    }
+
+    public filter(search: string = ''): void {
+        const s = search.toLowerCase();
+        this.filtered_triggers = this.trigger_list.filter(item => item.name.toLowerCase().includes(s));
     }
 
     /**
@@ -134,6 +142,8 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                             err => {
                                 ref.componentInstance.loading = null;
                                 this._service.notifyError(`Error removing trigger. Error: ${JSON.stringify(err.response || err.message || err)}`);
+                                this.trigger_list.splice(this.trigger_list.findIndex(item => this.item.id === item.id), 1);
+                                this.filter(this.search_str);
                             },
                             () => {
                                 this._service.notifySuccess(
@@ -180,12 +190,14 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
      * Add the selected trigger to the active system
      * @param trigger Trigger to add to system
      */
-    private addTrigger(trigger: EngineTrigger): void {
-        this._service.Systems.addTrigger(this.item.id, {
+    private async addTrigger(trigger: EngineTrigger): Promise<void> {
+        const item = await this._service.Systems.addTrigger(this.item.id, {
             control_system_id: this.item.id,
             enabled: true,
             important: false,
             trigger_id: trigger.id
         });
+        this.trigger_list.push(item);
+        this.filter(this.search_str);
     }
 }

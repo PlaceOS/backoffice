@@ -11,13 +11,14 @@
                 <input
                     matInput
                     [(ngModel)]="search_str"
+                    (ngModelChange)="filter($event)"
                     name="search-filter"
                     placeholder="Filter Triggers"
                 />
             </mat-form-field>
         </section>
         <section class="list">
-            <table *ngIf="trigger_list.length > 0; else empty_state">
+            <table *ngIf="filtered_triggers.length > 0; else empty_state">
                 <thead>
                     <td class="small"></td>
                     <td class="flex" i18n="@@triggerTableName">Name</td>
@@ -26,7 +27,7 @@
                     <td class="duo"></td>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let trigger of trigger_list">
+                    <tr *ngFor="let trigger of filtered_triggers">
                         <td class="small">
                             <div class="state" [class.active]="trigger.enabled"></div>
                         </td>
@@ -53,6 +54,6 @@
 </div>
 <ng-template #empty_state>
     <div class="info-block">
-        <div class="text" i18n="@@triggerTableEmpty">No triggers for system</div>
+        <div class="text" i18n="@@triggerTableEmpty">{{ search_str ? 'No matching triggers' : 'No triggers for system' }}</div>
     </div>
 </ng-template>
