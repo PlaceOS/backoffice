@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineZone } from '@placeos/ts-client';
+import { PlaceOS, EngineZone } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -58,7 +58,7 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
         list = await this._service.Zones.query(cquery);
         this.child_count = this._service.Zones.last_total || list.length || 0;
         // Get metadata
-        const map = await this._service.Zones.listMetadata(this.item.id);
+        const map = await PlaceOS.metadata.show(this.item.id);
         this.metadata_count = Object.keys(map).length;
     }
 

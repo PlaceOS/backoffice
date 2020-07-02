@@ -1,0 +1,54 @@
+<div class="container" *ngIf="item">
+    <button mat-button (tapped)="newMetadata()" i18n="@@addMetadataAction">Add new Metadata Field</button>
+    <div class="list" *ngIf="metadata && metadata.length > 0; else empty_state">
+        <mat-accordion>
+            <ng-container *ngFor="let item of metadata">
+                <mat-expansion-panel [class.no-padding]="true" *ngIf="form_map[item.name]" [formGroup]="form_map[item.name]">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <div
+                                class="text"
+                                [matTooltip]="form_map[item.name].controls.description.value"
+                                (click)="editMetadataDetails(item); $event.stopPropagation()"
+                            >
+                                {{ form_map[item.name].controls.name.value }}
+                                <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+                            </div>
+                            <ng-container *ngIf="edited[item.name]">
+                                <button
+                                    mat-button
+                                    *ngIf="!loading[item.name]; else load_state"
+                                    (click)="$event.stopPropagation()"
+                                    (tapped)="saveMetadata(item)"
+                                    i18n="@@saveAction"
+                                >
+                                    Save
+                                </button>
+                            </ng-container>
+                            <div class="contents" *ngIf="!item.new">
+                                <button mat-icon-button (tapped)="deleteMetadata(item.name)">
+                                    <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+                                </button>
+                            </div>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="settings">
+                        <settings-form-field
+                            formControlName="details"
+                            lang="json"
+                            [readonly]="false"
+                        ></settings-form-field>
+                    </div>
+                </mat-expansion-panel>
+            </ng-container>
+        </mat-accordion>
+    </div>
+</div>
+<ng-template #empty_state>
+    <div class="info-block">
+        <div class="text" i18n="@@zoneMetadataEmpty">No zone metadata found</div>
+    </div>
+</ng-template>
+<ng-template #load_state>
+    <mat-spinner diameter="32"></mat-spinner>
+</ng-template>

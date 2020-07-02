@@ -3,15 +3,15 @@ import { PlaceOS, EngineZone, PlaceMetadata } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
-import { HashMap } from 'src/app/shared/utilities/types.utilities';
+import { HashMap } from './node_modules/src/app/shared/utilities/types.utilities';
 import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
-import { validateJSONString } from 'src/app/shared/utilities/validation.utilities';
+import { validateJSONString } from './node_modules/src/app/shared/utilities/validation.utilities';
 import { MatDialog } from '@angular/material/dialog';
-import { MetadataDetailsModalComponent } from 'src/app/overlays/metadata-details-modal/metadata-details-modal.component';
+import { MetadataDetailsModalComponent } from './node_modules/src/app/overlays/metadata-details-modal/metadata-details-modal.component';
 import {
     ConfirmModalComponent,
     CONFIRM_METADATA
-} from 'src/app/overlays/confirm-modal/confirm-modal.component';
+} from './node_modules/src/app/overlays/confirm-modal/confirm-modal.component';
 
 @Component({
     selector: 'zone-metadata',
@@ -65,7 +65,7 @@ export class ZoneMetadataComponent extends BaseDirective implements OnChanges, O
         this.generateForms();
     }
 
-    public editMetadataDetails(field: PlaceMetadata) {
+    public editMetadataDetails(field: EngineZoneMetadata) {
         const form = this.form_map[field.name];
         this._dialog.open(MetadataDetailsModalComponent, {
             maxWidth: '95vw',
@@ -114,7 +114,7 @@ export class ZoneMetadataComponent extends BaseDirective implements OnChanges, O
         );
     }
 
-    public saveMetadata(field: PlaceMetadata) {
+    public saveMetadata(field: EngineZoneMetadata) {
         const form = this.form_map[field.name];
         form.markAllAsTouched();
         if (form.valid) {
@@ -124,7 +124,7 @@ export class ZoneMetadataComponent extends BaseDirective implements OnChanges, O
                 ...value,
                 details: JSON.parse(value.details)
             }).then(
-                (item: PlaceMetadata) => {
+                (item: EngineZoneMetadata) => {
                     this.loading[field.name] = false;
                     const index = this.metadata.findIndex(i => i.name === field.name);
                     this.edited[field.name] = false;

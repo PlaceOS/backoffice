@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChange, OnInit } from '@angular/core';
-import { PlaceOS, EngineZone, PlaceMetadata } from '@placeos/ts-client';
+import { PlaceOS, EngineSystem, PlaceMetadata } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -14,12 +14,12 @@ import {
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 
 @Component({
-    selector: 'zone-metadata',
-    templateUrl: './zone-metadata.template.html',
-    styleUrls: ['./zone-metadata.styles.scss']
+    selector: 'system-metadata',
+    templateUrl: './system-metadata.template.html',
+    styleUrls: ['./system-metadata.styles.scss']
 })
 export class ZoneMetadataComponent extends BaseDirective implements OnChanges, OnInit {
-    @Input() public item: EngineZone;
+    @Input() public item: EngineSystem;
     /** List of metadata associated with the zone */
     public metadata: PlaceMetadata[] = [];
     /** Map of form field groups to metadata fields */

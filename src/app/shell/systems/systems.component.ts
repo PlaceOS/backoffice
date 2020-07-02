@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EngineSystem } from '@placeos/ts-client';
+import { PlaceOS, EngineSystem } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -25,6 +25,8 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
     public device_count: number;
     /** Number of zones for the active system */
     public zone_count: number;
+    /** Number of metadata fields for the active system */
+    public metadata_count: number;
 
     constructor(
         protected _service: ApplicationService,
@@ -41,17 +43,18 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
         this._service.title = 'Systems';
     }
 
-    protected loadValues() {
+    protected async loadValues() {
         const query: any = { offset: 0, limit: 1, sys_id: this.item.id };
         // Get trigger count
-        this._service.Systems.listTriggers(this.item.id).then(
-            list =>
-                (this.trigger_count = list.length || 0)
-        );
+        const list = await this._service.Systems.listTriggers(this.item.id);
+        this.trigger_count = list.length || 0;
         // Get device count
         this.device_count = (this.item.modules || []).length;
         // Get zone count
         this.zone_count = (this.item.zones || []).length;
+        // Get metadata
+        const map = await PlaceOS.metadata.show(this.item.id);
+        this.metadata_count = Object.keys(map).length;
     }
 
     /**
