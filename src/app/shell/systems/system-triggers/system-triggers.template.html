@@ -2,7 +2,9 @@
     <div class="settings">
         <section class="select">
             <div class="dropdown">
-                <button mat-button (tapped)="selectTriggerToAdd()" i18n="@@addTriggerAction">Add trigger</button>
+                <button mat-button (tapped)="selectTriggerToAdd()" i18n="@@addTriggerAction">
+                    Add trigger
+                </button>
             </div>
             <mat-form-field appearance="outline">
                 <div class="prefix" matPrefix>
@@ -23,18 +25,38 @@
                     <td class="small"></td>
                     <td class="flex" i18n="@@triggerTableName">Name</td>
                     <td class="count" i18n="@@triggerTableCount">Count</td>
+                    <td class="count" i18n="@@triggerTableErrors">Errors</td>
                     <td class="added" i18n="@@triggerTableAddedTime">Added</td>
                     <td class="duo"></td>
                 </thead>
                 <tbody>
                     <tr *ngFor="let trigger of filtered_triggers">
-                        <td class="small">
-                            <div class="state" [class.active]="trigger.enabled"></div>
+                        <i
+                            hidden
+                            binding
+                            [sys]="item.id"
+                            mod="_TRIGGER__1"
+                            [bind]="trigger.id"
+                            [(model)]="trigger_state[trigger.id]"
+                            (modelChange)="updateComparisons(trigger.id)"
+                        ></i>
+                        <td class="small" [matTooltip]="comparisons[trigger.id]">
+                            <div
+                                class="state"
+                                [class.active]="trigger_state[trigger.id]?.triggered"
+                            ></div>
                         </td>
                         <td class="flex">
-                            <a [routerLink]="['/triggers', trigger.id]" [matTooltip]="trigger.id">{{trigger.name}}</a>
+                            <a [routerLink]="['/triggers', trigger.id]" [matTooltip]="trigger.id"
+                                >{{trigger.name}}</a
+                            >
                         </td>
-                        <td class="count">{{ trigger.activated_count || '0' }}</td>
+                        <td class="count">{{ trigger_state[trigger.id]?.trigger_count || '0' }}</td>
+                        <td class="count" [matTooltip]="'Action Errors: ' + trigger_state[trigger.id]?.action_errors + '\nComparision Errors: ' + trigger_state[trigger.id]?.comparison_errors"
+                            >
+                                {{ (trigger_state[trigger.id]?.action_errors +
+                                trigger_state[trigger.id]?.comparison_errors) || '0' }}
+                        </td>
                         <td class="added">{{ (+trigger.created_at * 1000) | dateFrom }}</td>
                         <td class="duo">
                             <div class="actions">
@@ -54,6 +76,8 @@
 </div>
 <ng-template #empty_state>
     <div class="info-block">
-        <div class="text" i18n="@@triggerTableEmpty">{{ search_str ? 'No matching triggers' : 'No triggers for system' }}</div>
+        <div class="text" i18n="@@triggerTableEmpty">
+            {{ search_str ? 'No matching triggers' : 'No triggers for system' }}
+        </div>
     </div>
 </ng-template>

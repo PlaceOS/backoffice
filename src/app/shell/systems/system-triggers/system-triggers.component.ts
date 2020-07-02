@@ -1,21 +1,29 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ComposerService } from '@placeos/composer';
 import { EngineSystem, EngineTrigger } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
-import { MatDialog } from '@angular/material/dialog';
 import {
     SelectItemModalComponent,
     SelectItemModalData
 } from 'src/app/overlays/select-item-modal/select-item-modal.component';
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, HashMap } from 'src/app/shared/utilities/types.utilities';
 import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
     ConfirmModalData
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-import { ComposerService } from '@placeos/composer';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
+
+export interface TriggerInstanceState {
+    triggered: boolean;
+    trigger_count: number;
+    action_errors: number;
+    comparison_errors: number;
+    conditions: HashMap<boolean>;
+}
 
 @Component({
     selector: 'system-triggers',
@@ -31,6 +39,10 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
     public filtered_triggers: EngineTrigger[] = [];
     /** Filter string for listing of triggers */
     public search_str: string;
+    /** Mapping of trigger instances to their current state */
+    public trigger_state: HashMap<TriggerInstanceState> = {};
+    /** Mapping of trigger instances to their condition state list */
+    public comparisons: HashMap<string> = {};
 
     constructor(
         private _service: ApplicationService,
@@ -70,6 +82,20 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
     public filter(search: string = ''): void {
         const s = search.toLowerCase();
         this.filtered_triggers = this.trigger_list.filter(item => item.name.toLowerCase().includes(s));
+    }
+
+    public updateComparisons(id: string): void {
+        this.comparisons[id] = '';
+        if (this.trigger_state[id]) {
+            for (const key in this.trigger_state[id].conditions) {
+                if (this.trigger_state[id].conditions.hasOwnProperty(key)) {
+                    if (this.comparisons[id]) {
+                        this.comparisons[id] += '\n';
+                    }
+                    this.comparisons[id] += `${key}: ${this.trigger_state[id].conditions[key]}`;
+                }
+            }
+        }
     }
 
     /**
