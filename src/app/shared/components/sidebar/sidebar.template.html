@@ -60,7 +60,7 @@
                 (scrolledIndexChange)="atBottom()"
             >
                 <ng-container *cdkVirtualFor="let item of items | async; trackBy:trackByFn">
-                    <a [routerLink]="[route, item.id]" routerLinkActive="active">
+                    <a [routerLink]="subroute ? [route, item.id, subroute]: [route, item.id]" routerLinkActive="active">
                         <div #list_item class="item" [title]="">
                             <div class="text" [innerHTML]="item_name[item.id] | sanitize"></div>
                             <app-icon

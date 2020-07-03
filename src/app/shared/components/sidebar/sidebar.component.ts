@@ -12,7 +12,7 @@ import {
     SimpleChanges
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { EngineModule, EngineDriverRole } from '@placeos/ts-client';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -56,6 +56,8 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     public last_check: number;
     /** Last total number of items when the list was fetched */
     public last_total: number;
+    /** Active subroute for active item */
+    public subroute: string;
 
     /** List of elements for each associated item */
     @ViewChildren('list_item') private item_list: QueryList<ElementRef>;
@@ -163,6 +165,14 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
                 this._service.Hotkeys.listen(['Alt', 'ArrowDown'], () => this.changeSelected(1))
             );
             this.items.next(this.list || []);
+            const url = this._router.url.split('/');
+            this.subroute = url[3];
+            this.subscription('router.events', this._router.events.subscribe((event) => {
+                if (event instanceof NavigationEnd) {
+                    const url = event.url.split('/');
+                    this.subroute = url[3];
+                }
+            }))
             this.atBottom();
         });
     }
