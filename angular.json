@@ -43,6 +43,11 @@
                 "input": "src/environments/dev",
                 "output": "/assets",
                 "glob": "*.js"
+              },
+              {
+                "input": "node_modules/ts-md5/dist/",
+                "output": "/assets",
+                "glob": "*file_hasher.js"
               }
             ],
             "styles": [
