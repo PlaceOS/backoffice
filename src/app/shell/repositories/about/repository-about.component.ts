@@ -39,6 +39,7 @@ export class RepositoryAboutComponent extends BaseDirective implements OnInit {
                 (resp: any) => {
                     this.pulling = false;
                     this._service.notifyInfo(`Pulled down commit ${resp.commit_hash} for ${this.item.name}`);
+                    this.item = new EngineRepository({ ...this.item, ...resp });
                 },
                 err => {
                     this.pulling = false;
