@@ -1,7 +1,7 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { ROUTES } from './domains.routes';
@@ -11,6 +11,7 @@ import { DomainApplicationsComponent } from './domain-applications/domain-applic
 import { DomainAuthenticationComponent } from './domain-authentication/domain-authentication.component';
 import { DomainUsersComponent } from './domain-users/domain-users.component';
 import { SharedContentModule } from 'src/app/shared/shared.module';
+import { DomainAboutComponent } from './domain-about/domain-about.component';
 
 
 @NgModule({
@@ -18,11 +19,13 @@ import { SharedContentModule } from 'src/app/shared/shared.module';
         DomainsComponent,
         DomainApplicationsComponent,
         DomainAuthenticationComponent,
-        DomainUsersComponent
+        DomainUsersComponent,
+        DomainAboutComponent
     ],
     imports: [
         CommonModule,
         FormsModule,
+        ReactiveFormsModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule
     ]
