@@ -18,7 +18,7 @@ import {
     templateUrl: './system-metadata.template.html',
     styleUrls: ['./system-metadata.styles.scss']
 })
-export class ZoneMetadataComponent extends BaseDirective implements OnChanges, OnInit {
+export class SystemMetadataComponent extends BaseDirective implements OnChanges, OnInit {
     @Input() public item: EngineSystem;
     /** List of metadata associated with the zone */
     public metadata: PlaceMetadata[] = [];

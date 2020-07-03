@@ -4,6 +4,7 @@ import { SystemAboutComponent } from './system-about/system-about.component';
 import { SystemModulesComponent } from './system-modules/system-modules.component';
 import { SystemTriggersComponent } from './system-triggers/system-triggers.component';
 import { SystemZonesComponent } from './system-zones/system-zones.component';
+import { SystemMetadataComponent } from './system-metadata/system-metadata.component';
 
 export const ROUTES: Routes = [
     {
@@ -14,6 +15,7 @@ export const ROUTES: Routes = [
             { path: 'modules', component: SystemModulesComponent },
             { path: 'triggers', component: SystemTriggersComponent },
             { path: 'zones', component: SystemZonesComponent },
+            { path: 'metadata', component: SystemMetadataComponent },
             { path: '**', redirectTo: 'about' }
         ]
     },

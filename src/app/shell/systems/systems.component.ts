@@ -26,7 +26,7 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
     /** Number of zones for the active system */
     public zone_count: number;
     /** Number of metadata fields for the active system */
-    public metadata_count: number;
+    public metadata_count: number = 0;
 
     constructor(
         protected _service: ApplicationService,
@@ -55,6 +55,7 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
         // Get metadata
         const map = await PlaceOS.metadata.show(this.item.id);
         this.metadata_count = Object.keys(map).length;
+        console.log('Metadata:', map);
     }
 
     /**
