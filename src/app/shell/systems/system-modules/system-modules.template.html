@@ -54,8 +54,8 @@
                         ></i>
                         <div
                             class="state"
-                            [class.active]="device.running && device.connected === 'true'"
-                            [class.inactive]="device.running && device.connected === 'false'"
+                            [class.active]="device.running && !!device.connected"
+                            [class.inactive]="device.running && !device.connected"
                             [class.black]="!device.running"
                             (tapped)="power(device)"
                         ></div>
