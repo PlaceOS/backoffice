@@ -3,6 +3,7 @@ import { FormGroup } from '@angular/forms';
 import {
     EngineRepositoryCommit,
     EngineRepository,
+    EngineRepositoryType,
     EngineRepositoriesService,
     EngineDriverRole,
 } from '@placeos/ts-client';
@@ -59,6 +60,8 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     public loading_drivers: boolean;
     /** Whether driver commits are being loaded */
     public loading_commits: boolean;
+    /** Function to check repo that are excluded from being listed */
+    public readonly exclude_fn = (repo: EngineRepository) => repo.type === EngineRepositoryType.Interface
 
     public get editing(): boolean {
         return this.form.controls.id && this.form.controls.id.value;

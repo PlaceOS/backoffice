@@ -6,6 +6,7 @@
                 name="repo"
                 [service]="discovery_service"
                 [ngModel]="base_repo"
+                [exclude]="exclude_fn"
                 (ngModelChange)="updateDriverList($event)"
             ></item-search-field>
         </div>
