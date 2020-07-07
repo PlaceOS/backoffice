@@ -16,7 +16,7 @@
     <ng-container *ngIf="item.id && item.modules && !hide_exec">
         <section class="exec">
             <h3 i18n="@@execHeader">Execute command</h3>
-            <system-exec-field [system]="item"></system-exec-field>
+            <system-exec-field [system]="item" [refresh]="refresh_modules"></system-exec-field>
         </section>
     </ng-container>
     <section class="device-list">
@@ -48,6 +48,7 @@
                             *ngIf="device && item.id"
                             binding
                             [(model)]="device.connected"
+                            (modelChange)="refresh_modules = !refresh_modules"
                             [sys]="item.id"
                             [mod]="device_classes[device.id]"
                             bind="connected"

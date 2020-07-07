@@ -47,6 +47,8 @@ export class SystemExecFieldComponent extends BaseDirective
     @Input() public system: EngineSystem;
     /** Whether the selected function is executable from this field */
     @Input() public executable = true;
+    /** Toggle for activating a refresh of the module list */
+    @Input() public refresh: boolean;
     /** Emitter for exec results */
     @Output() public event = new EventEmitter();
     /** List of modules of the system */
@@ -112,7 +114,7 @@ export class SystemExecFieldComponent extends BaseDirective
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.system) {
+        if (changes.system || changes.refresh) {
             this.devices = [];
             this.loadModules();
         }

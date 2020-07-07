@@ -38,6 +38,8 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
     public new_module: string;
     /** Whether to show exec block */
     public hide_exec: boolean;
+    /** Whether to refresh the list of active modules in the exec options */
+    public refresh_modules: boolean;
     /** Actions available for the context menu */
     public menu_options: ApplicationActionLink[] = [
         {
@@ -172,6 +174,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                     this.hide_exec = false;
                     this._service.notifySuccess('Module successfully stopped');
                     (device as any).running = false;
+                    this.refresh_modules = !this.refresh_modules;
                 },
                 (err) => {
                     this.hide_exec = false;
@@ -192,6 +195,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                     this.hide_exec = false;
                     this._service.notifySuccess('Module successfully started');
                     (device as any).running = true;
+                    this.refresh_modules = !this.refresh_modules;
                 },
                 (err) => {
                     this.hide_exec = false;
