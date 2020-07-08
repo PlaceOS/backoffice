@@ -13,7 +13,7 @@ import * as merge from 'deepmerge';
 @Component({
     selector: 'a-settings-form',
     templateUrl: './settings-form.component.html',
-    styleUrls: ['./settings-form.component.scss']
+    styleUrls: ['./settings-form.component.scss'],
 })
 export class SettingsFormComponent extends BaseDirective implements OnChanges, OnInit {
     /** ID of the parent object */
@@ -53,8 +53,8 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
     }
 
     /** Currently shown settings */
-    public get shown_option(): { id: EncryptionLevel, name: string, active?: boolean } {
-        return this.available_levels.find(i => i.id === this.encryption_level);
+    public get shown_option(): { id: EncryptionLevel; name: string; active?: boolean } {
+        return this.available_levels.find((i) => i.id === this.encryption_level);
     }
 
     /** Whether the currently active settings have been edited */
@@ -96,10 +96,10 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
             {
                 id: EncryptionLevel.Support,
                 name: 'Support',
-                active: this.is_support
+                active: this.is_support,
             },
             { id: EncryptionLevel.Admin, name: 'Admin', active: this.is_admin },
-            { id: EncryptionLevel.NeverDisplay, name: 'Encrypted', active: this.is_admin }
+            { id: EncryptionLevel.NeverDisplay, name: 'Encrypted', active: this.is_admin },
         ];
         if (this.merge) {
             levels.unshift({ id: EncryptionLevel.NeverDisplay + 1, name: 'Merged' });
@@ -141,6 +141,12 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
                 : EncryptionLevel.None;
             this.available_levels = this.levels;
         }
+        if (changes.merge_settings) {
+            this.timeout('update_merge', () => {
+                this.used_settings = this.processSettings(this.settings || []);
+                this.initForm();
+            }, 50);
+        }
         if (changes.settings) {
             this.used_settings = this.processSettings(this.settings || []);
             this.initForm();
@@ -165,10 +171,12 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
                     this.used_settings = this.processSettings(this.settings || []);
                     this.initForm();
                 },
-                err => {
+                (err) => {
                     this.saving[level] = false;
                     this._service.notifyError(
-                        `Error updating settings. Error: ${JSON.stringify(err.response || err.message || err)}`
+                        `Error updating settings. Error: ${JSON.stringify(
+                            err.response || err.message || err
+                        )}`
                     );
                 }
             );
@@ -202,12 +210,14 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
                     this.used_settings = this.processSettings(this.settings || []);
                     this.initForm();
                 },
-                err => {
+                (err) => {
                     for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
                         this.saving[i] = false;
                     }
                     this._service.notifyError(
-                        `Error updating settings. Error: ${JSON.stringify(err.response || err.message || err)}`
+                        `Error updating settings. Error: ${JSON.stringify(
+                            err.response || err.message || err
+                        )}`
                     );
                 }
             );
@@ -228,12 +238,12 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
             settings1: new FormControl(this.used_settings[1].settings_string, [validateYAML]),
             settings2: new FormControl(this.used_settings[2].settings_string, [validateYAML]),
             settings3: new FormControl(this.used_settings[3].settings_string, [validateYAML]),
-            settings4: new FormControl(this.used_settings[4].settings_string, [validateYAML])
+            settings4: new FormControl(this.used_settings[4].settings_string, [validateYAML]),
         });
         for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
             this.subscription(
                 `setting_change_${i}`,
-                this.form.controls[`settings${i}`].valueChanges.subscribe(value => {
+                this.form.controls[`settings${i}`].valueChanges.subscribe((value) => {
                     this.used_settings[i].storePendingChange('settings_string', value);
                 })
             );
@@ -265,7 +275,7 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
             return new EngineSettings({
                 ...setting.toJSON(),
                 parent_id: this.id,
-                settings_string
+                settings_string,
             });
         }
         return new EngineSettings({ ...setting, parent_id: this.id });
@@ -273,19 +283,37 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
 
     /** Genereate merged settings from all available settings */
     private generateMergedSettings(settings: EngineSettings[]): EngineSettings {
-        const local_settings = (settings || []).map(
-            item => yaml.safeLoad(item.settings_string) || {}
-        );
-        const remote_settings = (this.merge_settings || []).map(
-            item => yaml.safeLoad(item.settings_string) || {}
-        );
+        const local_settings = (settings || []).map((item) => {
+            let obj = {};
+            try {
+                obj = yaml.safeLoad(item.settings_string) || {};
+            } catch (err) {
+                for (const key of item.keys) {
+                    obj[key] = '<MASKED>';
+                }
+            }
+            return obj;
+        });
+        const remote_settings = (this.merge_settings || []).map((item) => {
+            let obj = {};
+            try {
+                obj = yaml.safeLoad(item.settings_string) || {};
+            } catch (err) {
+                for (const key of item.keys) {
+                    obj[key] = '<MASKED>';
+                }
+            }
+            return obj;
+        });
         const merged_settings = merge.all(remote_settings.concat(local_settings));
-        const settings_string = Object.keys(merged_settings).length ? yaml.safeDump(merged_settings, { strict: true }) : '';
+        const settings_string = Object.keys(merged_settings).length
+            ? yaml.safeDump(merged_settings, { strict: true })
+            : '';
         return new EngineSettings({
             id: 'merged',
             settings_string,
             parent_id: this.id,
-            keys: Object.keys(merged_settings)
+            keys: Object.keys(merged_settings),
         });
     }
 }
