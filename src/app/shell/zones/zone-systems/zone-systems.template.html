@@ -31,8 +31,8 @@
                             {{item.name}}
                         </a>
                     </td>
-                    <td class="devices align-right">{{item.installed_ui_devices}}</td>
-                    <td class="created">{{item.display?.created}}</td>
+                    <td class="devices align-right">{{item.modules.length}}</td>
+                    <td class="created">{{item?.created_at * 1000 | dateFrom}}</td>
                 </tr>
             </tbody>
         </table>
