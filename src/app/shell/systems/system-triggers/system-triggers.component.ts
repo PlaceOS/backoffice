@@ -7,15 +7,16 @@ import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 import {
     SelectItemModalComponent,
-    SelectItemModalData
+    SelectItemModalData,
 } from 'src/app/overlays/select-item-modal/select-item-modal.component';
 import { DialogEvent, HashMap } from 'src/app/shared/utilities/types.utilities';
 import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
-    ConfirmModalData
+    ConfirmModalData,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
+import { copyToClipboard } from 'src/app/shared/utilities/general.utilities';
 
 export interface TriggerInstanceState {
     triggered: boolean;
@@ -28,7 +29,7 @@ export interface TriggerInstanceState {
 @Component({
     selector: 'system-triggers',
     templateUrl: './system-triggers.template.html',
-    styleUrls: ['./system-triggers.styles.scss']
+    styleUrls: ['./system-triggers.styles.scss'],
 })
 export class SystemTriggersComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active System */
@@ -55,7 +56,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
                 this.item = item;
                 this.loadSystemTriggers();
             })
@@ -69,9 +70,11 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
     }
 
     public loadSystemTriggers(offset: number = 0): void {
-        if (!this.item) { return; }
+        if (!this.item) {
+            return;
+        }
         this._service.Systems.listTriggers(this.item.id).then(
-            list => {
+            (list) => {
                 this.trigger_list = list;
                 this.filter(this.search_str);
             },
@@ -81,7 +84,9 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
 
     public filter(search: string = ''): void {
         const s = search.toLowerCase();
-        this.filtered_triggers = this.trigger_list.filter(item => item.name.toLowerCase().includes(s));
+        this.filtered_triggers = this.trigger_list.filter((item) =>
+            item.name.toLowerCase().includes(s)
+        );
     }
 
     public updateComparisons(id: string): void {
@@ -98,6 +103,13 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
         }
     }
 
+    /** Copy the generated webhook URL for the given trigger */
+    public copyWebhookURL(trigger: EngineTrigger) {
+        copyToClipboard(
+            `${location.origin}/api/engine/v2/webhook/${trigger.id}/notify?secret=${trigger.webhook_secret}`
+        );
+    }
+
     /**
      * Open the modal to create a new system
      */
@@ -111,8 +123,8 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                 data: {
                     item: trigger,
                     service: this._service.Triggers,
-                    external_save: true
-                }
+                    external_save: true,
+                },
             });
             this.subscription(
                 'delete_confirm',
@@ -122,9 +134,13 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                         const url = `${this._composer.auth.api_endpoint}/systems/${this.item.id}/triggers/${trigger.id}`;
                         this._composer.http.put(url, trigger.toJSON(true)).subscribe(
                             () => null,
-                            err => {
+                            (err) => {
                                 ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error updating trigger settings. Error: ${JSON.stringify(err.response || err.message || err)}`);
+                                this._service.notifyError(
+                                    `Error updating trigger settings. Error: ${JSON.stringify(
+                                        err.response || err.message || err
+                                    )}`
+                                );
                             },
                             () => {
                                 this._service.notifySuccess(
@@ -153,8 +169,8 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                     data: {
                         title: `Remove trigger`,
                         content: `<p>Are you sure you want remove trigger "${trigger.name}"?</p><p>Configuration will be updated <strong>immediately</strong>.</p>`,
-                        icon: { type: 'icon', class: 'backoffice-trash' }
-                    }
+                        icon: { type: 'icon', class: 'backoffice-trash' },
+                    },
                 }
             );
             this.subscription(
@@ -165,10 +181,17 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                         const url = `${this._composer.auth.api_endpoint}/systems/${this.item.id}/triggers/${trigger.id}`;
                         this._composer.http.delete(url).subscribe(
                             () => null,
-                            err => {
+                            (err) => {
                                 ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error removing trigger. Error: ${JSON.stringify(err.response || err.message || err)}`);
-                                this.trigger_list.splice(this.trigger_list.findIndex(item => this.item.id === item.id), 1);
+                                this._service.notifyError(
+                                    `Error removing trigger. Error: ${JSON.stringify(
+                                        err.response || err.message || err
+                                    )}`
+                                );
+                                this.trigger_list.splice(
+                                    this.trigger_list.findIndex((item) => this.item.id === item.id),
+                                    1
+                                );
                                 this.filter(this.search_str);
                             },
                             () => {
@@ -195,8 +218,8 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                 height: 'auto',
                 width: 'auto',
                 data: {
-                    service_name: 'Triggers'
-                }
+                    service_name: 'Triggers',
+                },
             }
         );
         this.subscription(
@@ -221,7 +244,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
             control_system_id: this.item.id,
             enabled: true,
             important: false,
-            trigger_id: trigger.id
+            trigger_id: trigger.id,
         });
         this.trigger_list.push(item);
         this.filter(this.search_str);
