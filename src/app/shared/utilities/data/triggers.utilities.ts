@@ -58,6 +58,7 @@ export function generateTriggerSettingsFormFields(trigger: EngineTrigger): FormD
     const fields: HashMap<FormControl> = {
         name: new FormControl(trigger.name || ''),
         triggered: new FormControl(+trigger.activated_count > 0),
+        exec_enabled: new FormControl(!!trigger.exec_enabled),
         enabled: new FormControl(!!trigger.enabled),
         important: new FormControl(!!trigger.important)
     };
