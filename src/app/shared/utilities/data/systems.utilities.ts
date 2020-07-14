@@ -33,7 +33,7 @@ export function generateSystemsFormFields(system: EngineSystem): FormDetails {
     const fields: HashMap<FormControl> = {
         name: new FormControl(system.name || '', [Validators.required]),
         display_name: new FormControl(system.display_name || ''),
-        email: new FormControl(system.email || '', [Validators.email]),
+        email: new FormControl(system.email || '', [Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,10}$')]),
         support_url: new FormControl(system.support_url || '', [Validators.pattern(URL_PATTERN)]),
         installed_ui_devices: new FormControl(system.installed_ui_devices || 0, [
             Validators.pattern('[0-9]*'),
