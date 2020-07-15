@@ -36,9 +36,9 @@ export function generateRepositoryFormFields(repository: EngineRepository): Form
     } else {
         if (repository.type === EngineRepositoryType.Driver) {
             delete fields.branch;
+            delete fields.uri;
         }
         delete fields.folder_name;
-        delete fields.uri;
     }
     if (fields.branch) {
         fields.branch.valueChanges.subscribe((name) => {
