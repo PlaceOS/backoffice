@@ -7,8 +7,6 @@ name: PROD
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -53,8 +51,7 @@ jobs:
     - name: Deploy the application
       uses:  MrYuion/gha-publish-to-git@v1.1
       with:
-        repository: place-labs/backoffice-release
-        branch: master
+        branch: build-release
         source_folder: dist
         commit_message: >
           build(backoffice): CI build from ${{ steps.vars.outputs.sha_short }}
