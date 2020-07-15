@@ -18,13 +18,11 @@ import { SentryService } from './services/sentry.service';
 import { APP_COMPONENTS } from './shell';
 
 import './shared/mocks';
+import { AuthorisedUserGuard } from './shared/guards/authorised-user.guard';
+import { AuthorisedAdminGuard } from './shared/guards/authorised-admin.guard';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        ...APP_COMPONENTS
-
-    ],
+    declarations: [AppComponent, ...APP_COMPONENTS],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
@@ -34,9 +32,13 @@ import './shared/mocks';
         FormsModule,
         AGoogleAnalyticsModule,
         SharedOverlaysModule,
-        SharedContentModule
+        SharedContentModule,
     ],
-    providers: [{ provide: ErrorHandler, useClass: SentryService }],
-    bootstrap: [AppComponent]
+    providers: [
+        { provide: ErrorHandler, useClass: SentryService },
+        AuthorisedUserGuard,
+        AuthorisedAdminGuard,
+    ],
+    bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

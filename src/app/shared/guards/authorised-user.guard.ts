@@ -7,16 +7,16 @@ import {
     ActivatedRouteSnapshot,
     RouterStateSnapshot,
     UrlTree,
-    Router
+    Router,
 } from '@angular/router';
 import { EngineUser } from '@placeos/ts-client';
 import { ComposerService } from '@placeos/composer';
 import { first } from 'rxjs/operators';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
-export class AuthorisedAdminGuard implements CanActivate, CanLoad {
+export class AuthorisedUserGuard implements CanActivate, CanLoad {
 
     private _user: EngineUser;
 
@@ -30,7 +30,7 @@ export class AuthorisedAdminGuard implements CanActivate, CanLoad {
         const user: EngineUser = this._user || await this._composer.users.current();
         const can_activate = user && user.sys_admin;
         if (!can_activate) {
-            this._router.navigate(['/systems']);
+            this._router.navigate(['/unauthorised']);
         }
         this._user = user;
         return can_activate;
@@ -41,7 +41,7 @@ export class AuthorisedAdminGuard implements CanActivate, CanLoad {
         const user: EngineUser = this._user || await this._composer.users.current();
         const can_activate = user && user.sys_admin;
         if (!can_activate) {
-            this._router.navigate(['/systems']);
+            this._router.navigate(['/unauthorised']);
         }
         this._user = user;
         return can_activate;

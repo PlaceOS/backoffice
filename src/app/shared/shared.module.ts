@@ -72,6 +72,7 @@ import { DebugOutputComponent } from './components/debug-output/debug-output.com
 import { SettingsFormComponent } from './components/forms/settings-form/settings-form.component';
 import { ADatePickerModule } from '@acaprojects/ngx-date-picker';
 import { BrokerFormComponent } from './components/forms/broker-form/broker-form.component';
+import { UnauthorisedComponent } from './components/unauthorised/unauthorised.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -104,6 +105,7 @@ const COMPONENTS: Type<any>[] = [
     ...FORM_COMPONENTS,
     TerminalComponent,
     DebugOutputComponent,
+    UnauthorisedComponent,
 ];
 
 const PIPES: Type<any>[] = [
