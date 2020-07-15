@@ -31,10 +31,12 @@ export function generateRepositoryFormFields(repository: EngineRepository): Form
             );
         }
     }
-    fields.branch.disable();
     if (!repository.id) {
         repository.storePendingChange('commit_hash', 'HEAD');
     } else {
+        if (repository.type === EngineRepositoryType.Driver) {
+            delete fields.branch;
+        }
         delete fields.folder_name;
         delete fields.uri;
     }

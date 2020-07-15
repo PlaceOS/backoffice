@@ -27,7 +27,7 @@
                 >
             </mat-form-field>
         </div>
-        <div class="field" *ngIf="form.controls.branch">
+        <div class="field" *ngIf="form.controls.branch && is_edit">
             <label
                 for="repository-name"
                 [class.error]="form.controls.branch.invalid && form.controls.branch.touched"
