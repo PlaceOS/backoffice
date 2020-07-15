@@ -40,6 +40,15 @@ export function generateRepositoryFormFields(repository: EngineRepository): Form
         delete fields.folder_name;
         delete fields.uri;
     }
+    if (fields.branch) {
+        fields.branch.valueChanges.subscribe((name) => {
+            if (name !== repository.branch) {
+                fields.commit_hash.disable();
+            } else {
+                fields.commit_hash.enable();
+            }
+        })
+    }
     return {
         form: new FormGroup(fields),
         subscriptions,

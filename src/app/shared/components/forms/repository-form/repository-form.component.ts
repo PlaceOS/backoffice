@@ -18,6 +18,8 @@ export class RepositoryFormComponent {
     @Input() public form: FormGroup;
     /** List of commits available for repository */
     public commit_list: Identity[] = [];
+    /** List of branches available for repository */
+    public branch_list: string[] = [];
     /** Whether repository's commits are being loaded */
     public loading_commits: boolean;
     /** Currently selected commit for the repository */
@@ -48,6 +50,7 @@ export class RepositoryFormComponent {
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.form && this.form) {
             this.loadCommits();
+            this.loadBranches();
         }
     }
 
@@ -72,5 +75,15 @@ export class RepositoryFormComponent {
         if (!this.base_commit) {
             this.base_commit = this.commit_list[0] || null;
         }
+    }
+
+    public async loadBranches() {
+        console.log('Load Branches');
+        if (!this.is_edit || !this.form.controls.branch) {
+            return;
+        }
+        console.log('Loading Branches');
+        const id = this.form.controls.id.value;
+        this.branch_list = await this._service.Repositories.listBranches(id) || [];
     }
 }

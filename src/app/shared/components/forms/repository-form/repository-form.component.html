@@ -12,10 +12,7 @@
             ></item-search-field>
         </div>
         <div class="field" *ngIf="form.controls.commit_hash && is_edit">
-            <label
-                for="repository-commit"
-                i18n="@@commitLabel"
-            >Commit Hash:</label>
+            <label for="repository-commit" i18n="@@commitLabel">Commit Hash:</label>
             <mat-form-field appearance="outline">
                 <input
                     matInput
@@ -24,6 +21,9 @@
                     i18n-placeholder="@@repositoryCommitPLaceholder"
                     formControlName="commit_hash"
                     readonly
+                />
+                <mat-hint *ngIf="form.controls.commit_hash.disabled"
+                    >Commit hash is set to HEAD on branch changes</mat-hint
                 >
             </mat-form-field>
         </div>
@@ -36,6 +36,7 @@
             >
             <mat-form-field appearance="outline">
                 <input
+                    *ngIf="!branch_list || !branch_list.length; else options"
                     matInput
                     name="branch-name"
                     placeholder="Branch Name"
@@ -43,6 +44,13 @@
                     formControlName="branch"
                     required
                 />
+                <ng-template #options>
+                    <mat-select name="type" formControlName="branch" placeholder="Select Branch">
+                        <mat-option *ngFor="let branch of branch_list" [value]="branch">
+                            {{ branch }}
+                        </mat-option>
+                    </mat-select>
+                </ng-template>
                 <mat-error i18n="@@repoBranchError">Working branch name is required</mat-error>
             </mat-form-field>
         </div>
