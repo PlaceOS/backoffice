@@ -45659,7 +45659,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       "semverString": null,
       "version": "2.0.2",
       "core_version": "1.0.0",
-      "time": 1594793768726
+      "time": 1594794025941
     };
     /* tslint:enable */
 
