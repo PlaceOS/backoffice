@@ -21,6 +21,10 @@
             <label i18n="@@repoFolderNameLabel">Folder name:</label>
             <div class="value">{{ item.folder_name || 'No folder set' }}</div>
         </div>
+        <div class="field" *ngIf="item.type === 'Interface'">
+            <label i18n="@@repoBranchLabel">Branch:</label>
+            <div class="value">{{ item.branch || 'master' }}</div>
+        </div>
         <div class="field">
             <label i18n="@@repoUriLabel">Repository URI:</label>
             <div class="value"><a [href]="item.uri | safe:'url'">{{ item.uri || 'No URI set' }}</a></div>
