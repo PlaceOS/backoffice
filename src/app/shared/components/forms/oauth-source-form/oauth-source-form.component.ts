@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, AbstractControl } from '@angular/forms';
 
 import { Identity, HashMap } from 'src/app/shared/utilities/types.utilities';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -55,7 +55,7 @@ export class OauthSourceFormComponent extends BaseDirective implements OnChanges
 
     public updateMappings(
         mappings: { PlaceOS: string; Remote: string }[],
-        control: FormControl,
+        control: AbstractControl,
         split: boolean = false,
         fields: [string, string] = ['PlaceOS', 'Remote']
     ) {
