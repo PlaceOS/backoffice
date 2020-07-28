@@ -5,9 +5,9 @@ import { Identity, HashMap } from 'src/app/shared/utilities/types.utilities';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 
 @Component({
-  selector: 'oauth-source-form',
-  templateUrl: './oauth-source-form.component.html',
-  styleUrls: ['./oauth-source-form.component.scss']
+    selector: 'oauth-source-form',
+    templateUrl: './oauth-source-form.component.html',
+    styleUrls: ['./oauth-source-form.component.scss'],
 })
 export class OauthSourceFormComponent extends BaseDirective implements OnChanges {
     /** Group of form fields used for creating the system */
@@ -31,22 +31,19 @@ export class OauthSourceFormComponent extends BaseDirective implements OnChanges
             if (this.form.controls.info_mappings) {
                 const map = this.form.controls.info_mappings.value || {};
                 this.info_mapping_list = Object.keys(map).map((key) => {
-                    return { Engine: key, Remote: map[key] };
+                    return { PlaceOS: key, Remote: map[key] };
                 });
             }
         }
     }
 
-    public updateMappings(mappings: { Engine: string, Remote: string }[]) {
-        this.timeout('mappings', () => {
-            const map: HashMap = {};
-            for (const pair of mappings) {
-                if (pair.Engine && pair.Remote) {
-                    map[pair.Engine] = pair.Remote;
-                }
+    public updateMappings(mappings: { PlaceOS: string; Remote: string }[]) {
+        const map: HashMap = {};
+        for (const pair of mappings) {
+            if (pair.PlaceOS && pair.Remote) {
+                map[pair.PlaceOS] = pair.Remote;
             }
-            this.form.controls.info_mappings.setValue(map);
-        }, 200);
+        }
+        this.form.controls.info_mappings.setValue(map);
     }
-
 }
