@@ -17,6 +17,8 @@ export function generateOAuthSourceForm(auth_source: EngineOAuthSource): FormDet
         client_id: new FormControl(auth_source.client_id || ''),
         client_secret: new FormControl(auth_source.client_secret || ''),
         info_mappings: new FormControl(auth_source.info_mappings || {}),
+        authorize_params: new FormControl(auth_source.authorize_params || {}),
+        ensure_matching: new FormControl(auth_source.ensure_matching || {}),
         site: new FormControl(auth_source.site || ''),
         authorize_url: new FormControl(auth_source.authorize_url || ''),
         token_method: new FormControl(auth_source.token_method || 'post'),
