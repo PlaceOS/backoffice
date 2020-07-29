@@ -24589,7 +24589,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               var pair = _step16.value;
 
               if (pair[fields[0]] && pair[fields[1]]) {
-                map[pair[fields[0]]] = split ? pair[fields[1]] : (pair[fields[1]] || '').split(',');
+                map[pair[fields[0]]] = !split ? pair[fields[1]] : (pair[fields[1]] || '').split(',');
               }
             }
           } catch (err) {
@@ -45816,16 +45816,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var VERSION = {
       "dirty": false,
-      "raw": "37df985",
-      "hash": "37df985",
+      "raw": "9773a19",
+      "hash": "9773a19",
       "distance": null,
       "tag": null,
       "semver": null,
-      "suffix": "37df985",
+      "suffix": "9773a19",
       "semverString": null,
       "version": "2.0.2",
       "core_version": "1.0.0",
-      "time": 1595933584725
+      "time": 1596004259863
     };
     /* tslint:enable */
 
