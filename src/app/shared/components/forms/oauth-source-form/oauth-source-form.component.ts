@@ -62,7 +62,7 @@ export class OauthSourceFormComponent extends BaseDirective implements OnChanges
         const map: HashMap = {};
         for (const pair of mappings) {
             if (pair[fields[0]] && pair[fields[1]]) {
-                map[pair[fields[0]]] = split ? pair[fields[1]] : (pair[fields[1]] || '').split(',');
+                map[pair[fields[0]]] = !split ? pair[fields[1]] : (pair[fields[1]] || '').split(',');
             }
         }
         control.setValue(map);
