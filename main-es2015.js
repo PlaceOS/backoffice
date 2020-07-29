@@ -10859,14 +10859,16 @@ class OauthSourceFormComponent extends src_app_shared_globals_base_directive__WE
             if (this.form.controls.authorize_params) {
                 const map = this.form.controls.authorize_params.value || {};
                 this.auth_params_list = Object.keys(map).map((key) => {
-                    return { PlaceOS: key, Remote: map[key] };
+                    return { Parameter: key, Value: map[key] };
                 });
             }
             if (this.form.controls.ensure_matching) {
                 const map = this.form.controls.ensure_matching.value || {};
+                console.log('Map:', map);
                 this.ensure_matching_list = Object.keys(map).map((key) => {
-                    return { PlaceOS: key, Remote: (map[key] || []).join(',') };
+                    return { Parameter: key, Value: (map[key] || []).join(',') };
                 });
+                console.log(this.ensure_matching_list);
             }
         }
     }
@@ -22332,16 +22334,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "9773a19",
-    "hash": "9773a19",
+    "raw": "125382a",
+    "hash": "125382a",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "9773a19",
+    "suffix": "125382a",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1596004259863
+    "time": 1596010822515
 };
 /* tslint:enable */
 

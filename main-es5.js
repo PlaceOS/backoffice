@@ -24556,8 +24556,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
               this.auth_params_list = Object.keys(_map).map(function (key) {
                 return {
-                  PlaceOS: key,
-                  Remote: _map[key]
+                  Parameter: key,
+                  Value: _map[key]
                 };
               });
             }
@@ -24565,12 +24565,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             if (this.form.controls.ensure_matching) {
               var _map2 = this.form.controls.ensure_matching.value || {};
 
+              console.log('Map:', _map2);
               this.ensure_matching_list = Object.keys(_map2).map(function (key) {
                 return {
-                  PlaceOS: key,
-                  Remote: (_map2[key] || []).join(',')
+                  Parameter: key,
+                  Value: (_map2[key] || []).join(',')
                 };
               });
+              console.log(this.ensure_matching_list);
             }
           }
         }
@@ -45816,16 +45818,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var VERSION = {
       "dirty": false,
-      "raw": "9773a19",
-      "hash": "9773a19",
+      "raw": "125382a",
+      "hash": "125382a",
       "distance": null,
       "tag": null,
       "semver": null,
-      "suffix": "9773a19",
+      "suffix": "125382a",
       "semverString": null,
       "version": "2.0.2",
       "core_version": "1.0.0",
-      "time": 1596004259863
+      "time": 1596010822515
     };
     /* tslint:enable */
 
