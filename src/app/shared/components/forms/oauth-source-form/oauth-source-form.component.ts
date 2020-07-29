@@ -41,14 +41,16 @@ export class OauthSourceFormComponent extends BaseDirective implements OnChanges
             if (this.form.controls.authorize_params) {
                 const map = this.form.controls.authorize_params.value || {};
                 this.auth_params_list = Object.keys(map).map((key) => {
-                    return { PlaceOS: key, Remote: map[key] };
+                    return { Parameter: key, Value: map[key] };
                 });
             }
             if (this.form.controls.ensure_matching) {
                 const map = this.form.controls.ensure_matching.value || {};
+                console.log('Map:', map);
                 this.ensure_matching_list = Object.keys(map).map((key) => {
-                    return { PlaceOS: key, Remote: (map[key] || []).join(',') };
+                    return { Parameter: key, Value: (map[key] || []).join(',') };
                 });
+                console.log(this.ensure_matching_list);
             }
         }
     }
