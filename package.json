@@ -72,6 +72,8 @@
         "@types/jasminewd2": "^2.0.8",
         "@types/jest": "^25.2.3",
         "@types/node": "^12.11.1",
+        "animate.css": "^4.1.0",
+        "blob-util": "^2.0.2",
         "chart.js": "^2.9.2",
         "codelyzer": "^5.1.2",
         "cron-builder": "^0.3.0",

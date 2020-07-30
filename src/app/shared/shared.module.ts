@@ -16,7 +16,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-// import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -73,6 +73,7 @@ import { SettingsFormComponent } from './components/forms/settings-form/settings
 import { ADatePickerModule } from '@acaprojects/ngx-date-picker';
 import { BrokerFormComponent } from './components/forms/broker-form/broker-form.component';
 import { UnauthorisedComponent } from './components/unauthorised/unauthorised.component';
+import { UploadListComponent } from './components/upload-list/upload-list.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -106,6 +107,7 @@ const COMPONENTS: Type<any>[] = [
     TerminalComponent,
     DebugOutputComponent,
     UnauthorisedComponent,
+    UploadListComponent,
 ];
 
 const PIPES: Type<any>[] = [
@@ -132,7 +134,7 @@ const MATERIAL_MODULES: any[] = [
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    // MatProgressBarModule,
+    MatProgressBarModule,
     MatAutocompleteModule,
     MatSelectModule,
     MatTooltipModule,

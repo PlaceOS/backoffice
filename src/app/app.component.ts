@@ -46,7 +46,7 @@ export class AppComponent extends BaseDirective implements OnInit {
                         }
                         this._uploads.token = token;
                         this._uploads.autoStart = true;
-                        this._uploads.endpoint = '/api/staff/uploads';
+                        this._uploads.endpoint = '/api/files/v1/uploads';
                         UploadManager.addProvider(Amazon);
                         UploadManager.addProvider(Azure);
                         UploadManager.addProvider(Google);

@@ -14,6 +14,7 @@
         <global-search [(search)]="filter"></global-search>
     </div>
     <app-debug-output></app-debug-output>
+    <app-upload-list></app-upload-list>
 </div>
 <div class="container loader" [class.uat]="env !== 'prod'" *ngIf="loading">
     <div class="info-block">

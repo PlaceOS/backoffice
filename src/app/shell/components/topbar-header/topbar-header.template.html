@@ -56,6 +56,10 @@
         <app-icon [icon]="{ class: 'backoffice-log-out' }"></app-icon>
         <div class="text" i18n="@@logoutAction">Logout</div>
     </a>
+    <button mat-menu-item (click)="showUploadHistory()">
+        <app-icon [icon]="{ class: 'backoffice-clock' }"></app-icon>
+        <div class="text" i18n="@@logoutAction">Upload History</div>
+    </button>
     <div class="item" mat-menu-item role="menuitemcheckbox">
         <app-icon [icon]="{ class: 'backoffice-moon' }"></app-icon>
         <div class="text" i18n="@@darkMode">Dark Mode</div>

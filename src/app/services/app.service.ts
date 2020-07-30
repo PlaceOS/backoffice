@@ -77,6 +77,7 @@ export class ApplicationService extends BaseClass {
         this._engine_comments.parent = this._engine_logs.parent = this._engine_search.parent =
             this._engine_stats.parent = this._engine_system_logs.parent = this._users.parent = this;
         this.set('system', null);
+        this.set('show_upload_manager', true);
         this._app_ref.isStable.pipe(first(_ => _)).subscribe(() => {
             this._zone.run(() => {
                 this._stable = true;

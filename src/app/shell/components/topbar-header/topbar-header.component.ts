@@ -102,6 +102,10 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
         this.newItem(new EngineUser(), this._service.Users, EngineUser);
     }
 
+    public showUploadHistory() {
+        this._service.set('show_upload_manager', true);
+    }
+
     /**
      * Open the modal to create a new engine resource
      */
