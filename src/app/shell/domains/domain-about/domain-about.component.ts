@@ -58,8 +58,8 @@ export class DomainAboutComponent extends BaseDirective implements OnInit {
                 if (this.form.valid) {
                     const domain = new EngineDomain({
                         ...this.item,
-                        config: this.form.value.config,
-                        internals: this.form.value.internals,
+                        config: JSON.parse(this.form.value.config),
+                        internals: JSON.parse(this.form.value.internals),
                     });
                     const item = await domain.save();
                     this.item = item as any;
