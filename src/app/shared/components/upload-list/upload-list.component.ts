@@ -135,6 +135,7 @@ export class UploadListComponent extends BaseDirective implements OnInit {
                     upload_details.progress = 100;
                     this.updateUploadHistory();
                 }
+                this.updateUploadHistory();
                 this.clearInterval(`upload-${file.name}`);
             }, (err) => {
                 upload_details.error = err.message || err;
@@ -157,6 +158,8 @@ export class UploadListComponent extends BaseDirective implements OnInit {
      */
     private updateUploadHistory() {
         const done_list = this.uploads.filter((file) => file.progress >= 100);
+        done_list.forEach(i => delete i.upload);
+        console.log('Done List:', done_list, this.uploads);
         if (localStorage) {
             localStorage.setItem('BACKOFFICE.uploads', JSON.stringify(done_list));
         }
