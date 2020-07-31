@@ -159,7 +159,7 @@ function _templateObject327() {
 }
 
 function _templateObject326() {
-  var data = _taggedTemplateLiteral([":@@uploadLink\u241F38e0956efb7c78e758d638c8f1e5c99859b82836\u241F7934833136974560675:Retry"]);
+  var data = _taggedTemplateLiteral([":@@uploadRetry\u241F38e0956efb7c78e758d638c8f1e5c99859b82836\u241F7934833136974560675:Retry"]);
 
   _templateObject326 = function _templateObject326() {
     return data;
@@ -38299,8 +38299,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var I18N_2;
 
     if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-      var MSG_EXTERNAL_uploadLink$$SRC_APP_SHARED_COMPONENTS_UPLOAD_LIST_UPLOAD_LIST_COMPONENT_TS_____3 = goog.getMsg("Retry");
-      I18N_2 = MSG_EXTERNAL_uploadLink$$SRC_APP_SHARED_COMPONENTS_UPLOAD_LIST_UPLOAD_LIST_COMPONENT_TS_____3;
+      var MSG_EXTERNAL_uploadRetry$$SRC_APP_SHARED_COMPONENTS_UPLOAD_LIST_UPLOAD_LIST_COMPONENT_TS_____3 = goog.getMsg("Retry");
+      I18N_2 = MSG_EXTERNAL_uploadRetry$$SRC_APP_SHARED_COMPONENTS_UPLOAD_LIST_UPLOAD_LIST_COMPONENT_TS_____3;
     } else {
       I18N_2 = $localize(_templateObject326());
     }
@@ -38445,7 +38445,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", item_r6.progress >= 100);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", item_r6.progress >= 100 && item_r6.link);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
@@ -46635,16 +46635,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var VERSION = {
       "dirty": false,
-      "raw": "22bb5cf",
-      "hash": "22bb5cf",
+      "raw": "b4b0770",
+      "hash": "b4b0770",
       "distance": null,
       "tag": null,
       "semver": null,
-      "suffix": "22bb5cf",
+      "suffix": "b4b0770",
       "semverString": null,
       "version": "2.0.2",
       "core_version": "1.0.0",
-      "time": 1596160795403
+      "time": 1596168920211
     };
     /* tslint:enable */
 

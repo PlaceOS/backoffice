@@ -17985,11 +17985,11 @@ function UploadListComponent_div_0_ul_7_li_1_div_4_Template(rf, ctx) { if (rf & 
 } }
 var I18N_2;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_uploadLink$$SRC_APP_SHARED_COMPONENTS_UPLOAD_LIST_UPLOAD_LIST_COMPONENT_TS_____3 = goog.getMsg("Retry");
-    I18N_2 = MSG_EXTERNAL_uploadLink$$SRC_APP_SHARED_COMPONENTS_UPLOAD_LIST_UPLOAD_LIST_COMPONENT_TS_____3;
+    const MSG_EXTERNAL_uploadRetry$$SRC_APP_SHARED_COMPONENTS_UPLOAD_LIST_UPLOAD_LIST_COMPONENT_TS_____3 = goog.getMsg("Retry");
+    I18N_2 = MSG_EXTERNAL_uploadRetry$$SRC_APP_SHARED_COMPONENTS_UPLOAD_LIST_UPLOAD_LIST_COMPONENT_TS_____3;
 }
 else {
-    I18N_2 = $localize `:@@uploadLink␟38e0956efb7c78e758d638c8f1e5c99859b82836␟7934833136974560675:Retry`;
+    I18N_2 = $localize `:@@uploadRetry␟38e0956efb7c78e758d638c8f1e5c99859b82836␟7934833136974560675:Retry`;
 }
 function UploadListComponent_div_0_ul_7_li_1_div_5_Template(rf, ctx) { if (rf & 1) {
     const _r18 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
@@ -18055,7 +18055,7 @@ function UploadListComponent_div_0_ul_7_li_1_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](item_r6.name);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", item_r6.progress >= 100);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", item_r6.progress >= 100 && item_r6.link);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", item_r6.error);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
@@ -22716,16 +22716,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "22bb5cf",
-    "hash": "22bb5cf",
+    "raw": "b4b0770",
+    "hash": "b4b0770",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "22bb5cf",
+    "suffix": "b4b0770",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1596160795403
+    "time": 1596168920211
 };
 /* tslint:enable */
 
