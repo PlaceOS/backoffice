@@ -49,6 +49,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         },
         { id: 'state', name: 'View State', icon: { type: 'icon', class: 'backoffice-eye' } },
         { id: 'reload', name: 'Recompile Driver', icon: { type: 'icon', class: 'backoffice-cw' } },
+        { id: 'edit', name: 'Edit Module', icon: { type: 'icon', class: 'backoffice-edit' } },
         { id: 'remove', name: 'Remove Module', icon: { type: 'icon', class: 'backoffice-trash' } },
         {
             id: 'load',
@@ -63,6 +64,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             name: 'Toggle Power',
             icon: { type: 'icon', class: 'backoffice-power-plug' },
         },
+        { id: 'edit', name: 'Edit Module', icon: { type: 'icon', class: 'backoffice-edit' } },
         { id: 'remove', name: 'Remove Module', icon: { type: 'icon', class: 'backoffice-trash' } },
         {
             id: 'load',
@@ -157,6 +159,9 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                     break;
                 case 'load':
                     this.loadModule(device);
+                    break;
+                case 'edit':
+                    this.editModule(device);
                     break;
             }
         }
@@ -258,7 +263,10 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                         : this._service.Drivers.recompile(device.driver_id)
                     ).then(
                         (_) => this._service.notifySuccess('Driver successfully recompiled.'),
-                        (err) => this._service.notifyError(JSON.stringify(err.response || err.message || err))
+                        (err) =>
+                            this._service.notifyError(
+                                JSON.stringify(err.response || err.message || err)
+                            )
                     );
                     ref.close();
                     this.unsub('confirm_ref');
@@ -273,8 +281,42 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                 this._service.notifySuccess(
                     `Successfully loaded module "${device.name || device.id}"`
                 ),
-            (err) => this._service.notifyError(`Error loading module. Error: ${JSON.stringify(err.response || err.message || err)}`)
+            (err) =>
+                this._service.notifyError(
+                    `Error loading module. Error: ${JSON.stringify(
+                        err.response || err.message || err
+                    )}`
+                )
         );
+    }
+
+    public editModule(device: EngineModule) {
+        const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+            height: 'auto',
+            width: 'auto',
+            maxHeight: 'calc(100vh - 2em)',
+            maxWidth: 'calc(100vw - 2em)',
+            data: {
+                item: device,
+                service: this._service.Modules,
+            },
+        });
+        this.subscription(
+            'edit_module',
+            ref.componentInstance.event.subscribe((event: DialogEvent) => {
+                if (event.reason === 'done' && event.metadata) {
+                    this.devices.splice(
+                        this.devices.findIndex((d) => d.id === device.id),
+                        1,
+                        event.metadata.item
+                    );
+                    this.generateModuleBindings();
+                }
+            })
+        );
+        ref.afterClosed().subscribe(() => {
+            this.unsub('modal_events');
+        });
     }
 
     /** View Results of the execute */
@@ -320,7 +362,9 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                                 this.hide_exec = false;
                                 ref.componentInstance.loading = null;
                                 this._service.notifyError(
-                                    `Error reording modules. Error: ${JSON.stringify(err.response || err.message || err)}`
+                                    `Error reording modules. Error: ${JSON.stringify(
+                                        err.response || err.message || err
+                                    )}`
                                 );
                             }
                         );
@@ -358,7 +402,9 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                         (err) => {
                             this.hide_exec = false;
                             this._service.notifyError(
-                                `Error removing module. Error: ${JSON.stringify(err.response || err.message || err)}`
+                                `Error removing module. Error: ${JSON.stringify(
+                                    err.response || err.message || err
+                                )}`
                             );
                             ref.close();
                             this.unsub('confirm_ref');

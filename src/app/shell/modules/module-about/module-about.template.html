@@ -40,7 +40,7 @@
         </header>
         <header i18n="@@moduleDetailsSystem">
             Logic for system:&nbsp;<span *ngIf="system">
-                <a [routerLink]="['/systems', system.id]">{{system?.name}}</a>
+                <a [routerLink]="['/systems', system.id, 'modules']">{{system?.name}}</a>
             </span>
         </header>
         <section>

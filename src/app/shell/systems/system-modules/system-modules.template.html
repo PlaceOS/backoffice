@@ -84,7 +84,12 @@
                             >{{device.ip}}</a
                         >
                     </td>
-                    <td class="small" touchrelease>
+                    <td class="duo" touchrelease>
+                        <button mat-icon-button (click)="editModule(device)">
+                            <app-icon
+                                [icon]="{ class: 'backoffice-edit' }"
+                            ></app-icon>
+                        </button>
                         <button mat-icon-button [matMenuTriggerFor]="menu">
                             <app-icon
                                 [icon]="{ class: 'backoffice-dots-three-vertical' }"
