@@ -22,9 +22,10 @@ import {
     styleUrls: ['./zone-triggers.styles.scss']
 })
 export class ZoneTriggersComponent extends BaseDirective implements OnChanges, OnInit {
+    /** Zone to display */
     @Input() public item: EngineZone;
-
-    public model: any = {};
+    /** List of triggers associated with the zone */
+    public triggers: EngineTrigger[] = [];
     /** Filter string for zone list */
     public search_str: string;
 
@@ -49,9 +50,9 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
     }
 
     public loadZoneTriggers(offset: number = 0) {
-        this._service.Triggers.query({ zone_id: this.item.id, offset } as any).then(
+        this._service.Zones.listTriggers(this.item.id).then(
             list => {
-                this.model.triggers = list;
+                this.triggers = list;
             },
             () => null
         );

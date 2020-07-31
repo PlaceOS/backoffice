@@ -20,14 +20,14 @@
             </mat-form-field>
         </section>
         <section class="list">
-            <table *ngIf="model.triggers && model.triggers.length > 0">
+            <table *ngIf="triggers && triggers.length > 0">
                 <thead>
                     <td class="name" i18n="@@triggerTableName">Name</td>
                     <td class="flex" i18n="@@descriptionLabel">Description</td>
                     <td class="small"></td>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let trigger of model.triggers">
+                    <tr *ngFor="let trigger of triggers">
                         <td class="name">
                             <a [routerLink]="['/triggers', trigger.id]" [matTooltip]="trigger.id"
                                 >{{trigger.name}}</a
@@ -42,7 +42,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="info-block" *ngIf="!model.triggers || model.triggers.length <= 0">
+            <div class="info-block" *ngIf="!triggers || triggers.length <= 0">
                 <div class="text" i18n="@@zoneTriggerTableEmpty">No triggers for zone</div>
             </div>
         </section>

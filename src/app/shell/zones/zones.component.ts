@@ -50,9 +50,8 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
         this.system_count = this._service.Systems.last_total || list.length || 0;
         // Get trigger count
         const tquery: any = { offset: 0, limit: 1, zone_id: this.item.id };
-        list = await this._service.Triggers.query(tquery);
-        console.log('Triggers:', this._service.Triggers.last_total);
-        this.trigger_count = this._service.Triggers.last_total || list.length || 0;
+        list = await this._service.Zones.listTriggers(tquery);
+        this.trigger_count = list.length || 0;
         // Get child zone count
         const cquery: any = { offset: 0, limit: 1, parent: this.item.id };
         list = await this._service.Zones.query(cquery);
