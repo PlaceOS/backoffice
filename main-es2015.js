@@ -13230,11 +13230,11 @@ function SystemTriggerFormComponent_div_0_div_4_Template(rf, ctx) { if (rf & 1) 
 } }
 var I18N_6;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_execEnabledLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_SYSTEM_TRIGGER_FORM_SYSTEM_TRIGGER_FORM_COMPONENT_TS___7 = goog.getMsg("ExecuteEnabled");
+    const MSG_EXTERNAL_execEnabledLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_SYSTEM_TRIGGER_FORM_SYSTEM_TRIGGER_FORM_COMPONENT_TS___7 = goog.getMsg("Execute Enabled");
     I18N_6 = MSG_EXTERNAL_execEnabledLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_SYSTEM_TRIGGER_FORM_SYSTEM_TRIGGER_FORM_COMPONENT_TS___7;
 }
 else {
-    I18N_6 = $localize `:@@execEnabledLabel␟aedb6c47aa5508c2622f9cc2b016c00c00828d1e␟1425352925910630189:ExecuteEnabled`;
+    I18N_6 = $localize `:@@execEnabledLabel␟32a94231994e49ddb9f185846910ab38a3855cde␟1140246498798806367:Execute Enabled`;
 }
 function SystemTriggerFormComponent_div_0_div_5_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 4);
@@ -20660,7 +20660,7 @@ function generateTriggerFormFields(trigger) {
         description: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](trigger.description || ''),
         enable_webhook: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](trigger.enable_webhook || false),
         supported_methods: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](trigger.supported_methods || []),
-        debounce_period: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](trigger.debounce_period || 0)
+        debounce_period: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](Math.max(0, trigger.debounce_period || 0))
     };
     const subscriptions = [];
     for (const key in fields) {
@@ -22719,16 +22719,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "b809d02",
-    "hash": "b809d02",
+    "raw": "fff1dd5",
+    "hash": "fff1dd5",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "b809d02",
+    "suffix": "fff1dd5",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1596175864402
+    "time": 1596176331144
 };
 /* tslint:enable */
 
