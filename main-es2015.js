@@ -5162,8 +5162,9 @@ class EngineDebugService extends _shared_globals_base_class__WEBPACK_IMPORTED_MO
         this._module_names = {};
         this._composer.realtime.debug_events.subscribe((event) => {
             if (this._bound_modules.find((mod) => mod.id === event.mod_id)) {
-                const event_list = this.event_list;
+                let event_list = this.event_list;
                 event_list.push(event);
+                event_list = event_list.filter((event) => !event_list.find((i) => i !== event && i.mod_id === event.mod_id && i.time === event.time));
                 this._events.next(event_list);
             }
         });
@@ -7018,9 +7019,10 @@ class SystemExecFieldComponent extends _globals_base_directive__WEBPACK_IMPORTED
         this.fields = {};
         this.active_module = item;
         this.service.Systems.functionList(this.system.id, item.module, item.index).then(list => {
+            var _a;
             if (list) {
                 this.methods = Object.keys(list).map(i => (Object.assign({ name: i }, list[i])));
-                this.setMethod(this.active_method.name, this.fields);
+                this.setMethod((_a = this.active_method) === null || _a === void 0 ? void 0 : _a.name, this.fields);
             }
         }, () => {
             this.service.notifyInfo('No executable methods returned.');
@@ -7140,7 +7142,7 @@ class SystemExecFieldComponent extends _globals_base_directive__WEBPACK_IMPORTED
             this.service.Systems.execute(this.system.id, details.method, details.module, details.index, details.args).then(result => {
                 this.service.notifySuccess('Command successful executed.\nView Response?', 'View', () => this.viewDetails(result));
             }, err => {
-                if (typeof err === 'string' && err.length < 64) {
+                if (typeof err === 'string' && err.length < 128) {
                     this.service.notifyError(err);
                 }
                 else {
@@ -22717,16 +22719,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "bb242dd",
-    "hash": "bb242dd",
+    "raw": "b809d02",
+    "hash": "b809d02",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "bb242dd",
+    "suffix": "b809d02",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1596173100661
+    "time": 1596175864402
 };
 /* tslint:enable */
 

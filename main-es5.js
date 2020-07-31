@@ -13907,6 +13907,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           })) {
             var event_list = _this53.event_list;
             event_list.push(event);
+            event_list = event_list.filter(function (event) {
+              return !event_list.find(function (i) {
+                return i !== event && i.mod_id === event.mod_id && i.time === event.time;
+              });
+            });
 
             _this53._events.next(event_list);
           }
@@ -17536,6 +17541,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.fields = {};
           this.active_module = item;
           this.service.Systems.functionList(this.system.id, item.module, item.index).then(function (list) {
+            var _a;
+
             if (list) {
               _this81.methods = Object.keys(list).map(function (i) {
                 return Object.assign({
@@ -17543,7 +17550,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }, list[i]);
               });
 
-              _this81.setMethod(_this81.active_method.name, _this81.fields);
+              _this81.setMethod((_a = _this81.active_method) === null || _a === void 0 ? void 0 : _a.name, _this81.fields);
             }
           }, function () {
             _this81.service.notifyInfo('No executable methods returned.');
@@ -17713,7 +17720,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return _this84.viewDetails(result);
               });
             }, function (err) {
-              if (typeof err === 'string' && err.length < 64) {
+              if (typeof err === 'string' && err.length < 128) {
                 _this84.service.notifyError(err);
               } else {
                 _this84.service.notifyError("Executing '".concat(_this84.active_method.name, "' failed.\nView Error?"), 'View', function () {
@@ -46642,16 +46649,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var VERSION = {
       "dirty": false,
-      "raw": "bb242dd",
-      "hash": "bb242dd",
+      "raw": "b809d02",
+      "hash": "b809d02",
       "distance": null,
       "tag": null,
       "semver": null,
-      "suffix": "bb242dd",
+      "suffix": "b809d02",
       "semverString": null,
       "version": "2.0.2",
       "core_version": "1.0.0",
-      "time": 1596173100661
+      "time": 1596175864402
     };
     /* tslint:enable */
 
