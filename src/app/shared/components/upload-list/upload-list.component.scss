@@ -45,19 +45,26 @@ ul {
 
     li {
         margin: 2px 0;
+        height: 3em;
         &:nth-child(2n) {
             background-color: rgba(#000, 0.05);
         }
         &:hover {
-            background-color: rgba(#000, 0.1);
+            background-color: rgba(#000, 0.2);
+        }
+
+        &.error {
+            background-color: rgba($error, 0.1);
         }
     }
+
 }
 
 .details {
     display: flex;
     align-items: center;
     padding: 0.5em;
+    height: 2.75em;
 }
 
 .name {
@@ -75,6 +82,10 @@ ul {
 
     &.done {
         color: $success;
+    }
+
+    &.error {
+        color: $error;
     }
 }
 

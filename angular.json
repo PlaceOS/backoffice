@@ -47,7 +47,7 @@
               {
                 "input": "node_modules/ts-md5/dist/",
                 "output": "/assets",
-                "glob": "*file_hasher.js"
+                "glob": "*worker.js"
               }
             ],
             "styles": [

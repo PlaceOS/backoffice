@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { UploadManager } from '@acaprojects/ngx-uploads';
+import { UploadManager, Upload } from '@acaprojects/ngx-uploads';
 
 import { BaseDirective } from '../../globals/base.directive';
+import { ApplicationService } from 'src/app/services/app.service';
+import { copyToClipboard } from '../../utilities/general.utilities';
 
 import * as blobUtil from 'blob-util';
-import { ApplicationService } from 'src/app/services/app.service';
 
 export interface UploadDetails {
     /** Name of the file uploaded */
@@ -17,6 +18,10 @@ export interface UploadDetails {
     formatted_size: string;
     /** Size of the file being uploaded */
     size: number;
+    /** Error with upload request */
+    error?: string;
+    /** Upload object associated with the file */
+    upload: Upload;
 }
 
 @Component({
@@ -37,7 +42,6 @@ export class UploadListComponent extends BaseDirective implements OnInit {
     }
 
     public ngOnInit() {
-        this._service.set('show_upload_manager', false);
         if (localStorage) {
             this.uploads = JSON.parse(localStorage.getItem('BACKOFFICE.uploads') || '[]');
         }
@@ -65,7 +69,6 @@ export class UploadListComponent extends BaseDirective implements OnInit {
         this.timeout('file_event', () => {
             this.show_overlay = false;
             const element: HTMLInputElement = event.target as any;
-            console.log('Target:', event, element.files);
             /* istanbul ignore else */
             if (element?.files) {
                 const files: FileList = element.files;
@@ -80,40 +83,78 @@ export class UploadListComponent extends BaseDirective implements OnInit {
         });
     }
 
+    /**
+     * Copy the uploaded access URL to the clipboard
+     * @param details Details of the successful upload
+     */
+    public copyLink(details: UploadDetails) {
+        copyToClipboard(details.link);
+        this._service.notifyInfo(`Copied link for file ${details.name} to clipboard.`);
+    }
+
+    /**
+     * Retry a failed upload
+     * @param details Details of the failed upload
+     */
+    public retry(details: UploadDetails) {
+        if (details.error) {
+            details.error = null;
+            details.upload.resume();
+            this.interval(`upload-${details.name}`, () => {
+                if (!details.upload.uploading && details.upload.error) {
+                    details.error = details.upload.error;
+                    this.clearInterval(`upload-${details.name}`);
+                }
+                details.progress = details.upload.progress
+            });
+        }
+    }
+
+    /**
+     * Upload the given file to the cloud
+     * @param file File to upload
+     */
     private uploadFile(file: File) {
-        console.log('Upload File:', file.name);
         const fileReader = new FileReader();
         fileReader.addEventListener('loadend', (e: any) => {
             const arrayBuffer = e.target.result;
             const blob = blobUtil.arrayBufferToBlob(arrayBuffer, file.type);
-            this._upload_manager.upload([blob], { file_name: file.name });
-            const upload = this._upload_manager.uploads[this._upload_manager.uploads.length - 1];
+            const upload_list = this._upload_manager.upload([blob], { file_name: file.name });
+            const upload = upload_list[0];
             const upload_details: UploadDetails = {
                 name: file.name,
                 progress: 0,
                 link: '',
                 formatted_size: this.humanReadableByteCount(file.size),
                 size: file.size,
+                upload
             };
-            this.interval(`upload-${file.name}`, () => {
-                /* istanbul ignore else */
-                if (upload.complete || upload.error) {
-                    /* istanbul ignore else */
-                    if (upload.access_url && upload.complete) {
-                        upload_details.link = upload.access_url;
-                        upload_details.progress = 100;
-                        this.updateUploadHistory();
-                    }
-                    this.clearInterval(`upload-${file.name}`);
-                } else {
-                    upload_details.progress = upload.progress;
+            upload.promise.then((state) => {
+                if (state.access_url) {
+                    upload_details.link = upload.access_url;
+                    upload_details.progress = 100;
+                    this.updateUploadHistory();
                 }
+                this.clearInterval(`upload-${file.name}`);
+            }, (err) => {
+                upload_details.error = err.message || err;
+                this.clearInterval(`upload-${file.name}`);
+            });
+            this.interval(`upload-${file.name}`, () => {
+                if (!upload.uploading && upload.error) {
+                    upload_details.error = upload.error;
+                    this.clearInterval(`upload-${file.name}`);
+                }
+                upload_details.progress = upload.progress
             });
             this.uploads.push(upload_details);
         });
         fileReader.readAsArrayBuffer(file);
     }
 
+    /**
+     * Store changes to the list of successful uploads
+     */
     private updateUploadHistory() {
         const done_list = this.uploads.filter((file) => file.progress >= 100);
         if (localStorage) {
