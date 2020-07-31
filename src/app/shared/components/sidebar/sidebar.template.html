@@ -2,8 +2,8 @@
     <header>
         <div class="heading">
             { heading, select, Systems { Systems } Modules { Modules } Zones { Zones } Drivers {
-            Drivers } Repositories { Repositories } Triggers { Triggers } Users { Users } Domains { Domains }
-            Admin { Admin } other { Other } }
+            Drivers } Repositories { Repositories } Triggers { Triggers } Users { Users } Domains {
+            Domains } Admin { Admin } other { Other } }
         </div>
         <div class="count">
             <div>
@@ -60,14 +60,18 @@
                 (scrolledIndexChange)="atBottom()"
             >
                 <ng-container *cdkVirtualFor="let item of items | async; trackBy:trackByFn">
-                    <a [routerLink]="subroute ? [route, item.id, subroute]: [route, item.id]" routerLinkActive="active">
-                        <div #list_item class="item" [title]="">
-                            <div class="text" [innerHTML]="item_name[item.id] | sanitize"></div>
-                            <app-icon
-                                [icon]="{ type: 'icon', class: 'backoffice-check' }"
-                            ></app-icon>
-                        </div>
-                    </a>
+                        <a
+                            [routerLink]="subroute ? [route, item.id, subroute]: [route, item.id]"
+                            routerLinkActive="active"
+                            [routerLinkActiveOptions]="{ exact: false, __change_detection_hack__: item.id }"
+                        >
+                            <div #list_item class="item" [title]="">
+                                <div class="text" [innerHTML]="item_name[item.id] | sanitize"></div>
+                                <app-icon
+                                    [icon]="{ type: 'icon', class: 'backoffice-check' }"
+                                ></app-icon>
+                            </div>
+                        </a>
                 </ng-container>
             </cdk-virtual-scroll-viewport>
         </ng-container>
