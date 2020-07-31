@@ -153,3 +153,10 @@ ul {
     @include box-shadow();
     z-index: 1;
 }
+
+.link {
+    a {
+        font-weight: 300;
+        text-decoration: underline;
+    }
+}
