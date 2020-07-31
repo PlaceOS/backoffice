@@ -225,7 +225,7 @@ if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
 else {
     I18N_4 = $localize `:@@moduleDetailsSystem␟8dae01d0cd1bb98b4ac6e2ff6856c38e65d15e71␟6377598301195407213: Logic for system: ${"\uFFFD*22:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_SPAN:${"\uFFFD#2:1\uFFFD"}:START_LINK:${"\uFFFD0:1\uFFFD"}:INTERPOLATION:${"\uFFFD/#2:1\uFFFD"}:CLOSE_LINK:${"\uFFFD/#1:1\uFFFD\uFFFD/*22:1\uFFFD"}:CLOSE_TAG_SPAN:`;
 }
-const _c21 = function (a1) { return ["/systems", a1]; };
+const _c21 = function (a1) { return ["/systems", a1, "modules"]; };
 function ModuleAboutComponent_div_0_span_22_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵi18nStart"](0, I18N_4, 1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "span");
@@ -245,7 +245,7 @@ if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
     I18N_23 = MSG_EXTERNAL_2537520834646109979$$SRC_APP_SHELL_MODULES_MODULE_ABOUT_MODULE_ABOUT_COMPONENT_TS___24;
 }
 else {
-    I18N_23 = $localize `:␟d3f1ec12a5c78323a377cc950913025bb9b00563␟2537520834646109979:{VAR_SELECT, select, true {Stop Module } false {Start Module }}`;
+    I18N_23 = $localize `:␟2e434410a64453fd12259ac38cfcb4f7b4b26137␟2537520834646109979:{VAR_SELECT, select, true {Stop Module } false {Start Module }}`;
 }
 I18N_23 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵi18nPostprocess"](I18N_23, { "VAR_SELECT": "\uFFFD0\uFFFD" });
 var I18N_22;
@@ -254,7 +254,7 @@ if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
     I18N_22 = MSG_EXTERNAL_moduleStateToggle$$SRC_APP_SHELL_MODULES_MODULE_ABOUT_MODULE_ABOUT_COMPONENT_TS___25;
 }
 else {
-    I18N_22 = $localize `:@@moduleStateToggle␟49b4380b74eb9765ad09d46fac556b0ddc5bc22c␟6594646568873405470: ${I18N_23}:ICU: `;
+    I18N_22 = $localize `:@@moduleStateToggle␟d09fa3d7f10a3f4ba1dbb8ede1ea6f993f0adc3b␟6594646568873405470: ${I18N_23}:ICU: `;
 }
 function ModuleAboutComponent_div_0_div_25_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 14);
@@ -263,7 +263,7 @@ function ModuleAboutComponent_div_0_div_25_Template(rf, ctx) { if (rf & 1) {
 } if (rf & 2) {
     const ctx_r10 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵi18nExp"](ctx_r10.item.connected);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵi18nExp"](ctx_r10.item.running);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵi18nApply"](1);
 } }
 function ModuleAboutComponent_div_0_mat_spinner_26_Template(rf, ctx) { if (rf & 1) {
@@ -315,7 +315,7 @@ function ModuleAboutComponent_div_0_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](23, "section");
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](24, "button", 9);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("tapped", function ModuleAboutComponent_div_0_Template_button_tapped_24_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r14); const ctx_r13 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r13.item.connected ? ctx_r13.stopModule() : ctx_r13.startModule(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("tapped", function ModuleAboutComponent_div_0_Template_button_tapped_24_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r14); const ctx_r13 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r13.item.running ? ctx_r13.stopModule() : ctx_r13.startModule(); });
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](25, ModuleAboutComponent_div_0_div_25_Template, 2, 1, "div", 10);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](26, ModuleAboutComponent_div_0_mat_spinner_26_Template, 1, 0, "mat-spinner", 11);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
@@ -444,7 +444,7 @@ class ModuleAboutComponent extends _shared_globals_base_directive__WEBPACK_IMPOR
         this.item.stop().then(() => {
             this.stopping = false;
             this._service.notifySuccess('Module successfully stopped');
-            this.item.connected = false;
+            this.item.running = false;
         }, err => {
             this.stopping = false;
             if (typeof err === 'string' && err.length < 64) {
@@ -460,7 +460,7 @@ class ModuleAboutComponent extends _shared_globals_base_directive__WEBPACK_IMPOR
         this.item.start().then(() => {
             this.stopping = false;
             this._service.notifySuccess('Module successfully started');
-            this.item.connected = true;
+            this.item.running = true;
         }, err => {
             this.stopping = false;
             if (typeof err === 'string' && err.length < 64) {

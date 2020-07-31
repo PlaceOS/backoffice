@@ -369,7 +369,7 @@ function _templateObject306() {
 }
 
 function _templateObject305() {
-  var data = _taggedTemplateLiteral([":@@onlineState\u241F7660aaa8fa61bddb05966595d391bb27b3bfb67c\u241F2757699679594366926: ", ":ICU: "]);
+  var data = _taggedTemplateLiteral([":@@onlineState\u241F7331d11693e30136c2a6ec57c8eea1caf1124fa2\u241F2757699679594366926: ", ":ICU: "]);
 
   _templateObject305 = function _templateObject305() {
     return data;
@@ -379,7 +379,7 @@ function _templateObject305() {
 }
 
 function _templateObject304() {
-  var data = _taggedTemplateLiteral([":\u241Fdf3256642015f9f9c6e01ba29f1f5f74f18a67ff\u241F1133432502520691599:{VAR_SELECT, select, true {Online } false {Offline } other {Other }}"]);
+  var data = _taggedTemplateLiteral([":\u241F01b7d133a633a7836d0192085668b6ad2ccad2ab\u241F1133432502520691599:{VAR_SELECT, select, true {Online } false {Offline } other {Other }}"]);
 
   _templateObject304 = function _templateObject304() {
     return data;
@@ -34433,11 +34433,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       if (rf & 2) {
         var ctx_r10 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("active", ctx_r10.item.connected);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("active", ctx_r10.item.running);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nExp"](ctx_r10.item.connected);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nExp"](ctx_r10.item.running);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nApply"](1);
       }
@@ -34554,7 +34554,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r0.item.connected !== null && ctx_r0.item.connected !== undefined);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r0.item.running !== null && ctx_r0.item.running !== undefined);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
@@ -36992,7 +36992,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       return [a0, a1];
     };
 
-    var _c8 = function _c8() {
+    var _c8 = function _c8(a1) {
+      return {
+        exact: false,
+        __change_detection_hack__: a1
+      };
+    };
+
+    var _c9 = function _c9() {
       return {
         type: "icon",
         "class": "backoffice-check"
@@ -37027,15 +37034,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("routerLink", ctx_r7.subroute ? _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction3"](5, _c6, ctx_r7.route, item_r8.id, ctx_r7.subroute) : _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction2"](9, _c7, ctx_r7.route, item_r8.id));
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("routerLink", ctx_r7.subroute ? _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction3"](6, _c6, ctx_r7.route, item_r8.id, ctx_r7.subroute) : _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction2"](10, _c7, ctx_r7.route, item_r8.id))("routerLinkActiveOptions", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction1"](13, _c8, item_r8.id));
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("innerHTML", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind1"](5, 3, ctx_r7.item_name[item_r8.id]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeHtml"]);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("innerHTML", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind1"](5, 4, ctx_r7.item_name[item_r8.id]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeHtml"]);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("icon", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](12, _c8));
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("icon", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](15, _c9));
       }
     }
 
@@ -37061,7 +37068,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return ctx_r12.atBottom();
         });
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, SidebarComponent_ng_container_20_ng_container_2_Template, 7, 13, "ng-container", 21);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, SidebarComponent_ng_container_20_ng_container_2_Template, 7, 16, "ng-container", 21);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](3, "async");
 
@@ -37079,15 +37086,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }
 
-    var I18N_9;
+    var I18N_10;
 
     if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-      var MSG_EXTERNAL_4490461035567493937$$SRC_APP_SHARED_COMPONENTS_SIDEBAR_SIDEBAR_COMPONENT_TS___10 = goog.getMsg(" Add new {$interpolation} ", {
+      var MSG_EXTERNAL_4490461035567493937$$SRC_APP_SHARED_COMPONENTS_SIDEBAR_SIDEBAR_COMPONENT_TS___11 = goog.getMsg(" Add new {$interpolation} ", {
         "interpolation": "\uFFFD0\uFFFD"
       });
-      I18N_9 = MSG_EXTERNAL_4490461035567493937$$SRC_APP_SHARED_COMPONENTS_SIDEBAR_SIDEBAR_COMPONENT_TS___10;
+      I18N_10 = MSG_EXTERNAL_4490461035567493937$$SRC_APP_SHARED_COMPONENTS_SIDEBAR_SIDEBAR_COMPONENT_TS___11;
     } else {
-      I18N_9 = $localize(_templateObject321(), "\uFFFD0\uFFFD");
+      I18N_10 = $localize(_templateObject321(), "\uFFFD0\uFFFD");
     }
 
     function SidebarComponent_div_21_div_5_Template(rf, ctx) {
@@ -37106,7 +37113,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return ctx_r14.post("new");
         });
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](2, I18N_9);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](2, I18N_10);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
@@ -37168,13 +37175,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }
 
-    var _c11 = function _c11(a0) {
+    var _c12 = function _c12(a0) {
       return {
         "class": a0
       };
     };
 
-    var _c12 = ["*"];
+    var _c13 = ["*"];
 
     var SidebarComponent =
     /*#__PURE__*/
@@ -37600,10 +37607,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         event: "event"
       },
       features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"], _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]],
-      ngContentSelectors: _c12,
+      ngContentSelectors: _c13,
       decls: 23,
       vars: 18,
-      consts: [[1, "container"], [1, "heading"], [1, "count"], [1, "inline", 3, "matTooltip"], ["class", "add", 3, "matTooltip", "click", 4, "ngIf"], ["class", "error", 4, "ngIf", 6, "matTooltip"], ["mat-icon-button", "", 1, "mobile-only", 3, "touchrelease"], [3, "icon"], [1, "search"], [1, "input"], [3, "ngModel", "placeholder", "ngModelChange"], [1, "content"], [1, "list"], [4, "ngIf"], ["class", "info-block center", 4, "ngIf"], ["class", "loading", 4, "ngIf"], [1, "add", 3, "matTooltip", "click"], [1, "backoffice-plus"], [1, "error", 6, "matTooltip"], [1, "backoffice-warning"], ["itemSize", "48", 3, "scroll", "scrolledIndexChange"], [4, "cdkVirtualFor", "cdkVirtualForOf", "cdkVirtualForTrackBy"], ["routerLinkActive", "active", 3, "routerLink"], [1, "item", 3, "title"], ["list_item", ""], [1, "text", 3, "innerHTML"], [1, "info-block", "center"], [1, "icon"], [1, "backoffice-cross"], [1, "text"], ["class", "btn", 4, "ngIf"], [1, "btn"], ["mat-button", "", 3, "click"], [1, "loading"], ["double-circle-ring", "", "color", "#F44336"]],
+      consts: [[1, "container"], [1, "heading"], [1, "count"], [1, "inline", 3, "matTooltip"], ["class", "add", 3, "matTooltip", "click", 4, "ngIf"], ["class", "error", 4, "ngIf", 6, "matTooltip"], ["mat-icon-button", "", 1, "mobile-only", 3, "touchrelease"], [3, "icon"], [1, "search"], [1, "input"], [3, "ngModel", "placeholder", "ngModelChange"], [1, "content"], [1, "list"], [4, "ngIf"], ["class", "info-block center", 4, "ngIf"], ["class", "loading", 4, "ngIf"], [1, "add", 3, "matTooltip", "click"], [1, "backoffice-plus"], [1, "error", 6, "matTooltip"], [1, "backoffice-warning"], ["itemSize", "48", 3, "scroll", "scrolledIndexChange"], [4, "cdkVirtualFor", "cdkVirtualForOf", "cdkVirtualForTrackBy"], ["routerLinkActive", "active", 3, "routerLink", "routerLinkActiveOptions"], [1, "item", 3, "title"], ["list_item", ""], [1, "text", 3, "innerHTML"], [1, "info-block", "center"], [1, "icon"], [1, "backoffice-cross"], [1, "text"], ["class", "btn", 4, "ngIf"], [1, "btn"], ["mat-button", "", 3, "click"], [1, "loading"], ["double-circle-ring", "", "color", "#F44336"]],
       template: function SidebarComponent_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojectionDef"]();
@@ -37718,7 +37725,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("icon", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction1"](16, _c11, "backoffice-" + (ctx.close ? "cross" : "list")));
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("icon", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction1"](16, _c12, "backoffice-" + (ctx.close ? "cross" : "list")));
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
 
@@ -46635,16 +46642,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var VERSION = {
       "dirty": false,
-      "raw": "b4b0770",
-      "hash": "b4b0770",
+      "raw": "bb242dd",
+      "hash": "bb242dd",
       "distance": null,
       "tag": null,
       "semver": null,
-      "suffix": "b4b0770",
+      "suffix": "bb242dd",
       "semverString": null,
       "version": "2.0.2",
       "core_version": "1.0.0",
-      "time": 1596168920211
+      "time": 1596173100661
     };
     /* tslint:enable */
 

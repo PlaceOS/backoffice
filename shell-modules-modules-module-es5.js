@@ -93,7 +93,7 @@ function _templateObject13() {
 }
 
 function _templateObject12() {
-  var data = _taggedTemplateLiteral([":@@moduleStateToggle\u241F49b4380b74eb9765ad09d46fac556b0ddc5bc22c\u241F6594646568873405470: ", ":ICU: "]);
+  var data = _taggedTemplateLiteral([":@@moduleStateToggle\u241Fd09fa3d7f10a3f4ba1dbb8ede1ea6f993f0adc3b\u241F6594646568873405470: ", ":ICU: "]);
 
   _templateObject12 = function _templateObject12() {
     return data;
@@ -103,7 +103,7 @@ function _templateObject12() {
 }
 
 function _templateObject11() {
-  var data = _taggedTemplateLiteral([":\u241Fd3f1ec12a5c78323a377cc950913025bb9b00563\u241F2537520834646109979:{VAR_SELECT, select, true {Stop Module } false {Start Module }}"]);
+  var data = _taggedTemplateLiteral([":\u241F2e434410a64453fd12259ac38cfcb4f7b4b26137\u241F2537520834646109979:{VAR_SELECT, select, true {Stop Module } false {Start Module }}"]);
 
   _templateObject11 = function _templateObject11() {
     return data;
@@ -618,7 +618,7 @@ function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(
     }
 
     var _c21 = function _c21(a1) {
-      return ["/systems", a1];
+      return ["/systems", a1, "modules"];
     };
 
     function ModuleAboutComponent_div_0_span_22_Template(rf, ctx) {
@@ -684,7 +684,7 @@ function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵi18nExp"](ctx_r10.item.connected);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵi18nExp"](ctx_r10.item.running);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵi18nApply"](1);
       }
@@ -795,7 +795,7 @@ function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(
 
           var ctx_r13 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
 
-          return ctx_r13.item.connected ? ctx_r13.stopModule() : ctx_r13.startModule();
+          return ctx_r13.item.running ? ctx_r13.stopModule() : ctx_r13.startModule();
         });
 
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](25, ModuleAboutComponent_div_0_div_25_Template, 2, 1, "div", 10);
@@ -1021,7 +1021,7 @@ function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(
 
             _this5._service.notifySuccess('Module successfully stopped');
 
-            _this5.item.connected = false;
+            _this5.item.running = false;
           }, function (err) {
             _this5.stopping = false;
 
@@ -1045,7 +1045,7 @@ function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(
 
             _this6._service.notifySuccess('Module successfully started');
 
-            _this6.item.connected = true;
+            _this6.item.running = true;
           }, function (err) {
             _this6.stopping = false;
 
