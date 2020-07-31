@@ -5189,7 +5189,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](8);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r0.model.triggers);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r0.triggers);
       }
     }
 
@@ -5237,7 +5237,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         _this16 = _super5.call(this);
         _this16._service = _service;
         _this16._dialog = _dialog;
-        _this16.model = {};
+        /** List of triggers associated with the zone */
+
+        _this16.triggers = [];
         return _this16;
       }
 
@@ -5268,11 +5270,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           var offset = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
-          this._service.Triggers.query({
-            zone_id: this.item.id,
-            offset: offset
-          }).then(function (list) {
-            _this18.model.triggers = list;
+          this._service.Zones.listTriggers(this.item.id).then(function (list) {
+            _this18.triggers = list;
           }, function () {
             return null;
           });
@@ -5463,11 +5462,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.model.triggers && ctx.model.triggers.length > 0);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.triggers && ctx.triggers.length > 0);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx.model.triggers || ctx.model.triggers.length <= 0);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx.triggers || ctx.triggers.length <= 0);
         }
       },
       directives: [_angular_material_button__WEBPACK_IMPORTED_MODULE_7__["MatButton"], _acaprojects_ngx_custom_events__WEBPACK_IMPORTED_MODULE_8__["ɵb"], _angular_material_form_field__WEBPACK_IMPORTED_MODULE_9__["MatFormField"], _angular_material_form_field__WEBPACK_IMPORTED_MODULE_9__["MatPrefix"], _shared_components_icon_icon_component__WEBPACK_IMPORTED_MODULE_10__["IconComponent"], _angular_material_input__WEBPACK_IMPORTED_MODULE_11__["MatInput"], _angular_forms__WEBPACK_IMPORTED_MODULE_12__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_12__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_12__["NgModel"], _angular_common__WEBPACK_IMPORTED_MODULE_13__["NgIf"], _angular_common__WEBPACK_IMPORTED_MODULE_13__["NgForOf"], _angular_router__WEBPACK_IMPORTED_MODULE_14__["RouterLinkWithHref"], _angular_material_tooltip__WEBPACK_IMPORTED_MODULE_15__["MatTooltip"]],
@@ -5727,33 +5726,32 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                       zone_id: this.item.id
                     };
                     _context.next = 8;
-                    return this._service.Triggers.query(tquery);
+                    return this._service.Zones.listTriggers(tquery);
 
                   case 8:
                     list = _context.sent;
-                    console.log('Triggers:', this._service.Triggers.last_total);
-                    this.trigger_count = this._service.Triggers.last_total || list.length || 0; // Get child zone count
+                    this.trigger_count = list.length || 0; // Get child zone count
 
                     cquery = {
                       offset: 0,
                       limit: 1,
                       parent: this.item.id
                     };
-                    _context.next = 14;
+                    _context.next = 13;
                     return this._service.Zones.query(cquery);
 
-                  case 14:
+                  case 13:
                     list = _context.sent;
                     this.child_count = this._service.Zones.last_total || list.length || 0; // Get metadata
 
-                    _context.next = 18;
+                    _context.next = 17;
                     return _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceOS"].metadata.show(this.item.id);
 
-                  case 18:
+                  case 17:
                     map = _context.sent;
                     this.metadata_count = Object.keys(map).length;
 
-                  case 20:
+                  case 19:
                   case "end":
                     return _context.stop();
                 }
