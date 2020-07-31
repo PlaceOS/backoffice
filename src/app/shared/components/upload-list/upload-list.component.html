@@ -10,11 +10,11 @@
             <li *ngFor="let item of uploads" [class.error]="item.error">
                 <div class="details" [title]="item.name">
                     <div class="name">{{ item.name }}</div>
-                    <div class="link" *ngIf="item.progress >= 100">
+                    <div class="link" *ngIf="item.progress >= 100 && item.link">
                         <a mat-button (click)="copyLink(item)" i18n="@@uploadLink">Link</a>
                     </div>
                     <div class="link" *ngIf="item.error">
-                        <a mat-button (click)="retry(item)" i18n="@@uploadLink">Retry</a>
+                        <a mat-button (click)="retry(item)" i18n="@@uploadRetry">Retry</a>
                     </div>
                     <div class="size">{{ item.formatted_size }}</div>
                     <div class="progress" *ngIf="item.progress < 100 && !item.error">{{ item.progress }}%</div>
