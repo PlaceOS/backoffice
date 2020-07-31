@@ -81,6 +81,11 @@
                   "input": "src/environments/prod",
                   "output": "/assets",
                   "glob": "*.js"
+                },
+                {
+                  "input": "node_modules/ts-md5/dist/",
+                  "output": "/assets",
+                  "glob": "*worker.js"
                 }
               ],
               "baseHref": "/backoffice/",
@@ -129,6 +134,11 @@
                     "input": "src/environments/staging",
                     "output": "/assets",
                     "glob": "*.js"
+                  },
+                  {
+                    "input": "node_modules/ts-md5/dist/",
+                    "output": "/assets",
+                    "glob": "*worker.js"
                   }
                 ],
                 "serviceWorker": true,
@@ -180,6 +190,11 @@
                 "input": "src/environments/dev",
                 "output": "/assets",
                 "glob": "*.js"
+              },
+              {
+                "input": "node_modules/ts-md5/dist/",
+                "output": "/assets",
+                "glob": "*worker.js"
               }
             ],
             "styles": [
