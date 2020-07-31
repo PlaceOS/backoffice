@@ -52,15 +52,21 @@
                             >
                         </td>
                         <td class="count">{{ trigger_state[trigger.id]?.trigger_count || '0' }}</td>
-                        <td class="count" [matTooltip]="'Action Errors: ' + trigger_state[trigger.id]?.action_errors + '\nComparision Errors: ' + trigger_state[trigger.id]?.comparison_errors"
-                            >
-                                {{ (trigger_state[trigger.id]?.action_errors +
-                                trigger_state[trigger.id]?.comparison_errors) || '0' }}
+                        <td
+                            class="count"
+                            [matTooltip]="'Action Errors: ' + trigger_state[trigger.id]?.action_errors + '\nComparision Errors: ' + trigger_state[trigger.id]?.comparison_errors"
+                        >
+                            {{ (trigger_state[trigger.id]?.action_errors +
+                            trigger_state[trigger.id]?.comparison_errors) || '0' }}
                         </td>
                         <td class="added">{{ (+trigger.created_at * 1000) | dateFrom }}</td>
                         <td class="duo">
                             <div class="actions">
-                                <button mat-icon-button *ngIf="trigger.enable_webhook" (tapped)="copyWebhookURL(trigger)">
+                                <button
+                                    mat-icon-button
+                                    *ngIf="trigger.enable_webhook"
+                                    (tapped)="copyWebhookURL(trigger)"
+                                >
                                     <app-icon [icon]="{ class: 'backoffice-link' }"></app-icon>
                                 </button>
                                 <button mat-icon-button (tapped)="editTrigger(trigger)">

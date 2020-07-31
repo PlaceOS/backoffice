@@ -30,7 +30,7 @@ export function generateTriggerFormFields(trigger: EngineTrigger): FormDetails {
         description: new FormControl(trigger.description || ''),
         enable_webhook: new FormControl(trigger.enable_webhook || false),
         supported_methods: new FormControl(trigger.supported_methods || []),
-        debounce_period: new FormControl(trigger.debounce_period || 0)
+        debounce_period: new FormControl(Math.max(0, trigger.debounce_period || 0))
     };
     const subscriptions = [];
     for (const key in fields) {
