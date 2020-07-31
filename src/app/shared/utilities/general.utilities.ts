@@ -98,7 +98,7 @@ export function padZero(value: number, length: number): string {
  * @param array List of items to remove duplicates from
  * @param key Key on array objects to compare for uniqueness
  */
-export function unique(array: any[], key: string = '') {
+export function unique<T, K extends keyof T>(array: T[], key: K | '' = '') {
     return array.filter(
         (element, index) =>
             (key

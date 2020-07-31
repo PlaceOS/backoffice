@@ -174,7 +174,7 @@ export class SystemExecFieldComponent extends BaseDirective
             list => {
                 if (list) {
                     this.methods = Object.keys(list).map(i => ({ name: i, ...list[i] }));
-                    this.setMethod(this.active_method.name, this.fields);
+                    this.setMethod(this.active_method?.name, this.fields);
                 }
             },
             () => {
@@ -317,7 +317,7 @@ export class SystemExecFieldComponent extends BaseDirective
                     );
                 },
                 err => {
-                    if (typeof err === 'string' && err.length < 64) {
+                    if (typeof err === 'string' && err.length < 128) {
                         this.service.notifyError(err);
                     } else {
                         this.service.notifyError(
