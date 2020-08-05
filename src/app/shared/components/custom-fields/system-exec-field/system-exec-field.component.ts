@@ -339,12 +339,12 @@ export class SystemExecFieldComponent extends BaseDirective
     private processArguments(): any[] {
         const arg_list = [];
         for (const arg of this.active_method.order) {
-            arg_list.push(this.fields[arg] || null);
+            arg_list.push(this.fields[arg]);
         }
         if (this.active_method.arity < 0) {
             const len = arg_list.length;
-            for (let i = len - 1; i >= Math.abs(this.active_method.arity) - 1; i--) {
-                if (arg_list[i]) {
+            for (let i = len - 1; i >= 0; i--) {
+                if (arg_list[i] || this.active_method[this.active_method.order[i]].length < 2) {
                     break;
                 }
                 arg_list.pop();
