@@ -17747,7 +17747,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           try {
             for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
               var _arg = _step14.value;
-              arg_list.push(this.fields[_arg] || null);
+              arg_list.push(this.fields[_arg]);
             }
           } catch (err) {
             _iterator14.e(err);
@@ -17758,8 +17758,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           if (this.active_method.arity < 0) {
             var len = arg_list.length;
 
-            for (var i = len - 1; i >= Math.abs(this.active_method.arity) - 1; i--) {
-              if (arg_list[i]) {
+            for (var i = len - 1; i >= 0; i--) {
+              if (arg_list[i] || this.active_method[this.active_method.order[i]].length < 2) {
                 break;
               }
 
@@ -46655,16 +46655,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var VERSION = {
       "dirty": false,
-      "raw": "aa9ba77",
-      "hash": "aa9ba77",
+      "raw": "53e1705",
+      "hash": "53e1705",
       "distance": null,
       "tag": null,
       "semver": null,
-      "suffix": "aa9ba77",
+      "suffix": "53e1705",
       "semverString": null,
       "version": "2.0.2",
       "core_version": "1.0.0",
-      "time": 1596180341418
+      "time": 1596614941781
     };
     /* tslint:enable */
 

@@ -7160,12 +7160,12 @@ class SystemExecFieldComponent extends _globals_base_directive__WEBPACK_IMPORTED
     processArguments() {
         const arg_list = [];
         for (const arg of this.active_method.order) {
-            arg_list.push(this.fields[arg] || null);
+            arg_list.push(this.fields[arg]);
         }
         if (this.active_method.arity < 0) {
             const len = arg_list.length;
-            for (let i = len - 1; i >= Math.abs(this.active_method.arity) - 1; i--) {
-                if (arg_list[i]) {
+            for (let i = len - 1; i >= 0; i--) {
+                if (arg_list[i] || this.active_method[this.active_method.order[i]].length < 2) {
                     break;
                 }
                 arg_list.pop();
@@ -22722,16 +22722,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "aa9ba77",
-    "hash": "aa9ba77",
+    "raw": "53e1705",
+    "hash": "53e1705",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "aa9ba77",
+    "suffix": "53e1705",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1596180341418
+    "time": 1596614941781
 };
 /* tslint:enable */
 
