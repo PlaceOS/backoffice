@@ -17759,7 +17759,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var len = arg_list.length;
 
             for (var i = len - 1; i >= 0; i--) {
-              if (arg_list[i] || this.active_method[this.active_method.order[i]].length < 2) {
+              if (arg_list[i] || this.active_method.params[this.active_method.order[i]].length < 2) {
                 break;
               }
 
@@ -46655,16 +46655,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var VERSION = {
       "dirty": false,
-      "raw": "53e1705",
-      "hash": "53e1705",
+      "raw": "430c1db",
+      "hash": "430c1db",
       "distance": null,
       "tag": null,
       "semver": null,
-      "suffix": "53e1705",
+      "suffix": "430c1db",
       "semverString": null,
       "version": "2.0.2",
       "core_version": "1.0.0",
-      "time": 1596614941781
+      "time": 1596615079499
     };
     /* tslint:enable */
 
