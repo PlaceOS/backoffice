@@ -344,7 +344,7 @@ export class SystemExecFieldComponent extends BaseDirective
         if (this.active_method.arity < 0) {
             const len = arg_list.length;
             for (let i = len - 1; i >= 0; i--) {
-                if (arg_list[i] || this.active_method[this.active_method.order[i]].length < 2) {
+                if (arg_list[i] || this.active_method.params[this.active_method.order[i]].length < 2) {
                     break;
                 }
                 arg_list.pop();
