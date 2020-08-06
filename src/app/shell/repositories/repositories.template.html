@@ -2,7 +2,8 @@
     <div class="sidebar">
         <sidebar
             heading="Repositories"
-            [module]="module"
+            name="repositories"
+            [query_fn]="query_fn"
             [close]="show_sidebar"
             (event)="sidebarEvent($event)"
         ></sidebar>

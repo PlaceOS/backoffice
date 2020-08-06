@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { PlaceDriver, updateDriver, lastRequestTotal, addDriver, queryModules, removeDomain, removeDriver } from '@placeos/ts-client';
+import { PlaceDriver, updateDriver, lastRequestTotal, addDriver, queryModules, removeDriver, queryDrivers, showDriver } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -21,6 +21,12 @@ import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item
 export class DriversComponent extends BaseRootComponent<PlaceDriver> {
     /** Number of devices for the active system */
     public device_count: number;
+
+    public readonly name = 'drivers';
+    /** Function to query domains */
+    public readonly query_fn = (q) => queryDrivers(q);
+    /** Function to query domains */
+    public readonly show_fn = (id, q) => showDriver(id, q);
 
     constructor(
         protected _service: ApplicationService,

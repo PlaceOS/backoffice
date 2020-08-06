@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PlaceUser, updateUser, addUser, removeUser } from '@placeos/ts-client';
+import { PlaceUser, updateUser, addUser, removeUser, queryUsers, showUser } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -19,6 +19,13 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
     styleUrls: ['./users.styles.scss']
 })
 export class UsersComponent extends BaseRootComponent<PlaceUser> {
+
+    public readonly name = 'users';
+    /** Function to query domains */
+    public readonly query_fn = (q) => queryUsers(q);
+    /** Function to query domains */
+    protected readonly show_fn = (id, q) => showUser(id, q);
+
     constructor(
         protected _service: ApplicationService,
         protected _route: ActivatedRoute,

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { PlaceRepository, PlaceRepositoryType, updateRepository, addRepository, removeRepository, listRepositoryDrivers } from '@placeos/ts-client';
+import { PlaceRepository, PlaceRepositoryType, updateRepository, addRepository, removeRepository, listRepositoryDrivers, queryRepositories, showRepository } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -21,6 +21,12 @@ import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item
 export class RepositoriesComponent extends BaseRootComponent<PlaceRepository> {
     /** Number of drivers in the repository */
     public driver_count: number;
+
+    public readonly name = 'repositories';
+    /** Function to query domains */
+    public readonly query_fn = (q) => queryRepositories(q);
+    /** Function to query domains */
+    protected readonly show_fn = (id, q) => showRepository(id, q);
 
     constructor(
         protected _service: ApplicationService,

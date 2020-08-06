@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { PlaceZone, updateZone, addZone, listZoneTriggers, querySystems, queryZones, lastRequestTotal, showMetadata, removeZone  } from '@placeos/ts-client';
+import { PlaceZone, updateZone, addZone, listZoneTriggers, querySystems, queryZones, lastRequestTotal, showMetadata, removeZone, showZone  } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -28,6 +28,12 @@ export class ZonesComponent extends BaseRootComponent<PlaceZone> {
     /** Number of metadata properties associated with the active zone */
     public metadata_count: number;
 
+    public readonly name = 'zones';
+    /** Function to query domains */
+    public readonly query_fn = (q) => queryZones(q);
+    /** Function to query domains */
+    protected readonly show_fn = (id, q) => showZone(id, q);
+
     constructor(
         protected _service: ApplicationService,
         protected _route: ActivatedRoute,
@@ -48,8 +54,8 @@ export class ZonesComponent extends BaseRootComponent<PlaceZone> {
         let list: any[] = await querySystems(query).toPromise();
         this.system_count = lastRequestTotal('systems')  || list.length || 0;
         // Get trigger count
-        const tquery: any = { offset: 0, limit: 1, zone_id: this.item.id };
-        list = await listZoneTriggers(tquery).toPromise();
+        const tquery: any = { offset: 0, limit: 1 };
+        list = await listZoneTriggers(this.item.id, tquery).toPromise();
         this.trigger_count = list.length || 0;
         // Get child zone count
         const cquery: any = { offset: 0, limit: 1, parent: this.item.id };

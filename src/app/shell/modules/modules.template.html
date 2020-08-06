@@ -2,7 +2,8 @@
     <div class="sidebar">
         <sidebar
             heading="Modules"
-            [module]="module"
+            name="modules"
+            [query_fn]="query_fn"
             [close]="show_sidebar"
             [queryParams]="only_disconnected ? { connected: false, running: true } : {}"
             (event)="sidebarEvent($event)"

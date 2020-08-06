@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PlaceDomain, updateDomain, addDomain, removeDomain, queryApplications, queryUsers, lastRequestTotal } from '@placeos/ts-client';
+import { PlaceDomain, updateDomain, addDomain, removeDomain, queryApplications, queryUsers, lastRequestTotal, queryDomains, showDomain } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -26,6 +26,12 @@ export class DomainsComponent extends BaseRootComponent<PlaceDomain> {
     public auth_sources: number;
     /** Number of triggers for the active system */
     public user_count: number;
+
+    public readonly name = 'domains';
+    /** Function to query domains */
+    public readonly query_fn = (q) => queryDomains(q);
+    /** Function to query domains */
+    protected readonly show_fn = (id, q) => showDomain(id, q);
 
     constructor(
         protected _service: ApplicationService,

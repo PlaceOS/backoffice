@@ -13,8 +13,8 @@ import {
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Router, NavigationEnd } from '@angular/router';
-import { PlaceModule, PlaceDriverRole } from '@placeos/ts-client';
-import { BehaviorSubject } from 'rxjs';
+import { PlaceModule, PlaceDriverRole, lastRequestTotal, requestTotal } from '@placeos/ts-client';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 
 import { ApplicationService } from '../../../services/app.service';
@@ -36,7 +36,9 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     /** List of items to render on the list */
     @Input() public list: any[] = [];
     /** Name of the active module */
-    @Input() public module: PlaceServiceLike;
+    @Input() public name: string;
+    /** Name of the active module */
+    @Input() public query_fn: <T>(q: HashMap) => Observable<T[]>;
     /** Whether the list is being loaded */
     @Input() public loading: boolean;
     /** Additional query params to add to item load requests */
@@ -84,18 +86,15 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
 
     /** Whether new items for the active module can be created */
     public get new(): boolean {
-        if (this.module) {
-            return this._service.setting(`app.${this.module._api_route}.can_create`);
-        }
-        return false;
+        return this._service.setting(`app.${this.name}.can_create`);
     }
 
     public get total(): number {
-        return this.search ? this.module.last_total : this.module.total;
+        return this.search ? lastRequestTotal(this.name) : requestTotal('');
     }
 
     public get grand_total(): number {
-        return this.module.total;
+        return requestTotal(this.name);
     }
 
     /** Heading value lower cased */
@@ -105,16 +104,13 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
 
     /** Path of the active module */
     public get route() {
-        const route = this.module._api_route;
+        const route = this.name;
         return `/${route}`;
     }
 
     /** Maxiumum allowed items for the active module */
     public get licenses(): number {
-        if (this.module) {
-            return this._service.setting(`app.${this.module._api_route}.licenses`);
-        }
-        return 0;
+        return this._service.setting(`app.${this.name}.licenses`) || 0;
     }
 
     /** Map of item names to their IDs */
@@ -184,7 +180,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             this.items.next(this.list || []);
             this.atBottom();
         }
-        if (changes.module && changes.module.previousValue !== changes.module.currentValue) {
+        if (changes.query_fn && changes.query_fn.previousValue !== changes.query_fn.currentValue) {
             this.searching();
         }
         if (changes.query_params && this.query_params) {
@@ -217,7 +213,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         if (end === total) {
             this.last_total = total;
             this.last_check = dayjs().valueOf();
-            if (this.last_total !== this.module.last_total) {
+            if (this.last_total !== lastRequestTotal(this.name)) {
                 this.searching(this.list.length);
             }
         }
@@ -243,8 +239,8 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
      */
     public searching(offset: number = 0) {
         this.loading = true;
-        if (this.module) {
-            this.module.query({ q: this.search, offset, ...(this.query_params || {}) }).then(
+        if (this.query_fn) {
+            this.query_fn({ q: this.search, offset, ...(this.query_params || {}) }).toPromise().then(
                 list => {
                     this.list = offset ? this.list.concat(list) : list;
                     this.list = unique(this.list, 'id');
@@ -253,7 +249,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
                     this.loading = false;
                 },
                 err => {
-                    this._service.notifyError(`Error updating ${this.module._name} list. Error: ${JSON.stringify(err.response || err.message || err)}`);
+                    this._service.notifyError(`Error updating ${this.name} list. Error: ${JSON.stringify(err.response || err.message || err)}`);
                     this.loading = false;
                 }
             );
@@ -274,7 +270,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             index += offset;
             if (index >= 0 && index < list.length) {
                 list[index].nativeElement.scrollIntoView(false);
-                this._service.navigate([this.module._api_route, item_list[index].id]);
+                this._service.navigate([this.name, `${item_list[index].id}`]);
             }
         }
     }

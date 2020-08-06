@@ -17,7 +17,7 @@ export class AdminInterfacesComponent implements OnInit {
     }
 
     private async loadInterfaces() {
-        const interfaces = await listInterfaceRepositories();
+        const interfaces = await listInterfaceRepositories().toPromise();
         this.interfaces = Object.keys(interfaces).map(id => ({ id, name: interfaces[id] }));
     }
 }

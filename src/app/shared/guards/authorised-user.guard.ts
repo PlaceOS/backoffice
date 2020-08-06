@@ -27,30 +27,23 @@ export class AuthorisedUserGuard implements CanActivate, CanLoad {
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ): Promise<boolean | UrlTree> {
-        console.log('Wait until application loaded');
         await this._service.initialised.pipe(first(_ => _)).toPromise();
-        console.log('Check user');
         const user: PlaceUser = this._service.get('user') || await currentUser().toPromise();
         const can_activate = user && user.sys_admin;
         if (!can_activate) {
             this._router.navigate(['/unauthorised']);
         }
-        console.log('Can Activate:', can_activate);
         this._user = user;
         return can_activate;
     }
 
     public async canLoad(route: Route, segments: UrlSegment[]): Promise<boolean> {
-        console.log('Wait until application loaded');
         await this._service.initialised.pipe(first(_ => _)).toPromise();
-        console.log('Check user');
         const user: PlaceUser = this._user|| await currentUser().toPromise();
-        console.log('User:', user);
         const can_activate = user && user.sys_admin;
         if (!can_activate) {
             this._router.navigate(['/unauthorised']);
         }
-        console.log('Can Activate:', can_activate);
         this._user = user;
         return can_activate;
     }

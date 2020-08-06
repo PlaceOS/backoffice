@@ -13,6 +13,7 @@ import { ApplicationService } from '../../services/app.service';
 import { PlaceServiceLike, HashMap } from '../utilities/types.utilities';
 import { first } from 'rxjs/operators';
 import { MatDialogRef } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-base-root-component',
@@ -36,13 +37,10 @@ export class BaseRootComponent<T = HashMap<any>> extends BaseDirective implement
     public show_sidebar: boolean;
     /** Modal Reference */
     public modal_ref: MatDialogRef<any>;
-    /** Service to get data from */
-    public service: PlaceServiceLike;
 
-    /** Service for the active module */
-    public get module(): PlaceServiceLike {
-        return this.service;
-    }
+    public name = 'resource';
+    /** */
+    protected show_fn: (id: string, _) => Observable<T>;
 
     constructor(
         protected _service: ApplicationService,
@@ -164,14 +162,14 @@ export class BaseRootComponent<T = HashMap<any>> extends BaseDirective implement
      */
     protected loadItem() {
         this.timeout('loading', () => (this.loading_item = true), 10);
-        this.service.show(this.id, { complete: true }).then(
+        this.show_fn(this.id, { complete: true }).toPromise().then(
             item => this.setActiveItem(item),
             () => {
                 this._service.notifyError(
-                    `Failed to load data for ${this.service._name} "${this.id}"`
+                    `Failed to load data for ${this.name} "${this.id}"`
                 );
                 this.loading_item = false;
-                this._service.navigate([this.service._api_route]);
+                this._service.navigate([this.name]);
             }
         );
     }
@@ -181,14 +179,6 @@ export class BaseRootComponent<T = HashMap<any>> extends BaseDirective implement
         this._service.set('BACKOFFICE.active_item_id', this.id);
         this._service.set('BACKOFFICE.active_item', this.item);
         if (this.item) {
-            this.subscription(
-                'item_changes',
-                (this.item as any).changeEvents.subscribe(event => {
-                    if (event.type === 'item_saved') {
-                        this.setActiveItem(event.metadata as any);
-                    }
-                })
-            );
             this.loadValues();
             this.loadSettings();
         }

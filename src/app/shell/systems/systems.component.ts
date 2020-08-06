@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PlaceSystem, updateSystem, addSystem, removeSystem, listSystemTriggers, showMetadata } from '@placeos/ts-client';
+import { PlaceSystem, updateSystem, addSystem, removeSystem, listSystemTriggers, showMetadata, querySystems, showSystem } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -27,6 +27,12 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
     public zone_count: number;
     /** Number of metadata fields for the active system */
     public metadata_count: number = 0;
+
+    public readonly name = 'systems';
+    /** Function to query domains */
+    public readonly query_fn = (q) => querySystems(q);
+    /** Function to query domains */
+    protected readonly show_fn = (id, q) => showSystem(id, q);
 
     constructor(
         protected _service: ApplicationService,

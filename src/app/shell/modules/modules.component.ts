@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { PlaceModule, updateModule, addModule, removeModule, querySystems, lastRequestTotal } from '@placeos/ts-client';
+import { PlaceModule, updateModule, addModule, removeModule, querySystems, lastRequestTotal, queryModules, showModule } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -23,6 +23,12 @@ export class ModulesComponent extends BaseRootComponent<PlaceModule> {
     public system_count: number;
     /** Whether the list of devices should show only the disconnected devices */
     public only_disconnected: boolean;
+
+    public readonly name = 'modules';
+    /** Function to query domains */
+    public readonly query_fn = (q) => queryModules(q);
+    /** Function to query domains */
+    protected readonly show_fn = (id, q) => showModule(id, q);
 
     constructor(
         protected _service: ApplicationService,
