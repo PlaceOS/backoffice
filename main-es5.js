@@ -17747,7 +17747,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           try {
             for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
               var _arg = _step14.value;
-              arg_list.push(this.fields[_arg]);
+              arg_list.push(this.fields[_arg] || null);
             }
           } catch (err) {
             _iterator14.e(err);
@@ -17755,16 +17755,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _iterator14.f();
           }
 
-          if (this.active_method.arity < 0) {
-            var len = arg_list.length;
+          var len = arg_list.length;
 
-            for (var i = len - 1; i >= 0; i--) {
-              if (arg_list[i] || this.active_method.params[this.active_method.order[i]].length < 2) {
-                break;
-              }
-
-              arg_list.pop();
+          for (var i = len - 1; i >= 0; i--) {
+            if (arg_list[i] || this.active_method.params[this.active_method.order[i]].length < 2) {
+              break;
             }
+
+            arg_list.pop();
           } // Format arguments
 
 
@@ -21914,7 +21912,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       features: [_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵInheritDefinitionFeature"], _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵNgOnChangesFeature"]],
       decls: 3,
       vars: 1,
-      consts: [["class", "driver form", 4, "ngIf"], ["load_state", ""], [1, "driver", "form"], [1, "fieldset"], ["class", "field discovery", 4, "ngIf"], [4, "ngIf", "ngIfElse"], [1, "field", "discovery"], ["for", "repo"], ["name", "repo", 3, "service", "ngModel", "exclude", "ngModelChange"], ["for", "driver"], ["name", "driver", 3, "options", "loading", "ngModel", "ngModelChange"], ["for", "commit"], ["name", "commit", 3, "options", "loading", "ngModel", "ngModelChange"], [3, "formGroup"], [4, "ngIf"], ["class", "field", 4, "ngIf"], [1, "field"], ["for", "driver-name"], ["appearance", "outline"], ["matInput", "", "name", "driver-name", "formControlName", "name", "required", "", 6, "placeholder"], ["for", "role"], ["name", "role", "formControlName", "role"], [3, "value", 4, "ngFor", "ngForOf"], [3, "value"], ["for", "description"], ["matInput", "", "name", "description", "formControlName", "description", 6, "placeholder"], ["for", "module-name"], ["matInput", "", "name", "module-name", "placeholder", "Module Name", "formControlName", "module_name", "required", ""], ["for", "default-uri"], ["matInput", "", "name", "default-uri", "placeholder", "Default URI", "formControlName", "default_uri"], ["for", "default-port"], ["matInput", "", "name", "default-port", "type", "number", "placeholder", "Port Number", "formControlName", "default_port"], ["name", "ignore-connected", "formControlName", "ignore_connected"], [1, "info-block"], [1, "icon"], ["diameter", "48"], [1, "text"]],
+      consts: [["class", "driver form", 4, "ngIf"], ["load_state", ""], [1, "driver", "form"], [1, "fieldset"], ["class", "field discovery", 4, "ngIf"], [4, "ngIf", "ngIfElse"], [1, "field", "discovery"], ["for", "repo"], ["name", "repo", 3, "service", "ngModel", "exclude", "ngModelChange"], ["for", "driver"], ["name", "driver", 3, "options", "loading", "ngModel", "ngModelChange"], ["for", "commit"], ["name", "commit", 3, "options", "loading", "ngModel", "ngModelChange"], [3, "formGroup"], [4, "ngIf"], ["class", "field", 4, "ngIf"], [1, "field"], ["for", "driver-name"], ["appearance", "outline"], ["matInput", "", "name", "driver-name", "formControlName", "name", "required", "", 6, "placeholder"], ["for", "role"], ["name", "role", "formControlName", "role"], [3, "value", 4, "ngFor", "ngForOf"], [3, "value"], ["for", "description"], ["matInput", "", "name", "description", "formControlName", "description", 6, "placeholder"], ["for", "module-name"], ["matInput", "", "name", "module-name", "placeholder", "Module Name", "formControlName", "module_name", "required", ""], ["for", "default-uri"], ["matInput", "", "name", "default-uri", "placeholder", "Default URI", "formControlName", "default_uri"], ["for", "default-port"], ["matInput", "", "name", "default-port", "type", "number", "placeholder", "Port Number", "formControlName", "default_port"], ["name", "ignore-connected", "formControlName", "ignore_connected"], [1, "info-block"], [1, "icon"], ["diameter", "32"], [1, "text"]],
       template: function DriverFormComponent_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](0, DriverFormComponent_div_0_Template, 6, 5, "div", 0);
@@ -46655,16 +46653,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var VERSION = {
       "dirty": false,
-      "raw": "430c1db",
-      "hash": "430c1db",
+      "raw": "ad87427",
+      "hash": "ad87427",
       "distance": null,
       "tag": null,
       "semver": null,
-      "suffix": "430c1db",
+      "suffix": "ad87427",
       "semverString": null,
       "version": "2.0.2",
       "core_version": "1.0.0",
-      "time": 1596615079499
+      "time": 1596676577632
     };
     /* tslint:enable */
 
