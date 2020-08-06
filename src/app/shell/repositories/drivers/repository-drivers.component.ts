@@ -73,10 +73,7 @@ export class RepositoryDriversComponent extends BaseDirective implements OnChang
                             file_name: driver,
                         }),
                         name: 'Driver',
-                        save: (item) =>
-                            item.id
-                                ? updateDriver(item.id, item.toJSON())
-                                : addDriver(item.toJSON()),
+                        save: (item) => addDriver(item),
                     },
                 }
             );

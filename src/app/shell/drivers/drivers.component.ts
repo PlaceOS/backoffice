@@ -62,7 +62,7 @@ export class DriversComponent extends BaseRootComponent<PlaceDriver> {
             data: {
                 item: copy ? new PlaceDriver({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceDriver(),
                 name: 'Driver',
-                save: (item) => item.id ? updateDriver(item.id, item.toJSON()) : addDriver(item.toJSON()),
+                save: (item) => addDriver(item),
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -89,7 +89,7 @@ export class DriversComponent extends BaseRootComponent<PlaceDriver> {
                 data: {
                     item: this.item,
                     name: 'Driver',
-                    save: (item) => item.id ? updateDriver(item.id, item.toJSON()) : addDriver(item.toJSON()),
+                    save: (item) => updateDriver(item.id, item),
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {

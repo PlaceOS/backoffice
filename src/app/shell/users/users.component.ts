@@ -53,7 +53,7 @@ export class UsersComponent extends BaseRootComponent<PlaceUser> {
             data: {
                 item: copy ? new PlaceUser({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceUser(),
                 name: 'User',
-                save: (item) => item.id ? updateUser(item.id, item.toJSON()) : addUser(item.toJSON()),
+                save: (item) => addUser(item),
             }
         });
         this.modal_ref.componentInstance.event.subscribe(event => {
@@ -80,7 +80,7 @@ export class UsersComponent extends BaseRootComponent<PlaceUser> {
                 data: {
                     item: this.item,
                     name: 'User',
-                    save: (item) => item.id ? updateUser(item.id, item.toJSON()) : addUser(item.toJSON()),
+                    save: (item) => updateUser(item.id, item),
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {

@@ -41,7 +41,7 @@ export class AdminBrokersComponent extends BaseDirective implements OnInit {
             data: {
                 item: new PlaceMQTTBroker(),
                 name: 'Broker',
-                save: (item) => item.id ? updateBroker(item.id, item.toJSON()) : addBroker(item.toJSON()),
+                save: (item) => addBroker(item),
             },
         });
         this.subscription(
@@ -63,7 +63,7 @@ export class AdminBrokersComponent extends BaseDirective implements OnInit {
             data: {
                 item,
                 name: 'Broker',
-                save: (item) => item.id ? updateBroker(item.id, item.toJSON()) : addBroker(item.toJSON()),
+                save: (item) => updateBroker(item.id, item),
             },
         });
         this.subscription(

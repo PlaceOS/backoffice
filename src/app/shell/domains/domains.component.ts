@@ -82,7 +82,7 @@ export class DomainsComponent extends BaseRootComponent<PlaceDomain> {
             data: {
                 item: copy ? new PlaceDomain({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceDomain(),
                 name: 'Domain',
-                save: (item) => item.id ? updateDomain(item.id, item.toJSON()) : addDomain(item.toJSON()),
+                save: (item) => addDomain(item),
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -109,7 +109,7 @@ export class DomainsComponent extends BaseRootComponent<PlaceDomain> {
                 data: {
                     item: this.item,
                     name: 'Broker',
-                    save: (item) => item.id ? updateDomain(item.id, item.toJSON()) : addDomain(item.toJSON()),
+                    save: (item) => updateDomain(item.id, item),
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {

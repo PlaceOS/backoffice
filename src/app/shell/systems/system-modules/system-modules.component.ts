@@ -320,8 +320,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             data: {
                 item: device,
                 name: 'Module',
-                save: (item) =>
-                    item.id ? updateModule(item.id, item.toJSON()) : addModule(item.toJSON()),
+                save: (item) => updateModule(item.id, item),
             },
         });
         this.subscription(
@@ -453,8 +452,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                     control_system: this.item,
                 }),
                 name: 'Module',
-                save: (item) =>
-                    item.id ? updateModule(item.id, item.toJSON()) : addModule(item.toJSON()),
+                save: (item) => addModule(item),
                 readonly: true,
             },
         });

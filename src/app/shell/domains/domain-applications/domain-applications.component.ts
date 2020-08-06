@@ -89,7 +89,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
             data: {
                 item: new PlaceApplication(),
                 name: 'Application',
-                save: (item) => item.id ? updateApplication(item.id, item.toJSON()) : addApplication(item.toJSON()),
+                save: (item) => addApplication(item.toJSON()),
             }
         });
         this.subscription('item-form', ref.componentInstance.event.subscribe((event) => {
@@ -113,7 +113,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
                 data: {
                     item,
                     name: 'Application',
-                    save: (item) => item.id ? updateApplication(item.id, item.toJSON()) : addApplication(item.toJSON()),
+                    save: (item) => updateApplication(item.id, item),
                 }
             });
             this.subscription('item-form', ref.componentInstance.event.subscribe((event) => {

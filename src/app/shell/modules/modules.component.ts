@@ -65,7 +65,7 @@ export class ModulesComponent extends BaseRootComponent<PlaceModule> {
             data: {
                 item: copy ? new PlaceModule({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceModule(),
                 name: 'Module',
-                save: (item) => item.id ? updateModule(item.id, item.toJSON()) : addModule(item.toJSON()),
+                save: (item) => addModule(item),
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe((event) => {
@@ -92,7 +92,7 @@ export class ModulesComponent extends BaseRootComponent<PlaceModule> {
                 data: {
                     item: this.item,
                     name: 'Module',
-                    save: (item) => item.id ? updateModule(item.id, item.toJSON()) : addModule(item.toJSON()),
+                    save: (item) => updateModule(item.id, item),
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {

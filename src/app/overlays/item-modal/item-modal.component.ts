@@ -163,12 +163,15 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
         if (this.item && this.form.valid) {
             this.loading = `${this.item.id ? 'Updating' : 'Creating'} ${this.name}...`;
             this._dialog_ref.disableClose = true;
+            console.log('Saving...')
             if (this._data.external_save) {
                 this.event.emit({ reason: 'action', metadata: this.form.value });
                 return;
             }
-            this.item.save().then(
+            console.log('Save', this._data.save);
+            this._data.save({ ...this.item.toJSON(), ...this.form.value }).subscribe(
                 item => {
+                    console.log('Saved')
                     this.result = item;
                     this._dialog_ref.disableClose = false;
                     this.event.emit({ reason: 'done', metadata: { item } });

@@ -79,7 +79,7 @@ export class ZonesComponent extends BaseRootComponent<PlaceZone> {
             data: {
                 item: copy ? new PlaceZone({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceZone(),
                 name: 'Zone',
-                save: (item) => item.id ? updateZone(item.id, item.toJSON()) : addZone(item.toJSON()),
+                save: (item) => addZone(item),
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -106,7 +106,7 @@ export class ZonesComponent extends BaseRootComponent<PlaceZone> {
                 data: {
                     item: this.item,
                     name: 'Zone',
-                    save: (item) => item.id ? updateZone(item.id, item.toJSON()) : addZone(item.toJSON()),
+                    save: (item) => updateZone(item.id, item),
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {

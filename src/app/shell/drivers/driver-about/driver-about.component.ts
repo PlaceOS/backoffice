@@ -1,17 +1,25 @@
-
 import { Component, Input } from '@angular/core';
-import { PlaceDriver, EncryptionLevel, isDriverCompiled, recompileDriver } from '@placeos/ts-client';
+import {
+    PlaceDriver,
+    EncryptionLevel,
+    isDriverCompiled,
+    recompileDriver,
+} from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmModalComponent, ConfirmModalData, CONFIRM_METADATA } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import {
+    ConfirmModalComponent,
+    ConfirmModalData,
+    CONFIRM_METADATA,
+} from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent, Identity } from 'src/app/shared/utilities/types.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
 
 @Component({
     selector: 'driver-about',
     templateUrl: './driver-about.template.html',
-    styleUrls: ['./driver-about.styles.scss']
+    styleUrls: ['./driver-about.styles.scss'],
 })
 export class DriverAboutComponent extends BaseDirective {
     /** Item to render */
@@ -31,7 +39,7 @@ export class DriverAboutComponent extends BaseDirective {
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
                 this.item = item;
             })
         );
@@ -47,8 +55,8 @@ export class DriverAboutComponent extends BaseDirective {
                     data: {
                         title: `Recompile Driver`,
                         content: `<p>Are you sure you want recompile this driver?</p><p>New driver code will be loaded and device settings will be updated.</p>`,
-                        icon: { type: 'icon', class: 'backoffice-cycle' }
-                    }
+                        icon: { type: 'icon', class: 'backoffice-cycle' },
+                    },
                 }
             );
             this.subscription(
@@ -64,9 +72,13 @@ export class DriverAboutComponent extends BaseDirective {
                                 ref.close();
                                 this.unsub('delete_confirm');
                             },
-                            err => {
+                            (err) => {
                                 ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error recompiling driver. Error: ${JSON.stringify(err.response || err.message || err)}`);
+                                this._service.notifyError(
+                                    `Error recompiling driver. Error: ${JSON.stringify(
+                                        err.response || err.message || err
+                                    )}`
+                                );
                             }
                         );
                     }
@@ -76,11 +88,13 @@ export class DriverAboutComponent extends BaseDirective {
     }
 
     public checkCompiled() {
-        isDriverCompiled(this.item.id)
-            .subscribe(_ => this.compiled = true, _ => {
+        isDriverCompiled(this.item.id).subscribe(
+            () => (this.compiled = true),
+            () => {
                 this.compiled = false;
-                this.timeout('compiled', () => this.checkCompiled(), 1000)
-            })
+                this.timeout('compiled', () => this.checkCompiled(), 1000);
+            },
+            () => this.compiled = true
+        );
     }
-
 }

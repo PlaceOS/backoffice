@@ -76,8 +76,7 @@ export class TriggersComponent extends BaseRootComponent<PlaceTrigger> implement
                     ? new PlaceTrigger({ ...this.item, id: '', name: `${this.item.name} (1)` })
                     : new PlaceTrigger(),
                 name: 'Trigger',
-                save: (item) =>
-                    item.id ? updateTrigger(item.id, item.toJSON()) : addTrigger(item.toJSON()),
+                save: (item) => addTrigger(item),
             },
         });
         this.subscription(
@@ -107,8 +106,7 @@ export class TriggersComponent extends BaseRootComponent<PlaceTrigger> implement
                 data: {
                     item: this.item,
                     name: 'Trigger',
-                    save: (item) =>
-                        item.id ? updateTrigger(item.id, item.toJSON()) : addTrigger(item.toJSON()),
+                    save: (item) => updateTrigger(item.id, item),
                 },
             });
             this.modal_ref.afterClosed().subscribe(() => {

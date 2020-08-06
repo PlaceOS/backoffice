@@ -121,7 +121,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                 data: {
                     item: trigger,
                     name: 'Trigger',
-                    save: (item) => item.id ? updateTrigger(item.id, item.toJSON()) : this.addTrigger(item.toJSON()),
+                    save: (item) => updateTrigger(item.id, item),
                     external_save: true,
                 },
             });

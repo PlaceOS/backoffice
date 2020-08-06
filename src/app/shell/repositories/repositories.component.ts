@@ -67,7 +67,7 @@ export class RepositoriesComponent extends BaseRootComponent<PlaceRepository> {
             data: {
                 item: copy ? new PlaceRepository({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceRepository(),
                 name: 'Repository',
-                save: (item) => item.id ? updateRepository(item.id, item.toJSON()) : addRepository(item.toJSON()),
+                save: (item) => addRepository(item),
             }
         });
         this.subscription('modal_event', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -94,7 +94,7 @@ export class RepositoriesComponent extends BaseRootComponent<PlaceRepository> {
                 data: {
                     item: this.item,
                     name: 'Repository',
-                    save: (item) => item.id ? updateRepository(item.id, item.toJSON()) : addRepository(item.toJSON()),
+                    save: (item) => updateRepository(item.id, item),
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {

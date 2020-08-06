@@ -75,7 +75,7 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
             data: {
                 item: copy ? new PlaceSystem({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceSystem(),
                 name: 'System',
-                save: (item) => item.id ? updateSystem(item.id, item.toJSON()) : addSystem(item.toJSON()),
+                save: (item) => addSystem(item),
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -102,7 +102,7 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
                 data: {
                     item: this.item,
                     name: 'System',
-                    save: (item) => item.id ? updateSystem(item.id, item.toJSON()) : addSystem(item.toJSON()),
+                    save: (item) => updateSystem(item.id, item),
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {
