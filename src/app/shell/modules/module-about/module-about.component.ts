@@ -72,7 +72,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
 
     public loadDriver() {
         if (this.item && this.item.driver_id) {
-            showDriver(this.item.driver_id).toPromise().then(driver => {
+            showDriver(this.item.driver_id).subscribe(driver => {
                 this.driver = driver;
             });
         }
@@ -80,7 +80,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
 
     public loadSystem() {
         if (this.item && this.item.system_id) {
-            showSystem(this.item.system_id).toPromise().then(system => {
+            showSystem(this.item.system_id).subscribe(system => {
                 this.system = system;
             });
         }
@@ -95,7 +95,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
 
     public stopModule() {
         this.stopping = true;
-        stopModule(this.item.id).toPromise().then(
+        stopModule(this.item.id).subscribe(
             () => {
                 this.stopping = false;
                 this._service.notifySuccess('Module successfully stopped');
@@ -118,7 +118,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
 
     public startModule() {
         this.stopping = true;
-        startModule(this.item.id).toPromise().then(
+        startModule(this.item.id).subscribe(
             () => {
                 this.stopping = false;
                 this._service.notifySuccess('Module successfully started');

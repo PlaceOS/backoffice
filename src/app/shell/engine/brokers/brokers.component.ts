@@ -94,7 +94,7 @@ export class AdminBrokersComponent extends BaseDirective implements OnInit {
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         ref.componentInstance.loading = 'Deleting broker...';
-                        removeBroker(item.id).toPromise().then(
+                        removeBroker(item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted broker "${item.name}".`

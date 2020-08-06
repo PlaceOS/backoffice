@@ -1,23 +1,18 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
-import { PlaceUser, PlaceUserQueryOptions, removeUser, logout, authorise, currentUser, queryUsers } from '@placeos/ts-client';
+import { PlaceUser, PlaceUserQueryOptions, logout, authorise, currentUser, queryUsers } from '@placeos/ts-client';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
+import { first } from 'rxjs/operators';
 
-import { FilterFn, DialogEvent } from '../../shared/utilities/types.utilities';
+import { FilterFn } from '../../shared/utilities/types.utilities';
 import { toQueryString } from 'src/app/shared/utilities/api.utilities';
-import {
-    ConfirmModalComponent,
-    ConfirmModalData,
-    CONFIRM_METADATA
-} from '../../overlays/confirm-modal/confirm-modal.component';
+import { BaseClass } from 'src/app/shared/globals/base.class';
+import { ApplicationService } from '../app.service';
 
 import * as dayjs from 'dayjs';
 import * as Sentry from '@sentry/browser';
-import { BaseClass } from 'src/app/shared/globals/base.class';
-import { ApplicationService } from '../app.service';
 
 type ServiceItem = PlaceUser;
 
@@ -67,11 +62,10 @@ export class BackofficeUsersService extends BaseClass {
 
     constructor(
         private _service: ApplicationService,
-        private http_unauth: HttpClient,
-        private _dialog: MatDialog
+        private http_unauth: HttpClient
     ) {
         super();
-        this.load();
+        this._service.initialised.pipe(first(_ => _)).subscribe(() => this.load());
     }
 
     /**
@@ -87,18 +81,17 @@ export class BackofficeUsersService extends BaseClass {
     }
 
     public load(): Promise<void> {
-        console.log('Load user');
         return new Promise(resolve => {
             this.state.next('loading');
-            currentUser().toPromise().then(
+            currentUser().subscribe(
                 user => {
+                    console.log('User:', user);
                     if (user) {
                         this.user.next(user);
                         this._service.set('user', user);
                         Sentry.configureScope(scope => scope.setUser({ email: user.email }));
                         this.state.next('success');
                         resolve();
-                        console.log('Dark mode:', this.dark_mode);
                         this.dark_mode = this.dark_mode;
                     } else {
                         this.timeout('load', () => this.load().then(_ => resolve()), 600);
@@ -171,38 +164,5 @@ export class BackofficeUsersService extends BaseClass {
      */
     public logout() {
         logout();
-    }
-
-    /**
-     * Open confirmation modal for deleting an item
-     * @param item Item to delete
-     */
-    public askDelete(item: PlaceUser): Promise<string> {
-        return new Promise((resolve, reject) => {
-            let complete = false;
-            const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
-                ConfirmModalComponent,
-                {
-                    ...CONFIRM_METADATA,
-                    data: {
-                        title: 'Delete User?',
-                        content: `Are you sure you want to delete this user?`,
-                        icon: { type: 'icon', class: 'backoffice-trash' }
-                    }
-                }
-            );
-            this.subscription(
-                'confirm_ref',
-                ref.componentInstance.event.subscribe((e: DialogEvent) => {
-                    if (e.reason === 'done') {
-                        complete = true;
-                        removeUser(item.id).toPromise().then(
-                            () => resolve(),
-                            () => reject('Request failed')
-                        );
-                    }
-                })
-            );
-        });
     }
 }

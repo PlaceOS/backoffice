@@ -346,7 +346,6 @@ export function csvToJson(csv: string, seperator: string = ',') {
                 part = parts[i];
                 /* istanbul ignore else */
                 if (part !== undefined) {
-                    console.log('Part:', fields[i], part);
                     let value = '';
                     try { value = JSON.parse(part) }
                     catch (e) { value = part; }
@@ -373,7 +372,6 @@ export function jsonToCsv(json: HashMap[], use_keys?: string[], seperator = ',')
         const valid_keys = keys.filter(
             (key) => (!use_keys || use_keys.includes(key)) && json[0].hasOwnProperty(key)
         );
-        console.log('Valid Keys:', valid_keys);
         return `\uFEFF${valid_keys.join(seperator)}\n${json
             .map((item) =>
                 valid_keys

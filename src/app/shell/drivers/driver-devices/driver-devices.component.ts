@@ -87,7 +87,7 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
 
     public loadModules(offset: number = 0) {
         if (!this.item) { return; }
-        queryModules({ driver_id: this.item.id, offset, limit: 500 }).toPromise().then(
+        queryModules({ driver_id: this.item.id, offset, limit: 500 }).subscribe(
             list => (this.device_list = list),
             () => null
         );
@@ -111,7 +111,7 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         ref.componentInstance.loading = 'Deleting module...';
-                        removeModule(item.id).toPromise().then(
+                        removeModule(item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted module "${item.name}".`

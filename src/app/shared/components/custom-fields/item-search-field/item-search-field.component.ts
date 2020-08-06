@@ -86,7 +86,6 @@ export class ItemSearchFieldComponent<T extends Identity = any> extends BaseDire
             map((list: T[]) => {
                 this.loading = false;
                 const search = (this.search_str || '').toLowerCase();
-                console.log('List:', list);
                 return list.filter((item: any) => {
                     const match =
                         item.name.toLowerCase().indexOf(search) >= 0 ||
@@ -143,7 +142,6 @@ export class ItemSearchFieldComponent<T extends Identity = any> extends BaseDire
      * @param value The new value for the component
      */
     public writeValue(value: T) {
-        console.log('Value:', value);
         this.active_item = value;
         this.resetSearchString();
     }

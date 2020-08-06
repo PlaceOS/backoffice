@@ -41,7 +41,7 @@ export class ModulesComponent extends BaseRootComponent<PlaceModule> {
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, module_id: this.item.id };
         // Get system count
-        querySystems(query).toPromise().then((list) => {
+        querySystems(query).subscribe((list) => {
             this.system_count = lastRequestTotal('systems') || list.length || 0;
         });
     }
@@ -114,7 +114,7 @@ export class ModulesComponent extends BaseRootComponent<PlaceModule> {
                 this.modal_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         this.modal_ref.componentInstance.loading = 'Deleting module...';
-                        removeModule(this.item.id).toPromise().then(
+                        removeModule(this.item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted module "${this.item.name}".`

@@ -52,7 +52,7 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges,
         querySystems({
             trigger_id: this.item.id,
             offset
-        } as any).toPromise().then(
+        } as any).subscribe(
             list => this.system_trigger_list = list || [],
             () => null
         );

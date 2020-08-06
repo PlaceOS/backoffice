@@ -76,7 +76,6 @@ export class LoginComponent extends BaseDirective implements OnInit {
                 }
             },
             err => {
-                console.log('Error:', err);
                 this.login_form.controls.password.setErrors({ invalid: true });
             }
         );

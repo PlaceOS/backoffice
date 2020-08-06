@@ -331,7 +331,7 @@ export class ApplicationService extends BaseClass {
             if (window.debug) {
                 window.application = this;
             }
-            this._initialised.next(true);
+            this.timeout('init', () => this._initialised.next(true), 50);
         });
     }
 

@@ -185,7 +185,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
         listRepositoryDriverDetails(this.base_repo.id, {
             driver: `${this.base_driver.id}`,
             commit: `${event.id}`,
-        }).toPromise().then(
+        }).subscribe(
             (driver) => {
                 this.loading = false;
                 if (!this.form.controls.id.value) {

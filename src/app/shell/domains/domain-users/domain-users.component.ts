@@ -38,7 +38,7 @@ export class DomainUsersComponent extends BaseDirective implements OnInit, OnCha
 
     public loadUsers(offset: number = 0) {
         if (!this.item) { return; }
-        queryUsers({ authority_id: this.item.id, offset }).toPromise().then((list) => {
+        queryUsers({ authority_id: this.item.id, offset }).subscribe((list) => {
             if (!offset) { this.model.list = []; }
             for (const item of (list || [])) {
                 let found = false;

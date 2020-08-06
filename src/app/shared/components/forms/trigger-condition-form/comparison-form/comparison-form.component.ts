@@ -88,7 +88,7 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
      */
     public loadSystemStatusVariables(mod_name: string, side: 'left' | 'right') {
         const name = mod_name.split('_');
-        systemModuleState(this.system.id, name[0], +name[1]).toPromise().then(
+        systemModuleState(this.system.id, name[0], +name[1]).subscribe(
             var_map => {
                 if (Object.keys(var_map).length <= 0) {
                     var_map.connected = true;
@@ -113,7 +113,7 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
         if (!this.system) {
             return;
         }
-        queryModules({ control_system_id: this.system.id }).toPromise().then(module_list => {
+        queryModules({ control_system_id: this.system.id }).subscribe(module_list => {
             this.modules = module_list;
             const mod_list = this.system.modules;
             this.modules.sort((a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id));

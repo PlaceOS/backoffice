@@ -58,7 +58,6 @@ export function generateBasicHandlers<T = any>(
         delete ENDPOINT_SUBJECTS[endpoint];
         delete ENDPOINT_OBSERVABLES[endpoint];
     }
-    console.log('Data:', endpoint, data);
     ENDPOINT_SUBJECTS[endpoint] = new BehaviorSubject<T[]>(data);
     ENDPOINT_OBSERVABLES[endpoint] = ENDPOINT_SUBJECTS[endpoint].asObservable();
     /** Add GET for index */

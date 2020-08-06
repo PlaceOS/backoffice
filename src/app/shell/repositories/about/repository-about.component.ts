@@ -35,7 +35,7 @@ export class RepositoryAboutComponent extends BaseDirective implements OnInit {
     public pullLatestCommit() {
         this.pulling = true;
         pullRepositoryChanges(this.item.id)
-            .toPromise().then(
+            .subscribe(
                 (resp: any) => {
                     this.pulling = false;
                     this._service.notifyInfo(`Pulled down commit ${resp.commit_hash} for ${this.item.name}`);

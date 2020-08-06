@@ -94,7 +94,7 @@ export class SystemMetadataComponent extends BaseDirective implements OnChanges,
             'confirm',
             ref.componentInstance.event.subscribe(event => {
                 if (event.reason === 'done') {
-                    removeMetadata(this.item.id, { name: field }).toPromise().then(
+                    removeMetadata(this.item.id, { name: field }).subscribe(
                         () => {
                             this._service.notifySuccess(
                                 `Successfully removed "${field}" metadata.`
@@ -123,7 +123,7 @@ export class SystemMetadataComponent extends BaseDirective implements OnChanges,
             updateMetadata(this.item.id, {
                 ...value,
                 details: JSON.parse(value.details)
-            }).toPromise().then(
+            }).subscribe(
                 (item: PlaceMetadata) => {
                     this.loading[field.name] = false;
                     const index = this.metadata.findIndex(i => i.name === field.name);
@@ -194,7 +194,7 @@ export class SystemMetadataComponent extends BaseDirective implements OnChanges,
     }
 
     private loadMetadata() {
-        showMetadata(this.item.id).toPromise().then(map => {
+        showMetadata(this.item.id).subscribe(map => {
             this.metadata = Object.keys(map).map(key => map[key]);
             this.generateForms();
         });

@@ -89,7 +89,7 @@ export class PlaceClusterTaskListComponent extends BaseDirective implements OnIn
 
     private loadProcesses(): void {
         this.loading = true;
-        queryProcesses(this.cluster.id, { include_status: true } as any).toPromise().then(list => {
+        queryProcesses(this.cluster.id, { include_status: true } as any).subscribe(list => {
             this.process_list = list || [];
             this.loading = false;
         });

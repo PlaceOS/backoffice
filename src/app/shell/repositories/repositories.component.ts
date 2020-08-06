@@ -38,10 +38,9 @@ export class RepositoriesComponent extends BaseRootComponent<PlaceRepository> {
 
     protected loadValues() {
         const query: any = { offset: 0 };
-        console.log('Type:', this.item.type);
         if (this.item.type === PlaceRepositoryType.Driver) {
             // Get driver count for repository
-            listRepositoryDrivers(this.item.id, query).toPromise().then(
+            listRepositoryDrivers(this.item.id, query).subscribe(
                 list => (this.driver_count = list.length)
             );
         } else {

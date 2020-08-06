@@ -8,7 +8,7 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { PlaceUser, currentUser } from '@placeos/ts-client';
+import { PlaceUser } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
 
 import { ApplicationLink } from '../shared/utilities/settings.interfaces';
@@ -70,7 +70,7 @@ export class AppShellComponent extends BaseDirective implements OnInit {
 
     public init() {
         this.loading = false;
-        currentUser().toPromise().then(user => (this.user = user));
+        this._users.user.subscribe(user => (this.user = user));
     }
 
     /** Navigate to the root page */

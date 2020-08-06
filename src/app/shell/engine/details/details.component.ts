@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { get, apiEndpoint } from '@placeos/ts-client';
 
+import { VERSION } from 'src/environments/version';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
 import {
@@ -9,8 +11,6 @@ import {
 } from 'src/app/overlays/changelog-modal/changelog-modal.component';
 
 import * as dayjs from 'dayjs';
-import { VERSION } from 'src/environments/version';
-import { currentUser, get, apiEndpoint } from '@placeos/ts-client';
 
 export interface PlaceAPIDetails {
     /** Display name for the application */
@@ -40,7 +40,7 @@ export class PlaceDetailsComponent extends BaseDirective implements OnInit {
     }
 
     public get user() {
-        return currentUser();
+        return this._service.get('user');
     }
 
     public get backoffice_version() {

@@ -38,7 +38,7 @@ export class PlaceClusterDetailsComponent extends BaseDirective implements OnIni
     private loadClusters(): void {
         if (this.active_cluster) { return; }
         this.loading = true;
-        queryClusters({ include_status: true } as any).toPromise().then((list) => {
+        queryClusters({ include_status: true } as any).subscribe((list) => {
             this.cluster_list = list || [];
             const date = dayjs().valueOf();
             this.cluster_list.forEach(cluster => {

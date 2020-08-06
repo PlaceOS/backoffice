@@ -192,7 +192,7 @@ export class TriggerAboutComponent extends BaseDirective implements OnChanges, O
             );
             conditions.comparisons.splice(index, 1);
         }
-        updateTrigger(this.item.id, { ...this.item.toJSON(), conditions }).toPromise().then(
+        updateTrigger(this.item.id, { ...this.item.toJSON(), conditions }).subscribe(
             () => this._service.notifySuccess('Successfully removed trigger condition.'),
             err =>
                 this._service.notifyError(
@@ -248,7 +248,7 @@ export class TriggerAboutComponent extends BaseDirective implements OnChanges, O
             );
             actions.functions.splice(index, 1);
         }
-        updateTrigger(this.item.id, { ...this.item.toJSON(), actions }).toPromise().then(
+        updateTrigger(this.item.id, { ...this.item.toJSON(), actions }).subscribe(
             () => this._service.notifySuccess('Successfully removed trigger action.'),
             err =>
                 this._service.notifyError(
@@ -297,7 +297,7 @@ export class TriggerAboutComponent extends BaseDirective implements OnChanges, O
             functions: type === 'function' ? list : this.functions,
             mailers: type === 'function' ? this.mailers : list
         };
-        updateTrigger(this.item.id, { ...this.item.toJSON(), actions }).toPromise().then(
+        updateTrigger(this.item.id, { ...this.item.toJSON(), actions }).subscribe(
             () => this._service.notifySuccess(`Successfully re-ordered trigger ${type} action.`),
             err =>
                 this._service.notifyError(

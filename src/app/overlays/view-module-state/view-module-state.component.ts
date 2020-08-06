@@ -83,7 +83,7 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
         }
         this.loading = true;
         const class_parts = class_name.split('_');
-        systemModuleState(this.system.id, class_parts[0], +class_parts[1]).toPromise().then(
+        systemModuleState(this.system.id, class_parts[0], +class_parts[1]).subscribe(
             (state) => {
                 const pre_state =
                 typeof state === 'string'

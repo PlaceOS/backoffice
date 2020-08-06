@@ -78,7 +78,7 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
         } else {
             this.updateTimeDependents();
         }
-        updateTrigger(this.trigger.id, { ...this.trigger, conditions: this.conditions }).toPromise().then(
+        updateTrigger(this.trigger.id, { ...this.trigger, conditions: this.conditions }).subscribe(
             (item) => {
                 this.event.emit({ reason: 'done', metadata: { trigger: item } });
                 this._service.notifySuccess(

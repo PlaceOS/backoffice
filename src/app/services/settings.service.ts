@@ -130,7 +130,6 @@ export class SettingsService extends BaseClass {
             return Promise.resolve();
         }
         const file_name = file.split('/')[file.split('/').length - 1];
-        console.log('File name:', file_name, window[file_name]);
         // Check if data has been loaded into the global space
         if (window[file_name] instanceof Object) {
             this._settings[name] = { ...(this._settings[name] || {}), ...window[file_name] };

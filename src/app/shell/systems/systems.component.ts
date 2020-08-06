@@ -54,7 +54,6 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
         // Get metadata
         const map = await showMetadata(this.item.id).toPromise();
         this.metadata_count = Object.keys(map).length;
-        console.log('Metadata:', map);
     }
 
     /**
@@ -88,7 +87,6 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
      * Open the modal to create a new system
      */
     protected editItem() {
-        console.log('Edit');
         if (this.item && !this.modal_ref) {
             this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
@@ -126,7 +124,7 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
                 this.modal_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         this.modal_ref.componentInstance.loading = 'Deleting system...';
-                        removeSystem(this.item.id).toPromise().then(
+                        removeSystem(this.item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted system "${this.item.name}".`

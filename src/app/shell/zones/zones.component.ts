@@ -128,7 +128,7 @@ export class ZonesComponent extends BaseRootComponent<PlaceZone> {
                 this.modal_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         this.modal_ref.componentInstance.loading = 'Deleting zone...';
-                        removeZone(this.item.id).toPromise().then(
+                        removeZone(this.item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted zone "${this.item.name}".`

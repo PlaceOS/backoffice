@@ -47,7 +47,7 @@ export class RepositoryDriversComponent extends BaseDirective implements OnChang
             return;
         }
         this.loading = true;
-        listRepositoryDrivers(this.item.id, { offset } as any).toPromise().then(
+        listRepositoryDrivers(this.item.id, { offset } as any).subscribe(
             (list) => {
                 this.loading = false;
                 this.driver_list = list || [];

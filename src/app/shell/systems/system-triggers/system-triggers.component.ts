@@ -71,7 +71,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
         if (!this.item) {
             return;
         }
-        listSystemTriggers(this.item.id).toPromise().then(
+        listSystemTriggers(this.item.id).subscribe(
             (list) => {
                 this.trigger_list = list;
                 this.filter(this.search_str);

@@ -78,11 +78,9 @@ export class RepositoryFormComponent {
     }
 
     public async loadBranches() {
-        console.log('Load Branches');
         if (!this.is_edit || !this.form.controls.branch) {
             return;
         }
-        console.log('Loading Branches');
         const id = this.form.controls.id.value;
         this.branch_list = await listRepositoryBranches(id).toPromise() || [];
     }

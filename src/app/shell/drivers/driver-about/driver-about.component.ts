@@ -56,7 +56,7 @@ export class DriverAboutComponent extends BaseDirective {
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         ref.componentInstance.loading = 'Recompiling driver...';
-                        recompileDriver(this.item.id).toPromise().then(
+                        recompileDriver(this.item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully recompiled driver "${this.item.name}".`
@@ -77,7 +77,7 @@ export class DriverAboutComponent extends BaseDirective {
 
     public checkCompiled() {
         isDriverCompiled(this.item.id)
-            .toPromise().then(_ => this.compiled = true, _ => {
+            .subscribe(_ => this.compiled = true, _ => {
                 this.compiled = false;
                 this.timeout('compiled', () => this.checkCompiled(), 1000)
             })

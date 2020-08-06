@@ -56,7 +56,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
 
     public loadApplications(offset: number = 0) {
         if (!this.item) { return; }
-        queryApplications({ owner_id: this.item.id, offset } as any).toPromise().then(
+        queryApplications({ owner_id: this.item.id, offset } as any).subscribe(
             list => {
                 if (!offset) {
                     this.application_list = [];
@@ -146,7 +146,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         ref.componentInstance.loading = 'Deleting application...';
-                        removeApplication(item.id).toPromise().then(
+                        removeApplication(item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted application "${item.name}".`

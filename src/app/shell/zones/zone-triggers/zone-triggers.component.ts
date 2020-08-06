@@ -50,7 +50,7 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
     }
 
     public loadZoneTriggers(offset: number = 0) {
-        listZoneTriggers(this.item.id).toPromise().then(
+        listZoneTriggers(this.item.id).subscribe(
             list => {
                 this.triggers = list;
             },
@@ -86,7 +86,7 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
                         ref.componentInstance.loading = 'Removing trigger...';
                         const triggers = [...this.item.triggers];
                         triggers.splice(index, 1);
-                        updateZone(this.item.id, { ...this.item, triggers }).toPromise().then(
+                        updateZone(this.item.id, { ...this.item, triggers }).subscribe(
                             () => this._service.notifySuccess('Sucessfully removed trigger'),
                             err =>
                                 this._service.notifyError(
@@ -135,7 +135,7 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
      */
     private addTrigger(trigger: PlaceTrigger): void {
         const triggers = unique(this.item.triggers.concat(trigger.id));
-        updateZone(this.item.id, { ...this.item, triggers }).toPromise().then(
+        updateZone(this.item.id, { ...this.item, triggers }).subscribe(
             () => this._service.notifySuccess('Sucessfully added trigger'),
             err => this._service.notifyError(`Error adding trigger. Error: ${JSON.stringify(err.response || err.message || err)}`)
         );

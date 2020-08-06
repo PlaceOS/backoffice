@@ -38,7 +38,7 @@ export class DriversComponent extends BaseRootComponent<PlaceDriver> {
 
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, driver_id: this.item.id };
-        queryModules(query).toPromise().then(list => {
+        queryModules(query).subscribe(list => {
             this.device_count = lastRequestTotal('modules') || list.length || 0;
         });
     }
@@ -111,7 +111,7 @@ export class DriversComponent extends BaseRootComponent<PlaceDriver> {
                 this.modal_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         this.modal_ref.componentInstance.loading = 'Deleting driver...';
-                        removeDriver(this.item.id).toPromise().then(
+                        removeDriver(this.item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted driver "${this.item.name}".`

@@ -75,7 +75,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
             'confirm_ref',
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
-                    startSystem(this.item.id).toPromise().then(
+                    startSystem(this.item.id).subscribe(
                         result => null,
                         err =>
                             this._service.notifyError(
@@ -106,7 +106,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
             'confirm_ref',
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
-                    stopSystem(this.item.id).toPromise().then(
+                    stopSystem(this.item.id).subscribe(
                         result => null,
                         err =>
                             this._service.notifyError(
@@ -125,7 +125,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
         if (!this.item) {
             return;
         }
-        queryZones({ control_system_id: this.item.id, offset: 0 }).toPromise().then(
+        queryZones({ control_system_id: this.item.id, offset: 0 }).subscribe(
             list => {
                 list.sort((a, b) => this.item.zones.indexOf(b.id) - this.item.zones.indexOf(a.id));
                 this.zones = list;

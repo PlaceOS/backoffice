@@ -203,7 +203,7 @@ export class BaseRootComponent<T = HashMap<any>> extends BaseDirective implement
             this.item instanceof PlaceModule
         ) {
             this._service.set('loading_settings', true);
-            querySettings({ parent_id: this.item.id }).toPromise().then(
+            querySettings({ parent_id: this.item.id }).subscribe(
                 list => {
                     this._service.set('loading_settings', false);
                     for (const settings of list) {

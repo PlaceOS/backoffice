@@ -76,7 +76,7 @@ export class ModuleSystemsComponent extends BaseDirective implements OnChanges, 
 
     public loadSystems(offset: number = 0) {
         if (!this.item) { return; }
-        querySystems({ module_id: this.item.id, offset }).toPromise().then(
+        querySystems({ module_id: this.item.id, offset }).subscribe(
             list => {
                 this.system_list = list;
             },

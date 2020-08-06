@@ -61,7 +61,6 @@ export class BulkItemModalComponent<T = HashMap<any>> {
     public handleList(data: HashMap[], is_mapped: boolean = false): void {
         if (data.length) {
             if (is_mapped) {
-                console.log('To list:', data);
                 const Resource = this._data.constr;
                 this.item_list = data.map((item) => new Resource(item));
                 this.flow_step = 'list';

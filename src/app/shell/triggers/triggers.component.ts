@@ -39,7 +39,7 @@ export class TriggersComponent extends BaseRootComponent<PlaceTrigger> implement
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, trigger_id: this.item.id };
         // Get trigger count
-        querySystems(query).toPromise().then(
+        querySystems(query).subscribe(
             list =>
                 (this.system_count = lastRequestTotal('systems') || list.length || 0)
         );

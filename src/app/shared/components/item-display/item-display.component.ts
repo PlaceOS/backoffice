@@ -207,12 +207,6 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
         const item = this.item.toJSON();
         const filename = `${item.name.toLowerCase().split(' ').join('_')}.${this.name}.tsv`;
         const ignore_keys = ['module_list', 'settings', '_type', 'version'];
-        console.log(
-            'TSV:',
-            Object.keys(item),
-            ignore_keys,
-            Object.keys(item).filter((key) => ignore_keys.indexOf(key) < 0)
-        );
         const csv_data = jsonToCsv(
             [item],
             Object.keys(item).filter((key) => ignore_keys.indexOf(key) < 0),

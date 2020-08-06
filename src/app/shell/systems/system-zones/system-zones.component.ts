@@ -58,7 +58,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
      */
     public loadZones(offset: number = 0) {
         if (!this.item) { return; }
-        listSystemZones(this.item.id).toPromise().then(
+        listSystemZones(this.item.id).subscribe(
             list => {
                 list.sort((a, b) => this.item.zones.indexOf(a.id) - this.item.zones.indexOf(b.id));
                 this.zones = list;
@@ -87,7 +87,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                         const zones: string[] = [...this.item.zones];
                         moveItemInArray(zones, event.previousIndex, event.currentIndex);
                         ref.componentInstance.loading = 'Updating zone ordering...';
-                        updateSystem(this.item.id, { ...this.item.toJSON(), zones }).toPromise().then(
+                        updateSystem(this.item.id, { ...this.item.toJSON(), zones }).subscribe(
                             () => {
                                 ref.close();
                                 this.unsub('confirm_ref');
@@ -124,7 +124,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                     if (e.reason === 'done') {
                         this.loading.emit(true);
                         const zones = this.item.zones.filter(id => id !== zone.id);
-                        updateSystem(this.item.id, { ...this.item.toJSON(), zones }).toPromise().then(
+                        updateSystem(this.item.id, { ...this.item.toJSON(), zones }).subscribe(
                             (item: any) => {
                                 this.loading.emit(false);
                                 this.item = item;
@@ -170,7 +170,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                         if (e.reason === 'done') {
                             ref.componentInstance.loading = 'Adding zone to system...';
                             const zones = unique([...this.item.zones, this.new_zone.id]);
-                            updateSystem(this.item.id, { ...this.item.toJSON(), zones }).toPromise().then(
+                            updateSystem(this.item.id, { ...this.item.toJSON(), zones }).subscribe(
                                 (item: any) => {
                                     this.loading.emit(false);
                                     this._service.notifySuccess(

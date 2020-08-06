@@ -287,7 +287,6 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         if (!active_item) {
             return;
         }
-        console.log('Replace:', active_item);
         const list = this.items.getValue() || [];
         const index = list.findIndex(item => item.id === active_item.id);
         if (index >= 0) {
@@ -300,7 +299,6 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
 
         list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
         this.items.next([...list]);
-        console.log('Replaced');
     }
 
     /**

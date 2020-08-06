@@ -127,7 +127,7 @@ export class SystemExecFieldComponent extends BaseDirective
      */
     public loadModules(offset: number = 0) {
         if (this.system) {
-            queryModules({ control_system_id: this.system.id, offset, limit: 500, complete: true } as any).toPromise().then(
+            queryModules({ control_system_id: this.system.id, offset, limit: 500, complete: true } as any).subscribe(
                 list => {
                     this.devices = (list || []).filter(device => device.running).map(device => {
                         const module_name =
@@ -171,7 +171,7 @@ export class SystemExecFieldComponent extends BaseDirective
         this.methods = null;
         this.fields = {};
         this.active_module = item;
-        functionList(this.system.id, item.module, item.index).toPromise().then(
+        functionList(this.system.id, item.module, item.index).subscribe(
             list => {
                 if (list) {
                     this.methods = Object.keys(list).map(i => ({ name: i, ...list[i] }));
@@ -309,7 +309,7 @@ export class SystemExecFieldComponent extends BaseDirective
                 details.module,
                 details.index,
                 details.args
-            ).toPromise().then(
+            ).subscribe(
                 result => {
                     this.service.notifySuccess(
                         'Command successful executed.\nView Response?',

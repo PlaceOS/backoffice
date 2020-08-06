@@ -76,7 +76,7 @@ export class ZoneSystemsComponent extends BaseDirective implements OnChanges, On
     }
 
     public loadSystems(offset: number = 0) {
-        querySystems({ offset, zone_id: this.item.id, limit: 500 }).toPromise().then(
+        querySystems({ offset, zone_id: this.item.id, limit: 500 }).subscribe(
             list => (this.system_list = list)
         );
     }

@@ -76,7 +76,7 @@ export class ZoneChildrenComponent extends BaseDirective implements OnChanges, O
     }
 
     public loadChildren(offset: number = 0) {
-        queryZones({ offset, parent: this.item.id, limit: 500 }).toPromise().then(
+        queryZones({ offset, parent: this.item.id, limit: 500 }).subscribe(
             list => (this.zone_list = list)
         );
     }

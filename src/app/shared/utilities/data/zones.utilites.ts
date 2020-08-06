@@ -20,14 +20,11 @@ export function generateZoneFormFields(zone: PlaceZone): FormGroup {
         type: new FormControl(zone.display_name),
         count: new FormControl(zone.count),
         capacity: new FormControl(zone.capacity),
-        map_id: new FormControl(zone.map_id)
+        map_id: new FormControl(zone.map_id),
     };
 
-        fields.parent_zone.valueChanges.subscribe((zone: PlaceZone) =>
-            {
-                console.log('Zone:', zone);
-                fields.parent_id.setValue(zone.id);
-            }
-        );
+    fields.parent_zone.valueChanges.subscribe((zone: PlaceZone) =>
+        fields.parent_id.setValue(zone.id)
+    );
     return new FormGroup(fields);
 }

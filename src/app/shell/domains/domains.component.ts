@@ -50,7 +50,7 @@ export class DomainsComponent extends BaseRootComponent<PlaceDomain> {
         if(!this.item){ return; }
         let query: any = { offset: 0, limit: 1, owner: this.item.id };
         // Get application count
-        queryApplications(query).toPromise().then(
+        queryApplications(query).subscribe(
             list => (this.applications = lastRequestTotal('applications') || list.length || 0)
         );
         query = { offset: 0, limit: 1, authority_id: this.item.id };
@@ -59,7 +59,7 @@ export class DomainsComponent extends BaseRootComponent<PlaceDomain> {
         //     () => (this.auth_sources = this._service.AuthSources.last_total)
         // );
         // Get users count
-        queryUsers(query).toPromise().then(
+        queryUsers(query).subscribe(
             list => (this.user_count = lastRequestTotal('users') || list.length || 0)
         );
     }
@@ -131,7 +131,7 @@ export class DomainsComponent extends BaseRootComponent<PlaceDomain> {
                 this.modal_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         this.modal_ref.componentInstance.loading = 'Deleting domain...';
-                        removeDomain(this.item.id).toPromise().then(
+                        removeDomain(this.item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted domain "${this.item.name}".`
