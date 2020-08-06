@@ -1,13 +1,12 @@
 
 import { Injectable } from '@angular/core';
-import { ComposerService } from '@placeos/composer';
-import { EngineSystem, EngineUser } from '@placeos/ts-client';
+import { PlaceSystem, PlaceUser } from '@placeos/ts-client';
 
 import { BaseAPIService } from './base.service';
 
 import * as dayjs from 'dayjs';
 
-export interface IEngineLogEntry {
+export interface IPlaceLogEntry {
     id: string;
     name: string;
     notes?: string;
@@ -16,9 +15,9 @@ export interface IEngineLogEntry {
     installed_device?: boolean;
     ip?: string;
     user_id?: string;
-    user?: EngineUser;
+    user?: PlaceUser;
     system_id?: string;
-    systems?: EngineSystem[];
+    systems?: PlaceSystem[];
     display?: any;
     created: number;
     last_checked: number;
@@ -28,22 +27,16 @@ export interface IEngineLogEntry {
 @Injectable({
     providedIn: 'root'
 })
-export class BackofficeLogsService extends BaseAPIService<IEngineLogEntry> {
+export class BackofficeLogsService extends BaseAPIService<IPlaceLogEntry> {
 
-    constructor(private _composer: ComposerService) {
-        super(undefined);
-        const sub = this._composer.initialised.subscribe((state) => {
-            if (state) {
-                this.http = this._composer.http;
-                sub.unsubscribe();
-            }
-        });
+    constructor() {
+        super();
         this._name = 'log';
         this._api_route = '/logs';
     }
 
     public process(raw_item: any) {
-        const item: IEngineLogEntry = {
+        const item: IPlaceLogEntry = {
             id: raw_item.id,
             name: raw_item.name,
             notes: raw_item.notes,

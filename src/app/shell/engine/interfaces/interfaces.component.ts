@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ComposerService } from '@placeos/composer';
+import { listInterfaceRepositories } from '@placeos/ts-client';
+
 import { Identity } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
@@ -11,14 +12,12 @@ export class AdminInterfacesComponent implements OnInit {
     /** List of interfaces */
     public interfaces: Identity[] = [];
 
-    constructor(private _composer: ComposerService) {}
-
     ngOnInit() {
         this.loadInterfaces();
     }
 
     private async loadInterfaces() {
-        const interfaces = await this._composer.repositories.listInterfaces();
+        const interfaces = await listInterfaceRepositories();
         this.interfaces = Object.keys(interfaces).map(id => ({ id, name: interfaces[id] }));
     }
 }

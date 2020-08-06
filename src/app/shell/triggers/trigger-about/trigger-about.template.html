@@ -20,7 +20,8 @@
                     >Template System:
                 </label>
                 <item-search-field
-                    [service]="system_service"
+                    name="system"
+                    [query_fn]="query_fn"
                     [(ngModel)]="template_system"
                 ></item-search-field>
             </div>

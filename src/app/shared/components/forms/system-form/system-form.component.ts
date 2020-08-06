@@ -1,11 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { EncryptionLevel } from '@placeos/ts-client';
+import { EncryptionLevel, queryZones } from '@placeos/ts-client';
 import { SPACE, ENTER, COMMA } from '@angular/cdk/keycodes';
 
 import { ApplicationService } from 'src/app/services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { EngineServiceLike, Identity } from 'src/app/shared/utilities/types.utilities';
+import { PlaceServiceLike, Identity } from 'src/app/shared/utilities/types.utilities';
 import { MatChipInputEvent } from '@angular/material/chips';
 
 @Component({
@@ -23,17 +23,13 @@ export class SystemFormComponent extends BaseDirective {
         { id: EncryptionLevel.Admin, name: 'Admin' },
         { id: EncryptionLevel.NeverDisplay, name: 'Never Display' }
     ];
-
+    /** Function for querying zones */
+    public readonly query_fn = (_: string) => queryZones({ q: _ });
     /** List of separator characters for features */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
     public get feature_list(): string[] {
         return this.form.controls.features.value;
-    }
-
-    /** Service for handling zones */
-    public get zone_service(): EngineServiceLike {
-        return this._service.Zones;
     }
 
     constructor(private _service: ApplicationService) {

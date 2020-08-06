@@ -1,18 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-    EngineResource,
-    EngineSystem,
-    EngineZone,
-    EngineDriver,
-    EngineModule
+    PlaceSystem,
+    PlaceZone,
+    PlaceDriver,
+    PlaceModule,
+    querySettings
 } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
-import { EngineServiceLike } from '../utilities/types.utilities';
+import { PlaceServiceLike, HashMap } from '../utilities/types.utilities';
 import { first } from 'rxjs/operators';
-import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -20,7 +19,7 @@ import { MatDialogRef } from '@angular/material/dialog';
     template: '',
     styles: []
 })
-export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective implements OnInit {
+export class BaseRootComponent<T = HashMap<any>> extends BaseDirective implements OnInit {
     /** Name of the API service assoicated with the  */
     public readonly service_name: string;
     /** ID of the item to render */
@@ -38,10 +37,10 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective im
     /** Modal Reference */
     public modal_ref: MatDialogRef<any>;
     /** Service to get data from */
-    public service: EngineServiceLike;
+    public service: PlaceServiceLike;
 
     /** Service for the active module */
-    public get module(): EngineServiceLike {
+    public get module(): PlaceServiceLike {
         return this.service;
     }
 
@@ -52,7 +51,6 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective im
     ) {
         super();
         this.service_name = 'Systems';
-        this.service = this._service.Systems;
     }
 
     public ngOnInit() {
@@ -199,13 +197,13 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective im
 
     protected loadSettings(): void {
         if (
-            this.item instanceof EngineSystem ||
-            this.item instanceof EngineZone ||
-            this.item instanceof EngineDriver ||
-            this.item instanceof EngineModule
+            this.item instanceof PlaceSystem ||
+            this.item instanceof PlaceZone ||
+            this.item instanceof PlaceDriver ||
+            this.item instanceof PlaceModule
         ) {
             this._service.set('loading_settings', true);
-            this._service.EngineSettings.query({ parent_id: this.item.id }).then(
+            querySettings({ parent_id: this.item.id }).toPromise().then(
                 list => {
                     this._service.set('loading_settings', false);
                     for (const settings of list) {

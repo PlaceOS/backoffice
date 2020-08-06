@@ -1,6 +1,6 @@
 
 import { Component, Input } from '@angular/core';
-import { EngineDriver, EncryptionLevel } from '@placeos/ts-client';
+import { PlaceDriver, EncryptionLevel, isDriverCompiled, recompileDriver } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,7 +15,7 @@ import { ApplicationService } from 'src/app/services/app.service';
 })
 export class DriverAboutComponent extends BaseDirective {
     /** Item to render */
-    @Input() public item: EngineDriver;
+    @Input() public item: PlaceDriver;
     /** Whether driver has a compiled binary on the server */
     public compiled: boolean;
 
@@ -56,7 +56,7 @@ export class DriverAboutComponent extends BaseDirective {
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         ref.componentInstance.loading = 'Recompiling driver...';
-                        this.item.recompile().then(
+                        recompileDriver(this.item.id).toPromise().then(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully recompiled driver "${this.item.name}".`
@@ -76,8 +76,8 @@ export class DriverAboutComponent extends BaseDirective {
     }
 
     public checkCompiled() {
-        this._service.Drivers.isCompiled(this.item.id)
-            .then(_ => this.compiled = true, _ => {
+        isDriverCompiled(this.item.id)
+            .toPromise().then(_ => this.compiled = true, _ => {
                 this.compiled = false;
                 this.timeout('compiled', () => this.checkCompiled(), 1000)
             })

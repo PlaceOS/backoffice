@@ -2,7 +2,7 @@ import { Component, Input, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ENTER, COMMA, SPACE } from '@angular/cdk/keycodes';
 import { MatChipList } from '@angular/material/chips';
-import { EngineSystem } from '@placeos/ts-client';
+import { PlaceSystem } from '@placeos/ts-client';
 
 import { Identity } from 'src/app/shared/utilities/types.utilities';
 
@@ -15,7 +15,7 @@ export class TriggerActionFormComponent {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
     /** Systems used for templating the status variables */
-    @Input() public system: EngineSystem;
+    @Input() public system: PlaceSystem;
     /** List of seperators for storing emails */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
     /** Variable to hold new email addresses */

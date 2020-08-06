@@ -1,11 +1,15 @@
 import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
-    EngineRepositoryCommit,
-    EngineRepository,
-    EngineRepositoryType,
-    EngineRepositoriesService,
-    EngineDriverRole,
+    PlaceRepositoryCommit,
+    PlaceRepository,
+    PlaceRepositoryType,
+    PlaceDriverRole,
+    listRepositoryDriverDetails,
+    listRepositoryCommits,
+    listRepositoryDrivers,
+    showRepository,
+    queryRepositories,
 } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -29,17 +33,17 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     @Input() public form: FormGroup;
     /** List of driver roles */
     public role_types: Identity[] = [
-        { id: EngineDriverRole.SSH, name: 'SSH' },
-        { id: EngineDriverRole.Device, name: 'Device' },
-        { id: EngineDriverRole.Service, name: 'Service' },
-        { id: EngineDriverRole.Websocket, name: 'Websocket' },
-        { id: EngineDriverRole.Logic, name: 'Logic' },
+        { id: PlaceDriverRole.SSH, name: 'SSH' },
+        { id: PlaceDriverRole.Device, name: 'Device' },
+        { id: PlaceDriverRole.Service, name: 'Service' },
+        { id: PlaceDriverRole.Websocket, name: 'Websocket' },
+        { id: PlaceDriverRole.Logic, name: 'Logic' },
     ];
 
     /** Driver used as a template for the new driver being created */
-    public base_repo: EngineRepository;
+    public base_repo: PlaceRepository;
     /** Driver used as a template for the new driver being created */
-    public base_commit: EngineRepositoryCommit;
+    public base_commit: PlaceRepositoryCommit;
     /** Driver used as a template for the new driver being created */
     public base_driver: Identity;
     /** List of available drivers for the active repository */
@@ -60,16 +64,13 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     public loading_drivers: boolean;
     /** Whether driver commits are being loaded */
     public loading_commits: boolean;
+    /** Function to query repositories */
+    public readonly query_fn = (_: string) => queryRepositories({ q: _ });
     /** Function to check repo that are excluded from being listed */
-    public readonly exclude_fn = (repo: EngineRepository) => repo.type === EngineRepositoryType.Interface
+    public readonly exclude_fn = (repo: PlaceRepository) => repo.type === PlaceRepositoryType.Interface
 
     public get editing(): boolean {
         return this.form.controls.id && this.form.controls.id.value;
-    }
-
-    /** Service for handling driver discovery */
-    public get discovery_service(): EngineRepositoriesService {
-        return this._service.Repositories;
     }
 
     constructor(private _service: ApplicationService) {
@@ -83,7 +84,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
             switchMap((repo_id) => {
                 this.loading_drivers = true;
                 this.driver_list = [];
-                return this._service.Repositories.listDrivers(repo_id);
+                return listRepositoryDrivers(repo_id);
             }),
             catchError((_) => {
                 this._service.notifyError(`Error loading driver list. Error: ${_.message || _}`);
@@ -108,7 +109,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
             switchMap((driver_id) => {
                 this.loading_commits = true;
                 this.commit_list = [];
-                return this._service.Repositories.listCommits(this.base_repo.id, {
+                return listRepositoryCommits(this.base_repo.id, {
                     driver: `${driver_id}`,
                 });
             }),
@@ -125,7 +126,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                         (commit) => commit.id === this.form.controls.commit.value
                     ) as any;
                 }
-                return (list || []).map((commit: EngineRepositoryCommit) => {
+                return (list || []).map((commit: PlaceRepositoryCommit) => {
                     const date = dayjs(commit.date);
                     return {
                         id: commit.commit,
@@ -153,7 +154,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
      * Update the list of available drivers
      * @param repo Repository to grab the drivers for
      */
-    public async updateDriverList(repo: EngineRepository) {
+    public async updateDriverList(repo: PlaceRepository) {
         this.form.controls.repository_id.setValue(repo.id);
         this.base_repo = repo;
         const promise = this.driver_list$.toPromise();
@@ -181,10 +182,10 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
         this.form.controls.commit.setValue(event.id);
         this.base_commit = event as any;
         this.loading = true;
-        this._service.Repositories.driverDetails(this.base_repo.id, {
+        listRepositoryDriverDetails(this.base_repo.id, {
             driver: `${this.base_driver.id}`,
             commit: `${event.id}`,
-        }).then(
+        }).toPromise().then(
             (driver) => {
                 this.loading = false;
                 if (!this.form.controls.id.value) {
@@ -197,10 +198,10 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                     this.form.controls.default_uri.setValue(driver.uri_base || '');
                     this.form.controls.role.setValue(
                         driver.tcp_port || driver.udp_port
-                            ? EngineDriverRole.Device
+                            ? PlaceDriverRole.Device
                             : driver.uri_base
-                            ? EngineDriverRole.Service
-                            : EngineDriverRole.Logic
+                            ? PlaceDriverRole.Service
+                            : PlaceDriverRole.Logic
                     );
                     this.form.controls.settings.setValue(driver.default_settings || '');
                     this.form.controls.description.setValue(driver.description || '');
@@ -216,7 +217,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     private async initDriver() {
         if (this.form.controls.repository_id && this.form.controls.repository_id.value) {
             const value = this.form.controls.repository_id.value;
-            const repo = await this.discovery_service.show(value);
+            const repo = await showRepository(value).toPromise();
             this.base_repo = repo;
             this.updateDriverList(this.base_repo);
             const driver = this.form.controls.file_name.value;

@@ -9,7 +9,7 @@ import {
     ElementRef,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineResource, EngineDriver, EngineDriverRole } from '@placeos/ts-client';
+import { PlaceDriver, PlaceDriverRole } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
@@ -25,6 +25,8 @@ import {
     DuplicateModalComponent,
     DuplicateModalData,
 } from 'src/app/overlays/duplicate-modal/duplicate-modal.component';
+import { Observable } from 'rxjs';
+import { BackofficeUsersService } from 'src/app/services/data/users.service';
 
 export interface ApplicationTab {
     id: string;
@@ -53,6 +55,8 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
     @Input() public has_change = true;
     /** Tabs available to the item type */
     @Input() public tabs: ApplicationTab[] = [];
+    /** Method to call when saving changes to the item */
+    @Input() public save: (_:T) => Observable<T>;
     /** Emitter for events on the item display */
     @Output() public event = new EventEmitter();
     /** ID of the active tab */
@@ -62,7 +66,7 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
-        return this._service.Users.dark_mode;
+        return this._users.dark_mode;
     }
 
     public get is_scrolled() {
@@ -77,15 +81,15 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
         if (!item.role) {
             return '';
         }
-        const driver: EngineDriver = item || {};
+        const driver: PlaceDriver = item || {};
         switch (driver.role) {
-            case EngineDriverRole.Device:
+            case PlaceDriverRole.Device:
                 return 'Device';
-            case EngineDriverRole.SSH:
+            case PlaceDriverRole.SSH:
                 return 'SSH';
-            case EngineDriverRole.Service:
+            case PlaceDriverRole.Service:
                 return 'Service';
-            case EngineDriverRole.Websocket:
+            case PlaceDriverRole.Websocket:
                 return 'Websocket';
         }
         return 'Logic';
@@ -93,6 +97,7 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
 
     constructor(
         private _service: ApplicationService,
+        private _users: BackofficeUsersService,
         private _dialog: MatDialog,
         private _router: Router
     ) {
@@ -146,10 +151,10 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
             ItemCreateUpdateModalComponent,
             {
                 data: {
-                    service: (this.item as any)._service,
                     item: this.item,
                     form: [] as any,
                     name: this.name,
+                    save: this.save
                 },
             }
         );

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EngineDomain } from '@placeos/ts-client';
+import { PlaceDomain, updateDomain, addDomain, removeDomain, queryApplications, queryUsers, lastRequestTotal } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -19,7 +19,7 @@ import * as dayjs from 'dayjs';
     templateUrl: './domains.template.html',
     styleUrls: ['./domains.styles.scss']
 })
-export class DomainsComponent extends BaseRootComponent<EngineDomain> {
+export class DomainsComponent extends BaseRootComponent<PlaceDomain> {
     /** Number of triggers for the active system */
     public applications: number;
     /** Number of triggers for the active system */
@@ -34,7 +34,6 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
         private _dialog: MatDialog
     ) {
         super(_service, _route, _router);
-        this.service = this._service.Domains;
     }
 
     public ngOnInit(): void {
@@ -51,8 +50,8 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
         if(!this.item){ return; }
         let query: any = { offset: 0, limit: 1, owner: this.item.id };
         // Get application count
-        this._service.Applications.query(query).then(
-            list => (this.applications = this._service.Applications.last_total || list.length || 0)
+        queryApplications(query).toPromise().then(
+            list => (this.applications = lastRequestTotal('applications') || list.length || 0)
         );
         query = { offset: 0, limit: 1, authority_id: this.item.id };
         // Get auth source count
@@ -60,8 +59,8 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
         //     () => (this.auth_sources = this._service.AuthSources.last_total)
         // );
         // Get users count
-        this._service.Users.query(query).then(
-            list => (this.user_count = this._service.Users.last_total || list.length || 0)
+        queryUsers(query).toPromise().then(
+            list => (this.user_count = lastRequestTotal('users') || list.length || 0)
         );
     }
     /**
@@ -75,8 +74,9 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: copy ? new EngineDomain({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineDomain(),
-                service: this._service.Domains
+                item: copy ? new PlaceDomain({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceDomain(),
+                name: 'Domain',
+                save: (item) => item.id ? updateDomain(item.id, item.toJSON()) : addDomain(item.toJSON()),
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -102,7 +102,8 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item: this.item,
-                    service: this._service.Domains
+                    name: 'Broker',
+                    save: (item) => item.id ? updateDomain(item.id, item.toJSON()) : addDomain(item.toJSON()),
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {
@@ -130,7 +131,7 @@ export class DomainsComponent extends BaseRootComponent<EngineDomain> {
                 this.modal_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         this.modal_ref.componentInstance.loading = 'Deleting domain...';
-                        this.item.delete().then(
+                        removeDomain(this.item.id).toPromise().then(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted domain "${this.item.name}".`

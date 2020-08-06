@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
-import { PlaceMQTTBroker } from '@placeos/ts-client';
-import { ComposerService } from '@placeos/composer';
+import { PlaceMQTTBroker, updateBroker, addBroker, queryBrokers, removeBroker } from '@placeos/ts-client';
 
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -23,7 +22,6 @@ export class AdminBrokersComponent extends BaseDirective implements OnInit {
     public brokers: PlaceMQTTBroker[] = [];
 
     constructor(
-        private _composer: ComposerService,
         private _service: ApplicationService,
         private _dialog: MatDialog
     ) {
@@ -42,7 +40,8 @@ export class AdminBrokersComponent extends BaseDirective implements OnInit {
             maxWidth: 'calc(100vw - 2em)',
             data: {
                 item: new PlaceMQTTBroker(),
-                service: this._composer.brokers,
+                name: 'Broker',
+                save: (item) => item.id ? updateBroker(item.id, item.toJSON()) : addBroker(item.toJSON()),
             },
         });
         this.subscription(
@@ -63,7 +62,8 @@ export class AdminBrokersComponent extends BaseDirective implements OnInit {
             maxWidth: 'calc(100vw - 2em)',
             data: {
                 item,
-                service: this._composer.brokers,
+                name: 'Broker',
+                save: (item) => item.id ? updateBroker(item.id, item.toJSON()) : addBroker(item.toJSON()),
             },
         });
         this.subscription(
@@ -94,7 +94,7 @@ export class AdminBrokersComponent extends BaseDirective implements OnInit {
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         ref.componentInstance.loading = 'Deleting broker...';
-                        item.delete().then(
+                        removeBroker(item.id).toPromise().then(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted broker "${item.name}".`
@@ -118,7 +118,7 @@ export class AdminBrokersComponent extends BaseDirective implements OnInit {
     }
 
     private async loadBrokers() {
-        const brokers = await this._composer.brokers.query();
+        const brokers = await queryBrokers().toPromise();
         this.brokers = brokers;
     }
 }

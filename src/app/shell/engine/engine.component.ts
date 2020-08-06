@@ -8,7 +8,7 @@ import { ApplicationService } from 'src/app/services/app.service';
     templateUrl: './engine.component.html',
     styleUrls: ['./engine.component.scss']
 })
-export class EngineComponent extends BaseDirective {
+export class PlaceComponent extends BaseDirective {
 
     constructor(private _service: ApplicationService) {
         super();

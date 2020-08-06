@@ -1,7 +1,6 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ComposerService } from '@placeos/composer';
-import { EngineSystem, EngineTrigger } from '@placeos/ts-client';
+import { PlaceSystem, PlaceTrigger, listSystemTriggers, updateTrigger, apiEndpoint, put, del, addSystemTrigger, queryTriggers } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -33,11 +32,11 @@ export interface TriggerInstanceState {
 })
 export class SystemTriggersComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active System */
-    @Input() public item: EngineSystem;
+    @Input() public item: PlaceSystem;
     /** List of triggers associated with the active system */
-    public trigger_list: EngineTrigger[] = [];
+    public trigger_list: PlaceTrigger[] = [];
     /** List of triggers associated with the active system */
-    public filtered_triggers: EngineTrigger[] = [];
+    public filtered_triggers: PlaceTrigger[] = [];
     /** Filter string for listing of triggers */
     public search_str: string;
     /** Mapping of trigger instances to their current state */
@@ -47,8 +46,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
 
     constructor(
         private _service: ApplicationService,
-        private _dialog: MatDialog,
-        private _composer: ComposerService
+        private _dialog: MatDialog
     ) {
         super();
     }
@@ -73,7 +71,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
         if (!this.item) {
             return;
         }
-        this._service.Systems.listTriggers(this.item.id).then(
+        listSystemTriggers(this.item.id).toPromise().then(
             (list) => {
                 this.trigger_list = list;
                 this.filter(this.search_str);
@@ -104,7 +102,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
     }
 
     /** Copy the generated webhook URL for the given trigger */
-    public copyWebhookURL(trigger: EngineTrigger) {
+    public copyWebhookURL(trigger: PlaceTrigger) {
         copyToClipboard(
             `${location.origin}/api/engine/v2/webhook/${trigger.id}/notify?secret=${trigger.webhook_secret}`
         );
@@ -113,7 +111,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
     /**
      * Open the modal to create a new system
      */
-    public editTrigger(trigger: EngineTrigger) {
+    public editTrigger(trigger: PlaceTrigger) {
         if (this.item && trigger) {
             const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
@@ -122,7 +120,8 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item: trigger,
-                    service: this._service.Triggers,
+                    name: 'Trigger',
+                    save: (item) => item.id ? updateTrigger(item.id, item.toJSON()) : this.addTrigger(item.toJSON()),
                     external_save: true,
                 },
             });
@@ -131,8 +130,8 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'action') {
                         ref.componentInstance.loading = 'Saving trigger settings...';
-                        const url = `${this._composer.auth.api_endpoint}/systems/${this.item.id}/triggers/${trigger.id}`;
-                        this._composer.http.put(url, trigger.toJSON(true)).subscribe(
+                        const url = `${apiEndpoint()}/systems/${this.item.id}/triggers/${trigger.id}`;
+                        put(url, trigger.toJSON()).subscribe(
                             () => null,
                             (err) => {
                                 ref.componentInstance.loading = null;
@@ -160,7 +159,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
      * Remove a trigger from the active system
      * @param trigger Trigger to remove
      */
-    public deleteTrigger(trigger: EngineTrigger) {
+    public deleteTrigger(trigger: PlaceTrigger) {
         if (this.item && trigger) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
@@ -178,8 +177,8 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         ref.componentInstance.loading = 'Removing trigger...';
-                        const url = `${this._composer.auth.api_endpoint}/systems/${this.item.id}/triggers/${trigger.id}`;
-                        this._composer.http.delete(url).subscribe(
+                        const url = `${apiEndpoint()}/systems/${this.item.id}/triggers/${trigger.id}`;
+                        del(url).subscribe(
                             () => null,
                             (err) => {
                                 ref.componentInstance.loading = null;
@@ -219,6 +218,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                 width: 'auto',
                 data: {
                     service_name: 'Triggers',
+                    query_fn: (_) => queryTriggers({ q: _ })
                 },
             }
         );
@@ -239,13 +239,13 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
      * Add the selected trigger to the active system
      * @param trigger Trigger to add to system
      */
-    private async addTrigger(trigger: EngineTrigger): Promise<void> {
-        const item = await this._service.Systems.addTrigger(this.item.id, {
+    private async addTrigger(trigger: PlaceTrigger): Promise<void> {
+        const item = await addSystemTrigger(this.item.id, {
             control_system_id: this.item.id,
             enabled: true,
             important: false,
             trigger_id: trigger.id,
-        });
+        }).toPromise();
         this.trigger_list.push(item);
         this.filter(this.search_str);
     }

@@ -3,7 +3,7 @@ import * as DRIVER_DATA from '../data/drivers.json';
 import { generateBasicHandlers, API } from '../common.mock';
 import { HashMap } from '../../utilities/types.utilities';
 
-import { MockHttpRequestHandler } from '@placeos/ts-client';
+import { MockHttpRequestHandler, registerMockEndpoint } from '@placeos/ts-client';
 
 const FILTER_FN = (item: any, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
@@ -19,7 +19,7 @@ const FILTER_FN = (item: any, q: HashMap) => {
 /** Add basic API handlers for systems */
 generateBasicHandlers(`${API}/drivers`, (DRIVER_DATA as any).default, FILTER_FN);
 
-window.control.handlers.push({
+registerMockEndpoint({
     path: `${API}/drivers/:id/compiled`,
     metadata: (DRIVER_DATA as any).default,
     method: 'GET',

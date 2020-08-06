@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { EngineCluster } from '@placeos/ts-client';
+import { PlaceCluster, queryClusters } from '@placeos/ts-client';
 import { ApplicationService } from 'src/app/services/app.service';
 import { first } from 'rxjs/operators';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -13,14 +13,14 @@ import * as dayjs from 'dayjs';
     templateUrl: './cluster-details.component.html',
     styleUrls: ['./cluster-details.component.scss']
 })
-export class EngineClusterDetailsComponent extends BaseDirective implements OnInit {
+export class PlaceClusterDetailsComponent extends BaseDirective implements OnInit {
 
     /** List of available clusters on this instance of engine */
-    public cluster_list: EngineCluster[] = [];
+    public cluster_list: PlaceCluster[] = [];
     /** Map of clusters to CPU usage history */
     public cpu_history: HashMap<{ id: number, value: number }[]> = {};
     /** Active cluster to show details for */
-    public active_cluster: EngineCluster;
+    public active_cluster: PlaceCluster;
     /** Whether cluster details are being loaded */
     public loading: boolean;
 
@@ -38,7 +38,7 @@ export class EngineClusterDetailsComponent extends BaseDirective implements OnIn
     private loadClusters(): void {
         if (this.active_cluster) { return; }
         this.loading = true;
-        this._service.Clusters.query({ include_status: true } as any).then((list) => {
+        queryClusters({ include_status: true } as any).toPromise().then((list) => {
             this.cluster_list = list || [];
             const date = dayjs().valueOf();
             this.cluster_list.forEach(cluster => {

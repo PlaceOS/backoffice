@@ -4,7 +4,7 @@
             <label for="parent-zone" i18n="@@parentZoneLabel">Parent Zone: </label>
             <item-search-field
                 name="parent-zone"
-                [service]="zone_service"
+                [query_fn]="query_fn"
                 [exclude]="exclude"
                 formControlName="parent_zone"
             ></item-search-field>

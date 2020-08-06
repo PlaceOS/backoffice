@@ -1,10 +1,9 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { EngineZone } from '@placeos/ts-client';
+import { PlaceZone } from '@placeos/ts-client';
 
-import { FormDetails } from './systems.utilities';
 import { HashMap } from '../types.utilities';
 
-export function generateZoneFormFields(zone: EngineZone): FormDetails {
+export function generateZoneFormFields(zone: PlaceZone): FormGroup {
     if (!zone) {
         throw Error('No Zone passed to generate form fields');
     }
@@ -23,27 +22,12 @@ export function generateZoneFormFields(zone: EngineZone): FormDetails {
         capacity: new FormControl(zone.capacity),
         map_id: new FormControl(zone.map_id)
     };
-    const subscriptions = [];
-    for (const key in fields) {
-        if (fields[key] && zone.hasOwnProperty(key) && key.indexOf('settings') < 0) {
-            subscriptions.push(
-                fields[key].valueChanges.subscribe(value =>
-                    {
-                        zone.storePendingChange(key as any, value)}
-                )
-            );
-        }
-    }
-    subscriptions.push(
-        fields.parent_zone.valueChanges.subscribe((zone: EngineZone) =>
+
+        fields.parent_zone.valueChanges.subscribe((zone: PlaceZone) =>
             {
                 console.log('Zone:', zone);
                 fields.parent_id.setValue(zone.id);
             }
-        )
-    );
-    return {
-        form: new FormGroup(fields),
-        subscriptions
-    };
+        );
+    return new FormGroup(fields);
 }

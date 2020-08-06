@@ -3,7 +3,8 @@
         <section class="select">
             <div class="dropdown">
                 <item-search-field
-                    [service]="zone_service"
+                    name="zone"
+                    [query_fn]="query_fn"
                     [exclude]="exclude_fn"
                     [ngModel]="null"
                     (ngModelChange)="new_zone = $event"

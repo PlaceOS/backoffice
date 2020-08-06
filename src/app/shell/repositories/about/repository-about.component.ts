@@ -1,6 +1,6 @@
 
 import { Component, Input, OnInit } from '@angular/core';
-import { EngineRepository } from '@placeos/ts-client';
+import { PlaceRepository, pullRepositoryChanges } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -12,7 +12,7 @@ import { ApplicationService } from '../../../services/app.service';
 })
 export class RepositoryAboutComponent extends BaseDirective implements OnInit {
     /** Repository to display details about */
-    @Input() public item: EngineRepository;
+    @Input() public item: PlaceRepository;
     /** Whether the latest commit is being pulled on the server */
     public pulling: boolean;
 
@@ -34,12 +34,12 @@ export class RepositoryAboutComponent extends BaseDirective implements OnInit {
      */
     public pullLatestCommit() {
         this.pulling = true;
-        this._service.Repositories.pullCommit(this.item.id)
-            .then(
+        pullRepositoryChanges(this.item.id)
+            .toPromise().then(
                 (resp: any) => {
                     this.pulling = false;
                     this._service.notifyInfo(`Pulled down commit ${resp.commit_hash} for ${this.item.name}`);
-                    this.item = new EngineRepository({ ...this.item, ...resp });
+                    this.item = new PlaceRepository({ ...this.item, ...resp });
                 },
                 err => {
                     this.pulling = false;

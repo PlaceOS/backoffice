@@ -5,6 +5,7 @@ import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
 import { ApplicationImageIcon } from '../../utilities/settings.interfaces';
 import { first } from 'rxjs/operators';
+import { BackofficeUsersService } from 'src/app/services/data/users.service';
 
 @Component({
     selector: 'login-display',
@@ -22,7 +23,7 @@ export class LoginComponent extends BaseDirective implements OnInit {
     /** Current work environment for the application */
     public env: string;
 
-    constructor(private _service: ApplicationService) {
+    constructor(private _service: ApplicationService, private _users: BackofficeUsersService) {
         super();
     }
 
@@ -43,7 +44,7 @@ export class LoginComponent extends BaseDirective implements OnInit {
         this.logo = this._service.setting('app.logo') || {};
         this.subscription(
             'state',
-            this._service.Users.state.subscribe(state => {
+            this._users.state.subscribe(state => {
                 this.loading = false;
                 if (state === 'invalid') {
                     this.show = 'login';
@@ -65,7 +66,7 @@ export class LoginComponent extends BaseDirective implements OnInit {
 
     public login() {
         const form_values = this.login_form.value;
-        this._service.Users.login({
+        this._users.login({
             email: form_values.username,
             password: form_values.password
         }).then(

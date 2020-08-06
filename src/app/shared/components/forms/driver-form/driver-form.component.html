@@ -3,8 +3,8 @@
         <div class="field discovery" *ngIf="form.controls.repository_id && !editing">
             <label for="repo" i18n="@@repoLabel">Repository: </label>
             <item-search-field
-                name="repo"
-                [service]="discovery_service"
+                name="repository"
+                [query_fn]="query_fn"
                 [ngModel]="base_repo"
                 [exclude]="exclude_fn"
                 (ngModelChange)="updateDriverList($event)"

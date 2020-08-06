@@ -1,10 +1,10 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { EngineModule, EngineSystem } from '@placeos/ts-client';
+import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
+import { Subject, Observable, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
-import { Subject, Observable, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 
 @Component({
     selector: 'module-systems',
@@ -12,13 +12,13 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from '
     styleUrls: ['./module-systems.styles.scss']
 })
 export class ModuleSystemsComponent extends BaseDirective implements OnChanges, OnInit {
-    @Input() public item: EngineModule;
+    @Input() public item: PlaceModule;
     /** Filter string for the system list */
     public search_str: string;
     /** List of systems associated with the module */
-    public system_list: EngineSystem[];
+    public system_list: PlaceSystem[];
     /** List of items from an API search */
-    public search_results$: Observable<EngineSystem[]>;
+    public search_results$: Observable<PlaceSystem[]>;
     /** Subject holding the value of the search */
     public search$ = new Subject<string>();
     /** Whether systems are being loaded */
@@ -41,7 +41,7 @@ export class ModuleSystemsComponent extends BaseDirective implements OnChanges, 
             distinctUntilChanged(),
             switchMap(query => {
                 this.loading = true;
-                return this._service.Systems.query({
+                return querySystems({
                     q: query,
                     module_id: this.item.id,
                     offset: 0
@@ -51,7 +51,7 @@ export class ModuleSystemsComponent extends BaseDirective implements OnChanges, 
                 console.error(err);
                 return of([]);
             }),
-            map((list: EngineSystem[]) => {
+            map((list: PlaceSystem[]) => {
                 this.loading = false;
                 const search = this.search_str.toLowerCase();
                 return list.filter(
@@ -76,7 +76,7 @@ export class ModuleSystemsComponent extends BaseDirective implements OnChanges, 
 
     public loadSystems(offset: number = 0) {
         if (!this.item) { return; }
-        this._service.Systems.query({ module_id: this.item.id, offset }).then(
+        querySystems({ module_id: this.item.id, offset }).toPromise().then(
             list => {
                 this.system_list = list;
             },

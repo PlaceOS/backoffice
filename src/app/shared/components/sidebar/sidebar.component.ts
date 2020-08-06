@@ -13,16 +13,17 @@ import {
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Router, NavigationEnd } from '@angular/router';
-import { EngineModule, EngineDriverRole } from '@placeos/ts-client';
+import { PlaceModule, PlaceDriverRole } from '@placeos/ts-client';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from '../../globals/base.directive';
-import { EngineServiceLike, HashMap, Identity } from '../../utilities/types.utilities';
+import { PlaceServiceLike, HashMap, Identity } from '../../utilities/types.utilities';
 import { unique } from '../../utilities/general.utilities';
 
 import * as dayjs from 'dayjs';
+import { BackofficeUsersService } from 'src/app/services/data/users.service';
 
 @Component({
     selector: 'sidebar',
@@ -35,7 +36,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     /** List of items to render on the list */
     @Input() public list: any[] = [];
     /** Name of the active module */
-    @Input() public module: EngineServiceLike;
+    @Input() public module: PlaceServiceLike;
     /** Whether the list is being loaded */
     @Input() public loading: boolean;
     /** Additional query params to add to item load requests */
@@ -67,7 +68,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
-        return this._service.Users.dark_mode;
+        return this._users.dark_mode;
     }
 
     /** Whether list is has been scrolled from the top */
@@ -121,11 +122,11 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         const map = {};
         const list = this.items.getValue() || [];
         for (let item of list) {
-            if (item instanceof EngineModule) {
+            if (item instanceof PlaceModule) {
                 const detail =
-                    item.role === EngineDriverRole.Service
+                    item.role === PlaceDriverRole.Service
                         ? item.uri
-                        : item.role === EngineDriverRole.Logic
+                        : item.role === PlaceDriverRole.Logic
                             ? item.control_system_id
                             : item.ip;
                 map[item.id] = `${item.custom_name || item.name || '<Unnamed>'} <span class="small">${detail}<span>`;
@@ -136,7 +137,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         return map;
     }
 
-    constructor(private _service: ApplicationService, private _router: Router) {
+    constructor(private _service: ApplicationService, private _users: BackofficeUsersService, private _router: Router) {
         super();
     }
 

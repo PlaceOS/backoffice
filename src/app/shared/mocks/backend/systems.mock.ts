@@ -3,7 +3,7 @@ import * as SYSTEM_DATA from '../data/systems.json';
 import { generateBasicHandlers, API, endpointData } from '../common.mock';
 import { HashMap } from '../../utilities/types.utilities';
 
-import { MockHttpRequestHandler } from '@placeos/ts-client';
+import { MockHttpRequestHandler, registerMockEndpoint } from '@placeos/ts-client';
 
 const FILTER_FN = (item: any, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
@@ -26,7 +26,7 @@ const FILTER_FN = (item: any, q: HashMap) => {
 generateBasicHandlers(`${API}/systems`, (SYSTEM_DATA as any).default, FILTER_FN);
 
 /** Add handlers for getting system's zones */
-window.control.handlers.push({
+registerMockEndpoint({
     path: `${API}/systems/:id/zones`,
     metadata: [],
     method: 'GET',
@@ -45,7 +45,7 @@ window.control.handlers.push({
 } as MockHttpRequestHandler);
 
 /** Add handlers for getting system's modules */
-window.control.handlers.push({
+registerMockEndpoint({
     path: `${API}/systems/:id/modules`,
     metadata: [],
     method: 'GET',
@@ -64,7 +64,7 @@ window.control.handlers.push({
 } as MockHttpRequestHandler);
 
 /** Add handlers for getting system's triggers */
-window.control.handlers.push({
+registerMockEndpoint({
     path: `${API}/systems/:id/triggers`,
     metadata: [],
     method: 'GET',
@@ -77,7 +77,7 @@ window.control.handlers.push({
 } as MockHttpRequestHandler);
 
 /** Add handlers for getting system's inherited settings */
-window.control.handlers.push({
+registerMockEndpoint({
     path: `${API}/systems/:id/settings`,
     metadata: [],
     method: 'GET',

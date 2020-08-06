@@ -3,10 +3,10 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { Subject, Observable, of } from 'rxjs';
 import { switchMap, debounceTime, distinctUntilChanged, map, catchError } from 'rxjs/operators';
 
-import { EngineResource, EngineModule, EngineDriverRole } from '@placeos/ts-client';
+import { PlaceModule, PlaceDriverRole } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { EngineServiceLike, HashMap, Identity } from 'src/app/shared/utilities/types.utilities';
+import { HashMap, Identity } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
     selector: 'item-search-field',
@@ -22,6 +22,8 @@ import { EngineServiceLike, HashMap, Identity } from 'src/app/shared/utilities/t
 })
 export class ItemSearchFieldComponent<T extends Identity = any> extends BaseDirective
     implements OnInit, OnChanges, ControlValueAccessor {
+    /** Name of the items being query'd */
+    @Input() public name: string;
     /** Limit available options to these */
     @Input() public options: T[];
     /** Function for filtering out options */
@@ -31,7 +33,7 @@ export class ItemSearchFieldComponent<T extends Identity = any> extends BaseDire
     /** Whether item list is loading */
     @Input() public loading: boolean;
     /** Service used for searching items */
-    @Input() public service: EngineServiceLike;
+    @Input() public query_fn: (_: string) => Observable<T[]> = () => of([]);
     /** Currently selected item */
     public active_item: T;
     /** Item list to display */
@@ -52,11 +54,11 @@ export class ItemSearchFieldComponent<T extends Identity = any> extends BaseDire
         const map = {};
         const list = this.item_list || [];
         for (let item of list) {
-            if (item instanceof EngineModule) {
+            if (item instanceof PlaceModule) {
                 const detail =
-                    item.role === EngineDriverRole.Service
+                    item.role === PlaceDriverRole.Service
                         ? item.uri
-                        : item.role === EngineDriverRole.Logic
+                        : item.role === PlaceDriverRole.Logic
                         ? item.control_system_id
                         : item.ip;
                 map[item.id] = `${item.name || '<Unnamed>'} <span class="small">${detail}<span>`;
@@ -75,10 +77,10 @@ export class ItemSearchFieldComponent<T extends Identity = any> extends BaseDire
             switchMap((query) => {
                 this.loading = true;
                 return this.options && this.options.length > 0
-                    ? Promise.resolve(this.options)
+                    ? of(this.options)
                     : !this.min_length || query.length >= this.min_length
-                    ? (this.service.query({ q: query || '', cache: 5 * 1000 }) as Promise<T[]>)
-                    : Promise.resolve([]);
+                    ? this.query_fn(query)
+                    : of([]);
             }),
             catchError((_) => of([])),
             map((list: T[]) => {

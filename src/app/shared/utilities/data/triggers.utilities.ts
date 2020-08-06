@@ -1,7 +1,6 @@
 import { Validators, FormControl, FormGroup, AbstractControl } from '@angular/forms';
 import {
-    EngineTrigger,
-    HashMap,
+    PlaceTrigger,
     TriggerStatusVariable,
     TriggerConditionOperator,
     TriggerComparison,
@@ -12,8 +11,8 @@ import {
     TriggerMailer
 } from '@placeos/ts-client';
 
-import { FormDetails } from './systems.utilities';
 import { validateJSONString } from '../validation.utilities';
+import { HashMap } from '../types.utilities';
 
 import * as dayjs from 'dayjs';
 
@@ -21,7 +20,7 @@ import * as dayjs from 'dayjs';
  * Generate angular form controls
  * @param trigger Trigger to generate the form controls for
  */
-export function generateTriggerFormFields(trigger: EngineTrigger): FormDetails {
+export function generateTriggerFormFields(trigger: PlaceTrigger): FormGroup {
     if (!trigger) {
         throw Error('No Zone passed to generate form fields');
     }
@@ -32,26 +31,13 @@ export function generateTriggerFormFields(trigger: EngineTrigger): FormDetails {
         supported_methods: new FormControl(trigger.supported_methods || []),
         debounce_period: new FormControl(Math.max(0, trigger.debounce_period || 0))
     };
-    const subscriptions = [];
-    for (const key in fields) {
-        if (fields[key] && key.indexOf('settings') < 0) {
-            subscriptions.push(
-                fields[key].valueChanges.subscribe(value =>
-                    trigger.storePendingChange(key as any, value)
-                )
-            );
-        }
-    }
-    return {
-        form: new FormGroup(fields),
-        subscriptions
-    };
+    return new FormGroup(fields);
 }
 /**
  * Generate angular form controls
  * @param trigger Trigger to generate the form controls for
  */
-export function generateTriggerSettingsFormFields(trigger: EngineTrigger): FormDetails {
+export function generateTriggerSettingsFormFields(trigger: PlaceTrigger): FormGroup {
     if (!trigger) {
         throw Error('No Zone passed to generate form fields');
     }
@@ -62,20 +48,7 @@ export function generateTriggerSettingsFormFields(trigger: EngineTrigger): FormD
         enabled: new FormControl(!!trigger.enabled),
         important: new FormControl(!!trigger.important)
     };
-    const subscriptions = [];
-    for (const key in fields) {
-        if (fields[key] && key.indexOf('settings') < 0) {
-            subscriptions.push(
-                fields[key].valueChanges.subscribe(value =>
-                    trigger.storePendingChange(key as any, value)
-                )
-            );
-        }
-    }
-    return {
-        form: new FormGroup(fields),
-        subscriptions
-    };
+    return new FormGroup(fields);
 }
 
 /**

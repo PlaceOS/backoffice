@@ -1,40 +1,27 @@
 import { Validators, FormControl, FormGroup } from '@angular/forms';
-import { HashMap, EngineRepository, EngineRepositoryType } from '@placeos/ts-client';
-
-import { FormDetails } from './systems.utilities';
+import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
+import { HashMap } from '../types.utilities';
 
 /**
  * Generate angular form controls
  * @param repository Trigger to generate the form controls for
  */
-export function generateRepositoryFormFields(repository: EngineRepository): FormDetails {
+export function generateRepositoryFormFields(repository: PlaceRepository): FormGroup {
     if (!repository) {
         throw Error('No Zone passed to generate form fields');
     }
     const fields: HashMap<FormControl> = {
         id: new FormControl(repository.id || ''),
-        commit_hash: new FormControl(repository.commit_hash || ''),
+        commit_hash: new FormControl(repository.commit_hash || 'HEAD'),
         branch: new FormControl(repository.branch || 'master', [Validators.required]),
         name: new FormControl(repository.name || '', [Validators.required]),
         folder_name: new FormControl(repository.folder_name || '', [Validators.required]),
         description: new FormControl(repository.description || ''),
         uri: new FormControl(repository.uri || '', [Validators.required]),
-        repo_type: new FormControl(repository.repo_type || EngineRepositoryType.Driver),
+        repo_type: new FormControl(repository.repo_type || PlaceRepositoryType.Driver),
     };
-    const subscriptions = [];
-    for (const key in fields) {
-        if (fields[key] && key.indexOf('settings') < 0) {
-            subscriptions.push(
-                fields[key].valueChanges.subscribe((value) =>
-                    repository.storePendingChange(key as any, value)
-                )
-            );
-        }
-    }
-    if (!repository.id) {
-        repository.storePendingChange('commit_hash', 'HEAD');
-    } else {
-        if (repository.type === EngineRepositoryType.Driver) {
+    if (repository.id) {
+        if (repository.type === PlaceRepositoryType.Driver) {
             delete fields.branch;
             delete fields.uri;
         }
@@ -49,8 +36,5 @@ export function generateRepositoryFormFields(repository: EngineRepository): Form
             }
         })
     }
-    return {
-        form: new FormGroup(fields),
-        subscriptions,
-    };
+    return new FormGroup(fields);
 }

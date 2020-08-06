@@ -1,7 +1,9 @@
 <form *ngIf="form && used_settings && used_settings.length" [formGroup]="form">
     <div class="actions">
         <button mat-button *ngIf="edited_count > 0" (tapped)="clearChanges()">
-            <div class="text" *ngIf="!saving[shown_option.id]; else spinner"  i18n="@@clearLabel">Clear Changes [C]</div>
+            <div class="text" *ngIf="!saving[shown_option.id]; else spinner" i18n="@@clearLabel">
+                Clear Changes [C]
+            </div>
         </button>
         <button
             mat-button
@@ -9,7 +11,9 @@
             [disabled]="has_errors && !saving[shown_option.id]"
             (tapped)="save(shown_option.id)"
         >
-            <div class="text" *ngIf="!saving[shown_option.id]; else spinner"  i18n="@@saveLabel">Save [S]</div>
+            <div class="text" *ngIf="!saving[shown_option.id]; else spinner" i18n="@@saveLabel">
+                Save [S]
+            </div>
         </button>
         <button
             mat-button
@@ -17,7 +21,9 @@
             [disabled]="has_errors && !saving[shown_option.id]"
             (tapped)="saveAll()"
         >
-            <div class="text" *ngIf="!saving[shown_option.id]; else spinner" i18n="@@saveAllLabel">Save All [A]</div>
+            <div class="text" *ngIf="!saving[shown_option.id]; else spinner" i18n="@@saveAllLabel">
+                Save All [A]
+            </div>
         </button>
     </div>
     <mat-tab-group
@@ -28,9 +34,7 @@
             *ngFor="let option of available_levels"
             [label]="
                 option.name +
-                (option.id !== 4 && used_settings[option.id]?.changes?.settings_string !== undefined
-                    ? ' *'
-                    : '')
+                (option.id !== 4 && form.controls['settings' + option.id].dirty ? ' *' : '')
             "
         >
         </mat-tab>

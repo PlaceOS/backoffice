@@ -1,4 +1,4 @@
-import { EngineModule } from '@placeos/ts-client';
+import { PlaceModule } from '@placeos/ts-client';
 
 import { HashMap } from './types.utilities';
 
@@ -23,7 +23,7 @@ export function toQueryString(map: HashMap) {
  * @param module_list List of modules in the parent system
  * @param module Module to work out index
  */
-export function calculateModuleIndex(module_list: EngineModule[], module: EngineModule): number {
+export function calculateModuleIndex(module_list: PlaceModule[], module: PlaceModule): number {
     const driver = module.driver || { class_name: 'System' };
     const module_class = module.custom_name || driver.class_name;
     const modules_with_class = module_list.filter(mod => {

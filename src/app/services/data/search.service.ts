@@ -1,12 +1,11 @@
 
 import { Injectable } from '@angular/core';
-import { ComposerService } from '@placeos/composer';
 
 import { BaseAPIService } from './base.service';
 
 import * as dayjs from 'dayjs';
 
-export interface IEngineSearchResult {
+export interface IPlaceSearchResult {
     id: string;
     name: string;
     type: string;
@@ -17,9 +16,9 @@ export interface IEngineSearchResult {
 @Injectable({
     providedIn: 'root'
 })
-export class BackofficeSearchService extends BaseAPIService<IEngineSearchResult> {
+export class BackofficeSearchService extends BaseAPIService<IPlaceSearchResult> {
 
-    constructor(private _composer: ComposerService) {
+    constructor() {
         super(undefined);
         const sub = this._composer.initialised.subscribe((state) => {
             if (state) {
@@ -37,7 +36,7 @@ export class BackofficeSearchService extends BaseAPIService<IEngineSearchResult>
     public show() { return new Promise<any>((rs, rj) => rj('No show for this service')); }
 
     protected process(raw_item: any) {
-        const item: IEngineSearchResult = {
+        const item: IPlaceSearchResult = {
             id: raw_item.id,
             name: raw_item.name,
             type: raw_item.type,

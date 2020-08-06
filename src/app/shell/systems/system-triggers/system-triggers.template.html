@@ -31,7 +31,7 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let trigger of filtered_triggers">
-                        <i
+                        <!-- <i
                             hidden
                             binding
                             [sys]="item.id"
@@ -39,7 +39,7 @@
                             [bind]="trigger.id"
                             [(model)]="trigger_state[trigger.id]"
                             (modelChange)="updateComparisons(trigger.id)"
-                        ></i>
+                        ></i> -->
                         <td class="small" [matTooltip]="comparisons[trigger.id]">
                             <div
                                 class="state"

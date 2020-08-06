@@ -7,24 +7,24 @@ import { RouterModule } from '@angular/router';
 import { ROUTES } from './engine.routes';
 import { SharedContentModule } from 'src/app/shared/shared.module';
 
-import { EngineComponent } from './engine.component';
-import { EngineDatabaseDetailsComponent } from './database-details/database-details.component';
-import { EngineDetailsComponent } from './details/details.component';
-import { EngineClusterDetailsComponent } from './cluster-details/cluster-details.component';
-import { EngineClusterItemComponent } from './cluster-details/item/item.component';
-import { EngineClusterTaskListComponent } from './cluster-details/task-list/task-list.component';
+import { PlaceComponent } from './engine.component';
+import { PlaceDatabaseDetailsComponent } from './database-details/database-details.component';
+import { PlaceDetailsComponent } from './details/details.component';
+import { PlaceClusterDetailsComponent } from './cluster-details/cluster-details.component';
+import { PlaceClusterItemComponent } from './cluster-details/item/item.component';
+import { PlaceClusterTaskListComponent } from './cluster-details/task-list/task-list.component';
 import { AdminInterfacesComponent } from './interfaces/interfaces.component';
 import { AdminBrokersComponent } from './brokers/brokers.component';
 
 
 @NgModule({
     declarations: [
-        EngineComponent,
-        EngineDatabaseDetailsComponent,
-        EngineDetailsComponent,
-        EngineClusterDetailsComponent,
-        EngineClusterItemComponent,
-        EngineClusterTaskListComponent,
+        PlaceComponent,
+        PlaceDatabaseDetailsComponent,
+        PlaceDetailsComponent,
+        PlaceClusterDetailsComponent,
+        PlaceClusterItemComponent,
+        PlaceClusterTaskListComponent,
         AdminInterfacesComponent,
         AdminBrokersComponent
     ],
@@ -35,4 +35,4 @@ import { AdminBrokersComponent } from './brokers/brokers.component';
         SharedContentModule
     ]
 })
-export class AppEngineModule { }
+export class AppPlaceModule { }

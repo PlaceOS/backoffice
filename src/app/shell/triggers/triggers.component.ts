@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineTrigger } from '@placeos/ts-client';
+import { PlaceTrigger, updateTrigger, addTrigger, querySystems, lastRequestTotal, removeTrigger } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -18,7 +18,7 @@ import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item
     templateUrl: './triggers.template.html',
     styleUrls: ['./triggers.styles.scss']
 })
-export class TriggersComponent extends BaseRootComponent<EngineTrigger> implements OnInit {
+export class TriggersComponent extends BaseRootComponent<PlaceTrigger> implements OnInit {
     /** Number of system triggers */
     public system_count: number;
 
@@ -29,7 +29,6 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
         private _dialog: MatDialog
     ) {
         super(_service, _route, _router);
-        this.service = this._service.Triggers;
     }
 
     public ngOnInit(): void {
@@ -40,9 +39,9 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, trigger_id: this.item.id };
         // Get trigger count
-        this._service.Systems.query(query).then(
+        querySystems(query).toPromise().then(
             list =>
-                (this.system_count = this._service.Systems.last_total || list.length || 0)
+                (this.system_count = lastRequestTotal('systems') || list.length || 0)
         );
     }
 
@@ -57,8 +56,9 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: copy ? new EngineTrigger({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineTrigger(),
-                service: this._service.Triggers
+                item: copy ? new PlaceTrigger({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceTrigger(),
+                name: 'Trigger',
+                save: (item) => item.id ? updateTrigger(item.id, item.toJSON()) : addTrigger(item.toJSON()),
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -84,7 +84,8 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item: this.item,
-                    service: this._service.Triggers
+                    name: 'Trigger',
+                    save: (item) => item.id ? updateTrigger(item.id, item.toJSON()) : addTrigger(item.toJSON()),
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {
@@ -115,7 +116,7 @@ export class TriggersComponent extends BaseRootComponent<EngineTrigger> implemen
                 this.modal_ref.componentInstance.event.subscribe(async (event: DialogEvent) => {
                     if (event.reason === 'done') {
                         this.modal_ref.componentInstance.loading = 'Deleting trigger...';
-                        await this.item.delete().catch(err => {
+                        await removeTrigger(this.item.id).toPromise().catch(err => {
                             this.modal_ref.componentInstance.loading = null;
                             this._service.notifyError(
                                 `Error deleting trigger. Error: ${JSON.stringify(err.response || err.message || err)}`

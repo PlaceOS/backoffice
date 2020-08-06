@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { EngineCluster, EngineProcess } from '@placeos/ts-client';
+import { PlaceCluster, PlaceProcess, queryProcesses, terminateProcess } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
 import { ApplicationService } from 'src/app/services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -14,13 +14,13 @@ import {
     templateUrl: './task-list.component.html',
     styleUrls: ['./task-list.component.scss']
 })
-export class EngineClusterTaskListComponent extends BaseDirective implements OnInit {
+export class PlaceClusterTaskListComponent extends BaseDirective implements OnInit {
     /** Cluster to display tasks details for */
-    @Input() public cluster: EngineCluster;
+    @Input() public cluster: PlaceCluster;
     /** Emitter for close events */
     @Output() public close = new EventEmitter<void>();
     /** List of processes running in the cluster */
-    public process_list: EngineProcess[] = [];
+    public process_list: PlaceProcess[] = [];
     /** Whether the task list is updating */
     public loading: boolean;
     /** ID of the process being killed */
@@ -45,7 +45,7 @@ export class EngineClusterTaskListComponent extends BaseDirective implements OnI
         });
     }
 
-    public confirmKillProcess(process: EngineProcess): void {
+    public confirmKillProcess(process: PlaceProcess): void {
         const ref = this._dialog.open(ConfirmModalComponent, {
             ...CONFIRM_METADATA,
             data: {
@@ -83,13 +83,13 @@ export class EngineClusterTaskListComponent extends BaseDirective implements OnI
         );
     }
 
-    public killProcess(process: EngineProcess) {
-        return this._service.Clusters.delete(this.cluster.id, { driver: process.id });
+    public killProcess(process: PlaceProcess) {
+        return terminateProcess(this.cluster.id, { driver: process.id }).toPromise();
     }
 
     private loadProcesses(): void {
         this.loading = true;
-        this._service.Clusters.show(this.cluster.id, { include_status: true } as any).then(list => {
+        queryProcesses(this.cluster.id, { include_status: true } as any).toPromise().then(list => {
             this.process_list = list || [];
             this.loading = false;
         });

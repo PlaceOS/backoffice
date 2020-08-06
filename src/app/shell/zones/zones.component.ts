@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { PlaceOS, EngineZone } from '@placeos/ts-client';
+import { PlaceZone, updateZone, addZone, listZoneTriggers, querySystems, queryZones, lastRequestTotal, showMetadata, removeZone  } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -18,7 +18,7 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
     templateUrl: './zones.template.html',
     styleUrls: ['./zones.styles.scss']
 })
-export class ZonesComponent extends BaseRootComponent<EngineZone> {
+export class ZonesComponent extends BaseRootComponent<PlaceZone> {
     /** Number of systems associated with the active zone */
     public system_count: number;
     /** Number of triggers associated with the active zone */
@@ -35,7 +35,6 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
         private _dialog: MatDialog
     ) {
         super(_service, _route, _router);
-        this.service = this._service.Zones;
     }
 
     public ngOnInit(): void {
@@ -46,18 +45,18 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
     protected async loadValues() {
         // Get system count
         const query: any = { offset: 0, limit: 1, zone_id: this.item.id };
-        let list: any[] = await this._service.Systems.query(query);
-        this.system_count = this._service.Systems.last_total || list.length || 0;
+        let list: any[] = await querySystems(query).toPromise();
+        this.system_count = lastRequestTotal('systems')  || list.length || 0;
         // Get trigger count
         const tquery: any = { offset: 0, limit: 1, zone_id: this.item.id };
-        list = await this._service.Zones.listTriggers(tquery);
+        list = await listZoneTriggers(tquery).toPromise();
         this.trigger_count = list.length || 0;
         // Get child zone count
         const cquery: any = { offset: 0, limit: 1, parent: this.item.id };
-        list = await this._service.Zones.query(cquery);
-        this.child_count = this._service.Zones.last_total || list.length || 0;
+        list = await queryZones(cquery).toPromise();
+        this.child_count = lastRequestTotal('zones') || list.length || 0;
         // Get metadata
-        const map = await PlaceOS.metadata.show(this.item.id);
+        const map = await showMetadata(this.item.id).toPromise();
         this.metadata_count = Object.keys(map).length;
     }
 
@@ -72,8 +71,9 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: copy ? new EngineZone({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineZone(),
-                service: this._service.Zones
+                item: copy ? new PlaceZone({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceZone(),
+                name: 'Zone',
+                save: (item) => item.id ? updateZone(item.id, item.toJSON()) : addZone(item.toJSON()),
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -99,7 +99,8 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item: this.item,
-                    service: this._service.Zones
+                    name: 'Zone',
+                    save: (item) => item.id ? updateZone(item.id, item.toJSON()) : addZone(item.toJSON()),
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {
@@ -127,7 +128,7 @@ export class ZonesComponent extends BaseRootComponent<EngineZone> {
                 this.modal_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         this.modal_ref.componentInstance.loading = 'Deleting zone...';
-                        this.item.delete().then(
+                        removeZone(this.item.id).toPromise().then(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted zone "${this.item.name}".`

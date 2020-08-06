@@ -1,7 +1,6 @@
 import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { EngineUser } from '@placeos/ts-client';
+import { PlaceUser } from '@placeos/ts-client';
 
-import { FormDetails } from './systems.utilities';
 import { HashMap } from '../types.utilities';
 
 export function validateMatch(name: string) {
@@ -15,7 +14,7 @@ export function validateMatch(name: string) {
     }
 }
 
-export function generateUserFormFields(user: EngineUser): FormDetails {
+export function generateUserFormFields(user: PlaceUser): FormGroup {
     if (!user) {
         throw Error('No User passed to generate form fields');
     }
@@ -28,21 +27,8 @@ export function generateUserFormFields(user: EngineUser): FormDetails {
         password: new FormControl('', !user.id ? [Validators.required] : undefined),
         confirm_password: new FormControl('', [validateMatch('password')]),
     };
-    const subscriptions = [];
-    for (const key in fields) {
-        if (fields[key] && key.indexOf('confirm') < 0) {
-            subscriptions.push(
-                fields[key].valueChanges.subscribe(value =>
-                    user.storePendingChange(key as any, value)
-                )
-            );
-        }
-    }
-    subscriptions.push(fields.password.valueChanges.subscribe(() => {
+    fields.password.valueChanges.subscribe(() => {
         fields.confirm_password.updateValueAndValidity();
-    }));
-    return {
-        form: new FormGroup(fields),
-        subscriptions
-    };
+    });
+    return new FormGroup(fields);
 }
