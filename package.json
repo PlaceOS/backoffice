@@ -46,9 +46,6 @@
         "zone.js": "~0.10.2"
     },
     "devDependencies": {
-        "@acaprojects/ngx-google-analytics": "^1.0.1",
-        "@acaprojects/ngx-pipes": "^1.0.0",
-        "@acaprojects/ngx-uploads": "^1.0.7",
         "@angular-builders/custom-webpack": "^8.2.0",
         "@angular-devkit/build-angular": "~0.900.1",
         "@angular-devkit/core": "^9.0.1",
