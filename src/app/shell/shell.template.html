@@ -19,7 +19,7 @@
 <div class="container loader" [class.uat]="env !== 'prod'" *ngIf="loading">
     <div class="info-block">
         <div class="icon">
-            <a-spinner circle-ring color="#fff"></a-spinner>
+            <mat-spinner diameter="32"></mat-spinner>
         </div>
         <div class="text" i18n="@@rootLoader">Loading application data...</div>
     </div>
