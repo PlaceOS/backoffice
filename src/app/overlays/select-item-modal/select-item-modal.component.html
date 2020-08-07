@@ -13,7 +13,7 @@
 </mat-dialog-content>
 <mat-dialog-actions *ngIf="!loading">
     <button mat-button class="inverse" mat-dialog-close>Cancel</button>
-    <button mat-button type="submit" (tapped)="submit()" [disabled]="!item">Add</button>
+    <button mat-button type="submit" (click)="submit()" [disabled]="!item">Add</button>
 </mat-dialog-actions>
 <ng-template #load_state>
     <div class="info-block">

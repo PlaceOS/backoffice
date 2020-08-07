@@ -1,6 +1,6 @@
 <form *ngIf="form && used_settings && used_settings.length" [formGroup]="form">
     <div class="actions">
-        <button mat-button *ngIf="edited_count > 0" (tapped)="clearChanges()">
+        <button mat-button *ngIf="edited_count > 0" (click)="clearChanges()">
             <div class="text" *ngIf="!saving[shown_option.id]; else spinner" i18n="@@clearLabel">
                 Clear Changes [C]
             </div>
@@ -9,7 +9,7 @@
             mat-button
             *ngIf="active_edited"
             [disabled]="has_errors && !saving[shown_option.id]"
-            (tapped)="save(shown_option.id)"
+            (click)="save(shown_option.id)"
         >
             <div class="text" *ngIf="!saving[shown_option.id]; else spinner" i18n="@@saveLabel">
                 Save [S]
@@ -19,7 +19,7 @@
             mat-button
             *ngIf="edited_count > 1"
             [disabled]="has_errors && !saving[shown_option.id]"
-            (tapped)="saveAll()"
+            (click)="saveAll()"
         >
             <div class="text" *ngIf="!saving[shown_option.id]; else spinner" i18n="@@saveAllLabel">
                 Save All [A]

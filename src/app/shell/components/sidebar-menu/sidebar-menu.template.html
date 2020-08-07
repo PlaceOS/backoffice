@@ -3,7 +3,7 @@
     *ngIf="menu_items"
     [class.show]="show"
     (mouseleave)="tooltip = 'false'"
-    (tapped)="cancelClose()"
+    (click)="cancelClose()"
     (window:click)="close()"
 >
     <ng-container *ngFor="let item of menu_items">

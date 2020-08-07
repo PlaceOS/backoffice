@@ -46,7 +46,6 @@
         "zone.js": "~0.10.2"
     },
     "devDependencies": {
-        "@acaprojects/ngx-custom-events": "^1.0.5",
         "@acaprojects/ngx-google-analytics": "^1.0.1",
         "@acaprojects/ngx-pipes": "^1.0.0",
         "@acaprojects/ngx-uploads": "^1.0.7",

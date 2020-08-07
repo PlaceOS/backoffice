@@ -49,11 +49,11 @@
             </mat-form-field>
         </div>
         <!-- <mat-checkbox formControlName="remember">Remember username</mat-checkbox> -->
-        <div class="forgot" *ngIf="settings?.forgotten_password" (tapped)="forgot.emit()">
+        <div class="forgot" *ngIf="settings?.forgotten_password" (click)="forgot.emit()">
             Forgot?
         </div>
         <div class="options">
-            <button mat-button type="submit" (tapped)="submitted.emit()">Submit</button>
+            <button mat-button type="submit" (click)="submitted.emit()">Submit</button>
         </div>
     </form>
 </div>

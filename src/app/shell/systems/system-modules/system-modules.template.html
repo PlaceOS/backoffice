@@ -9,10 +9,10 @@
                 (ngModelChange)="new_module = $event.id"
             ></item-search-field>
         </div>
-        <button mat-button [disabled]="!new_module" (tapped)="addModule()"  i18n="@@addExistingAction">
+        <button mat-button [disabled]="!new_module" (click)="addModule()"  i18n="@@addExistingAction">
             Add existing
         </button>
-        <button mat-button (tapped)="newModule()" i18n="@@newAction">Add new</button>
+        <button mat-button (click)="newModule()" i18n="@@newAction">Add new</button>
     </section>
     <ng-container *ngIf="item.id && item.modules && !hide_exec">
         <section class="exec">
@@ -59,7 +59,7 @@
                             [class.active]="device.running && !!device.connected"
                             [class.inactive]="device.running && !device.connected"
                             [class.black]="!device.running"
-                            (tapped)="power(device)"
+                            (click)="power(device)"
                         ></div>
                     </td>
                     <td class="name">
@@ -100,7 +100,7 @@
                             <button
                                 mat-menu-item
                                 *ngFor="let item of (device.running ? menu_options : offline_options)"
-                                (tapped)="handleContextEvent(item, device)"
+                                (click)="handleContextEvent(item, device)"
                             >
                                 <app-icon [icon]="item.icon"></app-icon>
                                 <div class="text">{{ item.name }}</div>

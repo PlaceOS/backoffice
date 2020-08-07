@@ -7,7 +7,7 @@
                 <div class="id">{{item.id}}</div>
             </a>
             <div class="options">
-                <button mat-icon-button (touchrelease)="edit(item)">
+                <button mat-icon-button (click)="edit(item)">
                     <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
                 </button>
                 <a mat-icon-button [routerLink]="['/' + item.type, item.id]">

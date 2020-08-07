@@ -6,7 +6,7 @@
                 this repository
             </mat-card-content>
             <mat-card-actions>
-                <button mat-button [disabled]="pulling" (tapped)="pullLatestCommit()">
+                <button mat-button [disabled]="pulling" (click)="pullLatestCommit()">
                     <ng-container *ngIf="!pulling; else spinner" i18n="@@repoPullAction">Pull</ng-container>
                 </button>
             </mat-card-actions>

@@ -1,5 +1,5 @@
 <div class="container" *ngIf="item">
-    <button mat-button (tapped)="newMetadata()" i18n="@@addMetadataAction">Add new Metadata Field</button>
+    <button mat-button (click)="newMetadata()" i18n="@@addMetadataAction">Add new Metadata Field</button>
     <div class="list" *ngIf="metadata && metadata.length > 0; else empty_state">
         <mat-accordion>
             <ng-container *ngFor="let item of metadata">
@@ -19,14 +19,14 @@
                                     mat-button
                                     *ngIf="!loading[item.name]; else load_state"
                                     (click)="$event.stopPropagation()"
-                                    (tapped)="saveMetadata(item)"
+                                    (click)="saveMetadata(item)"
                                     i18n="@@saveAction"
                                 >
                                     Save
                                 </button>
                             </ng-container>
                             <div class="contents" *ngIf="!item.new">
-                                <button mat-icon-button (tapped)="deleteMetadata(item.name)">
+                                <button mat-icon-button (click)="deleteMetadata(item.name)">
                                     <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
                                 </button>
                             </div>

@@ -42,7 +42,7 @@
 </mat-dialog-content>
 <mat-dialog-actions>
     <footer>
-        <button [disabled]="!form.controls.name.valid" mat-button (tapped)="updateDetails()">
+        <button [disabled]="!form.controls.name.valid" mat-button (click)="updateDetails()">
             Update
         </button>
     </footer>

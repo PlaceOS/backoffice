@@ -8,7 +8,7 @@
             (event)="sidebarEvent($event)"
         ></sidebar>
     </div>
-    <main (touchrelease)="show_sidebar = false">
+    <main (click)="show_sidebar = false">
         <item-display
             name="trigger"
             route="triggers"

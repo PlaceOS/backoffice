@@ -2,7 +2,7 @@
     <div class="settings">
         <section class="select">
             <div class="dropdown">
-                <button mat-button (tapped)="selectTriggerToAdd()" i18n="@@addTriggerAction">
+                <button mat-button (click)="selectTriggerToAdd()" i18n="@@addTriggerAction">
                     Add trigger
                 </button>
             </div>
@@ -65,14 +65,14 @@
                                 <button
                                     mat-icon-button
                                     *ngIf="trigger.enable_webhook"
-                                    (tapped)="copyWebhookURL(trigger)"
+                                    (click)="copyWebhookURL(trigger)"
                                 >
                                     <app-icon [icon]="{ class: 'backoffice-link' }"></app-icon>
                                 </button>
-                                <button mat-icon-button (tapped)="editTrigger(trigger)">
+                                <button mat-icon-button (click)="editTrigger(trigger)">
                                     <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
                                 </button>
-                                <button mat-icon-button (tapped)="deleteTrigger(trigger)">
+                                <button mat-icon-button (click)="deleteTrigger(trigger)">
                                     <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
                                 </button>
                             </div>

@@ -1,7 +1,7 @@
 <div class="container" *ngIf="item">
     <section class="select">
-        <button mat-button (tapped)="start()"  i18n="@@systemStartAction">Start System</button>
-        <button mat-button (tapped)="stop()" i18n="@@systemStopAction">Stop System</button>
+        <button mat-button (click)="start()"  i18n="@@systemStartAction">Start System</button>
+        <button mat-button (click)="stop()" i18n="@@systemStopAction">Stop System</button>
     </section>
     <section class="details">
         <div class="field" *ngIf="item.support_url">

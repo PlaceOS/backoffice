@@ -17,7 +17,7 @@
                 {{ device_classes[module?.id] }}
             </div>
         </div>
-        <button mat-button (tapped)="updateState()">Update state</button>
+        <button mat-button (click)="updateState()">Update state</button>
         <div class="settings">
             <settings-form-field [ngModel]="state" [readonly]="true"></settings-form-field>
         </div>

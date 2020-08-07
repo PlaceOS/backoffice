@@ -2,7 +2,7 @@
     <div class="settings">
         <section class="select">
             <div class="dropdown">
-                <button mat-button (tapped)="selectTriggerToAdd()" i18n="@@addTriggerAction">
+                <button mat-button (click)="selectTriggerToAdd()" i18n="@@addTriggerAction">
                     Add trigger
                 </button>
             </div>
@@ -35,7 +35,7 @@
                         </td>
                         <td class="flex description">{{trigger.description}}</td>
                         <td class="small">
-                            <button mat-icon-button (tapped)="deleteTrigger(trigger)">
+                            <button mat-icon-button (click)="deleteTrigger(trigger)">
                                 <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
                             </button>
                         </td>

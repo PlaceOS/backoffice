@@ -2,7 +2,7 @@
     <div class="display">
         <input matInput type="time" [ngModel]="time" (ngModelChange)="setValue($event)" />
     </div>
-    <div class="icon" (tapped)="showSelect()">
+    <div class="icon" (click)="showSelect()">
         <app-icon
             [icon]="{
                 type: 'icon',

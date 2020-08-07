@@ -1,6 +1,6 @@
 
 <div class="header">
-    <button mat-icon-button (tapped)="close.emit()">
+    <button mat-icon-button (click)="close.emit()">
         <app-icon [icon]="{ type: 'icon', class: 'backoffice-arrow-left' }"></app-icon>
     </button>
     <h3 i18n="@@clusterHeader">Cluster - {{cluster?.hostname}}</h3>
@@ -25,7 +25,7 @@
     <ng-container cdkColumnDef="running">
         <th cdk-header-cell *cdkHeaderCellDef class="button"></th>
         <td cdk-cell *cdkCellDef="let element" class="button">
-            <button mat-icon-button (tapped)="confirmKillProcess(element)">
+            <button mat-icon-button (click)="confirmKillProcess(element)">
                 <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
             </button>
         </td>
