@@ -37887,8 +37887,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           this.terminal = new xterm__WEBPACK_IMPORTED_MODULE_1__["Terminal"]({
             theme: {
-              background: "#263238"
-            }
+              background: "#263238",
+              red: '#e53935',
+              blue: '#1e88e5',
+              yellow: '#fdd835',
+              green: '#43a047'
+            },
+            fontSize: 12
           });
           this.terminal.open(this.terminal_element.nativeElement);
           this.timeout('init', function () {
@@ -46653,16 +46658,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var VERSION = {
       "dirty": false,
-      "raw": "ad87427",
-      "hash": "ad87427",
+      "raw": "b47677b",
+      "hash": "b47677b",
       "distance": null,
       "tag": null,
       "semver": null,
-      "suffix": "ad87427",
+      "suffix": "b47677b",
       "semverString": null,
       "version": "2.0.2",
       "core_version": "1.0.0",
-      "time": 1596676577632
+      "time": 1596762661859
     };
     /* tslint:enable */
 

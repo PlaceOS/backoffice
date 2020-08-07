@@ -17776,7 +17776,16 @@ class TerminalComponent extends _globals_base_directive__WEBPACK_IMPORTED_MODULE
         if (this.terminal) {
             this.ngOnDestroy();
         }
-        this.terminal = new xterm__WEBPACK_IMPORTED_MODULE_1__["Terminal"]({ theme: { background: `#263238` } });
+        this.terminal = new xterm__WEBPACK_IMPORTED_MODULE_1__["Terminal"]({
+            theme: {
+                background: `#263238`,
+                red: '#e53935',
+                blue: '#1e88e5',
+                yellow: '#fdd835',
+                green: '#43a047',
+            },
+            fontSize: 12,
+        });
         this.terminal.open(this.terminal_element.nativeElement);
         this.timeout('init', () => {
             this.resizeTerminal();
@@ -17845,7 +17854,7 @@ const ɵTerminalComponent_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0
         args: [{
                 selector: 'a-terminal',
                 templateUrl: './terminal.component.html',
-                styleUrls: ['./terminal.component.scss']
+                styleUrls: ['./terminal.component.scss'],
             }]
     }], null, { content: [{
             type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
@@ -22720,16 +22729,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "ad87427",
-    "hash": "ad87427",
+    "raw": "b47677b",
+    "hash": "b47677b",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "ad87427",
+    "suffix": "b47677b",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1596676577632
+    "time": 1596762661859
 };
 /* tslint:enable */
 
