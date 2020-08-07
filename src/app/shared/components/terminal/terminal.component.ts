@@ -6,7 +6,7 @@ import {
     ViewChild,
     ElementRef,
     SimpleChanges,
-    OnChanges
+    OnChanges,
 } from '@angular/core';
 import { Terminal } from 'xterm';
 
@@ -15,7 +15,7 @@ import { BaseDirective } from '../../globals/base.directive';
 @Component({
     selector: 'a-terminal',
     templateUrl: './terminal.component.html',
-    styleUrls: ['./terminal.component.scss']
+    styleUrls: ['./terminal.component.scss'],
 })
 export class TerminalComponent extends BaseDirective implements OnInit, OnChanges, OnDestroy {
     /** Contents to display on the terminal */
@@ -32,7 +32,16 @@ export class TerminalComponent extends BaseDirective implements OnInit, OnChange
         if (this.terminal) {
             this.ngOnDestroy();
         }
-        this.terminal = new Terminal({ theme: { background: `#263238` } });
+        this.terminal = new Terminal({
+            theme: {
+                background: `#263238`,
+                red: '#e53935',
+                blue: '#1e88e5',
+                yellow: '#fdd835',
+                green: '#43a047',
+            },
+            fontSize: 12,
+        });
         this.terminal.open(this.terminal_element.nativeElement);
         this.timeout('init', () => {
             this.resizeTerminal();
