@@ -26,7 +26,7 @@
         ]
     },
     "dependencies": {
-        "@acaprojects/ngx-date-picker": "^1.0.5",
+        "@acaprojects/ngx-date-picker": "^1.1.0",
         "@angular/animations": "^9.0.0",
         "@angular/cdk": "^9.0.0",
         "@angular/common": "^9.0.0",
@@ -39,7 +39,7 @@
         "@angular/platform-browser-dynamic": "^9.0.0",
         "@angular/router": "^9.0.0",
         "@angular/service-worker": "^9.0.0",
-        "@placeos/ts-client": "file:../../library_repos/ts-client/placeos-ts-client-0.0.0-development.tgz",
+        "@placeos/ts-client": "file:../../library_repos/ts-client2/placeos-ts-client-0.1.0.tgz",
         "@sentry/browser": "^5.11.1",
         "rxjs": "~6.5.4",
         "tslib": "^1.10.0",
