@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PlaceSystem, updateSystem, addSystem, removeSystem, listSystemTriggers, showMetadata, querySystems, showSystem } from '@placeos/ts-client';
+import { PlaceSystem, updateSystem, addSystem, removeSystem, listSystemTriggers, showMetadata, querySystems, showSystem, addSystemModule } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -29,9 +29,11 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
     public metadata_count: number = 0;
 
     public readonly name = 'systems';
-    /** Function to query domains */
+    /** Function to save systems */
+    public readonly save_fn = (item: any) => item.id ? updateSystem(item.id, item) : addSystem(item);
+    /** Function to query systems */
     public readonly query_fn = (q) => querySystems(q);
-    /** Function to query domains */
+    /** Function to query systems */
     protected readonly show_fn = (id, q) => showSystem(id, q);
 
     constructor(
@@ -75,7 +77,7 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
             data: {
                 item: copy ? new PlaceSystem({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceSystem(),
                 name: 'System',
-                save: (item) => addSystem(item),
+                save: this.save_fn,
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -102,7 +104,7 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
                 data: {
                     item: this.item,
                     name: 'System',
-                    save: (item) => updateSystem(item.id, item),
+                    save: this.save_fn,
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {

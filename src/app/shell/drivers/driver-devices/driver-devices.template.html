@@ -29,7 +29,7 @@
                                 [class.active]="item.running && item.connected"
                                 [class.inactive]="item.running && !item.connected"
                                 [class.black]="!item.running"></div>
-                            <!-- <i binding [(model)]="item.connected" [sys]="item.system.id" [mod]="item.module_name" bind="connected"></i> -->
+                            <i binding [(model)]="item.connected" [sys]="item.system.id" [mod]="item.module_name" bind="connected"></i>
                         </td>
                         <td class="flex">
                             <a [routerLink]="['/modules', item.id]" [matTooltip]="item.id">{{item.name}}</a>

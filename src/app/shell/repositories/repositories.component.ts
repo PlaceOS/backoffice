@@ -23,9 +23,11 @@ export class RepositoriesComponent extends BaseRootComponent<PlaceRepository> {
     public driver_count: number;
 
     public readonly name = 'repositories';
-    /** Function to query domains */
+    /** Function to save repositories */
+    public readonly save_fn = (item: any) => item.id ? updateRepository(item.id, item) : addRepository(item);
+    /** Function to query repositories */
     public readonly query_fn = (q) => queryRepositories(q);
-    /** Function to query domains */
+    /** Function to query repositories */
     protected readonly show_fn = (id, q) => showRepository(id, q);
 
     constructor(
@@ -67,7 +69,7 @@ export class RepositoriesComponent extends BaseRootComponent<PlaceRepository> {
             data: {
                 item: copy ? new PlaceRepository({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceRepository(),
                 name: 'Repository',
-                save: (item) => addRepository(item),
+                save: this.save_fn,
             }
         });
         this.subscription('modal_event', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -94,7 +96,7 @@ export class RepositoriesComponent extends BaseRootComponent<PlaceRepository> {
                 data: {
                     item: this.item,
                     name: 'Repository',
-                    save: (item) => updateRepository(item.id, item),
+                    save: this.save_fn,
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {

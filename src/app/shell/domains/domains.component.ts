@@ -28,6 +28,8 @@ export class DomainsComponent extends BaseRootComponent<PlaceDomain> {
     public user_count: number;
 
     public readonly name = 'domains';
+    /** Function to save domains */
+    public readonly save_fn = (item: any) => item.id ? updateDomain(item.id, item) : addDomain(item);
     /** Function to query domains */
     public readonly query_fn = (q) => queryDomains(q);
     /** Function to query domains */
@@ -82,7 +84,7 @@ export class DomainsComponent extends BaseRootComponent<PlaceDomain> {
             data: {
                 item: copy ? new PlaceDomain({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceDomain(),
                 name: 'Domain',
-                save: (item) => addDomain(item),
+                save: this.save_fn,
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -109,7 +111,7 @@ export class DomainsComponent extends BaseRootComponent<PlaceDomain> {
                 data: {
                     item: this.item,
                     name: 'Broker',
-                    save: (item) => updateDomain(item.id, item),
+                    save:  this.save_fn,
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {

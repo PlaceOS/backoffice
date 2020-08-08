@@ -21,9 +21,11 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 export class UsersComponent extends BaseRootComponent<PlaceUser> {
 
     public readonly name = 'users';
-    /** Function to query domains */
+    /** Function to save users */
+    public readonly save_fn = (item: any) => item.id ? updateUser(item.id, item) : addUser(item);
+    /** Function to query users */
     public readonly query_fn = (q) => queryUsers(q);
-    /** Function to query domains */
+    /** Function to query users */
     protected readonly show_fn = (id, q) => showUser(id, q);
 
     constructor(
@@ -53,7 +55,7 @@ export class UsersComponent extends BaseRootComponent<PlaceUser> {
             data: {
                 item: copy ? new PlaceUser({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceUser(),
                 name: 'User',
-                save: (item) => addUser(item),
+                save: this.save_fn
             }
         });
         this.modal_ref.componentInstance.event.subscribe(event => {
@@ -80,7 +82,7 @@ export class UsersComponent extends BaseRootComponent<PlaceUser> {
                 data: {
                     item: this.item,
                     name: 'User',
-                    save: (item) => updateUser(item.id, item),
+                    save: this.save_fn,
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {

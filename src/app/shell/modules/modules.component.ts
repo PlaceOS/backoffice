@@ -25,6 +25,8 @@ export class ModulesComponent extends BaseRootComponent<PlaceModule> {
     public only_disconnected: boolean;
 
     public readonly name = 'modules';
+    /** Function to save systems */
+    public readonly save_fn = (item: any) => item.id ? updateModule(item.id, item) : addModule(item);
     /** Function to query domains */
     public readonly query_fn = (q) => queryModules(q);
     /** Function to query domains */
@@ -65,7 +67,7 @@ export class ModulesComponent extends BaseRootComponent<PlaceModule> {
             data: {
                 item: copy ? new PlaceModule({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceModule(),
                 name: 'Module',
-                save: (item) => addModule(item),
+                save: this.save_fn,
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe((event) => {
@@ -92,7 +94,7 @@ export class ModulesComponent extends BaseRootComponent<PlaceModule> {
                 data: {
                     item: this.item,
                     name: 'Module',
-                    save: (item) => updateModule(item.id, item),
+                    save: this.save_fn,
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {

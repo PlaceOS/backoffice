@@ -2,8 +2,6 @@
 import { generateBasicHandlers, generateID, API } from '../common.mock';
 import { HashMap } from '../../utilities/types.utilities';
 
-import * as faker from 'faker';
-
 const FILTER_FN = (item: any, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
         return true;
@@ -31,8 +29,8 @@ const PREDFINED_USERS = [
     sys_admin: Math.floor(Math.random() * 999_999) % 10 === 0
 }));
 
-const USER_DATA = Array(30).fill(0).map(() => {
-    const name = `${faker.name.firstName()} ${faker.name.lastName()}`;
+const USER_DATA = Array(0).fill(0).map((_, idx) => {
+    const name = `No. ${idx}`;
     return {
         id: `user-${generateID()}`,
         name,

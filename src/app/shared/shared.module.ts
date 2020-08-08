@@ -5,9 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { RouterModule } from '@angular/router';
 
-import { ASpinnerModule } from '@acaprojects/ngx-spinners';
 import { APipesModule } from '@acaprojects/ngx-pipes';
-import { ACustomEventsModule } from '@acaprojects/ngx-custom-events';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -73,6 +71,7 @@ import { ADatePickerModule } from '@acaprojects/ngx-date-picker';
 import { BrokerFormComponent } from './components/forms/broker-form/broker-form.component';
 import { UnauthorisedComponent } from './components/unauthorised/unauthorised.component';
 import { UploadListComponent } from './components/upload-list/upload-list.component';
+import { BindingDirective } from './components/binding/binding.directive';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -107,6 +106,7 @@ const COMPONENTS: Type<any>[] = [
     DebugOutputComponent,
     UnauthorisedComponent,
     UploadListComponent,
+    BindingDirective,
 ];
 
 const PIPES: Type<any>[] = [
@@ -157,20 +157,16 @@ const MATERIAL_MODULES: any[] = [
     ],
     imports: [
         CommonModule,
-        ASpinnerModule,
         FormsModule,
         APipesModule,
         ReactiveFormsModule,
-        ACustomEventsModule,
         ADatePickerModule,
         ScrollingModule,
         ...MATERIAL_MODULES,
         RouterModule.forChild([])
     ],
     exports: [
-        ASpinnerModule,
         APipesModule,
-        ACustomEventsModule,
         ADatePickerModule,
         ...COMPONENTS,
         ...PIPES,

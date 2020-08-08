@@ -63,7 +63,7 @@
                         <a
                             [routerLink]="subroute ? [route, item.id, subroute]: [route, item.id]"
                             routerLinkActive="active"
-                            [routerLinkActiveOptions]="{ exact: false, __change_detection_hack__: item.id }"
+                            [routerLinkActiveOptions]="{ exact: false, __change_detection_hack__: item.id + subroute }"
                         >
                             <div #list_item class="item" [title]="">
                                 <div class="text" [innerHTML]="item_name[item.id] | sanitize"></div>

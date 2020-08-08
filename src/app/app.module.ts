@@ -5,8 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { FormsModule } from '@angular/forms';
 
-import { AGoogleAnalyticsModule } from '@acaprojects/ngx-google-analytics';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
@@ -30,7 +28,6 @@ import { AuthorisedAdminGuard } from './shared/guards/authorised-admin.guard';
         ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
         HttpClientModule,
         FormsModule,
-        AGoogleAnalyticsModule,
         SharedOverlaysModule,
         SharedContentModule,
     ],

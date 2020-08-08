@@ -2,19 +2,16 @@ import { Injectable, ApplicationRef, NgZone } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
 
-import { MatSnackBar } from '@angular/material/snack-bar';
-
 import { setup, authority, apiEndpoint, PlaceAuthOptions } from '@placeos/ts-client';
-import { GoogleAnalyticsService } from '@acaprojects/ngx-google-analytics';
 
-import { Observable, BehaviorSubject, Subject } from 'rxjs';
-
+import { GoogleAnalyticsService } from './google-analytics.service';
 import { BaseClass } from '../shared/globals/base.class';
 import { SettingsService, ConsoleStream } from './settings.service';
 import { HashMap } from '../shared/utilities/types.utilities';
-
 import { HotkeysService } from './hotkeys.service';
 import { ApplicationIcon, ComposerOptions } from '../shared/utilities/settings.interfaces';
 
@@ -351,10 +348,11 @@ export class ApplicationService extends BaseClass {
         const login_locally = location.search.indexOf('login=true') >= 0;
         // Generate configuration object
         const config: PlaceAuthOptions = {
+            auth_type: 'auth_code',
             scope: 'public',
             host: `${host}:${port}`,
             auth_uri: `${url}/auth/oauth/authorize`,
-            token_uri: `${url}/auth/token`,
+            token_uri: `${url}/auth/oauth/token`,
             redirect_uri: `${location.origin}${route}/oauth-resp.html`,
             handle_login: !settings.local_login && !login_locally,
             mock

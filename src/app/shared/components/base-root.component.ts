@@ -10,7 +10,7 @@ import {
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
-import { PlaceServiceLike, HashMap } from '../utilities/types.utilities';
+import { HashMap } from '../utilities/types.utilities';
 import { first } from 'rxjs/operators';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
@@ -193,7 +193,7 @@ export class BaseRootComponent<T = HashMap<any>> extends BaseDirective implement
             this.item instanceof PlaceModule
         ) {
             this._service.set('loading_settings', true);
-            querySettings({ parent_id: this.item.id }).subscribe(
+            querySettings({ parent_id: (this.item as any).id }).subscribe(
                 list => {
                     this._service.set('loading_settings', false);
                     for (const settings of list) {

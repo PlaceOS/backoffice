@@ -32,6 +32,8 @@ export class TriggersComponent extends BaseRootComponent<PlaceTrigger> implement
     public system_count: number;
 
     public readonly name = 'triggers';
+    /** Function to save systems */
+    public readonly save_fn = (item: any) => item.id ? updateTrigger(item.id, item) : addTrigger(item);
     /** Function to query domains */
     public readonly query_fn = (q) => queryTriggers(q);
     /** Function to query domains */
@@ -76,7 +78,7 @@ export class TriggersComponent extends BaseRootComponent<PlaceTrigger> implement
                     ? new PlaceTrigger({ ...this.item, id: '', name: `${this.item.name} (1)` })
                     : new PlaceTrigger(),
                 name: 'Trigger',
-                save: (item) => addTrigger(item),
+                save: this.save_fn,
             },
         });
         this.subscription(
@@ -106,7 +108,7 @@ export class TriggersComponent extends BaseRootComponent<PlaceTrigger> implement
                 data: {
                     item: this.item,
                     name: 'Trigger',
-                    save: (item) => updateTrigger(item.id, item),
+                    save: this.save_fn,
                 },
             });
             this.modal_ref.afterClosed().subscribe(() => {

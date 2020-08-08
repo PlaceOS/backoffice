@@ -59,7 +59,7 @@ export class SystemExecFieldComponent extends BaseDirective
     /** Currently selected module */
     public active_module: PlaceModuleLike;
     /** Current selected module function */
-    public active_method: ModuleFunction;
+    public active_method: any;
     /** Mapping or errors to field names */
     public error: HashMap<boolean> = {};
     /** Whether the selected function's params are valid */
@@ -91,7 +91,7 @@ export class SystemExecFieldComponent extends BaseDirective
             return null;
         }
         const args = this.processArguments();
-        const method = this.active_method ? this.active_method : { order: [], params: {}, name: '' };
+        const method: any = this.active_method ? this.active_method : { order: [], params: {}, name: '' };
         return {
             mod: `${this.active_module.module}_${this.active_module.index}`,
             method: method.name,

@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import {
     PlaceDriver,
-    EncryptionLevel,
     isDriverCompiled,
     recompileDriver,
 } from '@placeos/ts-client';
@@ -13,7 +12,7 @@ import {
     ConfirmModalData,
     CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-import { DialogEvent, Identity } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
 
 @Component({

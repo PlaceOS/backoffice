@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { PlaceCluster, PlaceProcess, queryProcesses, terminateProcess } from '@placeos/ts-client';
+import { PlaceCluster, PlaceProcess, terminateProcess, queryProcesses } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
 import { ApplicationService } from 'src/app/services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -84,7 +84,7 @@ export class PlaceClusterTaskListComponent extends BaseDirective implements OnIn
     }
 
     public killProcess(process: PlaceProcess) {
-        return terminateProcess(this.cluster.id, { driver: process.id }).toPromise();
+        return terminateProcess(this.cluster.id, process.id).toPromise();
     }
 
     private loadProcesses(): void {

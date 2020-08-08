@@ -29,9 +29,11 @@ export class ZonesComponent extends BaseRootComponent<PlaceZone> {
     public metadata_count: number;
 
     public readonly name = 'zones';
-    /** Function to query domains */
+    /** Function to save zones */
+    public readonly save_fn = (item: any) => item.id ? updateZone(item.id, item) : addZone(item);
+    /** Function to query zones */
     public readonly query_fn = (q) => queryZones(q);
-    /** Function to query domains */
+    /** Function to query zones */
     protected readonly show_fn = (id, q) => showZone(id, q);
 
     constructor(
@@ -79,7 +81,7 @@ export class ZonesComponent extends BaseRootComponent<PlaceZone> {
             data: {
                 item: copy ? new PlaceZone({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceZone(),
                 name: 'Zone',
-                save: (item) => addZone(item),
+                save: this.save_fn,
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -106,7 +108,7 @@ export class ZonesComponent extends BaseRootComponent<PlaceZone> {
                 data: {
                     item: this.item,
                     name: 'Zone',
-                    save: (item) => updateZone(item.id, item),
+                    save: this.save_fn,
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {

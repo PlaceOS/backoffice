@@ -270,7 +270,11 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             index += offset;
             if (index >= 0 && index < list.length) {
                 list[index].nativeElement.scrollIntoView(false);
-                this._service.navigate([this.name, `${item_list[index].id}`]);
+                const route = [this.name, `${item_list[index].id}`];
+                if (this.subroute) {
+                    route.push(this.subroute);
+                }
+                this._service.navigate(route);
             }
         }
     }

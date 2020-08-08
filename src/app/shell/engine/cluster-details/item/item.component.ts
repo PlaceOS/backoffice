@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
 import { PlaceCluster } from '@placeos/ts-client';
 
-import * as Chart from 'chart.js';
+import Chart from 'chart.js/dist/Chart.bundle.js'
 import * as dayjs from 'dayjs';
 
 @Component({
