@@ -85,7 +85,6 @@ export class BackofficeUsersService extends BaseClass {
             this.state.next('loading');
             currentUser().subscribe(
                 user => {
-                    console.log('User:', user);
                     if (user) {
                         this.user.next(user);
                         this._service.set('user', user);

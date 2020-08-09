@@ -41,10 +41,11 @@
     </mat-tab-group>
     <ng-container *ngFor="let option of available_levels">
         <ng-container
-            *ngIf="encryption_level === option.id && form.controls['settings' + option.id]"
+            *ngIf="form && encryption_level === option.id && form.controls['settings' + option.id]"
         >
             <div [class.error-border]="form.controls['settings' + option.id]?.errors">
                 <settings-form-field
+                    [decorations]="option.id === 4 ? merge_decorations : []"
                     [formControlName]="'settings' + option.id"
                     [readonly]="!option.active || this.saving[option.id]"
                 ></settings-form-field>

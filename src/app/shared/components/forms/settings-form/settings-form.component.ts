@@ -1,6 +1,12 @@
 import { Component, Input, SimpleChanges, OnChanges, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { PlaceSettings, PlaceUser, EncryptionLevel, updateSettings } from '@placeos/ts-client';
+import {
+    PlaceSettings,
+    PlaceUser,
+    EncryptionLevel,
+    updateSettings,
+    addSettings,
+} from '@placeos/ts-client';
 
 import { ApplicationService } from 'src/app/services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -9,6 +15,7 @@ import { validateYAML } from 'src/app/shared/utilities/data/systems.utilities';
 
 import * as yaml from 'js-yaml';
 import * as merge from 'deepmerge';
+import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 
 @Component({
     selector: 'a-settings-form',
@@ -36,6 +43,8 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
     public available_levels = this.levels;
     /** Index of the active settings tab */
     public level_index: number;
+    /** List of decorations to apply to the merge settings */
+    public merge_decorations: HashMap[] = [];
 
     /** Current user */
     public get user(): PlaceUser {
@@ -161,10 +170,14 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
         const item = this.used_settings[level];
         if (item && !this.saving[level]) {
             this.saving[level] = true;
-            updateSettings(item.id, {
+            const details = {
                 ...item,
                 settings_string: this.form.controls[`settings${level}`].value,
-            })
+            };
+            (this.settings[level].id
+                ? updateSettings(this.settings[level].id, details)
+                : addSettings(details)
+            )
                 .toPromise()
                 .then(
                     (new_settings: PlaceSettings) => {
@@ -197,11 +210,14 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
         for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
             if (this.settings[i] && !this.saving[i]) {
                 this.saving[i] = true;
+                const details = {
+                    ...this.settings[i],
+                    settings_string: this.form.controls[`settings${i}`].value,
+                };
                 promises.push(
-                    updateSettings(this.settings[i].id, {
-                        ...this.settings[i],
-                        settings_string: this.form.controls[`settings${i}`].value,
-                    })
+                    this.settings[i].id
+                        ? updateSettings(this.settings[i].id, details)
+                        : addSettings(details)
                 );
             }
         }
@@ -280,7 +296,9 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
     }
 
     /** Genereate merged settings from all available settings */
-    private generateMergedSettings(settings: PlaceSettings[]): PlaceSettings {
+    private generateMergedSettings(settings: PlaceSettings[] = []): PlaceSettings {
+        const merge_settings =
+            this.merge_settings?.filter((item) => item.parent_id !== this.id) || [];
         const local_settings = (settings || []).map((item) => {
             let obj = {};
             try {
@@ -292,7 +310,7 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
             }
             return obj;
         });
-        const remote_settings = (this.merge_settings || []).map((item) => {
+        const remote_settings = merge_settings.map((item) => {
             let obj = {};
             try {
                 obj = yaml.safeLoad(item.settings_string) || {};
@@ -307,6 +325,11 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
         const settings_string = Object.keys(merged_settings).length
             ? yaml.safeDump(merged_settings, { strict: true })
             : '';
+        this.merge_decorations = this.decorationForSettings(
+            settings_string,
+            merge_settings.concat(settings),
+            remote_settings.concat(local_settings)
+        );
         return new PlaceSettings({
             id: 'merged',
             settings_string,
@@ -314,4 +337,115 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
             keys: Object.keys(merged_settings),
         });
     }
+
+    private decorationForSettings(
+        display: string,
+        settings: PlaceSettings[],
+        setting_maps: HashMap[]
+    ) {
+        const decorations: HashMap = {};
+        for (let i = 0; i < settings.length; i++) {
+            const type = Math.max(-1, i - (settings.length - 4));
+            this.decorationsForObject(decorations, setting_maps[i], display, settings[i], type);
+        }
+        return Object.keys(decorations).map((i) => decorations[i]);
+    }
+
+    private decorationsForObject(
+        decorations: HashMap,
+        obj: HashMap,
+        display: string,
+        settings: PlaceSettings,
+        type: number,
+        prefix: string = '',
+        level: number = 0
+    ) {
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                const field = `${prefix}${key}`;
+                decorations[field] = {
+                    options: {
+                        linesDecorationsClassName: `${MAPPING_CLASS[type + 1]}-margin`,
+                        inlineClassName: MAPPING_CLASS[type + 1],
+                        hoverMessage: {
+                            value: this.generateHoverMessage(type, settings),
+                            isTrusted: true,
+                        },
+                    },
+                    range: calcRangeOfStringInText(`${whiteSpace(level * 2)}${key}:`, display, level * 2),
+                };
+                if (obj[key] instanceof Object) {
+                    this.decorationsForObject(
+                        decorations,
+                        obj[key],
+                        display,
+                        settings,
+                        type,
+                        `${field}.`,
+                        level + 1
+                    );
+                }
+            }
+        }
+    }
+
+    private generateHoverMessage(type: number, settings: PlaceSettings) {
+        if (type === -1) {
+            return `Setting inherited from [${settings.parent_id}](${itemUrl(
+                settings.parent_id
+            )})(${ENCRYPTION_STRINGS[settings.encryption_level]})`;
+        } else {
+            return `Local setting from ${ENCRYPTION_STRINGS[settings.encryption_level]}`;
+        }
+    }
+}
+
+const MAPPING_CLASS = [
+    'external-setting',
+    'encryption-none',
+    'encryption-support',
+    'encryption-admin',
+    'encryption-hide',
+];
+const ENCRYPTION_STRINGS = ['Unencrypted', 'Support', 'Admin', 'Encrypted'];
+
+function whiteSpace(char_len: number) {
+    return new Array(char_len).fill(' ').join('');
+}
+
+function itemUrl(id: string) {
+    const path = `${location.origin}${location.pathname}`.replace(/\/$/g, '');
+    if (id.indexOf('sys-') === 0) {
+        return `${path}/#/systems/${id}/about`;
+    } else if (id.indexOf('mod-') === 0) {
+        return `${path}/#/modules/${id}/about`;
+    } else if (id.indexOf('zone-') === 0) {
+        return `${path}/#/zones/${id}/about`;
+    } else if (id.indexOf('driver-') === 0) {
+        return `${path}/#/drivers/${id}/about`;
+    }
+    return '';
+}
+
+/**
+ * Calculates the editor compatible position of the string in the text
+ * @param find String to find in text
+ * @param in_text Text to search for string
+ */
+function calcRangeOfStringInText(find: string, in_text: string, index: number = 0) {
+    const lines = in_text.split('\n');
+    let line = '';
+    let line_number = 0;
+    for (line of lines) {
+        line_number++;
+        if (line.indexOf(find) === 0) {
+            break;
+        }
+    }
+    return {
+        startColumn: index + 1,
+        startLineNumber: line_number,
+        endColumn: find.length,
+        endLineNumber: line_number,
+    };
 }
