@@ -64,6 +64,10 @@ export class UploadListComponent extends BaseDirective implements OnInit {
         return (bytes / Math.pow(unit, exp)).toFixed(1) + ' ' + pre;
     }
 
+    public hideOverlay() {
+        this.timeout('hide_overlay', () => this.show_overlay = false);
+    }
+
     /** Upload the image to the cloud */
     public handleFileEvent(event: DragEvent) {
         this.timeout('file_event', () => {

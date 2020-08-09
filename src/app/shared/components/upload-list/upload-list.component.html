@@ -34,7 +34,7 @@
         </ul>
     </div>
 </div>
-<div class="event-listener" (document:dragenter)="show_overlay = true" hidden></div>
+<div class="event-listener" (document:dragenter)="show_overlay = true" (drop)="hideOverlay()" hidden></div>
 <div
     class="overlay"
     (dragend)="show_overlay = false"
