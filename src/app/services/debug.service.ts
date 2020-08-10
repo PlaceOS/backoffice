@@ -69,7 +69,7 @@ export class PlaceDebugService extends BaseClass {
                 event_list = event_list.filter(
                     (event) =>
                         !event_list.find(
-                            (i) => i !== event && i.mod_id === event.mod_id && i.time === event.time
+                            (i) => i !== event && i.mod_id === event.mod_id && i.time === event.time && i.message === event.message
                         )
                 );
                 this._events.next(event_list);
