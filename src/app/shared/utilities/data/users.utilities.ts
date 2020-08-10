@@ -19,7 +19,8 @@ export function generateUserFormFields(user: PlaceUser): FormGroup {
         throw Error('No User passed to generate form fields');
     }
     const fields: HashMap<FormControl> = {
-        name: new FormControl(user.name || '', [Validators.required]),
+        first_name: new FormControl(user.first_name || user.name || '', [Validators.required]),
+        last_name: new FormControl(user.last_name || '', [Validators.required]),
         email: new FormControl(user.email || '', [Validators.email, Validators.required]),
         staff_id: new FormControl(user.staff_id || ''),
         support: new FormControl(user.support || false),

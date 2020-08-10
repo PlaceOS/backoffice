@@ -2,25 +2,42 @@
     <!--  fake fields are a workaround for chrome/opera autofill getting the wrong fields -->
     <input id="email" style="display: none;" type="text" name="fakeusernameremembered" />
     <input id="password" style="display: none;" type="password" name="fakepasswordremembered" />
-    <div class="field" *ngIf="form.controls.name">
-        <label
-            for="system-name"
-            [class.error]="form.controls.name.invalid && form.controls.name.touched"
-            i18n="@@nameLabel"
-        >
-            Name<span>*</span>:
-        </label>
-        <mat-form-field appearance="outline">
-            <input
-                matInput
-                name="name"
-                placeholder="Name"
-                i18n-placeholder="@@namePlaceholder"
-                formControlName="name"
-                required
-            />
-            <mat-error i18n="@@userNameError">User's name is required</mat-error>
-        </mat-form-field>
+    <div class="fieldset">
+        <div class="field" *ngIf="form.controls.first_name">
+            <label
+                for="system-name"
+                [class.error]="form.controls.first_name.invalid && form.controls.first_name.touched"
+                i18n="@@firstNameLabel"
+            >
+                First Name<span>*</span>:
+            </label>
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="first-name"
+                    placeholder="First name"
+                    i18n-placeholder="@@firstNamePlaceholder"
+                    formControlName="first_name"
+                    required
+                />
+                <mat-error i18n="@@userNameError">User's name is required</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.last_name">
+            <label for="system-name" i18n="@@lastNameLabel">
+                Last Name:
+            </label>
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="last-name"
+                    placeholder="Last name"
+                    i18n-placeholder="@@lastNamePlaceholder"
+                    formControlName="last_name"
+                    required
+                />
+            </mat-form-field>
+        </div>
     </div>
     <div class="field" *ngIf="form.controls.email">
         <label
