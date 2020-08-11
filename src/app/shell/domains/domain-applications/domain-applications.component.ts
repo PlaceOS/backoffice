@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { PlaceDomain, PlaceApplication, updateApplication, addApplication, removeApplication, queryApplications } from '@placeos/ts-client';
+import { PlaceDomain, PlaceApplication, updateApplication, addApplication, removeApplication, queryApplications, queryLDAPSources, queryOAuthSources, querySAMLSources } from '@placeos/ts-client';
 import { MatDialog } from '@angular/material/dialog';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
@@ -10,10 +10,11 @@ import {
     ConfirmModalData,
     CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-import { DialogEvent, HashMap } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, HashMap, Identity } from 'src/app/shared/utilities/types.utilities';
 
 import * as dayjs from 'dayjs';
 import { copyToClipboard } from 'src/app/shared/utilities/general.utilities';
+import { flatten } from '@angular/compiler';
 
 @Component({
     selector: 'domain-applications',
@@ -56,8 +57,12 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
 
     public loadApplications(offset: number = 0) {
         if (!this.item) { return; }
-        queryApplications({ owner_id: this.item.id, offset } as any).subscribe(
-            list => {
+        Promise.all([
+            queryLDAPSources({ owner_id: this.item.id, offset } as any).toPromise(),
+            queryOAuthSources({ owner_id: this.item.id, offset } as any).toPromise(),
+            querySAMLSources({ owner_id: this.item.id, offset } as any).toPromise(),
+        ]).then((lists) => {
+            const list: Identity[] = flatten(lists as any);
                 if (!offset) {
                     this.application_list = [];
                 }
@@ -70,7 +75,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
                         }
                     }
                     if (!found) {
-                        this.application_list.push(item);
+                        this.application_list.push(item as any);
                     }
                 }
             },
