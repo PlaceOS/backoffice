@@ -127,39 +127,41 @@ export class SystemExecFieldComponent extends BaseDirective
      */
     public loadModules(offset: number = 0) {
         if (this.system) {
-            queryModules({ control_system_id: this.system.id, offset, limit: 500, complete: true } as any).subscribe(
-                list => {
-                    this.devices = (list || []).filter(device => device.running).map(device => {
-                        const module_name =
-                            device.custom_name ||
-                            device.name
-                        return {
-                            id: device.id,
-                            name: device.name,
-                            module: module_name,
-                            index: 1
-                        };
-                    });
-                    this.devices.sort(
-                        (a, b) =>
-                            this.system.modules.indexOf(a.id) - this.system.modules.indexOf(b.id)
-                    );
-                    this.devices.forEach(
-                        device =>
-                            (device.index =
-                                this.devices
-                                    .filter(d => d.module === device.module)
-                                    .findIndex(mod => mod.id === device.id) + 1)
-                    );
-                    if (
-                        this.active_module &&
-                        !(this.devices || []).find(mod => mod.id === this.active_module.id)
-                    ) {
-                        this.devices.unshift(this.active_module);
-                    }
-                },
-                () => null
-            );
+            this.timeout('load_modules', () => {
+                queryModules({ control_system_id: this.system.id, offset, limit: 500, complete: true } as any).subscribe(
+                    list => {
+                        this.devices = (list || []).filter(device => device.running).map(device => {
+                            const module_name =
+                                device.custom_name ||
+                                device.name
+                            return {
+                                id: device.id,
+                                name: device.name,
+                                module: module_name,
+                                index: 1
+                            };
+                        });
+                        this.devices.sort(
+                            (a, b) =>
+                                this.system.modules.indexOf(a.id) - this.system.modules.indexOf(b.id)
+                        );
+                        this.devices.forEach(
+                            device =>
+                                (device.index =
+                                    this.devices
+                                        .filter(d => d.module === device.module)
+                                        .findIndex(mod => mod.id === device.id) + 1)
+                        );
+                        if (
+                            this.active_module &&
+                            !(this.devices || []).find(mod => mod.id === this.active_module.id)
+                        ) {
+                            this.devices.unshift(this.active_module);
+                        }
+                    },
+                    () => null
+                );
+            });
         }
     }
 
