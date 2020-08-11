@@ -193,7 +193,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                     this.form.controls.module_name.setValue(driver.generic_name || '');
                     this.form.controls.class_name.setValue(this.base_driver.id || '');
                     this.form.controls.default_port.setValue(
-                        driver.tcp_port || driver.udp_port || ''
+                        driver.tcp_port || driver.udp_port || null
                     );
                     this.form.controls.default_uri.setValue(driver.uri_base || '');
                     this.form.controls.role.setValue(
