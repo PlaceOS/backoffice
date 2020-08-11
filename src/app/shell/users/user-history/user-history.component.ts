@@ -1,6 +1,6 @@
 
 import { Component, Input, OnChanges, SimpleChange, OnInit } from '@angular/core';
-import { EngineUser } from '@placeos/ts-client';
+import { PlaceUser } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -11,7 +11,7 @@ import { ApplicationService } from '../../../services/app.service';
     styleUrls: ['./user-history.styles.scss']
 })
 export class UserHistoryComponent extends BaseDirective implements OnChanges, OnInit {
-    @Input() public item: EngineUser;
+    @Input() public item: PlaceUser;
 
     public model: any = {};
 
@@ -36,18 +36,6 @@ export class UserHistoryComponent extends BaseDirective implements OnChanges, On
     }
 
     public loadUserLogs(offset: number = 0) {
-        this._service.Logs.query({ offset, user_id: this.item.id }).then((list) => {
-            if (!offset) { this.model.list = []; }
-            for (const item of (list || [])) {
-                let found = false;
-                for (const i of this.model.list) {
-                    if (i.id === item.id) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) { this.model.list.push(item); }
-            }
-        }, () => null);
+
     }
 }

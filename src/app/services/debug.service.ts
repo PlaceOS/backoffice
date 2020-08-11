@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ComposerService } from '@placeos/composer';
-import { EngineDebugEvent, EngineModule } from '@placeos/ts-client';
+import { PlaceDebugEvent, PlaceModule, debug_events, debug, ignore } from '@placeos/ts-client';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { BaseClass } from '../shared/globals/base.class';
@@ -20,25 +19,25 @@ const TERMINAL_COLOURS = {
 @Injectable({
     providedIn: 'root',
 })
-export class EngineDebugService extends BaseClass {
+export class PlaceDebugService extends BaseClass {
     /** List of the current state of events */
-    private _events = new BehaviorSubject<EngineDebugEvent[]>([]);
+    private _events = new BehaviorSubject<PlaceDebugEvent[]>([]);
     /** Observable for changes to the event listing */
     private _event_obs = this._events.asObservable();
     /** List of modules listening to debug events */
-    private _bound_modules: EngineModule[] = [];
+    private _bound_modules: PlaceModule[] = [];
     /** Mapping of module IDs to display names */
     private _module_names: HashMap<string> = {};
     /** Whether debug console is enabled */
     private _enabled: boolean;
 
     /** Current list of debug events */
-    public get event_list(): EngineDebugEvent[] {
+    public get event_list(): PlaceDebugEvent[] {
         return this._events.getValue();
     }
 
     /** Observable for changes to the event listing */
-    public get events(): Observable<EngineDebugEvent[]> {
+    public get events(): Observable<PlaceDebugEvent[]> {
         return this._event_obs;
     }
 
@@ -61,16 +60,16 @@ export class EngineDebugService extends BaseClass {
         return this._enabled;
     }
 
-    constructor(private _composer: ComposerService) {
+    constructor() {
         super();
-        this._composer.realtime.debug_events.subscribe((event) => {
+        debug_events.subscribe((event) => {
             if (this._bound_modules.find((mod) => mod.id === event.mod_id)) {
                 let event_list = this.event_list;
                 event_list.push(event);
                 event_list = event_list.filter(
                     (event) =>
                         !event_list.find(
-                            (i) => i !== event && i.mod_id === event.mod_id && i.time === event.time
+                            (i) => i !== event && i.mod_id === event.mod_id && i.time === event.time && i.message === event.message
                         )
                 );
                 this._events.next(event_list);
@@ -86,7 +85,7 @@ export class EngineDebugService extends BaseClass {
     /**
      * Whether module is listening for debug events
      */
-    public isListening(module: EngineModule): boolean {
+    public isListening(module: PlaceModule): boolean {
         return !!this._bound_modules.find((mod) => mod.id === module.id);
     }
 
@@ -95,7 +94,7 @@ export class EngineDebugService extends BaseClass {
      * @param module Module to start listening to
      * @param module_name Display name for the module
      */
-    public bind(module: EngineModule, module_name: string) {
+    public bind(module: PlaceModule, module_name: string) {
         if (module) {
             const parts = module_name.split('_');
             const index = +parts.splice(parts.length - 1, 1);
@@ -106,10 +105,8 @@ export class EngineDebugService extends BaseClass {
                 name: 'debug',
             };
             this._enabled = true;
-            this._composer.realtime.debug(options).then(() => {
-                this.subscription(`debug_${module.id}`, () =>
-                    this._composer.realtime.ignore(options)
-                );
+            debug(options).then(() => {
+                this.subscription(`debug_${module.id}`, () => ignore(options));
                 this._bound_modules.push(module);
                 this._module_names[module.id] = module_name;
             });
@@ -120,7 +117,7 @@ export class EngineDebugService extends BaseClass {
      * Stop listening to debug events for module
      * @param module Module to stop listening to
      */
-    public unbind(module: EngineModule) {
+    public unbind(module: PlaceModule) {
         if (module) {
             this.unsub(`debug_${module.id}`);
             this._bound_modules = this._bound_modules.filter((mod) => mod.id !== module.id);

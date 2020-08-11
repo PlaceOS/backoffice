@@ -5,14 +5,20 @@ import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { generateTriggerActionForm } from 'src/app/shared/utilities/data/triggers.utilities';
-import { EngineTrigger, EngineSystem, TriggerMailer, TriggerFunction } from '@placeos/ts-client';
+import {
+    PlaceTrigger,
+    PlaceSystem,
+    TriggerMailer,
+    TriggerFunction,
+    updateTrigger,
+} from '@placeos/ts-client';
 import { FormGroup } from '@angular/forms';
 
 export interface TriggerActionModalData {
     /** Item to add/update the trigger on */
-    system: EngineSystem;
+    system: PlaceSystem;
     /** Trigger to add/update */
-    trigger: EngineTrigger;
+    trigger: PlaceTrigger;
     /** Trigger Condition to edit */
     action?: TriggerMailer | TriggerFunction;
 }
@@ -20,15 +26,17 @@ export interface TriggerActionModalData {
 @Component({
     selector: 'trigger-action-modal',
     templateUrl: './trigger-action-modal.template.html',
-    styleUrls: ['./trigger-action-modal.styles.scss']
+    styleUrls: ['./trigger-action-modal.styles.scss'],
 })
 export class TriggerActionModalComponent extends BaseDirective implements OnInit {
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether actions are loading */
     public loading: boolean;
-    /** Form fields for trigger condition */
+    /** Form fields for trigger action */
     public form: FormGroup;
+    /** Store for changes to actions */
+    public actions: any;
 
     /** Whether the triggers is new or not */
     public get is_new(): boolean {
@@ -36,12 +44,12 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
     }
 
     /** Template system to use for status variable bindings */
-    public get system(): EngineSystem {
+    public get system(): PlaceSystem {
         return this._data.system;
     }
 
     /** Template system to use for status variable bindings */
-    public get trigger(): EngineTrigger {
+    public get trigger(): PlaceTrigger {
         return this._data.trigger;
     }
 
@@ -71,49 +79,54 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
         } else {
             this.updateFunctions();
         }
-        this.trigger.save().then(
-            item => {
-                this.event.emit({ reason: 'done', metadata: { trigger: item } });
-                this._service.notifySuccess(`Successfully ${this.is_new ? 'added' : 'updated'} condition to trigger`);
-                this._dialog.close();
-            },
-            err => {
-                this.trigger.clearPendingChanges();
-                this.loading = false;
-                this._service.notifyError(
-                    `Error ${this.is_new ? 'adding' : 'updating'} condition to trigger. Error: ${JSON.stringify(err.response || err.message || err)}`
-                );
-            }
-        );
+        updateTrigger(this.trigger.id, { ...this.trigger, actions: this.actions })
+            .toPromise()
+            .then(
+                (item) => {
+                    this.event.emit({ reason: 'done', metadata: { trigger: item } });
+                    this._service.notifySuccess(
+                        `Successfully ${this.is_new ? 'added' : 'updated'} condition to trigger`
+                    );
+                    this._dialog.close();
+                },
+                (err) => {
+                    this.loading = false;
+                    this._service.notifyError(
+                        `Error ${
+                            this.is_new ? 'adding' : 'updating'
+                        } condition to trigger. Error: ${JSON.stringify(
+                            err.response || err.message || err
+                        )}`
+                    );
+                }
+            );
     }
 
     private updateMailers() {
         const mailers = this.trigger.actions.mailers;
         const new_mailer = {
             emails: this.form.value.emails,
-            content: this.form.value.content
+            content: this.form.value.content,
         };
         if (this._data.action) {
             const old_mailer = JSON.stringify(this._data.action);
-            const index = mailers.findIndex(
-                a_mailer => JSON.stringify(a_mailer) === old_mailer
-            );
+            const index = mailers.findIndex((a_mailer) => JSON.stringify(a_mailer) === old_mailer);
             mailers.splice(index, 1, new_mailer);
         } else {
             mailers.push(new_mailer);
         }
-        this.trigger.storePendingChange('actions', { ...this.trigger.actions, mailers });
+        this.actions = { ...this.trigger.actions, mailers };
     }
 
     private updateFunctions() {
         const functions = this.trigger.actions.functions;
         if (this._data.action) {
             const old_function = JSON.stringify(this._data.action);
-            const index = functions.findIndex(fn => JSON.stringify(fn) === old_function);
+            const index = functions.findIndex((fn) => JSON.stringify(fn) === old_function);
             functions.splice(index, 1, this.form.value.method_call);
         } else {
             functions.push(this.form.value.method_call);
         }
-        this.trigger.storePendingChange('actions', { ...this.trigger.actions, functions });
+        this.actions = { ...this.trigger.actions, functions };
     }
 }

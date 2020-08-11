@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
-import { ComposerService } from '@placeos/composer';
+import { authority } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
@@ -24,7 +24,6 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
 
     constructor(
         private _service: ApplicationService,
-        private _composer: ComposerService,
         private _router: Router
     ) {
         super();
@@ -36,9 +35,9 @@ export class SidebarMenuComponent extends BaseDirective implements OnInit {
 
     public init() {
         this.menu_items = this._service.setting('app.general.menu');
-        const user = this._service.Users.user.getValue();
+        const user = this._service.get('user');
         /** Only allow metrics if a URL has be set */
-        if (!this._composer.auth.authority.metrics) {
+        if (!authority().metrics) {
             this.menu_items = this.menu_items.filter(
                 item => item.route && item.route.indexOf('metrics') < 0
             );

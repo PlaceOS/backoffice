@@ -1,4 +1,4 @@
-import { ComposerService } from '@placeos/composer';
+import { post, apiEndpoint } from '@placeos/ts-client';
 import { Injectable } from '@angular/core';
 
 import { BaseClass } from 'src/app/shared/globals/base.class';
@@ -6,20 +6,17 @@ import { BaseClass } from 'src/app/shared/globals/base.class';
 @Injectable({
     providedIn: 'root'
 })
-export class EngineService extends BaseClass {
-    constructor(private _composer: ComposerService) {
-        super();
-    }
+export class PlaceService extends BaseClass {
 
-    public async reindex(backfill: boolean = true) {
-        const url = `${this._composer.auth.api_endpoint}/reindex${
+    public reindex(backfill: boolean = true) {
+        const url = `${apiEndpoint()}/reindex${
             backfill ? '?backfill=true' : ''
         }`;
-        return this._composer.http.post(url, null).toPromise();
+        return post(url, null).toPromise();
     }
 
-    public async backfill() {
-        const url = `${this._composer.auth.api_endpoint}/backfill`;
-        return this._composer.http.post(url, null).toPromise();
+    public backfill() {
+        const url = `${apiEndpoint()}/backfill`;
+        return post(url, null).toPromise();
     }
 }

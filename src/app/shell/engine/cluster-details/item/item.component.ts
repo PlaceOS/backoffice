@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
-import { EngineCluster } from '@placeos/ts-client';
+import { PlaceCluster } from '@placeos/ts-client';
 
-import * as Chart from 'chart.js';
+import Chart from 'chart.js/dist/Chart.bundle.js'
 import * as dayjs from 'dayjs';
 
 @Component({
@@ -9,9 +9,9 @@ import * as dayjs from 'dayjs';
     templateUrl: './item.component.html',
     styleUrls: ['./item.component.scss']
 })
-export class EngineClusterItemComponent implements OnInit {
+export class PlaceClusterItemComponent implements OnInit {
     /** Cluster to display details for */
-    @Input() public cluster: EngineCluster;
+    @Input() public cluster: PlaceCluster;
     /** List of historical data for cluster's CPU usage */
     @Input() public cpu_history: { id: number; value: number }[];
 

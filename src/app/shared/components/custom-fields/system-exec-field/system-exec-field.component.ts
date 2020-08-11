@@ -12,20 +12,21 @@ import {
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineModuleFunction, HashMap, TriggerFunction, EngineSystem } from '@placeos/ts-client';
+import { PlaceModuleFunction, TriggerFunction, PlaceSystem, functionList, executeOnSystem, queryModules } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../../../services/app.service';
 import { BaseDirective } from '../../../globals/base.directive';
 import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal/view-response-modal.component';
+import { HashMap } from 'src/app/shared/utilities/types.utilities';
 
-interface EngineModuleLike {
+interface PlaceModuleLike {
     id: string;
     name: string;
     module: string;
     index: number;
 }
 
-interface ModuleFunction extends EngineModuleFunction {
+interface ModuleFunction extends PlaceModuleFunction {
     name?: string;
 }
 
@@ -44,7 +45,7 @@ interface ModuleFunction extends EngineModuleFunction {
 export class SystemExecFieldComponent extends BaseDirective
     implements OnChanges, ControlValueAccessor {
     /** ID of the system to execute command on */
-    @Input() public system: EngineSystem;
+    @Input() public system: PlaceSystem;
     /** Whether the selected function is executable from this field */
     @Input() public executable = true;
     /** Toggle for activating a refresh of the module list */
@@ -52,13 +53,13 @@ export class SystemExecFieldComponent extends BaseDirective
     /** Emitter for exec results */
     @Output() public event = new EventEmitter();
     /** List of modules of the system */
-    public devices: EngineModuleLike[] = [];
+    public devices: PlaceModuleLike[] = [];
     /** List of available functions for the active module  */
     public methods: ModuleFunction[] = [];
     /** Currently selected module */
-    public active_module: EngineModuleLike;
+    public active_module: PlaceModuleLike;
     /** Current selected module function */
-    public active_method: ModuleFunction;
+    public active_method: any;
     /** Mapping or errors to field names */
     public error: HashMap<boolean> = {};
     /** Whether the selected function's params are valid */
@@ -90,7 +91,7 @@ export class SystemExecFieldComponent extends BaseDirective
             return null;
         }
         const args = this.processArguments();
-        const method = this.active_method ? this.active_method : { order: [], params: {}, name: '' };
+        const method: any = this.active_method ? this.active_method : { order: [], params: {}, name: '' };
         return {
             mod: `${this.active_module.module}_${this.active_module.index}`,
             method: method.name,
@@ -126,7 +127,7 @@ export class SystemExecFieldComponent extends BaseDirective
      */
     public loadModules(offset: number = 0) {
         if (this.system) {
-            this.service.Modules.query({ control_system_id: this.system.id, offset, limit: 500, complete: true } as any).then(
+            queryModules({ control_system_id: this.system.id, offset, limit: 500, complete: true } as any).subscribe(
                 list => {
                     this.devices = (list || []).filter(device => device.running).map(device => {
                         const module_name =
@@ -166,11 +167,11 @@ export class SystemExecFieldComponent extends BaseDirective
      * Load the available functions for the given module
      * @param item Module to grab function list for
      */
-    public loadFunctions(item: EngineModuleLike) {
+    public loadFunctions(item: PlaceModuleLike) {
         this.methods = null;
         this.fields = {};
         this.active_module = item;
-        this.service.Systems.functionList(this.system.id, item.module, item.index).then(
+        functionList(this.system.id, item.module, item.index).subscribe(
             list => {
                 if (list) {
                     this.methods = Object.keys(list).map(i => ({ name: i, ...list[i] }));
@@ -302,13 +303,13 @@ export class SystemExecFieldComponent extends BaseDirective
                 index: this.active_module.index,
                 args
             };
-            this.service.Systems.execute(
+            executeOnSystem(
                 this.system.id,
                 details.method,
                 details.module,
                 details.index,
                 details.args
-            ).then(
+            ).subscribe(
                 result => {
                     this.service.notifySuccess(
                         'Command successful executed.\nView Response?',

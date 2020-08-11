@@ -1,7 +1,6 @@
 import { Component, Input, SimpleChanges, OnChanges, Output, EventEmitter } from '@angular/core';
 
-import { EngineResource } from '@placeos/ts-client';
-import { Identity } from 'src/app/shared/utilities/types.utilities';
+import { Identity, HashMap } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
     selector: 'bulk-item-list',
@@ -10,7 +9,7 @@ import { Identity } from 'src/app/shared/utilities/types.utilities';
 })
 export class ListComponent implements OnChanges {
     /** List of bulk items to add */
-    @Input() public list: EngineResource<any>;
+    @Input() public list: HashMap<any>;
     /** List of fields available for building new item */
     @Input() public fields: Identity[] = [];
     /** Emitter user want to return to next step in flow */

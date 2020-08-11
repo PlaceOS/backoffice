@@ -1,6 +1,6 @@
 <div class="container" *ngIf="item">
     <section class="select">
-        <button mat-button (tapped)="newApplication()" i18n="@@newAction">Add new</button>
+        <button mat-button (click)="newApplication()" i18n="@@newAction">Add new</button>
     </section>
     <section>
         <div class="list" *ngIf="application_list && application_list.length > 0">
@@ -28,10 +28,10 @@
                         </td>
                         <td class="scope">{{item.scopes}}</td>
                         <td class="duo">
-                            <button mat-icon-button (tapped)="editApplication(item)">
+                            <button mat-icon-button (click)="editApplication(item)">
                                 <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
                             </button>
-                            <button mat-icon-button (tapped)="deleteApplication(item)">
+                            <button mat-icon-button (click)="deleteApplication(item)">
                                 <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
                             </button>
                         </td>

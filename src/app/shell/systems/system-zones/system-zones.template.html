@@ -3,13 +3,14 @@
         <section class="select">
             <div class="dropdown">
                 <item-search-field
-                    [service]="zone_service"
+                    name="zone"
+                    [query_fn]="query_fn"
                     [exclude]="exclude_fn"
                     [ngModel]="null"
                     (ngModelChange)="new_zone = $event"
                 ></item-search-field>
             </div>
-            <button mat-button [disabled]="!new_zone" (tapped)="joinZone()">Join zone</button>
+            <button mat-button [disabled]="!new_zone" (click)="joinZone()">Join zone</button>
         </section>
         <section>
             <table *ngIf="zones && zones.length > 0">
@@ -36,7 +37,7 @@
                         </td>
                         <td class="description">{{zone.description}}</td>
                         <td *ngIf="zones.length > 1" class="small">
-                            <button mat-icon-button (tapped)="removeZone(zone)">
+                            <button mat-icon-button (click)="removeZone(zone)">
                                 <i class="backoffice-trash"></i>
                             </button>
                         </td>

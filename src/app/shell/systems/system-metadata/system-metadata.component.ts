@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChange, OnInit } from '@angular/core';
-import { PlaceOS, EngineSystem, PlaceMetadata } from '@placeos/ts-client';
+import { PlaceSystem, PlaceMetadata, removeMetadata, updateMetadata, showMetadata } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -19,7 +19,7 @@ import {
     styleUrls: ['./system-metadata.styles.scss']
 })
 export class SystemMetadataComponent extends BaseDirective implements OnChanges, OnInit {
-    @Input() public item: EngineSystem;
+    @Input() public item: PlaceSystem;
     /** List of metadata associated with the zone */
     public metadata: PlaceMetadata[] = [];
     /** Map of form field groups to metadata fields */
@@ -94,7 +94,7 @@ export class SystemMetadataComponent extends BaseDirective implements OnChanges,
             'confirm',
             ref.componentInstance.event.subscribe(event => {
                 if (event.reason === 'done') {
-                    PlaceOS.metadata.delete(this.item.id, { name: field }).then(
+                    removeMetadata(this.item.id, { name: field }).subscribe(
                         () => {
                             this._service.notifySuccess(
                                 `Successfully removed "${field}" metadata.`
@@ -120,16 +120,16 @@ export class SystemMetadataComponent extends BaseDirective implements OnChanges,
         if (form.valid) {
             const value = form.value;
             this.loading[field.name] = true;
-            PlaceOS.metadata.update(this.item.id, {
+            updateMetadata(this.item.id, {
                 ...value,
                 details: JSON.parse(value.details)
-            }).then(
+            }).subscribe(
                 (item: PlaceMetadata) => {
                     this.loading[field.name] = false;
                     const index = this.metadata.findIndex(i => i.name === field.name);
                     this.edited[field.name] = false;
                     if (field.name !== item.name) {
-                        PlaceOS.metadata.delete(this.item.id, field).catch(err =>
+                        removeMetadata(this.item.id, field).toPromise().catch(err =>
                             this._service.notifyError(
                                 `Error removing old "${
                                     field.name
@@ -194,7 +194,7 @@ export class SystemMetadataComponent extends BaseDirective implements OnChanges,
     }
 
     private loadMetadata() {
-        PlaceOS.metadata.show(this.item.id).then(map => {
+        showMetadata(this.item.id).subscribe(map => {
             this.metadata = Object.keys(map).map(key => map[key]);
             this.generateForms();
         });

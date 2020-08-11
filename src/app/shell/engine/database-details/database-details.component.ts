@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { EngineService } from 'src/app/services/data/engine.service';
+import { PlaceService } from 'src/app/services/data/engine.service';
 import { ApplicationService } from 'src/app/services/app.service';
 
 @Component({
@@ -8,13 +8,13 @@ import { ApplicationService } from 'src/app/services/app.service';
     templateUrl: './database-details.component.html',
     styleUrls: ['./database-details.component.scss']
 })
-export class EngineDatabaseDetailsComponent {
+export class PlaceDatabaseDetailsComponent {
     /** Whether backend is reindexing the database */
     public reindexing: boolean;
     /** Whether backend is reindexing the database */
     public backfilling: boolean;
 
-    constructor(private _service: ApplicationService, private _engine_service: EngineService) {}
+    constructor(private _service: ApplicationService, private _engine_service: PlaceService) {}
 
     public reindex() {
         this.reindexing = true;

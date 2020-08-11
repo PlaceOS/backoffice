@@ -19,7 +19,7 @@
                     </td>
                     <td>{{ +(trigger.created_at) * 1000 | dateFrom }}</td>
                     <td class="small">
-                        <button mat-icon-button (tapped)="delete(trigger)">
+                        <button mat-icon-button (click)="delete(trigger)">
                             <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
                         </button>
                     </td>

@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnInit, Output, EventEmitter } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineSystem, EngineZone, EngineZonesService } from '@placeos/ts-client';
+import { PlaceSystem, PlaceZone, updateSystem, listSystemZones, queryZones } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -20,20 +20,17 @@ import { unique } from 'src/app/shared/utilities/general.utilities';
 })
 export class SystemZonesComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active item */
-    @Input() public item: EngineSystem;
+    @Input() public item: PlaceSystem;
     /** Emitter for changes to the loading state of the item */
     @Output() public loading = new EventEmitter<boolean | string>();
     /** List of zones assoicated with the active item */
-    public zones: EngineZone[];
+    public zones: PlaceZone[];
     /** ID of a zone that the user wishes to add to the system */
-    public new_zone: EngineZone;
+    public new_zone: PlaceZone;
+    /** Query function for systems */
+    public readonly query_fn = _ => queryZones({ q: _ });
 
-    public readonly exclude_fn = (zone: EngineZone) => this.item.zones.indexOf(zone.id) >= 0
-
-    /** Service for managing zone data */
-    public get zone_service(): EngineZonesService {
-        return this._service.Zones;
-    }
+    public readonly exclude_fn = (zone: PlaceZone) => this.item.zones.indexOf(zone.id) >= 0
 
     constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
@@ -61,7 +58,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
      */
     public loadZones(offset: number = 0) {
         if (!this.item) { return; }
-        this._service.Systems.listZones(this.item.id).then(
+        listSystemZones(this.item.id).subscribe(
             list => {
                 list.sort((a, b) => this.item.zones.indexOf(a.id) - this.item.zones.indexOf(b.id));
                 this.zones = list;
@@ -87,11 +84,10 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                 'confirm_ref',
                 ref.componentInstance.event.subscribe((e: DialogEvent) => {
                     if (e.reason === 'done') {
-                        const list: string[] = [...this.item.zones];
-                        moveItemInArray(list, event.previousIndex, event.currentIndex);
+                        const zones: string[] = [...this.item.zones];
+                        moveItemInArray(zones, event.previousIndex, event.currentIndex);
                         ref.componentInstance.loading = 'Updating zone ordering...';
-                        this.item.storePendingChange('zones', list);
-                        this.item.save().then(
+                        updateSystem(this.item.id, { ...this.item.toJSON(), zones }).subscribe(
                             () => {
                                 ref.close();
                                 this.unsub('confirm_ref');
@@ -109,7 +105,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
         }
     }
 
-    public removeZone(zone: EngineZone) {
+    public removeZone(zone: PlaceZone) {
         if (zone && zone.id) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
@@ -127,8 +123,8 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                 ref.componentInstance.event.subscribe((e: DialogEvent) => {
                     if (e.reason === 'done') {
                         this.loading.emit(true);
-                        this.item.storePendingChange('zones', this.item.zones.filter(id => id !== zone.id));
-                        this.item.save().then(
+                        const zones = this.item.zones.filter(id => id !== zone.id);
+                        updateSystem(this.item.id, { ...this.item.toJSON(), zones }).subscribe(
                             (item: any) => {
                                 this.loading.emit(false);
                                 this.item = item;
@@ -173,8 +169,8 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                     ref.componentInstance.event.subscribe((e: DialogEvent) => {
                         if (e.reason === 'done') {
                             ref.componentInstance.loading = 'Adding zone to system...';
-                            this.item.storePendingChange('zones', unique([...this.item.zones, this.new_zone.id]));
-                            this.item.save().then(
+                            const zones = unique([...this.item.zones, this.new_zone.id]);
+                            updateSystem(this.item.id, { ...this.item.toJSON(), zones }).subscribe(
                                 (item: any) => {
                                     this.loading.emit(false);
                                     this._service.notifySuccess(

@@ -31,7 +31,6 @@ const handle_items_fn = (list) => {
             });
         }
     });
-    console.log('Settings:', SETTINGS_DATA);
 };
 
 let obs = listenToHandlerChanges(`${API}/systems`);

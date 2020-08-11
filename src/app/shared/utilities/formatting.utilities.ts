@@ -1,5 +1,5 @@
 
-import { EngineUser } from '@placeos/ts-client';
+import { PlaceUser } from '@placeos/ts-client';
 
 import { humaniseDuration } from './general.utilities';
 
@@ -14,7 +14,7 @@ import * as dayjs from 'dayjs';
  * Get function to create formatted string for a list of users with a host
  * @param host Host user
  */
-export function formatAttendeesWithHost(host: EngineUser): (_: EngineUser[]) => string {
+export function formatAttendeesWithHost(host: PlaceUser): (_: PlaceUser[]) => string {
     return (l) => formatAttendees(l, host);
 }
 
@@ -23,7 +23,7 @@ export function formatAttendeesWithHost(host: EngineUser): (_: EngineUser[]) => 
  * @param list List of users
  * @param host Owner of the list of users
  */
-export function formatAttendees(list: EngineUser[], host?: EngineUser) {
+export function formatAttendees(list: PlaceUser[], host?: PlaceUser) {
     let attendee_str: string = '';
     if (list && list.length > 0) {
         const users = [...list];

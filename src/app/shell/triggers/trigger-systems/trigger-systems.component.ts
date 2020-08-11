@@ -1,9 +1,8 @@
 import { Component, Input, OnChanges, SimpleChange, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ComposerService } from '@placeos/composer';
-import { EngineTrigger, EngineSystem, HashMap } from '@placeos/ts-client';
+import { PlaceTrigger, PlaceSystem, querySystems, apiEndpoint, del } from '@placeos/ts-client';
 
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, HashMap } from 'src/app/shared/utilities/types.utilities';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -20,16 +19,15 @@ import {
 })
 export class TriggerSystemsComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active trigger */
-    @Input() public item: EngineTrigger;
+    @Input() public item: PlaceTrigger;
     /** List of systems associated with the trigger */
-    public system_trigger_list: EngineSystem[] = [];
+    public system_trigger_list: PlaceSystem[] = [];
     /** Map of systems ids to connected status */
     public connected: HashMap<boolean> = {};
 
     constructor(
         private _service: ApplicationService,
-        private _dialog: MatDialog,
-        private _composer: ComposerService
+        private _dialog: MatDialog
     ) {
         super();
     }
@@ -51,10 +49,10 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges,
     }
 
     public loadSystemTriggers(offset: number = 0) {
-        this._service.Systems.query({
+        querySystems({
             trigger_id: this.item.id,
             offset
-        } as any).then(
+        } as any).subscribe(
             list => this.system_trigger_list = list || [],
             () => null
         );
@@ -63,7 +61,7 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges,
     /**
      * Delete the trigger from system
      */
-    public delete(trigger: EngineTrigger) {
+    public delete(trigger: PlaceTrigger) {
         if (trigger) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
@@ -101,10 +99,10 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges,
      * Remove the trigger from it's associated system
      * @param trigger Trigger to remove
      */
-    private deleteTrigger(trigger: EngineTrigger) {
+    private deleteTrigger(trigger: PlaceTrigger) {
         return new Promise((resolve, reject) => {
-            const url = `${this._composer.auth.api_endpoint}/systems/${trigger.system_id}/triggers/${trigger.id}`;
-            this._composer.http.delete(url).subscribe(
+            const url = `${apiEndpoint()}/systems/${trigger.system_id}/triggers/${trigger.id}`;
+            del(url).subscribe(
                 _ => null,
                 _ => reject(_),
                 () => resolve()

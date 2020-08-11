@@ -9,25 +9,26 @@ import {
     UrlTree,
     Router
 } from '@angular/router';
-import { EngineUser } from '@placeos/ts-client';
-import { ComposerService } from '@placeos/composer';
+import { PlaceUser, currentUser } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
+
+import { ApplicationService } from '../../services/app.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthorisedAdminGuard implements CanActivate, CanLoad {
 
-    private _user: EngineUser;
+    private _user: PlaceUser;
 
-    constructor(private _composer: ComposerService, private _router: Router) {}
+    constructor(private _service: ApplicationService, private _router: Router) {}
 
     public async canActivate(
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ): Promise<boolean | UrlTree> {
-        await this._composer.initialised.pipe(first(_ => _)).toPromise();
-        const user: EngineUser = this._user || await this._composer.users.current();
+        await this._service.initialised.pipe(first(_ => _)).toPromise();
+        const user: PlaceUser = this._user || await currentUser().toPromise();
         const can_activate = user && user.sys_admin;
         if (!can_activate) {
             this._router.navigate(['/systems']);
@@ -37,8 +38,8 @@ export class AuthorisedAdminGuard implements CanActivate, CanLoad {
     }
 
     public async canLoad(route: Route, segments: UrlSegment[]): Promise<boolean> {
-        await this._composer.initialised.pipe(first(_ => _)).toPromise();
-        const user: EngineUser = this._user || await this._composer.users.current();
+        await this._service.initialised.pipe(first(_ => _)).toPromise();
+        const user: PlaceUser = this._user || await currentUser().toPromise();
         const can_activate = user && user.sys_admin;
         if (!can_activate) {
             this._router.navigate(['/systems']);

@@ -8,7 +8,7 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { EngineUser } from '@placeos/ts-client';
+import { PlaceUser } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
 
 import { ApplicationLink } from '../shared/utilities/settings.interfaces';
@@ -16,6 +16,7 @@ import { ApplicationService } from '../services/app.service';
 import { BaseDirective } from '../shared/globals/base.directive';
 
 import * as dayjs from 'dayjs';
+import { BackofficeUsersService } from '../services/data/users.service';
 
 @Component({
     selector: 'app-shell',
@@ -28,7 +29,7 @@ export class AppShellComponent extends BaseDirective implements OnInit {
     /** Display string for the current year */
     public year: string;
     /** Currently active user */
-    public user: EngineUser;
+    public user: PlaceUser;
     /** Global search filter string */
     public filter: string;
     /** Whether sidebar menu should be shown */
@@ -46,14 +47,14 @@ export class AppShellComponent extends BaseDirective implements OnInit {
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
-        return this._service.Users.dark_mode;
+        return this._users.dark_mode;
     }
 
     public get is_fools_day(): boolean {
         return dayjs().format('D MMM') === '1 Apr' && !localStorage.getItem('I\'M NO FOOL!!!');
     }
 
-    constructor(private _service: ApplicationService) {
+    constructor(private _service: ApplicationService, private _users: BackofficeUsersService) {
         super();
     }
 
@@ -61,7 +62,7 @@ export class AppShellComponent extends BaseDirective implements OnInit {
         this.year = dayjs().format('YYYY');
         this.subscription(
             'user',
-            this._service.Users.user.subscribe(user => (this.user = user))
+            this._users.user.subscribe(user => (this.user = user))
         );
         this.loading = true;
         this._service.initialised.pipe(first(_ => _)).subscribe(() => this.init());
@@ -69,7 +70,7 @@ export class AppShellComponent extends BaseDirective implements OnInit {
 
     public init() {
         this.loading = false;
-        this._service.Users.current().then(user => (this.user = user));
+        this._users.user.subscribe(user => (this.user = user));
     }
 
     /** Navigate to the root page */

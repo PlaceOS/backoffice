@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { EngineDomain, EngineSAMLSource, EngineLDAPSource } from '@placeos/ts-client';
+import { PlaceDomain, PlaceSAMLSource, PlaceLDAPSource, queryOAuthSources, querySAMLSources, queryLDAPSources } from '@placeos/ts-client';
 import { MatDialog } from '@angular/material/dialog';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
@@ -12,9 +12,9 @@ import {
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { AuthSourceModalComponent, AuthSourceModalData } from 'src/app/overlays/auth-source-modal/auth-source-modal.component';
 
-export interface EngineAuthSourceLike extends Identity {
+export interface PlaceAuthSourceLike extends Identity {
     authority_id: string;
-    save: () => Promise<EngineAuthSourceLike>;
+    save: () => Promise<PlaceAuthSourceLike>;
     delete: () => Promise<void>;
 }
 
@@ -25,9 +25,9 @@ export interface EngineAuthSourceLike extends Identity {
 })
 export class DomainAuthenticationComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active domain item */
-    @Input() public item: EngineDomain;
+    @Input() public item: PlaceDomain;
     /** List of auth sources associated with the active domain */
-    public auth_sources: EngineAuthSourceLike[] = [];
+    public auth_sources: PlaceAuthSourceLike[] = [];
     /** Mapping of auth sources to their type */
     public source_types: HashMap<'oauth' | 'saml' | 'ldap'> = {};
 
@@ -58,9 +58,9 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
     public loadAuthSources(offset: number = 0) {
         if (!this.item) { return; }
         Promise.all([
-            this._service.OAuthSources.query({ authority_id: this.item.id, offset } as any),
-            this._service.SAMLAuthSources.query({ authority_id: this.item.id, offset } as any),
-            this._service.LDAPAuthSources.query({ authority_id: this.item.id, offset } as any)
+            queryOAuthSources({ authority_id: this.item.id, offset } as any).toPromise(),
+            querySAMLSources({ authority_id: this.item.id, offset } as any).toPromise(),
+            queryLDAPSources({ authority_id: this.item.id, offset } as any).toPromise()
         ]).then(
             responses => {
                 if (!offset) {
@@ -97,7 +97,7 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
      * Open modal to edit auth source
      * @param item Auth source to edit
      */
-    public editAuthSource(item: EngineAuthSourceLike): void {
+    public editAuthSource(item: PlaceAuthSourceLike): void {
         const ref = this._dialog.open<AuthSourceModalComponent, AuthSourceModalData>(
             AuthSourceModalComponent,
             {
@@ -116,7 +116,7 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
      * Delete the auth source from the domain
      * @param item Auth source to delete
      */
-    public deleteAuthSource(item: EngineAuthSourceLike): void {
+    public deleteAuthSource(item: PlaceAuthSourceLike): void {
         if (item) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
@@ -158,11 +158,11 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
      * Add source the the auth source list. Updated item if it already exists
      * @param source Source to add the the list
      */
-    private addAuthSourceToList(source: EngineAuthSourceLike) {
+    private addAuthSourceToList(source: PlaceAuthSourceLike) {
         this.source_types[source.id] =
-            source instanceof EngineSAMLSource
+            source instanceof PlaceSAMLSource
                 ? 'saml'
-                : source instanceof EngineLDAPSource
+                : source instanceof PlaceLDAPSource
                 ? 'ldap'
                 : 'oauth';
         const index = this.auth_sources.findIndex(a_source => a_source.id === source.id);

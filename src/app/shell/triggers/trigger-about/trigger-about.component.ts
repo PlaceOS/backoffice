@@ -1,12 +1,13 @@
 import { Component, Input, SimpleChanges, OnChanges, OnInit, SimpleChange } from '@angular/core';
 import {
-    EngineTrigger,
-    EngineSystem,
-    EngineSystemsService,
+    PlaceTrigger,
+    PlaceSystem,
     TriggerComparison,
     TriggerTimeCondition,
     TriggerFunction,
-    TriggerMailer
+    TriggerMailer,
+    updateTrigger,
+    querySystems
 } from '@placeos/ts-client';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
@@ -35,9 +36,9 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 })
 export class TriggerAboutComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active trigger */
-    @Input() public item: EngineTrigger;
+    @Input() public item: PlaceTrigger;
     /** System to use for conditions with systen variables and functions */
-    public template_system: EngineSystem;
+    public template_system: PlaceSystem;
     /** List of variable comparison trigger conditions */
     public comparisons: TriggerComparison[] = [];
     /** List of time dependent trigger conditions */
@@ -48,11 +49,8 @@ export class TriggerAboutComponent extends BaseDirective implements OnChanges, O
     public mailers: TriggerMailer[] = [];
     /** Reference for confirmation modal */
     private confirm_ref: MatDialogRef<ConfirmModalComponent>;
-
-    /** Service for handling system endpoint requests */
-    public get system_service(): EngineSystemsService {
-        return this._service.Systems;
-    }
+    /** Query function for systems */
+    public readonly query_fn = _ => querySystems({ q: _ });
 
     constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
@@ -194,8 +192,7 @@ export class TriggerAboutComponent extends BaseDirective implements OnChanges, O
             );
             conditions.comparisons.splice(index, 1);
         }
-        this.item.storePendingChange('conditions', conditions);
-        this.item.save().then(
+        updateTrigger(this.item.id, { ...this.item.toJSON(), conditions }).subscribe(
             () => this._service.notifySuccess('Successfully removed trigger condition.'),
             err =>
                 this._service.notifyError(
@@ -251,8 +248,7 @@ export class TriggerAboutComponent extends BaseDirective implements OnChanges, O
             );
             actions.functions.splice(index, 1);
         }
-        this.item.storePendingChange('actions', actions);
-        this.item.save().then(
+        updateTrigger(this.item.id, { ...this.item.toJSON(), actions }).subscribe(
             () => this._service.notifySuccess('Successfully removed trigger action.'),
             err =>
                 this._service.notifyError(
@@ -301,8 +297,7 @@ export class TriggerAboutComponent extends BaseDirective implements OnChanges, O
             functions: type === 'function' ? list : this.functions,
             mailers: type === 'function' ? this.mailers : list
         };
-        this.item.storePendingChange('actions', actions);
-        this.item.save().then(
+        updateTrigger(this.item.id, { ...this.item.toJSON(), actions }).subscribe(
             () => this._service.notifySuccess(`Successfully re-ordered trigger ${type} action.`),
             err =>
                 this._service.notifyError(

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ComposerService } from '@placeos/composer';
+import { get, apiEndpoint } from '@placeos/ts-client';
 
+import { VERSION } from 'src/environments/version';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
 import {
@@ -10,9 +11,8 @@ import {
 } from 'src/app/overlays/changelog-modal/changelog-modal.component';
 
 import * as dayjs from 'dayjs';
-import { VERSION } from 'src/environments/version';
 
-export interface EngineAPIDetails {
+export interface PlaceAPIDetails {
     /** Display name for the application */
     readonly app: string;
     /** Semantic version of the API */
@@ -28,9 +28,9 @@ export interface EngineAPIDetails {
     templateUrl: './details.component.html',
     styleUrls: ['./details.component.scss']
 })
-export class EngineDetailsComponent extends BaseDirective implements OnInit {
+export class PlaceDetailsComponent extends BaseDirective implements OnInit {
     /** Current details about the API */
-    public api_details: EngineAPIDetails;
+    public api_details: PlaceAPIDetails;
 
     public get api_build(): string {
         if (!this.api_details || !this.api_details.build_time) {
@@ -40,7 +40,7 @@ export class EngineDetailsComponent extends BaseDirective implements OnInit {
     }
 
     public get user() {
-        return this._service.Users.current();
+        return this._service.get('user');
     }
 
     public get backoffice_version() {
@@ -54,8 +54,7 @@ export class EngineDetailsComponent extends BaseDirective implements OnInit {
 
     constructor(
         private _service: ApplicationService,
-        private _dialog: MatDialog,
-        private _composer: ComposerService
+        private _dialog: MatDialog
     ) {
         super();
     }
@@ -71,8 +70,7 @@ export class EngineDetailsComponent extends BaseDirective implements OnInit {
     }
 
     public loadApiDetails(): void {
-        this._composer.http
-            .get(`${this._composer.auth.api_endpoint}/version`)
+        get(`${apiEndpoint()}/version`)
             .toPromise()
             .then(
                 details => (this.api_details = details as any),

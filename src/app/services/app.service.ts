@@ -2,27 +2,17 @@ import { Injectable, ApplicationRef, NgZone } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
 
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { setup, authority, apiEndpoint, PlaceAuthOptions } from '@placeos/ts-client';
 
-import { ComposerService } from '@placeos/composer';
-import { PlaceOSOptions } from '@placeos/ts-client';
-import { GoogleAnalyticsService } from '@acaprojects/ngx-google-analytics';
-
-import { Observable, BehaviorSubject, Subject, Subscription } from 'rxjs';
-
+import { GoogleAnalyticsService } from './google-analytics.service';
 import { BaseClass } from '../shared/globals/base.class';
 import { SettingsService, ConsoleStream } from './settings.service';
 import { HashMap } from '../shared/utilities/types.utilities';
-
 import { HotkeysService } from './hotkeys.service';
-import { BackofficeCommentsService } from './data/comments.service';
-import { BackofficeLogsService } from './data/logs.service';
-import { BackofficeSearchService } from './data/search.service';
-import { BackofficeStatsService } from './data/stats.service';
-import { BackofficeSystemLogsService } from './data/system_logs.service';
-import { BackofficeUsersService } from './data/users.service';
 import { ApplicationIcon, ComposerOptions } from '../shared/utilities/settings.interfaces';
 
 import * as Sentry from '@sentry/browser';
@@ -62,20 +52,11 @@ export class ApplicationService extends BaseClass {
         private _router: Router,
         private _cache: SwUpdate,
         private _settings: SettingsService,
-        private _composer: ComposerService,
         private _analytics: GoogleAnalyticsService,
         private _hotkeys: HotkeysService,
-        private _engine_comments: BackofficeCommentsService,
-        private _engine_logs: BackofficeLogsService,
-        private _engine_search: BackofficeSearchService,
-        private _engine_stats: BackofficeStatsService,
-        private _engine_system_logs: BackofficeSystemLogsService,
-        private _users: BackofficeUsersService,
         private _snackbar: MatSnackBar
     ) {
         super();
-        this._engine_comments.parent = this._engine_logs.parent = this._engine_search.parent =
-            this._engine_stats.parent = this._engine_system_logs.parent = this._users.parent = this;
         this.set('system', null);
         this.set('show_upload_manager', false);
         this._app_ref.isStable.pipe(first(_ => _)).subscribe(() => {
@@ -96,99 +77,6 @@ export class ApplicationService extends BaseClass {
     /** Hotkeys service */
     public get Hotkeys() {
         return this._hotkeys;
-    }
-
-    /** Users service */
-    public get Users() {
-        return this._users;
-    }
-
-    /** Engine Applications service */
-    public get Applications() {
-        return this._composer.applications;
-    }
-
-    /** Engine Auth Sources service */
-    public get OAuthSources() {
-        return this._composer.oauth_sources;
-    }
-
-    /** Engine Auth Sources service */
-    public get SAMLAuthSources() {
-        return this._composer.saml_sources;
-    }
-
-    /** Engine Auth Sources service */
-    public get LDAPAuthSources() {
-        return this._composer.ldap_sources;
-    }
-
-    /** Comments service */
-    public get Comments() {
-        return this._engine_comments;
-    }
-
-    /** Engine Domains service */
-    public get Domains() {
-        return this._composer.domains;
-    }
-
-    /** Engine Cluster service */
-    public get Clusters() {
-        return this._composer.clusters;
-    }
-
-    /** Drivers service */
-    public get Drivers() {
-        return this._composer.drivers;
-    }
-
-    /** Engine Logs service */
-    public get Logs() {
-        return this._engine_logs;
-    }
-
-    /** Modules service */
-    public get Modules() {
-        return this._composer.modules;
-    }
-
-    /** Engine Search service */
-    public get Search() {
-        return this._engine_search;
-    }
-
-    public get Repositories() {
-        return this._composer.repositories;
-    }
-
-    /** Stats service */
-    public get Stats() {
-        return this._engine_stats;
-    }
-
-    /** Engien System Logs service */
-    public get SystemLogs() {
-        return this._engine_system_logs;
-    }
-
-    /** Systems service */
-    public get Systems() {
-        return this._composer.systems;
-    }
-
-    /** Triggers service */
-    public get Triggers() {
-        return this._composer.triggers;
-    }
-
-    /** Zones service */
-    public get Zones() {
-        return this._composer.zones;
-    }
-
-    public get EngineSettings() {
-        return this._composer.settings;
     }
 
     /**
@@ -221,12 +109,12 @@ export class ApplicationService extends BaseClass {
 
     /** Root API Endpoint */
     public get endpoint() {
-        return this._composer.auth.api_endpoint;
+        return apiEndpoint();
     }
 
     /** Root API Endpoint for engine */
     public get engine_endpoint() {
-        return this._composer.auth.api_endpoint;
+        return apiEndpoint();
     }
 
     /**
@@ -425,32 +313,29 @@ export class ApplicationService extends BaseClass {
      * Initialise application services
      */
     private init(): void {
-        this.setupComposer();
-        // Setup analytics
-        this._analytics.enabled = !!this.setting('app.analytics.enabled');
-        if (this._analytics.enabled) {
-            this._analytics.load(this.setting('app.analytics.tracking_id'));
-        }
-        this._composer.initialised.pipe(first(_ => _)).subscribe(() => {
+        this.setupComposer().then(() => {
+            // Setup analytics
+            this._analytics.enabled = !!this.setting('app.analytics.enabled');
+            if (this._analytics.enabled) {
+                this._analytics.load(this.setting('app.analytics.tracking_id'));
+            }
             this.set('ready', true);
-            const dsn =
-                this._composer.auth.authority.sentry_dsn || this.setting('app.sentry_dsn');
+            const dsn = authority().sentry_dsn || this.setting('app.sentry_dsn');
             if (dsn) {
                 Sentry.init({ dsn });
             }
-            this.loadActiveUser();
-            this._initialised.next(true);
+            // Add service to window if in debug mode
+            if (window.debug) {
+                window.application = this;
+            }
+            this.timeout('init', () => this._initialised.next(true), 200);
         });
-        // Add service to window if in debug mode
-        if (window.debug) {
-            window.application = this;
-        }
     }
 
     /**
      * Initialise the composer library comms
      */
-    private setupComposer(): void {
+    private setupComposer(): Promise<void> {
         this.log('SYSTEM', 'Setup up composer...');
         // Get application settings
         const settings: ComposerOptions = this.setting('composer') || {};
@@ -462,20 +347,17 @@ export class ApplicationService extends BaseClass {
         const mock = this.setting('mock');
         const login_locally = location.search.indexOf('login=true') >= 0;
         // Generate configuration object
-        const config: PlaceOSOptions = {
+        const config: PlaceAuthOptions = {
+            auth_type: 'auth_code',
             scope: 'public',
             host: `${host}:${port}`,
             auth_uri: `${url}/auth/oauth/authorize`,
-            token_uri: `${url}/auth/token`,
+            token_uri: `${url}/auth/oauth/token`,
             redirect_uri: `${location.origin}${route}/oauth-resp.html`,
             handle_login: !settings.local_login && !login_locally,
             mock
         };
-        this._composer.setup(config);
-    }
-
-    private loadActiveUser() {
-        this.Users.load();
+        return setup(config);
     }
 
     /**

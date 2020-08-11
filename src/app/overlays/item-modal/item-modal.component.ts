@@ -1,24 +1,24 @@
 import { Component, Inject, EventEmitter, Output, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
-    EngineResource,
-    EngineSystem,
-    EngineModule,
-    EngineZone,
-    EngineDriver,
-    EngineUser,
-    EngineDomain,
-    EngineApplication,
-    EngineSettings,
-    EngineTrigger,
-    EngineRepository,
+    PlaceSystem,
+    PlaceModule,
+    PlaceZone,
+    PlaceDriver,
+    PlaceUser,
+    PlaceDomain,
+    PlaceApplication,
+    PlaceSettings,
+    PlaceTrigger,
+    PlaceRepository,
     PlaceMQTTBroker,
-    EncryptionLevel
+    EncryptionLevel,
+    addSettings
 } from '@placeos/ts-client';
 import { FormGroup } from '@angular/forms';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { DialogEvent, EngineServiceLike, Identity } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, PlaceServiceLike, Identity, HashMap } from 'src/app/shared/utilities/types.utilities';
 import {
     generateSystemsFormFields,
     FormDetails
@@ -36,10 +36,11 @@ import {
 } from 'src/app/shared/utilities/data/triggers.utilities';
 import { generateRepositoryFormFields } from 'src/app/shared/utilities/data/repositories.utilities';
 import { generateBrokerFormFields } from 'src/app/shared/utilities/data/brokers.utilities';
+import { Observable } from 'rxjs';
 
 export interface CreateEditModalData<T extends Identity = any> {
     /** Service associated with the item being created/edited */
-    service: EngineServiceLike;
+    save: (item: T) => Observable<T>;
     /** Item being worked on */
     item: T;
     /** Form fields for item */
@@ -63,7 +64,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
     /** Whether the item is being editing */
     public edit: boolean;
     /** Item to edit */
-    public item: EngineResource<any>;
+    public item: HashMap<any>;
     /** Saved version of the item */
     public result: any;
     /** List of the form fields needed for the item */
@@ -72,7 +73,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
     public loading: string;
 
     public get name(): string {
-        return this._data.service.name || this._data.service._name;
+        return this._data.name;
     }
 
     public get readonly(): boolean {
@@ -80,25 +81,25 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
     }
 
     public get item_type(): string {
-        if (this.item instanceof EngineSystem) {
+        if (this.item instanceof PlaceSystem) {
             return 'system';
-        } else if (this.item instanceof EngineModule) {
+        } else if (this.item instanceof PlaceModule) {
             return 'module';
-        } else if (this.item instanceof EngineZone) {
+        } else if (this.item instanceof PlaceZone) {
             return 'zone';
-        } else if (this.item instanceof EngineDriver) {
+        } else if (this.item instanceof PlaceDriver) {
             return 'driver';
-        } else if (this.item instanceof EngineUser) {
+        } else if (this.item instanceof PlaceUser) {
             return 'user';
-        } else if (this.item instanceof EngineDomain) {
+        } else if (this.item instanceof PlaceDomain) {
             return 'domain';
-        } else if (this.item instanceof EngineApplication) {
+        } else if (this.item instanceof PlaceApplication) {
             return 'application';
-        } else if (this.item instanceof EngineTrigger && this._data.external_save) {
+        } else if (this.item instanceof PlaceTrigger && this._data.external_save) {
             return 'system-trigger';
-        } else if (this.item instanceof EngineTrigger) {
+        } else if (this.item instanceof PlaceTrigger) {
             return 'trigger';
-        } else if (this.item instanceof EngineRepository) {
+        } else if (this.item instanceof PlaceRepository) {
             return 'repository';
         } else if (this.item instanceof PlaceMQTTBroker) {
             return 'broker';
@@ -117,37 +118,31 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
      * Generate the form fields for the item being handled
      */
     public generateFormData(): FormGroup {
-        let details: FormDetails = null;
-        if (this.item instanceof EngineSystem) {
+        let details: FormGroup = null;
+        if (this.item instanceof PlaceSystem) {
             details = generateSystemsFormFields(this.item);
-        } else if (this.item instanceof EngineModule) {
+        } else if (this.item instanceof PlaceModule) {
             details = generateModuleFormFields(this.item);
-        } else if (this.item instanceof EngineZone) {
+        } else if (this.item instanceof PlaceZone) {
             details = generateZoneFormFields(this.item);
-        } else if (this.item instanceof EngineDriver) {
+        } else if (this.item instanceof PlaceDriver) {
             details = generateDriverFormFields(this.item);
-        } else if (this.item instanceof EngineUser) {
+        } else if (this.item instanceof PlaceUser) {
             details = generateUserFormFields(this.item);
-        } else if (this.item instanceof EngineDomain) {
+        } else if (this.item instanceof PlaceDomain) {
             details = generateDomainFormFields(this.item);
-        } else if (this.item instanceof EngineApplication) {
+        } else if (this.item instanceof PlaceApplication) {
             details = generateApplicationFormFields(this.item);
-        } else if (this.item instanceof EngineTrigger && this._data.external_save) {
+        } else if (this.item instanceof PlaceTrigger && this._data.external_save) {
             details = generateTriggerSettingsFormFields(this.item);
-        } else if (this.item instanceof EngineTrigger) {
+        } else if (this.item instanceof PlaceTrigger) {
             details = generateTriggerFormFields(this.item);
-        } else if (this.item instanceof EngineRepository) {
+        } else if (this.item instanceof PlaceRepository) {
             details = generateRepositoryFormFields(this.item);
         } else if (this.item instanceof PlaceMQTTBroker) {
             details = generateBrokerFormFields(this.item);
         }
-        if (details) {
-            details.subscriptions.forEach((sub, index) =>
-                this.subscription(`form_field_${index}`, sub)
-            );
-            return details.form;
-        }
-        return new FormGroup({});
+        return details ||  new FormGroup({});
     }
 
     public ngOnInit(): void {
@@ -172,7 +167,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
                 this.event.emit({ reason: 'action', metadata: this.form.value });
                 return;
             }
-            this.item.save().then(
+            this._data.save({ ...this.item.toJSON(), ...this.form.value }).subscribe(
                 item => {
                     this.result = item;
                     this._dialog_ref.disableClose = false;
@@ -204,14 +199,13 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
     /**
      * Save initial settings for resources
      */
-    private async newSettings(item: EngineResource<any>, setting_string: string) {
-        const new_settings = new EngineSettings({
+    private async newSettings(item: HashMap<any>, setting_string: string) {
+        const new_settings = new PlaceSettings({
             parent_id: item.id,
-            setting_string: '',
+            setting_string,
             encryption_level: EncryptionLevel.None
         });
-        new_settings.storePendingChange('settings_string', setting_string);
-        const settings = await new_settings.save().catch(err => {
+        const settings = await addSettings(new_settings).toPromise().catch(err => {
             this.loading = null;
             this._service.notifyError(
                 `Error saving settings for ${item.name || item.id}. Error: ${JSON.stringify(err.response || err.message || err)}`

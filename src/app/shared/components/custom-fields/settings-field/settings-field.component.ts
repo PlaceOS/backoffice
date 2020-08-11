@@ -9,11 +9,13 @@ import {
     Input,
     OnDestroy,
     SimpleChanges,
-    OnChanges
+    OnChanges,
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
+import { BackofficeUsersService } from 'src/app/services/data/users.service';
 
 // import * as monaco_yaml from 'monaco-editor/dev/vs/basic-languages/yaml/yaml.js';
 
@@ -25,9 +27,9 @@ import { BaseDirective } from 'src/app/shared/globals/base.directive';
         {
             provide: NG_VALUE_ACCESSOR,
             useExisting: forwardRef(() => SettingsFieldComponent),
-            multi: true
-        }
-    ]
+            multi: true,
+        },
+    ],
 })
 export class SettingsFieldComponent extends BaseDirective
     implements OnInit, OnChanges, OnDestroy, ControlValueAccessor {
@@ -35,6 +37,8 @@ export class SettingsFieldComponent extends BaseDirective
     @Input() public readonly = true;
     /** Resize */
     @Input() public resize: boolean;
+    /** List of decorations to apply to the editor */
+    @Input() public decorations: HashMap[];
     /** Input language for syntax highlighting and error checking */
     @Input() public lang = 'yaml';
     /** Current value for the */
@@ -44,10 +48,16 @@ export class SettingsFieldComponent extends BaseDirective
     /** Form control on touch handler */
     private _onTouch: (_: string) => void;
 
+    private _active_decorators: string[] = [];
+
     /** Reference to the element container the monaco editor */
     @ViewChild('editor', { static: true }) private element: ElementRef;
     /** API object for the monaco editor */
     private editor: any;
+
+    constructor(private _users: BackofficeUsersService) {
+        super();
+    }
 
     public ngOnInit(): void {
         this.createEditor();
@@ -62,6 +72,12 @@ export class SettingsFieldComponent extends BaseDirective
         }
         if (changes.resize) {
             this.resizeEditor();
+        }
+        if (changes.decorations && this.editor) {
+            this._active_decorators = this.editor.deltaDecorations(
+                this._active_decorators,
+                (this.decorations || []).map(i =>({...i}))
+            );
         }
     }
 
@@ -135,16 +151,21 @@ export class SettingsFieldComponent extends BaseDirective
                 value: this.settings_string || '',
                 language: this.lang || 'yaml',
                 fontFamily: `"Fira Code", monospace`,
-
                 lineNumbers: 'on',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
                 readOnly: this.readonly,
-                theme: 'vs-dark'
+                theme: !this._users.dark_mode ? 'vs' : 'vs-dark',
             });
             this.editor.onDidChangeModelContent(() => {
                 this.setValue(this.editor.getValue());
             });
+            this.timeout('decorations', () => {
+                this._active_decorators = this.editor.deltaDecorations(
+                    this._active_decorators,
+                    (this.decorations || []).map(i =>({...i}))
+                );
+            }, 50);
         }
     }
 }

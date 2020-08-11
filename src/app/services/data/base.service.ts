@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable, Subscription, Subscriber, Subject } from 'rxjs';
-import { EngineHttpClient } from '@placeos/ts-client';
+import { get, post, put, del } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
 
 import { BaseClass } from '../../shared/globals/base.class';
@@ -7,7 +7,7 @@ import { ApplicationService } from '../app.service';
 import { HashMap } from '../../shared/utilities/types.utilities';
 import { toQueryString } from '../../shared/utilities/api.utilities';
 
-export interface IEngineResponse {
+export interface IPlaceResponse {
     results: HashMap[];
     total: number;
 }
@@ -37,7 +37,7 @@ export class BaseAPIService<T extends {}> extends BaseClass {
     /** Default filter function for list method */
     protected _list_filter: (a: T) => boolean = a => !!a;
 
-    constructor(protected http: EngineHttpClient) {
+    constructor() {
         super();
         this._name = 'base';
         this._singular = 'base';
@@ -157,8 +157,8 @@ export class BaseAPIService<T extends {}> extends BaseClass {
             this._promises[key] = new Promise((resolve, reject) => {
                 const url = `${this.route(engine)}${query ? '?' + query : ''}`;
                 let result: T[] | HashMap[] = [];
-                this.http.get(url).subscribe(
-                    (d: IEngineResponse | HashMap[]) => {
+                get(url).subscribe(
+                    (d: IPlaceResponse | HashMap[]) => {
                         result =
                             d && d instanceof Array
                                 ? d.map(i => this.process(i))
@@ -205,7 +205,7 @@ export class BaseAPIService<T extends {}> extends BaseClass {
             this._promises[key] = new Promise<T>((resolve, reject) => {
                 const url = `${this.route(engine)}${query ? '?' + query : ''}`;
                 let result: T = null;
-                this.http.get(url).subscribe(
+                get(url).subscribe(
                     d => (result = this.process(d)),
                     e => {
                         reject(e);
@@ -247,7 +247,7 @@ export class BaseAPIService<T extends {}> extends BaseClass {
                 const query = toQueryString(query_params);
                 const url = `${this.route(query_params.engine)}${query ? '?' + query : ''}`;
                 let result: T = null;
-                this.http.post(url, form_data).subscribe(
+                post(url, form_data).subscribe(
                     d => (result = this.process(d)),
                     e => {
                         reject(e);
@@ -280,7 +280,7 @@ export class BaseAPIService<T extends {}> extends BaseClass {
                 const post_data = { ...form_data, id, _task: task_name };
                 const url = `${this.route(form_data.engine)}/${id}/${task_name}`;
                 let result = null;
-                this.http.post(url, post_data).subscribe(
+                post(url, post_data).subscribe(
                     d => (result = d),
                     e => {
                         reject(e);
@@ -382,7 +382,7 @@ export class BaseAPIService<T extends {}> extends BaseClass {
                 const query = toQueryString(query_params);
                 const url = `${this.route(query_params.engine)}/${id}${query ? '?' + query : ''}`;
                 let result: T = null;
-                this.http.put(url, form_data).subscribe(
+                put(url, form_data).subscribe(
                     d => (result = this.process(d)),
                     e => {
                         reject(e);
@@ -415,7 +415,7 @@ export class BaseAPIService<T extends {}> extends BaseClass {
         if (!this._promises[key]) {
             this._promises[key] = new Promise<void>((resolve, reject) => {
                 const url = `${this.route()}/${id}`;
-                this.http.delete(url).subscribe(
+                del(url).subscribe(
                     _ => null,
                     e => reject(e),
                     () => {
@@ -429,40 +429,10 @@ export class BaseAPIService<T extends {}> extends BaseClass {
     }
 
     /**
-     * Add new API item from another service or API class
-     * @param id ID of the item/or service adding the new item
-     * @param data Raw API data for the new item
-     * @param type Adder type
-     */
-    public addFrom(
-        id: string,
-        data: HashMap,
-        type: 'class' | 'service' | 'other' = 'other'
-    ): string {
-        const new_item = this.process(data);
-        this.set('list', this.updateList(this.get('list'), [new_item]));
-        return (new_item as any).id;
-    }
-
-    /**
-     * Remove items with the given IDs from the list
-     * @param id ID of the item/or service remove the list of items
-     * @param remove_ids List of item IDs to remove
-     * @param type Remover type
-     */
-    public removeFrom(
-        id: string,
-        remove_ids: string[],
-        type: 'class' | 'service' | 'other' = 'other'
-    ) {}
-
-    /**
      * Load initial data for the service
      */
     protected load(): Promise<void> {
-        return new Promise<void>(resolve => {
-            resolve();
-        });
+        return Promise.resolve();
     }
 
     /**

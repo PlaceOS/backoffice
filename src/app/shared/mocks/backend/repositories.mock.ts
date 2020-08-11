@@ -1,4 +1,4 @@
-import { EngineRepositoryType, MockHttpRequestHandler } from '@placeos/ts-client';
+import { PlaceRepositoryType, MockHttpRequestHandler, registerMockEndpoint } from '@placeos/ts-client';
 
 import * as DISCOVERY_DATA from '../data/discovery.json';
 
@@ -25,7 +25,7 @@ const REPO_DATA = [
         folder_name: 'drivers/placeos',
         uri: 'https://github.com/PlaceOS/drivers',
         commit_hash: 'HEAD',
-        type: EngineRepositoryType.Driver,
+        type: PlaceRepositoryType.Driver,
     },
 ];
 
@@ -64,7 +64,7 @@ COMMIT_LIST.sort((a, b) => b.date - a.date);
 generateBasicHandlers(`${API}/repositories`, REPO_DATA, FILTER_FN);
 
 /** Add handlers for getting respository drivers */
-window.control.handlers.push({
+registerMockEndpoint({
     path: `${API}/repositories/:id/drivers`,
     metadata: [],
     method: 'GET',
@@ -77,7 +77,7 @@ window.control.handlers.push({
 } as MockHttpRequestHandler);
 
 /** Add handlers for getting respository driver's commits */
-window.control.handlers.push({
+registerMockEndpoint({
     path: `${API}/repositories/:id/commits`,
     metadata: [],
     method: 'GET',
@@ -90,7 +90,7 @@ window.control.handlers.push({
 } as MockHttpRequestHandler);
 
 /** Add handlers for getting respository driver's details */
-window.control.handlers.push({
+registerMockEndpoint({
     path: `${API}/repositories/:id/details`,
     metadata: [],
     method: 'GET',

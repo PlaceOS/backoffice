@@ -1,6 +1,10 @@
 <div class="container" *ngIf="item">
     <section class="details">
         <div class="field" *ngIf="item.created_at">
+            <label i18n="@@userCreatedAtLabel">Email:</label>
+            <div class="value"><a [href]="'mailto:' + item.email">{{ item.email }}</a></div>
+        </div>
+        <div class="field" *ngIf="item.created_at">
             <label i18n="@@userCreatedAtLabel">Created:</label>
             <div class="value">{{ item.created_at * 1000 | dateFrom }}</div>
         </div>

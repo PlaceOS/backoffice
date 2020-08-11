@@ -1,10 +1,9 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PlaceMQTTBroker, AuthType } from '@placeos/ts-client';
 
-import { FormDetails } from './systems.utilities';
 import { HashMap } from '../types.utilities';
 
-export function generateBrokerFormFields(broker: PlaceMQTTBroker): FormDetails {
+export function generateBrokerFormFields(broker: PlaceMQTTBroker): FormGroup {
     if (!broker) {
         throw Error('No MQTT Broker passed to generate form fields');
     }
@@ -30,36 +29,21 @@ export function generateBrokerFormFields(broker: PlaceMQTTBroker): FormDetails {
         secret: new FormControl(broker.secret),
         filters: new FormControl(broker.filters),
     };
-    const subscriptions = [];
-    for (const key in fields) {
-        if (fields[key] && key.indexOf('confirm') < 0) {
-            subscriptions.push(
-                fields[key].valueChanges.subscribe((value) =>
-                    broker.storePendingChange(key as any, value)
-                )
-            );
+    fields.auth_type.valueChanges.subscribe((type) => {
+        switch (type) {
+            case AuthType.Certificate:
+                fields.username.setValidators([]);
+                fields.password.setValidators([]);
+                fields.certificate.setValidators([Validators.required]);
+            case AuthType.UserPassword:
+                fields.username.setValidators([Validators.required]);
+                fields.password.setValidators([Validators.required]);
+                fields.certificate.setValidators([]);
+            default:
+                fields.username.setValidators([]);
+                fields.password.setValidators([]);
+                fields.certificate.setValidators([]);
         }
-    }
-    subscriptions.push(
-        fields.auth_type.valueChanges.subscribe((type) => {
-            switch (type) {
-                case AuthType.Certificate:
-                    fields.username.setValidators([]);
-                    fields.password.setValidators([]);
-                    fields.certificate.setValidators([Validators.required]);
-                case AuthType.UserPassword:
-                    fields.username.setValidators([Validators.required]);
-                    fields.password.setValidators([Validators.required]);
-                    fields.certificate.setValidators([]);
-                default:
-                    fields.username.setValidators([]);
-                    fields.password.setValidators([]);
-                    fields.certificate.setValidators([]);
-            }
-        })
-    );
-    return {
-        form: new FormGroup(fields),
-        subscriptions,
-    };
+    });
+    return new FormGroup(fields);
 }

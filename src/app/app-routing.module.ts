@@ -82,7 +82,7 @@ const routes: Routes = [
                 canLoad: [AuthorisedAdminGuard],
                 canActivate: [AuthorisedAdminGuard],
                 loadChildren: () =>
-                    import('./shell/engine/engine.module').then((m) => m.AppEngineModule),
+                    import('./shell/engine/engine.module').then((m) => m.AppPlaceModule),
             },
             { path: '**', redirectTo: 'systems' },
         ],

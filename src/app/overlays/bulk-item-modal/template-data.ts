@@ -1,5 +1,5 @@
 
-import { EngineDriverRole } from '@placeos/ts-client';
+import { PlaceDriverRole } from '@placeos/ts-client';
 
 export const SYSTEM_TEMPLATE = {
     name: 'A System',
@@ -27,7 +27,7 @@ export const MODULE_TEMPLATE = {
     makebreak: false,
     uri: 'test.com',
     custom_name: 'mi-name',
-    role: EngineDriverRole.Device,
+    role: PlaceDriverRole.Device,
     notes: 'Clone wars',
     ignore_connected: false,
 };
@@ -36,7 +36,7 @@ export const DRIVER_TEMPLATE = {
     name: 'A Driver',
     description: 'In a galaxy far far away...',
     module_name: 'SteamShip',
-    role: EngineDriverRole.Logic,
+    role: PlaceDriverRole.Logic,
     default_uri: 'Sometimes we default',
     default_port: 1234,
     ignore_connected: false,

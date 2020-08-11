@@ -1,6 +1,6 @@
 
 import { Component, Input, SimpleChanges, OnInit, OnChanges, SimpleChange } from '@angular/core';
-import { EngineZone, EngineSystem, EncryptionLevel } from '@placeos/ts-client';
+import { PlaceZone, PlaceSystem, EncryptionLevel, querySystems } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
@@ -15,11 +15,11 @@ import { Identity } from 'src/app/shared/utilities/types.utilities';
 })
 export class ZoneAboutComponent extends BaseDirective implements OnInit, OnChanges {
     /** Item to render */
-    @Input() public item: EngineZone;
+    @Input() public item: PlaceZone;
     /** List of systems associated with the zone */
-    public system_list: EngineSystem[];
+    public system_list: PlaceSystem[];
     /** Selected system */
-    public active_system: EngineSystem;
+    public active_system: PlaceSystem;
 
     /** Whether application is loading settings for item */
     public get loading_settings(): boolean {
@@ -52,7 +52,7 @@ export class ZoneAboutComponent extends BaseDirective implements OnInit, OnChang
     }
 
     public loadSystems(offset: number = 0) {
-        this._service.Systems.query({ offset, zone_id: this.item.id, limit: 500 }).then((list) => {
+        querySystems({ offset, zone_id: this.item.id, limit: 500 }).subscribe((list) => {
             this.system_list = list;
         });
     }

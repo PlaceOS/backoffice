@@ -1,22 +1,22 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { EngineRepository, EngineDriver } from '@placeos/ts-client';
+import { PlaceRepository, PlaceDriver, updateDriver, addDriver, listRepositoryDrivers } from '@placeos/ts-client';
 import { MatDialog } from '@angular/material/dialog';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 import {
     ItemCreateUpdateModalComponent,
-    CreateEditModalData
+    CreateEditModalData,
 } from 'src/app/overlays/item-modal/item-modal.component';
 
 @Component({
     selector: 'repository-drivers',
     templateUrl: './repository-drivers.template.html',
-    styleUrls: ['./repository-drivers.styles.scss']
+    styleUrls: ['./repository-drivers.styles.scss'],
 })
 export class RepositoryDriversComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active repository */
-    @Input() public item: EngineRepository;
+    @Input() public item: PlaceRepository;
     /** Whether driver list is loading */
     public loading: boolean;
     /** List of drivers available in the repository */
@@ -29,7 +29,7 @@ export class RepositoryDriversComponent extends BaseDirective implements OnChang
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
                 this.item = item;
                 this.load();
             })
@@ -47,12 +47,12 @@ export class RepositoryDriversComponent extends BaseDirective implements OnChang
             return;
         }
         this.loading = true;
-        this._service.Repositories.listDrivers(this.item.id, { offset } as any).then(
-            list => {
+        listRepositoryDrivers(this.item.id, { offset } as any).subscribe(
+            (list) => {
                 this.loading = false;
                 this.driver_list = list || [];
             },
-            () => this.loading = false
+            () => (this.loading = false)
         );
     }
 
@@ -66,14 +66,15 @@ export class RepositoryDriversComponent extends BaseDirective implements OnChang
                     maxHeight: 'calc(100vh - 2em)',
                     maxWidth: 'calc(100vw - 2em)',
                     data: {
-                        item: new EngineDriver({
+                        item: new PlaceDriver({
                             name: '',
                             module_name: '',
                             repository_id: this.item.id,
-                            file_name: driver
+                            file_name: driver,
                         }),
-                        service: this._service.Drivers
-                    }
+                        name: 'Driver',
+                        save: (item) => addDriver(item),
+                    },
                 }
             );
         }

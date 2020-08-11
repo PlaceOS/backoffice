@@ -4,9 +4,11 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { Observable } from 'rxjs';
 
-export interface SelectItemModalData {
+export interface SelectItemModalData<T = any> {
     service_name: string;
+    query_fn: (_: string) => Observable<T[]>;
 }
 
 @Component({
@@ -30,6 +32,10 @@ export class SelectItemModalComponent extends BaseDirective implements OnInit {
         private _service: ApplicationService
     ) {
         super();
+    }
+
+    public get query_fn(): (_: any) => Observable<any[]> {
+        return this._data.query_fn;
     }
 
     public get name(): string {

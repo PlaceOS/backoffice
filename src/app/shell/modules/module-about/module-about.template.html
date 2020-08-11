@@ -47,7 +47,7 @@
             <button
                 mat-button
                 [disabled]="stopping"
-                (tapped)="item.running ? stopModule(): startModule()"
+                (click)="item.running ? stopModule(): startModule()"
             >
                 <div class="text" *ngIf="!stopping"  i18n="@@moduleStateToggle">
                     { item.running, select, true { Stop Module } false { Start Module } }

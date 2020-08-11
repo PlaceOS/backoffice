@@ -64,6 +64,10 @@ export class UploadListComponent extends BaseDirective implements OnInit {
         return (bytes / Math.pow(unit, exp)).toFixed(1) + ' ' + pre;
     }
 
+    public hideOverlay() {
+        this.timeout('hide_overlay', () => this.show_overlay = false);
+    }
+
     /** Upload the image to the cloud */
     public handleFileEvent(event: DragEvent) {
         this.timeout('file_event', () => {
@@ -159,7 +163,6 @@ export class UploadListComponent extends BaseDirective implements OnInit {
     private updateUploadHistory() {
         const done_list = this.uploads.filter((file) => file.progress >= 100);
         done_list.forEach(i => delete i.upload);
-        console.log('Done List:', done_list, this.uploads);
         if (localStorage) {
             localStorage.setItem('BACKOFFICE.uploads', JSON.stringify(done_list));
         }

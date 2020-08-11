@@ -26,7 +26,7 @@ SETTINGS.app = {
     title: 'PlaceOS',
     name: 'PlaceOS',
     description: 'PlaceOS Frontend made in Angular 9.1+',
-    short_name: 'Engine',
+    short_name: 'Place',
     code: 'ENGINE',
     copyright: 'Copyright 2018 ACA Projects',
     login: {

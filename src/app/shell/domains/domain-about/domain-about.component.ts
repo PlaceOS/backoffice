@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 
-import { EngineDomain } from '@placeos/ts-client';
+import { PlaceDomain, updateDomain } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
@@ -14,7 +14,7 @@ import { validateJSONString } from 'src/app/shared/utilities/validation.utilitie
 })
 export class DomainAboutComponent extends BaseDirective implements OnInit {
     /** Domain to display details for */
-    public item: EngineDomain;
+    public item: PlaceDomain;
     /** Form group for edit domain settings */
     public form: FormGroup;
     /** Index of the active tab */
@@ -56,12 +56,12 @@ export class DomainAboutComponent extends BaseDirective implements OnInit {
             'save',
             async () => {
                 if (this.form.valid) {
-                    const domain = new EngineDomain({
+                    const domain = new PlaceDomain({
                         ...this.item,
                         config: JSON.parse(this.form.value.config),
                         internals: JSON.parse(this.form.value.internals),
                     });
-                    const item = await domain.save();
+                    const item = await updateDomain(domain.id, domain);
                     this.item = item as any;
                 }
             },

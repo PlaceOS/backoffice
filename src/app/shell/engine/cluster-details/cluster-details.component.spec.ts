@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EngineClusterDetailsComponent } from './cluster-details.component';
+import { PlaceClusterDetailsComponent } from './cluster-details.component';
 
-describe('EngineClusterDetailsComponent', () => {
-    let component: EngineClusterDetailsComponent;
-    let fixture: ComponentFixture<EngineClusterDetailsComponent>;
+describe('PlaceClusterDetailsComponent', () => {
+    let component: PlaceClusterDetailsComponent;
+    let fixture: ComponentFixture<PlaceClusterDetailsComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [EngineClusterDetailsComponent]
+            declarations: [PlaceClusterDetailsComponent]
         }).compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(EngineClusterDetailsComponent);
+        fixture = TestBed.createComponent(PlaceClusterDetailsComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

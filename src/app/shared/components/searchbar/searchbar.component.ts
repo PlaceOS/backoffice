@@ -2,6 +2,7 @@
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { BaseDirective } from '../../globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
+import { BackofficeUsersService } from 'src/app/services/data/users.service';
 
 
 @Component({
@@ -25,10 +26,10 @@ export class SearchbarComponent extends BaseDirective {
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
-        return this._service.Users.dark_mode;
+        return this._users.dark_mode;
     }
 
-    constructor(private _service: ApplicationService) {
+    constructor(private _service: ApplicationService, private _users: BackofficeUsersService) {
         super();
         const win = window as any;
         this.model.speech = !!(win.SpeechRecognition || win.webkitSpeechRecognition);

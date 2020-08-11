@@ -8,7 +8,7 @@
             >
                 Zone<span>*</span>:
             </label>
-            <item-search-field [service]="zone_service" formControlName="zone"></item-search-field>
+            <item-search-field name="zone" [query_fn]="query_fn" formControlName="zone"></item-search-field>
             <div
                 class="error"
                 *ngIf="form.controls.zone.invalid && form.controls.zone.touched"

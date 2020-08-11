@@ -13,7 +13,7 @@
                     <td [innerHTML]="item | driverFormat">
                     </td>
                     <td class="small">
-                        <button mat-icon-button (tapped)="newDriver(item)">
+                        <button mat-icon-button (click)="newDriver(item)">
                             <app-icon [icon]="{ class: 'material-icons', content: 'add' }"></app-icon>
                         </button>
                     </td>

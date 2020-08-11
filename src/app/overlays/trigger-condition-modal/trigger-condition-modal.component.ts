@@ -3,10 +3,11 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormGroup } from '@angular/forms';
 
 import {
-    EngineSystem,
-    EngineTrigger,
+    PlaceSystem,
+    PlaceTrigger,
     TriggerComparison,
     TriggerTimeCondition,
+    updateTrigger,
 } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -17,9 +18,9 @@ import { generateTriggerConditionForm } from 'src/app/shared/utilities/data/trig
 
 export interface TriggerConditionData {
     /** Item to add/update the trigger on */
-    system: EngineSystem;
+    system: PlaceSystem;
     /** Trigger to add/update */
-    trigger: EngineTrigger;
+    trigger: PlaceTrigger;
     /** Trigger Condition to edit */
     condition?: TriggerComparison | TriggerTimeCondition;
 }
@@ -36,6 +37,8 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
     public loading: boolean;
     /** Form fields for trigger condition */
     public form: FormGroup;
+    /** Store for updated conditions */
+    public conditions: any;
 
     /** Whether the triggers is new or not */
     public get is_new(): boolean {
@@ -43,12 +46,12 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
     }
 
     /** Template system to use for status variable bindings */
-    public get system(): EngineSystem {
+    public get system(): PlaceSystem {
         return this._data.system;
     }
 
     /** Template system to use for status variable bindings */
-    public get trigger(): EngineTrigger {
+    public get trigger(): PlaceTrigger {
         return this._data.trigger;
     }
 
@@ -75,7 +78,7 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
         } else {
             this.updateTimeDependents();
         }
-        this.trigger.save().then(
+        updateTrigger(this.trigger.id, { ...this.trigger, conditions: this.conditions }).subscribe(
             (item) => {
                 this.event.emit({ reason: 'done', metadata: { trigger: item } });
                 this._service.notifySuccess(
@@ -84,7 +87,6 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
                 this._dialog.close();
             },
             (err) => {
-                this.trigger.clearPendingChanges();
                 this.loading = false;
                 this._service.notifyError(
                     `Error ${
@@ -126,7 +128,7 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
             ...this.trigger.conditions,
             comparisons: old_values,
         };
-        this.trigger.storePendingChange('conditions', updated_conditions);
+        this.conditions = updated_conditions;
     }
 
     /**
@@ -153,6 +155,6 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
             ...this.trigger.conditions,
             time_dependents: old_values,
         };
-        this.trigger.storePendingChange('conditions', updated_conditions);
+        this.conditions = updated_conditions;
     }
 }
