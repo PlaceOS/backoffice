@@ -16061,43 +16061,45 @@
             var offset = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
             if (this.system) {
-              Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryModules"])({
-                control_system_id: this.system.id,
-                offset: offset,
-                limit: 500,
-                complete: true
-              }).subscribe(function (list) {
-                _this71.devices = (list || []).filter(function (device) {
-                  return device.running;
-                }).map(function (device) {
-                  var module_name = device.custom_name || device.name;
-                  return {
-                    id: device.id,
-                    name: device.name,
-                    module: module_name,
-                    index: 1
-                  };
-                });
+              this.timeout('load_modules', function () {
+                Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryModules"])({
+                  control_system_id: _this71.system.id,
+                  offset: offset,
+                  limit: 500,
+                  complete: true
+                }).subscribe(function (list) {
+                  _this71.devices = (list || []).filter(function (device) {
+                    return device.running;
+                  }).map(function (device) {
+                    var module_name = device.custom_name || device.name;
+                    return {
+                      id: device.id,
+                      name: device.name,
+                      module: module_name,
+                      index: 1
+                    };
+                  });
 
-                _this71.devices.sort(function (a, b) {
-                  return _this71.system.modules.indexOf(a.id) - _this71.system.modules.indexOf(b.id);
-                });
+                  _this71.devices.sort(function (a, b) {
+                    return _this71.system.modules.indexOf(a.id) - _this71.system.modules.indexOf(b.id);
+                  });
 
-                _this71.devices.forEach(function (device) {
-                  return device.index = _this71.devices.filter(function (d) {
-                    return d.module === device.module;
-                  }).findIndex(function (mod) {
-                    return mod.id === device.id;
-                  }) + 1;
-                });
+                  _this71.devices.forEach(function (device) {
+                    return device.index = _this71.devices.filter(function (d) {
+                      return d.module === device.module;
+                    }).findIndex(function (mod) {
+                      return mod.id === device.id;
+                    }) + 1;
+                  });
 
-                if (_this71.active_module && !(_this71.devices || []).find(function (mod) {
-                  return mod.id === _this71.active_module.id;
-                })) {
-                  _this71.devices.unshift(_this71.active_module);
-                }
-              }, function () {
-                return null;
+                  if (_this71.active_module && !(_this71.devices || []).find(function (mod) {
+                    return mod.id === _this71.active_module.id;
+                  })) {
+                    _this71.devices.unshift(_this71.active_module);
+                  }
+                }, function () {
+                  return null;
+                });
               });
             }
           }
@@ -45022,16 +45024,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "edd63d2",
-        "hash": "edd63d2",
+        "raw": "ba33134",
+        "hash": "ba33134",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "edd63d2",
+        "suffix": "ba33134",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1597108185407
+        "time": 1597127973852
       };
       /* tslint:enable */
 

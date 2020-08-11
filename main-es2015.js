@@ -6282,27 +6282,29 @@ class SystemExecFieldComponent extends _globals_base_directive__WEBPACK_IMPORTED
      */
     loadModules(offset = 0) {
         if (this.system) {
-            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryModules"])({ control_system_id: this.system.id, offset, limit: 500, complete: true }).subscribe(list => {
-                this.devices = (list || []).filter(device => device.running).map(device => {
-                    const module_name = device.custom_name ||
-                        device.name;
-                    return {
-                        id: device.id,
-                        name: device.name,
-                        module: module_name,
-                        index: 1
-                    };
-                });
-                this.devices.sort((a, b) => this.system.modules.indexOf(a.id) - this.system.modules.indexOf(b.id));
-                this.devices.forEach(device => (device.index =
-                    this.devices
-                        .filter(d => d.module === device.module)
-                        .findIndex(mod => mod.id === device.id) + 1));
-                if (this.active_module &&
-                    !(this.devices || []).find(mod => mod.id === this.active_module.id)) {
-                    this.devices.unshift(this.active_module);
-                }
-            }, () => null);
+            this.timeout('load_modules', () => {
+                Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryModules"])({ control_system_id: this.system.id, offset, limit: 500, complete: true }).subscribe(list => {
+                    this.devices = (list || []).filter(device => device.running).map(device => {
+                        const module_name = device.custom_name ||
+                            device.name;
+                        return {
+                            id: device.id,
+                            name: device.name,
+                            module: module_name,
+                            index: 1
+                        };
+                    });
+                    this.devices.sort((a, b) => this.system.modules.indexOf(a.id) - this.system.modules.indexOf(b.id));
+                    this.devices.forEach(device => (device.index =
+                        this.devices
+                            .filter(d => d.module === device.module)
+                            .findIndex(mod => mod.id === device.id) + 1));
+                    if (this.active_module &&
+                        !(this.devices || []).find(mod => mod.id === this.active_module.id)) {
+                        this.devices.unshift(this.active_module);
+                    }
+                }, () => null);
+            });
         }
     }
     /**
@@ -21962,16 +21964,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "edd63d2",
-    "hash": "edd63d2",
+    "raw": "ba33134",
+    "hash": "ba33134",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "edd63d2",
+    "suffix": "ba33134",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1597108185407
+    "time": 1597127973852
 };
 /* tslint:enable */
 
