@@ -13,15 +13,14 @@ import {
     PlaceRepository,
     PlaceMQTTBroker,
     EncryptionLevel,
-    addSettings
+    addSettings,
+    cleanObject,
 } from '@placeos/ts-client';
 import { FormGroup } from '@angular/forms';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { DialogEvent, Identity, HashMap } from 'src/app/shared/utilities/types.utilities';
-import {
-    generateSystemsFormFields,
-} from 'src/app/shared/utilities/data/systems.utilities';
+import { generateSystemsFormFields } from 'src/app/shared/utilities/data/systems.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
 import { generateModuleFormFields } from 'src/app/shared/utilities/data/modules.utilities';
 import { generateZoneFormFields } from 'src/app/shared/utilities/data/zones.utilites';
@@ -31,7 +30,7 @@ import { generateDomainFormFields } from 'src/app/shared/utilities/data/domains.
 import { generateApplicationFormFields } from 'src/app/shared/utilities/data/applications.utilities';
 import {
     generateTriggerFormFields,
-    generateTriggerSettingsFormFields
+    generateTriggerSettingsFormFields,
 } from 'src/app/shared/utilities/data/triggers.utilities';
 import { generateRepositoryFormFields } from 'src/app/shared/utilities/data/repositories.utilities';
 import { generateBrokerFormFields } from 'src/app/shared/utilities/data/brokers.utilities';
@@ -55,7 +54,7 @@ export interface CreateEditModalData<T extends Identity = any> {
 @Component({
     selector: 'item-modal',
     templateUrl: './item-modal.component.html',
-    styleUrls: ['./item-modal.component.scss']
+    styleUrls: ['./item-modal.component.scss'],
 })
 export class ItemCreateUpdateModalComponent extends BaseDirective implements OnInit {
     /** Emitter for user action on the modal */
@@ -141,7 +140,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
         } else if (this.item instanceof PlaceMQTTBroker) {
             details = generateBrokerFormFields(this.item);
         }
-        return details ||  new FormGroup({});
+        return details || new FormGroup({});
     }
 
     public ngOnInit(): void {
@@ -166,32 +165,41 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
                 this.event.emit({ reason: 'action', metadata: this.form.value });
                 return;
             }
-            this._data.save({ ...this.item.toJSON(), ...this.form.value }).subscribe(
-                item => {
-                    this.result = item;
-                    this._dialog_ref.disableClose = false;
-                    this.event.emit({ reason: 'done', metadata: { item } });
-                    this._service.notifySuccess(
-                        `Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`
-                    );
-                    if (!this.form.value.id && this.form.controls.settings) {
-                        this.newSettings(item, this.form.controls.settings.value).then(() =>
-                            this._dialog_ref.close()
+            this._data
+                .save(
+                    cleanObject({ ...this.item.toJSON(), ...this.form.value }, [
+                        undefined,
+                        null,
+                        '',
+                    ])
+                )
+                .subscribe(
+                    (item) => {
+                        this.result = item;
+                        this._dialog_ref.disableClose = false;
+                        this.event.emit({ reason: 'done', metadata: { item } });
+                        this._service.notifySuccess(
+                            `Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`
                         );
-                    } else {
-                        this._dialog_ref.close();
+                        console.log('Settings:', this.form.controls.settings)
+                        if (!this.form.value.id && this.form.controls.settings) {
+                            this.newSettings(item, this.form.controls.settings.value).then(() =>
+                                this._dialog_ref.close()
+                            );
+                        } else {
+                            this._dialog_ref.close();
+                        }
+                    },
+                    (err) => {
+                        this.loading = null;
+                        this._dialog_ref.disableClose = false;
+                        this._service.notifyError(
+                            `Error ${this.item.id ? 'editing' : 'adding new'} ${
+                                this.name
+                            }. Error: ${JSON.stringify(err.response || err.message || err)}`
+                        );
                     }
-                },
-                err => {
-                    this.loading = null;
-                    this._dialog_ref.disableClose = false;
-                    this._service.notifyError(
-                        `Error ${this.item.id ? 'editing' : 'adding new'} ${
-                            this.name
-                        }. Error: ${JSON.stringify(err.response || err.message || err)}`
-                    );
-                }
-            );
+                );
         }
     }
 
@@ -202,14 +210,18 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
         const new_settings = new PlaceSettings({
             parent_id: item.id,
             setting_string,
-            encryption_level: EncryptionLevel.None
+            encryption_level: EncryptionLevel.None,
         });
-        const settings = await addSettings(new_settings).toPromise().catch(err => {
-            this.loading = null;
-            this._service.notifyError(
-                `Error saving settings for ${item.name || item.id}. Error: ${JSON.stringify(err.response || err.message || err)}`
-            );
-        });
+        const settings = await addSettings(new_settings)
+            .toPromise()
+            .catch((err) => {
+                this.loading = null;
+                this._service.notifyError(
+                    `Error saving settings for ${item.name || item.id}. Error: ${JSON.stringify(
+                        err.response || err.message || err
+                    )}`
+                );
+            });
         (item as any).settings[EncryptionLevel.None] = settings;
     }
 

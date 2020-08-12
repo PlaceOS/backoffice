@@ -92,6 +92,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
             }),
             map((list: any[]) => {
                 this.loading_drivers = false;
+                this.commit_list = [];
                 return (list || []).map((driver) => ({
                     id: driver,
                     name: driver.replace(/\//g, ' > '),
@@ -107,6 +108,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
             distinctUntilChanged(),
             switchMap((driver_id) => {
                 this.loading_commits = true;
+                this.commit_list = [];
                 return listRepositoryCommits(this.base_repo.id, {
                     driver: `${driver_id}`,
                 });
@@ -167,6 +169,10 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     public updateCommitList(driver: Identity) {
         this.form.controls.file_name.setValue(driver.id);
         this.base_driver = driver;
+        if (!this.form.controls.id.value){
+            this.base_commit = null;
+            this.form.controls.commit.setValue('');
+        }
         const promise = this.commit_list$.toPromise();
         this.driver$.next(`${driver.id}`);
         return promise;
@@ -186,6 +192,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
         }).subscribe(
             (driver) => {
                 this.loading = false;
+                console.log('ID:')
                 if (!this.form.controls.id.value) {
                     this.form.controls.name.setValue(driver.descriptive_name || '');
                     this.form.controls.module_name.setValue(driver.generic_name || '');
