@@ -1688,7 +1688,7 @@
         features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]],
         decls: 5,
         vars: 17,
-        consts: [[1, "container"], [1, "sidebar"], ["heading", "Drivers", "name", "drivers", 3, "query_fn", "close", "event"], [3, "click"], ["name", "module", "route", "drivers", 3, "save", "item", "tabs", "event"]],
+        consts: [[1, "container"], [1, "sidebar"], ["heading", "Drivers", "name", "drivers", 3, "query_fn", "close", "event"], [3, "click"], ["name", "Driver", "route", "drivers", 3, "save", "item", "tabs", "event"]],
         template: function DriversComponent_Template(rf, ctx) {
           if (rf & 1) {
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
