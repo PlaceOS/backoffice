@@ -8,16 +8,25 @@ import {
     ElementRef,
     QueryList,
     SimpleChanges,
-    forwardRef
+    forwardRef,
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { PlaceModuleFunction, TriggerFunction, PlaceSystem, functionList, executeOnSystem, queryModules } from '@placeos/ts-client';
+import {
+    PlaceModuleFunction,
+    TriggerFunction,
+    PlaceSystem,
+    functionList,
+    executeOnSystem,
+    queryModules,
+} from '@placeos/ts-client';
 
 import { ApplicationService } from '../../../../services/app.service';
 import { BaseDirective } from '../../../globals/base.directive';
 import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal/view-response-modal.component';
 import { HashMap } from 'src/app/shared/utilities/types.utilities';
+import { COMMA } from '@angular/cdk/keycodes';
+import { validateJSONString } from 'src/app/shared/utilities/validation.utilities';
 
 interface PlaceModuleLike {
     id: string;
@@ -38,9 +47,9 @@ interface ModuleFunction extends PlaceModuleFunction {
         {
             provide: NG_VALUE_ACCESSOR,
             useExisting: forwardRef(() => SystemExecFieldComponent),
-            multi: true
-        }
-    ]
+            multi: true,
+        },
+    ],
 })
 export class SystemExecFieldComponent extends BaseDirective
     implements OnChanges, ControlValueAccessor {
@@ -91,21 +100,24 @@ export class SystemExecFieldComponent extends BaseDirective
             return null;
         }
         const args = this.processArguments();
-        const method: any = this.active_method ? this.active_method : { order: [], params: {}, name: '' };
+        const method: any = this.active_method
+            ? this.active_method
+            : { order: [], params: {}, name: '' };
         return {
             mod: `${this.active_module.module}_${this.active_module.index}`,
             method: method.name,
             args: args.reduce((map, arg, index) => {
                 map[method.order[index]] = arg;
                 return map;
-            }, {})
+            }, {}),
         };
     }
 
     public get placeholder(): HashMap<string> {
         const map = {};
         for (const arg of this.param_list) {
-            map[arg[0]] = (arg[2] !== undefined ? '[' + arg[0] + (arg[2] ? '=' + arg[2] : '') + ']' : arg[0])
+            map[arg[0]] =
+                arg[2] !== undefined ? '[' + arg[0] + (arg[2] ? '=' + arg[2] : '') + ']' : arg[0];
         }
         return map;
     }
@@ -128,33 +140,39 @@ export class SystemExecFieldComponent extends BaseDirective
     public loadModules(offset: number = 0) {
         if (this.system) {
             this.timeout('load_modules', () => {
-                queryModules({ control_system_id: this.system.id, offset, limit: 500, complete: true } as any).subscribe(
-                    list => {
-                        this.devices = (list || []).filter(device => device.running).map(device => {
-                            const module_name =
-                                device.custom_name ||
-                                device.name
-                            return {
-                                id: device.id,
-                                name: device.name,
-                                module: module_name,
-                                index: 1
-                            };
-                        });
+                queryModules({
+                    control_system_id: this.system.id,
+                    offset,
+                    limit: 500,
+                    complete: true,
+                } as any).subscribe(
+                    (list) => {
+                        this.devices = (list || [])
+                            .filter((device) => device.running)
+                            .map((device) => {
+                                const module_name = device.custom_name || device.name;
+                                return {
+                                    id: device.id,
+                                    name: device.name,
+                                    module: module_name,
+                                    index: 1,
+                                };
+                            });
                         this.devices.sort(
                             (a, b) =>
-                                this.system.modules.indexOf(a.id) - this.system.modules.indexOf(b.id)
+                                this.system.modules.indexOf(a.id) -
+                                this.system.modules.indexOf(b.id)
                         );
                         this.devices.forEach(
-                            device =>
+                            (device) =>
                                 (device.index =
                                     this.devices
-                                        .filter(d => d.module === device.module)
-                                        .findIndex(mod => mod.id === device.id) + 1)
+                                        .filter((d) => d.module === device.module)
+                                        .findIndex((mod) => mod.id === device.id) + 1)
                         );
                         if (
                             this.active_module &&
-                            !(this.devices || []).find(mod => mod.id === this.active_module.id)
+                            !(this.devices || []).find((mod) => mod.id === this.active_module.id)
                         ) {
                             this.devices.unshift(this.active_module);
                         }
@@ -174,9 +192,9 @@ export class SystemExecFieldComponent extends BaseDirective
         this.fields = {};
         this.active_module = item;
         functionList(this.system.id, item.module, item.index).subscribe(
-            list => {
+            (list) => {
                 if (list) {
-                    this.methods = Object.keys(list).map(i => ({ name: i, ...list[i] }));
+                    this.methods = Object.keys(list).map((i) => ({ name: i, ...list[i] }));
                     this.setMethod(this.active_method?.name, this.fields);
                 }
             },
@@ -190,7 +208,7 @@ export class SystemExecFieldComponent extends BaseDirective
         this.active_method = fn;
         if (fn) {
             this.param_list = Object.keys(this.active_method.params).map(
-                i => [i, ...this.active_method.params[i]] as any
+                (i) => [i, ...this.active_method.params[i]] as any
             );
         }
         this.checkFields();
@@ -235,20 +253,21 @@ export class SystemExecFieldComponent extends BaseDirective
      * Move cursor to the next argument field
      */
     public nextField(e) {
-        if (e && e.preventDefault) {
-            e.preventDefault();
-        }
         if (this.arg_list) {
             const args = this.arg_list.toArray();
             const current = args[this.active_field].nativeElement;
-            const other = e.key.toLowerCase() !== 'arrowright';
-            const right_arrow =
-                e.key.toLowerCase() === 'arrowright' &&
-                this.last_location === (current.value || '').length;
-            if ((other || right_arrow) && this.active_field < args.length - 1) {
+            const available =
+                e.key.toLowerCase() !== 'arrowright' ||
+                (e.key.toLowerCase() !== 'arrowright' &&
+                    !validateJSONString({ value: current.value } as any));
+            const next = this.last_location === (current.value || '').length;
+            if (available && next && this.active_field < args.length - 1) {
                 const el = args[this.active_field + 1].nativeElement;
                 el.focus();
                 el.selectionStart = el.selectionEnd = 0;
+                if (e && e.preventDefault) {
+                    e.preventDefault();
+                }
             }
             this.last_location = current.selectionEnd;
         }
@@ -303,7 +322,7 @@ export class SystemExecFieldComponent extends BaseDirective
                 method: this.active_method.name,
                 module: this.active_module.module,
                 index: this.active_module.index,
-                args
+                args,
             };
             executeOnSystem(
                 this.system.id,
@@ -312,14 +331,14 @@ export class SystemExecFieldComponent extends BaseDirective
                 details.index,
                 details.args
             ).subscribe(
-                result => {
+                (result) => {
                     this.service.notifySuccess(
                         'Command successful executed.\nView Response?',
                         'View',
                         () => this.viewDetails(result)
                     );
                 },
-                err => {
+                (err) => {
                     if (typeof err === 'string' && err.length < 128) {
                         this.service.notifyError(err);
                     } else {
@@ -391,9 +410,9 @@ export class SystemExecFieldComponent extends BaseDirective
                     id: value.mod,
                     name: value.mod,
                     module: parts[0],
-                    index: +parts[1]
+                    index: +parts[1],
                 };
-                if (!(this.devices || []).find(mod => mod.id === this.active_module.id)) {
+                if (!(this.devices || []).find((mod) => mod.id === this.active_module.id)) {
                     this.devices.unshift(this.active_module);
                 }
             }
@@ -406,13 +425,13 @@ export class SystemExecFieldComponent extends BaseDirective
 
     private setMethod(name: string, args: HashMap = {}) {
         if (name) {
-            const method = (this.methods || []).find(a_method => a_method.name === name);
+            const method = (this.methods || []).find((a_method) => a_method.name === name);
             if (!method) {
                 this.active_method = {
                     name,
                     arity: Object.keys(args).length - 1,
-                    params: Object.keys(args).map(key => ['req', key]) as any,
-                    order: Object.keys(args)
+                    params: Object.keys(args).map((key) => ['req', key]) as any,
+                    order: Object.keys(args),
                 };
                 this.methods.unshift(this.active_method);
             } else {
@@ -424,7 +443,7 @@ export class SystemExecFieldComponent extends BaseDirective
     /** View Results of the execute */
     private viewDetails(content: any) {
         this._dialog.open<ViewResponseModalComponent>(ViewResponseModalComponent, {
-            data: { content }
+            data: { content },
         });
     }
 
