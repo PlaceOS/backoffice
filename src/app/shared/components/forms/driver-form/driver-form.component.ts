@@ -84,6 +84,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
             switchMap((repo_id) => {
                 this.loading_drivers = true;
                 this.driver_list = [];
+                this.commit_list = [];
                 return listRepositoryDrivers(repo_id);
             }),
             catchError((_) => {
@@ -92,7 +93,6 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
             }),
             map((list: any[]) => {
                 this.loading_drivers = false;
-                this.commit_list = [];
                 return (list || []).map((driver) => ({
                     id: driver,
                     name: driver.replace(/\//g, ' > '),
