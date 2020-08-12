@@ -8558,13 +8558,13 @@ class DriverFormComponent extends src_app_shared_globals_base_directive__WEBPACK
         this.driver_list$ = this.repo$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["debounceTime"])(100), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["distinctUntilChanged"])(), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["switchMap"])((repo_id) => {
             this.loading_drivers = true;
             this.driver_list = [];
+            this.commit_list = [];
             return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["listRepositoryDrivers"])(repo_id);
         }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["catchError"])((_) => {
             this._service.notifyError(`Error loading driver list. Error: ${_.message || _}`);
             return Object(rxjs__WEBPACK_IMPORTED_MODULE_5__["of"])([]);
         }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["map"])((list) => {
             this.loading_drivers = false;
-            this.commit_list = [];
             return (list || []).map((driver) => ({
                 id: driver,
                 name: driver.replace(/\//g, ' > '),
@@ -21990,16 +21990,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "c657e1e",
-    "hash": "c657e1e",
+    "raw": "5e5354c",
+    "hash": "5e5354c",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "c657e1e",
+    "suffix": "5e5354c",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1597224235171
+    "time": 1597276182660
 };
 /* tslint:enable */
 
