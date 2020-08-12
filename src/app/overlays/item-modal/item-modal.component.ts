@@ -206,12 +206,13 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
     /**
      * Save initial settings for resources
      */
-    private async newSettings(item: HashMap<any>, setting_string: string) {
+    private async newSettings(item: HashMap<any>, settings_string: string) {
         const new_settings = new PlaceSettings({
             parent_id: item.id,
-            setting_string,
+            settings_string,
             encryption_level: EncryptionLevel.None,
         });
+        console.log('Settings:', new_settings, settings_string)
         const settings = await addSettings(new_settings)
             .toPromise()
             .catch((err) => {
