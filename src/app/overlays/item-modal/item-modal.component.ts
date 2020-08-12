@@ -18,10 +18,9 @@ import {
 import { FormGroup } from '@angular/forms';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { DialogEvent, PlaceServiceLike, Identity, HashMap } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, Identity, HashMap } from 'src/app/shared/utilities/types.utilities';
 import {
     generateSystemsFormFields,
-    FormDetails
 } from 'src/app/shared/utilities/data/systems.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
 import { generateModuleFormFields } from 'src/app/shared/utilities/data/modules.utilities';

@@ -92,7 +92,6 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
             }),
             map((list: any[]) => {
                 this.loading_drivers = false;
-                this.commit_list = [];
                 return (list || []).map((driver) => ({
                     id: driver,
                     name: driver.replace(/\//g, ' > '),
@@ -104,11 +103,10 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
             this.driver_list$.subscribe((list) => (this.driver_list = list))
         );
         this.commit_list$ = this.driver$.pipe(
-            debounceTime(100),
+            debounceTime(120),
             distinctUntilChanged(),
             switchMap((driver_id) => {
                 this.loading_commits = true;
-                this.commit_list = [];
                 return listRepositoryCommits(this.base_repo.id, {
                     driver: `${driver_id}`,
                 });
@@ -154,12 +152,12 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
      * Update the list of available drivers
      * @param repo Repository to grab the drivers for
      */
-    public async updateDriverList(repo: PlaceRepository) {
+    public updateDriverList(repo: PlaceRepository) {
         this.form.controls.repository_id.setValue(repo.id);
         this.base_repo = repo;
         const promise = this.driver_list$.toPromise();
         this.repo$.next(repo.id);
-        return await promise;
+        return promise;
     }
 
     /**
@@ -225,7 +223,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                 typeof driver === 'string'
                     ? { id: driver, name: driver.split('/').join(' > ') }
                     : driver;
-            this.updateCommitList(this.base_driver);
+            this.commit_list = await this.updateCommitList(this.base_driver);
         }
     }
 }

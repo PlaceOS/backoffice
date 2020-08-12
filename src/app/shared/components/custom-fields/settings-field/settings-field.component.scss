@@ -10,6 +10,8 @@ $line-height: 24px;
     height: 32em;
     overflow: hidden;
     font-size: .95em;
+    border: 1px solid rgba(#000, .1);
+
     &.error {
         border-color: $error;
     }
