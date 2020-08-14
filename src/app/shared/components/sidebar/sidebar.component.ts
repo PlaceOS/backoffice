@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Router, NavigationEnd } from '@angular/router';
-import { PlaceModule, PlaceDriverRole, lastRequestTotal, requestTotal } from '@placeos/ts-client';
+import { PlaceModule, PlaceDriverRole } from '@placeos/ts-client';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 
@@ -38,7 +38,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     /** Name of the active module */
     @Input() public name: string;
     /** Name of the active module */
-    @Input() public query_fn: <T>(q: HashMap) => Observable<T[]>;
+    @Input() public query_fn: <T>(q: HashMap) => Observable<{ total: number, data: T[] }>;
     /** Whether the list is being loaded */
     @Input() public loading: boolean;
     /** Additional query params to add to item load requests */
@@ -59,6 +59,10 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     public last_check: number;
     /** Last total number of items when the list was fetched */
     public last_total: number;
+    /** Total number of items in the last request */
+    public total: number;
+    /** Total number of items */
+    public grand_total: number;
     /** Active subroute for active item */
     public subroute: string;
 
@@ -87,14 +91,6 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     /** Whether new items for the active module can be created */
     public get new(): boolean {
         return this._service.setting(`app.${this.name}.can_create`);
-    }
-
-    public get total(): number {
-        return this.search ? lastRequestTotal(this.name) : requestTotal('');
-    }
-
-    public get grand_total(): number {
-        return requestTotal(this.name);
     }
 
     /** Heading value lower cased */
@@ -213,7 +209,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         if (end === total) {
             this.last_total = total;
             this.last_check = dayjs().valueOf();
-            if (this.last_total !== lastRequestTotal(this.name)) {
+            if (this.last_total !== this.total) {
                 this.searching(this.list.length);
             }
         }
@@ -241,10 +237,14 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         this.loading = true;
         if (this.query_fn) {
             this.query_fn({ q: this.search, offset, ...(this.query_params || {}) }).toPromise().then(
-                list => {
-                    this.list = offset ? this.list.concat(list) : list;
+                resp => {
+                    this.list = offset ? this.list.concat(resp.data) : resp.data;
                     this.list = unique(this.list, 'id');
                     this.list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                    if (!this.search) {
+                        this.grand_total = resp.total;
+                    }
+                    this.total = resp.total
                     this.items.next(this.list);
                     this.loading = false;
                 },

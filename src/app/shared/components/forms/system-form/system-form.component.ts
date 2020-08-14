@@ -7,6 +7,7 @@ import { ApplicationService } from 'src/app/services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { PlaceServiceLike, Identity } from 'src/app/shared/utilities/types.utilities';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'system-form',
@@ -24,7 +25,7 @@ export class SystemFormComponent extends BaseDirective {
         { id: EncryptionLevel.NeverDisplay, name: 'Never Display' }
     ];
     /** Function for querying zones */
-    public readonly query_fn = (_: string) => queryZones({ q: _ });
+    public readonly query_fn = (_: string) => queryZones({ q: _ }).pipe(map(resp => resp.data));
     /** List of separator characters for features */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 

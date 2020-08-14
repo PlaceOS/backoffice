@@ -11,6 +11,7 @@ import {
     CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { AuthSourceModalComponent, AuthSourceModalData } from 'src/app/overlays/auth-source-modal/auth-source-modal.component';
+import { map } from 'rxjs/operators';
 
 export interface PlaceAuthSourceLike extends Identity {
     authority_id: string;
@@ -58,9 +59,9 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
     public loadAuthSources(offset: number = 0) {
         if (!this.item) { return; }
         Promise.all([
-            queryOAuthSources({ authority_id: this.item.id, offset } as any).toPromise(),
-            querySAMLSources({ authority_id: this.item.id, offset } as any).toPromise(),
-            queryLDAPSources({ authority_id: this.item.id, offset } as any).toPromise()
+            queryOAuthSources({ authority_id: this.item.id, offset } as any).pipe(map(resp => resp.data)).toPromise(),
+            querySAMLSources({ authority_id: this.item.id, offset } as any).pipe(map(resp => resp.data)).toPromise(),
+            queryLDAPSources({ authority_id: this.item.id, offset } as any).pipe(map(resp => resp.data)).toPromise()
         ]).then(
             responses => {
                 if (!offset) {

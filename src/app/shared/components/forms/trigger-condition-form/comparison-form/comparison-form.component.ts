@@ -12,6 +12,7 @@ import {
 import { Identity } from 'src/app/shared/utilities/types.utilities';
 import { calculateModuleIndex } from 'src/app/shared/utilities/api.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'trigger-condition-comparison-form',
@@ -113,7 +114,7 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
         if (!this.system) {
             return;
         }
-        queryModules({ control_system_id: this.system.id }).subscribe(module_list => {
+        queryModules({ control_system_id: this.system.id }).pipe(map(resp => resp.data)).subscribe(module_list => {
             this.modules = module_list;
             const mod_list = this.system.modules;
             this.modules.sort((a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id));

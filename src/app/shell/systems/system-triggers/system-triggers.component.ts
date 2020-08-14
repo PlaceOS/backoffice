@@ -1,6 +1,16 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { PlaceSystem, PlaceTrigger, listSystemTriggers, updateTrigger, apiEndpoint, put, del, addSystemTrigger, queryTriggers } from '@placeos/ts-client';
+import {
+    PlaceSystem,
+    PlaceTrigger,
+    listSystemTriggers,
+    updateTrigger,
+    apiEndpoint,
+    put,
+    del,
+    addSystemTrigger,
+    queryTriggers,
+} from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -16,6 +26,7 @@ import {
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 import { copyToClipboard } from 'src/app/shared/utilities/general.utilities';
+import { map } from 'rxjs/operators';
 
 export interface TriggerInstanceState {
     triggered: boolean;
@@ -44,10 +55,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
     /** Mapping of trigger instances to their condition state list */
     public comparisons: HashMap<string> = {};
 
-    constructor(
-        private _service: ApplicationService,
-        private _dialog: MatDialog
-    ) {
+    constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
@@ -71,13 +79,15 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
         if (!this.item) {
             return;
         }
-        listSystemTriggers(this.item.id).subscribe(
-            (list) => {
-                this.trigger_list = list;
-                this.filter(this.search_str);
-            },
-            () => null
-        );
+        listSystemTriggers(this.item.id)
+            .pipe(map((resp) => resp.data))
+            .subscribe(
+                (list) => {
+                    this.trigger_list = list;
+                    this.filter(this.search_str);
+                },
+                () => null
+            );
     }
 
     public filter(search: string = ''): void {
@@ -130,7 +140,9 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'action') {
                         ref.componentInstance.loading = 'Saving trigger settings...';
-                        const url = `${apiEndpoint()}/systems/${this.item.id}/triggers/${trigger.id}`;
+                        const url = `${apiEndpoint()}/systems/${this.item.id}/triggers/${
+                            trigger.id
+                        }`;
                         put(url, trigger.toJSON()).subscribe(
                             () => null,
                             (err) => {
@@ -177,7 +189,9 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         ref.componentInstance.loading = 'Removing trigger...';
-                        const url = `${apiEndpoint()}/systems/${this.item.id}/triggers/${trigger.id}`;
+                        const url = `${apiEndpoint()}/systems/${this.item.id}/triggers/${
+                            trigger.id
+                        }`;
                         del(url).subscribe(
                             () => null,
                             (err) => {
@@ -218,7 +232,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                 width: 'auto',
                 data: {
                     service_name: 'Triggers',
-                    query_fn: (_) => queryTriggers({ q: _ })
+                    query_fn: (_) => queryTriggers({ q: _ }).pipe(map((resp) => resp.data)),
                 },
             }
         );

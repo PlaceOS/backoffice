@@ -3,6 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { PlaceDriverRole, queryDrivers, querySystems } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'module-form',
@@ -15,9 +16,9 @@ export class ModuleFormComponent extends BaseDirective implements OnDestroy {
     /** Whether system is readonly */
     @Input() public readonly: boolean;
 
-    public readonly driver_query_fn = (_: string) => queryDrivers({ q: _ } as any);
+    public readonly driver_query_fn = (_: string) => queryDrivers({ q: _ } as any).pipe(map(resp => resp.data));
 
-    public readonly system_query_fn = (_: string) => querySystems({ q: _ });
+    public readonly system_query_fn = (_: string) => querySystems({ q: _ }).pipe(map(resp => resp.data));
 
     /** Role of the selected driver */
     public get role(): string {

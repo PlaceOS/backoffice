@@ -12,6 +12,7 @@ import {
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'app-brokers',
@@ -118,7 +119,7 @@ export class AdminBrokersComponent extends BaseDirective implements OnInit {
     }
 
     private async loadBrokers() {
-        const brokers = await queryBrokers().toPromise();
+        const brokers = await queryBrokers().pipe(map(resp => resp.data)).toPromise();
         this.brokers = brokers;
     }
 }

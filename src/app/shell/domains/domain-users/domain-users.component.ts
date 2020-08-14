@@ -4,6 +4,7 @@ import { PlaceDomain, queryUsers } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'domain-users',
@@ -38,7 +39,7 @@ export class DomainUsersComponent extends BaseDirective implements OnInit, OnCha
 
     public loadUsers(offset: number = 0) {
         if (!this.item) { return; }
-        queryUsers({ authority_id: this.item.id, offset }).subscribe((list) => {
+        queryUsers({ authority_id: this.item.id, offset }).pipe(map(resp => resp.data)).subscribe((list) => {
             if (!offset) { this.model.list = []; }
             for (const item of (list || [])) {
                 let found = false;

@@ -9,7 +9,7 @@ import { ApplicationService } from '../../../services/app.service';
 @Component({
     selector: 'module-systems',
     templateUrl: './module-systems.template.html',
-    styleUrls: ['./module-systems.styles.scss']
+    styleUrls: ['./module-systems.styles.scss'],
 })
 export class ModuleSystemsComponent extends BaseDirective implements OnChanges, OnInit {
     @Input() public item: PlaceModule;
@@ -31,7 +31,7 @@ export class ModuleSystemsComponent extends BaseDirective implements OnChanges, 
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
                 this.item = item;
                 this.loadSystems();
             })
@@ -39,15 +39,15 @@ export class ModuleSystemsComponent extends BaseDirective implements OnChanges, 
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
             distinctUntilChanged(),
-            switchMap(query => {
+            switchMap((query) => {
                 this.loading = true;
                 return querySystems({
                     q: query,
                     module_id: this.item.id,
-                    offset: 0
+                    offset: 0,
                 });
             }),
-            catchError(err => {
+            catchError((err) => {
                 console.error(err);
                 return of([]);
             }),
@@ -64,7 +64,7 @@ export class ModuleSystemsComponent extends BaseDirective implements OnChanges, 
         // Process API results
         this.subscription(
             'search_results',
-            this.search_results$.subscribe(list => (this.system_list = list))
+            this.search_results$.subscribe((list) => (this.system_list = list))
         );
     }
 
@@ -74,13 +74,12 @@ export class ModuleSystemsComponent extends BaseDirective implements OnChanges, 
         }
     }
 
-    public loadSystems(offset: number = 0) {
-        if (!this.item) { return; }
-        querySystems({ module_id: this.item.id, offset }).subscribe(
-            list => {
-                this.system_list = list;
-            },
-            () => null
-        );
+    public async loadSystems(offset: number = 0) {
+        if (!this.item) {
+            return;
+        }
+        this.system_list = await querySystems({ module_id: this.item.id, offset })
+            .pipe(map((resp) => resp.data))
+            .toPromise();
     }
 }

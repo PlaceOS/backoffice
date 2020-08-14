@@ -12,6 +12,7 @@ import {
     CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'app-users',

@@ -6,7 +6,6 @@ import {
     updateTrigger,
     addTrigger,
     querySystems,
-    lastRequestTotal,
     removeTrigger,
     queryTriggers,
     showTrigger,
@@ -21,6 +20,7 @@ import {
     CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'app-triggers',
@@ -53,12 +53,10 @@ export class TriggersComponent extends BaseRootComponent<PlaceTrigger> implement
         this._service.title = 'Triggers';
     }
 
-    protected loadValues() {
+    protected async loadValues() {
         const query: any = { offset: 0, limit: 1, trigger_id: this.item.id };
         // Get trigger count
-        querySystems(query).subscribe(
-            (list) => (this.system_count = lastRequestTotal('systems') || list.length || 0)
-        );
+        this.system_count = (await querySystems(query).toPromise()).total;
     }
 
     /**

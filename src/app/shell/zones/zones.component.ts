@@ -1,7 +1,17 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { PlaceZone, updateZone, addZone, listZoneTriggers, querySystems, queryZones, lastRequestTotal, showMetadata, removeZone, showZone  } from '@placeos/ts-client';
+import {
+    PlaceZone,
+    updateZone,
+    addZone,
+    listZoneTriggers,
+    querySystems,
+    queryZones,
+    showMetadata,
+    removeZone,
+    showZone,
+} from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -9,14 +19,15 @@ import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item
 import {
     ConfirmModalComponent,
     ConfirmModalData,
-    CONFIRM_METADATA
+    CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'app-zones',
     templateUrl: './zones.template.html',
-    styleUrls: ['./zones.styles.scss']
+    styleUrls: ['./zones.styles.scss'],
 })
 export class ZonesComponent extends BaseRootComponent<PlaceZone> {
     /** Number of systems associated with the active zone */
@@ -30,7 +41,7 @@ export class ZonesComponent extends BaseRootComponent<PlaceZone> {
 
     public readonly name = 'zones';
     /** Function to save zones */
-    public readonly save_fn = (item: any) => item.id ? updateZone(item.id, item) : addZone(item);
+    public readonly save_fn = (item: any) => (item.id ? updateZone(item.id, item) : addZone(item));
     /** Function to query zones */
     public readonly query_fn = (q) => queryZones(q);
     /** Function to query zones */
@@ -53,42 +64,46 @@ export class ZonesComponent extends BaseRootComponent<PlaceZone> {
     protected async loadValues() {
         // Get system count
         const query: any = { offset: 0, limit: 1, zone_id: this.item.id };
-        let list: any[] = await querySystems(query).toPromise();
-        this.system_count = lastRequestTotal('systems')  || list.length || 0;
+        this.system_count = (await querySystems(query).toPromise()).total;
         // Get trigger count
         const tquery: any = { offset: 0, limit: 1 };
-        list = await listZoneTriggers(this.item.id, tquery).toPromise();
-        this.trigger_count = list.length || 0;
+        this.trigger_count = (await listZoneTriggers(this.item.id, tquery).toPromise()).total;
         // Get child zone count
         const cquery: any = { offset: 0, limit: 1, parent: this.item.id };
-        list = await queryZones(cquery).toPromise();
-        this.child_count = lastRequestTotal('zones') || list.length || 0;
+        this.child_count = (await queryZones(cquery).toPromise()).total;
         // Get metadata
         const map = await showMetadata(this.item.id).toPromise();
-        this.metadata_count = Object.keys(map).length;
+        this.metadata_count = map.length;
     }
 
     /**
      * Open the modal to create a new system
      */
     protected newItem(copy: boolean = false) {
-        if (this.modal_ref) { return; }
+        if (this.modal_ref) {
+            return;
+        }
         this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
             width: 'auto',
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: copy ? new PlaceZone({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceZone(),
+                item: copy
+                    ? new PlaceZone({ ...this.item, id: '', name: `${this.item.name} (1)` })
+                    : new PlaceZone(),
                 name: 'Zone',
                 save: this.save_fn,
-            }
+            },
         });
-        this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
-            if (event.reason === 'done') {
-                this._router.navigate(['/zones', event.metadata.item.id]);
-            }
-        }));
+        this.subscription(
+            'modal_events',
+            this.modal_ref.componentInstance.event.subscribe((event) => {
+                if (event.reason === 'done') {
+                    this._router.navigate(['/zones', event.metadata.item.id]);
+                }
+            })
+        );
         this.modal_ref.afterClosed().subscribe(() => {
             this.unsub('modal_events');
             this.modal_ref = null;
@@ -109,7 +124,7 @@ export class ZonesComponent extends BaseRootComponent<PlaceZone> {
                     item: this.item,
                     name: 'Zone',
                     save: this.save_fn,
-                }
+                },
             });
             this.modal_ref.afterClosed().subscribe(() => {
                 this.unsub('modal_events');
@@ -127,8 +142,8 @@ export class ZonesComponent extends BaseRootComponent<PlaceZone> {
                     data: {
                         title: `Delete zone`,
                         content: `<p>Are you sure you want delete this zone?</p><p>Deleting this zone will <strong>immediately</strong> remove systems without another zone</p>`,
-                        icon: { type: 'icon', class: 'backoffice-trash' }
-                    }
+                        icon: { type: 'icon', class: 'backoffice-trash' },
+                    },
                 }
             );
             this.subscription(
@@ -145,9 +160,13 @@ export class ZonesComponent extends BaseRootComponent<PlaceZone> {
                                 this._service.set('BACKOFFICE.removed', this.item.id);
                                 this.modal_ref.close();
                             },
-                            err => {
+                            (err) => {
                                 this.modal_ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error deleting zone. Error: ${JSON.stringify(err.response || err.message || err)}`);
+                                this._service.notifyError(
+                                    `Error deleting zone. Error: ${JSON.stringify(
+                                        err.response || err.message || err
+                                    )}`
+                                );
                             }
                         );
                     }

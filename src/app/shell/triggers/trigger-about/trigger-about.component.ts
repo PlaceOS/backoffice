@@ -28,6 +28,7 @@ import {
     CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'trigger-about',
@@ -50,7 +51,7 @@ export class TriggerAboutComponent extends BaseDirective implements OnChanges, O
     /** Reference for confirmation modal */
     private confirm_ref: MatDialogRef<ConfirmModalComponent>;
     /** Query function for systems */
-    public readonly query_fn = _ => querySystems({ q: _ });
+    public readonly query_fn = _ => querySystems({ q: _ }).pipe(map(resp => resp.data));
 
     constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();

@@ -13,6 +13,7 @@ import {
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import * as dayjs from 'dayjs';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'app-domains',
@@ -54,22 +55,18 @@ export class DomainsComponent extends BaseRootComponent<PlaceDomain> {
         this._service.title = 'Domains';
     }
 
-    protected loadValues() {
+    protected async loadValues() {
         if(!this.item){ return; }
         let query: any = { offset: 0, limit: 1, owner: this.item.id };
         // Get application count
-        queryApplications(query).subscribe(
-            list => (this.applications = lastRequestTotal('applications') || list.length || 0)
-        );
+        this.applications = (await queryApplications(query).toPromise()).total;
         query = { offset: 0, limit: 1, authority_id: this.item.id };
         // Get auth source count
         // this._service.AuthSources.query(query).then(
         //     () => (this.auth_sources = this._service.AuthSources.last_total)
         // );
         // Get users count
-        queryUsers(query).subscribe(
-            list => (this.user_count = lastRequestTotal('users') || list.length || 0)
-        );
+        this.user_count = (await queryUsers(query).toPromise()).total
     }
     /**
      * Open the modal to create a new system

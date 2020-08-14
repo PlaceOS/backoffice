@@ -1,6 +1,15 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PlaceSystem, updateSystem, addSystem, removeSystem, listSystemTriggers, showMetadata, querySystems, showSystem, addSystemModule } from '@placeos/ts-client';
+import {
+    PlaceSystem,
+    updateSystem,
+    addSystem,
+    removeSystem,
+    listSystemTriggers,
+    showMetadata,
+    querySystems,
+    showSystem,
+} from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -9,14 +18,15 @@ import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item
 import {
     ConfirmModalComponent,
     ConfirmModalData,
-    CONFIRM_METADATA
+    CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'app-systems',
     templateUrl: './systems.template.html',
-    styleUrls: ['./systems.styles.scss']
+    styleUrls: ['./systems.styles.scss'],
 })
 export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
     /** Number of triggers for the active system */
@@ -30,7 +40,8 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
 
     public readonly name = 'systems';
     /** Function to save systems */
-    public readonly save_fn = (item: any) => item.id ? updateSystem(item.id, item) : addSystem(item);
+    public readonly save_fn = (item: any) =>
+        item.id ? updateSystem(item.id, item) : addSystem(item);
     /** Function to query systems */
     public readonly query_fn = (q) => querySystems(q);
     /** Function to query systems */
@@ -53,38 +64,44 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
     protected async loadValues() {
         const query: any = { offset: 0, limit: 1, sys_id: this.item.id };
         // Get trigger count
-        const list = await listSystemTriggers(this.item.id).toPromise();
-        this.trigger_count = list.length || 0;
+        this.trigger_count = (await listSystemTriggers(this.item.id).toPromise()).total;
         // Get device count
         this.device_count = (this.item.modules || []).length;
         // Get zone count
         this.zone_count = (this.item.zones || []).length;
         // Get metadata
         const map = await showMetadata(this.item.id).toPromise();
-        this.metadata_count = Object.keys(map).length;
+        this.metadata_count = map.length;
     }
 
     /**
      * Open the modal to create a new system
      */
     protected newItem(copy: boolean = false) {
-        if (this.modal_ref) { return; }
+        if (this.modal_ref) {
+            return;
+        }
         this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             height: 'auto',
             width: 'auto',
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: copy ? new PlaceSystem({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceSystem(),
+                item: copy
+                    ? new PlaceSystem({ ...this.item, id: '', name: `${this.item.name} (1)` })
+                    : new PlaceSystem(),
                 name: 'System',
                 save: this.save_fn,
-            }
+            },
         });
-        this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
-            if (event.reason === 'done') {
-                this._router.navigate(['/systems', event.metadata.item.id]);
-            }
-        }));
+        this.subscription(
+            'modal_events',
+            this.modal_ref.componentInstance.event.subscribe((event) => {
+                if (event.reason === 'done') {
+                    this._router.navigate(['/systems', event.metadata.item.id]);
+                }
+            })
+        );
         this.modal_ref.afterClosed().subscribe(() => {
             this.unsub('modal_events');
             this.modal_ref = null;
@@ -105,7 +122,7 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
                     item: this.item,
                     name: 'System',
                     save: this.save_fn,
-                }
+                },
             });
             this.modal_ref.afterClosed().subscribe(() => {
                 this.unsub('modal_events');
@@ -123,8 +140,8 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
                     data: {
                         title: `Delete system`,
                         content: `<p>Are you sure you want delete this system?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>`,
-                        icon: { type: 'icon', class: 'backoffice-trash' }
-                    }
+                        icon: { type: 'icon', class: 'backoffice-trash' },
+                    },
                 }
             );
             this.subscription(
@@ -141,9 +158,13 @@ export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
                                 this._router.navigate(['/systems']);
                                 this.modal_ref.close();
                             },
-                            err => {
+                            (err) => {
                                 this.modal_ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error deleting system. Error: ${JSON.stringify(err.response || err.message || err)}`);
+                                this._service.notifyError(
+                                    `Error deleting system. Error: ${JSON.stringify(
+                                        err.response || err.message || err
+                                    )}`
+                                );
                             }
                         );
                     }

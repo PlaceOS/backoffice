@@ -195,9 +195,9 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
      */
     private queryEndpoints(query_str: string, offset: number = 0) {
         return Promise.all([
-            querySystems({ q: query_str || '', offset, cache: 60 * 1000 }).toPromise(),
-            queryZones({ q: query_str || '', offset, cache: 60 * 1000 }).toPromise(),
-            queryModules({ q: query_str || '', offset, cache: 60 * 1000 }).toPromise()
+            querySystems({ q: query_str || '', offset, cache: 60 * 1000 }).pipe(map(resp => resp.data)).toPromise(),
+            queryZones({ q: query_str || '', offset, cache: 60 * 1000 }).pipe(map(resp => resp.data)).toPromise(),
+            queryModules({ q: query_str || '', offset, cache: 60 * 1000 }).pipe(map(resp => resp.data)).toPromise()
         ]);
     }
 

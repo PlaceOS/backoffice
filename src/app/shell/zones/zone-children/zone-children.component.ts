@@ -9,7 +9,7 @@ import { ApplicationService } from '../../../services/app.service';
 @Component({
     selector: 'zone-children',
     templateUrl: './zone-children.template.html',
-    styleUrls: ['./zone-children.styles.scss']
+    styleUrls: ['./zone-children.styles.scss'],
 })
 export class ZoneChildrenComponent extends BaseDirective implements OnChanges, OnInit {
     @Input() public item: PlaceZone;
@@ -31,7 +31,7 @@ export class ZoneChildrenComponent extends BaseDirective implements OnChanges, O
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
                 this.item = item;
                 this.ngOnChanges({ item: new SimpleChange(null, this.item, false) });
             })
@@ -39,15 +39,15 @@ export class ZoneChildrenComponent extends BaseDirective implements OnChanges, O
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
             distinctUntilChanged(),
-            switchMap(query => {
+            switchMap((query) => {
                 this.loading = true;
                 return queryZones({
                     q: query,
                     parent: this.item.id,
-                    offset: 0
+                    offset: 0,
                 });
             }),
-            catchError(err => {
+            catchError((err) => {
                 console.error(err);
                 return of([]);
             }),
@@ -65,7 +65,7 @@ export class ZoneChildrenComponent extends BaseDirective implements OnChanges, O
         // Process API results
         this.subscription(
             'search_results',
-            this.search_results$.subscribe(list => (this.zone_list = list))
+            this.search_results$.subscribe((list) => (this.zone_list = list))
         );
     }
 
@@ -76,8 +76,8 @@ export class ZoneChildrenComponent extends BaseDirective implements OnChanges, O
     }
 
     public loadChildren(offset: number = 0) {
-        queryZones({ offset, parent: this.item.id, limit: 500 }).subscribe(
-            list => (this.zone_list = list)
-        );
+        queryZones({ offset, parent: this.item.id, limit: 500 })
+            .pipe(map((resp) => resp.data))
+            .subscribe((list) => (this.zone_list = list));
     }
 }
