@@ -1,6 +1,6 @@
 import { Component, OnInit, Renderer2, ViewChild, ElementRef } from '@angular/core';
 
-import { EngineDebugService } from 'src/app/services/debug.service';
+import { PlaceDebugService } from 'src/app/services/debug.service';
 import { ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR } from '../../globals/angular-animations';
 import { BaseDirective } from '../../globals/base.directive';
 import { eventToPoint } from '../../utilities/general.utilities';
@@ -32,7 +32,7 @@ export class DebugOutputComponent extends BaseDirective implements OnInit {
     public get is_enabled(): boolean {
         return this._service.is_listening;
     }
-    constructor(private _service: EngineDebugService, private _renderer: Renderer2) {
+    constructor(private _service: PlaceDebugService, private _renderer: Renderer2) {
         super();
     }
 

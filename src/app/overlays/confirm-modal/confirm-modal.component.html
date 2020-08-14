@@ -11,13 +11,13 @@
 </mat-dialog-content>
 <mat-dialog-actions *ngIf="!loading">
     <button mat-button class="inverse" mat-dialog-close>Cancel</button>
-    <button mat-button name="accept" (tapped)="accept()">{{ action || 'Ok' }}</button>
+    <button mat-button name="accept" (click)="accept()">{{ action || 'Ok' }}</button>
 </mat-dialog-actions>
 <ng-template #load_state>
     <div class="body">
         <div class="info-block">
             <div class="icon">
-                <a-spinner circle-ring></a-spinner>
+                <mat-spinner diameter="32"></mat-spinner>
             </div>
             <div class="text">{{ loading }}</div>
         </div>

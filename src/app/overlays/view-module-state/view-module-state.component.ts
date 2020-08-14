@@ -1,17 +1,18 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { HashMap, EngineModule, EngineSystem } from '@placeos/ts-client';
+import { PlaceModule, PlaceSystem, systemModuleState } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
+import { HashMap } from 'src/app/shared/utilities/types.utilities';
 
 export interface ModuleStateModalData {
     /** System Data to show the details for */
-    system: EngineSystem;
+    system: PlaceSystem;
     /** Module to expose the state of */
-    module: EngineModule;
+    module: PlaceModule;
     /** Modules associated with the system */
-    devices: EngineModule[];
+    devices: PlaceModule[];
 }
 
 @Component({
@@ -30,17 +31,17 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
     public device_classes: HashMap<string> = {};
 
     /** System of the selected module */
-    public get system(): EngineSystem {
+    public get system(): PlaceSystem {
         return this._data.system;
     }
 
     /** Module to view the state of */
-    public get module(): EngineModule {
+    public get module(): PlaceModule {
         return this._data.module;
     }
 
     /** Modules associated with the system */
-    public get devices(): EngineModule[] {
+    public get devices(): PlaceModule[] {
         return this._data.devices || [];
     }
 
@@ -82,7 +83,7 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
         }
         this.loading = true;
         const class_parts = class_name.split('_');
-        this._service.Systems.state(this.system.id, class_parts[0], +class_parts[1]).then(
+        systemModuleState(this.system.id, class_parts[0], +class_parts[1]).subscribe(
             (state) => {
                 const pre_state =
                 typeof state === 'string'

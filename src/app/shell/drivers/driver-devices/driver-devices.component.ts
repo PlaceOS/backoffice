@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { EngineDriver, EngineModule } from '@placeos/ts-client';
+import { PlaceDriver, PlaceModule, removeModule, queryModules } from '@placeos/ts-client';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
@@ -19,14 +19,14 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
     styleUrls: ['./driver-devices.styles.scss']
 })
 export class DriverModulesComponent extends BaseDirective implements OnChanges, OnInit {
-    @Input() public item: EngineDriver;
+    @Input() public item: PlaceDriver;
 
     /** Filter string for the system list */
     public search_str: string;
     /** List of Modules associated with the driver */
-    public device_list: EngineModule[] = [];
+    public device_list: PlaceModule[] = [];
     /** List of items from an API search */
-    public search_results$: Observable<EngineModule[]>;
+    public search_results$: Observable<PlaceModule[]>;
     /** Subject holding the value of the search */
     public search$ = new Subject<string>();
     /** Whether systems are being loaded */
@@ -50,7 +50,7 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
             distinctUntilChanged(),
             switchMap(query => {
                 this.loading = true;
-                return this._service.Modules.query({
+                return queryModules({
                     q: query,
                     driver_id: this.item.id,
                     complete: true,
@@ -62,7 +62,7 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
                 console.error(err);
                 return of([]);
             }),
-            map((list: EngineModule[]) => {
+            map((list: PlaceModule[]) => {
                 this.loading = false;
                 const search = this.search_str.toLowerCase();
                 return list.filter(
@@ -87,13 +87,13 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
 
     public loadModules(offset: number = 0) {
         if (!this.item) { return; }
-        this._service.Modules.query({ driver_id: this.item.id, offset, limit: 500 }).then(
+        queryModules({ driver_id: this.item.id, offset, limit: 500 }).subscribe(
             list => (this.device_list = list),
             () => null
         );
     }
 
-    public removeModule(item: EngineModule) {
+    public removeModule(item: PlaceModule) {
         if (item) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
@@ -111,7 +111,7 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         ref.componentInstance.loading = 'Deleting module...';
-                        item.delete().then(
+                        removeModule(item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted module "${item.name}".`

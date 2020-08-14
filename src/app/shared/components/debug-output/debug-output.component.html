@@ -3,7 +3,7 @@
         <div class="content" #content [@show]="show_content ? 'show' : 'hide'" [style.height]="height + 'px'" [style.width]="width + 'px'">
             <div class="header">
                 <div class="text" i18n="@@debugConsole">Debug Console</div>
-                <button mat-button (tapped)="clearDebugMessages()" i18n="@@clear">Clear</button>
+                <button mat-button (click)="clearDebugMessages()" i18n="@@clear">Clear</button>
             </div>
             <a-terminal [content]="logs" [resize]="resize"></a-terminal>
             <div
@@ -22,7 +22,7 @@
                 (touchstart)="startResize($event, 'xy')"
             ></div>
         </div>
-        <button mat-icon-button (tapped)="show_content = !show_content">
+        <button mat-icon-button (click)="show_content = !show_content">
             <app-icon
                 [icon]="{ class: show_content ? 'backoffice-cross' : 'backoffice-terminal' }"
             ></app-icon>

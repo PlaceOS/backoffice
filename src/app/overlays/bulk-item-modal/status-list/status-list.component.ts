@@ -1,6 +1,5 @@
 import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 
-import { EngineResource } from '@placeos/ts-client';
 import { HashMap } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
@@ -10,9 +9,9 @@ import { HashMap } from 'src/app/shared/utilities/types.utilities';
 })
 export class StatusListComponent implements OnChanges {
     /** List of bulk items to add */
-    @Input() public list: EngineResource<any>[] = [];
+    @Input() public list: HashMap<any>[] = [];
     /** Emitter for completion status of the item upload */
-    @Output() public done = new EventEmitter<EngineResource<any>[]>();
+    @Output() public done = new EventEmitter<HashMap<any>[]>();
     /** Status of each of the items to be created */
     public status: HashMap<string> = {};
 

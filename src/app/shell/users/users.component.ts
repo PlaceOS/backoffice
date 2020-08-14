@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EngineUser } from '@placeos/ts-client';
+import { PlaceUser, updateUser, addUser, removeUser, queryUsers, showUser } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -18,7 +18,16 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
     templateUrl: './users.template.html',
     styleUrls: ['./users.styles.scss']
 })
-export class UsersComponent extends BaseRootComponent<EngineUser> {
+export class UsersComponent extends BaseRootComponent<PlaceUser> {
+
+    public readonly name = 'users';
+    /** Function to save users */
+    public readonly save_fn = (item: any) => item.id ? updateUser(item.id, item) : addUser(item);
+    /** Function to query users */
+    public readonly query_fn = (q) => queryUsers(q);
+    /** Function to query users */
+    protected readonly show_fn = (id, q) => showUser(id, q);
+
     constructor(
         protected _service: ApplicationService,
         protected _route: ActivatedRoute,
@@ -26,7 +35,6 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
         private _dialog: MatDialog
     ) {
         super(_service, _route, _router);
-        this.service = this._service.Users as any;
     }
 
     public ngOnInit(): void {
@@ -45,8 +53,9 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: copy ? new EngineUser({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineUser(),
-                service: this._service.Users
+                item: copy ? new PlaceUser({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceUser(),
+                name: 'User',
+                save: this.save_fn
             }
         });
         this.modal_ref.componentInstance.event.subscribe(event => {
@@ -72,7 +81,8 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item: this.item,
-                    service: this._service.Users
+                    name: 'User',
+                    save: this.save_fn,
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {
@@ -100,7 +110,7 @@ export class UsersComponent extends BaseRootComponent<EngineUser> {
                 this.modal_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         this.modal_ref.componentInstance.loading = 'Deleting user...';
-                        this.item.delete().then(
+                        removeUser(this.item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted user "${this.item.name}".`

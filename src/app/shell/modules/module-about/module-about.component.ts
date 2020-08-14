@@ -1,12 +1,12 @@
 import { Component, Input, SimpleChanges, OnChanges, OnInit } from '@angular/core';
-import { EngineModule, EngineDriver, EngineSystem, EngineSettings, EncryptionLevel } from '@placeos/ts-client';
+import { PlaceModule, PlaceDriver, PlaceSystem, PlaceSettings, EncryptionLevel, startModule, stopModule, moduleSettings, showSystem, showDriver } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
-import { mergeYAMLSettings } from 'src/app/shared/utilities/general.utilities';
 import { Identity } from 'src/app/shared/utilities/types.utilities';
 import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal/view-response-modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { BackofficeUsersService } from 'src/app/services/data/users.service';
 
 @Component({
     selector: 'module-about',
@@ -15,13 +15,13 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class ModuleAboutComponent extends BaseDirective implements OnChanges, OnInit {
     /** Item to render */
-    @Input() public item: EngineModule;
+    @Input() public item: PlaceModule;
     /** Driver for the active item */
-    public driver: EngineDriver;
+    public driver: PlaceDriver;
     /** Control System for the active item */
-    public system: EngineSystem;
+    public system: PlaceSystem;
     /** List of settings for associated modules, drivers and zones */
-    public other_settings: EngineSettings[] = [];
+    public other_settings: PlaceSettings[] = [];
     /** Whether module is being stopped */
     public stopping: boolean;
 
@@ -32,7 +32,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
 
     /** Displayable encryption levels for settings */
     public get levels(): Identity[] {
-        const user = this._service.Users.user.getValue();
+        const user = this._users.user.getValue();
         const levels = [
             { id: EncryptionLevel.NeverDisplay, name: 'Merged' },
             { id: EncryptionLevel.None, name: 'Unencrypted' }
@@ -46,7 +46,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
         return levels;
     }
 
-    constructor(private _service: ApplicationService, private _dialog: MatDialog) {
+    constructor(private _service: ApplicationService, private _users: BackofficeUsersService, private _dialog: MatDialog) {
         super();
     }
 
@@ -72,7 +72,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
 
     public loadDriver() {
         if (this.item && this.item.driver_id) {
-            this._service.Drivers.show(this.item.driver_id).then(driver => {
+            showDriver(this.item.driver_id).subscribe(driver => {
                 this.driver = driver;
             });
         }
@@ -80,7 +80,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
 
     public loadSystem() {
         if (this.item && this.item.system_id) {
-            this._service.Systems.show(this.item.system_id).then(system => {
+            showSystem(this.item.system_id).subscribe(system => {
                 this.system = system;
             });
         }
@@ -90,16 +90,16 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
         if (!this.item) {
             return;
         }
-        this.other_settings = await this._service.Modules.settings(this.item.id);
+        this.other_settings = await moduleSettings(this.item.id).toPromise();
     }
 
     public stopModule() {
         this.stopping = true;
-        this.item.stop().then(
+        stopModule(this.item.id).subscribe(
             () => {
                 this.stopping = false;
                 this._service.notifySuccess('Module successfully stopped');
-                (this.item as any).connected = false;
+                (this.item as any).running = false;
             },
             err => {
                 this.stopping = false;
@@ -118,11 +118,11 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
 
     public startModule() {
         this.stopping = true;
-        this.item.start().then(
+        startModule(this.item.id).subscribe(
             () => {
                 this.stopping = false;
                 this._service.notifySuccess('Module successfully started');
-                (this.item as any).connected = true;
+                (this.item as any).running = true;
             },
             err => {
                 this.stopping = false;

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EngineSystem } from '@placeos/ts-client';
+import { PlaceSystem, updateSystem, addSystem, removeSystem, listSystemTriggers, showMetadata, querySystems, showSystem, addSystemModule } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -18,13 +18,23 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
     templateUrl: './systems.template.html',
     styleUrls: ['./systems.styles.scss']
 })
-export class SystemsComponent extends BaseRootComponent<EngineSystem> {
+export class SystemsComponent extends BaseRootComponent<PlaceSystem> {
     /** Number of triggers for the active system */
     public trigger_count: number;
     /** Number of devices for the active system */
     public device_count: number;
     /** Number of zones for the active system */
     public zone_count: number;
+    /** Number of metadata fields for the active system */
+    public metadata_count: number = 0;
+
+    public readonly name = 'systems';
+    /** Function to save systems */
+    public readonly save_fn = (item: any) => item.id ? updateSystem(item.id, item) : addSystem(item);
+    /** Function to query systems */
+    public readonly query_fn = (q) => querySystems(q);
+    /** Function to query systems */
+    protected readonly show_fn = (id, q) => showSystem(id, q);
 
     constructor(
         protected _service: ApplicationService,
@@ -33,7 +43,6 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
         private _dialog: MatDialog
     ) {
         super(_service, _route, _router);
-        this.service = this._service.Systems;
     }
 
     public ngOnInit(): void {
@@ -41,17 +50,18 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
         this._service.title = 'Systems';
     }
 
-    protected loadValues() {
+    protected async loadValues() {
         const query: any = { offset: 0, limit: 1, sys_id: this.item.id };
         // Get trigger count
-        this._service.Systems.listTriggers(this.item.id).then(
-            list =>
-                (this.trigger_count = list.length || 0)
-        );
+        const list = await listSystemTriggers(this.item.id).toPromise();
+        this.trigger_count = list.length || 0;
         // Get device count
         this.device_count = (this.item.modules || []).length;
         // Get zone count
         this.zone_count = (this.item.zones || []).length;
+        // Get metadata
+        const map = await showMetadata(this.item.id).toPromise();
+        this.metadata_count = Object.keys(map).length;
     }
 
     /**
@@ -65,8 +75,9 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: copy ? new EngineSystem({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineSystem(),
-                service: this._service.Systems
+                item: copy ? new PlaceSystem({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceSystem(),
+                name: 'System',
+                save: this.save_fn,
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -84,7 +95,6 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
      * Open the modal to create a new system
      */
     protected editItem() {
-        console.log('Edit');
         if (this.item && !this.modal_ref) {
             this.modal_ref = this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
@@ -93,7 +103,8 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item: this.item,
-                    service: this._service.Systems
+                    name: 'System',
+                    save: this.save_fn,
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {
@@ -121,7 +132,7 @@ export class SystemsComponent extends BaseRootComponent<EngineSystem> {
                 this.modal_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         this.modal_ref.componentInstance.loading = 'Deleting system...';
-                        this.item.delete().then(
+                        removeSystem(this.item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted system "${this.item.name}".`

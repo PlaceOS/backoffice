@@ -2,7 +2,8 @@
     <div class="sidebar">
         <sidebar
             heading="Modules"
-            [module]="module"
+            name="modules"
+            [query_fn]="query_fn"
             [close]="show_sidebar"
             [queryParams]="only_disconnected ? { connected: false, running: true } : {}"
             (event)="sidebarEvent($event)"
@@ -14,10 +15,11 @@
             </div>
         </sidebar>
     </div>
-    <main (touchrelease)="show_sidebar = false">
+    <main (click)="show_sidebar = false">
         <item-display
             name="module"
             route="modules"
+            [save]="save_fn"
             [item]="item"
             [tabs]="[
                 { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },

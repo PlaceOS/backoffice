@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChange, OnInit } from '@angular/core';
-import { EngineZone, EngineSystem } from '@placeos/ts-client';
+import { PlaceZone, PlaceSystem, querySystems } from '@placeos/ts-client';
 import { Observable, Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 
@@ -12,13 +12,13 @@ import { ApplicationService } from '../../../services/app.service';
     styleUrls: ['./zone-systems.styles.scss']
 })
 export class ZoneSystemsComponent extends BaseDirective implements OnChanges, OnInit {
-    @Input() public item: EngineZone;
+    @Input() public item: PlaceZone;
     /** List of systems associated with the zone */
-    public system_list: EngineSystem[] = [];
+    public system_list: PlaceSystem[] = [];
     /** Filter string for the systems */
     public search_str: string;
     /** List of items from an API search */
-    public search_results$: Observable<EngineSystem[]>;
+    public search_results$: Observable<PlaceSystem[]>;
     /** Subject holding the value of the search */
     public search$ = new Subject<string>();
     /** Whether systems are being loaded */
@@ -41,7 +41,7 @@ export class ZoneSystemsComponent extends BaseDirective implements OnChanges, On
             distinctUntilChanged(),
             switchMap(query => {
                 this.loading = true;
-                return this._service.Systems.query({
+                return querySystems({
                     q: query,
                     module_id: this.item.id,
                     offset: 0
@@ -51,7 +51,7 @@ export class ZoneSystemsComponent extends BaseDirective implements OnChanges, On
                 console.error(err);
                 return of([]);
             }),
-            map((list: EngineSystem[]) => {
+            map((list: PlaceSystem[]) => {
                 this.loading = false;
                 const search = this.search_str.toLowerCase();
                 return list.filter(
@@ -76,7 +76,7 @@ export class ZoneSystemsComponent extends BaseDirective implements OnChanges, On
     }
 
     public loadSystems(offset: number = 0) {
-        this._service.Systems.query({ offset, zone_id: this.item.id, limit: 500 }).then(
+        querySystems({ offset, zone_id: this.item.id, limit: 500 }).subscribe(
             list => (this.system_list = list)
         );
     }

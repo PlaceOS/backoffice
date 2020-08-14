@@ -1,9 +1,7 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { EncryptionLevel, EngineDriverRole } from '@placeos/ts-client';
+import { PlaceDriverRole, queryDrivers, querySystems } from '@placeos/ts-client';
 
-import { Identity, EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
-import { ApplicationService } from 'src/app/services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 
 @Component({
@@ -17,15 +15,9 @@ export class ModuleFormComponent extends BaseDirective implements OnDestroy {
     /** Whether system is readonly */
     @Input() public readonly: boolean;
 
-    /** Service for handling system */
-    public get system_service(): EngineServiceLike {
-        return this._service.Systems;
-    }
+    public readonly driver_query_fn = (_: string) => queryDrivers({ q: _ } as any);
 
-    /** Service for handling drivers */
-    public get driver_service(): EngineServiceLike {
-        return this._service.Drivers;
-    }
+    public readonly system_query_fn = (_: string) => querySystems({ q: _ });
 
     /** Role of the selected driver */
     public get role(): string {
@@ -37,19 +29,15 @@ export class ModuleFormComponent extends BaseDirective implements OnDestroy {
             return 'logic';
         }
         switch (driver.role) {
-            case EngineDriverRole.SSH:
+            case PlaceDriverRole.SSH:
                 return 'ssh';
-            case EngineDriverRole.Device:
+            case PlaceDriverRole.Device:
                 return 'device';
-            case EngineDriverRole.Service:
+            case PlaceDriverRole.Service:
                 return 'service';
-            case EngineDriverRole.Websocket:
+            case PlaceDriverRole.Websocket:
                 return 'websocket';
         }
         return 'logic';
-    }
-
-    constructor(private _service: ApplicationService) {
-        super();
     }
 }

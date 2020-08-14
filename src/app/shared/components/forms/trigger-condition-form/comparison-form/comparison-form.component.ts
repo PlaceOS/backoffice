@@ -1,10 +1,12 @@
 import { Component, OnInit, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
-    EngineModule,
-    EngineSystem,
+    PlaceModule,
+    PlaceSystem,
     TriggerConditionOperator,
-    TriggerStatusVariable
+    TriggerStatusVariable,
+    queryModules,
+    systemModuleState
 } from '@placeos/ts-client';
 
 import { Identity } from 'src/app/shared/utilities/types.utilities';
@@ -20,9 +22,9 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
     /** Systems used for templating the status variables */
-    @Input() public system: EngineSystem;
+    @Input() public system: PlaceSystem;
     /** List of modules associated with the template system */
-    public modules: EngineModule[] = [];
+    public modules: PlaceModule[] = [];
     /** List of status variables associated with the selected module */
     public module_list: Identity[] = [];
     /** List of status variables associated with the selected module */
@@ -86,7 +88,7 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
      */
     public loadSystemStatusVariables(mod_name: string, side: 'left' | 'right') {
         const name = mod_name.split('_');
-        this._service.Systems.state(this.system.id, name[0], +name[1]).then(
+        systemModuleState(this.system.id, name[0], +name[1]).subscribe(
             var_map => {
                 if (Object.keys(var_map).length <= 0) {
                     var_map.connected = true;
@@ -111,7 +113,7 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
         if (!this.system) {
             return;
         }
-        this._service.Modules.query({ control_system_id: this.system.id }).then(module_list => {
+        queryModules({ control_system_id: this.system.id }).subscribe(module_list => {
             this.modules = module_list;
             const mod_list = this.system.modules;
             this.modules.sort((a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id));

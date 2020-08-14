@@ -2,10 +2,10 @@ import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormGroup } from '@angular/forms';
 import {
-    EngineDomain,
-    EngineOAuthSource,
-    EngineLDAPSource,
-    EngineSAMLSource
+    PlaceDomain,
+    PlaceOAuthSource,
+    PlaceLDAPSource,
+    PlaceSAMLSource
 } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -19,9 +19,9 @@ import {
 
 export interface AuthSourceModalData {
     /** Domain the auth source is associated with */
-    domain: EngineDomain;
+    domain: PlaceDomain;
     /** Item to add/update the trigger on */
-    auth_source?: EngineOAuthSource | EngineLDAPSource | EngineSAMLSource;
+    auth_source?: PlaceOAuthSource | PlaceLDAPSource | PlaceSAMLSource;
 }
 
 export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
@@ -39,7 +39,7 @@ export class AuthSourceModalComponent extends BaseDirective implements OnInit {
     /** Form fields for trigger condition */
     public form: FormGroup;
     /** Item */
-    public item: EngineOAuthSource | EngineLDAPSource | EngineSAMLSource;
+    public item: PlaceOAuthSource | PlaceLDAPSource | PlaceSAMLSource;
     /** List of available authentication sources */
     public source_types: Identity[] = [
         { id: 'oauth', name: 'OAuth' },
@@ -55,9 +55,9 @@ export class AuthSourceModalComponent extends BaseDirective implements OnInit {
     }
 
     public get type(): AuthSourceTypes {
-        return this.item instanceof EngineSAMLSource
+        return this.item instanceof PlaceSAMLSource
             ? 'saml'
-            : this.item instanceof EngineLDAPSource
+            : this.item instanceof PlaceLDAPSource
             ? 'ldap'
             : 'oauth';
     }
@@ -86,13 +86,13 @@ export class AuthSourceModalComponent extends BaseDirective implements OnInit {
         const data = { authority_id: this._data.domain.id };
         switch (type) {
             case 'saml':
-                this.item = new EngineSAMLSource(data);
+                this.item = new PlaceSAMLSource(data);
                 break;
             case 'ldap':
-                this.item = new EngineLDAPSource(data);
+                this.item = new PlaceLDAPSource(data);
                 break;
             default:
-                this.item = new EngineOAuthSource(data);
+                this.item = new PlaceOAuthSource(data);
                 break;
         }
         this.initialiseForm();
@@ -133,12 +133,12 @@ export class AuthSourceModalComponent extends BaseDirective implements OnInit {
         if (!this.item) {
             return;
         }
-        if (this.item instanceof EngineOAuthSource) {
-            this.form = generateOAuthSourceForm(this.item).form;
-        } else if (this.item instanceof EngineSAMLSource) {
-            this.form = generateSAMLSourceForm(this.item).form;
-        } else if (this.item instanceof EngineLDAPSource) {
-            this.form = generateLDAPSourceForm(this.item).form;
+        if (this.item instanceof PlaceOAuthSource) {
+            this.form = generateOAuthSourceForm(this.item);
+        } else if (this.item instanceof PlaceSAMLSource) {
+            this.form = generateSAMLSourceForm(this.item);
+        } else if (this.item instanceof PlaceLDAPSource) {
+            this.form = generateLDAPSourceForm(this.item);
         }
     }
 }

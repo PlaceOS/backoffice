@@ -20,14 +20,15 @@
                     >Template System:
                 </label>
                 <item-search-field
-                    [service]="system_service"
+                    name="system"
+                    [query_fn]="query_fn"
                     [(ngModel)]="template_system"
                 ></item-search-field>
             </div>
         </section>
         <header>
             <div class="action">
-                <button mat-icon-button [disabled]="!template_system" (tapped)="addCondition()">
+                <button mat-icon-button [disabled]="!template_system" (click)="addCondition()">
                     <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
                 </button>
             </div>
@@ -52,11 +53,11 @@
                         <button
                             mat-icon-button
                             [disabled]="!template_system"
-                            (tapped)="editCondition(comparison)"
+                            (click)="editCondition(comparison)"
                         >
                             <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
                         </button>
-                        <button mat-icon-button (tapped)="confirmRemoveCondition(comparison)">
+                        <button mat-icon-button (click)="confirmRemoveCondition(comparison)">
                             <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
                         </button>
                     </div>
@@ -75,11 +76,11 @@
                         <button
                             mat-icon-button
                             [disabled]="!template_system"
-                            (tapped)="editCondition(time)"
+                            (click)="editCondition(time)"
                         >
                             <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
                         </button>
-                        <button mat-icon-button (tapped)="confirmRemoveCondition(time)">
+                        <button mat-icon-button (click)="confirmRemoveCondition(time)">
                             <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
                         </button>
                     </div>
@@ -88,7 +89,7 @@
         </section>
         <header>
             <div class="action">
-                <button mat-icon-button [disabled]="!template_system" (tapped)="addAction()">
+                <button mat-icon-button [disabled]="!template_system" (click)="addAction()">
                     <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
                 </button>
             </div>
@@ -116,11 +117,11 @@
                         <button
                             mat-icon-button
                             [disabled]="!template_system"
-                            (tapped)="editAction(action)"
+                            (click)="editAction(action)"
                         >
                             <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
                         </button>
-                        <button mat-icon-button (tapped)="confirmRemoveAction(action)">
+                        <button mat-icon-button (click)="confirmRemoveAction(action)">
                             <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
                         </button>
                         <div class="placeholder" *cdkDragPlaceholder></div>
@@ -149,11 +150,11 @@
                         <button
                             mat-icon-button
                             [disabled]="!template_system"
-                            (tapped)="editAction(action)"
+                            (click)="editAction(action)"
                         >
                             <app-icon [icon]="{ class: 'backoffice-edit'}"></app-icon>
                         </button>
-                        <button mat-icon-button (tapped)="confirmRemoveAction(action)">
+                        <button mat-icon-button (click)="confirmRemoveAction(action)">
                             <app-icon [icon]="{ class: 'backoffice-trash'}"></app-icon>
                         </button>
                         <div class="placeholder" *cdkDragPlaceholder></div>

@@ -40,17 +40,17 @@
         </header>
         <header i18n="@@moduleDetailsSystem">
             Logic for system:&nbsp;<span *ngIf="system">
-                <a [routerLink]="['/systems', system.id]">{{system?.name}}</a>
+                <a [routerLink]="['/systems', system.id, 'modules']">{{system?.name}}</a>
             </span>
         </header>
         <section>
             <button
                 mat-button
                 [disabled]="stopping"
-                (tapped)="item.connected ? stopModule(): startModule()"
+                (click)="item.running ? stopModule(): startModule()"
             >
                 <div class="text" *ngIf="!stopping"  i18n="@@moduleStateToggle">
-                    { item.connected, select, true { Stop Module } false { Start Module } }
+                    { item.running, select, true { Stop Module } false { Start Module } }
                 </div>
                 <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
             </button>

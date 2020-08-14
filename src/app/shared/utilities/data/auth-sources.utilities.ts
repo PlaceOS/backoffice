@@ -1,14 +1,14 @@
-import { EngineOAuthSource, EngineLDAPSource, EngineSAMLSource } from '@placeos/ts-client';
 
-import { FormDetails } from './systems.utilities';
-import { HashMap } from '../types.utilities';
 import { Validators, FormControl, FormGroup } from '@angular/forms';
+import { PlaceOAuthSource, PlaceLDAPSource, PlaceSAMLSource } from '@placeos/ts-client';
+
+import { HashMap } from '../types.utilities';
 
 /**
  * Generate form controls for an OAuth authentication source
  * @param auth_source Auth source to apply changes to
  */
-export function generateOAuthSourceForm(auth_source: EngineOAuthSource): FormDetails {
+export function generateOAuthSourceForm(auth_source: PlaceOAuthSource): FormGroup {
     if (!auth_source) {
         throw Error('No OAuth source passed to generate form fields');
     }
@@ -17,6 +17,8 @@ export function generateOAuthSourceForm(auth_source: EngineOAuthSource): FormDet
         client_id: new FormControl(auth_source.client_id || ''),
         client_secret: new FormControl(auth_source.client_secret || ''),
         info_mappings: new FormControl(auth_source.info_mappings || {}),
+        authorize_params: new FormControl(auth_source.authorize_params || {}),
+        ensure_matching: new FormControl(auth_source.ensure_matching || {}),
         site: new FormControl(auth_source.site || ''),
         authorize_url: new FormControl(auth_source.authorize_url || ''),
         token_method: new FormControl(auth_source.token_method || 'post'),
@@ -25,27 +27,14 @@ export function generateOAuthSourceForm(auth_source: EngineOAuthSource): FormDet
         scope: new FormControl(auth_source.scope || ''),
         raw_info_url: new FormControl(auth_source.raw_info_url || '')
     };
-    const subscriptions = [];
-    for (const key in fields) {
-        if (fields[key] && key.indexOf('confirm') < 0) {
-            subscriptions.push(
-                fields[key].valueChanges.subscribe(value =>
-                    auth_source.storePendingChange(key as any, value)
-                )
-            );
-        }
-    }
-    return {
-        form: new FormGroup(fields),
-        subscriptions
-    };
+    return new FormGroup(fields);
 }
 
 /**
  * Generate form controls for an SAML authentication source
  * @param auth_source Auth source to apply changes to
  */
-export function generateSAMLSourceForm(auth_source: EngineSAMLSource): FormDetails {
+export function generateSAMLSourceForm(auth_source: PlaceSAMLSource): FormGroup {
     if (!auth_source) {
         throw Error('No OAuth source passed to generate form fields');
     }
@@ -74,27 +63,14 @@ export function generateSAMLSourceForm(auth_source: EngineSAMLSource): FormDetai
         idp_slo_target_url: new FormControl(auth_source.idp_slo_target_url || ''),
         slo_default_relay_state: new FormControl(auth_source.slo_default_relay_state || '')
     };
-    const subscriptions = [];
-    for (const key in fields) {
-        if (fields[key] && key.indexOf('confirm') < 0) {
-            subscriptions.push(
-                fields[key].valueChanges.subscribe(value =>
-                    auth_source.storePendingChange(key as any, value)
-                )
-            );
-        }
-    }
-    return {
-        form: new FormGroup(fields),
-        subscriptions
-    };
+    return new FormGroup(fields);
 }
 
 /**
  * Generate form controls for an LDAP authentication source
  * @param auth_source Auth source to apply changes to
  */
-export function generateLDAPSourceForm(auth_source: EngineLDAPSource): FormDetails {
+export function generateLDAPSourceForm(auth_source: PlaceLDAPSource): FormGroup {
     if (!auth_source) {
         throw Error('No OAuth source passed to generate form fields');
     }
@@ -109,18 +85,5 @@ export function generateLDAPSourceForm(auth_source: EngineLDAPSource): FormDetai
         password: new FormControl(auth_source.password || ''),
         filter: new FormControl(auth_source.filter || '')
     };
-    const subscriptions = [];
-    for (const key in fields) {
-        if (fields[key] && key.indexOf('confirm') < 0) {
-            subscriptions.push(
-                fields[key].valueChanges.subscribe(value =>
-                    auth_source.storePendingChange(key as any, value)
-                )
-            );
-        }
-    }
-    return {
-        form: new FormGroup(fields),
-        subscriptions
-    };
+    return new FormGroup(fields);
 }

@@ -2,15 +2,17 @@
     <div class="sidebar">
         <sidebar
             heading="Repositories"
-            [module]="module"
+            name="repositories"
+            [query_fn]="query_fn"
             [close]="show_sidebar"
             (event)="sidebarEvent($event)"
         ></sidebar>
     </div>
-    <main (touchrelease)="show_sidebar = false">
+    <main (click)="show_sidebar = false">
         <item-display
             name="repository"
             route="repositories"
+            [save]="save_fn"
             [item]="item"
             [loading]="loading_item"
             [tabs]="driver_count < 0 ?

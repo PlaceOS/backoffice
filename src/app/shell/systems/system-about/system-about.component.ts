@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineSystem, EngineZone, EngineSettings, EncryptionLevel } from '@placeos/ts-client';
+import { PlaceSystem, PlaceZone, PlaceSettings, EncryptionLevel, systemSettings, queryZones, stopSystem, startSystem } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -18,11 +18,11 @@ import {
 })
 export class SystemAboutComponent extends BaseDirective implements OnChanges, OnInit {
     /** System to render */
-    @Input() public item: EngineSystem;
+    @Input() public item: PlaceSystem;
     /** List of zones for the active system */
-    public zones: EngineZone[];
+    public zones: PlaceZone[];
     /** List of settings for associated modules, drivers and zones */
-    public other_settings: EngineSettings[] = [];
+    public other_settings: PlaceSettings[] = [];
 
     /** List of module ids associated with the system */
     public modules(): string[] {
@@ -75,7 +75,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
             'confirm_ref',
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
-                    this._service.Systems.startSystem(this.item.id).then(
+                    startSystem(this.item.id).subscribe(
                         result => null,
                         err =>
                             this._service.notifyError(
@@ -106,7 +106,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
             'confirm_ref',
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
-                    this._service.Systems.stopSystem(this.item.id).then(
+                    stopSystem(this.item.id).subscribe(
                         result => null,
                         err =>
                             this._service.notifyError(
@@ -125,7 +125,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
         if (!this.item) {
             return;
         }
-        this._service.Zones.query({ control_system_id: this.item.id, offset: 0 }).then(
+        queryZones({ control_system_id: this.item.id, offset: 0 }).subscribe(
             list => {
                 list.sort((a, b) => this.item.zones.indexOf(b.id) - this.item.zones.indexOf(a.id));
                 this.zones = list;
@@ -138,6 +138,6 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
         if (!this.item) {
             return;
         }
-        this.other_settings = await this._service.Systems.settings(this.item.id);
+        this.other_settings = await systemSettings(this.item.id).toPromise();
     }
 }

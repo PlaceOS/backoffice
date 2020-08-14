@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import { ComposerService } from '@placeos/composer';
+import { authority } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../shared/globals/base.directive';
 
@@ -28,11 +28,11 @@ export class MetricsComponent extends BaseDirective implements OnInit {
 
     /** URL for the metrics interface */
     public get metrics_url(): string {
-        const authority = this._composer.auth.authority;
-        return authority ? authority.metrics : '';
+        const api_authority = authority();
+        return api_authority ? api_authority.metrics : '';
     }
 
-    constructor(private _composer: ComposerService, private _service: ApplicationService) {
+    constructor(private _service: ApplicationService) {
         super();
     }
 

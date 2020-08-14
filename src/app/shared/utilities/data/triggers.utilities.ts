@@ -1,7 +1,6 @@
 import { Validators, FormControl, FormGroup, AbstractControl } from '@angular/forms';
 import {
-    EngineTrigger,
-    HashMap,
+    PlaceTrigger,
     TriggerStatusVariable,
     TriggerConditionOperator,
     TriggerComparison,
@@ -12,7 +11,8 @@ import {
     TriggerMailer
 } from '@placeos/ts-client';
 
-import { FormDetails } from './systems.utilities';
+import { validateJSONString } from '../validation.utilities';
+import { HashMap } from '../types.utilities';
 
 import * as dayjs from 'dayjs';
 
@@ -20,58 +20,35 @@ import * as dayjs from 'dayjs';
  * Generate angular form controls
  * @param trigger Trigger to generate the form controls for
  */
-export function generateTriggerFormFields(trigger: EngineTrigger): FormDetails {
+export function generateTriggerFormFields(trigger: PlaceTrigger): FormGroup {
     if (!trigger) {
         throw Error('No Zone passed to generate form fields');
     }
     const fields: HashMap<FormControl> = {
         name: new FormControl(trigger.name || '', [Validators.required]),
         description: new FormControl(trigger.description || ''),
-        enable_webhook: new FormControl(trigger.enable_webhook || '')
+        enable_webhook: new FormControl(trigger.enable_webhook || false),
+        supported_methods: new FormControl(trigger.supported_methods || []),
+        debounce_period: new FormControl(Math.max(0, trigger.debounce_period || 0))
     };
-    const subscriptions = [];
-    for (const key in fields) {
-        if (fields[key] && key.indexOf('settings') < 0) {
-            subscriptions.push(
-                fields[key].valueChanges.subscribe(value =>
-                    trigger.storePendingChange(key as any, value)
-                )
-            );
-        }
-    }
-    return {
-        form: new FormGroup(fields),
-        subscriptions
-    };
+    return new FormGroup(fields);
 }
 /**
  * Generate angular form controls
  * @param trigger Trigger to generate the form controls for
  */
-export function generateTriggerSettingsFormFields(trigger: EngineTrigger): FormDetails {
+export function generateTriggerSettingsFormFields(trigger: PlaceTrigger): FormGroup {
     if (!trigger) {
         throw Error('No Zone passed to generate form fields');
     }
     const fields: HashMap<FormControl> = {
         name: new FormControl(trigger.name || ''),
         triggered: new FormControl(+trigger.activated_count > 0),
+        exec_enabled: new FormControl(!!trigger.exec_enabled),
         enabled: new FormControl(!!trigger.enabled),
         important: new FormControl(!!trigger.important)
     };
-    const subscriptions = [];
-    for (const key in fields) {
-        if (fields[key] && key.indexOf('settings') < 0) {
-            subscriptions.push(
-                fields[key].valueChanges.subscribe(value =>
-                    trigger.storePendingChange(key as any, value)
-                )
-            );
-        }
-    }
-    return {
-        form: new FormGroup(fields),
-        subscriptions
-    };
+    return new FormGroup(fields);
 }
 
 /**
@@ -90,7 +67,7 @@ export function validateCompare(control: AbstractControl) {
             const value: TriggerStatusVariable = control.value;
             return !value.mod ? { module: true } : !value.status ? { status: true } : null;
         } else {
-            return !control.value ? { required: true } : null;
+            return validateJSONString(control);
         }
     }
     return null;

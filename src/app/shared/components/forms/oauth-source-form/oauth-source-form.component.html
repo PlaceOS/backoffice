@@ -145,9 +145,27 @@
             <label for="client-secret" i18n="@@authSourceMappingsLabel">Info Mappings:</label>
             <object-list-field
                 [(ngModel)]="info_mapping_list"
-                (ngModelChange)="updateMappings($event)"
+                (ngModelChange)="updateMappings($event, form.controls.info_mappings)"
                 [ngModelOptions]="{ standalone: true }"
-                [fields]="['Engine', 'Remote']"
+                [fields]="['PlaceOS', 'Remote']"
+            ></object-list-field>
+        </div>
+        <div class="field" *ngIf="form.controls.authorize_params">
+            <label for="client-secret" i18n="@@authSourceAuthParamsLabel">Authorize Params:</label>
+            <object-list-field
+                [(ngModel)]="auth_params_list"
+                (ngModelChange)="updateMappings($event, form.controls.authorize_params, false, ['Parameter', 'Value'])"
+                [ngModelOptions]="{ standalone: true }"
+                [fields]="['Parameter', 'Value']"
+            ></object-list-field>
+        </div>
+        <div class="field" *ngIf="form.controls.ensure_matching">
+            <label for="client-secret" i18n="@@authSourceEnsureMatchingLabel">Ensure Matching:</label>
+            <object-list-field
+                [(ngModel)]="ensure_matching_list"
+                (ngModelChange)="updateMappings($event, form.controls.ensure_matching, true, ['Parameter', 'Value'])"
+                [ngModelOptions]="{ standalone: true }"
+                [fields]="['Parameter', 'Value']"
             ></object-list-field>
         </div>
     </form>

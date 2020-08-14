@@ -2,21 +2,22 @@
     <section class="select">
         <div class="dropdown">
             <item-search-field
-                [service]="module_service"
+                name="module"
+                [query_fn]="query_fn"
                 [exclude]="exclude_fn"
                 [ngModel]="null"
                 (ngModelChange)="new_module = $event.id"
             ></item-search-field>
         </div>
-        <button mat-button [disabled]="!new_module" (tapped)="addModule()"  i18n="@@addExistingAction">
+        <button mat-button [disabled]="!new_module" (click)="addModule()"  i18n="@@addExistingAction">
             Add existing
         </button>
-        <button mat-button (tapped)="newModule()" i18n="@@newAction">Add new</button>
+        <button mat-button (click)="newModule()" i18n="@@newAction">Add new</button>
     </section>
     <ng-container *ngIf="item.id && item.modules && !hide_exec">
         <section class="exec">
             <h3 i18n="@@execHeader">Execute command</h3>
-            <system-exec-field [system]="item"></system-exec-field>
+            <system-exec-field [system]="item" [refresh]="refresh_modules"></system-exec-field>
         </section>
     </ng-container>
     <section class="device-list">
@@ -48,16 +49,17 @@
                             *ngIf="device && item.id"
                             binding
                             [(model)]="device.connected"
+                            (modelChange)="refresh_modules = !refresh_modules"
                             [sys]="item.id"
                             [mod]="device_classes[device.id]"
                             bind="connected"
                         ></i>
                         <div
                             class="state"
-                            [class.active]="device.running && device.connected === 'true'"
-                            [class.inactive]="device.running && device.connected === 'false'"
+                            [class.active]="device.running && !!device.connected"
+                            [class.inactive]="device.running && !device.connected"
                             [class.black]="!device.running"
-                            (tapped)="power(device)"
+                            (click)="power(device)"
                         ></div>
                     </td>
                     <td class="name">
@@ -70,7 +72,7 @@
                     <td class="module">
                         <mat-checkbox
                             [checked]="debugged_modules[device.id]"
-                            (change)="toggleDebugEvents(device)"
+                            (click)="toggleDebugEvents(device)"
                         >
                             {{ device_classes[device.id] }}
                         </mat-checkbox>
@@ -83,7 +85,12 @@
                             >{{device.ip}}</a
                         >
                     </td>
-                    <td class="small" touchrelease>
+                    <td class="duo" touchrelease>
+                        <button mat-icon-button (click)="editModule(device)">
+                            <app-icon
+                                [icon]="{ class: 'backoffice-edit' }"
+                            ></app-icon>
+                        </button>
                         <button mat-icon-button [matMenuTriggerFor]="menu">
                             <app-icon
                                 [icon]="{ class: 'backoffice-dots-three-vertical' }"
@@ -93,7 +100,7 @@
                             <button
                                 mat-menu-item
                                 *ngFor="let item of (device.running ? menu_options : offline_options)"
-                                (tapped)="handleContextEvent(item, device)"
+                                (click)="handleContextEvent(item, device)"
                             >
                                 <app-icon [icon]="item.icon"></app-icon>
                                 <div class="text">{{ item.name }}</div>

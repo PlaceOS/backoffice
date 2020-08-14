@@ -10,7 +10,7 @@
             </label>
             <item-search-field
                 name="driver"
-                [service]="driver_service"
+                [query_fn]="driver_query_fn"
                 formControlName="driver"
             ></item-search-field>
             <div
@@ -32,7 +32,7 @@
                 <ng-container *ngIf="!readonly; else readonly_system">
                     <item-search-field
                         name="system"
-                        [service]="system_service"
+                        [query_fn]="system_query_fn"
                         formControlName="system"
                     ></item-search-field>
                     <div

@@ -1,7 +1,6 @@
 import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { EngineUser } from '@placeos/ts-client';
+import { PlaceUser } from '@placeos/ts-client';
 
-import { FormDetails } from './systems.utilities';
 import { HashMap } from '../types.utilities';
 
 export function validateMatch(name: string) {
@@ -15,12 +14,13 @@ export function validateMatch(name: string) {
     }
 }
 
-export function generateUserFormFields(user: EngineUser): FormDetails {
+export function generateUserFormFields(user: PlaceUser): FormGroup {
     if (!user) {
         throw Error('No User passed to generate form fields');
     }
     const fields: HashMap<FormControl> = {
-        name: new FormControl(user.name || '', [Validators.required]),
+        first_name: new FormControl(user.first_name || user.name || '', [Validators.required]),
+        last_name: new FormControl(user.last_name || '', [Validators.required]),
         email: new FormControl(user.email || '', [Validators.email, Validators.required]),
         staff_id: new FormControl(user.staff_id || ''),
         support: new FormControl(user.support || false),
@@ -28,21 +28,8 @@ export function generateUserFormFields(user: EngineUser): FormDetails {
         password: new FormControl('', !user.id ? [Validators.required] : undefined),
         confirm_password: new FormControl('', [validateMatch('password')]),
     };
-    const subscriptions = [];
-    for (const key in fields) {
-        if (fields[key] && key.indexOf('confirm') < 0) {
-            subscriptions.push(
-                fields[key].valueChanges.subscribe(value =>
-                    user.storePendingChange(key as any, value)
-                )
-            );
-        }
-    }
-    subscriptions.push(fields.password.valueChanges.subscribe(() => {
+    fields.password.valueChanges.subscribe(() => {
         fields.confirm_password.updateValueAndValidity();
-    }));
-    return {
-        form: new FormGroup(fields),
-        subscriptions
-    };
+    });
+    return new FormGroup(fields);
 }

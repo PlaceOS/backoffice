@@ -1,15 +1,15 @@
 
 import { Injectable } from '@angular/core';
-import { EngineUser } from '@placeos/ts-client';
+import { PlaceUser } from '@placeos/ts-client';
 
 import { BaseAPIService } from './base.service';
-import { ComposerService } from '@placeos/composer';
+import { ApplicationService } from '../app.service';
 
 export interface IComment {
     id: string;
     channel_id: string;
     user_id: string;    // ACA User ID
-    user: EngineUser;
+    user: PlaceUser;
     master_id: string;  // ID of master object
     reply_to_id: string;
     replies: IComment[];
@@ -27,9 +27,9 @@ export interface IComment {
 })
 export class BackofficeCommentsService extends BaseAPIService<IComment> {
 
-    constructor(private _composer: ComposerService) {
+    constructor(private _service: ApplicationService) {
         super(undefined);
-        const sub = this._composer.initialised.subscribe((state) => {
+        const sub = this._service.initialised.subscribe((state) => {
             if (state) {
                 this.http = this._composer.http;
                 sub.unsubscribe();
@@ -102,8 +102,8 @@ export class BackofficeCommentsService extends BaseAPIService<IComment> {
             }
         }
         this.parent.Users.query({ q: cmt.name }).then((list) => {
-            comment.user = list[0] || new EngineUser(cmt);
-        }, (err) => comment.user = new EngineUser(cmt));
+            comment.user = list[0] || new PlaceUser(cmt);
+        }, (err) => comment.user = new PlaceUser(cmt));
         return comment;
     }
 

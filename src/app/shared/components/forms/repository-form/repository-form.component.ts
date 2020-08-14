@@ -1,7 +1,7 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
-import { EngineRepositoryType } from '@placeos/ts-client';
+import { PlaceRepositoryType, listRepositoryBranches, listRepositoryCommits } from '@placeos/ts-client';
 
 import { Identity } from 'src/app/shared/utilities/types.utilities';
 import { ApplicationService } from 'src/app/services/app.service';
@@ -18,14 +18,16 @@ export class RepositoryFormComponent {
     @Input() public form: FormGroup;
     /** List of commits available for repository */
     public commit_list: Identity[] = [];
+    /** List of branches available for repository */
+    public branch_list: string[] = [];
     /** Whether repository's commits are being loaded */
     public loading_commits: boolean;
     /** Currently selected commit for the repository */
     public base_commit: Identity;
     /** List of available types of repositories */
     public repo_types: Identity[] = [
-        { id: EngineRepositoryType.Driver, name: 'Driver' },
-        { id: EngineRepositoryType.Interface, name: 'Interface' },
+        { id: PlaceRepositoryType.Driver, name: 'Driver' },
+        { id: PlaceRepositoryType.Interface, name: 'Interface' },
     ];
 
     /** Whether item is being edited */
@@ -39,7 +41,7 @@ export class RepositoryFormComponent {
             this.form &&
             this.form.controls.commit_hash &&
             this.form.controls.repo_type &&
-            this.form.controls.repo_type.value === EngineRepositoryType.Interface
+            this.form.controls.repo_type.value === PlaceRepositoryType.Interface
         );
     }
 
@@ -48,6 +50,7 @@ export class RepositoryFormComponent {
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.form && this.form) {
             this.loadCommits();
+            this.loadBranches();
         }
     }
 
@@ -56,7 +59,7 @@ export class RepositoryFormComponent {
             return;
         }
         const id = this.form.controls.id.value;
-        const commits: any[] = await this._service.Repositories.listCommits(id);
+        const commits: any[] = await listRepositoryCommits(id).toPromise();
         this.commit_list = (commits || []).map((commit) => {
             const date = dayjs(commit.date);
             return {
@@ -72,5 +75,13 @@ export class RepositoryFormComponent {
         if (!this.base_commit) {
             this.base_commit = this.commit_list[0] || null;
         }
+    }
+
+    public async loadBranches() {
+        if (!this.is_edit || !this.form.controls.branch) {
+            return;
+        }
+        const id = this.form.controls.id.value;
+        this.branch_list = await listRepositoryBranches(id).toPromise() || [];
     }
 }

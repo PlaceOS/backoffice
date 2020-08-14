@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChange, OnInit } from '@angular/core';
-import { EngineZone, EngineZoneMetadata } from '@placeos/ts-client';
+import { PlaceZone, PlaceMetadata, removeMetadata, updateMetadata, showMetadata } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -19,9 +19,9 @@ import {
     styleUrls: ['./zone-metadata.styles.scss']
 })
 export class ZoneMetadataComponent extends BaseDirective implements OnChanges, OnInit {
-    @Input() public item: EngineZone;
+    @Input() public item: PlaceZone;
     /** List of metadata associated with the zone */
-    public metadata: EngineZoneMetadata[] = [];
+    public metadata: PlaceMetadata[] = [];
     /** Map of form field groups to metadata fields */
     public form_map: HashMap<FormGroup> = {};
     /** Map of metadata fields to whether they have been edited */
@@ -65,7 +65,7 @@ export class ZoneMetadataComponent extends BaseDirective implements OnChanges, O
         this.generateForms();
     }
 
-    public editMetadataDetails(field: EngineZoneMetadata) {
+    public editMetadataDetails(field: PlaceMetadata) {
         const form = this.form_map[field.name];
         this._dialog.open(MetadataDetailsModalComponent, {
             maxWidth: '95vw',
@@ -94,7 +94,7 @@ export class ZoneMetadataComponent extends BaseDirective implements OnChanges, O
             'confirm',
             ref.componentInstance.event.subscribe(event => {
                 if (event.reason === 'done') {
-                    this._service.Zones.deleteMetadata(this.item.id, { name: field }).then(
+                    removeMetadata(this.item.id, { name: field }).subscribe(
                         () => {
                             this._service.notifySuccess(
                                 `Successfully removed "${field}" metadata.`
@@ -114,22 +114,22 @@ export class ZoneMetadataComponent extends BaseDirective implements OnChanges, O
         );
     }
 
-    public saveMetadata(field: EngineZoneMetadata) {
+    public saveMetadata(field: PlaceMetadata) {
         const form = this.form_map[field.name];
         form.markAllAsTouched();
         if (form.valid) {
             const value = form.value;
             this.loading[field.name] = true;
-            this._service.Zones.updateMetadata(this.item.id, {
+            updateMetadata(this.item.id, {
                 ...value,
                 details: JSON.parse(value.details)
-            }).then(
-                (item: EngineZoneMetadata) => {
+            }).subscribe(
+                (item: PlaceMetadata) => {
                     this.loading[field.name] = false;
                     const index = this.metadata.findIndex(i => i.name === field.name);
                     this.edited[field.name] = false;
                     if (field.name !== item.name) {
-                        this._service.Zones.deleteMetadata(this.item.id, field).catch(err =>
+                        removeMetadata(this.item.id, field).toPromise().catch(err =>
                             this._service.notifyError(
                                 `Error removing old "${
                                     field.name
@@ -194,7 +194,7 @@ export class ZoneMetadataComponent extends BaseDirective implements OnChanges, O
     }
 
     private loadMetadata() {
-        this._service.Zones.listMetadata(this.item.id).then(map => {
+        showMetadata(this.item.id).subscribe(map => {
             this.metadata = Object.keys(map).map(key => map[key]);
             this.generateForms();
         });

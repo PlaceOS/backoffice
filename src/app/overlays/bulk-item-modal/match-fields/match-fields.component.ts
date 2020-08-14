@@ -37,7 +37,6 @@ export class MatchFieldsComponent {
 
     /** Generated the mapped list of items and emit them */
     public saveMapping(): void {
-        console.log('Mapping:', this.field_mapping);
         const mapped_list = this.list.map(item => {
             const mapped_item: any = {};
             for (const field of this.field_list) {

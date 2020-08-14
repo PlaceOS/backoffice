@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChange, OnInit } from '@angular/core';
-import { EngineZone, EngineTrigger } from '@placeos/ts-client';
+import { PlaceZone, PlaceTrigger, updateZone, listZoneTriggers, queryTriggers } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../../services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -22,9 +22,10 @@ import {
     styleUrls: ['./zone-triggers.styles.scss']
 })
 export class ZoneTriggersComponent extends BaseDirective implements OnChanges, OnInit {
-    @Input() public item: EngineZone;
-
-    public model: any = {};
+    /** Zone to display */
+    @Input() public item: PlaceZone;
+    /** List of triggers associated with the zone */
+    public triggers: PlaceTrigger[] = [];
     /** Filter string for zone list */
     public search_str: string;
 
@@ -49,9 +50,9 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
     }
 
     public loadZoneTriggers(offset: number = 0) {
-        this._service.Triggers.query({ zone_id: this.item.id, offset } as any).then(
+        listZoneTriggers(this.item.id).subscribe(
             list => {
-                this.model.triggers = list;
+                this.triggers = list;
             },
             () => null
         );
@@ -61,7 +62,7 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
      * Remove a trigger from the active system
      * @param trigger Trigger to remove
      */
-    public deleteTrigger(trigger: EngineTrigger) {
+    public deleteTrigger(trigger: PlaceTrigger) {
         if (this.item && trigger) {
             const index = this.item.triggers.indexOf(trigger.id);
             if (index < 0) {
@@ -85,8 +86,7 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
                         ref.componentInstance.loading = 'Removing trigger...';
                         const triggers = [...this.item.triggers];
                         triggers.splice(index, 1);
-                        this.item.storePendingChange('triggers', triggers);
-                        this.item.save().then(
+                        updateZone(this.item.id, { ...this.item, triggers }).subscribe(
                             () => this._service.notifySuccess('Sucessfully removed trigger'),
                             err =>
                                 this._service.notifyError(
@@ -111,7 +111,8 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
                 height: 'auto',
                 width: 'auto',
                 data: {
-                    service_name: 'Triggers'
+                    service_name: 'Triggers',
+                    query_fn: (_) => queryTriggers({ q: _ })
                 }
             }
         );
@@ -132,10 +133,9 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
      * Add the selected trigger to the active system
      * @param trigger Trigger to add to system
      */
-    private addTrigger(trigger: EngineTrigger): void {
+    private addTrigger(trigger: PlaceTrigger): void {
         const triggers = unique(this.item.triggers.concat(trigger.id));
-        this.item.storePendingChange('triggers', triggers);
-        this.item.save().then(
+        updateZone(this.item.id, { ...this.item, triggers }).subscribe(
             () => this._service.notifySuccess('Sucessfully added trigger'),
             err => this._service.notifyError(`Error adding trigger. Error: ${JSON.stringify(err.response || err.message || err)}`)
         );

@@ -1,6 +1,6 @@
 
 import { Component, Input, OnInit } from '@angular/core';
-import { EngineUser } from '@placeos/ts-client';
+import { PlaceUser } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from 'src/app/services/app.service';
@@ -11,7 +11,7 @@ import { ApplicationService } from 'src/app/services/app.service';
     styleUrls: ['./user-about.styles.scss']
 })
 export class UserAboutComponent extends BaseDirective implements OnInit {
-    @Input() public item: EngineUser;
+    @Input() public item: PlaceUser;
 
     constructor(private _service: ApplicationService) {
         super();

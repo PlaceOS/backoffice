@@ -1,11 +1,9 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { EngineZone } from '@placeos/ts-client';
+import { PlaceZone, showZone, queryZones } from '@placeos/ts-client';
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 
-import { EngineServiceLike } from 'src/app/shared/utilities/types.utilities';
-import { ApplicationService } from 'src/app/services/app.service';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 
 @Component({
@@ -18,20 +16,13 @@ export class ZoneFormComponent extends BaseDirective {
     @Input() public form: FormGroup;
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
+    /** Query function for zones */
+    public readonly query_fn = (_: string) => queryZones({ q: _ });
     /** Function to exclude zones */
-    public readonly exclude = (zone: EngineZone) => zone.id === this.form.controls.id.value;
-
-    /** Service for handling zones */
-    public get zone_service(): EngineServiceLike {
-        return this._service.Zones;
-    }
+    public readonly exclude = (zone: PlaceZone) => zone.id === this.form.controls.id.value;
 
     public get tag_list(): string[] {
         return this.form.controls.tags.value;
-    }
-
-    constructor(private _service: ApplicationService) {
-        super();
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -79,7 +70,7 @@ export class ZoneFormComponent extends BaseDirective {
     private async updateZone() {
         const parent_id = this.form.controls.parent_id ? this.form.controls.parent_id.value : '';
         if (parent_id) {
-            const zone = await this._service.Zones.show(parent_id);
+            const zone = await showZone(parent_id).toPromise();
             this.form.controls.parent_zone.setValue(zone);
         }
     }

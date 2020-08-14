@@ -1,10 +1,9 @@
 
 import { Injectable } from '@angular/core';
-import { ComposerService } from '@placeos/composer';
 
 import { BaseAPIService } from './base.service';
 
-export interface IEngineStats {
+export interface IPlaceStats {
     id?: string;
     name?: string;
     period: string;
@@ -16,9 +15,9 @@ export interface IEngineStats {
 @Injectable({
     providedIn: 'root'
 })
-export class BackofficeStatsService extends BaseAPIService<IEngineStats> {
+export class BackofficeStatsService extends BaseAPIService<IPlaceStats> {
 
-    constructor(private _composer: ComposerService) {
+    constructor() {
         super(undefined);
         const sub = this._composer.initialised.subscribe((state) => {
             if (state) {
@@ -51,7 +50,7 @@ export class BackofficeStatsService extends BaseAPIService<IEngineStats> {
     }
 
     protected process(raw_item: any) {
-        const item: IEngineStats = {
+        const item: IPlaceStats = {
             period: raw_item.period_name,
             interval: raw_item.interval,
             histogram: raw_item.histogram || [],

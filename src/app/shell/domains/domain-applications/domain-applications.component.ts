@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { EngineDomain, EngineApplication } from '@placeos/ts-client';
+import { PlaceDomain, PlaceApplication, updateApplication, addApplication, removeApplication, queryApplications, queryLDAPSources, queryOAuthSources, querySAMLSources } from '@placeos/ts-client';
 import { MatDialog } from '@angular/material/dialog';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
@@ -10,10 +10,11 @@ import {
     ConfirmModalData,
     CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-import { DialogEvent, HashMap } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, HashMap, Identity } from 'src/app/shared/utilities/types.utilities';
 
 import * as dayjs from 'dayjs';
 import { copyToClipboard } from 'src/app/shared/utilities/general.utilities';
+import { flatten } from '@angular/compiler';
 
 @Component({
     selector: 'domain-applications',
@@ -22,9 +23,9 @@ import { copyToClipboard } from 'src/app/shared/utilities/general.utilities';
 })
 export class DomainApplicationsComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active domain */
-    @Input() public item: EngineDomain;
+    @Input() public item: PlaceDomain;
     /** List of applications associated with the active domain */
-    public application_list: EngineApplication[];
+    public application_list: PlaceApplication[];
 
     public show_secret: HashMap<boolean> = {};
 
@@ -48,7 +49,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
         }
     }
 
-    public copySecret(item: EngineApplication) {
+    public copySecret(item: PlaceApplication) {
         this.show_secret[item.id] = false;
         copyToClipboard(item.secret);
         this._service.notifyInfo('Copied client secret to clipboard');
@@ -56,8 +57,12 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
 
     public loadApplications(offset: number = 0) {
         if (!this.item) { return; }
-        this._service.Applications.query({ owner_id: this.item.id, offset } as any).then(
-            list => {
+        Promise.all([
+            queryLDAPSources({ owner_id: this.item.id, offset } as any).toPromise(),
+            queryOAuthSources({ owner_id: this.item.id, offset } as any).toPromise(),
+            querySAMLSources({ owner_id: this.item.id, offset } as any).toPromise(),
+        ]).then((lists) => {
+            const list: Identity[] = flatten(lists as any);
                 if (!offset) {
                     this.application_list = [];
                 }
@@ -70,7 +75,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
                         }
                     }
                     if (!found) {
-                        this.application_list.push(item);
+                        this.application_list.push(item as any);
                     }
                 }
             },
@@ -87,8 +92,9 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: new EngineApplication(),
-                service: this._service.Applications
+                item: new PlaceApplication(),
+                name: 'Application',
+                save: (item) => addApplication(item.toJSON()),
             }
         });
         this.subscription('item-form', ref.componentInstance.event.subscribe((event) => {
@@ -102,7 +108,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
     /**
      * Open the modal to create a new system
      */
-    public editApplication(item: EngineApplication) {
+    public editApplication(item: PlaceApplication) {
         if (this.item) {
             const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
@@ -111,7 +117,8 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item,
-                    service: this._service.Applications
+                    name: 'Application',
+                    save: (item) => updateApplication(item.id, item),
                 }
             });
             this.subscription('item-form', ref.componentInstance.event.subscribe((event) => {
@@ -126,7 +133,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
         }
     }
 
-    public deleteApplication(item: EngineApplication) {
+    public deleteApplication(item: PlaceApplication) {
         if (item) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
                 ConfirmModalComponent,
@@ -144,7 +151,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         ref.componentInstance.loading = 'Deleting application...';
-                        item.delete().then(
+                        removeApplication(item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted application "${item.name}".`

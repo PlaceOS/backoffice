@@ -1,16 +1,15 @@
 
 import { Injectable } from '@angular/core';
-import { ComposerService } from '@placeos/composer';
 
 import { BaseAPIService } from './base.service';
-import { IEngineLogEntry } from './logs.service';
+import { IPlaceLogEntry } from './logs.service';
 
 @Injectable({
     providedIn: 'root'
 })
-export class BackofficeSystemLogsService extends BaseAPIService<IEngineLogEntry> {
+export class BackofficeSystemLogsService extends BaseAPIService<IPlaceLogEntry> {
 
-    constructor(private _composer: ComposerService) {
+    constructor() {
         super(undefined);
         const sub = this._composer.initialised.subscribe((state) => {
             if (state) {
@@ -23,8 +22,7 @@ export class BackofficeSystemLogsService extends BaseAPIService<IEngineLogEntry>
     }
 
     protected process(raw_item: any) {
-        const item = this.parent.Logs.process(raw_item);
-        return item;
+        return this.parent.Logs.process(raw_item);
     }
 
 }

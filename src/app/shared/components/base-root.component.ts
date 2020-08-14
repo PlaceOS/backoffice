@@ -1,26 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-    EngineResource,
-    EngineSystem,
-    EngineZone,
-    EngineDriver,
-    EngineModule
+    PlaceSystem,
+    PlaceZone,
+    PlaceDriver,
+    PlaceModule,
+    querySettings
 } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
-import { EngineServiceLike } from '../utilities/types.utilities';
+import { HashMap } from '../utilities/types.utilities';
 import { first } from 'rxjs/operators';
-import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 import { MatDialogRef } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-base-root-component',
     template: '',
     styles: []
 })
-export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective implements OnInit {
+export class BaseRootComponent<T = HashMap<any>> extends BaseDirective implements OnInit {
     /** Name of the API service assoicated with the  */
     public readonly service_name: string;
     /** ID of the item to render */
@@ -37,13 +37,10 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective im
     public show_sidebar: boolean;
     /** Modal Reference */
     public modal_ref: MatDialogRef<any>;
-    /** Service to get data from */
-    public service: EngineServiceLike;
 
-    /** Service for the active module */
-    public get module(): EngineServiceLike {
-        return this.service;
-    }
+    public name = 'resource';
+    /** */
+    protected show_fn: (id: string, _) => Observable<T>;
 
     constructor(
         protected _service: ApplicationService,
@@ -52,7 +49,6 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective im
     ) {
         super();
         this.service_name = 'Systems';
-        this.service = this._service.Systems;
     }
 
     public ngOnInit() {
@@ -166,14 +162,14 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective im
      */
     protected loadItem() {
         this.timeout('loading', () => (this.loading_item = true), 10);
-        this.service.show(this.id, { complete: true }).then(
+        this.show_fn(this.id, { complete: true }).toPromise().then(
             item => this.setActiveItem(item),
             () => {
                 this._service.notifyError(
-                    `Failed to load data for ${this.service._name} "${this.id}"`
+                    `Failed to load data for ${this.name} "${this.id}"`
                 );
                 this.loading_item = false;
-                this._service.navigate([this.service._api_route]);
+                this._service.navigate([this.name]);
             }
         );
     }
@@ -183,14 +179,6 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective im
         this._service.set('BACKOFFICE.active_item_id', this.id);
         this._service.set('BACKOFFICE.active_item', this.item);
         if (this.item) {
-            this.subscription(
-                'item_changes',
-                (this.item as any).changeEvents.subscribe(event => {
-                    if (event.type === 'item_saved') {
-                        this.setActiveItem(event.metadata as any);
-                    }
-                })
-            );
             this.loadValues();
             this.loadSettings();
         }
@@ -199,13 +187,13 @@ export class BaseRootComponent<T = EngineResource<any>> extends BaseDirective im
 
     protected loadSettings(): void {
         if (
-            this.item instanceof EngineSystem ||
-            this.item instanceof EngineZone ||
-            this.item instanceof EngineDriver ||
-            this.item instanceof EngineModule
+            this.item instanceof PlaceSystem ||
+            this.item instanceof PlaceZone ||
+            this.item instanceof PlaceDriver ||
+            this.item instanceof PlaceModule
         ) {
             this._service.set('loading_settings', true);
-            this._service.EngineSettings.query({ parent_id: this.item.id }).then(
+            querySettings({ parent_id: (this.item as any).id }).subscribe(
                 list => {
                     this._service.set('loading_settings', false);
                     for (const settings of list) {

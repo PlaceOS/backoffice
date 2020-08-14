@@ -40,7 +40,7 @@
             [class.not-mobile]="true"
             mat-button
             [disabled]="!fields_valid"
-            (tapped)="execute()"
+            (click)="execute()"
             i18n="@@execute"
         >
             Execute
@@ -76,7 +76,7 @@
         [class.mobile-only]="true"
         mat-button
         [disabled]="!fields_valid"
-        (tapped)="execute()"
+        (click)="execute()"
         i18n="@@execute"
     >
         Execute

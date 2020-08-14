@@ -5,7 +5,7 @@
         <br>current state of the database
     </mat-card-content>
     <mat-card-actions>
-        <button mat-button [disabled]="reindexing" (tapped)="reindex()">
+        <button mat-button [disabled]="reindexing" (click)="reindex()">
             <ng-container *ngIf="!reindexing; else spinner">Re-index</ng-container>
         </button>
     </mat-card-actions>
@@ -16,7 +16,7 @@
         current state of the database
     </mat-card-content>
     <mat-card-actions>
-        <button mat-button [disabled]="backfilling" (tapped)="backfill()">
+        <button mat-button [disabled]="backfilling" (click)="backfill()">
             <ng-container *ngIf="!backfilling; else spinner">Backfill</ng-container>
         </button>
     </mat-card-actions>

@@ -12,6 +12,37 @@ export function getItemWithKeys(keys: string[], map: HashMap) {
     return null;
 }
 
+/* istanbul ignore next */
+/**
+ * detect IE
+ * returns version of IE or false, if browser is not Internet Explorer
+ */
+export function detectIE() {
+    var ua = window.navigator.userAgent;
+
+    var msie = ua.indexOf('MSIE ');
+    if (msie > 0) {
+        // IE 10 or older => return version number
+        return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+    }
+
+    var trident = ua.indexOf('Trident/');
+    if (trident > 0) {
+        // IE 11 => return version number
+        var rv = ua.indexOf('rv:');
+        return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+    }
+
+    var edge = ua.indexOf('Edge/');
+    if (edge > 0) {
+        // Edge (IE 12+) => return version number
+        return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+    }
+
+    // other browser
+    return false;
+}
+
 /**
  * Checks whether the platform is a mobile device.
  */
@@ -67,7 +98,7 @@ export function padZero(value: number, length: number): string {
  * @param array List of items to remove duplicates from
  * @param key Key on array objects to compare for uniqueness
  */
-export function unique(array: any[], key: string = '') {
+export function unique<T, K extends keyof T>(array: T[], key: K | '' = '') {
     return array.filter(
         (element, index) =>
             (key
@@ -315,7 +346,6 @@ export function csvToJson(csv: string, seperator: string = ',') {
                 part = parts[i];
                 /* istanbul ignore else */
                 if (part !== undefined) {
-                    console.log('Part:', fields[i], part);
                     let value = '';
                     try { value = JSON.parse(part) }
                     catch (e) { value = part; }
@@ -342,7 +372,6 @@ export function jsonToCsv(json: HashMap[], use_keys?: string[], seperator = ',')
         const valid_keys = keys.filter(
             (key) => (!use_keys || use_keys.includes(key)) && json[0].hasOwnProperty(key)
         );
-        console.log('Valid Keys:', valid_keys);
         return `\uFEFF${valid_keys.join(seperator)}\n${json
             .map((item) =>
                 valid_keys

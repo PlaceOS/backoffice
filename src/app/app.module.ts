@@ -5,8 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { FormsModule } from '@angular/forms';
 
-import { AGoogleAnalyticsModule } from '@acaprojects/ngx-google-analytics';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
@@ -18,13 +16,11 @@ import { SentryService } from './services/sentry.service';
 import { APP_COMPONENTS } from './shell';
 
 import './shared/mocks';
+import { AuthorisedUserGuard } from './shared/guards/authorised-user.guard';
+import { AuthorisedAdminGuard } from './shared/guards/authorised-admin.guard';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        ...APP_COMPONENTS
-
-    ],
+    declarations: [AppComponent, ...APP_COMPONENTS],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
@@ -32,11 +28,14 @@ import './shared/mocks';
         ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
         HttpClientModule,
         FormsModule,
-        AGoogleAnalyticsModule,
         SharedOverlaysModule,
-        SharedContentModule
+        SharedContentModule,
     ],
-    providers: [{ provide: ErrorHandler, useClass: SentryService }],
-    bootstrap: [AppComponent]
+    providers: [
+        { provide: ErrorHandler, useClass: SentryService },
+        AuthorisedUserGuard,
+        AuthorisedAdminGuard,
+    ],
+    bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

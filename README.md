@@ -1,7 +1,8 @@
 # PlaceOS Angular Backoffice UI
 
 ![PROD](https://github.com/PlaceOS/backoffice/workflows/PROD/badge.svg)
-![DEVELOP](https://github.com/PlaceOS/backoffice/workflows/DEVELOP/badge.svg)
+![UAT](https://github.com/PlaceOS/backoffice/workflows/UAT/badge.svg)
+[![CodeFactor](https://www.codefactor.io/repository/github/placeos/backoffice/badge/master)](https://www.codefactor.io/repository/github/placeos/backoffice/overview/master)
 
 ## Setup
 

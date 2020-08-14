@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChange, OnInit } from '@angular/core';
-import { EngineZone } from '@placeos/ts-client';
+import { PlaceZone, queryZones } from '@placeos/ts-client';
 import { Observable, Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 
@@ -12,13 +12,13 @@ import { ApplicationService } from '../../../services/app.service';
     styleUrls: ['./zone-children.styles.scss']
 })
 export class ZoneChildrenComponent extends BaseDirective implements OnChanges, OnInit {
-    @Input() public item: EngineZone;
+    @Input() public item: PlaceZone;
     /** List of children associated with the zone */
-    public zone_list: EngineZone[] = [];
+    public zone_list: PlaceZone[] = [];
     /** Filter string for the children */
     public search_str: string;
     /** List of items from an API search */
-    public search_results$: Observable<EngineZone[]>;
+    public search_results$: Observable<PlaceZone[]>;
     /** Subject holding the value of the search */
     public search$ = new Subject<string>();
     /** Whether children are being loaded */
@@ -41,7 +41,7 @@ export class ZoneChildrenComponent extends BaseDirective implements OnChanges, O
             distinctUntilChanged(),
             switchMap(query => {
                 this.loading = true;
-                return this._service.Zones.query({
+                return queryZones({
                     q: query,
                     parent: this.item.id,
                     offset: 0
@@ -51,7 +51,7 @@ export class ZoneChildrenComponent extends BaseDirective implements OnChanges, O
                 console.error(err);
                 return of([]);
             }),
-            map((list: EngineZone[]) => {
+            map((list: PlaceZone[]) => {
                 this.loading = false;
                 const search = this.search_str.toLowerCase();
                 return list.filter(
@@ -76,7 +76,7 @@ export class ZoneChildrenComponent extends BaseDirective implements OnChanges, O
     }
 
     public loadChildren(offset: number = 0) {
-        this._service.Zones.query({ offset, parent: this.item.id, limit: 500 }).then(
+        queryZones({ offset, parent: this.item.id, limit: 500 }).subscribe(
             list => (this.zone_list = list)
         );
     }

@@ -2,25 +2,25 @@ import { Component, Inject, Type } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import {
-    EngineResource,
-    SYSTEM_MUTABLE_FIELDS,
-    EngineSystem,
-    MODULE_MUTABLE_FIELDS,
-    EngineModule,
-    DRIVER_MUTABLE_FIELDS,
-    EngineDriver,
-    USER_MUTABLE_FIELDS,
-    EngineUser,
-    ZONE_MUTABLE_FIELDS,
-    EngineZone
+    PlaceSystem,
+    PlaceModule,
+    PlaceDriver,
+    PlaceUser,
+    PlaceZone,
 } from '@placeos/ts-client';
-import { HashMap, EngineServiceLike, Identity } from 'src/app/shared/utilities/types.utilities';
+import { HashMap, PlaceServiceLike, Identity } from 'src/app/shared/utilities/types.utilities';
 import { unique } from 'src/app/shared/utilities/general.utilities';
-import { SYSTEM_TEMPLATE, MODULE_TEMPLATE, DRIVER_TEMPLATE, USER_TEMPLATE, ZONE_TEMPLATE } from './template-data';
+import {
+    SYSTEM_TEMPLATE,
+    MODULE_TEMPLATE,
+    DRIVER_TEMPLATE,
+    USER_TEMPLATE,
+    ZONE_TEMPLATE,
+} from './template-data';
 
-export interface BulkItemModalData<T = EngineResource<any>> {
+export interface BulkItemModalData<T = HashMap<any>> {
     constr: Type<T>;
-    service: EngineServiceLike;
+    service: PlaceServiceLike;
 }
 
 @Component({
@@ -28,7 +28,7 @@ export interface BulkItemModalData<T = EngineResource<any>> {
     templateUrl: './bulk-item-modal.component.html',
     styleUrls: ['./bulk-item-modal.component.scss'],
 })
-export class BulkItemModalComponent<T = EngineResource<any>> {
+export class BulkItemModalComponent<T = HashMap<any>> {
     /** Current step in the bulk add flow */
     public flow_step: '' | 'match-fields' | 'list' | 'status' = '';
     /** List of items to bulk add */
@@ -61,7 +61,6 @@ export class BulkItemModalComponent<T = EngineResource<any>> {
     public handleList(data: HashMap[], is_mapped: boolean = false): void {
         if (data.length) {
             if (is_mapped) {
-                console.log('To list:', data);
                 const Resource = this._data.constr;
                 this.item_list = data.map((item) => new Resource(item));
                 this.flow_step = 'list';
@@ -81,24 +80,7 @@ export class BulkItemModalComponent<T = EngineResource<any>> {
     }
 
     private getAvailableFields(): Identity[] {
-        let list: readonly string[] = [];
-        switch (this._data.constr as any) {
-            case EngineSystem:
-                list = SYSTEM_MUTABLE_FIELDS;
-                break;
-            case EngineModule:
-                list = MODULE_MUTABLE_FIELDS;
-                break;
-            case EngineDriver:
-                list = DRIVER_MUTABLE_FIELDS;
-                break;
-            case EngineUser:
-                list = USER_MUTABLE_FIELDS;
-                break;
-            case EngineZone:
-                list = ZONE_MUTABLE_FIELDS;
-                break;
-        }
+        let list: readonly string[] = Object.keys(new this._data.constr());
         return unique(
             list.map((i) => ({ id: i, name: i.split('_').join(' ') })),
             'id'
@@ -107,16 +89,16 @@ export class BulkItemModalComponent<T = EngineResource<any>> {
 
     private generateTemplate(): HashMap[] {
         switch (this._data.constr as any) {
-            case EngineSystem:
-                return [new EngineSystem(SYSTEM_TEMPLATE).toJSON()];
-            case EngineModule:
-                return [new EngineModule(MODULE_TEMPLATE).toJSON()];
-            case EngineDriver:
-                return [new EngineDriver(DRIVER_TEMPLATE).toJSON()];
-            case EngineUser:
-                return [new EngineUser(USER_TEMPLATE)];
-            case EngineZone:
-                return [new EngineZone(ZONE_TEMPLATE)];
+            case PlaceSystem:
+                return [new PlaceSystem(SYSTEM_TEMPLATE).toJSON()];
+            case PlaceModule:
+                return [new PlaceModule(MODULE_TEMPLATE).toJSON()];
+            case PlaceDriver:
+                return [new PlaceDriver(DRIVER_TEMPLATE).toJSON()];
+            case PlaceUser:
+                return [new PlaceUser(USER_TEMPLATE)];
+            case PlaceZone:
+                return [new PlaceZone(ZONE_TEMPLATE)];
         }
     }
 }

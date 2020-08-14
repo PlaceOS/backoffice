@@ -12,19 +12,21 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router, NavigationEnd } from '@angular/router';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 import {
-    EngineResource,
-    EngineSystem,
-    EngineModule,
-    EngineZone,
-    HashMap
+    PlaceSystem,
+    PlaceModule,
+    PlaceZone,
+    queryModules,
+    queryZones,
+    querySystems
 } from '@placeos/ts-client';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 import { Subject, Observable, of } from 'rxjs';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
-import { ApplicationService } from '../../../services/app.service';
 import { unique } from 'src/app/shared/utilities/general.utilities';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
+import { HashMap } from 'src/app/shared/utilities/types.utilities';
+import { BackofficeUsersService } from 'src/app/services/data/users.service';
 
 @Component({
     selector: 'global-search',
@@ -64,9 +66,9 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
     /** Current display value of the search input field  */
     public search_str: string;
     /** Observable for the list of items from an API search */
-    public search_results$: Observable<EngineResource<any>[]>;
+    public search_results$: Observable<HashMap<any>[]>;
     /** List of item */
-    public results: EngineResource<any>[];
+    public results: HashMap<any>[];
     /** Current page offset to get the next list of items */
     public offset = 0;
 
@@ -77,11 +79,11 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
-        return this._service.Users.dark_mode;
+        return this._users.dark_mode;
     }
 
     constructor(
-        private _service: ApplicationService,
+        private _users: BackofficeUsersService,
         private _dialog: MatDialog,
         private _router: Router
     ) {
@@ -101,7 +103,7 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
                     : Promise.resolve([]);
             }),
             catchError(() => of([])),
-            map((list: EngineResource<any>[][]) => {
+            map((list: HashMap<any>[][]) => {
                 this.loading = false;
                 return [].concat.apply([], list);
             })
@@ -136,7 +138,7 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
     public loadMoreItems() {
         this.loading = true;
         this.queryEndpoints(this.search, this.offset).then(
-            (results_list: EngineResource<any>[][]) => {
+            (results_list: any[][]) => {
                 for (const list of results_list) {
                     this.results = unique(this.results.concat(list), 'id');
                 }
@@ -152,10 +154,10 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
      * Get the type of item
      * @param item Item the get the type of
      */
-    public itemType(item: EngineResource<any>): 'systems' | 'modules' | 'zones' {
-        if (item instanceof EngineSystem) return 'systems';
-        if (item instanceof EngineModule) return 'modules';
-        if (item instanceof EngineZone) return 'zones';
+    public itemType(item: HashMap<any>): 'systems' | 'modules' | 'zones' {
+        if (item instanceof PlaceSystem) return 'systems';
+        if (item instanceof PlaceModule) return 'modules';
+        if (item instanceof PlaceZone) return 'zones';
         return 'zones';
     }
 
@@ -163,7 +165,7 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
      * Open the modal to edit item
      * @param item Item to edit
      */
-    public edit(item: EngineResource<any>) {
+    public edit(item: HashMap<any>) {
         if (item) {
             this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
@@ -193,9 +195,9 @@ export class GlobalSearchComponent extends BaseDirective implements OnChanges {
      */
     private queryEndpoints(query_str: string, offset: number = 0) {
         return Promise.all([
-            this._service.Systems.query({ q: query_str || '', offset, cache: 60 * 1000 }),
-            this._service.Zones.query({ q: query_str || '', offset, cache: 60 * 1000 }),
-            this._service.Modules.query({ q: query_str || '', offset, cache: 60 * 1000 })
+            querySystems({ q: query_str || '', offset, cache: 60 * 1000 }).toPromise(),
+            queryZones({ q: query_str || '', offset, cache: 60 * 1000 }).toPromise(),
+            queryModules({ q: query_str || '', offset, cache: 60 * 1000 }).toPromise()
         ]);
     }
 

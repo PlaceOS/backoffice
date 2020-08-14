@@ -1,19 +1,31 @@
 import { Component, OnInit, EventEmitter, Output, Input, Type } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineSystem, EngineZone, EngineDriver, EngineModule, EngineUser } from '@placeos/ts-client';
+import {
+    PlaceSystem,
+    PlaceZone,
+    PlaceDriver,
+    PlaceModule,
+    PlaceUser,
+    addDriver,
+    addModule,
+    addZone,
+    addSystem,
+    addUser,
+} from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
-import { ApplicationLink, ApplicationIcon, ApplicationActionLink } from 'src/app/shared/utilities/settings.interfaces';
+import { ApplicationLink, ApplicationIcon } from 'src/app/shared/utilities/settings.interfaces';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 
 import * as dayjs from 'dayjs';
 import { BulkItemModalComponent } from 'src/app/overlays/bulk-item-modal/bulk-item-modal.component';
+import { BackofficeUsersService } from 'src/app/services/data/users.service';
 
 @Component({
     selector: 'topbar-header',
     templateUrl: './topbar-header.template.html',
-    styleUrls: ['./topbar-header.styles.scss']
+    styleUrls: ['./topbar-header.styles.scss'],
 })
 export class TopbarHeaderComponent extends BaseDirective implements OnInit {
     /** Whether the sidebar menu should be shown */
@@ -33,10 +45,10 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
-        return this._service.Users.dark_mode;
+        return this._users.dark_mode;
     }
     public set dark_mode(state: boolean) {
-        this._service.Users.dark_mode = state;
+        this._users.dark_mode = state;
     }
 
     public get title() {
@@ -44,7 +56,7 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
     }
 
     public get is_fools_day(): boolean {
-        return dayjs().format('D MMM') === '1 Apr' && !localStorage.getItem('I\'M NO FOOL!!!');
+        return dayjs().format('D MMM') === '1 Apr' && !localStorage.getItem("I'M NO FOOL!!!");
     }
 
     /** Application logo */
@@ -58,13 +70,13 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
     }
 
     /** Whether global search is enabled */
-    public get languages(): { name: string, locale: string, icon: ApplicationIcon }[] {
+    public get languages(): { name: string; locale: string; icon: ApplicationIcon }[] {
         return this._service.setting('app.languages') || [];
     }
 
     /** Active user */
     public get user(): any {
-        return this._service.Users.user.getValue();
+        return this._service.get('user');
     }
 
     /** Current environment of the application */
@@ -72,40 +84,48 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
         return this._service.setting('env');
     }
 
-    constructor(private _service: ApplicationService, private _dialog: MatDialog) {
+    constructor(
+        private _service: ApplicationService,
+        private _users: BackofficeUsersService,
+        private _dialog: MatDialog
+    ) {
         super();
     }
 
     public ngOnInit() {}
 
     public notAFool() {
-        localStorage.setItem('I\'M NO FOOL!!!', 'true');
+        localStorage.setItem("I'M NO FOOL!!!", 'true');
     }
 
     public newSystem() {
-        this.newItem(new EngineSystem(), this._service.Systems, EngineSystem);
+        this.newItem(new PlaceSystem(), (_) => addSystem(_), 'System', PlaceSystem);
     }
 
     public newZone() {
-        this.newItem(new EngineZone(), this._service.Zones, EngineZone);
+        this.newItem(new PlaceZone(), (_) => addZone(_), 'Zone', PlaceZone);
     }
 
     public newModule() {
-        this.newItem(new EngineModule(), this._service.Modules, EngineModule);
+        this.newItem(new PlaceModule(), (_) => addModule(_), 'Module', PlaceModule);
     }
 
     public newDriver() {
-        this.newItem(new EngineDriver(), this._service.Drivers, EngineDriver);
+        this.newItem(new PlaceDriver(), (_) => addDriver(_), 'Driver', PlaceDriver);
     }
 
     public newUser() {
-        this.newItem(new EngineUser(), this._service.Users, EngineUser);
+        this.newItem(new PlaceUser(), (_) => addUser(_), 'User', PlaceUser);
+    }
+
+    public showUploadHistory() {
+        this._service.set('show_upload_manager', true);
     }
 
     /**
      * Open the modal to create a new engine resource
      */
-    protected newItem<T = any>(item: any, service: any, constr: Type<T>) {
+    protected newItem<T = any>(item: any, save: any, name: string, constr: Type<T>) {
         if (this.bulk) {
             this._dialog.open(BulkItemModalComponent, {
                 height: 'auto',
@@ -114,8 +134,9 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     constr,
-                    service
-                }
+                    name,
+                    save,
+                },
             });
         } else {
             this._dialog.open(ItemCreateUpdateModalComponent, {
@@ -125,8 +146,9 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item,
-                    service
-                }
+                    name,
+                    save,
+                },
             });
         }
     }

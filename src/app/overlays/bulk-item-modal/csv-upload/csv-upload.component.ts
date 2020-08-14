@@ -56,7 +56,6 @@ export class CsvUploadComponent {
     private processCSVData(data: string) {
         try {
             const list = csvToJson(data, '\t') || [];
-            console.log('List:', list);
             this.loading = false;
             this.list.emit(list);
         } catch (e) {

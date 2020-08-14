@@ -9,7 +9,7 @@
                     <engine-cluster-item [cluster]="cluster" [cpu_history]="cpu_history[cluster.id] || []"></engine-cluster-item>
                 </mat-card-content>
                 <mat-card-actions>
-                    <button mat-button (tapped)="active_cluster = cluster" i18n="@@viewClusterProcesses">View Processes</button>
+                    <button mat-button (click)="active_cluster = cluster" i18n="@@viewClusterProcesses">View Processes</button>
                 </mat-card-actions>
             </mat-card>
         </ng-container>

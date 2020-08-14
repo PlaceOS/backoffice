@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineRepository, EngineRepositoryType } from '@placeos/ts-client';
+import { PlaceRepository, PlaceRepositoryType, updateRepository, addRepository, removeRepository, listRepositoryDrivers, queryRepositories, showRepository } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -18,9 +18,17 @@ import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item
     templateUrl: './repositories.template.html',
     styleUrls: ['./repositories.styles.scss']
 })
-export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
+export class RepositoriesComponent extends BaseRootComponent<PlaceRepository> {
     /** Number of drivers in the repository */
     public driver_count: number;
+
+    public readonly name = 'repositories';
+    /** Function to save repositories */
+    public readonly save_fn = (item: any) => item.id ? updateRepository(item.id, item) : addRepository(item);
+    /** Function to query repositories */
+    public readonly query_fn = (q) => queryRepositories(q);
+    /** Function to query repositories */
+    protected readonly show_fn = (id, q) => showRepository(id, q);
 
     constructor(
         protected _service: ApplicationService,
@@ -29,7 +37,6 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
         private _dialog: MatDialog
     ) {
         super(_service, _route, _router);
-        this.service = this._service.Repositories;
     }
 
     public ngOnInit(): void {
@@ -39,10 +46,9 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
 
     protected loadValues() {
         const query: any = { offset: 0 };
-        console.log('Type:', this.item.type);
-        if (this.item.type === EngineRepositoryType.Driver) {
+        if (this.item.type === PlaceRepositoryType.Driver) {
             // Get driver count for repository
-            this._service.Repositories.listDrivers(this.item.id, query).then(
+            listRepositoryDrivers(this.item.id, query).subscribe(
                 list => (this.driver_count = list.length)
             );
         } else {
@@ -61,8 +67,9 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: copy ? new EngineRepository({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineRepository(),
-                service: this._service.Repositories
+                item: copy ? new PlaceRepository({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceRepository(),
+                name: 'Repository',
+                save: this.save_fn,
             }
         });
         this.subscription('modal_event', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -88,7 +95,8 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item: this.item,
-                    service: this._service.Repositories
+                    name: 'Repository',
+                    save: this.save_fn,
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {
@@ -119,7 +127,7 @@ export class RepositoriesComponent extends BaseRootComponent<EngineRepository> {
                 this.modal_ref.componentInstance.event.subscribe(async (event: DialogEvent) => {
                     if (event.reason === 'done') {
                         this.modal_ref.componentInstance.loading = 'Deleting repository...';
-                        await this.item.delete().catch(err => {
+                        await removeRepository(this.item.id).toPromise().catch(err => {
                             this.modal_ref.componentInstance.loading = null;
                             this._service.notifyError(
                                 `Error deleting repository. Error: ${JSON.stringify(err.response || err.message || err)}`

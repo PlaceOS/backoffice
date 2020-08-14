@@ -3,9 +3,10 @@
         <div class="field discovery" *ngIf="form.controls.repository_id && !editing">
             <label for="repo" i18n="@@repoLabel">Repository: </label>
             <item-search-field
-                name="repo"
-                [service]="discovery_service"
+                name="repository"
+                [query_fn]="query_fn"
                 [ngModel]="base_repo"
+                [exclude]="exclude_fn"
                 (ngModelChange)="updateDriverList($event)"
             ></item-search-field>
         </div>
@@ -170,7 +171,7 @@
 <ng-template #load_state>
     <div class="info-block">
         <div class="icon">
-            <mat-spinner diameter="48"></mat-spinner>
+            <mat-spinner diameter="32"></mat-spinner>
         </div>
         <div class="text" i18n="@@driverCommitLoading">Loading driver details for commit...</div>
     </div>

@@ -45,13 +45,13 @@
 </mat-dialog-content>
 <mat-dialog-actions *ngIf="!loading">
     <button mat-button class="inverse" mat-dialog-close>Cancel</button>
-    <button mat-button type="submit" (tapped)="submit()">{{ item ? 'Save' : 'Add' }} [S]</button>
+    <button mat-button type="submit" (click)="submit()">{{ item ? 'Save' : 'Add' }} [S]</button>
 </mat-dialog-actions>
 <ng-template #load_state>
     <div class="body">
         <div class="info-block">
             <div class="icon">
-                <a-spinner circle-ring color="#000"></a-spinner>
+                <mat-spinner diameter="32"></mat-spinner>
             </div>
             <div class="text">Processing request...</div>
         </div>

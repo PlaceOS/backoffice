@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineDriver } from '@placeos/ts-client';
+import { PlaceDriver, updateDriver, lastRequestTotal, addDriver, queryModules, removeDriver, queryDrivers, showDriver } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -18,9 +18,17 @@ import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item
     templateUrl: './drivers.template.html',
     styleUrls: ['./drivers.styles.scss']
 })
-export class DriversComponent extends BaseRootComponent<EngineDriver> {
+export class DriversComponent extends BaseRootComponent<PlaceDriver> {
     /** Number of devices for the active system */
     public device_count: number;
+
+    public readonly name = 'drivers';
+    /** Function to save drivers */
+    public readonly save_fn = (item: any) => item.id ? updateDriver(item.id, item) : addDriver(item);
+    /** Function to query drivers */
+    public readonly query_fn = (q) => queryDrivers(q);
+    /** Function to query drivers */
+    public readonly show_fn = (id, q) => showDriver(id, q);
 
     constructor(
         protected _service: ApplicationService,
@@ -29,7 +37,6 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
         private _dialog: MatDialog
     ) {
         super(_service, _route, _router);
-        this.service = this._service.Drivers;
     }
 
     public ngOnInit(): void {
@@ -39,8 +46,8 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
 
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, driver_id: this.item.id };
-        this._service.Modules.query(query).then(list => {
-            this.device_count = this._service.Modules.last_total || list.length || 0;
+        queryModules(query).subscribe(list => {
+            this.device_count = lastRequestTotal('modules') || list.length || 0;
         });
     }
 
@@ -55,8 +62,9 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: copy ? new EngineDriver({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineDriver(),
-                service: this._service.Drivers
+                item: copy ? new PlaceDriver({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceDriver(),
+                name: 'Driver',
+                save: this.save_fn,
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe(event => {
@@ -82,7 +90,8 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item: this.item,
-                    service: this._service.Drivers
+                    name: 'Driver',
+                    save: this.save_fn,
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {
@@ -110,7 +119,7 @@ export class DriversComponent extends BaseRootComponent<EngineDriver> {
                 this.modal_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         this.modal_ref.componentInstance.loading = 'Deleting driver...';
-                        this.item.delete().then(
+                        removeDriver(this.item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted driver "${this.item.name}".`

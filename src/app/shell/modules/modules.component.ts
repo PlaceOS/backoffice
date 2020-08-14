@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { EngineModule } from '@placeos/ts-client';
+import { PlaceModule, updateModule, addModule, removeModule, querySystems, lastRequestTotal, queryModules, showModule } from '@placeos/ts-client';
 
 import { ApplicationService } from '../../services/app.service';
 import { BaseRootComponent } from '../../shared/components/base-root.component';
@@ -18,11 +18,19 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
     templateUrl: './modules.template.html',
     styleUrls: ['./modules.styles.scss']
 })
-export class ModulesComponent extends BaseRootComponent<EngineModule> {
+export class ModulesComponent extends BaseRootComponent<PlaceModule> {
     /** Number of systems for the active device */
     public system_count: number;
     /** Whether the list of devices should show only the disconnected devices */
     public only_disconnected: boolean;
+
+    public readonly name = 'modules';
+    /** Function to save systems */
+    public readonly save_fn = (item: any) => item.id ? updateModule(item.id, item) : addModule(item);
+    /** Function to query domains */
+    public readonly query_fn = (q) => queryModules(q);
+    /** Function to query domains */
+    protected readonly show_fn = (id, q) => showModule(id, q);
 
     constructor(
         protected _service: ApplicationService,
@@ -31,7 +39,6 @@ export class ModulesComponent extends BaseRootComponent<EngineModule> {
         private _dialog: MatDialog
     ) {
         super(_service, _route, _router);
-        this.service = this._service.Modules;
     }
 
     public ngOnInit(): void {
@@ -42,8 +49,8 @@ export class ModulesComponent extends BaseRootComponent<EngineModule> {
     protected loadValues() {
         const query: any = { offset: 0, limit: 1, module_id: this.item.id };
         // Get system count
-        this._service.Systems.query(query).then((list) => {
-            this.system_count = this._service.Systems.last_total || list.length || 0;
+        querySystems(query).subscribe((list) => {
+            this.system_count = lastRequestTotal('systems') || list.length || 0;
         });
     }
 
@@ -58,8 +65,9 @@ export class ModulesComponent extends BaseRootComponent<EngineModule> {
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: copy ? new EngineModule({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new EngineModule(),
-                service: this._service.Modules
+                item: copy ? new PlaceModule({ ...this.item, id: '', name: `${this.item.name} (1)` }) : new PlaceModule(),
+                name: 'Module',
+                save: this.save_fn,
             }
         });
         this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe((event) => {
@@ -85,7 +93,8 @@ export class ModulesComponent extends BaseRootComponent<EngineModule> {
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item: this.item,
-                    service: this._service.Modules
+                    name: 'Module',
+                    save: this.save_fn,
                 }
             });
             this.modal_ref.afterClosed().subscribe(() => {
@@ -113,7 +122,7 @@ export class ModulesComponent extends BaseRootComponent<EngineModule> {
                 this.modal_ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         this.modal_ref.componentInstance.loading = 'Deleting module...';
-                        this.item.delete().then(
+                        removeModule(this.item.id).subscribe(
                             () => {
                                 this._service.notifySuccess(
                                     `Successfully deleted module "${this.item.name}".`

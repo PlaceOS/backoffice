@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EngineDatabaseDetailsComponent } from './database-details.component';
+import { PlaceDatabaseDetailsComponent } from './database-details.component';
 
-describe('EngineDatabaseDetailsComponent', () => {
-    let component: EngineDatabaseDetailsComponent;
-    let fixture: ComponentFixture<EngineDatabaseDetailsComponent>;
+describe('PlaceDatabaseDetailsComponent', () => {
+    let component: PlaceDatabaseDetailsComponent;
+    let fixture: ComponentFixture<PlaceDatabaseDetailsComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [EngineDatabaseDetailsComponent]
+            declarations: [PlaceDatabaseDetailsComponent]
         }).compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(EngineDatabaseDetailsComponent);
+        fixture = TestBed.createComponent(PlaceDatabaseDetailsComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

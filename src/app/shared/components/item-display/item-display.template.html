@@ -14,11 +14,11 @@
                 </div>
                 <div
                     class="chip connect"
-                    *ngIf="item.connected !== null && item.connected !== undefined"
-                    [class.active]="item.connected"
+                    *ngIf="item.running !== null && item.running !== undefined"
+                    [class.active]="item.running"
                     i18n="@@onlineState"
                 >
-                    { item.connected, select, true { Online } false { Offline } other { Other } }
+                    { item.running, select, true { Online } false { Offline } other { Other } }
                 </div>
                 <div class="chip secure" *ngIf="item.tls">
                     <div class="icon"><i class="backoffice-lock"></i></div>
@@ -90,7 +90,7 @@
 </div>
 <div class="info-block center" *ngIf="loading">
     <div class="icon">
-        <a-spinner circle-ring></a-spinner>
+        <mat-spinner diameter="32"></mat-spinner>
     </div>
     <div class="text" i18n="@@itemLoading">
         Loading { name, select, system { system } module { module } driver { driver } repository {
@@ -132,7 +132,7 @@
     <button mat-menu-item (click)="exportAsTSV()">
         <div class="group">
             <app-icon [icon]="{ class: 'backoffice-download' }"></app-icon>
-            <div class="text" i18n="@@exporeAction">
+            <div class="text" i18n="@@exportAction">
                 Export { name, select, system { system } module { module } driver { driver }
                 repository { repository } zone { zone } trigger { trigger } user { user } domain {
                 domain } other { other } } as TSV template

@@ -1,7 +1,7 @@
 import { Observable, BehaviorSubject } from 'rxjs';
 import { HashMap } from '../utilities/types.utilities';
 
-import { MockHttpRequestHandler } from '@placeos/ts-client';
+import { MockHttpRequestHandler, registerMockEndpoint } from '@placeos/ts-client';
 
 /** Domain of the organisation */
 export const DOMAIN = 'place.tech';
@@ -58,17 +58,10 @@ export function generateBasicHandlers<T = any>(
         delete ENDPOINT_SUBJECTS[endpoint];
         delete ENDPOINT_OBSERVABLES[endpoint];
     }
-    console.log('Data:', endpoint, data);
     ENDPOINT_SUBJECTS[endpoint] = new BehaviorSubject<T[]>(data);
     ENDPOINT_OBSERVABLES[endpoint] = ENDPOINT_SUBJECTS[endpoint].asObservable();
-    if (!window.control) {
-        window.control = {};
-    }
-    if (!window.control.handlers) {
-        window.control.handlers = [];
-    }
     /** Add GET for index */
-    window.control.handlers.push({
+    registerMockEndpoint({
         path: `${endpoint}`,
         metadata: data,
         method: 'GET',
@@ -79,7 +72,7 @@ export function generateBasicHandlers<T = any>(
         },
     } as MockHttpRequestHandler);
     /** Add GET for show */
-    window.control.handlers.push({
+    registerMockEndpoint({
         path: `${endpoint}/:id`,
         metadata: data,
         method: 'GET',
@@ -91,7 +84,7 @@ export function generateBasicHandlers<T = any>(
         },
     } as MockHttpRequestHandler);
     /** Add POST for item */
-    window.control.handlers.push({
+    registerMockEndpoint({
         path: `${endpoint}`,
         metadata: data,
         method: 'POST',
@@ -123,10 +116,10 @@ export function generateBasicHandlers<T = any>(
             }
         },
     } as MockHttpRequestHandler;
-    window.control.handlers.push(action);
-    window.control.handlers.push({ ...action, method: 'PUT' });
+    registerMockEndpoint(action);
+    registerMockEndpoint({ ...action, method: 'PUT' });
     /** Add DELETE for item */
-    window.control.handlers.push({
+    registerMockEndpoint({
         path: `${endpoint}/:id`,
         metadata: data,
         method: 'DELETE',

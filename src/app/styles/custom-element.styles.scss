@@ -270,4 +270,63 @@ mat-expansion-panel {
             border: 1px solid #999;
         }
     }
+
+    app-upload-list {
+        .upload-list {
+            background-color: #424242;
+            color: #fff;
+
+            ul li {
+                &:nth-child(2n) {
+                    background-color: rgba(#fff, 0.1);
+                }
+                &:hover {
+                    background-color: rgba(#fff, 0.2);
+                }
+            }
+        }
+    }
+}
+
+.editor {
+    .external-setting {
+        text-decoration: underline;
+    }
+    .external-setting-margin {
+        background-color: #d500f9;
+        width: 5px !important;
+        margin-left: 3px;
+    }
+    .encryption-none {
+        text-decoration: underline;
+    }
+    .encryption-none-margin {
+        background-color: #43a047;
+        width: 5px !important;
+        margin-left: 3px;
+    }
+    .encryption-support {
+        text-decoration: underline;
+    }
+    .encryption-support-margin {
+        background-color: #fdd835;
+        width: 5px !important;
+        margin-left: 3px;
+    }
+    .encryption-admin {
+        text-decoration: underline;
+    }
+    .encryption-admin-margin {
+        background-color: #fb8c00;
+        width: 5px !important;
+        margin-left: 3px;
+    }
+    .encryption-hide {
+        text-decoration: underline;
+    }
+    .encryption-hide-margin {
+        background-color: #e53935;
+        width: 5px !important;
+        margin-left: 3px;
+    }
 }

@@ -1,7 +1,7 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
@@ -12,6 +12,7 @@ import { SystemAboutComponent } from './system-about/system-about.component';
 import { SystemModulesComponent } from './system-modules/system-modules.component';
 import { SystemTriggersComponent } from './system-triggers/system-triggers.component';
 import { SystemZonesComponent } from './system-zones/system-zones.component';
+import { SystemMetadataComponent } from './system-metadata/system-metadata.component';
 import { SharedContentModule } from 'src/app/shared/shared.module';
 
 @NgModule({
@@ -21,10 +22,12 @@ import { SharedContentModule } from 'src/app/shared/shared.module';
         SystemModulesComponent,
         SystemTriggersComponent,
         SystemZonesComponent,
+        SystemMetadataComponent
     ],
     imports: [
         CommonModule,
         FormsModule,
+        ReactiveFormsModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule,
         DragDropModule

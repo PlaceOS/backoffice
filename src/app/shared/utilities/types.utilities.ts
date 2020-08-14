@@ -26,7 +26,7 @@ export type FilterFn<T = any> = (_: T) => boolean;
 /** Generic type for a comparison function */
 export type CompareFn<T = any> = (a: T, b: T) => number;
 
-export interface EngineServiceLike<T = any> extends HashMap {
+export interface PlaceServiceLike<T = any> extends HashMap {
     /** Whether new items can be created for the service */
     readonly can_create?: boolean;
     /** Whether items can be edited for the service */

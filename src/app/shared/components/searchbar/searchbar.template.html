@@ -1,6 +1,6 @@
 <div class="searchbar" [class.dark-mode]="dark_mode" widget>
     <div class="field" [class.focus]="model.focus || filter || model.dictate">
-        <button mat-icon-button (touchrelease)="focusInput()">
+        <button mat-icon-button (click)="focusInput()">
             <app-icon [icon]="{ class: 'backoffice-magnifying-glass' }"></app-icon>
         </button>
         <div class="input">
@@ -9,10 +9,10 @@
                 (blur)="model.focus = false; blur.emit($event)"
                 [placeholder]="placeholder">
         </div>
-        <button mat-icon-button *ngIf="model.speech && dictation" [class.active]="model.dictate" (tapped)="startDictation()">
+        <button mat-icon-button *ngIf="model.speech && dictation" [class.active]="model.dictate" (click)="startDictation()">
             <app-icon [icon]="{ class: 'backoffice-mic' }"></app-icon>
         </button>
-        <button mat-icon-button class="close" *ngIf="filter && clearable" (tapped)="clear()">
+        <button mat-icon-button class="close" *ngIf="filter && clearable" (click)="clear()">
             <app-icon [icon]="{ class: 'backoffice-cross' }"></app-icon>
         </button>
         <ng-content></ng-content>
