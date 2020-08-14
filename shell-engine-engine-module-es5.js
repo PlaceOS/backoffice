@@ -20607,31 +20607,37 @@
       /* harmony import */
 
 
-      var src_app_services_app_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
+      var rxjs_operators__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
+      /*! rxjs/operators */
+      "./node_modules/rxjs/_esm2015/operators/index.js");
+      /* harmony import */
+
+
+      var src_app_services_app_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
       /*! src/app/services/app.service */
       "./src/app/services/app.service.ts");
       /* harmony import */
 
 
-      var _angular_material_dialog__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
+      var _angular_material_dialog__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(
       /*! @angular/material/dialog */
       "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/dialog.js");
       /* harmony import */
 
 
-      var _angular_material_button__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(
+      var _angular_material_button__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(
       /*! @angular/material/button */
       "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/button.js");
       /* harmony import */
 
 
-      var _shared_components_icon_icon_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(
+      var _shared_components_icon_icon_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(
       /*! ../../../shared/components/icon/icon.component */
       "./src/app/shared/components/icon/icon.component.ts");
       /* harmony import */
 
 
-      var _angular_common__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(
+      var _angular_common__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(
       /*! @angular/common */
       "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
 
@@ -21029,7 +21035,9 @@
                   switch (_context.prev = _context.next) {
                     case 0:
                       _context.next = 2;
-                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryBrokers"])().toPromise();
+                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryBrokers"])().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["map"])(function (resp) {
+                        return resp.data;
+                      })).toPromise();
 
                     case 2:
                       brokers = _context.sent;
@@ -21049,7 +21057,7 @@
       }(src_app_shared_globals_base_directive__WEBPACK_IMPORTED_MODULE_4__["BaseDirective"]);
 
       AdminBrokersComponent.ɵfac = function AdminBrokersComponent_Factory(t) {
-        return new (t || AdminBrokersComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_services_app_service__WEBPACK_IMPORTED_MODULE_6__["ApplicationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_material_dialog__WEBPACK_IMPORTED_MODULE_7__["MatDialog"]));
+        return new (t || AdminBrokersComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_services_app_service__WEBPACK_IMPORTED_MODULE_7__["ApplicationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_material_dialog__WEBPACK_IMPORTED_MODULE_8__["MatDialog"]));
       };
 
       AdminBrokersComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({
@@ -21098,8 +21106,8 @@
             _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx.brokers && ctx.brokers.length)("ngIfElse", _r1);
           }
         },
-        directives: [_angular_material_button__WEBPACK_IMPORTED_MODULE_8__["MatButton"], _shared_components_icon_icon_component__WEBPACK_IMPORTED_MODULE_9__["IconComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_10__["NgIf"], _angular_common__WEBPACK_IMPORTED_MODULE_10__["NgForOf"]],
-        pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_10__["JsonPipe"]],
+        directives: [_angular_material_button__WEBPACK_IMPORTED_MODULE_9__["MatButton"], _shared_components_icon_icon_component__WEBPACK_IMPORTED_MODULE_10__["IconComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_11__["NgIf"], _angular_common__WEBPACK_IMPORTED_MODULE_11__["NgForOf"]],
+        pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_11__["JsonPipe"]],
         styles: [".actions[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  padding: 1em;\n}\n\n.info-block[_ngcontent-%COMP%] {\n  margin: 2em 0.5em;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvc2hlbGwvZW5naW5lL2Jyb2tlcnMvYnJva2Vycy5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFDQTtFQUNJLGFBQUE7RUFDQSxtQkFBQTtFQUNBLHVCQUFBO0VBQ0EsWUFBQTtBQUFKOztBQUlBO0VBQ0ksaUJBQUE7QUFESiIsImZpbGUiOiJzcmMvYXBwL3NoZWxsL2VuZ2luZS9icm9rZXJzL2Jyb2tlcnMuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyJcbi5hY3Rpb25zIHtcbiAgICBkaXNwbGF5OiBmbGV4O1xuICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gICAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7XG4gICAgcGFkZGluZzogMWVtO1xuXG59XG5cbi5pbmZvLWJsb2NrIHtcbiAgICBtYXJnaW46IDJlbSAuNWVtO1xufVxuIl19 */"]
       });
       /*@__PURE__*/
@@ -21114,9 +21122,9 @@
           }]
         }], function () {
           return [{
-            type: src_app_services_app_service__WEBPACK_IMPORTED_MODULE_6__["ApplicationService"]
+            type: src_app_services_app_service__WEBPACK_IMPORTED_MODULE_7__["ApplicationService"]
           }, {
-            type: _angular_material_dialog__WEBPACK_IMPORTED_MODULE_7__["MatDialog"]
+            type: _angular_material_dialog__WEBPACK_IMPORTED_MODULE_8__["MatDialog"]
           }];
         }, null);
       })();
@@ -21448,7 +21456,9 @@
             this.loading = true;
             Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryClusters"])({
               include_status: true
-            }).subscribe(function (list) {
+            }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])(function (resp) {
+              return resp.data;
+            })).subscribe(function (list) {
               _this7.cluster_list = list || [];
               var date = dayjs__WEBPACK_IMPORTED_MODULE_4__().valueOf();
 

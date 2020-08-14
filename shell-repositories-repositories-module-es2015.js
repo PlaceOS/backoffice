@@ -586,7 +586,7 @@ class RepositoriesComponent extends _shared_components_base_root_component__WEBP
         const query = { offset: 0 };
         if (this.item.type === _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceRepositoryType"].Driver) {
             // Get driver count for repository
-            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["listRepositoryDrivers"])(this.item.id, query).subscribe(list => (this.driver_count = list.length));
+            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["listRepositoryDrivers"])(this.item.id, query).subscribe((list) => (this.driver_count = list.length));
         }
         else {
             this.driver_count = -1;
@@ -605,12 +605,14 @@ class RepositoriesComponent extends _shared_components_base_root_component__WEBP
             maxHeight: 'calc(100vh - 2em)',
             maxWidth: 'calc(100vw - 2em)',
             data: {
-                item: copy ? new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceRepository"](Object.assign(Object.assign({}, this.item), { id: '', name: `${this.item.name} (1)` })) : new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceRepository"](),
+                item: copy
+                    ? new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceRepository"](Object.assign(Object.assign({}, this.item), { id: '', name: `${this.item.name} (1)` }))
+                    : new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceRepository"](),
                 name: 'Repository',
                 save: this.save_fn,
-            }
+            },
         });
-        this.subscription('modal_event', this.modal_ref.componentInstance.event.subscribe(event => {
+        this.subscription('modal_event', this.modal_ref.componentInstance.event.subscribe((event) => {
             if (event.reason === 'done') {
                 this._router.navigate(['/repositories', event.metadata.item.id]);
             }
@@ -634,7 +636,7 @@ class RepositoriesComponent extends _shared_components_base_root_component__WEBP
                     item: this.item,
                     name: 'Repository',
                     save: this.save_fn,
-                }
+                },
             });
             this.modal_ref.afterClosed().subscribe(() => {
                 this.unsub('modal_events');
@@ -650,12 +652,14 @@ class RepositoriesComponent extends _shared_components_base_root_component__WEBP
             this.modal_ref = this._dialog.open(src_app_overlays_confirm_modal_confirm_modal_component__WEBPACK_IMPORTED_MODULE_4__["ConfirmModalComponent"], Object.assign(Object.assign({}, src_app_overlays_confirm_modal_confirm_modal_component__WEBPACK_IMPORTED_MODULE_4__["CONFIRM_METADATA"]), { data: {
                     title: `Delete repository`,
                     content: `<p>Are you sure you want delete this repository?</p><p>Deleting this repository will <strong>immediately</strong> remove it from all associated systems and zones</p>`,
-                    icon: { type: 'icon', class: 'backoffice-trash' }
+                    icon: { type: 'icon', class: 'backoffice-trash' },
                 } }));
             this.subscription('modal_events', this.modal_ref.componentInstance.event.subscribe((event) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
                 if (event.reason === 'done') {
                     this.modal_ref.componentInstance.loading = 'Deleting repository...';
-                    yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["removeRepository"])(this.item.id).toPromise().catch(err => {
+                    yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["removeRepository"])(this.item.id)
+                        .toPromise()
+                        .catch((err) => {
                         this.modal_ref.componentInstance.loading = null;
                         this._service.notifyError(`Error deleting repository. Error: ${JSON.stringify(err.response || err.message || err)}`);
                         throw err;
@@ -699,7 +703,7 @@ RepositoriesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵde
         args: [{
                 selector: 'app-repositories',
                 templateUrl: './repositories.template.html',
-                styleUrls: ['./repositories.styles.scss']
+                styleUrls: ['./repositories.styles.scss'],
             }]
     }], function () { return [{ type: _services_app_service__WEBPACK_IMPORTED_MODULE_6__["ApplicationService"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_7__["ActivatedRoute"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_7__["Router"] }, { type: _angular_material_dialog__WEBPACK_IMPORTED_MODULE_8__["MatDialog"] }]; }, null); })();
 
