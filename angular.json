@@ -35,6 +35,11 @@
               "src/manifest.webmanifest",
               "src/oauth-resp.html",
               {
+                  "glob": "oauth-resp.html",
+                  "input": "node_modules/@placeos/ts-client/dist/",
+                  "output": "/"
+              },
+              {
                 "glob": "**/*",
                 "input": "node_modules/monaco-editor/min/",
                 "output": "./assets/monaco/"
