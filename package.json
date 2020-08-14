@@ -59,7 +59,7 @@
     "@commitlint/config-conventional": "^8.3.4",
     "@compodoc/compodoc": "^1.1.11",
     "@cypress/webpack-preprocessor": "^4.1.1",
-    "@placeos/ts-client": "^3.0.3",
+    "@placeos/ts-client": "^3.0.5",
     "@schematics/angular": "^8.3.25",
     "@semantic-release/changelog": "^3.0.5",
     "@semantic-release/commit-analyzer": "^6.3.2",
