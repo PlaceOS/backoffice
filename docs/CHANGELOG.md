@@ -1,3 +1,56 @@
+# [1.6.0](https://github.com/PlaceOS/backoffice/compare/v1.5.0...v1.6.0) (2020-08-14)
+
+
+### Bug Fixes
+
+* **apps:** fix loading of application data ([aa7e6ca](https://github.com/PlaceOS/backoffice/commit/aa7e6ca454f6c8873608f1550437b0f44885786a))
+* **build:** fix assets for uploads in prod and staging configs ([22bb5cf](https://github.com/PlaceOS/backoffice/commit/22bb5cf1cfa181e6131c9fb50a48f2917131c110))
+* **debug:** fix filter comparison check ([66c157b](https://github.com/PlaceOS/backoffice/commit/66c157bf245be136d80ee3270bed23b21b44149b))
+* **debug:** prevent duplicate messages showing ([b809d02](https://github.com/PlaceOS/backoffice/commit/b809d023c7bc0ffd0c21d7dce2caa602931b712e)), closes [#95](https://github.com/PlaceOS/backoffice/issues/95)
+* **domains:** fix about tab on domain details ([588f96c](https://github.com/PlaceOS/backoffice/commit/588f96c8c584d6fd7b2545c3d6a74d5c2c9b4256))
+* **driver:** exclude interface repositories when creating a new driver ([d37f48e](https://github.com/PlaceOS/backoffice/commit/d37f48ef8097587cfba10f696d7277cf5994e030)), closes [#88](https://github.com/PlaceOS/backoffice/issues/88)
+* **driver:** fix clearing commit list on edit ([5e5354c](https://github.com/PlaceOS/backoffice/commit/5e5354c8d338a482bc43adb5b1652d118efea2de))
+* **driver:** fix listing of commits on form ([e78d210](https://github.com/PlaceOS/backoffice/commit/e78d210db743451117b589d0141aec701365a1ca))
+* **driver:** fix race condition when loading commits ([30853f1](https://github.com/PlaceOS/backoffice/commit/30853f1aee96312ab4e8614dffc47092d4307ba8))
+* **exec:** fix parameters ([ad87427](https://github.com/PlaceOS/backoffice/commit/ad87427626cc76aad5cd409731e7764292955c1d))
+* **exec:** use default params to check required fields ([53e1705](https://github.com/PlaceOS/backoffice/commit/53e1705c3fcde77b4b3535ebf922070ff0fd7763))
+* **form:** fix creating new settings from creation form ([7641219](https://github.com/PlaceOS/backoffice/commit/764121953d82dd587c49d4929bb1cdf1be09df53))
+* **metadata:** fix height of metadata field ([3ce107c](https://github.com/PlaceOS/backoffice/commit/3ce107cd4b3acfdb091fbf4268bcd164886992ed)), closes [#89](https://github.com/PlaceOS/backoffice/issues/89)
+* **metadata:** update lib and fix minor issues ([b1deca6](https://github.com/PlaceOS/backoffice/commit/b1deca69defd551db89f2b634c61c3b95a32a524))
+* **modules:** set online state to use running instead of connected ([d8e7cf4](https://github.com/PlaceOS/backoffice/commit/d8e7cf47661a672f2790b58037bbc3188675a558))
+* **oauth:** fix mapping of model data to form fields ([125382a](https://github.com/PlaceOS/backoffice/commit/125382adca0f958f580e38fc74f2c8845b197591)), closes [#97](https://github.com/PlaceOS/backoffice/issues/97)
+* **oauth:** fix processing fields for oauth form ([9773a19](https://github.com/PlaceOS/backoffice/commit/9773a19d20c67a461c62c2d8e73be6c79c786168)), closes [#97](https://github.com/PlaceOS/backoffice/issues/97)
+* **oauth:** fix updating of info mappings ([c68e56a](https://github.com/PlaceOS/backoffice/commit/c68e56a2b1edf315937300c5468aff569dbe94c9)), closes [#96](https://github.com/PlaceOS/backoffice/issues/96)
+* **repo:** update local data after pull ([0ee325f](https://github.com/PlaceOS/backoffice/commit/0ee325f5920a08af769d385a6978bba19ffa0da1))
+* **settings:** fix updating merged settings from associated components ([abcc659](https://github.com/PlaceOS/backoffice/commit/abcc6595d9d02b5dd0b72054059f2c9bd9fc69a0))
+* **sidebar:** fix active item display ([bb242dd](https://github.com/PlaceOS/backoffice/commit/bb242dde196a407d90b17ef0b854a1b9b0e5084f))
+* **sidebar:** keep track of active tab for items ([b907a2d](https://github.com/PlaceOS/backoffice/commit/b907a2d96f7d6216f11ca42ebdac528bf50f9215))
+* **sys-exec:** fix adding comma in the middle of statements ([c657e1e](https://github.com/PlaceOS/backoffice/commit/c657e1e4eda9bf40cedc12aa0bdcd381008c45c4))
+* **sys-exec:** fix getting params for execs when set trigger actions ([92b9a35](https://github.com/PlaceOS/backoffice/commit/92b9a35efa327a2c1d781dff3186b4c8fae0574c))
+* **sys-modules:** fix debugging system modules ([81d7fcb](https://github.com/PlaceOS/backoffice/commit/81d7fcb973366207ea40dff8787c90076421a9e5))
+* **sys-triggers:** fix updating of rendered triggers ([f95f5c2](https://github.com/PlaceOS/backoffice/commit/f95f5c2cabe6cec3f64d9061c531f1cfba417cf3))
+* **systems:** add custom regex for email checking ([35c9d91](https://github.com/PlaceOS/backoffice/commit/35c9d913986bff53fea647e3f7e8950794e0ab47))
+* **trigger:** parse json values for comparisons ([3a1c229](https://github.com/PlaceOS/backoffice/commit/3a1c229cdd6cbb203740cc70e2bac4fe345d2550))
+* **triggers:** update support for websockets ([62964f8](https://github.com/PlaceOS/backoffice/commit/62964f8c260ac0ee9bbc2e90dc66160b9f648143)), closes [#92](https://github.com/PlaceOS/backoffice/issues/92)
+* **uploads:** fix storing upload history ([c97e048](https://github.com/PlaceOS/backoffice/commit/c97e0481991df55f13c63cb41eaa0f2ec0cb2816))
+* **uploads:** prevent dragging non-files locking the overlay in ([208b9c9](https://github.com/PlaceOS/backoffice/commit/208b9c93683e54e6f1e7b11a2e11cd45003b39b4))
+* more minor fixes ([5956480](https://github.com/PlaceOS/backoffice/commit/595648084eea1dcca941b2b9bc753ccd8c79495e))
+* **users:** split name into first and last names ([1d1c3cf](https://github.com/PlaceOS/backoffice/commit/1d1c3cf86cbe6d476b4633775bfd18d9e6d744e4))
+* **zones:** update API usage for zone triggers ([354f436](https://github.com/PlaceOS/backoffice/commit/354f436f8a13c1fa0b4684bbc6b6b6f489346f84)), closes [#91](https://github.com/PlaceOS/backoffice/issues/91)
+
+
+### Features
+
+* **access:** fix access control to the application ([24fdc2b](https://github.com/PlaceOS/backoffice/commit/24fdc2b37318845013eeeeea124b96b52b7e3759)), closes [#93](https://github.com/PlaceOS/backoffice/issues/93)
+* **domains:** add about page for domains ([7f155d1](https://github.com/PlaceOS/backoffice/commit/7f155d18835c720a9b3803a6a8dc0e185d7652e0))
+* **metadata:** update metadata api usage and add metadata logic to sys' ([5c5f140](https://github.com/PlaceOS/backoffice/commit/5c5f140d17472239d4463a6fde5a9b2807dbf433))
+* **repos:** allow branch switching on interface repos ([07a7566](https://github.com/PlaceOS/backoffice/commit/07a7566afa66fa7ab3ec50f6c37fb5c6c8e43895))
+* update logic to use new version of ts-client ([a1b720c](https://github.com/PlaceOS/backoffice/commit/a1b720c41df662c965171160c107dcdf09e794b4))
+* **settings:** add colours and tooltips to merged settings ([b755d40](https://github.com/PlaceOS/backoffice/commit/b755d408a17e7384d98d1bb02582401eb625b6dc)), closes [#90](https://github.com/PlaceOS/backoffice/issues/90)
+* **triggers:** add bindings for getting system trigger states ([ffed4e4](https://github.com/PlaceOS/backoffice/commit/ffed4e43d2f7f7eac9bdcb9289dfef6942716c9b))
+* **uploads:** add component for managing file uploads ([be91c0a](https://github.com/PlaceOS/backoffice/commit/be91c0a6f68bfd408e1a0e7ed6510bf4a14c0056))
+* **uploads:** add uploads library ([e5101be](https://github.com/PlaceOS/backoffice/commit/e5101be202404140e60e1e20916d2efdb11ea14f))
+
 # [1.5.0](https://github.com/PlaceOS/backoffice/compare/v1.4.0...v1.5.0) (2020-06-30)
 
 
