@@ -68,7 +68,7 @@
                 },
                 {
                   "replace": "src/app/shared/mocks/index.ts",
-                  "with": "src/environments/prod/no-mock.ts"
+                  "with": "src/environments/no-mock.ts"
                 }
               ],
               "baseHref": "/backoffice/",
