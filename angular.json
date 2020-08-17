@@ -33,7 +33,6 @@
               "src/favicon.ico",
               "src/assets",
               "src/manifest.webmanifest",
-              "src/oauth-resp.html",
               {
                   "glob": "oauth-resp.html",
                   "input": "node_modules/@placeos/ts-client/dist/",
@@ -70,27 +69,6 @@
                 {
                   "replace": "src/app/shared/mocks/index.ts",
                   "with": "src/environments/prod/no-mock.ts"
-                }
-              ],
-              "assets": [
-                "src/favicon.ico",
-                "src/assets",
-                "src/manifest.webmanifest",
-                "src/oauth-resp.html",
-                {
-                  "glob": "**/*",
-                  "input": "node_modules/monaco-editor/min/",
-                  "output": "./assets/monaco/"
-                },
-                {
-                  "input": "src/environments/prod",
-                  "output": "/assets",
-                  "glob": "*.js"
-                },
-                {
-                  "input": "node_modules/ts-md5/dist/",
-                  "output": "/assets",
-                  "glob": "*worker.js"
                 }
               ],
               "baseHref": "/backoffice/",
