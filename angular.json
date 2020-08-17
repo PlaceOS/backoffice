@@ -103,27 +103,6 @@
                     }
                 ],
                 "baseHref": "/backoffice/",
-                "assets": [
-                  "src/favicon.ico",
-                  "src/assets",
-                  "src/manifest.webmanifest",
-                  "src/oauth-resp.html",
-                  {
-                    "glob": "**/*",
-                    "input": "node_modules/monaco-editor/min/",
-                    "output": "./assets/monaco/"
-                  },
-                  {
-                    "input": "src/environments/staging",
-                    "output": "/assets",
-                    "glob": "*.js"
-                  },
-                  {
-                    "input": "node_modules/ts-md5/dist/",
-                    "output": "/assets",
-                    "glob": "*worker.js"
-                  }
-                ],
                 "serviceWorker": true,
                 "ngswConfigPath": "ngsw-config.json"
             }
