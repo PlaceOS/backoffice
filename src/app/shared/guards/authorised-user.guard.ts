@@ -10,7 +10,7 @@ import {
     Router,
 } from '@angular/router';
 import { PlaceUser, currentUser } from '@placeos/ts-client';
-import { first, take } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 
 import { ApplicationService } from '../../services/app.service';
 
