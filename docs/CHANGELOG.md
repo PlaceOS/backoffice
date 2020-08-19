@@ -1,3 +1,11 @@
+## [1.6.1](https://github.com/PlaceOS/backoffice/compare/v1.6.0...v1.6.1) (2020-08-19)
+
+
+### Bug Fixes
+
+* update display counters ([7dca779](https://github.com/PlaceOS/backoffice/commit/7dca7795badca09f2c5a4a5ab8cde1c1f9054e2a))
+* **mock:** fix mocks ([98277fa](https://github.com/PlaceOS/backoffice/commit/98277fa76190d4982c81e1d3cd22088ee6e202be))
+
 # [1.6.0](https://github.com/PlaceOS/backoffice/compare/v1.5.0...v1.6.0) (2020-08-14)
 
 
