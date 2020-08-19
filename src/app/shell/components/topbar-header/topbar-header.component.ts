@@ -155,8 +155,10 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
 
     /** Toggle the show state of the sidebar menu */
     public toggleMenu() {
-        this.show_menu = !this.show_menu;
-        this.show_menu_change.emit(this.show_menu);
+        this.timeout('toggle_menu', () => {
+            this.show_menu = !this.show_menu;
+            this.show_menu_change.emit(this.show_menu);
+        }, 100);
     }
 
     /**

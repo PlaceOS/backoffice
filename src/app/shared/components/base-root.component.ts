@@ -68,7 +68,7 @@ export class BaseRootComponent<T = HashMap<any>> extends BaseDirective implement
                     this.id = '-';
                     this.setActiveItem(null);
                 }
-                this.timeout('sidebar', () => (this.show_sidebar = !this.id));
+                this.timeout('sidebar', () => (this.show_sidebar = this.id === '-'));
             })
         );
         this._service.initialised.pipe(first(_ => _)).subscribe(() => {
