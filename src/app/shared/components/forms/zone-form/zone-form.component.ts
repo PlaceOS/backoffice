@@ -5,6 +5,7 @@ import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'zone-form',
@@ -17,7 +18,7 @@ export class ZoneFormComponent extends BaseDirective {
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
     /** Query function for zones */
-    public readonly query_fn = (_: string) => queryZones({ q: _ });
+    public readonly query_fn = (_: string) => queryZones({ q: _ }).pipe(map(resp => resp.data));
     /** Function to exclude zones */
     public readonly exclude = (zone: PlaceZone) => zone.id === this.form.controls.id.value;
 

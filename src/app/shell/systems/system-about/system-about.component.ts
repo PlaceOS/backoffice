@@ -1,6 +1,15 @@
 import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { PlaceSystem, PlaceZone, PlaceSettings, EncryptionLevel, systemSettings, queryZones, stopSystem, startSystem } from '@placeos/ts-client';
+import {
+    PlaceSystem,
+    PlaceZone,
+    PlaceSettings,
+    EncryptionLevel,
+    systemSettings,
+    queryZones,
+    stopSystem,
+    startSystem,
+} from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
@@ -8,13 +17,14 @@ import { DialogEvent, Identity } from 'src/app/shared/utilities/types.utilities'
 import {
     ConfirmModalComponent,
     ConfirmModalData,
-    CONFIRM_METADATA
+    CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'system-about',
     templateUrl: './system-about.template.html',
-    styleUrls: ['./system-about.styles.scss']
+    styleUrls: ['./system-about.styles.scss'],
 })
 export class SystemAboutComponent extends BaseDirective implements OnChanges, OnInit {
     /** System to render */
@@ -41,7 +51,7 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
                 this.item = item;
                 this.loadZones();
                 this.loadSettings();
@@ -67,8 +77,8 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
                 data: {
                     title: 'Start system?',
                     content: `Are you sure you want to start this system?<br>All stopped modules within the system will boot up.`,
-                    icon: { type: 'icon', class: 'backoffice-controller-play' }
-                }
+                    icon: { type: 'icon', class: 'backoffice-controller-play' },
+                },
             }
         );
         this.subscription(
@@ -76,10 +86,12 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
                     startSystem(this.item.id).subscribe(
-                        result => null,
-                        err =>
+                        (result) => null,
+                        (err) =>
                             this._service.notifyError(
-                                `Failed to start system: ${JSON.stringify(err.response || err.message || err)}`
+                                `Failed to start system: ${JSON.stringify(
+                                    err.response || err.message || err
+                                )}`
                             )
                     );
                 }
@@ -98,8 +110,8 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
                 data: {
                     title: 'Stop system?',
                     content: `Are you sure you want to stop this system?<br>All modules will be immediately stopped regardless of any other systems they may be in.`,
-                    icon: { type: 'icon', class: 'backoffice-controller-stop' }
-                }
+                    icon: { type: 'icon', class: 'backoffice-controller-stop' },
+                },
             }
         );
         this.subscription(
@@ -107,10 +119,12 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
                     stopSystem(this.item.id).subscribe(
-                        result => null,
-                        err =>
+                        (result) => null,
+                        (err) =>
                             this._service.notifyError(
-                                `Failed to stop system: ${JSON.stringify(err.response || err.message || err)}`
+                                `Failed to stop system: ${JSON.stringify(
+                                    err.response || err.message || err
+                                )}`
                             )
                     );
                 }
@@ -125,13 +139,17 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
         if (!this.item) {
             return;
         }
-        queryZones({ control_system_id: this.item.id, offset: 0 }).subscribe(
-            list => {
-                list.sort((a, b) => this.item.zones.indexOf(b.id) - this.item.zones.indexOf(a.id));
-                this.zones = list;
-            },
-            () => null
-        );
+        queryZones({ control_system_id: this.item.id, offset: 0 })
+            .pipe(map((resp) => resp.data))
+            .subscribe(
+                (list) => {
+                    list.sort(
+                        (a, b) => this.item.zones.indexOf(b.id) - this.item.zones.indexOf(a.id)
+                    );
+                    this.zones = list;
+                },
+                () => null
+            );
     }
 
     public async loadSettings() {

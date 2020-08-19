@@ -9,14 +9,14 @@ import { ApplicationService } from '../../../services/app.service';
 import {
     ConfirmModalComponent,
     ConfirmModalData,
-    CONFIRM_METADATA
+    CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
     selector: 'driver-devices',
     templateUrl: './driver-devices.template.html',
-    styleUrls: ['./driver-devices.styles.scss']
+    styleUrls: ['./driver-devices.styles.scss'],
 })
 export class DriverModulesComponent extends BaseDirective implements OnChanges, OnInit {
     @Input() public item: PlaceDriver;
@@ -36,11 +36,10 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
         super();
     }
 
-
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
                 this.item = item;
                 this.loadModules();
             })
@@ -48,17 +47,17 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
             distinctUntilChanged(),
-            switchMap(query => {
+            switchMap((query) => {
                 this.loading = true;
                 return queryModules({
                     q: query,
                     driver_id: this.item.id,
                     complete: true,
                     offset: 0,
-                    limit: 500
-                } as any);
+                    limit: 500,
+                } as any).pipe(map((resp) => resp.data));
             }),
-            catchError(err => {
+            catchError((err) => {
                 console.error(err);
                 return of([]);
             }),
@@ -75,7 +74,7 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
         // Process API results
         this.subscription(
             'search_results',
-            this.search_results$.subscribe(list => (this.device_list = list))
+            this.search_results$.subscribe((list) => (this.device_list = list))
         );
     }
 
@@ -85,12 +84,13 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
         }
     }
 
-    public loadModules(offset: number = 0) {
-        if (!this.item) { return; }
-        queryModules({ driver_id: this.item.id, offset, limit: 500 }).subscribe(
-            list => (this.device_list = list),
-            () => null
-        );
+    public async loadModules(offset: number = 0) {
+        if (!this.item) {
+            return;
+        }
+        this.device_list = await queryModules({ driver_id: this.item.id, offset, limit: 500 })
+            .pipe(map((resp) => resp.data))
+            .toPromise();
     }
 
     public removeModule(item: PlaceModule) {
@@ -102,8 +102,8 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
                     data: {
                         title: `Delete module`,
                         content: `<p>Are you sure you want delete this module?</p><p>Deleting this will module <strong>immediately</strong> remove it from any system associated with it</p>`,
-                        icon: { type: 'icon', class: 'backoffice-trash' }
-                    }
+                        icon: { type: 'icon', class: 'backoffice-trash' },
+                    },
                 }
             );
             this.subscription(
@@ -120,9 +120,13 @@ export class DriverModulesComponent extends BaseDirective implements OnChanges, 
                                 ref.close();
                                 this.unsub('delete_confirm');
                             },
-                            err => {
+                            (err) => {
                                 ref.componentInstance.loading = null;
-                                this._service.notifyError(`Error deleting module. Error: ${JSON.stringify(err.response || err.message || err)}`);
+                                this._service.notifyError(
+                                    `Error deleting module. Error: ${JSON.stringify(
+                                        err.response || err.message || err
+                                    )}`
+                                );
                             }
                         );
                     }

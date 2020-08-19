@@ -12,6 +12,7 @@ import {
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'app-drivers',
@@ -44,11 +45,9 @@ export class DriversComponent extends BaseRootComponent<PlaceDriver> {
         this._service.title = 'Drivers';
     }
 
-    protected loadValues() {
+    protected async loadValues() {
         const query: any = { offset: 0, limit: 1, driver_id: this.item.id };
-        queryModules(query).subscribe(list => {
-            this.device_count = lastRequestTotal('modules') || list.length || 0;
-        });
+        this.device_count = (await queryModules(query).toPromise()).total;
     }
 
     /**

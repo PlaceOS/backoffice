@@ -65,7 +65,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
     /** Whether driver commits are being loaded */
     public loading_commits: boolean;
     /** Function to query repositories */
-    public readonly query_fn = (_: string) => queryRepositories({ q: _ });
+    public readonly query_fn = (_: string) => queryRepositories({ q: _ }).pipe(map(resp => resp.data));
     /** Function to check repo that are excluded from being listed */
     public readonly exclude_fn = (repo: PlaceRepository) => repo.type === PlaceRepositoryType.Interface
 

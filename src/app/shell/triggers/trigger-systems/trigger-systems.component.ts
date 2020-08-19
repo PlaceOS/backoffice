@@ -9,13 +9,14 @@ import { ApplicationService } from '../../../services/app.service';
 import {
     ConfirmModalComponent,
     ConfirmModalData,
-    CONFIRM_METADATA
+    CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'trigger-systems',
     templateUrl: './trigger-systems.template.html',
-    styleUrls: ['./trigger-systems.styles.scss']
+    styleUrls: ['./trigger-systems.styles.scss'],
 })
 export class TriggerSystemsComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active trigger */
@@ -25,17 +26,14 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges,
     /** Map of systems ids to connected status */
     public connected: HashMap<boolean> = {};
 
-    constructor(
-        private _service: ApplicationService,
-        private _dialog: MatDialog
-    ) {
+    constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
                 this.item = item;
                 this.ngOnChanges({ item: new SimpleChange(null, this.item, false) });
             })
@@ -48,14 +46,13 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges,
         }
     }
 
-    public loadSystemTriggers(offset: number = 0) {
-        querySystems({
+    public async loadSystemTriggers(offset: number = 0) {
+        this.system_trigger_list = await querySystems({
             trigger_id: this.item.id,
-            offset
-        } as any).subscribe(
-            list => this.system_trigger_list = list || [],
-            () => null
-        );
+            offset,
+        } as any)
+            .pipe(map((resp) => resp.data))
+            .toPromise();
     }
 
     /**
@@ -69,9 +66,11 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges,
                     ...CONFIRM_METADATA,
                     data: {
                         title: `Remove trigger`,
-                        content: `<p>Are you sure you want remove this trigger?</p><p>Deleting this trigger will <strong>immediately</strong> remove from the system "${trigger.system_name || ''}"</p>`,
-                        icon: { type: 'icon', class: 'backoffice-trash' }
-                    }
+                        content: `<p>Are you sure you want remove this trigger?</p><p>Deleting this trigger will <strong>immediately</strong> remove from the system "${
+                            trigger.system_name || ''
+                        }"</p>`,
+                        icon: { type: 'icon', class: 'backoffice-trash' },
+                    },
                 }
             );
             this.subscription(
@@ -79,10 +78,12 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges,
                 ref.componentInstance.event.subscribe(async (event: DialogEvent) => {
                     if (event.reason === 'done') {
                         ref.componentInstance.loading = 'Removing trigger...';
-                        await this.deleteTrigger(trigger).catch(err => {
+                        await this.deleteTrigger(trigger).catch((err) => {
                             ref.componentInstance.loading = null;
                             this._service.notifyError(
-                                `Error removing trigger. Error: ${JSON.stringify(err.response || err.message || err)}`
+                                `Error removing trigger. Error: ${JSON.stringify(
+                                    err.response || err.message || err
+                                )}`
                             );
                             throw err;
                         });
@@ -103,8 +104,8 @@ export class TriggerSystemsComponent extends BaseDirective implements OnChanges,
         return new Promise((resolve, reject) => {
             const url = `${apiEndpoint()}/systems/${trigger.system_id}/triggers/${trigger.id}`;
             del(url).subscribe(
-                _ => null,
-                _ => reject(_),
+                (_) => null,
+                (_) => reject(_),
                 () => resolve()
             );
         });

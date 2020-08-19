@@ -16,15 +16,16 @@
                 </div>
             </div>
         </div>
-        <div
+        <button
+            mat-icon-button
             class="add"
             *ngIf="new && (total < licenses || !licenses)"
             (click)="post('new')"
             [matTooltip]="'Add ' + heading + ' [N]'"
             i18n-matTooltip
         >
-            <i class="backoffice-plus"></i>
-        </div>
+            <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
+        </button>
         <div
             class="error"
             *ngIf="new && (total >= licenses && licenses)"
@@ -60,18 +61,18 @@
                 (scrolledIndexChange)="atBottom()"
             >
                 <ng-container *cdkVirtualFor="let item of items | async; trackBy:trackByFn">
-                        <a
-                            [routerLink]="subroute ? [route, item.id, subroute]: [route, item.id]"
-                            routerLinkActive="active"
-                            [routerLinkActiveOptions]="{ exact: false, __change_detection_hack__: item.id + subroute }"
-                        >
-                            <div #list_item class="item" [title]="">
-                                <div class="text" [innerHTML]="item_name[item.id] | sanitize"></div>
-                                <app-icon
-                                    [icon]="{ type: 'icon', class: 'backoffice-check' }"
-                                ></app-icon>
-                            </div>
-                        </a>
+                    <a
+                        [routerLink]="subroute ? [route, item.id, subroute]: [route, item.id]"
+                        routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: false, __change_detection_hack__: item.id + subroute }"
+                    >
+                        <div #list_item class="item" [title]="">
+                            <div class="text" [innerHTML]="item_name[item.id] | sanitize"></div>
+                            <app-icon
+                                [icon]="{ type: 'icon', class: 'backoffice-check' }"
+                            ></app-icon>
+                        </div>
+                    </a>
                 </ng-container>
             </cdk-virtual-scroll-viewport>
         </ng-container>

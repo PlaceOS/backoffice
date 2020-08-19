@@ -14,10 +14,10 @@ import { SharedContentModule } from './shared/shared.module';
 import { SentryService } from './services/sentry.service';
 
 import { APP_COMPONENTS } from './shell';
-
-import './shared/mocks';
 import { AuthorisedUserGuard } from './shared/guards/authorised-user.guard';
 import { AuthorisedAdminGuard } from './shared/guards/authorised-admin.guard';
+
+import './shared/mocks';
 
 @NgModule({
     declarations: [AppComponent, ...APP_COMPONENTS],

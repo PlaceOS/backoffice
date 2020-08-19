@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { PlaceUser, PlaceUserQueryOptions, logout, authorise, currentUser, queryUsers } from '@placeos/ts-client';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
-import { first } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 
 import { FilterFn } from '../../shared/utilities/types.utilities';
 import { toQueryString } from 'src/app/shared/utilities/api.utilities';
@@ -77,7 +77,7 @@ export class BackofficeUsersService extends BaseClass {
     }
 
     public query(query_params?: PlaceUserQueryOptions): Observable<PlaceUser[]> {
-        return queryUsers(query_params)
+        return queryUsers(query_params).pipe(map(resp => resp.data));
     }
 
     public load(): Promise<void> {

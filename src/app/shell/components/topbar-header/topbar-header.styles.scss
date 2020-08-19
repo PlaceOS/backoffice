@@ -114,6 +114,7 @@ a {
     font-size: .6em;
     z-index: 100;
     text-transform: uppercase;
+    min-height: 1.75em;
     @include box-shadow;
 
     @include respond-to(mobile) {

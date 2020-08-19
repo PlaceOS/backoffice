@@ -34,6 +34,7 @@ import {
 import { PlaceDebugService } from 'src/app/services/debug.service';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal/view-response-modal.component';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'system-modules',
@@ -138,6 +139,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
             complete: true,
             offset,
         } as any)
+            .pipe(map((resp) => resp.data))
             .toPromise()
             .then(
                 (list) => {

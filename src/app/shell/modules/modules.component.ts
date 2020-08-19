@@ -12,6 +12,7 @@ import {
     CONFIRM_METADATA
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'app-modules',
@@ -46,12 +47,10 @@ export class ModulesComponent extends BaseRootComponent<PlaceModule> {
         this._service.title = 'Modules';
     }
 
-    protected loadValues() {
+    protected async loadValues() {
         const query: any = { offset: 0, limit: 1, module_id: this.item.id };
         // Get system count
-        querySystems(query).subscribe((list) => {
-            this.system_count = lastRequestTotal('systems') || list.length || 0;
-        });
+        this.system_count = (await querySystems(query).toPromise()).total;
     }
 
     /**

@@ -9,7 +9,7 @@ import { ApplicationService } from '../../../services/app.service';
 @Component({
     selector: 'zone-systems',
     templateUrl: './zone-systems.template.html',
-    styleUrls: ['./zone-systems.styles.scss']
+    styleUrls: ['./zone-systems.styles.scss'],
 })
 export class ZoneSystemsComponent extends BaseDirective implements OnChanges, OnInit {
     @Input() public item: PlaceZone;
@@ -31,7 +31,7 @@ export class ZoneSystemsComponent extends BaseDirective implements OnChanges, On
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
                 this.item = item;
                 this.ngOnChanges({ item: new SimpleChange(null, this.item, false) });
             })
@@ -39,15 +39,15 @@ export class ZoneSystemsComponent extends BaseDirective implements OnChanges, On
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
             distinctUntilChanged(),
-            switchMap(query => {
+            switchMap((query) => {
                 this.loading = true;
                 return querySystems({
                     q: query,
                     module_id: this.item.id,
-                    offset: 0
+                    offset: 0,
                 });
             }),
-            catchError(err => {
+            catchError((err) => {
                 console.error(err);
                 return of([]);
             }),
@@ -65,7 +65,7 @@ export class ZoneSystemsComponent extends BaseDirective implements OnChanges, On
         // Process API results
         this.subscription(
             'search_results',
-            this.search_results$.subscribe(list => (this.system_list = list))
+            this.search_results$.subscribe((list) => (this.system_list = list))
         );
     }
 
@@ -76,8 +76,8 @@ export class ZoneSystemsComponent extends BaseDirective implements OnChanges, On
     }
 
     public loadSystems(offset: number = 0) {
-        querySystems({ offset, zone_id: this.item.id, limit: 500 }).subscribe(
-            list => (this.system_list = list)
-        );
+        querySystems({ offset, zone_id: this.item.id, limit: 500 })
+            .pipe(map((resp) => resp.data))
+            .subscribe((list) => (this.system_list = list));
     }
 }

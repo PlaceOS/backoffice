@@ -15,6 +15,7 @@ import {
     SelectItemModalComponent,
     SelectItemModalData
 } from 'src/app/overlays/select-item-modal/select-item-modal.component';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'zone-triggers',
@@ -50,7 +51,7 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
     }
 
     public loadZoneTriggers(offset: number = 0) {
-        listZoneTriggers(this.item.id).subscribe(
+        listZoneTriggers(this.item.id).pipe(map(resp => resp.data)).subscribe(
             list => {
                 this.triggers = list;
             },
@@ -112,7 +113,7 @@ export class ZoneTriggersComponent extends BaseDirective implements OnChanges, O
                 width: 'auto',
                 data: {
                     service_name: 'Triggers',
-                    query_fn: (_) => queryTriggers({ q: _ })
+                    query_fn: (_) => queryTriggers({ q: _ }).pipe(map(resp => resp.data))
                 }
             }
         );

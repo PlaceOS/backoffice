@@ -9,3 +9,4 @@ import './users.mock';
 import './domains.mock';
 
 import './settings.mock';
+import './general.mock';

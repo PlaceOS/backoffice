@@ -1,22 +1,29 @@
 import { Component, Input, OnChanges, OnInit, Output, EventEmitter } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
-import { PlaceSystem, PlaceZone, updateSystem, listSystemZones, queryZones } from '@placeos/ts-client';
+import {
+    PlaceSystem,
+    PlaceZone,
+    updateSystem,
+    listSystemZones,
+    queryZones,
+} from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
 import { ApplicationService } from '../../../services/app.service';
 import {
     ConfirmModalComponent,
     ConfirmModalData,
-    CONFIRM_METADATA
+    CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { unique } from 'src/app/shared/utilities/general.utilities';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'system-zones',
     templateUrl: './system-zones.template.html',
-    styleUrls: ['./system-zones.styles.scss']
+    styleUrls: ['./system-zones.styles.scss'],
 })
 export class SystemZonesComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active item */
@@ -28,9 +35,9 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
     /** ID of a zone that the user wishes to add to the system */
     public new_zone: PlaceZone;
     /** Query function for systems */
-    public readonly query_fn = _ => queryZones({ q: _ });
+    public readonly query_fn = (_) => queryZones({ q: _ }).pipe(map((resp) => resp.data));
 
-    public readonly exclude_fn = (zone: PlaceZone) => this.item.zones.indexOf(zone.id) >= 0
+    public readonly exclude_fn = (zone: PlaceZone) => this.item.zones.indexOf(zone.id) >= 0;
 
     constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
@@ -39,7 +46,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
                 this.item = item;
                 this.loadZones();
             })
@@ -57,14 +64,20 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
      * @param offset Page offset for the service request
      */
     public loadZones(offset: number = 0) {
-        if (!this.item) { return; }
-        listSystemZones(this.item.id).subscribe(
-            list => {
-                list.sort((a, b) => this.item.zones.indexOf(a.id) - this.item.zones.indexOf(b.id));
-                this.zones = list;
-            },
-            () => null
-        );
+        if (!this.item) {
+            return;
+        }
+        listSystemZones(this.item.id)
+            .pipe(map((resp) => resp.data))
+            .subscribe(
+                (list) => {
+                    list.sort(
+                        (a, b) => this.item.zones.indexOf(a.id) - this.item.zones.indexOf(b.id)
+                    );
+                    this.zones = list;
+                },
+                () => null
+            );
     }
 
     public drop(event) {
@@ -76,8 +89,8 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                     data: {
                         title: 'Change order?',
                         content: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
-                        icon: { type: 'icon', class: 'backoffice-cycle' }
-                    }
+                        icon: { type: 'icon', class: 'backoffice-cycle' },
+                    },
                 }
             );
             this.subscription(
@@ -92,10 +105,12 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                                 ref.close();
                                 this.unsub('confirm_ref');
                             },
-                            err => {
+                            (err) => {
                                 ref.componentInstance.loading = null;
                                 this._service.notifyError(
-                                    `Error reording zones. Error: ${JSON.stringify(err.response || err.message || err)}`
+                                    `Error reording zones. Error: ${JSON.stringify(
+                                        err.response || err.message || err
+                                    )}`
                                 );
                             }
                         );
@@ -114,8 +129,8 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                     data: {
                         title: 'Remove zone?',
                         content: `<p>Are you sure you want remove zone "${zone.name}" from the system?</p>Configuration will be updated immediately.`,
-                        icon: { type: 'icon', class: 'backoffice-trash' }
-                    }
+                        icon: { type: 'icon', class: 'backoffice-trash' },
+                    },
                 }
             );
             this.subscription(
@@ -123,7 +138,7 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                 ref.componentInstance.event.subscribe((e: DialogEvent) => {
                     if (e.reason === 'done') {
                         this.loading.emit(true);
-                        const zones = this.item.zones.filter(id => id !== zone.id);
+                        const zones = this.item.zones.filter((id) => id !== zone.id);
                         updateSystem(this.item.id, { ...this.item.toJSON(), zones }).subscribe(
                             (item: any) => {
                                 this.loading.emit(false);
@@ -134,10 +149,14 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                                 ref.close();
                                 this.unsub('confirm_ref');
                             },
-                            err => {
+                            (err) => {
                                 this.loading.emit(false);
                                 this._service.notifySuccess(
-                                    `Error removing "${zone.name}" from system. Error: ${JSON.stringify(err.response || err.message || err)}`
+                                    `Error removing "${
+                                        zone.name
+                                    }" from system. Error: ${JSON.stringify(
+                                        err.response || err.message || err
+                                    )}`
                                 );
                                 ref.close();
                                 this.unsub('confirm_ref');
@@ -160,8 +179,8 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                         data: {
                             title: 'Add zone',
                             content: `Add zone "${this.new_zone.name}" to system "${this.item.name}"`,
-                            icon: { type: 'icon', class: 'backoffice-upload-to-cloud' }
-                        }
+                            icon: { type: 'icon', class: 'backoffice-upload-to-cloud' },
+                        },
                     }
                 );
                 this.subscription(
@@ -186,7 +205,11 @@ export class SystemZonesComponent extends BaseDirective implements OnChanges, On
                                     ref.componentInstance.loading = null;
                                     this.loading.emit(false);
                                     this._service.notifyError(
-                                        `Error adding zone "${this.new_zone.name}". Error: ${JSON.stringify(err.response || err.message || err)}`
+                                        `Error adding zone "${
+                                            this.new_zone.name
+                                        }". Error: ${JSON.stringify(
+                                            err.response || err.message || err
+                                        )}`
                                     );
                                 }
                             );

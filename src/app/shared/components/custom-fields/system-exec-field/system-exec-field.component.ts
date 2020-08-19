@@ -27,6 +27,7 @@ import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal
 import { HashMap } from 'src/app/shared/utilities/types.utilities';
 import { COMMA } from '@angular/cdk/keycodes';
 import { validateJSONString } from 'src/app/shared/utilities/validation.utilities';
+import { map } from 'rxjs/operators';
 
 interface PlaceModuleLike {
     id: string;
@@ -145,7 +146,7 @@ export class SystemExecFieldComponent extends BaseDirective
                     offset,
                     limit: 500,
                     complete: true,
-                } as any).subscribe(
+                } as any).pipe(map(resp => resp.data)).subscribe(
                     (list) => {
                         this.devices = (list || [])
                             .filter((device) => device.running)

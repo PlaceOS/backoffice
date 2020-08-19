@@ -1,4 +1,3 @@
-
 import { Component, Input, SimpleChanges, OnInit, OnChanges, SimpleChange } from '@angular/core';
 import { PlaceZone, PlaceSystem, EncryptionLevel, querySystems } from '@placeos/ts-client';
 
@@ -7,11 +6,12 @@ import { ApplicationService } from 'src/app/services/app.service';
 
 import * as marked from 'marked';
 import { Identity } from 'src/app/shared/utilities/types.utilities';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'zone-about',
     templateUrl: './zone-about.template.html',
-    styleUrls: ['./zone-about.styles.scss']
+    styleUrls: ['./zone-about.styles.scss'],
 })
 export class ZoneAboutComponent extends BaseDirective implements OnInit, OnChanges {
     /** Item to render */
@@ -33,7 +33,7 @@ export class ZoneAboutComponent extends BaseDirective implements OnInit, OnChang
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
                 this.item = item;
                 this.ngOnChanges({ item: new SimpleChange(null, this.item, false) });
             })
@@ -47,19 +47,22 @@ export class ZoneAboutComponent extends BaseDirective implements OnInit, OnChang
     }
 
     public get parsed_description() {
-        if (!this.item) { return ''; }
+        if (!this.item) {
+            return '';
+        }
         return marked(this.item.description);
     }
 
     public loadSystems(offset: number = 0) {
-        querySystems({ offset, zone_id: this.item.id, limit: 500 }).subscribe((list) => {
-            this.system_list = list;
-        });
+        querySystems({ offset, zone_id: this.item.id, limit: 500 })
+            .pipe(map((resp) => resp.data))
+            .subscribe((list) => {
+                this.system_list = list;
+            });
     }
 
     /** List of tags associated with the zone */
     public get tag_list(): string[] {
         return this.item ? this.item.tags : [];
     }
-
 }

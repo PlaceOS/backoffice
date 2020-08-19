@@ -4,12 +4,21 @@
             <app-icon [icon]="{ class: 'backoffice-magnifying-glass' }"></app-icon>
         </button>
         <div class="input">
-            <input #input [(ngModel)]="filter" (ngModelChange)="post()"
+            <input
+                #input
+                [(ngModel)]="filter"
+                (ngModelChange)="post()"
                 (focus)="model.focus = true; focus.emit($event)"
                 (blur)="model.focus = false; blur.emit($event)"
-                [placeholder]="placeholder">
+                [placeholder]="placeholder"
+            />
         </div>
-        <button mat-icon-button *ngIf="model.speech && dictation" [class.active]="model.dictate" (click)="startDictation()">
+        <button
+            mat-icon-button
+            *ngIf="model.speech && dictation && (model.focus || model.dictate)"
+            [class.active]="model.dictate"
+            (click)="startDictation()"
+        >
             <app-icon [icon]="{ class: 'backoffice-mic' }"></app-icon>
         </button>
         <button mat-icon-button class="close" *ngIf="filter && clearable" (click)="clear()">

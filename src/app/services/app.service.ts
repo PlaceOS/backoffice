@@ -328,7 +328,8 @@ export class ApplicationService extends BaseClass {
             if (window.debug) {
                 window.application = this;
             }
-            this.timeout('init', () => this._initialised.next(true), 200);
+            this._settings.overrides = [authority().config];
+            this.timeout('init', () => this._initialised.next(true), 500);
         });
     }
 
@@ -343,8 +344,11 @@ export class ApplicationService extends BaseClass {
         const host = settings.domain || location.hostname;
         const port = settings.port || location.port;
         const url = settings.use_domain ? `${protocol}//${host}:${port}` : location.origin;
-        const route = settings.route || '';
-        const mock = this.setting('mock');
+        const route = host.includes('localhost') && port === '4200' ? '' : settings.route || '';
+        const mock =
+            this._settings.get('mock') ||
+            location.href.includes('mock=true') ||
+            localStorage.getItem('mock') === 'true';
         const login_locally = location.search.indexOf('login=true') >= 0;
         // Generate configuration object
         const config: PlaceAuthOptions = {
@@ -355,8 +359,12 @@ export class ApplicationService extends BaseClass {
             token_uri: `${url}/auth/oauth/token`,
             redirect_uri: `${location.origin}${route}/oauth-resp.html`,
             handle_login: !settings.local_login && !login_locally,
+            use_iframe: true,
             mock
         };
+        if (localStorage) {
+            localStorage.setItem('mock', `${!location.href.includes('mock=false') && !!mock}`);
+        }
         return setup(config);
     }
 

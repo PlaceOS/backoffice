@@ -11,7 +11,7 @@ import {
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { ApplicationService } from '../../services/app.service';
 import { HashMap } from '../utilities/types.utilities';
-import { first } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 
@@ -68,7 +68,7 @@ export class BaseRootComponent<T = HashMap<any>> extends BaseDirective implement
                     this.id = '-';
                     this.setActiveItem(null);
                 }
-                this.timeout('sidebar', () => (this.show_sidebar = !this.id));
+                this.timeout('sidebar', () => (this.show_sidebar = this.id === '-'));
             })
         );
         this._service.initialised.pipe(first(_ => _)).subscribe(() => {
@@ -193,7 +193,7 @@ export class BaseRootComponent<T = HashMap<any>> extends BaseDirective implement
             this.item instanceof PlaceModule
         ) {
             this._service.set('loading_settings', true);
-            querySettings({ parent_id: (this.item as any).id }).subscribe(
+            querySettings({ parent_id: (this.item as any).id }).pipe(map(resp => resp.data)).subscribe(
                 list => {
                     this._service.set('loading_settings', false);
                     for (const settings of list) {

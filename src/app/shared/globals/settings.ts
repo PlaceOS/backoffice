@@ -1,16 +1,10 @@
-const SETTINGS = {
-    env: 'staging',
-    debug: true,
-    mock: false,
-    composer: {},
-    app: {},
-};
+
 
 /*=======================*\
 ||   COMPOSER SETTINGS   ||
 \*=======================*/
 
-SETTINGS.composer = {
+const composer = {
     domain: '',
     route: '/backoffice',
     protocol: '',
@@ -18,43 +12,11 @@ SETTINGS.composer = {
     local_login: false,
 };
 
-/*==========================*\
-||   APPLICATION SETTINGS   ||
-\*==========================*/
-
-SETTINGS.app = {
-    title: 'PlaceOS',
-    name: 'PlaceOS',
-    description: 'PlaceOS Frontend made in Angular 9.1+',
-    short_name: 'Place',
-    code: 'ENGINE',
-    copyright: 'Copyright 2018 ACA Projects',
-    login: {
-        forgot: false,
-    },
-    analytics: {
-        enabled: false,
-        tracking_id: '',
-    },
-    logo_light: {
-        type: 'img',
-        src: 'assets/img/logo.svg',
-        background: '',
-    },
-    languages: [
-        {
-            name: 'English',
-            locale: 'en-US',
-            icon: { class: '', content: '🇬🇧' }
-        }
-    ],
-};
 
 /*==========================*\
-||   GENERAL SETTINGS   ||
+||     GENERAL SETTINGS     ||
 \*==========================*/
-
-SETTINGS.app.general = {
+const general = {
     menu: [
         {
             name: 'Systems',
@@ -154,54 +116,49 @@ SETTINGS.app.general = {
 /*==========================*\
 ||      SYSTEM SETTINGS     ||
 \*==========================*/
-
-SETTINGS.app.systems = {
+const systems = {
     can_create: true,
 };
 
 /*==========================*\
 ||      MODULE SETTINGS     ||
 \*==========================*/
-
-SETTINGS.app.modules = {
+const modules = {
     can_create: true,
 };
 
 /*==========================*\
 ||       ZONE SETTINGS      ||
 \*==========================*/
-
-SETTINGS.app.zones = {
+const zones = {
     can_create: true,
 };
 
 /*==========================*\
 ||      DRIVER SETTINGS     ||
 \*==========================*/
-
-SETTINGS.app.drivers = {
+const drivers = {
     can_create: true,
 };
 
 /*==========================*\
 ||       USER SETTINGS      ||
 \*==========================*/
-
-SETTINGS.app.users = {
+const users = {
     can_create: true,
 };
 
 /*==========================*\
 ||      DOMAIN SETTINGS     ||
 \*==========================*/
-
-SETTINGS.app.domains = {
+const domains = {
     can_create: true,
 };
+
 /*==========================*\
 ||     TRIGGER SETTINGS     ||
 \*==========================*/
-SETTINGS.app.triggers = {
+const triggers = {
     can_create: true,
 };
 
@@ -209,9 +166,55 @@ SETTINGS.app.triggers = {
 ||       REPO SETTINGS      ||
 \*==========================*/
 
-SETTINGS.app.repositories = {
+const repositories = {
     can_create: true,
 };
 
-/** Add settings to the global space */
-window['settings.json'] = SETTINGS;
+/*==========================*\
+||   APPLICATION SETTINGS   ||
+\*==========================*/
+
+const app = {
+    title: 'PlaceOS',
+    name: 'PlaceOS',
+    description: 'PlaceOS Frontend made in Angular 9.1+',
+    short_name: 'Place',
+    code: 'ENGINE',
+    copyright: 'Copyright 2018 ACA Projects',
+    login: {
+        forgot: false,
+    },
+    analytics: {
+        enabled: false,
+        tracking_id: '',
+    },
+    logo_light: {
+        type: 'img',
+        src: 'assets/img/logo.svg',
+        background: '',
+    },
+    languages: [
+        {
+            name: 'English',
+            locale: 'en-US',
+            icon: { class: '', content: '🇬🇧' }
+        }
+    ],
+    general,
+    systems,
+    modules,
+    zones,
+    drivers,
+    repositories,
+    users,
+    domains,
+    triggers
+};
+
+export const DEFAULT_SETTINGS = {
+    env: 'staging',
+    debug: true,
+    mock: false,
+    composer,
+    app,
+};
