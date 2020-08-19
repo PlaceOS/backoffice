@@ -45,7 +45,7 @@ const CURRENT_USER = {
     name: 'Place Admin',
     email: `admin@place.tech`,
     support: Math.floor(Math.random() * 999_999) % 10 === 0,
-    sys_admin: Math.floor(Math.random() * 999_999) % 10 === 0
+    sys_admin: true
 };
 
 /** Add basic API handlers for systems */

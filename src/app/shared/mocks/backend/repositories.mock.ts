@@ -1,4 +1,8 @@
-import { PlaceRepositoryType, MockHttpRequestHandler, registerMockEndpoint } from '@placeos/ts-client';
+import {
+    PlaceRepositoryType,
+    MockHttpRequestHandler,
+    registerMockEndpoint,
+} from '@placeos/ts-client';
 
 import * as DISCOVERY_DATA from '../data/discovery.json';
 
@@ -34,31 +38,50 @@ const DRIVER_LIST = (DISCOVERY_DATA as any).default.map((driver) => driver.id);
 const COMMIT_LIST = [
     {
         commit: generateID(6, '1234567890abcdef'.split('')),
-        date: dayjs().subtract(Math.floor(Math.random() * 30 * 24 * 60), 'm').valueOf(),
+        date: dayjs()
+            .subtract(Math.floor(Math.random() * 30 * 24 * 60), 'm')
+            .valueOf(),
         author: 'alex@place.tech',
         subject: 'feat(drivers): cleanup drivers',
     },
     {
         commit: generateID(6, '1234567890abcdef'.split('')),
-        date: dayjs().subtract(Math.floor(Math.random() * 30 * 24 * 60), 'm').valueOf(),
+        date: dayjs()
+            .subtract(Math.floor(Math.random() * 30 * 24 * 60), 'm')
+            .valueOf(),
         author: 'alex@place.tech',
         subject: 'chore(readme): update readme',
     },
     {
         commit: generateID(6, '1234567890abcdef'.split('')),
-        date: dayjs().subtract(Math.floor(Math.random() * 30 * 24 * 60), 'm').valueOf(),
+        date: dayjs()
+            .subtract(Math.floor(Math.random() * 30 * 24 * 60), 'm')
+            .valueOf(),
         author: 'alex@place.tech',
         subject: 'refactor(drivers): cleanup lighting driver',
     },
     {
         commit: generateID(6, '1234567890abcdef'.split('')),
-        date: dayjs().subtract(Math.floor(Math.random() * 30 * 24 * 60), 'm').valueOf(),
+        date: dayjs()
+            .subtract(Math.floor(Math.random() * 30 * 24 * 60), 'm')
+            .valueOf(),
         author: 'alex@place.tech',
         subject: 'test(drivers): update test coverage',
     },
 ];
 
 COMMIT_LIST.sort((a, b) => b.date - a.date);
+
+/** Add GET for show */
+registerMockEndpoint({
+    path: `${API}/repositories/interfaces`,
+    metadata: REPO_DATA,
+    method: 'GET',
+    callback: _ =>
+        REPO_DATA.filter((repo) => repo.type === PlaceRepositoryType.Interface).map(
+            (repo) => repo.name
+        ),
+} as MockHttpRequestHandler);
 
 /** Add basic API handlers for systems */
 generateBasicHandlers(`${API}/repositories`, REPO_DATA, FILTER_FN);

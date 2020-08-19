@@ -163,7 +163,6 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             this.subscription('router.events', this._router.events.subscribe((event) => {
                 if (event instanceof NavigationEnd) {
                     const url = event.url.split('/');
-                    this.has_item =
                     this.subroute = url[3];
                 }
             }))

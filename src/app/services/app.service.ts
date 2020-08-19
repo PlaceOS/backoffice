@@ -362,6 +362,9 @@ export class ApplicationService extends BaseClass {
             use_iframe: true,
             mock
         };
+        if (localStorage) {
+            localStorage.setItem('mock', `${!location.href.includes('mock=false') && !!mock}`);
+        }
         return setup(config);
     }
 
