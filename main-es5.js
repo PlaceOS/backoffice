@@ -45383,16 +45383,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "a349619",
-        "hash": "a349619",
+        "raw": "13bc6cd",
+        "hash": "13bc6cd",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "a349619",
+        "suffix": "13bc6cd",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1597989299301
+        "time": 1597990010718
       };
       /* tslint:enable */
 

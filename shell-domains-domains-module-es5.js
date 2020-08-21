@@ -1010,7 +1010,9 @@
               maxHeight: 'calc(100vh - 2em)',
               maxWidth: 'calc(100vw - 2em)',
               data: {
-                item: new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceApplication"](),
+                item: new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceApplication"]({
+                  owner_id: this.item.id
+                }),
                 name: 'Application',
                 save: function save(item) {
                   return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addApplication"])(item);
