@@ -86,7 +86,7 @@ export class DomainApplicationsComponent extends BaseDirective implements OnChan
             data: {
                 item: new PlaceApplication(),
                 name: 'Application',
-                save: (item) => addApplication(item.toJSON()),
+                save: (item) => addApplication(item),
             },
         });
         this.subscription(
