@@ -3860,7 +3860,7 @@ class ApplicationService extends _shared_globals_base_class__WEBPACK_IMPORTED_MO
             }
             this.set('ready', true);
             const dsn = Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["authority"])().sentry_dsn || this.setting('app.sentry_dsn');
-            if (dsn) {
+            if (dsn && !location.host.includes('localhost')) {
                 _sentry_browser__WEBPACK_IMPORTED_MODULE_6__["init"]({
                     dsn,
                     release: `backoffice@${src_environments_version__WEBPACK_IMPORTED_MODULE_4__["VERSION"].version || 'dev'}-${src_environments_version__WEBPACK_IMPORTED_MODULE_4__["VERSION"].hash.slice(0, 6)}`
@@ -4640,7 +4640,7 @@ class SentryService {
             console.error(extractedError);
         }
         // Optionally show user dialog to provide details on what happened.
-        _sentry_browser__WEBPACK_IMPORTED_MODULE_3__["showReportDialog"]({ eventId });
+        // Sentry.showReportDialog({ eventId });
     }
 }
 SentryService.ɵfac = function SentryService_Factory(t) { return new (t || SentryService)(); };
@@ -5879,9 +5879,11 @@ class SettingsFieldComponent extends src_app_shared_globals_base_directive__WEBP
      * @param new_value New value to set on the form field
      */
     setValue(new_value) {
-        this.settings_string = new_value;
-        if (this._onChange) {
-            this._onChange(new_value);
+        if (this.settings_string !== new_value) {
+            this.settings_string = new_value;
+            if (this._onChange) {
+                this._onChange(new_value);
+            }
         }
     }
     /**
@@ -22254,7 +22256,8 @@ AppShellComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefine
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "environment", function() { return environment; });
 const environment = {
-    production: true
+    production: true,
+    hmr: false
 };
 
 
@@ -22274,18 +22277,49 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "13bc6cd",
-    "hash": "13bc6cd",
+    "raw": "5407a3c",
+    "hash": "5407a3c",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "13bc6cd",
+    "suffix": "5407a3c",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1597990010718
+    "time": 1597993762350
 };
 /* tslint:enable */
+
+
+/***/ }),
+
+/***/ "./src/hmr.ts":
+/*!********************!*\
+  !*** ./src/hmr.ts ***!
+  \********************/
+/*! exports provided: hmrBootstrap */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hmrBootstrap", function() { return hmrBootstrap; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var _angularclass_hmr__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angularclass/hmr */ "./node_modules/@angularclass/hmr/dist/index.js");
+/* harmony import */ var _angularclass_hmr__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_angularclass_hmr__WEBPACK_IMPORTED_MODULE_1__);
+
+
+const hmrBootstrap = (module, bootstrap) => {
+    let ngModule;
+    module.hot.accept();
+    bootstrap().then(mod => (ngModule = mod));
+    module.hot.dispose(() => {
+        const appRef = ngModule.injector.get(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ApplicationRef"]);
+        const elements = appRef.components.map(c => c.location.nativeElement);
+        const makeVisible = Object(_angularclass_hmr__WEBPACK_IMPORTED_MODULE_1__["createNewHosts"])(elements);
+        ngModule.destroy();
+        makeVisible();
+    });
+};
 
 
 /***/ }),
@@ -22301,8 +22335,10 @@ const VERSION = {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
 /* harmony import */ var _environments_environment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./environments/environment */ "./src/environments/environment.ts");
-/* harmony import */ var _app_app_module__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./app/app.module */ "./src/app/app.module.ts");
-/* harmony import */ var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/platform-browser */ "./node_modules/@angular/platform-browser/__ivy_ngcc__/fesm2015/platform-browser.js");
+/* harmony import */ var _hmr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./hmr */ "./src/hmr.ts");
+/* harmony import */ var _app_app_module__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./app/app.module */ "./src/app/app.module.ts");
+/* harmony import */ var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/platform-browser */ "./node_modules/@angular/platform-browser/__ivy_ngcc__/fesm2015/platform-browser.js");
+
 
 
 
@@ -22310,8 +22346,17 @@ __webpack_require__.r(__webpack_exports__);
 if (_environments_environment__WEBPACK_IMPORTED_MODULE_1__["environment"].production) {
     Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["enableProdMode"])();
 }
-_angular_platform_browser__WEBPACK_IMPORTED_MODULE_3__["platformBrowser"]().bootstrapModule(_app_app_module__WEBPACK_IMPORTED_MODULE_2__["AppModule"])
-    .catch(err => console.error(err));
+const bootstrap = () => _angular_platform_browser__WEBPACK_IMPORTED_MODULE_4__["platformBrowser"]().bootstrapModule(_app_app_module__WEBPACK_IMPORTED_MODULE_3__["AppModule"]);
+if (_environments_environment__WEBPACK_IMPORTED_MODULE_1__["environment"].hmr) {
+    if (false) {}
+    else {
+        console.error('HMR is not enabled for webpack-dev-server!');
+        console.log('Are you using the --hmr flag for ng serve?');
+    }
+}
+else {
+    bootstrap().catch(err => console.log(err));
+}
 
 
 /***/ }),

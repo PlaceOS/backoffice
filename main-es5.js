@@ -11378,7 +11378,7 @@
 
               var dsn = Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["authority"])().sentry_dsn || _this28.setting('app.sentry_dsn');
 
-              if (dsn) {
+              if (dsn && !location.host.includes('localhost')) {
                 _sentry_browser__WEBPACK_IMPORTED_MODULE_6__["init"]({
                   dsn: dsn,
                   release: "backoffice@".concat(src_environments_version__WEBPACK_IMPORTED_MODULE_4__["VERSION"].version || 'dev', "-").concat(src_environments_version__WEBPACK_IMPORTED_MODULE_4__["VERSION"].hash.slice(0, 6))
@@ -12793,11 +12793,8 @@
             if (!src_environments_environment__WEBPACK_IMPORTED_MODULE_2__["environment"].production) {
               console.error(extractedError);
             } // Optionally show user dialog to provide details on what happened.
+            // Sentry.showReportDialog({ eventId });
 
-
-            _sentry_browser__WEBPACK_IMPORTED_MODULE_3__["showReportDialog"]({
-              eventId: eventId
-            });
           }
         }]);
 
@@ -15262,10 +15259,12 @@
         }, {
           key: "setValue",
           value: function setValue(new_value) {
-            this.settings_string = new_value;
+            if (this.settings_string !== new_value) {
+              this.settings_string = new_value;
 
-            if (this._onChange) {
-              this._onChange(new_value);
+              if (this._onChange) {
+                this._onChange(new_value);
+              }
             }
           }
           /**
@@ -45353,7 +45352,8 @@
       });
 
       var environment = {
-        production: true
+        production: true,
+        hmr: false
       };
       /***/
     },
@@ -45383,20 +45383,76 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "13bc6cd",
-        "hash": "13bc6cd",
+        "raw": "5407a3c",
+        "hash": "5407a3c",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "13bc6cd",
+        "suffix": "5407a3c",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1597990010718
+        "time": 1597993762350
       };
       /* tslint:enable */
 
       /***/
+    },
+
+    /***/
+    "./src/hmr.ts":
+    /*!********************!*\
+      !*** ./src/hmr.ts ***!
+      \********************/
+
+    /*! exports provided: hmrBootstrap */
+
+    /***/
+    function srcHmrTs(module, __webpack_exports__, __webpack_require__) {
+      "use strict";
+
+      __webpack_require__.r(__webpack_exports__);
+      /* harmony export (binding) */
+
+
+      __webpack_require__.d(__webpack_exports__, "hmrBootstrap", function () {
+        return hmrBootstrap;
+      });
+      /* harmony import */
+
+
+      var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(
+      /*! @angular/core */
+      "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+      /* harmony import */
+
+
+      var _angularclass_hmr__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(
+      /*! @angularclass/hmr */
+      "./node_modules/@angularclass/hmr/dist/index.js");
+      /* harmony import */
+
+
+      var _angularclass_hmr__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_angularclass_hmr__WEBPACK_IMPORTED_MODULE_1__);
+
+      var hmrBootstrap = function hmrBootstrap(module, bootstrap) {
+        var ngModule;
+        module.hot.accept();
+        bootstrap().then(function (mod) {
+          return ngModule = mod;
+        });
+        module.hot.dispose(function () {
+          var appRef = ngModule.injector.get(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ApplicationRef"]);
+          var elements = appRef.components.map(function (c) {
+            return c.location.nativeElement;
+          });
+          var makeVisible = Object(_angularclass_hmr__WEBPACK_IMPORTED_MODULE_1__["createNewHosts"])(elements);
+          ngModule.destroy();
+          makeVisible();
+        });
+      };
+      /***/
+
     },
 
     /***/
@@ -45427,13 +45483,19 @@
       /* harmony import */
 
 
-      var _app_app_module__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
+      var _hmr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
+      /*! ./hmr */
+      "./src/hmr.ts");
+      /* harmony import */
+
+
+      var _app_app_module__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
       /*! ./app/app.module */
       "./src/app/app.module.ts");
       /* harmony import */
 
 
-      var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
+      var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(
       /*! @angular/platform-browser */
       "./node_modules/@angular/platform-browser/__ivy_ngcc__/fesm2015/platform-browser.js");
 
@@ -45441,9 +45503,20 @@
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["enableProdMode"])();
       }
 
-      _angular_platform_browser__WEBPACK_IMPORTED_MODULE_3__["platformBrowser"]().bootstrapModule(_app_app_module__WEBPACK_IMPORTED_MODULE_2__["AppModule"])["catch"](function (err) {
-        return console.error(err);
-      });
+      var bootstrap = function bootstrap() {
+        return _angular_platform_browser__WEBPACK_IMPORTED_MODULE_4__["platformBrowser"]().bootstrapModule(_app_app_module__WEBPACK_IMPORTED_MODULE_3__["AppModule"]);
+      };
+
+      if (_environments_environment__WEBPACK_IMPORTED_MODULE_1__["environment"].hmr) {
+        if (false) {} else {
+          console.error('HMR is not enabled for webpack-dev-server!');
+          console.log('Are you using the --hmr flag for ng serve?');
+        }
+      } else {
+        bootstrap()["catch"](function (err) {
+          return console.log(err);
+        });
+      }
       /***/
 
     },
