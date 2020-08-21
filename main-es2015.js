@@ -4587,18 +4587,55 @@ HotkeysService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineIn
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SentryService", function() { return SentryService; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
-/* harmony import */ var _sentry_browser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @sentry/browser */ "./node_modules/@sentry/browser/esm/index.js");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/http.js");
+/* harmony import */ var src_environments_environment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/environments/environment */ "./src/environments/environment.ts");
+/* harmony import */ var _sentry_browser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @sentry/browser */ "./node_modules/@sentry/browser/esm/index.js");
+
+
 
 
 
 class SentryService {
-    /**
-     * Handle error thrown by Angular
-     * @param error Angular error
-     */
+    extractError(error) {
+        // Try to unwrap zone.js error.
+        // https://github.com/angular/angular/blob/master/packages/core/src/util/errors.ts
+        if (error && error.ngOriginalError) {
+            error = error.ngOriginalError;
+        }
+        // We can handle messages and Error objects directly.
+        if (typeof error === 'string' || error instanceof Error) {
+            return error;
+        }
+        // If it's http module error, extract as much information from it as we can.
+        if (error instanceof _angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpErrorResponse"]) {
+            // The `error` property of http exception can be either an `Error` object, which we can use directly...
+            if (error.error instanceof Error) {
+                return error.error;
+            }
+            // ... or an`ErrorEvent`, which can provide us with the message but no stack...
+            if (error.error instanceof ErrorEvent) {
+                return error.error.message;
+            }
+            // ...or the request body itself, which we can use as a message instead.
+            if (typeof error.error === 'string') {
+                return `Server returned code ${error.status} with body "${error.error}"`;
+            }
+            // If we don't have any detailed information, fallback to the request message itself.
+            return error.message;
+        }
+        // Skip if there's no error, and let user decide what to do with it.
+        return null;
+    }
     handleError(error) {
-        _sentry_browser__WEBPACK_IMPORTED_MODULE_1__["captureException"](error.originalError || error);
-        throw error;
+        const extractedError = this.extractError(error) || 'Handled unknown error';
+        // Capture handled exception and send it to Sentry.
+        const eventId = _sentry_browser__WEBPACK_IMPORTED_MODULE_3__["captureException"](extractedError);
+        // When in development mode, log the error to console for immediate feedback.
+        if (!src_environments_environment__WEBPACK_IMPORTED_MODULE_2__["environment"].production) {
+            console.error(extractedError);
+        }
+        // Optionally show user dialog to provide details on what happened.
+        _sentry_browser__WEBPACK_IMPORTED_MODULE_3__["showReportDialog"]({ eventId });
     }
 }
 SentryService.ɵfac = function SentryService_Factory(t) { return new (t || SentryService)(); };
@@ -18078,6 +18115,7 @@ const app = {
     short_name: 'Place',
     code: 'ENGINE',
     copyright: 'Copyright 2018 ACA Projects',
+    sentry_dsn: 'https://7941b5b93d7c4712803604891cdfec23@o437082.ingest.sentry.io/5399124',
     login: {
         forgot: false,
     },
@@ -22231,16 +22269,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "98277fa",
-    "hash": "98277fa",
+    "raw": "28e1e6b",
+    "hash": "28e1e6b",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "98277fa",
+    "suffix": "28e1e6b",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1597799625052
+    "time": 1597988847564
 };
 /* tslint:enable */
 

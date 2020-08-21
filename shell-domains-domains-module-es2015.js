@@ -377,7 +377,7 @@ class DomainApplicationsComponent extends _shared_globals_base_directive__WEBPAC
             data: {
                 item: new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceApplication"](),
                 name: 'Application',
-                save: (item) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addApplication"])(item.toJSON()),
+                save: (item) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addApplication"])(item),
             },
         });
         this.subscription('item-form', ref.componentInstance.event.subscribe((event) => {

@@ -1013,7 +1013,7 @@
                 item: new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceApplication"](),
                 name: 'Application',
                 save: function save(item) {
-                  return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addApplication"])(item.toJSON());
+                  return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addApplication"])(item);
                 }
               }
             });
