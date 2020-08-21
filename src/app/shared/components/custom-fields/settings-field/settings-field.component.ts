@@ -93,9 +93,11 @@ export class SettingsFieldComponent extends BaseDirective
      * @param new_value New value to set on the form field
      */
     public setValue(new_value: string): void {
-        this.settings_string = new_value;
-        if (this._onChange) {
-            this._onChange(new_value);
+        if (this.settings_string !== new_value) {
+            this.settings_string = new_value;
+            if (this._onChange) {
+                this._onChange(new_value);
+            }
         }
     }
 
