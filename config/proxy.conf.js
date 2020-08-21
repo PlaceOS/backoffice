@@ -12,7 +12,8 @@ const PROXY_CONFIG = [
             "/styles",
             "/scripts",
             "/login",
-            "/backoffice"
+            "/backoffice",
+            "/stylesheets"
         ],
         target: `http${secure ? 's' : ''}://${domain}`,
         secure: valid_ssl,
