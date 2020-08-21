@@ -322,7 +322,7 @@ export class ApplicationService extends BaseClass {
             }
             this.set('ready', true);
             const dsn = authority().sentry_dsn || this.setting('app.sentry_dsn');
-            if (dsn) {
+            if (dsn && !location.host.includes('localhost')) {
                 Sentry.init({
                     dsn,
                     release: `backoffice@${VERSION.version || 'dev'}-${VERSION.hash.slice(0, 6)}`
