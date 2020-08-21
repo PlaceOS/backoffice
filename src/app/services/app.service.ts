@@ -8,6 +8,7 @@ import { first } from 'rxjs/operators';
 
 import { setup, authority, apiEndpoint, PlaceAuthOptions } from '@placeos/ts-client';
 
+import { VERSION } from 'src/environments/version';
 import { GoogleAnalyticsService } from './google-analytics.service';
 import { BaseClass } from '../shared/globals/base.class';
 import { SettingsService, ConsoleStream } from './settings.service';
@@ -28,7 +29,7 @@ declare global {
 }
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class ApplicationService extends BaseClass {
     /** List of previous routes for return navigation */
@@ -59,7 +60,7 @@ export class ApplicationService extends BaseClass {
         super();
         this.set('system', null);
         this.set('show_upload_manager', false);
-        this._app_ref.isStable.pipe(first(_ => _)).subscribe(() => {
+        this._app_ref.isStable.pipe(first((_) => _)).subscribe(() => {
             this._zone.run(() => {
                 this._stable = true;
                 this.log('APP', `Application has stablised.`);
@@ -133,13 +134,13 @@ export class ApplicationService extends BaseClass {
         icon: ApplicationIcon = {
             type: 'icon',
             class: 'material-icons',
-            content: 'info'
+            content: 'info',
         },
         duration: number = 8000
     ): void {
         const snackbar_ref = this._snackbar.open(message, action, {
             panelClass: [type],
-            duration
+            duration,
         });
         this.subscription(
             'snackbar_close',
@@ -302,7 +303,7 @@ export class ApplicationService extends BaseClass {
     /** Wait for settings to be initialised before setting up the application */
     private waitForSettings() {
         // Wait until the settings have loaded before initialising
-        this._settings.initialised.pipe(first(_ => _)).subscribe((setup) => {
+        this._settings.initialised.pipe(first((_) => _)).subscribe((setup) => {
             if (setup) {
                 this.init();
             }
@@ -322,7 +323,10 @@ export class ApplicationService extends BaseClass {
             this.set('ready', true);
             const dsn = authority().sentry_dsn || this.setting('app.sentry_dsn');
             if (dsn) {
-                Sentry.init({ dsn });
+                Sentry.init({
+                    dsn,
+                    release: `backoffice@${VERSION.version || 'dev'}-${VERSION.hash.slice(0, 6)}`
+                });
             }
             // Add service to window if in debug mode
             if (window.debug) {
@@ -360,7 +364,7 @@ export class ApplicationService extends BaseClass {
             redirect_uri: `${location.origin}${route}/oauth-resp.html`,
             handle_login: !settings.local_login && !login_locally,
             use_iframe: true,
-            mock
+            mock,
         };
         if (localStorage) {
             localStorage.setItem('mock', `${!location.href.includes('mock=false') && !!mock}`);
@@ -377,12 +381,15 @@ export class ApplicationService extends BaseClass {
         if (this._cache.isEnabled) {
             this.log('CACHE', `Listening to cache events...`);
             this._cache.activateUpdate();
-            this.subscription('cache_update', this._cache.available.subscribe((event) => {
-                const current = `current version is ${event.current.hash}`;
-                const available = `available version is ${event.available.hash}`;
-                this.log('CACHE', `Update available: ${current} ${available}`);
-                this.activateUpdate()
-            }));
+            this.subscription(
+                'cache_update',
+                this._cache.available.subscribe((event) => {
+                    const current = `current version is ${event.current.hash}`;
+                    const available = `available version is ${event.available.hash}`;
+                    this.log('CACHE', `Update available: ${current} ${available}`);
+                    this.activateUpdate();
+                })
+            );
             setInterval(() => {
                 this.log('CACHE', `Checking for updates...`);
                 this._cache.checkForUpdate();
