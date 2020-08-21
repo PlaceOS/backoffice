@@ -181,6 +181,7 @@ const app = {
     short_name: 'Place',
     code: 'ENGINE',
     copyright: 'Copyright 2018 ACA Projects',
+    sentry_dsn: 'https://7941b5b93d7c4712803604891cdfec23@o437082.ingest.sentry.io/5399124',
     login: {
         forgot: false,
     },
