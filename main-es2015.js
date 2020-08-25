@@ -3997,8 +3997,9 @@ class BackofficeUsersService extends src_app_shared_globals_base_class__WEBPACK_
         this.singular = 'user';
         /** Behavior subject with the currently available list of users */
         this.listing = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"]([]);
+        this._user = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"](null);
         /** Active User */
-        this.user = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"](null);
+        this.user = this._user.asObservable();
         /** State of loading the user */
         this.state = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"]('');
         this.can_create = false;
@@ -4009,13 +4010,13 @@ class BackofficeUsersService extends src_app_shared_globals_base_class__WEBPACK_
     }
     /** Whether dark mode is enabled */
     get dark_mode() {
-        if (!(this.user.getValue() || {}).ui_theme &&
+        if (!(this._user.getValue() || {}).ui_theme &&
             !localStorage.getItem('BACKOFFICE.theme') &&
             window.matchMedia &&
             window.matchMedia('(prefers-color-scheme: dark)').matches) {
             return true;
         }
-        return ((this.user.getValue() || {}).ui_theme === 'dark' ||
+        return ((this._user.getValue() || {}).ui_theme === 'dark' ||
             localStorage.getItem('BACKOFFICE.theme') === 'dark');
     }
     set dark_mode(state) {
@@ -4044,7 +4045,7 @@ class BackofficeUsersService extends src_app_shared_globals_base_class__WEBPACK_
             this.state.next('loading');
             Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["currentUser"])().subscribe(user => {
                 if (user) {
-                    this.user.next(user);
+                    this._user.next(user);
                     this._service.set('user', user);
                     _sentry_browser__WEBPACK_IMPORTED_MODULE_9__["configureScope"](scope => scope.setUser({ email: user.email }));
                     this.state.next('success');
@@ -18175,10 +18176,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AuthorisedAdminGuard", function() { return AuthorisedAdminGuard; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
-/* harmony import */ var _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @placeos/ts-client */ "./node_modules/@placeos/ts-client/dist/esm/index.js");
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm2015/operators/index.js");
-/* harmony import */ var _services_app_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../services/app.service */ "./src/app/services/app.service.ts");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm2015/operators/index.js");
+/* harmony import */ var _services_app_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../services/app.service */ "./src/app/services/app.service.ts");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+/* harmony import */ var src_app_services_data_users_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! src/app/services/data/users.service */ "./src/app/services/data/users.service.ts");
 
 
 
@@ -18187,43 +18188,42 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class AuthorisedAdminGuard {
-    constructor(_service, _router) {
+    constructor(_service, _router, _users) {
         this._service = _service;
         this._router = _router;
+        this._users = _users;
     }
     canActivate(next, state) {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            yield this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(_ => _)).toPromise();
-            const user = this._user || (yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["currentUser"])().toPromise());
+            yield this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])((_) => _)).toPromise();
+            const user = yield this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])((_) => !!_)).toPromise();
             const can_activate = user && user.sys_admin;
             if (!can_activate) {
-                this._router.navigate(['/systems']);
+                this._router.navigate(['/unauthorised']);
             }
-            this._user = user;
             return can_activate;
         });
     }
     canLoad(route, segments) {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            yield this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(_ => _)).toPromise();
-            const user = this._user || (yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["currentUser"])().toPromise());
+            yield this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])((_) => _)).toPromise();
+            const user = yield this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])((_) => !!_)).toPromise();
             const can_activate = user && user.sys_admin;
             if (!can_activate) {
-                this._router.navigate(['/systems']);
+                this._router.navigate(['/unauthorised']);
             }
-            this._user = user;
             return can_activate;
         });
     }
 }
-AuthorisedAdminGuard.ɵfac = function AuthorisedAdminGuard_Factory(t) { return new (t || AuthorisedAdminGuard)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_services_app_service__WEBPACK_IMPORTED_MODULE_4__["ApplicationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_5__["Router"])); };
+AuthorisedAdminGuard.ɵfac = function AuthorisedAdminGuard_Factory(t) { return new (t || AuthorisedAdminGuard)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_services_app_service__WEBPACK_IMPORTED_MODULE_3__["ApplicationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](src_app_services_data_users_service__WEBPACK_IMPORTED_MODULE_5__["BackofficeUsersService"])); };
 AuthorisedAdminGuard.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({ token: AuthorisedAdminGuard, factory: AuthorisedAdminGuard.ɵfac, providedIn: 'root' });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](AuthorisedAdminGuard, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"],
         args: [{
                 providedIn: 'root'
             }]
-    }], function () { return [{ type: _services_app_service__WEBPACK_IMPORTED_MODULE_4__["ApplicationService"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_5__["Router"] }]; }, null); })();
+    }], function () { return [{ type: _services_app_service__WEBPACK_IMPORTED_MODULE_3__["ApplicationService"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"] }, { type: src_app_services_data_users_service__WEBPACK_IMPORTED_MODULE_5__["BackofficeUsersService"] }]; }, null); })();
 
 
 /***/ }),
@@ -18240,10 +18240,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AuthorisedUserGuard", function() { return AuthorisedUserGuard; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
-/* harmony import */ var _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @placeos/ts-client */ "./node_modules/@placeos/ts-client/dist/esm/index.js");
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm2015/operators/index.js");
-/* harmony import */ var _services_app_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../services/app.service */ "./src/app/services/app.service.ts");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm2015/operators/index.js");
+/* harmony import */ var _services_app_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../services/app.service */ "./src/app/services/app.service.ts");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+/* harmony import */ var src_app_services_data_users_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! src/app/services/data/users.service */ "./src/app/services/data/users.service.ts");
 
 
 
@@ -18252,43 +18252,42 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class AuthorisedUserGuard {
-    constructor(_service, _router) {
+    constructor(_service, _router, _users) {
         this._service = _service;
         this._router = _router;
+        this._users = _users;
     }
     canActivate(next, state) {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            yield this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(_ => _)).toPromise();
-            const user = this._service.get('user') || (yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["currentUser"])().toPromise());
-            const can_activate = user && user.sys_admin;
+            yield this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])((_) => _)).toPromise();
+            const user = yield this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])((_) => !!_)).toPromise();
+            const can_activate = user && (user.sys_admin || user.support);
             if (!can_activate) {
                 this._router.navigate(['/unauthorised']);
             }
-            this._user = user;
             return can_activate;
         });
     }
     canLoad(route, segments) {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            yield this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(_ => _)).toPromise();
-            const user = this._user || (yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["currentUser"])().toPromise());
-            const can_activate = user && user.sys_admin;
+            yield this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])((_) => _)).toPromise();
+            const user = yield this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])((_) => !!_)).toPromise();
+            const can_activate = user && (user.sys_admin || user.support);
             if (!can_activate) {
                 this._router.navigate(['/unauthorised']);
             }
-            this._user = user;
             return can_activate;
         });
     }
 }
-AuthorisedUserGuard.ɵfac = function AuthorisedUserGuard_Factory(t) { return new (t || AuthorisedUserGuard)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_services_app_service__WEBPACK_IMPORTED_MODULE_4__["ApplicationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_5__["Router"])); };
+AuthorisedUserGuard.ɵfac = function AuthorisedUserGuard_Factory(t) { return new (t || AuthorisedUserGuard)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_services_app_service__WEBPACK_IMPORTED_MODULE_3__["ApplicationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](src_app_services_data_users_service__WEBPACK_IMPORTED_MODULE_5__["BackofficeUsersService"])); };
 AuthorisedUserGuard.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({ token: AuthorisedUserGuard, factory: AuthorisedUserGuard.ɵfac, providedIn: 'root' });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](AuthorisedUserGuard, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"],
         args: [{
                 providedIn: 'root',
             }]
-    }], function () { return [{ type: _services_app_service__WEBPACK_IMPORTED_MODULE_4__["ApplicationService"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_5__["Router"] }]; }, null); })();
+    }], function () { return [{ type: _services_app_service__WEBPACK_IMPORTED_MODULE_3__["ApplicationService"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"] }, { type: src_app_services_data_users_service__WEBPACK_IMPORTED_MODULE_5__["BackofficeUsersService"] }]; }, null); })();
 
 
 /***/ }),
@@ -22277,16 +22276,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "5407a3c",
-    "hash": "5407a3c",
+    "raw": "dac052e",
+    "hash": "dac052e",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "5407a3c",
+    "suffix": "dac052e",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1597993762350
+    "time": 1598398212323
 };
 /* tslint:enable */
 

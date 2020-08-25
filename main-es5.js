@@ -11701,9 +11701,10 @@
           /** Behavior subject with the currently available list of users */
 
           _this31.listing = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"]([]);
+          _this31._user = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"](null);
           /** Active User */
 
-          _this31.user = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"](null);
+          _this31.user = _this31._user.asObservable();
           /** State of loading the user */
 
           _this31.state = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"]('');
@@ -11754,7 +11755,7 @@
 
               Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["currentUser"])().subscribe(function (user) {
                 if (user) {
-                  _this32.user.next(user);
+                  _this32._user.next(user);
 
                   _this32._service.set('user', user);
 
@@ -11867,11 +11868,11 @@
         }, {
           key: "dark_mode",
           get: function get() {
-            if (!(this.user.getValue() || {}).ui_theme && !localStorage.getItem('BACKOFFICE.theme') && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            if (!(this._user.getValue() || {}).ui_theme && !localStorage.getItem('BACKOFFICE.theme') && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
               return true;
             }
 
-            return (this.user.getValue() || {}).ui_theme === 'dark' || localStorage.getItem('BACKOFFICE.theme') === 'dark';
+            return (this._user.getValue() || {}).ui_theme === 'dark' || localStorage.getItem('BACKOFFICE.theme') === 'dark';
           },
           set: function set(state) {
             if (state) {
@@ -38249,34 +38250,35 @@
       /* harmony import */
 
 
-      var _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
-      /*! @placeos/ts-client */
-      "./node_modules/@placeos/ts-client/dist/esm/index.js");
-      /* harmony import */
-
-
-      var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
+      var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
       /*! rxjs/operators */
       "./node_modules/rxjs/_esm2015/operators/index.js");
       /* harmony import */
 
 
-      var _services_app_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(
+      var _services_app_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
       /*! ../../services/app.service */
       "./src/app/services/app.service.ts");
       /* harmony import */
 
 
-      var _angular_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(
+      var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(
       /*! @angular/router */
       "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+      /* harmony import */
+
+
+      var src_app_services_data_users_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(
+      /*! src/app/services/data/users.service */
+      "./src/app/services/data/users.service.ts");
 
       var AuthorisedAdminGuard = /*#__PURE__*/function () {
-        function AuthorisedAdminGuard(_service, _router) {
+        function AuthorisedAdminGuard(_service, _router, _users) {
           _classCallCheck(this, AuthorisedAdminGuard);
 
           this._service = _service;
           this._router = _router;
+          this._users = _users;
         }
 
         _createClass(AuthorisedAdminGuard, [{
@@ -38289,36 +38291,27 @@
                   switch (_context11.prev = _context11.next) {
                     case 0:
                       _context11.next = 2;
-                      return this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
+                      return this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])(function (_) {
                         return _;
                       })).toPromise();
 
                     case 2:
-                      _context11.t0 = this._user;
+                      _context11.next = 4;
+                      return this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])(function (_) {
+                        return !!_;
+                      })).toPromise();
 
-                      if (_context11.t0) {
-                        _context11.next = 7;
-                        break;
-                      }
-
-                      _context11.next = 6;
-                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["currentUser"])().toPromise();
-
-                    case 6:
-                      _context11.t0 = _context11.sent;
-
-                    case 7:
-                      user = _context11.t0;
+                    case 4:
+                      user = _context11.sent;
                       can_activate = user && user.sys_admin;
 
                       if (!can_activate) {
-                        this._router.navigate(['/systems']);
+                        this._router.navigate(['/unauthorised']);
                       }
 
-                      this._user = user;
                       return _context11.abrupt("return", can_activate);
 
-                    case 12:
+                    case 8:
                     case "end":
                       return _context11.stop();
                   }
@@ -38336,36 +38329,27 @@
                   switch (_context12.prev = _context12.next) {
                     case 0:
                       _context12.next = 2;
-                      return this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
+                      return this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])(function (_) {
                         return _;
                       })).toPromise();
 
                     case 2:
-                      _context12.t0 = this._user;
+                      _context12.next = 4;
+                      return this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])(function (_) {
+                        return !!_;
+                      })).toPromise();
 
-                      if (_context12.t0) {
-                        _context12.next = 7;
-                        break;
-                      }
-
-                      _context12.next = 6;
-                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["currentUser"])().toPromise();
-
-                    case 6:
-                      _context12.t0 = _context12.sent;
-
-                    case 7:
-                      user = _context12.t0;
+                    case 4:
+                      user = _context12.sent;
                       can_activate = user && user.sys_admin;
 
                       if (!can_activate) {
-                        this._router.navigate(['/systems']);
+                        this._router.navigate(['/unauthorised']);
                       }
 
-                      this._user = user;
                       return _context12.abrupt("return", can_activate);
 
-                    case 12:
+                    case 8:
                     case "end":
                       return _context12.stop();
                   }
@@ -38379,7 +38363,7 @@
       }();
 
       AuthorisedAdminGuard.ɵfac = function AuthorisedAdminGuard_Factory(t) {
-        return new (t || AuthorisedAdminGuard)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_services_app_service__WEBPACK_IMPORTED_MODULE_4__["ApplicationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_5__["Router"]));
+        return new (t || AuthorisedAdminGuard)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_services_app_service__WEBPACK_IMPORTED_MODULE_3__["ApplicationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](src_app_services_data_users_service__WEBPACK_IMPORTED_MODULE_5__["BackofficeUsersService"]));
       };
 
       AuthorisedAdminGuard.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({
@@ -38397,9 +38381,11 @@
           }]
         }], function () {
           return [{
-            type: _services_app_service__WEBPACK_IMPORTED_MODULE_4__["ApplicationService"]
+            type: _services_app_service__WEBPACK_IMPORTED_MODULE_3__["ApplicationService"]
           }, {
-            type: _angular_router__WEBPACK_IMPORTED_MODULE_5__["Router"]
+            type: _angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"]
+          }, {
+            type: src_app_services_data_users_service__WEBPACK_IMPORTED_MODULE_5__["BackofficeUsersService"]
           }];
         }, null);
       })();
@@ -38441,34 +38427,35 @@
       /* harmony import */
 
 
-      var _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
-      /*! @placeos/ts-client */
-      "./node_modules/@placeos/ts-client/dist/esm/index.js");
-      /* harmony import */
-
-
-      var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
+      var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
       /*! rxjs/operators */
       "./node_modules/rxjs/_esm2015/operators/index.js");
       /* harmony import */
 
 
-      var _services_app_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(
+      var _services_app_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
       /*! ../../services/app.service */
       "./src/app/services/app.service.ts");
       /* harmony import */
 
 
-      var _angular_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(
+      var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(
       /*! @angular/router */
       "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+      /* harmony import */
+
+
+      var src_app_services_data_users_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(
+      /*! src/app/services/data/users.service */
+      "./src/app/services/data/users.service.ts");
 
       var AuthorisedUserGuard = /*#__PURE__*/function () {
-        function AuthorisedUserGuard(_service, _router) {
+        function AuthorisedUserGuard(_service, _router, _users) {
           _classCallCheck(this, AuthorisedUserGuard);
 
           this._service = _service;
           this._router = _router;
+          this._users = _users;
         }
 
         _createClass(AuthorisedUserGuard, [{
@@ -38481,36 +38468,27 @@
                   switch (_context13.prev = _context13.next) {
                     case 0:
                       _context13.next = 2;
-                      return this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
+                      return this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])(function (_) {
                         return _;
                       })).toPromise();
 
                     case 2:
-                      _context13.t0 = this._service.get('user');
+                      _context13.next = 4;
+                      return this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])(function (_) {
+                        return !!_;
+                      })).toPromise();
 
-                      if (_context13.t0) {
-                        _context13.next = 7;
-                        break;
-                      }
-
-                      _context13.next = 6;
-                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["currentUser"])().toPromise();
-
-                    case 6:
-                      _context13.t0 = _context13.sent;
-
-                    case 7:
-                      user = _context13.t0;
-                      can_activate = user && user.sys_admin;
+                    case 4:
+                      user = _context13.sent;
+                      can_activate = user && (user.sys_admin || user.support);
 
                       if (!can_activate) {
                         this._router.navigate(['/unauthorised']);
                       }
 
-                      this._user = user;
                       return _context13.abrupt("return", can_activate);
 
-                    case 12:
+                    case 8:
                     case "end":
                       return _context13.stop();
                   }
@@ -38528,36 +38506,27 @@
                   switch (_context14.prev = _context14.next) {
                     case 0:
                       _context14.next = 2;
-                      return this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
+                      return this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])(function (_) {
                         return _;
                       })).toPromise();
 
                     case 2:
-                      _context14.t0 = this._user;
+                      _context14.next = 4;
+                      return this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])(function (_) {
+                        return !!_;
+                      })).toPromise();
 
-                      if (_context14.t0) {
-                        _context14.next = 7;
-                        break;
-                      }
-
-                      _context14.next = 6;
-                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["currentUser"])().toPromise();
-
-                    case 6:
-                      _context14.t0 = _context14.sent;
-
-                    case 7:
-                      user = _context14.t0;
-                      can_activate = user && user.sys_admin;
+                    case 4:
+                      user = _context14.sent;
+                      can_activate = user && (user.sys_admin || user.support);
 
                       if (!can_activate) {
                         this._router.navigate(['/unauthorised']);
                       }
 
-                      this._user = user;
                       return _context14.abrupt("return", can_activate);
 
-                    case 12:
+                    case 8:
                     case "end":
                       return _context14.stop();
                   }
@@ -38571,7 +38540,7 @@
       }();
 
       AuthorisedUserGuard.ɵfac = function AuthorisedUserGuard_Factory(t) {
-        return new (t || AuthorisedUserGuard)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_services_app_service__WEBPACK_IMPORTED_MODULE_4__["ApplicationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_5__["Router"]));
+        return new (t || AuthorisedUserGuard)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_services_app_service__WEBPACK_IMPORTED_MODULE_3__["ApplicationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](src_app_services_data_users_service__WEBPACK_IMPORTED_MODULE_5__["BackofficeUsersService"]));
       };
 
       AuthorisedUserGuard.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({
@@ -38589,9 +38558,11 @@
           }]
         }], function () {
           return [{
-            type: _services_app_service__WEBPACK_IMPORTED_MODULE_4__["ApplicationService"]
+            type: _services_app_service__WEBPACK_IMPORTED_MODULE_3__["ApplicationService"]
           }, {
-            type: _angular_router__WEBPACK_IMPORTED_MODULE_5__["Router"]
+            type: _angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"]
+          }, {
+            type: src_app_services_data_users_service__WEBPACK_IMPORTED_MODULE_5__["BackofficeUsersService"]
           }];
         }, null);
       })();
@@ -45383,16 +45354,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "5407a3c",
-        "hash": "5407a3c",
+        "raw": "dac052e",
+        "hash": "dac052e",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "5407a3c",
+        "suffix": "dac052e",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1597993762350
+        "time": 1598398212323
       };
       /* tslint:enable */
 
