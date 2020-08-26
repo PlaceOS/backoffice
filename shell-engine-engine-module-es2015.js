@@ -21221,7 +21221,7 @@ class PlaceClusterDetailsComponent extends src_app_shared_globals_base_directive
         }
         this.loading = true;
         Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryClusters"])({ include_status: true })
-            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])((resp) => resp.data))
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])((resp) => resp.data), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["catchError"])(_ => []))
             .subscribe((list) => {
             this.cluster_list = list || [];
             const date = dayjs__WEBPACK_IMPORTED_MODULE_4__().valueOf();

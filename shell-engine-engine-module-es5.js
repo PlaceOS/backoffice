@@ -21458,6 +21458,8 @@
               include_status: true
             }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])(function (resp) {
               return resp.data;
+            }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["catchError"])(function (_) {
+              return [];
             })).subscribe(function (list) {
               _this7.cluster_list = list || [];
               var date = dayjs__WEBPACK_IMPORTED_MODULE_4__().valueOf();
