@@ -1,3 +1,14 @@
+## [1.6.2](https://github.com/PlaceOS/backoffice/compare/v1.6.1...v1.6.2) (2020-08-26)
+
+
+### Bug Fixes
+
+* **admin:** catch 404 errors for cluster requests ([7dc09b6](https://github.com/PlaceOS/backoffice/commit/7dc09b67083087a86537cf4d707542e0636fdd0a))
+* **auth:** update ts-client and fix handling user auth on errors ([dac052e](https://github.com/PlaceOS/backoffice/commit/dac052ea18e7adc91cc97508aaf78245b86d890c))
+* **domain:** fix adding new applications ([b2810a5](https://github.com/PlaceOS/backoffice/commit/b2810a5a3ec36bcc814ecbdbcd3a197d82528266))
+* **domain:** fix setting owner id for applications ([13bc6cd](https://github.com/PlaceOS/backoffice/commit/13bc6cdb070594ae87fe4e832ea891f9fdc59f3e))
+* **settings:** ignore local changes that aren't different ([682d41f](https://github.com/PlaceOS/backoffice/commit/682d41faca1c1c1d452aa77954dfbf3dd5ad8a74))
+
 ## [1.6.1](https://github.com/PlaceOS/backoffice/compare/v1.6.0...v1.6.1) (2020-08-19)
 
 
