@@ -33,9 +33,7 @@
 </mat-dialog-content>
 <mat-dialog-actions *ngIf="!loading">
     <button mat-button class="inverse" mat-dialog-close>Cancel</button>
-    <button mat-button type="button" [disabled]="!active_type" (click)="save()">
-        {{ is_new ? 'Save' : 'Add' }}
-    </button>
+    <button mat-button type="button" [disabled]="!active_type" (click)="save()">Save</button>
 </mat-dialog-actions>
 <ng-template #load_state>
     <div class="body">

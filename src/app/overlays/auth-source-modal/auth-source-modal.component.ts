@@ -5,7 +5,13 @@ import {
     PlaceDomain,
     PlaceOAuthSource,
     PlaceLDAPSource,
-    PlaceSAMLSource
+    PlaceSAMLSource,
+    updateSAMLSource,
+    addSAMLSource,
+    updateLDAPSource,
+    addLDAPSource,
+    updateOAuthSource,
+    addOAuthSource,
 } from '@placeos/ts-client';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
@@ -14,8 +20,9 @@ import { DialogEvent, Identity } from 'src/app/shared/utilities/types.utilities'
 import {
     generateOAuthSourceForm,
     generateLDAPSourceForm,
-    generateSAMLSourceForm
+    generateSAMLSourceForm,
 } from 'src/app/shared/utilities/data/auth-sources.utilities';
+import { Observable } from 'rxjs';
 
 export interface AuthSourceModalData {
     /** Domain the auth source is associated with */
@@ -29,7 +36,7 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
 @Component({
     selector: 'app-auth-source-modal',
     templateUrl: './auth-source-modal.component.html',
-    styleUrls: ['./auth-source-modal.component.scss']
+    styleUrls: ['./auth-source-modal.component.scss'],
 })
 export class AuthSourceModalComponent extends BaseDirective implements OnInit {
     /** Emitter for events on the modal */
@@ -44,7 +51,7 @@ export class AuthSourceModalComponent extends BaseDirective implements OnInit {
     public source_types: Identity[] = [
         { id: 'oauth', name: 'OAuth' },
         { id: 'ldap', name: 'LDAP' },
-        { id: 'saml', name: 'SAML2' }
+        { id: 'saml', name: 'SAML2' },
     ];
 
     public active_type: AuthSourceTypes;
@@ -98,6 +105,16 @@ export class AuthSourceModalComponent extends BaseDirective implements OnInit {
         this.initialiseForm();
     }
 
+    public updateMethod(item) {
+        switch (this.type) {
+            case 'saml':
+                return item.id ? updateSAMLSource(item.id, item) : addSAMLSource(item);
+            case 'ldap':
+                return item.id ? updateLDAPSource(item.id, item) : addLDAPSource(item);
+        }
+        return item.id ? updateOAuthSource(item.id, item) : addOAuthSource(item);
+    }
+
     /**
      * Create item if new or update if exsiting
      */
@@ -107,15 +124,16 @@ export class AuthSourceModalComponent extends BaseDirective implements OnInit {
             return;
         }
         this.loading = true;
-        (this.item as any).save().then(
-            item => {
-                this.event.emit({ reason: 'done', metadata: { trigger: item } });
+        const method: Observable<any> = this.updateMethod({ ...this.item.toJSON(), ...this.form.value });
+        method.toPromise().then(
+            (item) => {
+                this.event.emit({ reason: 'done', metadata: { source: item } });
                 this._service.notifySuccess(
                     `Successfully ${this.is_new ? 'added' : 'updated'} auth source`
                 );
                 this._dialog.close();
             },
-            err => {
+            (err) => {
                 this.loading = false;
                 this._service.notifyError(
                     `Error ${
