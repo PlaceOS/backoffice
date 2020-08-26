@@ -21212,7 +21212,7 @@ class PlaceClusterDetailsComponent extends src_app_shared_globals_base_directive
     ngOnInit() {
         this._service.initialised.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["first"])((_) => _)).subscribe(() => {
             this.loadClusters();
-            this.interval('load_cluster', () => this.loadClusters(), 1000);
+            this.interval('load_cluster', () => this.loadClusters(), 2000);
         });
     }
     loadClusters() {

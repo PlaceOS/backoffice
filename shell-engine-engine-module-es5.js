@@ -21441,7 +21441,7 @@
 
               _this6.interval('load_cluster', function () {
                 return _this6.loadClusters();
-              }, 1000);
+              }, 2000);
             });
           }
         }, {

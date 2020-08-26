@@ -45354,16 +45354,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "7dc09b6",
-        "hash": "7dc09b6",
+        "raw": "1a6bb5b",
+        "hash": "1a6bb5b",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "7dc09b6",
+        "suffix": "1a6bb5b",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1598409883288
+        "time": 1598411497582
       };
       /* tslint:enable */
 
