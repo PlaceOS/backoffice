@@ -24,8 +24,10 @@ export class BackofficeUsersService extends BaseClass {
     public readonly singular: string = 'user';
     /** Behavior subject with the currently available list of users */
     public readonly listing = new BehaviorSubject<ServiceItem[]>([]);
+
+    private _user = new BehaviorSubject<ServiceItem>(null);
     /** Active User */
-    public readonly user = new BehaviorSubject<ServiceItem>(null);
+    public readonly user = this._user.asObservable();
     /** State of loading the user */
     public readonly state = new BehaviorSubject<string>('');
 
@@ -35,7 +37,7 @@ export class BackofficeUsersService extends BaseClass {
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
         if (
-            !((this.user.getValue() || {}) as any).ui_theme &&
+            !((this._user.getValue() || {}) as any).ui_theme &&
             !localStorage.getItem('BACKOFFICE.theme') &&
             window.matchMedia &&
             window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -43,7 +45,7 @@ export class BackofficeUsersService extends BaseClass {
             return true;
         }
         return (
-            ((this.user.getValue() || {}) as any).ui_theme === 'dark' ||
+            ((this._user.getValue() || {}) as any).ui_theme === 'dark' ||
             localStorage.getItem('BACKOFFICE.theme') === 'dark'
         );
     }
@@ -86,7 +88,7 @@ export class BackofficeUsersService extends BaseClass {
             currentUser().subscribe(
                 user => {
                     if (user) {
-                        this.user.next(user);
+                        this._user.next(user);
                         this._service.set('user', user);
                         Sentry.configureScope(scope => scope.setUser({ email: user.email }));
                         this.state.next('success');

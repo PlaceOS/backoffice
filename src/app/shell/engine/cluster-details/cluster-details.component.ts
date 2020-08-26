@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { PlaceCluster, queryClusters } from '@placeos/ts-client';
 import { ApplicationService } from 'src/app/services/app.service';
-import { first, map } from 'rxjs/operators';
+import { first, map, catchError } from 'rxjs/operators';
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
 import { HashMap } from 'src/app/shared/utilities/types.utilities';
 
@@ -30,7 +30,7 @@ export class PlaceClusterDetailsComponent extends BaseDirective implements OnIni
     public ngOnInit(): void {
         this._service.initialised.pipe(first((_) => _)).subscribe(() => {
             this.loadClusters();
-            this.interval('load_cluster', () => this.loadClusters(), 1000);
+            this.interval('load_cluster', () => this.loadClusters(), 2000);
         });
     }
 
@@ -40,7 +40,7 @@ export class PlaceClusterDetailsComponent extends BaseDirective implements OnIni
         }
         this.loading = true;
         queryClusters({ include_status: true } as any)
-            .pipe(map((resp) => resp.data))
+            .pipe(map((resp) => resp.data), catchError(_ => []))
             .subscribe((list) => {
                 this.cluster_list = list || [];
                 const date = dayjs().valueOf();

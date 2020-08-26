@@ -30,23 +30,7 @@ export class ModuleAboutComponent extends BaseDirective implements OnChanges, On
         return this._service.get('loading_settings');
     }
 
-    /** Displayable encryption levels for settings */
-    public get levels(): Identity[] {
-        const user = this._users.user.getValue();
-        const levels = [
-            { id: EncryptionLevel.NeverDisplay, name: 'Merged' },
-            { id: EncryptionLevel.None, name: 'Unencrypted' }
-        ];
-        if (user.support || user.sys_admin) {
-            levels.push({ id: EncryptionLevel.Support, name: 'Support' });
-        }
-        if (user.sys_admin) {
-            levels.push({ id: EncryptionLevel.Admin, name: 'Admin' });
-        }
-        return levels;
-    }
-
-    constructor(private _service: ApplicationService, private _users: BackofficeUsersService, private _dialog: MatDialog) {
+    constructor(private _service: ApplicationService, private _dialog: MatDialog) {
         super();
     }
 

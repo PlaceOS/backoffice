@@ -105,6 +105,14 @@
                 "baseHref": "/backoffice/",
                 "serviceWorker": true,
                 "ngswConfigPath": "ngsw-config.json"
+            },
+            "hmr": {
+                "fileReplacements": [
+                    {
+                        "replace": "src/environments/environment.ts",
+                        "with": "src/environments/environment.hmr.ts"
+                    }
+                ]
             }
           }
         },
@@ -118,6 +126,10 @@
           "configurations": {
             "production": {
               "browserTarget": "ngx-backoffice:build:production"
+            },
+            "hmr": {
+                "hmr": true,
+                "browserTarget": "mckinsey-staff-ui:build:hmr"
             }
           }
         },
