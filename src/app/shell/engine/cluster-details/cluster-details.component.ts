@@ -30,7 +30,7 @@ export class PlaceClusterDetailsComponent extends BaseDirective implements OnIni
     public ngOnInit(): void {
         this._service.initialised.pipe(first((_) => _)).subscribe(() => {
             this.loadClusters();
-            this.interval('load_cluster', () => this.loadClusters(), 1000);
+            this.interval('load_cluster', () => this.loadClusters(), 2000);
         });
     }
 
