@@ -1556,8 +1556,14 @@
               }
             });
 
-            ref.afterClosed().subscribe(function () {
-              return _this13.loadAuthSources();
+            ref.componentInstance.event.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["first"])(function (_) {
+              return _.reason === 'done';
+            })).subscribe(function (event) {
+              _this13.addAuthSourceToList(event.metadata.source);
+
+              _this13.timeout('load', function () {
+                return _this13.loadAuthSources();
+              }, 2000);
             });
           }
           /**
@@ -1579,9 +1585,26 @@
               }
             });
 
-            ref.afterClosed().subscribe(function () {
-              return _this14.loadAuthSources();
+            ref.componentInstance.event.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["first"])(function (_) {
+              return _.reason === 'done';
+            })).subscribe(function (event) {
+              _this14.addAuthSourceToList(event.metadata.source);
+
+              _this14.timeout('load', function () {
+                return _this14.loadAuthSources();
+              }, 2000);
             });
+          }
+        }, {
+          key: "deleteMethod",
+          value: function deleteMethod(item) {
+            if (item instanceof _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceSAMLSource"]) {
+              return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["removeSAMLSource"])(item.id);
+            } else if (item instanceof _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceLDAPSource"]) {
+              return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["removeLDAPSource"])(item.id);
+            }
+
+            return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["removeOAuthSource"])(item.id);
           }
           /**
            * Delete the auth source from the domain
@@ -1608,7 +1631,12 @@
               this.subscription('delete_confirm', ref.componentInstance.event.subscribe(function (event) {
                 if (event.reason === 'done') {
                   ref.componentInstance.loading = 'Deleting auth source...';
-                  item["delete"]().then(function () {
+
+                  _this15.deleteMethod(item).toPromise().then(function () {
+                    _this15.auth_sources = _this15.auth_sources.filter(function (source) {
+                      return source.id !== item.id;
+                    });
+
                     _this15._service.notifySuccess('Successfully deleted auth source.');
 
                     ref.close();

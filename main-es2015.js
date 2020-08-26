@@ -463,15 +463,13 @@ function AuthSourceModalComponent_mat_dialog_actions_7_Template(rf, ctx) { if (r
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "button", 19);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AuthSourceModalComponent_mat_dialog_actions_7_Template_button_click_3_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r15); const ctx_r14 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r14.save(); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, "Save");
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } if (rf & 2) {
     const ctx_r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", !ctx_r1.active_type);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx_r1.is_new ? "Save" : "Add", " ");
 } }
 function AuthSourceModalComponent_ng_template_8_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 6);
@@ -498,7 +496,7 @@ class AuthSourceModalComponent extends src_app_shared_globals_base_directive__WE
         this.source_types = [
             { id: 'oauth', name: 'OAuth' },
             { id: 'ldap', name: 'LDAP' },
-            { id: 'saml', name: 'SAML2' }
+            { id: 'saml', name: 'SAML2' },
         ];
     }
     /** Whether the triggers is new or not */
@@ -538,6 +536,15 @@ class AuthSourceModalComponent extends src_app_shared_globals_base_directive__WE
         }
         this.initialiseForm();
     }
+    updateMethod(item) {
+        switch (this.type) {
+            case 'saml':
+                return item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["updateSAMLSource"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addSAMLSource"])(item);
+            case 'ldap':
+                return item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["updateLDAPSource"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addLDAPSource"])(item);
+        }
+        return item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["updateOAuthSource"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addOAuthSource"])(item);
+    }
     /**
      * Create item if new or update if exsiting
      */
@@ -547,11 +554,12 @@ class AuthSourceModalComponent extends src_app_shared_globals_base_directive__WE
             return;
         }
         this.loading = true;
-        this.item.save().then(item => {
-            this.event.emit({ reason: 'done', metadata: { trigger: item } });
+        const method = this.updateMethod(Object.assign(Object.assign({}, this.item.toJSON()), this.form.value));
+        method.toPromise().then((item) => {
+            this.event.emit({ reason: 'done', metadata: { source: item } });
             this._service.notifySuccess(`Successfully ${this.is_new ? 'added' : 'updated'} auth source`);
             this._dialog.close();
-        }, err => {
+        }, (err) => {
             this.loading = false;
             this._service.notifyError(`Error ${this.is_new ? 'adding' : 'updating'} auth source. Error: ${JSON.stringify(err.response || err.message || err)}`);
         });
@@ -587,7 +595,7 @@ AuthSourceModalComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵ�
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "mat-dialog-content");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](6, AuthSourceModalComponent_div_6_Template, 3, 2, "div", 3);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, AuthSourceModalComponent_mat_dialog_actions_7_Template, 5, 2, "mat-dialog-actions", 4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, AuthSourceModalComponent_mat_dialog_actions_7_Template, 5, 1, "mat-dialog-actions", 4);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](8, AuthSourceModalComponent_ng_template_8_Template, 6, 0, "ng-template", null, 5, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplateRefExtractor"]);
     } if (rf & 2) {
         const _r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](9);
@@ -605,7 +613,7 @@ AuthSourceModalComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵ�
         args: [{
                 selector: 'app-auth-source-modal',
                 templateUrl: './auth-source-modal.component.html',
-                styleUrls: ['./auth-source-modal.component.scss']
+                styleUrls: ['./auth-source-modal.component.scss'],
             }]
     }], function () { return [{ type: _angular_material_dialog__WEBPACK_IMPORTED_MODULE_1__["MatDialogRef"] }, { type: undefined, decorators: [{
                 type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"],
@@ -22276,16 +22284,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "4eb1596",
-    "hash": "4eb1596",
+    "raw": "4402e06",
+    "hash": "4402e06",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "4eb1596",
+    "suffix": "4402e06",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1598440063774
+    "time": 1598486229401
 };
 /* tslint:enable */
 

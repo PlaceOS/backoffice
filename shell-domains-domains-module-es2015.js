@@ -601,7 +601,7 @@ class DomainAuthenticationComponent extends _shared_globals_base_directive__WEBP
         this.source_types = {};
     }
     ngOnInit() {
-        this.subscription('item', this._service.listen('BACKOFFICE.active_item').subscribe(item => {
+        this.subscription('item', this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
             this.item = item;
             this.loadAuthSources();
         }));
@@ -620,15 +620,21 @@ class DomainAuthenticationComponent extends _shared_globals_base_directive__WEBP
             return;
         }
         Promise.all([
-            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryOAuthSources"])({ authority_id: this.item.id, offset }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])(resp => resp.data)).toPromise(),
-            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["querySAMLSources"])({ authority_id: this.item.id, offset }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])(resp => resp.data)).toPromise(),
-            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryLDAPSources"])({ authority_id: this.item.id, offset }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])(resp => resp.data)).toPromise()
-        ]).then(responses => {
+            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryOAuthSources"])({ authority_id: this.item.id, offset })
+                .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])((resp) => resp.data))
+                .toPromise(),
+            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["querySAMLSources"])({ authority_id: this.item.id, offset })
+                .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])((resp) => resp.data))
+                .toPromise(),
+            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryLDAPSources"])({ authority_id: this.item.id, offset })
+                .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])((resp) => resp.data))
+                .toPromise(),
+        ]).then((responses) => {
             if (!offset) {
                 this.auth_sources = [];
             }
             for (const list of responses) {
-                list.forEach(auth_source => this.addAuthSourceToList(auth_source));
+                list.forEach((auth_source) => this.addAuthSourceToList(auth_source));
             }
         }, () => null);
     }
@@ -641,10 +647,13 @@ class DomainAuthenticationComponent extends _shared_globals_base_directive__WEBP
             width: 'auto',
             height: 'auto',
             data: {
-                domain: this.item
-            }
+                domain: this.item,
+            },
         });
-        ref.afterClosed().subscribe(() => this.loadAuthSources());
+        ref.componentInstance.event.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["first"])((_) => _.reason === 'done')).subscribe((event) => {
+            this.addAuthSourceToList(event.metadata.source);
+            this.timeout('load', () => this.loadAuthSources(), 2000);
+        });
     }
     /**
      * Open modal to edit auth source
@@ -656,10 +665,22 @@ class DomainAuthenticationComponent extends _shared_globals_base_directive__WEBP
             height: 'auto',
             data: {
                 domain: this.item,
-                auth_source: item
-            }
+                auth_source: item,
+            },
         });
-        ref.afterClosed().subscribe(() => this.loadAuthSources());
+        ref.componentInstance.event.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["first"])((_) => _.reason === 'done')).subscribe((event) => {
+            this.addAuthSourceToList(event.metadata.source);
+            this.timeout('load', () => this.loadAuthSources(), 2000);
+        });
+    }
+    deleteMethod(item) {
+        if (item instanceof _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceSAMLSource"]) {
+            return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["removeSAMLSource"])(item.id);
+        }
+        else if (item instanceof _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceLDAPSource"]) {
+            return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["removeLDAPSource"])(item.id);
+        }
+        return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["removeOAuthSource"])(item.id);
     }
     /**
      * Delete the auth source from the domain
@@ -670,17 +691,20 @@ class DomainAuthenticationComponent extends _shared_globals_base_directive__WEBP
             const ref = this._dialog.open(src_app_overlays_confirm_modal_confirm_modal_component__WEBPACK_IMPORTED_MODULE_3__["ConfirmModalComponent"], Object.assign(Object.assign({}, src_app_overlays_confirm_modal_confirm_modal_component__WEBPACK_IMPORTED_MODULE_3__["CONFIRM_METADATA"]), { data: {
                     title: `Delete auth source`,
                     content: `<p>Are you sure you want delete this auth source?</p><p>Deleting this will remove this auth source <strong>immediately</strong></p>`,
-                    icon: { type: 'icon', class: 'backoffice-trash' }
+                    icon: { type: 'icon', class: 'backoffice-trash' },
                 } }));
             this.subscription('delete_confirm', ref.componentInstance.event.subscribe((event) => {
                 if (event.reason === 'done') {
                     ref.componentInstance.loading = 'Deleting auth source...';
-                    item.delete().then(() => {
+                    this.deleteMethod(item)
+                        .toPromise()
+                        .then(() => {
+                        this.auth_sources = this.auth_sources.filter((source) => source.id !== item.id);
                         this._service.notifySuccess('Successfully deleted auth source.');
                         ref.close();
                         this.unsub('delete_confirm');
                         this.loadAuthSources();
-                    }, err => {
+                    }, (err) => {
                         this._service.notifyError(`Error deleting auth source. Error ${JSON.stringify(err.response || err.message || err)}`);
                         ref.componentInstance.loading = null;
                     });
@@ -699,7 +723,7 @@ class DomainAuthenticationComponent extends _shared_globals_base_directive__WEBP
                 : source instanceof _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceLDAPSource"]
                     ? 'ldap'
                     : 'oauth';
-        const index = this.auth_sources.findIndex(a_source => a_source.id === source.id);
+        const index = this.auth_sources.findIndex((a_source) => a_source.id === source.id);
         if (index < 0) {
             this.auth_sources.push(source);
         }
@@ -732,7 +756,7 @@ DomainAuthenticationComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__
         args: [{
                 selector: 'domain-authentication',
                 templateUrl: './domain-authentication.template.html',
-                styleUrls: ['./domain-authentication.styles.scss']
+                styleUrls: ['./domain-authentication.styles.scss'],
             }]
     }], function () { return [{ type: _services_app_service__WEBPACK_IMPORTED_MODULE_6__["ApplicationService"] }, { type: _angular_material_dialog__WEBPACK_IMPORTED_MODULE_7__["MatDialog"] }]; }, { item: [{
             type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]

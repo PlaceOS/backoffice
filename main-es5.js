@@ -4448,7 +4448,7 @@
             return ctx_r14.save();
           });
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, "Save");
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
@@ -4461,10 +4461,6 @@
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", !ctx_r1.active_type);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx_r1.is_new ? "Save" : "Add", " ");
         }
       }
 
@@ -4571,6 +4567,19 @@
 
             this.initialiseForm();
           }
+        }, {
+          key: "updateMethod",
+          value: function updateMethod(item) {
+            switch (this.type) {
+              case 'saml':
+                return item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["updateSAMLSource"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addSAMLSource"])(item);
+
+              case 'ldap':
+                return item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["updateLDAPSource"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addLDAPSource"])(item);
+            }
+
+            return item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["updateOAuthSource"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addOAuthSource"])(item);
+          }
           /**
            * Create item if new or update if exsiting
            */
@@ -4587,11 +4596,12 @@
             }
 
             this.loading = true;
-            this.item.save().then(function (item) {
+            var method = this.updateMethod(Object.assign(Object.assign({}, this.item.toJSON()), this.form.value));
+            method.toPromise().then(function (item) {
               _this4.event.emit({
                 reason: 'done',
                 metadata: {
-                  trigger: item
+                  source: item
                 }
               });
 
@@ -4676,7 +4686,7 @@
 
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, AuthSourceModalComponent_mat_dialog_actions_7_Template, 5, 2, "mat-dialog-actions", 4);
+            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, AuthSourceModalComponent_mat_dialog_actions_7_Template, 5, 1, "mat-dialog-actions", 4);
 
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](8, AuthSourceModalComponent_ng_template_8_Template, 6, 0, "ng-template", null, 5, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplateRefExtractor"]);
           }
@@ -45354,16 +45364,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "4eb1596",
-        "hash": "4eb1596",
+        "raw": "4402e06",
+        "hash": "4402e06",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "4eb1596",
+        "suffix": "4402e06",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1598440063774
+        "time": 1598486229401
       };
       /* tslint:enable */
 
