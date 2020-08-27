@@ -15,8 +15,10 @@ import { SettingsService, ConsoleStream } from './settings.service';
 import { HashMap } from '../shared/utilities/types.utilities';
 import { HotkeysService } from './hotkeys.service';
 import { ApplicationIcon, ComposerOptions } from '../shared/utilities/settings.interfaces';
+import { environment } from 'src/environments/environment';
 
 import * as Sentry from '@sentry/browser';
+import { Integrations } from "@sentry/tracing";
 
 declare global {
     interface Window {
@@ -325,7 +327,9 @@ export class ApplicationService extends BaseClass {
             if (dsn && !location.host.includes('localhost')) {
                 Sentry.init({
                     dsn,
-                    release: `backoffice@${VERSION.version || 'dev'}-${VERSION.hash.slice(0, 6)}`
+                    release: `backoffice@${VERSION.version || 'dev'}-${VERSION.hash.slice(0, 6)}`,
+                    integrations: [new Integrations.BrowserTracing()],
+                    tracesSampleRate: environment.production ? 0.1 : 1.0, // Be sure to lower this in production
                 });
             }
             // Add service to window if in debug mode
