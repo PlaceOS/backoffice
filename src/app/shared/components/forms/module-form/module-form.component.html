@@ -57,7 +57,7 @@
                         [class.error]="form.controls.ip.invalid && form.controls.ip.touched"
                         i18n="@@ipAddressLabel"
                     >
-                        IP Address<span *ngIf="role === 'ssh' || role === 'device'">*</span>:
+                        IP Address or FQDN<span *ngIf="role === 'ssh' || role === 'device'">*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
