@@ -89,7 +89,7 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         },
     ];
     /** Query method for modules */
-    public readonly query_fn = (_: string) => queryModules({ q: _ });
+    public readonly query_fn = (_: string) => queryModules({ q: _ }).pipe(map(_ => _.data));
     /** Function for excluding modules already within this system */
     public readonly exclude_fn = (item: PlaceModule) =>
         item.control_system_id === this.item.id || item.role === PlaceDriverRole.Logic;
