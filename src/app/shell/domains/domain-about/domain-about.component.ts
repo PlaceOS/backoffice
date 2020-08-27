@@ -61,7 +61,7 @@ export class DomainAboutComponent extends BaseDirective implements OnInit {
                         config: JSON.parse(this.form.value.config),
                         internals: JSON.parse(this.form.value.internals),
                     });
-                    const item = await updateDomain(domain.id, domain);
+                    const item = await updateDomain(domain.id, domain).toPromise();
                     this.item = item as any;
                 }
             },
