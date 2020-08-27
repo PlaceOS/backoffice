@@ -5493,6 +5493,7 @@ class ItemSearchFieldComponent extends src_app_shared_globals_base_directive__WE
         }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["catchError"])((_) => Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["of"])([])), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])((list) => {
             this.loading = false;
             const search = (this.search_str || '').toLowerCase();
+            console.log('List:', list);
             return list.filter((item) => {
                 const match = item.name.toLowerCase().indexOf(search) >= 0 ||
                     (item.email || '').toLowerCase().indexOf(search) >= 0;
@@ -22290,16 +22291,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "998df40",
-    "hash": "998df40",
+    "raw": "6028109",
+    "hash": "6028109",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "998df40",
+    "suffix": "6028109",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1598496679918
+    "time": 1598497432627
 };
 /* tslint:enable */
 

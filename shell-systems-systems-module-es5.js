@@ -2703,7 +2703,9 @@
           _this12.query_fn = function (_) {
             return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryModules"])({
               q: _
-            });
+            }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_8__["map"])(function (_) {
+              return _.data;
+            }));
           };
           /** Function for excluding modules already within this system */
 

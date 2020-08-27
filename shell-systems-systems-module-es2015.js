@@ -1122,7 +1122,7 @@ class SystemModulesComponent extends _shared_globals_base_directive__WEBPACK_IMP
             },
         ];
         /** Query method for modules */
-        this.query_fn = (_) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryModules"])({ q: _ });
+        this.query_fn = (_) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryModules"])({ q: _ }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_8__["map"])(_ => _.data));
         /** Function for excluding modules already within this system */
         this.exclude_fn = (item) => item.control_system_id === this.item.id || item.role === _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceDriverRole"].Logic;
     }
