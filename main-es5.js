@@ -11034,49 +11034,61 @@
       /* harmony import */
 
 
-      var _sentry_browser__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
+      var src_environments_environment__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
+      /*! src/environments/environment */
+      "./src/environments/environment.ts");
+      /* harmony import */
+
+
+      var _sentry_browser__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
       /*! @sentry/browser */
       "./node_modules/@sentry/browser/esm/index.js");
       /* harmony import */
 
 
-      var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
+      var _sentry_tracing__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(
+      /*! @sentry/tracing */
+      "./node_modules/@sentry/tracing/esm/index.js");
+      /* harmony import */
+
+
+      var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(
       /*! @angular/platform-browser */
       "./node_modules/@angular/platform-browser/__ivy_ngcc__/fesm2015/platform-browser.js");
       /* harmony import */
 
 
-      var _angular_router__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(
+      var _angular_router__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(
       /*! @angular/router */
       "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
       /* harmony import */
 
 
-      var _angular_service_worker__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(
+      var _angular_service_worker__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(
       /*! @angular/service-worker */
       "./node_modules/@angular/service-worker/__ivy_ngcc__/fesm2015/service-worker.js");
       /* harmony import */
 
 
-      var _settings_service__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(
+      var _settings_service__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(
       /*! ./settings.service */
       "./src/app/services/settings.service.ts");
       /* harmony import */
 
 
-      var _google_analytics_service__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(
+      var _google_analytics_service__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(
       /*! ./google-analytics.service */
       "./src/app/services/google-analytics.service.ts");
       /* harmony import */
 
 
-      var _hotkeys_service__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(
+      var _hotkeys_service__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(
       /*! ./hotkeys.service */
       "./src/app/services/hotkeys.service.ts");
       /* harmony import */
 
 
-      var _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(
+      var _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(
       /*! @angular/material/snack-bar */
       "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/snack-bar.js");
 
@@ -11389,9 +11401,11 @@
               var dsn = Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["authority"])().sentry_dsn || _this28.setting('app.sentry_dsn');
 
               if (dsn && !location.host.includes('localhost')) {
-                _sentry_browser__WEBPACK_IMPORTED_MODULE_6__["init"]({
+                _sentry_browser__WEBPACK_IMPORTED_MODULE_7__["init"]({
                   dsn: dsn,
-                  release: "backoffice@".concat(src_environments_version__WEBPACK_IMPORTED_MODULE_4__["VERSION"].version || 'dev', "-").concat(src_environments_version__WEBPACK_IMPORTED_MODULE_4__["VERSION"].hash.slice(0, 6))
+                  release: "backoffice@".concat(src_environments_version__WEBPACK_IMPORTED_MODULE_4__["VERSION"].version || 'dev', "-").concat(src_environments_version__WEBPACK_IMPORTED_MODULE_4__["VERSION"].hash.slice(0, 6)),
+                  integrations: [new _sentry_tracing__WEBPACK_IMPORTED_MODULE_8__["Integrations"].BrowserTracing()],
+                  tracesSampleRate: src_environments_environment__WEBPACK_IMPORTED_MODULE_6__["environment"].production ? 0.1 : 1.0
                 });
               } // Add service to window if in debug mode
 
@@ -11556,7 +11570,7 @@
       }(_shared_globals_base_class__WEBPACK_IMPORTED_MODULE_5__["BaseClass"]);
 
       ApplicationService.ɵfac = function ApplicationService_Factory(t) {
-        return new (t || ApplicationService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ApplicationRef"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgZone"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_platform_browser__WEBPACK_IMPORTED_MODULE_7__["Title"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_8__["Router"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_service_worker__WEBPACK_IMPORTED_MODULE_9__["SwUpdate"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_settings_service__WEBPACK_IMPORTED_MODULE_10__["SettingsService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_google_analytics_service__WEBPACK_IMPORTED_MODULE_11__["GoogleAnalyticsService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_hotkeys_service__WEBPACK_IMPORTED_MODULE_12__["HotkeysService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_13__["MatSnackBar"]));
+        return new (t || ApplicationService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ApplicationRef"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgZone"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_platform_browser__WEBPACK_IMPORTED_MODULE_9__["Title"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_10__["Router"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_service_worker__WEBPACK_IMPORTED_MODULE_11__["SwUpdate"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_settings_service__WEBPACK_IMPORTED_MODULE_12__["SettingsService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_google_analytics_service__WEBPACK_IMPORTED_MODULE_13__["GoogleAnalyticsService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_hotkeys_service__WEBPACK_IMPORTED_MODULE_14__["HotkeysService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_15__["MatSnackBar"]));
       };
 
       ApplicationService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({
@@ -11578,19 +11592,19 @@
           }, {
             type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["NgZone"]
           }, {
-            type: _angular_platform_browser__WEBPACK_IMPORTED_MODULE_7__["Title"]
+            type: _angular_platform_browser__WEBPACK_IMPORTED_MODULE_9__["Title"]
           }, {
-            type: _angular_router__WEBPACK_IMPORTED_MODULE_8__["Router"]
+            type: _angular_router__WEBPACK_IMPORTED_MODULE_10__["Router"]
           }, {
-            type: _angular_service_worker__WEBPACK_IMPORTED_MODULE_9__["SwUpdate"]
+            type: _angular_service_worker__WEBPACK_IMPORTED_MODULE_11__["SwUpdate"]
           }, {
-            type: _settings_service__WEBPACK_IMPORTED_MODULE_10__["SettingsService"]
+            type: _settings_service__WEBPACK_IMPORTED_MODULE_12__["SettingsService"]
           }, {
-            type: _google_analytics_service__WEBPACK_IMPORTED_MODULE_11__["GoogleAnalyticsService"]
+            type: _google_analytics_service__WEBPACK_IMPORTED_MODULE_13__["GoogleAnalyticsService"]
           }, {
-            type: _hotkeys_service__WEBPACK_IMPORTED_MODULE_12__["HotkeysService"]
+            type: _hotkeys_service__WEBPACK_IMPORTED_MODULE_14__["HotkeysService"]
           }, {
-            type: _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_13__["MatSnackBar"]
+            type: _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_15__["MatSnackBar"]
           }];
         }, null);
       })();
@@ -45364,16 +45378,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "4402e06",
-        "hash": "4402e06",
+        "raw": "f1d1777",
+        "hash": "f1d1777",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "4402e06",
+        "suffix": "f1d1777",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1598486229401
+        "time": 1598492832710
       };
       /* tslint:enable */
 
