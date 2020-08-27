@@ -9304,11 +9304,11 @@ else {
 const _c11 = ["placeholder", I18N_9];
 var I18N_8;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_ipAddressLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____12 = goog.getMsg(" IP Address{$startTagSpan}*{$closeTagSpan}: ", { "startTagSpan": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD", "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD" });
+    const MSG_EXTERNAL_ipAddressLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____12 = goog.getMsg(" IP Address or FQDN{$startTagSpan}*{$closeTagSpan}: ", { "startTagSpan": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD", "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD" });
     I18N_8 = MSG_EXTERNAL_ipAddressLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____12;
 }
 else {
-    I18N_8 = $localize `:@@ipAddressLabel␟aed51f9579f45b37293148150aa526ddb08124f3␟2824789580368589081: IP Address${"\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_SPAN:*${"\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD"}:CLOSE_TAG_SPAN:: `;
+    I18N_8 = $localize `:@@ipAddressLabel␟110806cacebf0851c5dc034ff09c91c6de8e9727␟6716704441760289338: IP Address or FQDN${"\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_SPAN:*${"\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD"}:CLOSE_TAG_SPAN:: `;
 }
 function ModuleFormComponent_div_0_ng_container_3_div_3_span_3_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nStart"](0, I18N_8, 1);
@@ -20894,7 +20894,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateJSONString", function() { return validateJSONString; });
 /* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/__ivy_ngcc__/fesm2015/forms.js");
 
-const validateIpAddress = (ctrl) => /^(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)$/g.test(ctrl.value || '1.1.1.1')
+const validateIpAddress = (ctrl) => /^(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)$/g.test(ctrl.value || '') || /^(?!:\/\/)(?=.{1,255}$)((.{1,63}\.){1,127}(?![0-9]*$)[a-z0-9-]+\.?)$/gi.test(ctrl.value)
     ? null
     : { pattern: true };
 const validateURI = (ctrl) => {
@@ -22290,16 +22290,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "f1d1777",
-    "hash": "f1d1777",
+    "raw": "998df40",
+    "hash": "998df40",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "f1d1777",
+    "suffix": "998df40",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1598492832710
+    "time": 1598496679918
 };
 /* tslint:enable */
 

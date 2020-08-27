@@ -2450,7 +2450,7 @@
   }
 
   function _templateObject99() {
-    var data = _taggedTemplateLiteral([":@@ipAddressLabel\u241Faed51f9579f45b37293148150aa526ddb08124f3\u241F2824789580368589081: IP Address", ":START_TAG_SPAN:*", ":CLOSE_TAG_SPAN:: "]);
+    var data = _taggedTemplateLiteral([":@@ipAddressLabel\u241F110806cacebf0851c5dc034ff09c91c6de8e9727\u241F6716704441760289338: IP Address or FQDN", ":START_TAG_SPAN:*", ":CLOSE_TAG_SPAN:: "]);
 
     _templateObject99 = function _templateObject99() {
       return data;
@@ -21565,7 +21565,7 @@
       var I18N_8;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_ipAddressLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____12 = goog.getMsg(" IP Address{$startTagSpan}*{$closeTagSpan}: ", {
+        var MSG_EXTERNAL_ipAddressLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____12 = goog.getMsg(" IP Address or FQDN{$startTagSpan}*{$closeTagSpan}: ", {
           "startTagSpan": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
           "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD"
         });
@@ -42494,7 +42494,7 @@
       "./node_modules/@angular/forms/__ivy_ngcc__/fesm2015/forms.js");
 
       var validateIpAddress = function validateIpAddress(ctrl) {
-        return /^(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)$/g.test(ctrl.value || '1.1.1.1') ? null : {
+        return /^(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)$/g.test(ctrl.value || '') || /^(?!:\/\/)(?=.{1,255}$)((.{1,63}\.){1,127}(?![0-9]*$)[a-z0-9-]+\.?)$/gi.test(ctrl.value) ? null : {
           pattern: true
         };
       };
@@ -45378,16 +45378,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "f1d1777",
-        "hash": "f1d1777",
+        "raw": "998df40",
+        "hash": "998df40",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "f1d1777",
+        "suffix": "998df40",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1598492832710
+        "time": 1598496679918
       };
       /* tslint:enable */
 
