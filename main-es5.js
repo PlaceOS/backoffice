@@ -14480,7 +14480,6 @@
             }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (list) {
               _this63.loading = false;
               var search = (_this63.search_str || '').toLowerCase();
-              console.log('List:', list);
               return list.filter(function (item) {
                 var match = item.name.toLowerCase().indexOf(search) >= 0 || (item.email || '').toLowerCase().indexOf(search) >= 0;
                 return match && (_this63.exclude ? !_this63.exclude(item) : true);
@@ -45379,16 +45378,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "6028109",
-        "hash": "6028109",
+        "raw": "a99edf2",
+        "hash": "a99edf2",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "6028109",
+        "suffix": "a99edf2",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1598497432627
+        "time": 1598522926320
       };
       /* tslint:enable */
 

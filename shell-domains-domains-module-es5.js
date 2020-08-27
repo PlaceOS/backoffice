@@ -403,7 +403,7 @@
                           internals: JSON.parse(this.form.value.internals)
                         }));
                         _context.next = 4;
-                        return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["updateDomain"])(domain.id, domain);
+                        return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["updateDomain"])(domain.id, domain).toPromise();
 
                       case 4:
                         item = _context.sent;

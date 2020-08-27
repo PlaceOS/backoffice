@@ -91,7 +91,7 @@ class DomainAboutComponent extends src_app_shared_globals_base_directive__WEBPAC
         this.timeout('save', () => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             if (this.form.valid) {
                 const domain = new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["PlaceDomain"](Object.assign(Object.assign({}, this.item), { config: JSON.parse(this.form.value.config), internals: JSON.parse(this.form.value.internals) }));
-                const item = yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["updateDomain"])(domain.id, domain);
+                const item = yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["updateDomain"])(domain.id, domain).toPromise();
                 this.item = item;
             }
         }), 3000);
