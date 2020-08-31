@@ -11,6 +11,7 @@ import {
     addZone,
     addSystem,
     addUser,
+    authority,
 } from '@placeos/ts-client';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
@@ -81,7 +82,7 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
 
     /** Current environment of the application */
     public get env(): string {
-        return this._service.setting('env');
+        return authority().production ? 'prod' : this._service.setting('env');
     }
 
     constructor(

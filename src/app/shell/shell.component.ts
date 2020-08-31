@@ -14,9 +14,9 @@ import { first } from 'rxjs/operators';
 import { ApplicationLink } from '../shared/utilities/settings.interfaces';
 import { ApplicationService } from '../services/app.service';
 import { BaseDirective } from '../shared/globals/base.directive';
+import { BackofficeUsersService } from '../services/data/users.service';
 
 import * as dayjs from 'dayjs';
-import { BackofficeUsersService } from '../services/data/users.service';
 
 @Component({
     selector: 'app-shell',
