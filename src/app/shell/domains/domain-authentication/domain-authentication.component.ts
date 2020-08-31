@@ -1,5 +1,15 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { PlaceDomain, PlaceSAMLSource, PlaceLDAPSource, queryOAuthSources, querySAMLSources, queryLDAPSources } from '@placeos/ts-client';
+import {
+    PlaceDomain,
+    PlaceSAMLSource,
+    PlaceLDAPSource,
+    queryOAuthSources,
+    querySAMLSources,
+    queryLDAPSources,
+    removeSAMLSource,
+    removeLDAPSource,
+    removeOAuthSource,
+} from '@placeos/ts-client';
 import { MatDialog } from '@angular/material/dialog';
 
 import { BaseDirective } from '../../../shared/globals/base.directive';
@@ -8,10 +18,13 @@ import { Identity, HashMap, DialogEvent } from 'src/app/shared/utilities/types.u
 import {
     ConfirmModalComponent,
     ConfirmModalData,
-    CONFIRM_METADATA
+    CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-import { AuthSourceModalComponent, AuthSourceModalData } from 'src/app/overlays/auth-source-modal/auth-source-modal.component';
-import { map } from 'rxjs/operators';
+import {
+    AuthSourceModalComponent,
+    AuthSourceModalData,
+} from 'src/app/overlays/auth-source-modal/auth-source-modal.component';
+import { map, first } from 'rxjs/operators';
 
 export interface PlaceAuthSourceLike extends Identity {
     authority_id: string;
@@ -22,7 +35,7 @@ export interface PlaceAuthSourceLike extends Identity {
 @Component({
     selector: 'domain-authentication',
     templateUrl: './domain-authentication.template.html',
-    styleUrls: ['./domain-authentication.styles.scss']
+    styleUrls: ['./domain-authentication.styles.scss'],
 })
 export class DomainAuthenticationComponent extends BaseDirective implements OnChanges, OnInit {
     /** Active domain item */
@@ -39,7 +52,7 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.listen('BACKOFFICE.active_item').subscribe(item => {
+            this._service.listen('BACKOFFICE.active_item').subscribe((item) => {
                 this.item = item;
                 this.loadAuthSources();
             })
@@ -57,24 +70,31 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
      * @param offset Request page offset
      */
     public loadAuthSources(offset: number = 0) {
-        if (!this.item) { return; }
+        if (!this.item) {
+            return;
+        }
         Promise.all([
-            queryOAuthSources({ authority_id: this.item.id, offset } as any).pipe(map(resp => resp.data)).toPromise(),
-            querySAMLSources({ authority_id: this.item.id, offset } as any).pipe(map(resp => resp.data)).toPromise(),
-            queryLDAPSources({ authority_id: this.item.id, offset } as any).pipe(map(resp => resp.data)).toPromise()
+            queryOAuthSources({ authority_id: this.item.id, offset } as any)
+                .pipe(map((resp) => resp.data))
+                .toPromise(),
+            querySAMLSources({ authority_id: this.item.id, offset } as any)
+                .pipe(map((resp) => resp.data))
+                .toPromise(),
+            queryLDAPSources({ authority_id: this.item.id, offset } as any)
+                .pipe(map((resp) => resp.data))
+                .toPromise(),
         ]).then(
-            responses => {
+            (responses) => {
                 if (!offset) {
                     this.auth_sources = [];
                 }
                 for (const list of responses) {
-                    list.forEach(auth_source => this.addAuthSourceToList(auth_source));
+                    list.forEach((auth_source) => this.addAuthSourceToList(auth_source));
                 }
             },
             () => null
         );
     }
-
 
     /**
      * Open modal to create a new  auth source for the domain
@@ -87,11 +107,14 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
                 width: 'auto',
                 height: 'auto',
                 data: {
-                    domain: this.item
-                }
+                    domain: this.item,
+                },
             }
         );
-        ref.afterClosed().subscribe(() => this.loadAuthSources());
+        ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).subscribe((event) => {
+            this.addAuthSourceToList(event.metadata.source);
+            this.timeout('load', () => this.loadAuthSources(), 2000);
+        });
     }
 
     /**
@@ -106,11 +129,23 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
                 height: 'auto',
                 data: {
                     domain: this.item,
-                    auth_source: item as any
-                }
+                    auth_source: item as any,
+                },
             }
         );
-        ref.afterClosed().subscribe(() => this.loadAuthSources());
+        ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).subscribe((event) => {
+            this.addAuthSourceToList(event.metadata.source);
+            this.timeout('load', () => this.loadAuthSources(), 2000);
+        });
+    }
+
+    public deleteMethod(item: any) {
+        if (item instanceof PlaceSAMLSource) {
+            return removeSAMLSource(item.id);
+        } else if (item instanceof PlaceLDAPSource) {
+            return removeLDAPSource(item.id);
+        }
+        return removeOAuthSource(item.id);
     }
 
     /**
@@ -126,8 +161,8 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
                     data: {
                         title: `Delete auth source`,
                         content: `<p>Are you sure you want delete this auth source?</p><p>Deleting this will remove this auth source <strong>immediately</strong></p>`,
-                        icon: { type: 'icon', class: 'backoffice-trash' }
-                    }
+                        icon: { type: 'icon', class: 'backoffice-trash' },
+                    },
                 }
             );
             this.subscription(
@@ -135,20 +170,29 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
                 ref.componentInstance.event.subscribe((event: DialogEvent) => {
                     if (event.reason === 'done') {
                         ref.componentInstance.loading = 'Deleting auth source...';
-                        item.delete().then(
-                            () => {
-                                this._service.notifySuccess('Successfully deleted auth source.');
-                                ref.close();
-                                this.unsub('delete_confirm');
-                                this.loadAuthSources();
-                            },
-                            err => {
-                                this._service.notifyError(
-                                    `Error deleting auth source. Error ${JSON.stringify(err.response || err.message || err)}`
-                                );
-                                ref.componentInstance.loading = null;
-                            }
-                        );
+                        this.deleteMethod(item)
+                            .toPromise()
+                            .then(
+                                () => {
+                                    this.auth_sources = this.auth_sources.filter(
+                                        (source) => source.id !== item.id
+                                    );
+                                    this._service.notifySuccess(
+                                        'Successfully deleted auth source.'
+                                    );
+                                    ref.close();
+                                    this.unsub('delete_confirm');
+                                    this.loadAuthSources();
+                                },
+                                (err) => {
+                                    this._service.notifyError(
+                                        `Error deleting auth source. Error ${JSON.stringify(
+                                            err.response || err.message || err
+                                        )}`
+                                    );
+                                    ref.componentInstance.loading = null;
+                                }
+                            );
                     }
                 })
             );
@@ -166,7 +210,7 @@ export class DomainAuthenticationComponent extends BaseDirective implements OnCh
                 : source instanceof PlaceLDAPSource
                 ? 'ldap'
                 : 'oauth';
-        const index = this.auth_sources.findIndex(a_source => a_source.id === source.id);
+        const index = this.auth_sources.findIndex((a_source) => a_source.id === source.id);
         if (index < 0) {
             this.auth_sources.push(source);
         } else {
