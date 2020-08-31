@@ -141,7 +141,7 @@ export class DomainsComponent extends BaseRootComponent<PlaceDomain> {
                                 this._service.notifySuccess(
                                     `Successfully deleted domain "${this.item.name}".`
                                 );
-                                this._router.navigate(['/users']);
+                                this._router.navigate(['/domains']);
                                 this._service.set('BACKOFFICE.removed', this.item.id);
                                 this.modal_ref.close();
                             },
