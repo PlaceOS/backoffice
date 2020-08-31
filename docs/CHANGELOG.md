@@ -1,3 +1,18 @@
+# [1.7.0](https://github.com/PlaceOS/backoffice/compare/v1.6.2...v1.7.0) (2020-08-31)
+
+
+### Bug Fixes
+
+* **domain:** fix settings update ([a99edf2](https://github.com/PlaceOS/backoffice/commit/a99edf28f979041c2786d726dd4bcc262f3133e1))
+* **domains:** fix adding and editing authentication sources ([4402e06](https://github.com/PlaceOS/backoffice/commit/4402e06ba8aca33b69117e8f2c7214af32a59e49))
+* **modules:** allow fqdns in ip address field ([998df40](https://github.com/PlaceOS/backoffice/commit/998df40c1836649d011ab692d23723b49f7eee56))
+* **system:** fix module search on system module listing ([6028109](https://github.com/PlaceOS/backoffice/commit/6028109ccedb87b371437a8e11dc131ec3cf58fb))
+
+
+### Features
+
+* **sentry:** add performance monitoring ([f1d1777](https://github.com/PlaceOS/backoffice/commit/f1d17777ffe3bc1240bf8b77e63dca15d5f339e6))
+
 ## [1.6.2](https://github.com/PlaceOS/backoffice/compare/v1.6.1...v1.6.2) (2020-08-26)
 
 
