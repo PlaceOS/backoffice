@@ -21742,7 +21742,7 @@ class TopbarHeaderComponent extends _shared_globals_base_directive__WEBPACK_IMPO
     }
     /** Current environment of the application */
     get env() {
-        return this._service.setting('env');
+        return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["authority"])().production ? 'prod' : this._service.setting('env');
     }
     ngOnInit() { }
     notAFool() {
@@ -22290,16 +22290,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "a99edf2",
-    "hash": "a99edf2",
+    "raw": "623d6f6",
+    "hash": "623d6f6",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "a99edf2",
+    "suffix": "623d6f6",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1598522926320
+    "time": 1598857845600
 };
 /* tslint:enable */
 
