@@ -44,7 +44,11 @@ export class PlaceDetailsComponent extends BaseDirective implements OnInit {
     }
 
     public get backoffice_version() {
-        return VERSION.semver ? VERSION.semver.version : '';
+        return VERSION?.tag || '';
+    }
+
+    public get backoffice_hash() {
+        return VERSION?.hash || ''
     }
 
     public get backoffice_build() {

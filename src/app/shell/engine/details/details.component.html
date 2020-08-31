@@ -3,11 +3,15 @@
 <section>
     <div class="field">
         <label for="version"  i18n="@@version">Version:</label>
-        <div class="value">{{ backoffice_version }}</div>
+        <div name="version" class="value">{{ backoffice_version }}</div>
     </div>
     <div class="field">
-        <label for="version" i18n="@@buildTime">Build:</label>
-        <div class="value">{{ backoffice_build }}</div>
+        <label for="hash"  i18n="@@commitHash">Commit Hash:</label>
+        <div name="hash" class="value">{{ backoffice_hash }}</div>
+    </div>
+    <div class="field">
+        <label for="build-time" i18n="@@buildTime">Build:</label>
+        <div name="build-time" class="value">{{ backoffice_build }}</div>
     </div>
 </section>
 <h3 i18n="@@apiHeader">API</h3>
