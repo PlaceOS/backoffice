@@ -1092,7 +1092,7 @@ class DomainsComponent extends _shared_components_base_root_component__WEBPACK_I
                     this.modal_ref.componentInstance.loading = 'Deleting domain...';
                     Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["removeDomain"])(this.item.id).subscribe(() => {
                         this._service.notifySuccess(`Successfully deleted domain "${this.item.name}".`);
-                        this._router.navigate(['/users']);
+                        this._router.navigate(['/domains']);
                         this._service.set('BACKOFFICE.removed', this.item.id);
                         this.modal_ref.close();
                     }, err => {

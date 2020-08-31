@@ -2481,7 +2481,7 @@
                   Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["removeDomain"])(_this23.item.id).subscribe(function () {
                     _this23._service.notifySuccess("Successfully deleted domain \"".concat(_this23.item.name, "\"."));
 
-                    _this23._router.navigate(['/users']);
+                    _this23._router.navigate(['/domains']);
 
                     _this23._service.set('BACKOFFICE.removed', _this23.item.id);
 
