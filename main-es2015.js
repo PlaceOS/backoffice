@@ -20067,7 +20067,6 @@ function generateModuleFormFields(module) {
             switch (value.role) {
                 case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].Service:
                 case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].Websocket:
-                    fields.ip.setValidators([]);
                     fields.uri.setValidators([_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required, _validation_utilities__WEBPACK_IMPORTED_MODULE_2__["validateURI"]]);
                     fields.udp.setValue(false);
                     break;
@@ -20883,9 +20882,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateJSONString", function() { return validateJSONString; });
 /* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/__ivy_ngcc__/fesm2015/forms.js");
 
-const validateIpAddress = (ctrl) => /^(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)$/g.test(ctrl.value || '') || /^(?!:\/\/)(?=.{1,255}$)((.{1,63}\.){1,127}(?![0-9]*$)[a-z0-9-]+\.?)$/gi.test(ctrl.value)
+const validateIpAddress = (ctrl) => (ctrl === null || ctrl === void 0 ? void 0 : ctrl.value) ? /^(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)$/g.test(ctrl.value || '') ||
+    /^(?!:\/\/)(?=.{1,255}$)((.{1,63}\.){1,127}(?![0-9]*$)[a-z0-9-]+\.?)$/gi.test(ctrl.value)
     ? null
-    : { pattern: true };
+    : { pattern: true }
+    : null;
 const validateURI = (ctrl) => {
     if (!ctrl.value) {
         return null;
@@ -22279,16 +22280,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "9e4f60f",
-    "hash": "9e4f60f",
+    "raw": "e88e535",
+    "hash": "e88e535",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "9e4f60f",
+    "suffix": "e88e535",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1598923158952
+    "time": 1598931566663
 };
 /* tslint:enable */
 
