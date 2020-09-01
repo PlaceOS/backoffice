@@ -88,7 +88,7 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
      * @param module Module to list status variables
      */
     public loadSystemStatusVariables(mod_name: string, side: 'left' | 'right') {
-        const name = mod_name.split('_');
+        const name = (mod_name || '').split('_');
         systemModuleState(this.system.id, name[0], +name[1]).subscribe(
             var_map => {
                 if (Object.keys(var_map).length <= 0) {

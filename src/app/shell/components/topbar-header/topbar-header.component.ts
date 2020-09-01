@@ -82,7 +82,8 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
 
     /** Current environment of the application */
     public get env(): string {
-        return authority().production ? 'prod' : this._service.setting('env');
+        const auth: any = authority() || {};
+        return auth.production ? 'prod' : this._service.setting('env');
     }
 
     constructor(
