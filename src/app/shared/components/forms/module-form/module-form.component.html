@@ -50,14 +50,40 @@
                     </div>
                 </ng-template>
             </div>
+            <div
+                class="field"
+                *ngIf="form.controls.uri && (role === 'service' || role === 'websocket')"
+            >
+                <label
+                    for="uri"
+                    [class.error]="form.controls.uri.invalid && form.controls.uri.touched"
+                    i18n="@@uriLabel"
+                >
+                    URI<span>*</span>:
+                </label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="uri"
+                        placeholder="Module URI"
+                        i18n-placeholder="@@uriPlaceholder"
+                        formControlName="uri"
+                    />
+                    <mat-error i18n="@@uriError">A valid URI is required</mat-error>
+                </mat-form-field>
+            </div>
             <div class="fieldset">
-                <div class="field" *ngIf="form.controls.ip && role !== 'logic'">
+                <div
+                    class="field"
+                    *ngIf="form.controls.ip && !(role === 'service' || role === 'websocket')"
+                >
                     <label
                         for="ip"
                         [class.error]="form.controls.ip.invalid && form.controls.ip.touched"
                         i18n="@@ipAddressLabel"
                     >
-                        IP Address or FQDN<span *ngIf="role === 'ssh' || role === 'device'">*</span>:
+                        IP Address or FQDN<span *ngIf="role === 'ssh' || role === 'device'">*</span
+                        >:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -72,7 +98,10 @@
                         </mat-error>
                     </mat-form-field>
                 </div>
-                <div class="field" *ngIf="form.controls.port && role !== 'logic'">
+                <div
+                    class="field"
+                    *ngIf="form.controls.port && !(role === 'service' || role === 'websocket')"
+                >
                     <label
                         for="port-number"
                         [class.error]="form.controls.port.invalid && form.controls.port.touched"
@@ -95,12 +124,15 @@
                     </mat-form-field>
                 </div>
             </div>
-            <div class="field" *ngIf="form.controls.tls && role !== 'logic'">
+            <div
+                class="field"
+                *ngIf="form.controls.tls && !(role === 'service' || role === 'websocket')"
+            >
                 <mat-checkbox name="tls" formControlName="tls" i18n="@@tlsLabel">TLS</mat-checkbox>
             </div>
             <div
                 class="field"
-                *ngIf="form.controls.udp && role !== 'logic' && role !== 'websocket'"
+                *ngIf="form.controls.udp && !(role === 'service' || role === 'websocket')"
             >
                 <mat-checkbox name="udp" formControlName="udp" i18n="@@udpLabel">UDP</mat-checkbox>
             </div>
@@ -117,27 +149,6 @@
                 >
                     Ignore Connected
                 </mat-checkbox>
-            </div>
-            <div class="field" *ngIf="form.controls.uri && role !== 'logic'">
-                <label
-                    for="uri"
-                    [class.error]="form.controls.uri.invalid && form.controls.uri.touched"
-                    i18n="@@uriLabel"
-                >
-                    URI<span *ngIf="role === 'websocket' || role === 'service'">*</span>:
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="uri"
-                        placeholder="Module URI"
-                        i18n-placeholder="@@uriPlaceholder"
-                        formControlName="uri"
-                    />
-                    <mat-error *ngIf="form.controls.uri.invalid" i18n="@@uriError"
-                        >A valid URI is required</mat-error
-                    >
-                </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.notes">
                 <label for="notes" i18n="@@notesLabel">Notes:</label>

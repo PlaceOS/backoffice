@@ -38,6 +38,7 @@ export function generateModuleFormFields(module: PlaceModule): FormGroup {
             switch (value.role) {
                 case PlaceDriverRole.Service:
                 case PlaceDriverRole.Websocket:
+                    fields.ip.setValidators([]);
                     fields.uri.setValidators([Validators.required, validateURI]);
                     fields.udp.setValue(false);
                     break;
