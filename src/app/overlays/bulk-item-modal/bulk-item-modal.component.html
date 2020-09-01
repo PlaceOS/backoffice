@@ -8,7 +8,11 @@
     <main>
         <div [ngSwitch]="flow_step">
             <div *ngSwitchCase="'status'">
-                <bulk-item-status-list [list]="item_list" (done)="done()"></bulk-item-status-list>
+                <bulk-item-status-list
+                    [save]="save"
+                    [list]="item_list"
+                    (done)="done()"
+                ></bulk-item-status-list>
             </div>
             <div *ngSwitchCase="'list'">
                 <bulk-item-list

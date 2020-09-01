@@ -6,7 +6,7 @@ export const SYSTEM_TEMPLATE = {
     description: 'A description',
     email: 'system@place.tech',
     capacity: 10,
-    features: 'vidConf',
+    features: ['vidConf'],
     bookable: true,
     installed_ui_devices: 4,
     support_url: 'https://place.tech/support/test',

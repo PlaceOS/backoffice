@@ -1,6 +1,8 @@
 import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 
 import { HashMap } from 'src/app/shared/utilities/types.utilities';
+import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'bulk-item-status-list',
@@ -10,6 +12,8 @@ import { HashMap } from 'src/app/shared/utilities/types.utilities';
 export class StatusListComponent implements OnChanges {
     /** List of bulk items to add */
     @Input() public list: HashMap<any>[] = [];
+    /** Method to save changes to items in the list */
+    @Input() public save: (item: HashMap) => Observable<PlaceResource>
     /** Emitter for completion status of the item upload */
     @Output() public done = new EventEmitter<HashMap<any>[]>();
     /** Status of each of the items to be created */
@@ -26,9 +30,8 @@ export class StatusListComponent implements OnChanges {
         const list = [];
         let index = 0;
         for (const item of this.list) {
-            item.storePendingChange('id', '');
             this.status[index] = 'loading';
-            const saved_item = await item.save().catch((err) => {
+            const saved_item = await this.save({ ...item, id: '' }).toPromise().catch((err) => {
                 this.status[index] = `Error: ${err.message || err}`;
                 console.error(this.status[index])
                 // this._service.notifyError(this.status[index]);

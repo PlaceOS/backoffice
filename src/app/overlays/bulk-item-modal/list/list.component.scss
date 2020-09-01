@@ -11,3 +11,13 @@
         margin: .5em .25em 0;
     }
 }
+
+.details {
+    width: 100%;
+    overflow: auto;
+    padding-bottom: 1em;
+}
+
+input {
+    min-width: 4em;
+}

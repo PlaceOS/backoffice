@@ -93,7 +93,7 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
             var_map => {
                 if (Object.keys(var_map).length <= 0) {
                     var_map.connected = true;
-                }
+            }
                 this[`${side}_status_variables`] = Object.keys(var_map).map(key => ({
                     id: key,
                     name: key
