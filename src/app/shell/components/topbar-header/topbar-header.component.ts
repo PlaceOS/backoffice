@@ -129,7 +129,8 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
      */
     protected newItem<T = any>(item: any, save: any, name: string, constr: Type<T>) {
         if (this.bulk) {
-            this._dialog.open(BulkItemModalComponent, {
+            this._service.set('disable_uploads', true);
+            const ref = this._dialog.open(BulkItemModalComponent, {
                 height: 'auto',
                 width: 'auto',
                 maxHeight: 'calc(100vh - 2em)',
@@ -140,6 +141,7 @@ export class TopbarHeaderComponent extends BaseDirective implements OnInit {
                     save,
                 },
             });
+            ref.afterClosed().subscribe(() => this._service.set('disable_uploads', false));
         } else {
             this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',

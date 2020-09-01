@@ -37,6 +37,10 @@ export class UploadListComponent extends BaseDirective implements OnInit {
     /** List of uploads */
     public uploads: UploadDetails[] = [];
 
+    public get enabled() {
+        return !this._service.get('disable_uploads');
+    }
+
     constructor(private _upload_manager: UploadManager, private _service: ApplicationService) {
         super();
     }
