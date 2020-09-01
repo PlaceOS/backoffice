@@ -2340,7 +2340,7 @@
   }
 
   function _templateObject110() {
-    var data = _taggedTemplateLiteral([":@@uriError\u241Fbb520c49c10ca9297385a6f2b79b8c3ab1fcfebd\u241F6435500942819855534:A valid URI is required"]);
+    var data = _taggedTemplateLiteral([":@@ignoreConnectedLabel\u241Ff5448136c97e82df20b9f2dac9320eb08bd9890b\u241F9154328713539594350: Ignore Connected "]);
 
     _templateObject110 = function _templateObject110() {
       return data;
@@ -2350,7 +2350,7 @@
   }
 
   function _templateObject109() {
-    var data = _taggedTemplateLiteral([":@@uriLabel\u241Fa41884654941baa095cf99621a74f3ff2dae2b33\u241F4312123178941532134: URI", ":START_TAG_SPAN:*", ":CLOSE_TAG_SPAN:: "]);
+    var data = _taggedTemplateLiteral([":@@makebreakLabel\u241F65f94f61020b4caf9818c57fe9a5a36422c3e775\u241F3411855928832783247:Makebreak"]);
 
     _templateObject109 = function _templateObject109() {
       return data;
@@ -2360,7 +2360,7 @@
   }
 
   function _templateObject108() {
-    var data = _taggedTemplateLiteral([":@@uriPlaceholder\u241F0ce47a42a1fadbc220ef94b765f13f02e235a075\u241F7017931458829945839:Module URI"]);
+    var data = _taggedTemplateLiteral([":@@udpLabel\u241Fd2a6ad6e8bc315f07911722c05767ac79c136d99\u241F3773803671682342506:UDP"]);
 
     _templateObject108 = function _templateObject108() {
       return data;
@@ -2370,7 +2370,7 @@
   }
 
   function _templateObject107() {
-    var data = _taggedTemplateLiteral([":@@ignoreConnectedLabel\u241Ff5448136c97e82df20b9f2dac9320eb08bd9890b\u241F9154328713539594350: Ignore Connected "]);
+    var data = _taggedTemplateLiteral([":@@tlsLabel\u241F9f966f03180c9b2eced60276708343ca9853ef77\u241F8264734555769135431:TLS"]);
 
     _templateObject107 = function _templateObject107() {
       return data;
@@ -2380,7 +2380,7 @@
   }
 
   function _templateObject106() {
-    var data = _taggedTemplateLiteral([":@@makebreakLabel\u241F65f94f61020b4caf9818c57fe9a5a36422c3e775\u241F3411855928832783247:Makebreak"]);
+    var data = _taggedTemplateLiteral([":@@portError\u241F22ded6a800b72ae17a3e86945e77ec1cdb379730\u241F1657712352379965062: A valid port number between 1 - 65535 is required "]);
 
     _templateObject106 = function _templateObject106() {
       return data;
@@ -2390,7 +2390,7 @@
   }
 
   function _templateObject105() {
-    var data = _taggedTemplateLiteral([":@@udpLabel\u241Fd2a6ad6e8bc315f07911722c05767ac79c136d99\u241F3773803671682342506:UDP"]);
+    var data = _taggedTemplateLiteral([":@@portLabel\u241Fc2d21f9fffa38f94f4f6d744113754dc6779b3a1\u241F2967822282311223203: Port Number", ":START_TAG_SPAN:*", ":CLOSE_TAG_SPAN:: "]);
 
     _templateObject105 = function _templateObject105() {
       return data;
@@ -2400,7 +2400,7 @@
   }
 
   function _templateObject104() {
-    var data = _taggedTemplateLiteral([":@@tlsLabel\u241F9f966f03180c9b2eced60276708343ca9853ef77\u241F8264734555769135431:TLS"]);
+    var data = _taggedTemplateLiteral([":@@portPlaceholder\u241Feb7096be937ec74616991ccb4e156f395afbf1cd\u241F7829730324938512830:Port Number"]);
 
     _templateObject104 = function _templateObject104() {
       return data;
@@ -2410,7 +2410,7 @@
   }
 
   function _templateObject103() {
-    var data = _taggedTemplateLiteral([":@@portError\u241F22ded6a800b72ae17a3e86945e77ec1cdb379730\u241F1657712352379965062: A valid port number between 1 - 65535 is required "]);
+    var data = _taggedTemplateLiteral([":@@ipAddressError\u241F017618d5155ce33f6e114aa63d87fecd8c278526\u241F7738124471717547709: A valid IP address is required "]);
 
     _templateObject103 = function _templateObject103() {
       return data;
@@ -2420,7 +2420,7 @@
   }
 
   function _templateObject102() {
-    var data = _taggedTemplateLiteral([":@@portLabel\u241Fc2d21f9fffa38f94f4f6d744113754dc6779b3a1\u241F2967822282311223203: Port Number", ":START_TAG_SPAN:*", ":CLOSE_TAG_SPAN:: "]);
+    var data = _taggedTemplateLiteral([":@@ipAddressLabel\u241F110806cacebf0851c5dc034ff09c91c6de8e9727\u241F6716704441760289338: IP Address or FQDN", ":START_TAG_SPAN:*", ":CLOSE_TAG_SPAN:: "]);
 
     _templateObject102 = function _templateObject102() {
       return data;
@@ -2430,7 +2430,7 @@
   }
 
   function _templateObject101() {
-    var data = _taggedTemplateLiteral([":@@portPlaceholder\u241Feb7096be937ec74616991ccb4e156f395afbf1cd\u241F7829730324938512830:Port Number"]);
+    var data = _taggedTemplateLiteral([":@@ipAddressPlaceholder\u241F1c1113c07fe4f7008c667f8fb1c5d397fa2055b1\u241F1827245616056417685:IP Address"]);
 
     _templateObject101 = function _templateObject101() {
       return data;
@@ -2440,7 +2440,7 @@
   }
 
   function _templateObject100() {
-    var data = _taggedTemplateLiteral([":@@ipAddressError\u241F017618d5155ce33f6e114aa63d87fecd8c278526\u241F7738124471717547709: A valid IP address is required "]);
+    var data = _taggedTemplateLiteral([":@@uriError\u241Fbb520c49c10ca9297385a6f2b79b8c3ab1fcfebd\u241F6435500942819855534:A valid URI is required"]);
 
     _templateObject100 = function _templateObject100() {
       return data;
@@ -2450,7 +2450,7 @@
   }
 
   function _templateObject99() {
-    var data = _taggedTemplateLiteral([":@@ipAddressLabel\u241F110806cacebf0851c5dc034ff09c91c6de8e9727\u241F6716704441760289338: IP Address or FQDN", ":START_TAG_SPAN:*", ":CLOSE_TAG_SPAN:: "]);
+    var data = _taggedTemplateLiteral([":@@uriPlaceholder\u241F0ce47a42a1fadbc220ef94b765f13f02e235a075\u241F7017931458829945839:Module URI"]);
 
     _templateObject99 = function _templateObject99() {
       return data;
@@ -2460,7 +2460,7 @@
   }
 
   function _templateObject98() {
-    var data = _taggedTemplateLiteral([":@@ipAddressPlaceholder\u241F1c1113c07fe4f7008c667f8fb1c5d397fa2055b1\u241F1827245616056417685:IP Address"]);
+    var data = _taggedTemplateLiteral([":@@uriLabel\u241Fa41884654941baa095cf99621a74f3ff2dae2b33\u241F4312123178941532134: URI", ":START_TAG_SPAN:*", ":CLOSE_TAG_SPAN:: "]);
 
     _templateObject98 = function _templateObject98() {
       return data;
@@ -21552,58 +21552,38 @@
         }
       }
 
-      var I18N_9;
-
-      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_ipAddressPlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____10 = goog.getMsg("IP Address");
-        I18N_9 = MSG_EXTERNAL_ipAddressPlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____10;
-      } else {
-        I18N_9 = $localize(_templateObject98());
-      }
-
-      var _c11 = ["placeholder", I18N_9];
       var I18N_8;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_ipAddressLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____12 = goog.getMsg(" IP Address or FQDN{$startTagSpan}*{$closeTagSpan}: ", {
-          "startTagSpan": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
-          "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD"
+        var MSG_EXTERNAL_uriLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____9 = goog.getMsg(" URI{$startTagSpan}*{$closeTagSpan}: ", {
+          "startTagSpan": "\uFFFD#3\uFFFD",
+          "closeTagSpan": "\uFFFD/#3\uFFFD"
         });
-        I18N_8 = MSG_EXTERNAL_ipAddressLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____12;
+        I18N_8 = MSG_EXTERNAL_uriLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____9;
       } else {
-        I18N_8 = $localize(_templateObject99(), "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD", "\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD");
+        I18N_8 = $localize(_templateObject98(), "\uFFFD#3\uFFFD", "\uFFFD/#3\uFFFD");
       }
 
-      function ModuleFormComponent_div_0_ng_container_3_div_3_span_3_Template(rf, ctx) {
-        if (rf & 1) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nStart"](0, I18N_8, 1);
+      var I18N_10;
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "span");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nEnd"]();
-        }
+      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+        var MSG_EXTERNAL_uriPlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____11 = goog.getMsg("Module URI");
+        I18N_10 = MSG_EXTERNAL_uriPlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____11;
+      } else {
+        I18N_10 = $localize(_templateObject99());
       }
 
+      var _c12 = ["placeholder", I18N_10];
       var I18N_13;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_ipAddressError$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____14 = goog.getMsg(" A valid IP address is required ");
-        I18N_13 = MSG_EXTERNAL_ipAddressError$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____14;
+        var MSG_EXTERNAL_uriError$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____14 = goog.getMsg("A valid URI is required");
+        I18N_13 = MSG_EXTERNAL_uriError$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____14;
       } else {
         I18N_13 = $localize(_templateObject100());
       }
 
-      function ModuleFormComponent_div_0_ng_container_3_div_3_mat_error_7_Template(rf, ctx) {
-        if (rf & 1) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "mat-error");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](1, I18N_13);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        }
-      }
-
-      function ModuleFormComponent_div_0_ng_container_3_div_3_Template(rf, ctx) {
+      function ModuleFormComponent_div_0_ng_container_3_div_2_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 5);
 
@@ -21611,7 +21591,7 @@
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nStart"](2, I18N_8);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, ModuleFormComponent_div_0_ng_container_3_div_3_span_3_Template, 2, 0, "span", 4);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](3, "span");
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nEnd"]();
 
@@ -21621,11 +21601,15 @@
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "input", 18);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nAttributes"](6, _c11);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nAttributes"](6, _c12);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, ModuleFormComponent_div_0_ng_container_3_div_3_mat_error_7_Template, 2, 0, "mat-error", 4);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "mat-error");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](8, I18N_13);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
@@ -21637,23 +21621,15 @@
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("error", ctx_r5.form.controls.ip.invalid && ctx_r5.form.controls.ip.touched);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r5.role === "ssh" || ctx_r5.role === "device");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r5.form.controls.ip.invalid);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("error", ctx_r5.form.controls.uri.invalid && ctx_r5.form.controls.uri.touched);
         }
       }
 
       var I18N_16;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_portPlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____17 = goog.getMsg("Port Number");
-        I18N_16 = MSG_EXTERNAL_portPlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____17;
+        var MSG_EXTERNAL_ipAddressPlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____17 = goog.getMsg("IP Address");
+        I18N_16 = MSG_EXTERNAL_ipAddressPlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____17;
       } else {
         I18N_16 = $localize(_templateObject101());
       }
@@ -21662,11 +21638,11 @@
       var I18N_15;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_portLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____19 = goog.getMsg(" Port Number{$startTagSpan}*{$closeTagSpan}: ", {
+        var MSG_EXTERNAL_ipAddressLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____19 = goog.getMsg(" IP Address or FQDN{$startTagSpan}*{$closeTagSpan}: ", {
           "startTagSpan": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
           "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD"
         });
-        I18N_15 = MSG_EXTERNAL_portLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____19;
+        I18N_15 = MSG_EXTERNAL_ipAddressLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____19;
       } else {
         I18N_15 = $localize(_templateObject102(), "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD", "\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD");
       }
@@ -21684,8 +21660,8 @@
       var I18N_20;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_portError$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____21 = goog.getMsg(" A valid port number between 1 - 65535 is required ");
-        I18N_20 = MSG_EXTERNAL_portError$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____21;
+        var MSG_EXTERNAL_ipAddressError$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____21 = goog.getMsg(" A valid IP address is required ");
+        I18N_20 = MSG_EXTERNAL_ipAddressError$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____21;
       } else {
         I18N_20 = $localize(_templateObject103());
       }
@@ -21734,7 +21710,7 @@
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("error", ctx_r6.form.controls.port.invalid && ctx_r6.form.controls.port.touched);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("error", ctx_r6.form.controls.ip.invalid && ctx_r6.form.controls.ip.touched);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
 
@@ -21742,95 +21718,123 @@
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r6.form.controls.port.invalid);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r6.form.controls.ip.invalid);
         }
       }
 
+      var I18N_23;
+
+      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+        var MSG_EXTERNAL_portPlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____24 = goog.getMsg("Port Number");
+        I18N_23 = MSG_EXTERNAL_portPlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____24;
+      } else {
+        I18N_23 = $localize(_templateObject104());
+      }
+
+      var _c25 = ["placeholder", I18N_23];
       var I18N_22;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_tlsLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____23 = goog.getMsg("TLS");
-        I18N_22 = MSG_EXTERNAL_tlsLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____23;
+        var MSG_EXTERNAL_portLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____26 = goog.getMsg(" Port Number{$startTagSpan}*{$closeTagSpan}: ", {
+          "startTagSpan": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
+          "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD"
+        });
+        I18N_22 = MSG_EXTERNAL_portLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____26;
       } else {
-        I18N_22 = $localize(_templateObject104());
+        I18N_22 = $localize(_templateObject105(), "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD", "\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD");
+      }
+
+      function ModuleFormComponent_div_0_ng_container_3_div_5_span_3_Template(rf, ctx) {
+        if (rf & 1) {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nStart"](0, I18N_22, 1);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "span");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nEnd"]();
+        }
+      }
+
+      var I18N_27;
+
+      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+        var MSG_EXTERNAL_portError$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____28 = goog.getMsg(" A valid port number between 1 - 65535 is required ");
+        I18N_27 = MSG_EXTERNAL_portError$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____28;
+      } else {
+        I18N_27 = $localize(_templateObject106());
+      }
+
+      function ModuleFormComponent_div_0_ng_container_3_div_5_mat_error_7_Template(rf, ctx) {
+        if (rf & 1) {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "mat-error");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](1, I18N_27);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        }
       }
 
       function ModuleFormComponent_div_0_ng_container_3_div_5_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 5);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "mat-checkbox", 21);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "label", 21);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](2, I18N_22);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nStart"](2, I18N_22);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, ModuleFormComponent_div_0_ng_container_3_div_5_span_3_Template, 2, 0, "span", 4);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "mat-form-field", 17);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "input", 22);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nAttributes"](6, _c25);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, ModuleFormComponent_div_0_ng_container_3_div_5_mat_error_7_Template, 2, 0, "mat-error", 4);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         }
+
+        if (rf & 2) {
+          var ctx_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("error", ctx_r7.form.controls.port.invalid && ctx_r7.form.controls.port.touched);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r7.role === "ssh" || ctx_r7.role === "device");
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r7.form.controls.port.invalid);
+        }
       }
 
-      var I18N_24;
+      var I18N_29;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_udpLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____25 = goog.getMsg("UDP");
-        I18N_24 = MSG_EXTERNAL_udpLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____25;
+        var MSG_EXTERNAL_tlsLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____30 = goog.getMsg("TLS");
+        I18N_29 = MSG_EXTERNAL_tlsLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____30;
       } else {
-        I18N_24 = $localize(_templateObject105());
+        I18N_29 = $localize(_templateObject107());
       }
 
       function ModuleFormComponent_div_0_ng_container_3_div_6_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 5);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "mat-checkbox", 22);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](2, I18N_24);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        }
-      }
-
-      var I18N_26;
-
-      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_makebreakLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____27 = goog.getMsg("Makebreak");
-        I18N_26 = MSG_EXTERNAL_makebreakLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____27;
-      } else {
-        I18N_26 = $localize(_templateObject106());
-      }
-
-      function ModuleFormComponent_div_0_ng_container_3_div_7_Template(rf, ctx) {
-        if (rf & 1) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 5);
-
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "mat-checkbox", 23);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](2, I18N_26);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        }
-      }
-
-      var I18N_28;
-
-      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_ignoreConnectedLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____29 = goog.getMsg(" Ignore Connected ");
-        I18N_28 = MSG_EXTERNAL_ignoreConnectedLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____29;
-      } else {
-        I18N_28 = $localize(_templateObject107());
-      }
-
-      function ModuleFormComponent_div_0_ng_container_3_div_8_Template(rf, ctx) {
-        if (rf & 1) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 5);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "mat-checkbox", 24);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](2, I18N_28);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](2, I18N_29);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
@@ -21841,97 +21845,69 @@
       var I18N_31;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_uriPlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____32 = goog.getMsg("Module URI");
-        I18N_31 = MSG_EXTERNAL_uriPlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____32;
+        var MSG_EXTERNAL_udpLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____32 = goog.getMsg("UDP");
+        I18N_31 = MSG_EXTERNAL_udpLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____32;
       } else {
         I18N_31 = $localize(_templateObject108());
       }
 
-      var _c33 = ["placeholder", I18N_31];
-      var I18N_30;
+      function ModuleFormComponent_div_0_ng_container_3_div_7_Template(rf, ctx) {
+        if (rf & 1) {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 5);
 
-      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_uriLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____34 = goog.getMsg(" URI{$startTagSpan}*{$closeTagSpan}: ", {
-          "startTagSpan": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
-          "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD"
-        });
-        I18N_30 = MSG_EXTERNAL_uriLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____34;
-      } else {
-        I18N_30 = $localize(_templateObject109(), "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD", "\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD");
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "mat-checkbox", 24);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](2, I18N_31);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        }
       }
 
-      function ModuleFormComponent_div_0_ng_container_3_div_9_span_3_Template(rf, ctx) {
+      var I18N_33;
+
+      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+        var MSG_EXTERNAL_makebreakLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____34 = goog.getMsg("Makebreak");
+        I18N_33 = MSG_EXTERNAL_makebreakLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____34;
+      } else {
+        I18N_33 = $localize(_templateObject109());
+      }
+
+      function ModuleFormComponent_div_0_ng_container_3_div_8_Template(rf, ctx) {
         if (rf & 1) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nStart"](0, I18N_30, 1);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 5);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "span");
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "mat-checkbox", 25);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nEnd"]();
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](2, I18N_33);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         }
       }
 
       var I18N_35;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_uriError$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____36 = goog.getMsg("A valid URI is required");
-        I18N_35 = MSG_EXTERNAL_uriError$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS_____36;
+        var MSG_EXTERNAL_ignoreConnectedLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____36 = goog.getMsg(" Ignore Connected ");
+        I18N_35 = MSG_EXTERNAL_ignoreConnectedLabel$$SRC_APP_SHARED_COMPONENTS_FORMS_MODULE_FORM_MODULE_FORM_COMPONENT_TS____36;
       } else {
         I18N_35 = $localize(_templateObject110());
-      }
-
-      function ModuleFormComponent_div_0_ng_container_3_div_9_mat_error_7_Template(rf, ctx) {
-        if (rf & 1) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "mat-error");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](1, I18N_35);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        }
       }
 
       function ModuleFormComponent_div_0_ng_container_3_div_9_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 5);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "label", 25);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "mat-checkbox", 26);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nStart"](2, I18N_30);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, ModuleFormComponent_div_0_ng_container_3_div_9_span_3_Template, 2, 0, "span", 4);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "mat-form-field", 17);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "input", 26);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nAttributes"](6, _c33);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, ModuleFormComponent_div_0_ng_container_3_div_9_mat_error_7_Template, 2, 0, "mat-error", 4);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18n"](2, I18N_35);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        }
-
-        if (rf & 2) {
-          var ctx_r11 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("error", ctx_r11.form.controls.uri.invalid && ctx_r11.form.controls.uri.touched);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r11.role === "websocket" || ctx_r11.role === "service");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r11.form.controls.uri.invalid);
         }
       }
 
@@ -21999,15 +21975,15 @@
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, ModuleFormComponent_div_0_ng_container_3_div_1_Template, 7, 5, "div", 3);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 10);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, ModuleFormComponent_div_0_ng_container_3_div_2_Template, 9, 2, "div", 3);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, ModuleFormComponent_div_0_ng_container_3_div_3_Template, 8, 4, "div", 3);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 10);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, ModuleFormComponent_div_0_ng_container_3_div_4_Template, 8, 4, "div", 3);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](5, ModuleFormComponent_div_0_ng_container_3_div_5_Template, 8, 4, "div", 3);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](5, ModuleFormComponent_div_0_ng_container_3_div_5_Template, 3, 0, "div", 3);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](6, ModuleFormComponent_div_0_ng_container_3_div_6_Template, 3, 0, "div", 3);
 
@@ -22015,7 +21991,7 @@
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](8, ModuleFormComponent_div_0_ng_container_3_div_8_Template, 3, 0, "div", 3);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](9, ModuleFormComponent_div_0_ng_container_3_div_9_Template, 8, 4, "div", 3);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](9, ModuleFormComponent_div_0_ng_container_3_div_9_Template, 3, 0, "div", 3);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](10, ModuleFormComponent_div_0_ng_container_3_div_10_Template, 5, 0, "div", 3);
 
@@ -22031,21 +22007,25 @@
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.form.controls.system && ctx_r2.role === "logic");
 
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.form.controls.uri && (ctx_r2.role === "service" || ctx_r2.role === "websocket"));
+
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.form.controls.ip && ctx_r2.role !== "logic");
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.form.controls.ip && !(ctx_r2.role === "service" || ctx_r2.role === "websocket"));
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.form.controls.port && ctx_r2.role !== "logic");
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.form.controls.port && !(ctx_r2.role === "service" || ctx_r2.role === "websocket"));
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.form.controls.tls && ctx_r2.role !== "logic");
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.form.controls.tls && !(ctx_r2.role === "service" || ctx_r2.role === "websocket"));
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.form.controls.udp && ctx_r2.role !== "logic" && ctx_r2.role !== "websocket");
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.form.controls.udp && !(ctx_r2.role === "service" || ctx_r2.role === "websocket"));
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
@@ -22054,10 +22034,6 @@
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.form.controls.ignore_connected && ctx_r2.role !== "logic");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r2.form.controls.uri && ctx_r2.role !== "logic");
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
@@ -22182,7 +22158,7 @@
         features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]],
         decls: 1,
         vars: 1,
-        consts: [["class", "module form", 4, "ngIf"], [1, "module", "form"], [3, "formGroup"], ["class", "field", 4, "ngIf"], [4, "ngIf"], [1, "field"], ["for", "driver"], ["name", "driver", "formControlName", "driver", 3, "query_fn"], ["class", "error", 4, "ngIf"], [1, "error"], [1, "fieldset"], ["for", "system"], [4, "ngIf", "ngIfElse"], ["readonly_system", ""], ["name", "system", "formControlName", "system", 3, "query_fn"], [1, "value"], ["for", "ip"], ["appearance", "outline"], ["matInput", "", "name", "ip", "formControlName", "ip", 6, "placeholder"], ["for", "port-number"], ["matInput", "", "name", "port-number", "type", "number", "formControlName", "port", 6, "placeholder"], ["name", "tls", "formControlName", "tls"], ["name", "udp", "formControlName", "udp"], ["name", "makebreak", "formControlName", "makebreak"], ["name", "ignore-connected", "formControlName", "ignore_connected"], ["for", "uri"], ["matInput", "", "name", "uri", "formControlName", "uri", 6, "placeholder"], ["for", "notes"], ["matInput", "", "name", "notes", "placeholder", "Module Notes", "formControlName", "notes"], ["for", "custom-name"], ["matInput", "", "name", "custom-name", "placeholder", "Custom Name", "formControlName", "custom_name"]],
+        consts: [["class", "module form", 4, "ngIf"], [1, "module", "form"], [3, "formGroup"], ["class", "field", 4, "ngIf"], [4, "ngIf"], [1, "field"], ["for", "driver"], ["name", "driver", "formControlName", "driver", 3, "query_fn"], ["class", "error", 4, "ngIf"], [1, "error"], [1, "fieldset"], ["for", "system"], [4, "ngIf", "ngIfElse"], ["readonly_system", ""], ["name", "system", "formControlName", "system", 3, "query_fn"], [1, "value"], ["for", "uri"], ["appearance", "outline"], ["matInput", "", "name", "uri", "formControlName", "uri", 6, "placeholder"], ["for", "ip"], ["matInput", "", "name", "ip", "formControlName", "ip", 6, "placeholder"], ["for", "port-number"], ["matInput", "", "name", "port-number", "type", "number", "formControlName", "port", 6, "placeholder"], ["name", "tls", "formControlName", "tls"], ["name", "udp", "formControlName", "udp"], ["name", "makebreak", "formControlName", "makebreak"], ["name", "ignore-connected", "formControlName", "ignore_connected"], ["for", "notes"], ["matInput", "", "name", "notes", "placeholder", "Module Notes", "formControlName", "notes"], ["for", "custom-name"], ["matInput", "", "name", "custom-name", "placeholder", "Custom Name", "formControlName", "custom_name"]],
         template: function ModuleFormComponent_Template(rf, ctx) {
           if (rf & 1) {
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, ModuleFormComponent_div_0_Template, 4, 3, "div", 0);
@@ -41144,6 +41120,7 @@
             switch (value.role) {
               case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].Service:
               case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].Websocket:
+                fields.ip.setValidators([]);
                 fields.uri.setValidators([_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required, _validation_utilities__WEBPACK_IMPORTED_MODULE_2__["validateURI"]]);
                 fields.udp.setValue(false);
                 break;
@@ -45378,16 +45355,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "f6ea7c5",
-        "hash": "f6ea7c5",
+        "raw": "9e4f60f",
+        "hash": "9e4f60f",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "f6ea7c5",
+        "suffix": "9e4f60f",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1598869918593
+        "time": 1598923158952
       };
       /* tslint:enable */
 
