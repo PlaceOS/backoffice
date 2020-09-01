@@ -13392,7 +13392,7 @@ class TriggerConditionComparisonFormComponent {
      * @param module Module to list status variables
      */
     loadSystemStatusVariables(mod_name, side) {
-        const name = mod_name.split('_');
+        const name = (mod_name || '').split('_');
         Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["systemModuleState"])(this.system.id, name[0], +name[1]).subscribe(var_map => {
             if (Object.keys(var_map).length <= 0) {
                 var_map.connected = true;
@@ -21732,7 +21732,8 @@ class TopbarHeaderComponent extends _shared_globals_base_directive__WEBPACK_IMPO
     }
     /** Current environment of the application */
     get env() {
-        return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["authority"])().production ? 'prod' : this._service.setting('env');
+        const auth = Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["authority"])() || {};
+        return auth.production ? 'prod' : this._service.setting('env');
     }
     ngOnInit() { }
     notAFool() {
@@ -22280,16 +22281,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "e88e535",
-    "hash": "e88e535",
+    "raw": "0aaab5d",
+    "hash": "0aaab5d",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "e88e535",
+    "suffix": "0aaab5d",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1598931566663
+    "time": 1598947509643
 };
 /* tslint:enable */
 
