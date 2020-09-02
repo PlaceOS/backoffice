@@ -3043,8 +3043,11 @@
             this.subscription('confirm_ref', ref.componentInstance.event.subscribe(function (e) {
               if (e.reason === 'done') {
                 _this20.hide_exec = true;
-                Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["removeSystemModule"])(_this20.item.id, device.id).toPromise().then(function () {
+                Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["removeSystemModule"])(_this20.item.id, device.id).toPromise().then(function (item) {
                   _this20.hide_exec = false;
+                  _this20.item = item;
+
+                  _this20._service.set('BACKOFFICE.active_item', _this20.item);
 
                   _this20._service.notifySuccess('Succefully removed module.');
 
@@ -3091,12 +3094,9 @@
             this.subscription('modal_events', ref.componentInstance.event.subscribe(function (event) {
               if (event.reason === 'done') {
                 _this21.hide_exec = true;
-                Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addSystemModule"])(_this21.item.id, event.metadata.item.id).toPromise().then(function () {
+                Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addSystemModule"])(_this21.item.id, event.metadata.item.id).toPromise().then(function (item) {
                   _this21.hide_exec = false;
-                  _this21.item = new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceSystem"](Object.assign(Object.assign({}, _this21.item), {
-                    modules: _this21.item.modules.concat(event.metadata.item.id),
-                    version: _this21.item._version++
-                  }));
+                  _this21.item = item;
 
                   _this21._service.set('BACKOFFICE.active_item', _this21.item);
 
@@ -3132,12 +3132,11 @@
             }
 
             this.hide_exec = true;
-            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addSystemModule"])(this.item.id, id).toPromise().then(function () {
+            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addSystemModule"])(this.item.id, id).toPromise().then(function (item) {
               _this22.hide_exec = false;
-              _this22.item = new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceSystem"](Object.assign(Object.assign({}, _this22.item), {
-                modules: _this22.item.modules.concat(id),
-                version: _this22.item._version++
-              }));
+              _this22.item = item;
+
+              _this22._service.set('BACKOFFICE.active_item', _this22.item);
 
               _this22._service.notifySuccess('Successfully added device to system');
 

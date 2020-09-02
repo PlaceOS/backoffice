@@ -1350,8 +1350,10 @@ class SystemModulesComponent extends _shared_globals_base_directive__WEBPACK_IMP
                 this.hide_exec = true;
                 Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["removeSystemModule"])(this.item.id, device.id)
                     .toPromise()
-                    .then(() => {
+                    .then((item) => {
                     this.hide_exec = false;
+                    this.item = item;
+                    this._service.set('BACKOFFICE.active_item', this.item);
                     this._service.notifySuccess('Succefully removed module.');
                     this.devices.splice(this.devices.indexOf(device), 1);
                     ref.close();
@@ -1386,9 +1388,9 @@ class SystemModulesComponent extends _shared_globals_base_directive__WEBPACK_IMP
                 this.hide_exec = true;
                 Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addSystemModule"])(this.item.id, event.metadata.item.id)
                     .toPromise()
-                    .then(() => {
+                    .then((item) => {
                     this.hide_exec = false;
-                    this.item = new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceSystem"](Object.assign(Object.assign({}, this.item), { modules: this.item.modules.concat(event.metadata.item.id), version: this.item._version++ }));
+                    this.item = item;
                     this._service.set('BACKOFFICE.active_item', this.item);
                     this.timeout('reload_module_list', () => this.loadModules(), 1000);
                 }, (err) => {
@@ -1414,9 +1416,10 @@ class SystemModulesComponent extends _shared_globals_base_directive__WEBPACK_IMP
         this.hide_exec = true;
         Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addSystemModule"])(this.item.id, id)
             .toPromise()
-            .then(() => {
+            .then((item) => {
             this.hide_exec = false;
-            this.item = new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceSystem"](Object.assign(Object.assign({}, this.item), { modules: this.item.modules.concat(id), version: this.item._version++ }));
+            this.item = item;
+            this._service.set('BACKOFFICE.active_item', this.item);
             this._service.notifySuccess('Successfully added device to system');
             this.loadModules();
         }, () => {
