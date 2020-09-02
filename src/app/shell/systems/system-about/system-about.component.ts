@@ -19,7 +19,7 @@ import {
     ConfirmModalData,
     CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-import { map } from 'rxjs/operators';
+import { map, first } from 'rxjs/operators';
 
 @Component({
     selector: 'system-about',
@@ -81,22 +81,20 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
                 },
             }
         );
-        this.subscription(
-            'confirm_ref',
-            ref.componentInstance.event.subscribe((e: DialogEvent) => {
-                if (e.reason === 'done') {
-                    startSystem(this.item.id).subscribe(
-                        (result) => null,
-                        (err) =>
-                            this._service.notifyError(
-                                `Failed to start system: ${JSON.stringify(
-                                    err.response || err.message || err
-                                )}`
-                            )
-                    );
-                }
-            })
-        );
+        ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).subscribe((_) => {
+            startSystem(this.item.id).subscribe(
+                (_) => {
+                    this._service.notifySuccess(`Successfully started system`);
+                    ref.close();
+                },
+                (err) =>
+                    this._service.notifyError(
+                        `Failed to start system: ${JSON.stringify(
+                            err.response || err.message || err
+                        )}`
+                    )
+            );
+        });
     }
 
     /**
@@ -114,22 +112,20 @@ export class SystemAboutComponent extends BaseDirective implements OnChanges, On
                 },
             }
         );
-        this.subscription(
-            'confirm_ref',
-            ref.componentInstance.event.subscribe((e: DialogEvent) => {
-                if (e.reason === 'done') {
-                    stopSystem(this.item.id).subscribe(
-                        (result) => null,
-                        (err) =>
-                            this._service.notifyError(
-                                `Failed to stop system: ${JSON.stringify(
-                                    err.response || err.message || err
-                                )}`
-                            )
-                    );
-                }
-            })
-        );
+        ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).subscribe((_) => {
+            stopSystem(this.item.id).subscribe(
+                (_) => {
+                    this._service.notifySuccess(`Successfully stopped system`);
+                    ref.close();
+                },
+                (err) =>
+                    this._service.notifyError(
+                        `Failed to stop system: ${JSON.stringify(
+                            err.response || err.message || err
+                        )}`
+                    )
+            );
+        });
     }
 
     /**
