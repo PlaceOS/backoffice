@@ -1003,15 +1003,17 @@
               }
             }));
 
-            this.subscription('confirm_ref', ref.componentInstance.event.subscribe(function (e) {
-              if (e.reason === 'done') {
-                Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["startSystem"])(_this3.item.id).subscribe(function (result) {
-                  return null;
-                }, function (err) {
-                  return _this3._service.notifyError("Failed to start system: ".concat(JSON.stringify(err.response || err.message || err)));
-                });
-              }
-            }));
+            ref.componentInstance.event.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["first"])(function (_) {
+              return _.reason === 'done';
+            })).subscribe(function (_) {
+              Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["startSystem"])(_this3.item.id).subscribe(function (_) {
+                _this3._service.notifySuccess("Successfully started system");
+
+                ref.close();
+              }, function (err) {
+                return _this3._service.notifyError("Failed to start system: ".concat(JSON.stringify(err.response || err.message || err)));
+              });
+            });
           }
           /**
            * Open confirmation modal for stopping the active system
@@ -1033,15 +1035,17 @@
               }
             }));
 
-            this.subscription('confirm_ref', ref.componentInstance.event.subscribe(function (e) {
-              if (e.reason === 'done') {
-                Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["stopSystem"])(_this4.item.id).subscribe(function (result) {
-                  return null;
-                }, function (err) {
-                  return _this4._service.notifyError("Failed to stop system: ".concat(JSON.stringify(err.response || err.message || err)));
-                });
-              }
-            }));
+            ref.componentInstance.event.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["first"])(function (_) {
+              return _.reason === 'done';
+            })).subscribe(function (_) {
+              Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["stopSystem"])(_this4.item.id).subscribe(function (_) {
+                _this4._service.notifySuccess("Successfully stopped system");
+
+                ref.close();
+              }, function (err) {
+                return _this4._service.notifyError("Failed to stop system: ".concat(JSON.stringify(err.response || err.message || err)));
+              });
+            });
           }
           /**
            * Load zones associated with the system to allow for merging

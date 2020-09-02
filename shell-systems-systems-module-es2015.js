@@ -346,11 +346,12 @@ class SystemAboutComponent extends _shared_globals_base_directive__WEBPACK_IMPOR
                 content: `Are you sure you want to start this system?<br>All stopped modules within the system will boot up.`,
                 icon: { type: 'icon', class: 'backoffice-controller-play' },
             } }));
-        this.subscription('confirm_ref', ref.componentInstance.event.subscribe((e) => {
-            if (e.reason === 'done') {
-                Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["startSystem"])(this.item.id).subscribe((result) => null, (err) => this._service.notifyError(`Failed to start system: ${JSON.stringify(err.response || err.message || err)}`));
-            }
-        }));
+        ref.componentInstance.event.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["first"])((_) => _.reason === 'done')).subscribe((_) => {
+            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["startSystem"])(this.item.id).subscribe((_) => {
+                this._service.notifySuccess(`Successfully started system`);
+                ref.close();
+            }, (err) => this._service.notifyError(`Failed to start system: ${JSON.stringify(err.response || err.message || err)}`));
+        });
     }
     /**
      * Open confirmation modal for stopping the active system
@@ -361,11 +362,12 @@ class SystemAboutComponent extends _shared_globals_base_directive__WEBPACK_IMPOR
                 content: `Are you sure you want to stop this system?<br>All modules will be immediately stopped regardless of any other systems they may be in.`,
                 icon: { type: 'icon', class: 'backoffice-controller-stop' },
             } }));
-        this.subscription('confirm_ref', ref.componentInstance.event.subscribe((e) => {
-            if (e.reason === 'done') {
-                Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["stopSystem"])(this.item.id).subscribe((result) => null, (err) => this._service.notifyError(`Failed to stop system: ${JSON.stringify(err.response || err.message || err)}`));
-            }
-        }));
+        ref.componentInstance.event.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["first"])((_) => _.reason === 'done')).subscribe((_) => {
+            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["stopSystem"])(this.item.id).subscribe((_) => {
+                this._service.notifySuccess(`Successfully stopped system`);
+                ref.close();
+            }, (err) => this._service.notifyError(`Failed to stop system: ${JSON.stringify(err.response || err.message || err)}`));
+        });
     }
     /**
      * Load zones associated with the system to allow for merging
