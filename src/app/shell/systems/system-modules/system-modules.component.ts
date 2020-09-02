@@ -419,8 +419,10 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                     removeSystemModule(this.item.id, device.id)
                         .toPromise()
                         .then(
-                            () => {
+                            (item) => {
                                 this.hide_exec = false;
+                                this.item = item;
+                                this._service.set('BACKOFFICE.active_item', this.item);
                                 this._service.notifySuccess('Succefully removed module.');
                                 this.devices.splice(this.devices.indexOf(device), 1);
                                 ref.close();
@@ -466,13 +468,9 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
                     addSystemModule(this.item.id, event.metadata.item.id)
                         .toPromise()
                         .then(
-                            () => {
+                            (item) => {
                                 this.hide_exec = false;
-                                this.item = new PlaceSystem({
-                                    ...this.item,
-                                    modules: this.item.modules.concat(event.metadata.item.id),
-                                    version: (this.item as any)._version++,
-                                });
+                                this.item = item;
                                 this._service.set('BACKOFFICE.active_item', this.item);
                                 this.timeout('reload_module_list', () => this.loadModules(), 1000);
                             },
@@ -504,13 +502,10 @@ export class SystemModulesComponent extends BaseDirective implements OnInit, OnC
         addSystemModule(this.item.id, id)
             .toPromise()
             .then(
-                () => {
+                (item) => {
                     this.hide_exec = false;
-                    this.item = new PlaceSystem({
-                        ...this.item,
-                        modules: this.item.modules.concat(id),
-                        version: (this.item as any)._version++,
-                    });
+                    this.item = item;
+                    this._service.set('BACKOFFICE.active_item', this.item);
                     this._service.notifySuccess('Successfully added device to system');
                     this.loadModules();
                 },
