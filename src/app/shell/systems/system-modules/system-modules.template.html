@@ -28,7 +28,7 @@
                 <td class="small" i18n="@@moduleStateLabel">State</td>
                 <td class="name" i18n="@@moduleNameLabel">Name</td>
                 <td class="module" i18n="@@moduleClassLabel">Class</td>
-                <td class="ip" i18n="@@moduleIpLabel">IP</td>
+                <td class="ip" i18n="@@moduleIpLabel">IP/URI</td>
                 <td class="small"></td>
             </thead>
             <tbody cdkDropList (cdkDropListDropped)="drop($event)">
@@ -81,8 +81,8 @@
                         <div class="lock">
                             <i class="backoffice-lock" *ngIf="device.tls"></i>
                         </div>
-                        <a [href]="(device.tls ? 'https://' : 'http://') + device.ip"
-                            >{{device.ip}}</a
+                        <a [href]="device.ip ? (device.tls ? 'https://' : 'http://') + device.ip : device.uri"
+                            >{{device.ip || device.uri}}</a
                         >
                     </td>
                     <td class="duo" touchrelease>
