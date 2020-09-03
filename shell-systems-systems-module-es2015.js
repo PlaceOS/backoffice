@@ -875,11 +875,11 @@ else {
 }
 var I18N_14;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_moduleIpLabel$$SRC_APP_SHELL_SYSTEMS_SYSTEM_MODULES_SYSTEM_MODULES_COMPONENT_TS___15 = goog.getMsg("IP");
+    const MSG_EXTERNAL_moduleIpLabel$$SRC_APP_SHELL_SYSTEMS_SYSTEM_MODULES_SYSTEM_MODULES_COMPONENT_TS___15 = goog.getMsg("IP/URI");
     I18N_14 = MSG_EXTERNAL_moduleIpLabel$$SRC_APP_SHELL_SYSTEMS_SYSTEM_MODULES_SYSTEM_MODULES_COMPONENT_TS___15;
 }
 else {
-    I18N_14 = $localize `:@@moduleIpLabel␟84738b1bbb866302445901b1bca1e9cb5bf8d006␟512712988274106243:IP`;
+    I18N_14 = $localize `:@@moduleIpLabel␟2217451678c314dac35bbb2eb4f0e378dc6489b4␟3770692832990652705:IP/URI`;
 }
 function SystemModulesComponent_div_0_table_12_tr_13_i_5_Template(rf, ctx) { if (rf & 1) {
     const _r13 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
@@ -985,9 +985,9 @@ function SystemModulesComponent_div_0_table_12_tr_13_Template(rf, ctx) { if (rf 
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", device_r5.tls);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("href", (device_r5.tls ? "https://" : "http://") + device_r5.ip, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("href", device_r5.ip ? (device_r5.tls ? "https://" : "http://") + device_r5.ip : device_r5.uri, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](device_r5.ip);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](device_r5.ip || device_r5.uri);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("icon", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction0"](23, _c17));
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);

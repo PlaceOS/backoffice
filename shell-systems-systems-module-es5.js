@@ -106,7 +106,7 @@
   }
 
   function _templateObject22() {
-    var data = _taggedTemplateLiteral([":@@moduleIpLabel\u241F84738b1bbb866302445901b1bca1e9cb5bf8d006\u241F512712988274106243:IP"]);
+    var data = _taggedTemplateLiteral([":@@moduleIpLabel\u241F2217451678c314dac35bbb2eb4f0e378dc6489b4\u241F3770692832990652705:IP/URI"]);
 
     _templateObject22 = function _templateObject22() {
       return data;
@@ -2113,7 +2113,7 @@
       var I18N_14;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_moduleIpLabel$$SRC_APP_SHELL_SYSTEMS_SYSTEM_MODULES_SYSTEM_MODULES_COMPONENT_TS___15 = goog.getMsg("IP");
+        var MSG_EXTERNAL_moduleIpLabel$$SRC_APP_SHELL_SYSTEMS_SYSTEM_MODULES_SYSTEM_MODULES_COMPONENT_TS___15 = goog.getMsg("IP/URI");
         I18N_14 = MSG_EXTERNAL_moduleIpLabel$$SRC_APP_SHELL_SYSTEMS_SYSTEM_MODULES_SYSTEM_MODULES_COMPONENT_TS___15;
       } else {
         I18N_14 = $localize(_templateObject22());
@@ -2395,11 +2395,11 @@
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("href", (device_r5.tls ? "https://" : "http://") + device_r5.ip, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("href", device_r5.ip ? (device_r5.tls ? "https://" : "http://") + device_r5.ip : device_r5.uri, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](device_r5.ip);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](device_r5.ip || device_r5.uri);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
 
