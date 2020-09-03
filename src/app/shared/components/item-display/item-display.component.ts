@@ -181,7 +181,7 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
     public duplicateItem() {
         const ref = this._dialog.open<DuplicateModalComponent, DuplicateModalData>(
             DuplicateModalComponent,
-            { data: { item: this.item } }
+            { data: { item: this.item, save: this.save as any } }
         );
         this.subscription(
             'confirm_ref',
