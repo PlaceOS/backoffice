@@ -19,6 +19,8 @@ export function generateRepositoryFormFields(repository: PlaceRepository): FormG
         description: new FormControl(repository.description || ''),
         uri: new FormControl(repository.uri || '', [Validators.required]),
         repo_type: new FormControl(repository.repo_type || PlaceRepositoryType.Driver),
+        username: new FormControl(repository.username),
+        password: new FormControl(repository.password),
     };
     if (repository.id) {
         if (repository.type === PlaceRepositoryType.Driver) {

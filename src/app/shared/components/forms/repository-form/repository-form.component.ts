@@ -29,6 +29,7 @@ export class RepositoryFormComponent {
         { id: PlaceRepositoryType.Driver, name: 'Driver' },
         { id: PlaceRepositoryType.Interface, name: 'Interface' },
     ];
+    public show_password: boolean = false;
 
     /** Whether item is being edited */
     public get is_edit(): boolean {

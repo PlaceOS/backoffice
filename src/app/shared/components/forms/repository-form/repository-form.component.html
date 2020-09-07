@@ -39,6 +39,7 @@
                     *ngIf="!branch_list || !branch_list.length; else options"
                     matInput
                     name="branch-name"
+
                     placeholder="Branch Name"
                     i18n-placeholder="@@repositoryBranchPlaceholder"
                     formControlName="branch"
@@ -136,6 +137,41 @@
                         } }
                     </mat-option>
                 </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.username">
+            <label for="repo-u" i18n="@@usernameLabel">Repository Username: </label>
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="repo-u"
+                    autocomplete="off"
+                    placeholder="Repository URI"
+                    i18n-placeholder="@@usernamePlaceholder"
+                    formControlName="username"
+                />
+            </mat-form-field>
+        </div>
+        <div class="field" *ngIf="form.controls.password">
+            <label for="repo-p" i18n="@@passwordLabel">Repository Password: </label>
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="repo-p"
+                    autocomplete="new-password"
+                    [type]="show_password ? 'text' : 'password'"
+                    placeholder="Password"
+                    i18n-placeholder="@@passwordPlaceholder"
+                    formControlName="password"
+                />
+                <app-icon
+                    matSuffix
+                    [icon]="{ class: 'material-icons', content: 'visibility' }"
+                    (mousedown)="show_password = true"
+                    (window:mouseup)="show_password = false"
+                    (touchstart)="show_password = true"
+                    (window:touchend)="show_password = false"
+                ></app-icon>
             </mat-form-field>
         </div>
     </form>
