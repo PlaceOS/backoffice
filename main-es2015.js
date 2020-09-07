@@ -10647,11 +10647,11 @@ else {
 }
 var I18N_49;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_usernamePlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_REPOSITORY_FORM_REPOSITORY_FORM_COMPONENT_TS___50 = goog.getMsg("Repository URI");
+    const MSG_EXTERNAL_usernamePlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_REPOSITORY_FORM_REPOSITORY_FORM_COMPONENT_TS___50 = goog.getMsg("Username");
     I18N_49 = MSG_EXTERNAL_usernamePlaceholder$$SRC_APP_SHARED_COMPONENTS_FORMS_REPOSITORY_FORM_REPOSITORY_FORM_COMPONENT_TS___50;
 }
 else {
-    I18N_49 = $localize `:@@usernamePlaceholder␟8c33336b84b4f5384333a03f94b9e2bfa43dfe29␟3081337847567885075:Repository URI`;
+    I18N_49 = $localize `:@@usernamePlaceholder␟08c74dc9762957593b91f6eb5d65efdfc975bf48␟5248717555542428023:Username`;
 }
 const _c51 = ["placeholder", I18N_49];
 function RepositoryFormComponent_div_0_div_10_Template(rf, ctx) { if (rf & 1) {
@@ -22393,16 +22393,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "be6b8b5",
-    "hash": "be6b8b5",
+    "raw": "f66ad4f",
+    "hash": "f66ad4f",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "be6b8b5",
+    "suffix": "f66ad4f",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1599470157280
+    "time": 1599522525730
 };
 /* tslint:enable */
 

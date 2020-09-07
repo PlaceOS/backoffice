@@ -1460,7 +1460,7 @@
               this.modal_ref = this._dialog.open(src_app_overlays_confirm_modal_confirm_modal_component__WEBPACK_IMPORTED_MODULE_4__["ConfirmModalComponent"], Object.assign(Object.assign({}, src_app_overlays_confirm_modal_confirm_modal_component__WEBPACK_IMPORTED_MODULE_4__["CONFIRM_METADATA"]), {
                 data: {
                   title: "Delete repository",
-                  content: "<p>Are you sure you want delete this repository?</p><p>Deleting this repository will <strong>immediately</strong> remove it from all associated systems and zones</p>",
+                  content: "\n                            <p>Are you sure you want delete this repository?</p>\n                            ".concat(this.item.type === _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceRepositoryType"].Driver ? '<p>Deleting this repository will <strong>immediately</strong> remove assoicated drivers and modules</p>' : '', "\n                        "),
                   icon: {
                     type: 'icon',
                     "class": 'backoffice-trash'
