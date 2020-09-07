@@ -135,7 +135,14 @@ export class RepositoriesComponent extends BaseRootComponent<PlaceRepository> {
                     ...CONFIRM_METADATA,
                     data: {
                         title: `Delete repository`,
-                        content: `<p>Are you sure you want delete this repository?</p>`,
+                        content: `
+                            <p>Are you sure you want delete this repository?</p>
+                            ${
+                                this.item.type === PlaceRepositoryType.Driver
+                                    ? '<p>Deleting this repository will <strong>immediately</strong> remove assoicated drivers and modules</p>'
+                                    : ''
+                            }
+                        `,
                         icon: { type: 'icon', class: 'backoffice-trash' },
                     },
                 }
