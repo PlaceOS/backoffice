@@ -167,11 +167,11 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
             }
             this._data
                 .save(
-                    cleanObject({ ...this.item.toJSON(), ...this.form.value }, [
+                    this.item.id ? cleanObject({ ...this.item.toJSON(), ...this.form.value }, [
                         undefined,
                         null,
                         '',
-                    ])
+                    ]): { ...this.item.toJSON(), ...this.form.value }
                 )
                 .subscribe(
                     (item) => {
