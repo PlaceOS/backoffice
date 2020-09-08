@@ -6550,6 +6550,7 @@
 
       var SYSTEM_TEMPLATE = {
         name: 'A System',
+        display_name: "Your System",
         description: 'A description',
         email: 'system@place.tech',
         capacity: 10,
@@ -45616,16 +45617,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "f66ad4f",
-        "hash": "f66ad4f",
+        "raw": "9b9ffe4",
+        "hash": "9b9ffe4",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "f66ad4f",
+        "suffix": "9b9ffe4",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1599522525730
+        "time": 1599608629561
       };
       /* tslint:enable */
 
