@@ -3,6 +3,7 @@ import { PlaceDriverRole } from '@placeos/ts-client';
 
 export const SYSTEM_TEMPLATE = {
     name: 'A System',
+    display_name: "Your System",
     description: 'A description',
     email: 'system@place.tech',
     capacity: 10,
