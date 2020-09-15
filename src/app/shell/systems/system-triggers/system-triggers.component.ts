@@ -116,6 +116,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
         copyToClipboard(
             `${location.origin}/api/engine/v2/webhook/${trigger.id}/notify?secret=${trigger.webhook_secret}`
         );
+        this._service.notifyInfo('Webhook link copied to clipboard');
     }
 
     /**
