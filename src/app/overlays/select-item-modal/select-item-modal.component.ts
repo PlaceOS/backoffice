@@ -1,8 +1,7 @@
-import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Output, EventEmitter, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { ApplicationService } from 'src/app/services/app.service';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { Observable } from 'rxjs';
 
