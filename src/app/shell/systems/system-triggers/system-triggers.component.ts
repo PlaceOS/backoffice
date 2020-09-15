@@ -144,7 +144,7 @@ export class SystemTriggersComponent extends BaseDirective implements OnChanges,
                         const url = `${apiEndpoint()}/systems/${this.item.id}/triggers/${
                             trigger.id
                         }`;
-                        put(url, trigger.toJSON()).subscribe(
+                        put(url, event.metadata).subscribe(
                             () => null,
                             (err) => {
                                 ref.componentInstance.loading = null;

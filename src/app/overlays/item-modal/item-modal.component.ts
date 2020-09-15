@@ -161,45 +161,39 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
         if (this.item && this.form.valid) {
             this.loading = `${this.item.id ? 'Updating' : 'Creating'} ${this.name}...`;
             this._dialog_ref.disableClose = true;
+            const item = this.item.id
+                ? cleanObject({ ...this.item.toJSON(), ...this.form.value }, [undefined, null, ''])
+                : { ...this.item.toJSON(), ...this.form.value };
             if (this._data.external_save) {
-                this.event.emit({ reason: 'action', metadata: this.form.value });
+                this.event.emit({ reason: 'action', metadata: item });
                 return;
             }
-            this._data
-                .save(
-                    this.item.id ? cleanObject({ ...this.item.toJSON(), ...this.form.value }, [
-                        undefined,
-                        null,
-                        '',
-                    ]): { ...this.item.toJSON(), ...this.form.value }
-                )
-                .subscribe(
-                    (item) => {
-                        this.result = item;
-                        this._dialog_ref.disableClose = false;
-                        this.event.emit({ reason: 'done', metadata: { item } });
-                        this._service.notifySuccess(
-                            `Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`
+            this._data.save(item).subscribe(
+                (item) => {
+                    this.result = item;
+                    this._dialog_ref.disableClose = false;
+                    this.event.emit({ reason: 'done', metadata: { item } });
+                    this._service.notifySuccess(
+                        `Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`
+                    );
+                    if (!this.form.value.id && this.form.controls.settings) {
+                        this.newSettings(item, this.form.controls.settings.value).then(() =>
+                            this._dialog_ref.close()
                         );
-                        console.log('Settings:', this.form.controls.settings)
-                        if (!this.form.value.id && this.form.controls.settings) {
-                            this.newSettings(item, this.form.controls.settings.value).then(() =>
-                                this._dialog_ref.close()
-                            );
-                        } else {
-                            this._dialog_ref.close();
-                        }
-                    },
-                    (err) => {
-                        this.loading = null;
-                        this._dialog_ref.disableClose = false;
-                        this._service.notifyError(
-                            `Error ${this.item.id ? 'editing' : 'adding new'} ${
-                                this.name
-                            }. Error: ${JSON.stringify(err.response || err.message || err)}`
-                        );
+                    } else {
+                        this._dialog_ref.close();
                     }
-                );
+                },
+                (err) => {
+                    this.loading = null;
+                    this._dialog_ref.disableClose = false;
+                    this._service.notifyError(
+                        `Error ${this.item.id ? 'editing' : 'adding new'} ${
+                            this.name
+                        }. Error: ${JSON.stringify(err.response || err.message || err)}`
+                    );
+                }
+            );
         }
     }
 
@@ -212,7 +206,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
             settings_string,
             encryption_level: EncryptionLevel.None,
         });
-        console.log('Settings:', new_settings, settings_string)
+        console.log('Settings:', new_settings, settings_string);
         const settings = await addSettings(new_settings)
             .toPromise()
             .catch((err) => {
