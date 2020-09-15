@@ -2310,22 +2310,18 @@ class ItemCreateUpdateModalComponent extends src_app_shared_globals_base_directi
         if (this.item && this.form.valid) {
             this.loading = `${this.item.id ? 'Updating' : 'Creating'} ${this.name}...`;
             this._dialog_ref.disableClose = true;
+            const item = this.item.id
+                ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["cleanObject"])(Object.assign(Object.assign({}, this.item.toJSON()), this.form.value), [undefined, null, ''])
+                : Object.assign(Object.assign({}, this.item.toJSON()), this.form.value);
             if (this._data.external_save) {
-                this.event.emit({ reason: 'action', metadata: this.form.value });
+                this.event.emit({ reason: 'action', metadata: item });
                 return;
             }
-            this._data
-                .save(this.item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["cleanObject"])(Object.assign(Object.assign({}, this.item.toJSON()), this.form.value), [
-                undefined,
-                null,
-                '',
-            ]) : Object.assign(Object.assign({}, this.item.toJSON()), this.form.value))
-                .subscribe((item) => {
+            this._data.save(item).subscribe((item) => {
                 this.result = item;
                 this._dialog_ref.disableClose = false;
                 this.event.emit({ reason: 'done', metadata: { item } });
                 this._service.notifySuccess(`Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`);
-                console.log('Settings:', this.form.controls.settings);
                 if (!this.form.value.id && this.form.controls.settings) {
                     this.newSettings(item, this.form.controls.settings.value).then(() => this._dialog_ref.close());
                 }
@@ -22382,16 +22378,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "2424f8b",
-    "hash": "2424f8b",
+    "raw": "e72a33f",
+    "hash": "e72a33f",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "2424f8b",
+    "suffix": "e72a33f",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1600152044549
+    "time": 1600152733495
 };
 /* tslint:enable */
 

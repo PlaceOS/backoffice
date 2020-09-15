@@ -1781,6 +1781,7 @@ class SystemTriggersComponent extends _shared_globals_base_directive__WEBPACK_IM
     /** Copy the generated webhook URL for the given trigger */
     copyWebhookURL(trigger) {
         Object(src_app_shared_utilities_general_utilities__WEBPACK_IMPORTED_MODULE_7__["copyToClipboard"])(`${location.origin}/api/engine/v2/webhook/${trigger.id}/notify?secret=${trigger.webhook_secret}`);
+        this._service.notifyInfo('Webhook link copied to clipboard');
     }
     /**
      * Open the modal to create a new system
@@ -1803,7 +1804,7 @@ class SystemTriggersComponent extends _shared_globals_base_directive__WEBPACK_IM
                 if (event.reason === 'action') {
                     ref.componentInstance.loading = 'Saving trigger settings...';
                     const url = `${Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["apiEndpoint"])()}/systems/${this.item.id}/triggers/${trigger.id}`;
-                    Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["put"])(url, trigger.toJSON()).subscribe(() => null, (err) => {
+                    Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["put"])(url, event.metadata).subscribe(() => null, (err) => {
                         ref.componentInstance.loading = null;
                         this._service.notifyError(`Error updating trigger settings. Error: ${JSON.stringify(err.response || err.message || err)}`);
                     }, () => {

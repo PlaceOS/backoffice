@@ -8322,16 +8322,17 @@
             if (this.item && this.form.valid) {
               this.loading = "".concat(this.item.id ? 'Updating' : 'Creating', " ").concat(this.name, "...");
               this._dialog_ref.disableClose = true;
+              var item = this.item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["cleanObject"])(Object.assign(Object.assign({}, this.item.toJSON()), this.form.value), [undefined, null, '']) : Object.assign(Object.assign({}, this.item.toJSON()), this.form.value);
 
               if (this._data.external_save) {
                 this.event.emit({
                   reason: 'action',
-                  metadata: this.form.value
+                  metadata: item
                 });
                 return;
               }
 
-              this._data.save(this.item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["cleanObject"])(Object.assign(Object.assign({}, this.item.toJSON()), this.form.value), [undefined, null, '']) : Object.assign(Object.assign({}, this.item.toJSON()), this.form.value)).subscribe(function (item) {
+              this._data.save(item).subscribe(function (item) {
                 _this15.result = item;
                 _this15._dialog_ref.disableClose = false;
 
@@ -8343,8 +8344,6 @@
                 });
 
                 _this15._service.notifySuccess("Successfully ".concat(_this15.item.id ? 'updated' : 'added', " ").concat(_this15.name));
-
-                console.log('Settings:', _this15.form.controls.settings);
 
                 if (!_this15.form.value.id && _this15.form.controls.settings) {
                   _this15.newSettings(item, _this15.form.controls.settings.value).then(function () {
@@ -45593,16 +45592,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "2424f8b",
-        "hash": "2424f8b",
+        "raw": "e72a33f",
+        "hash": "e72a33f",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "2424f8b",
+        "suffix": "e72a33f",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1600152044549
+        "time": 1600152733495
       };
       /* tslint:enable */
 

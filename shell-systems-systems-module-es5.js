@@ -3936,6 +3936,8 @@
           key: "copyWebhookURL",
           value: function copyWebhookURL(trigger) {
             Object(src_app_shared_utilities_general_utilities__WEBPACK_IMPORTED_MODULE_7__["copyToClipboard"])("".concat(location.origin, "/api/engine/v2/webhook/").concat(trigger.id, "/notify?secret=").concat(trigger.webhook_secret));
+
+            this._service.notifyInfo('Webhook link copied to clipboard');
           }
           /**
            * Open the modal to create a new system
@@ -3966,7 +3968,7 @@
                 if (event.reason === 'action') {
                   ref.componentInstance.loading = 'Saving trigger settings...';
                   var url = "".concat(Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["apiEndpoint"])(), "/systems/").concat(_this27.item.id, "/triggers/").concat(trigger.id);
-                  Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["put"])(url, trigger.toJSON()).subscribe(function () {
+                  Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["put"])(url, event.metadata).subscribe(function () {
                     return null;
                   }, function (err) {
                     ref.componentInstance.loading = null;
