@@ -16,7 +16,7 @@ export interface SelectItemModalData<T = any> {
     templateUrl: './select-item-modal.component.html',
     styleUrls: ['./select-item-modal.component.scss']
 })
-export class SelectItemModalComponent extends BaseDirective implements OnInit {
+export class SelectItemModalComponent extends BaseDirective {
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether the item is being editing */
@@ -27,9 +27,7 @@ export class SelectItemModalComponent extends BaseDirective implements OnInit {
     public loading: boolean;
 
     constructor(
-        private _dialog: MatDialogRef<SelectItemModalComponent>,
         @Inject(MAT_DIALOG_DATA) private _data: SelectItemModalData,
-        private _service: ApplicationService
     ) {
         super();
     }
@@ -39,17 +37,7 @@ export class SelectItemModalComponent extends BaseDirective implements OnInit {
     }
 
     public get name(): string {
-        return this.service.name || this.service._name;
-    }
-
-    public get service() {
-        return this._service[this._data.service_name];
-    }
-
-    public ngOnInit(): void {
-        if (!this.service) {
-            this._dialog.close();
-        }
+        return this._data.service_name;
     }
 
     public submit() {
