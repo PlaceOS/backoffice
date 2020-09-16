@@ -3,7 +3,7 @@ import { map, catchError } from 'rxjs/operators';
 
 import { PlaceCluster, queryClusters } from '@placeos/ts-client';
 import { BaseClass } from 'src/app/common/base.class';
-import { HashMap } from 'src/app/shared/utilities/types.utilities';
+import { HashMap } from 'src/app/common/types';
 
 import * as dayjs from 'dayjs';
 

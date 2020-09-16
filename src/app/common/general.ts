@@ -1,4 +1,4 @@
-import { HashMap } from './types';
+import { HashMap, Point } from './types';
 
 /** Available console output streams. */
 export type ConsoleStream = 'debug' | 'warn' | 'log' | 'error';
@@ -96,24 +96,77 @@ export function randomInt(ceil: number, floor: number = 0) {
 }
 
 /**
+ * Copy the given value to the OS Clipboard
+ * @param value String to copy to the clipboard
+ */
+export function copyToClipboard(value: string) {
+    const el = document.createElement('textarea'); // Create a <textarea> element
+    el.value = value; // Set its value to the string that you want copied
+    el.setAttribute('readonly', ''); // Make it readonly to be tamper-proof
+    el.style.position = 'absolute';
+    el.style.left = '-9999px'; // Move outside the screen to make it invisible
+    document.body.appendChild(el); // Append the <textarea> element to the HTML document
+    // Check if there is any content selected previously
+    const selected =
+        document.getSelection().rangeCount > 0
+            ? document.getSelection().getRangeAt(0) // Store selection if found
+            : false; // Mark as false to know no selection existed before
+    // Select the <textarea> content
+    el.select();
+    // Copy - only works as a result of a user action (e.g. click events)
+    document.execCommand('copy');
+    document.body.removeChild(el); // Remove the <textarea> element
+    if (selected) {
+        // If a selection existed before copying
+        // Unselect everything on the HTML document
+        document.getSelection().removeAllRanges();
+        // Restore the original selection
+        document.getSelection().addRange(selected);
+    }
+}
+
+/**
+ * Calculate the position counter for the given number e.g `1st`, `2nd`, `3rd`, `4th`...
+ * @param num Number to caculate position for
+ */
+export function numberToPosition(num: number): string {
+    const mod_ten = num % 10;
+    if (num > 10 && num < 20) {
+        return `${num}th`;
+    } else if (mod_ten === 1) {
+        return `${num}st`;
+    } else if (mod_ten === 2) {
+        return `${num}nd`;
+    } else if (mod_ten === 3) {
+        return `${num}rd`;
+    }
+    return `${num}th`;
+}
+
+/**
  * Parse raw CSV data into a JSON object
  * @param csv CSV data to parse
  */
-export function csvToJson(csv: string) {
+export function csvToJson(csv: string, seperator: string = ',') {
     const lines = csv.split('\n');
-    let fields = lines.splice(0, 1)[0].split(',');
+    let fields = lines.splice(0, 1)[0].split(seperator);
     fields = fields.map((v) => v.replace('\r', ''));
     const list: any[] = [];
     for (const line of lines) {
-        let parts = line.split(',');
+        let parts = line.split(seperator);
         parts = parts.map((v) => v.replace('\r', ''));
+        /* istanbul ignore else */
         if (parts.length >= fields.length) {
             const item: any = {};
             for (let i = 0; i <= parts.length; i++) {
                 let part = null;
                 part = parts[i];
+                /* istanbul ignore else */
                 if (part !== undefined) {
-                    item[(fields[i] || '').split(' ').join('_').toLowerCase()] = part;
+                    let value = '';
+                    try { value = JSON.parse(part) }
+                    catch (e) { value = part; }
+                    item[(fields[i] || '').split(' ').join('_').toLowerCase()] = value;
                 }
             }
             list.push(item);
@@ -121,6 +174,49 @@ export function csvToJson(csv: string) {
     }
 
     return list;
+}
+
+/**
+ * Convert javascript array to CSV string
+ * @param json Javascript array to convert
+ * @param use_keys Fields in the objects to use in the CSV output
+ * @param seperator Seperator between field values in the CSV data
+ */
+export function jsonToCsv(json: HashMap[], use_keys?: string[], seperator = ',') {
+    /* istanbul ignore else */
+    if (json instanceof Array && json.length > 0) {
+        const keys = Object.keys(json[0]);
+        const valid_keys = keys.filter(
+            (key) => (!use_keys || use_keys.includes(key)) && json[0].hasOwnProperty(key)
+        );
+        return `\uFEFF${valid_keys.join(seperator)}\n${json
+            .map((item) =>
+                valid_keys
+                    .map((key) =>
+                        item[key] instanceof Object ? JSON.stringify(item[key]) : item[key]
+                    )
+                    .join(seperator)
+            )
+            .join('\n')}`;
+    }
+    return '';
+}
+
+/**
+ * Grab point details from mouse or touch event
+ * @param event Event to grab details from
+ */
+export function eventToPoint(event: MouseEvent | TouchEvent): Point {
+    if (!event) {
+        return { x: -1, y: -1 };
+    }
+    if (event instanceof MouseEvent) {
+        return { x: event.clientX, y: event.clientY };
+    } else {
+        return event.touches && event.touches.length > 0
+            ? { x: event.touches[0].clientX, y: event.touches[0].clientY }
+            : { x: -1, y: -1 };
+    }
 }
 
 /**

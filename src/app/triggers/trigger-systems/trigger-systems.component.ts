@@ -2,7 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PlaceTrigger, PlaceSystem, querySystems, apiEndpoint, del } from '@placeos/ts-client';
 
-import { DialogEvent, HashMap } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, HashMap } from 'src/app/common/types';
 
 import { BaseClass } from 'src/app/common/base.class';
 import {

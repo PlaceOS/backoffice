@@ -2,7 +2,7 @@ import { PlaceSystem, PlaceZone, EncryptionLevel } from '@placeos/ts-client';
 import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { HashMap } from '../types.utilities';
+import { HashMap } from 'src/app/common/types';
 
 import * as yaml from 'js-yaml';
 

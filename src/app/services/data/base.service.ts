@@ -3,8 +3,8 @@ import { get, post, put, del, onlineState, apiEndpoint } from '@placeos/ts-clien
 import { first } from 'rxjs/operators';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { HashMap } from '../../shared/utilities/types.utilities';
-import { toQueryString } from '../../shared/utilities/api.utilities';
+import { HashMap } from 'src/app/common/types';
+import { toQueryString } from 'src/app/common/api';
 
 export interface IPlaceResponse {
     results: HashMap[];

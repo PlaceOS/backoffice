@@ -22,7 +22,7 @@ import {
     TriggerConditionModalComponent,
     TriggerConditionData,
 } from 'src/app/overlays/trigger-condition-modal/trigger-condition-modal.component';
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent } from 'src/app/common/types';
 import {
     ConfirmModalComponent,
     ConfirmModalData,

@@ -1,7 +1,7 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PlaceApplication } from '@placeos/ts-client';
 
-import { HashMap } from '../types.utilities';
+import { HashMap } from 'src/app/common/types';
 
 export function generateApplicationFormFields(app: PlaceApplication): FormGroup {
     if (!app) {

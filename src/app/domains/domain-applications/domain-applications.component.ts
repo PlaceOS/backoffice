@@ -20,8 +20,8 @@ import {
     ConfirmModalData,
     CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-import { DialogEvent, HashMap } from 'src/app/shared/utilities/types.utilities';
-import { copyToClipboard } from 'src/app/shared/utilities/general.utilities';
+import { DialogEvent, HashMap } from 'src/app/common/types';
+import { copyToClipboard } from 'src/app/common/general';
 import { notifyError, notifySuccess, notifyInfo } from 'src/app/common/notifications';
 
 import * as dayjs from 'dayjs';

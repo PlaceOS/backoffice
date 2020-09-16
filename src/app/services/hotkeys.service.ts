@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
-import { HashMap } from '../shared/utilities/types.utilities';
-import { unique } from '../shared/utilities/general.utilities';
+import { HashMap } from 'src/app/common/types';
+import { unique } from 'src/app/common/general';
 
 /** List of keys that cannot be in a combination by themselves or with each other */
 const INVALID_STANDALONE_KEYS: string[] = ['control', 'shift', 'alt', 'meta', 'os'];

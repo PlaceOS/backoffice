@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 
-import { HashMap } from 'src/app/shared/utilities/types.utilities';
+import { HashMap } from 'src/app/common/types';
 import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
 import { Observable } from 'rxjs';
 

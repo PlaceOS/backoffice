@@ -4,7 +4,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { PlaceDomain, updateDomain } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { validateJSONString } from 'src/app/shared/utilities/validation.utilities';
+import { validateJSONString } from 'src/app/common/validation';
 import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({

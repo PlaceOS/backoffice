@@ -19,7 +19,7 @@ import {
 import { FormGroup } from '@angular/forms';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { DialogEvent, Identity, HashMap } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, Identity, HashMap } from 'src/app/common/types';
 import { generateSystemsFormFields } from 'src/app/shared/utilities/data/systems.utilities';
 import { generateModuleFormFields } from 'src/app/shared/utilities/data/modules.utilities';
 import { generateZoneFormFields } from 'src/app/shared/utilities/data/zones.utilites';

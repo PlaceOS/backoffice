@@ -1,6 +1,6 @@
 import { Component, Input, SimpleChanges, EventEmitter, Output } from '@angular/core';
 
-import { HashMap, Identity } from 'src/app/shared/utilities/types.utilities';
+import { HashMap, Identity } from 'src/app/common/types';
 
 @Component({
     selector: 'bulk-item-match-fields',

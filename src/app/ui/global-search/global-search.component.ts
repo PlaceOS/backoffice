@@ -23,9 +23,9 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from '
 import { Subject, Observable, of } from 'rxjs';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { unique } from 'src/app/shared/utilities/general.utilities';
+import { unique } from 'src/app/common/general';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
-import { HashMap } from 'src/app/shared/utilities/types.utilities';
+import { HashMap } from 'src/app/common/types';
 import { BackofficeUsersService } from 'src/app/services/data/users.service';
 
 @Component({

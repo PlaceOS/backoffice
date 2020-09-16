@@ -2,8 +2,8 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PlaceDriver, PlaceRepository, PlaceDriverRole } from '@placeos/ts-client';
 
-import { HashMap } from '../types.utilities';
-import { validateURI } from '../validation.utilities';
+import { HashMap } from 'src/app/common/types';
+import { validateURI } from 'src/app/common/validation';
 
 export interface DriverInitData {
     repo: PlaceRepository;

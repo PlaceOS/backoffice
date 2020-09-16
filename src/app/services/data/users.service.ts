@@ -6,8 +6,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
 import { first, map } from 'rxjs/operators';
 
-import { FilterFn } from '../../shared/utilities/types.utilities';
-import { toQueryString } from 'src/app/shared/utilities/api.utilities';
+import { FilterFn } from 'src/app/common/types';
+import { toQueryString } from 'src/app/common/api';
 import { BaseClass } from 'src/app/common/base.class';
 import { SettingsService } from '../settings.service';
 

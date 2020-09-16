@@ -10,7 +10,7 @@ import {
 } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent } from 'src/app/common/types';
 import { generateTriggerActionForm } from 'src/app/shared/utilities/data/triggers.utilities';
 import { notifyError, notifySuccess } from 'src/app/common/notifications';
 

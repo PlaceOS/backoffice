@@ -11,8 +11,8 @@ import {
     TriggerMailer
 } from '@placeos/ts-client';
 
-import { validateJSONString } from '../validation.utilities';
-import { HashMap } from '../types.utilities';
+import { validateJSONString } from 'src/app/common/validation';
+import { HashMap } from 'src/app/common/types';
 
 import * as dayjs from 'dayjs';
 

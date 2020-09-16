@@ -10,7 +10,14 @@ export interface Identity extends HashMap {
     name: string;
 }
 
+export type ApplicationLink =
+    | ApplicationLinkAction
+    | ApplicationLinkInternal
+    | ApplicationLinkExternal;
+
 export interface AppLink {
+    /** Identifier for the link */
+    id?: string;
     /** Name of the tile */
     name: string;
     /** Application route the tile will navigate */
@@ -25,18 +32,26 @@ export interface AppLink {
     children?: ApplicationLink[];
     /** Image URL to display with the link */
     background?: string;
+    /** Callback function to respond to action */
+    callback?: () => void;
+}
+
+export interface ApplicationLinkAction extends AppLink {
+    /** Callback function to respond to action */
+    callback: () => void;
 }
 
 export interface ApplicationLinkInternal extends AppLink {
     route: string;
+    /** Role needed to access the link */
+    needs_role?: string;
 }
 
 export interface ApplicationLinkExternal extends AppLink {
     link: string;
 }
 
-/** Metadata for linking to internal or external URLs */
-export type ApplicationLink = ApplicationLinkExternal | ApplicationLinkInternal;
+export type FilterFn<T> = (_: T) => boolean;
 
 export interface ApplicationIcon {
     /** Type of icon */
@@ -56,4 +71,9 @@ export interface DialogEvent<T = any> {
     /** Reason the event was called */
     reason: 'action' | 'close' | 'reset' | 'loading' | 'done' | 'other',
     metadata?: T;
+}
+
+export interface Point {
+    readonly x: number;
+    readonly y: number;
 }

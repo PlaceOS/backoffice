@@ -13,7 +13,7 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { Identity, HashMap, DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { Identity, HashMap, DialogEvent } from 'src/app/common/types';
 import {
     ConfirmModalComponent,
     ConfirmModalData,

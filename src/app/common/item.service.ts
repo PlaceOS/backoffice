@@ -15,10 +15,11 @@ import { SettingsService } from '../services/settings.service';
 import { HotkeysService } from '../services/hotkeys.service';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
 import { notifySuccess, notifyError } from './notifications';
-import { DialogEvent } from '../shared/utilities/types.utilities';
+import { DialogEvent } from 'src/app/common/types';
 import { DuplicateModalComponent, DuplicateModalData } from '../overlays/duplicate-modal/duplicate-modal.component';
 import { QueryResponse } from '@placeos/ts-client/dist/esm/resources/functions';
 import { log } from './general';
+import { BaseClass } from './base.class';
 
 export type ResourceType =
     | 'domains'
@@ -34,11 +35,13 @@ export type ResourceType =
 @Injectable({
     providedIn: 'root',
 })
-export class ActiveItemService {
+export class ActiveItemService extends BaseClass {
     /** Whether active item is loading */
     private _loading = new BehaviorSubject<boolean>(false);
     /** Whether item list should show on mobile */
     private _show_options = new BehaviorSubject<boolean>(false);
+    /** Whether item list should show on mobile */
+    private _search = new BehaviorSubject<string>('');
     /** Currently active item */
     private _active_item = new BehaviorSubject<PlaceResource>(null);
     /** Currently active item */
@@ -77,12 +80,17 @@ export class ActiveItemService {
         this.updateList();
     }
 
+    public setSearch(str: string) {
+        this._search.next(str);
+    }
+
     constructor(
         private _router: Router,
         private _settings: SettingsService,
         private _hotkey: HotkeysService,
         private _dialog: MatDialog
     ) {
+        super();
         this._router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
                 this.updateType();
@@ -91,6 +99,12 @@ export class ActiveItemService {
         this._hotkey.listen(['KeyN'], () => this.create());
         this._hotkey.listen(['KeyE'], () => this.edit());
         this._hotkey.listen(['KeyD'], () => this.delete());
+        this._search.subscribe((str) => {
+            this._loading_list.next(true);
+            this._next_query.next(null);
+            this._list.next([]);
+            this.updateList();
+        });
         setTimeout(() => this.updateType(), 300);
     }
 
@@ -227,6 +241,7 @@ export class ActiveItemService {
         if (old_type !== this._type) {
             this._next_query.next(null);
             this._active_item.next(null);
+            this._search.next('');
             const name = this._type[0].toUpperCase() + this._type.slice(1);
             this._name.next(name);
             this._settings.title = name;
@@ -241,19 +256,21 @@ export class ActiveItemService {
         }
     }
 
-    private async updateList() {
-        if (!this.actions) return;
-        this._loading_list.next(true);
-        let next = this._next_query.getValue();
-        if (!next) {
-            next = this.actions.query;
-            this._list.next([]);
-        }
-        const resp = await next().toPromise();
-        this._next_query.next(resp.next || (() => of({ data: [], total: resp.total, next: null })));
-        const list = this._list.getValue().filter(i => !resp.data.find(item => item.id === i.id));
-        list.sort((a, b) => a.name?.localeCompare(b.name));
-        this._list.next(list.concat(resp.data));
-        this._loading_list.next(false);
+    private updateList() {
+        this.timeout('update', async () => {
+            if (!this.actions) return;
+            this._loading_list.next(true);
+            let next = this._next_query.getValue();
+            if (!next) {
+                next = () => this.actions.query(this._search.getValue());
+                this._list.next([]);
+            }
+            const resp = await next().toPromise();
+            this._next_query.next(resp.next || (() => of({ data: [], total: resp.total, next: null })));
+            const list = this._list.getValue().filter(i => !resp.data.find(item => item.id === i.id));
+            list.sort((a, b) => a.name?.localeCompare(b.name));
+            this._list.next(list.concat(resp.data));
+            this._loading_list.next(false);
+        });
     }
 }

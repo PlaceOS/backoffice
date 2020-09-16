@@ -1,7 +1,7 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PlaceMQTTBroker, AuthType } from '@placeos/ts-client';
 
-import { HashMap } from '../types.utilities';
+import { HashMap } from 'src/app/common/types';
 
 export function generateBrokerFormFields(broker: PlaceMQTTBroker): FormGroup {
     if (!broker) {

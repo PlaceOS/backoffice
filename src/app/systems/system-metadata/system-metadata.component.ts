@@ -8,9 +8,9 @@ import {
 } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { HashMap } from 'src/app/shared/utilities/types.utilities';
+import { HashMap } from 'src/app/common/types';
 import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
-import { validateJSONString } from 'src/app/shared/utilities/validation.utilities';
+import { validateJSONString } from 'src/app/common/validation';
 import { MatDialog } from '@angular/material/dialog';
 import { MetadataDetailsModalComponent } from 'src/app/overlays/metadata-details-modal/metadata-details-modal.component';
 import {

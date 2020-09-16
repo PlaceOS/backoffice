@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { listInterfaceRepositories } from '@placeos/ts-client';
 
-import { Identity } from 'src/app/shared/utilities/types.utilities';
+import { Identity } from 'src/app/common/types';
 
 @Component({
     selector: 'app-interfaces',

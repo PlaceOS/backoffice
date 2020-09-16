@@ -17,14 +17,14 @@ import {
     SelectItemModalComponent,
     SelectItemModalData,
 } from 'src/app/overlays/select-item-modal/select-item-modal.component';
-import { DialogEvent, HashMap } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, HashMap } from 'src/app/common/types';
 import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
     ConfirmModalData,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
-import { copyToClipboard } from 'src/app/shared/utilities/general.utilities';
+import { copyToClipboard } from 'src/app/common/general';
 import { map } from 'rxjs/operators';
 import { notifyInfo, notifyError, notifySuccess } from 'src/app/common/notifications';
 import { ActiveItemService } from 'src/app/common/item.service';

@@ -1,6 +1,6 @@
 import { Validators, FormControl, FormGroup } from '@angular/forms';
 import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
-import { HashMap } from '../types.utilities';
+import { HashMap } from 'src/app/common/types';
 
 /**
  * Generate angular form controls

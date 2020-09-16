@@ -2,7 +2,7 @@ import { Component, Output, EventEmitter, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent } from 'src/app/common/types';
 import { Observable } from 'rxjs';
 
 export interface SelectItemModalData<T = any> {

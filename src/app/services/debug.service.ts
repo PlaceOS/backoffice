@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { PlaceDebugEvent, PlaceModule, debug_events, debug, ignore } from '@placeos/ts-client';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import { HashMap } from '../shared/utilities/types.utilities';
+import { HashMap } from 'src/app/common/types';
 import { BaseClass } from '../common/base.class';
 
 import * as dayjs from 'dayjs';

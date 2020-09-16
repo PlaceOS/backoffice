@@ -15,7 +15,7 @@ import {
 } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { DialogEvent, Identity } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, Identity } from 'src/app/common/types';
 import {
     generateOAuthSourceForm,
     generateLDAPSourceForm,

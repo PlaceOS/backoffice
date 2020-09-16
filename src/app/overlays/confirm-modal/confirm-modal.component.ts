@@ -1,8 +1,8 @@
 import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { ApplicationIcon } from '../../shared/utilities/settings.interfaces';
-import { DialogEvent } from '../../shared/utilities/types.utilities';
+import { ApplicationIcon } from 'src/app/common/types';
+import { DialogEvent } from 'src/app/common/types';
 import { BaseClass } from 'src/app/common/base.class';
 
 export interface ConfirmModalData {

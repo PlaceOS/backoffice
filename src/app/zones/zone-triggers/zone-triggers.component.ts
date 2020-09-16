@@ -19,8 +19,8 @@ import {
     SelectItemModalData,
 } from 'src/app/overlays/select-item-modal/select-item-modal.component';
 import { BaseClass } from 'src/app/common/base.class';
-import { unique } from 'src/app/shared/utilities/general.utilities';
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { unique } from 'src/app/common/general';
+import { DialogEvent } from 'src/app/common/types';
 import { notifySuccess, notifyError } from 'src/app/common/notifications';
 import { ActiveItemService } from 'src/app/common/item.service';
 

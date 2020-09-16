@@ -2,7 +2,7 @@
 import { Validators, FormControl, FormGroup } from '@angular/forms';
 import { PlaceOAuthSource, PlaceLDAPSource, PlaceSAMLSource } from '@placeos/ts-client';
 
-import { HashMap } from '../types.utilities';
+import { HashMap } from 'src/app/common/types';
 
 /**
  * Generate form controls for an OAuth authentication source

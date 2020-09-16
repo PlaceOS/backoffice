@@ -1,7 +1,7 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PlaceDomain } from '@placeos/ts-client';
 
-import { HashMap } from '../types.utilities';
+import { HashMap } from 'src/app/common/types';
 
 export function generateDomainFormFields(domain: PlaceDomain): FormGroup {
     if (!domain) {

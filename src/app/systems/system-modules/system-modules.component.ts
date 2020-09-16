@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -19,13 +19,13 @@ import {
 } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { ApplicationActionLink } from 'src/app/shared/utilities/settings.interfaces';
+import { AppLink } from 'src/app/common/types';
 import {
     ConfirmModalComponent,
     ConfirmModalData,
     CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-import { DialogEvent, HashMap } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent, HashMap } from 'src/app/common/types';
 import {
     ViewModuleStateModalComponent,
     ModuleStateModalData,
@@ -56,7 +56,7 @@ export class SystemModulesComponent extends BaseClass {
     /** Whether to refresh the list of active modules in the exec options */
     public refresh_modules: boolean;
     /** Actions available for the context menu */
-    public menu_options: ApplicationActionLink[] = [
+    public menu_options: AppLink[] = [
         {
             id: 'power',
             name: 'Toggle Power',
@@ -73,7 +73,7 @@ export class SystemModulesComponent extends BaseClass {
         },
     ];
 
-    public offline_options: ApplicationActionLink[] = [
+    public offline_options: AppLink[] = [
         {
             id: 'power',
             name: 'Toggle Power',
@@ -151,7 +151,7 @@ export class SystemModulesComponent extends BaseClass {
      * @param event Event posted by the context menu
      * @param device Module associated with the context menu event
      */
-    public handleContextEvent(event: ApplicationActionLink, device: PlaceModule) {
+    public handleContextEvent(event: AppLink, device: PlaceModule) {
         if (event) {
             switch (event.id) {
                 case 'power':

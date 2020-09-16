@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
 
-import { HashMap } from 'src/app/shared/utilities/types.utilities';
-import { csvToJson, jsonToCsv, downloadFile } from 'src/app/shared/utilities/general.utilities';
+import { HashMap } from 'src/app/common/types';
+import { csvToJson, jsonToCsv, downloadFile } from 'src/app/common/general';
 import { notifyError } from 'src/app/common/notifications';
 
 @Component({

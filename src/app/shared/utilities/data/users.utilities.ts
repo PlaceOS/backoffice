@@ -1,7 +1,7 @@
 import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { PlaceUser } from '@placeos/ts-client';
 
-import { HashMap } from '../types.utilities';
+import { HashMap } from 'src/app/common/types';
 
 export function validateMatch(name: string) {
     return (control: AbstractControl) => {

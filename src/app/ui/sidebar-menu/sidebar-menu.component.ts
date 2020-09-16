@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { authority } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { ApplicationInternalLink } from 'src/app/shared/utilities/settings.interfaces';
+import { ApplicationLinkInternal } from 'src/app/common/types';
 import { SettingsService } from 'src/app/services/settings.service';
 import { BackofficeUsersService } from 'src/app/services/data/users.service';
 import { HotkeysService } from 'src/app/services/hotkeys.service';
@@ -19,7 +19,7 @@ export class SidebarMenuComponent extends BaseClass implements OnInit {
     /** Emitter for changes to the sidebar show state */
     @Output() public showChange = new EventEmitter<boolean>();
     /** List of available menu items for the application */
-    public menu_items: ApplicationInternalLink[];
+    public menu_items: ApplicationLinkInternal[];
     /** Route of the shown tooltip */
     public tooltip: string;
 

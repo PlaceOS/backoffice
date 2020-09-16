@@ -15,7 +15,7 @@ import {
 } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { ApplicationLink, ApplicationIcon } from 'src/app/shared/utilities/settings.interfaces';
+import { ApplicationLink, ApplicationIcon } from 'src/app/common/types';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 import { BulkItemModalComponent } from 'src/app/overlays/bulk-item-modal/bulk-item-modal.component';
 import { BackofficeUsersService } from 'src/app/services/data/users.service';

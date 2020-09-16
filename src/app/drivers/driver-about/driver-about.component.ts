@@ -8,7 +8,7 @@ import {
     ConfirmModalData,
     CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { DialogEvent } from 'src/app/common/types';
 import { notifyError, notifySuccess } from 'src/app/common/notifications';
 import { ActiveItemService } from 'src/app/common/item.service';
 

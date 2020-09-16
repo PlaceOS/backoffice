@@ -15,8 +15,8 @@ import {
     ConfirmModalData,
     CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
-import { unique } from 'src/app/shared/utilities/general.utilities';
+import { DialogEvent } from 'src/app/common/types';
+import { unique } from 'src/app/common/general';
 import { map } from 'rxjs/operators';
 import { notifyError, notifySuccess, notifyInfo } from 'src/app/common/notifications';
 import { ActiveItemService } from 'src/app/common/item.service';

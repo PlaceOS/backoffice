@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { AuthorisedAdminGuard } from './shared/guards/authorised-admin.guard';
-import { AuthorisedUserGuard } from './shared/guards/authorised-user.guard';
-import { UnauthorisedComponent } from './shared/components/unauthorised/unauthorised.component';
+import { AuthorisedAdminGuard } from './ui/guards/authorised-admin.guard';
+import { AuthorisedUserGuard } from './ui/guards/authorised-user.guard';
+import { UnauthorisedComponent } from './ui/unauthorised/unauthorised.component';
 
 const routes: Routes = [
     { path: 'unauthorised', component: UnauthorisedComponent },

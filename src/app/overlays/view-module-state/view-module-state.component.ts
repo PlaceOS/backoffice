@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PlaceModule, PlaceSystem, systemModuleState } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { HashMap } from 'src/app/shared/utilities/types.utilities';
+import { HashMap } from 'src/app/common/types';
 import { notifyError } from 'src/app/common/notifications';
 
 export interface ModuleStateModalData {

@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 import { PlaceComponent } from './engine.component';
 import { PlaceDatabaseDetailsComponent } from './database-details/database-details.component';
 import { PlaceDetailsComponent } from './details/details.component';
-import { AuthorisedAdminGuard } from 'src/app/shared/guards/authorised-admin.guard';
+import { AuthorisedAdminGuard } from 'src/app/ui/guards/authorised-admin.guard';
 import { PlaceClusterDetailsComponent } from './cluster-details/cluster-details.component';
 import { AdminInterfacesComponent } from './interfaces/interfaces.component';
 import { AdminBrokersComponent } from './brokers/brokers.component';

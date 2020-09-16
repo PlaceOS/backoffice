@@ -8,8 +8,8 @@ import {
     PlaceUser,
     PlaceZone,
 } from '@placeos/ts-client';
-import { HashMap, PlaceServiceLike, Identity } from 'src/app/shared/utilities/types.utilities';
-import { unique } from 'src/app/shared/utilities/general.utilities';
+import { HashMap, Identity } from 'src/app/common/types';
+import { unique } from 'src/app/common/general';
 import {
     SYSTEM_TEMPLATE,
     MODULE_TEMPLATE,

@@ -16,10 +16,10 @@ import { SharedOverlaysModule } from './overlays/overlays.module';
 import { SharedContentModule } from './ui/ui.module';
 import { SentryService } from './services/sentry.service';
 
-import { AuthorisedUserGuard } from './shared/guards/authorised-user.guard';
-import { AuthorisedAdminGuard } from './shared/guards/authorised-admin.guard';
+import { AuthorisedUserGuard } from './ui/guards/authorised-user.guard';
+import { AuthorisedAdminGuard } from './ui/guards/authorised-admin.guard';
 
-import './shared/mocks';
+import './mocks';
 
 @NgModule({
     declarations: [AppComponent, TopbarHeaderComponent, GlobalSearchComponent, SidebarMenuComponent],
