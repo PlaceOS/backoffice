@@ -49,6 +49,7 @@ import {
     removeRepository,
     removeModule,
     removeDriver,
+    PlaceSettings,
 } from '@placeos/ts-client';
 import { QueryResponse } from '@placeos/ts-client/dist/esm/resources/functions';
 import { Observable } from 'rxjs';

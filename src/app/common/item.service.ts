@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, of } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, map, debounce, debounceTime } from 'rxjs/operators';
 import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
 
 import {
@@ -16,10 +16,14 @@ import { HotkeysService } from '../services/hotkeys.service';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
 import { notifySuccess, notifyError } from './notifications';
 import { DialogEvent } from 'src/app/common/types';
-import { DuplicateModalComponent, DuplicateModalData } from '../overlays/duplicate-modal/duplicate-modal.component';
+import {
+    DuplicateModalComponent,
+    DuplicateModalData,
+} from '../overlays/duplicate-modal/duplicate-modal.component';
 import { QueryResponse } from '@placeos/ts-client/dist/esm/resources/functions';
 import { log } from './general';
 import { BaseClass } from './base.class';
+import { querySettings } from '@placeos/ts-client';
 
 export type ResourceType =
     | 'domains'
@@ -61,7 +65,7 @@ export class ActiveItemService extends BaseClass {
     /** Observable for list of items */
     public readonly list = this._list.asObservable();
     /** Observable for active item */
-    public readonly item = this._active_item.asObservable();
+    public readonly item = this._active_item.asObservable().pipe(debounceTime(1000));
     /** Observable for list of items */
     public readonly list_items = () => this._list.getValue();
     /** Observable for whether the item list should show on mobile */
@@ -120,6 +124,7 @@ export class ActiveItemService extends BaseClass {
             this._name.next(name);
             this._settings.title = name;
             this._show_options.next(false);
+            this.updateSettings();
             this._loading.next(false);
         }
     }
@@ -209,16 +214,16 @@ export class ActiveItemService extends BaseClass {
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
                     this._active_item.next(e.metadata[0]);
-                    this.replaceItem(e.metadata[0])
+                    this.replaceItem(e.metadata[0]);
                 }
-            })
+            });
         }
     }
 
     public replaceItem(item: any) {
         if ((this.active_item as Object).constructor === item.constructor) {
             this._active_item.next(item);
-            const list = this._list.getValue().filter(i => i.id !== item.id);
+            const list = this._list.getValue().filter((i) => i.id !== item.id);
             list.push(item);
             list.sort((a, b) => a.name?.localeCompare(b.name));
             this._list.next(list);
@@ -227,13 +232,13 @@ export class ActiveItemService extends BaseClass {
 
     public removeItem(item: any) {
         if (item.id) {
-            const list = this._list.getValue().filter(i => i.id !== item.id);
+            const list = this._list.getValue().filter((i) => i.id !== item.id);
             list.sort((a, b) => a.name?.localeCompare(b.name));
             this._list.next(list);
         }
     }
 
-    private updateType() {
+    private async updateType() {
         const url = this._router.url.split('/');
         const old_type = this._type;
         this._type = url[1] as any;
@@ -249,7 +254,7 @@ export class ActiveItemService extends BaseClass {
             this.updateList();
         }
         if (this._type !== 'admin' && url[2]) {
-            this.setItem(url[2]);
+            await this.setItem(url[2]);
         }
         if (this._type === 'admin') {
             this._active_item.next({ name: 'PlaceOS Admin' } as any);
@@ -266,11 +271,23 @@ export class ActiveItemService extends BaseClass {
                 this._list.next([]);
             }
             const resp = await next().toPromise();
-            this._next_query.next(resp.next || (() => of({ data: [], total: resp.total, next: null })));
-            const list = this._list.getValue().filter(i => !resp.data.find(item => item.id === i.id));
+            this._next_query.next(
+                resp.next || (() => of({ data: [], total: resp.total, next: null }))
+            );
+            const list = this._list
+                .getValue()
+                .filter((i) => !resp.data.find((item) => item.id === i.id));
             list.sort((a, b) => a.name?.localeCompare(b.name));
             this._list.next(list.concat(resp.data));
             this._loading_list.next(false);
         });
+    }
+
+    private async updateSettings() {
+        const item = this.active_item;
+        if (item && (item as any).settings) {
+            const settings = await querySettings({ parent_id: item.id }).pipe(map(resp => resp.data)).toPromise();
+            this._active_item.next(new this.actions.itemConstructor({ ...item, settings }));
+        }
     }
 }
