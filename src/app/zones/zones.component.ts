@@ -28,6 +28,8 @@ export class ZonesComponent extends BaseClass {
 
     public readonly name = 'zones';
 
+    public readonly show_options = this._service.show_options;
+
     constructor(
         protected _service: ActiveItemService,
         protected _route: ActivatedRoute,

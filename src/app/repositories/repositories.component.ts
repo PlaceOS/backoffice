@@ -15,6 +15,8 @@ export class RepositoriesComponent extends BaseClass {
 
     public readonly name = 'repositories';
 
+    public readonly show_options = this._service.show_options;
+
     constructor(protected _service: ActiveItemService) {
         super();
     }
@@ -26,6 +28,7 @@ export class RepositoriesComponent extends BaseClass {
     }
 
     protected loadValues(item: PlaceRepository) {
+        if (!item) return;
         const query: any = { offset: 0 };
         if (item.type === PlaceRepositoryType.Driver) {
             // Get driver count for repository

@@ -12,6 +12,8 @@ import { BaseClass } from '../common/base.class';
 export class UsersComponent extends BaseClass {
     public readonly name = 'users';
 
+    public readonly show_options = this._service.show_options;
+
     constructor(protected _service: ActiveItemService) {
         super();
     }

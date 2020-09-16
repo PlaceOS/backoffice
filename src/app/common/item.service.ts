@@ -28,7 +28,8 @@ export type ResourceType =
     | 'systems'
     | 'triggers'
     | 'users'
-    | 'zones';
+    | 'zones'
+    | 'admin';
 
 @Injectable({
     providedIn: 'root',
@@ -36,6 +37,8 @@ export type ResourceType =
 export class ActiveItemService {
     /** Whether active item is loading */
     private _loading = new BehaviorSubject<boolean>(false);
+    /** Whether item list should show on mobile */
+    private _show_options = new BehaviorSubject<boolean>(false);
     /** Currently active item */
     private _active_item = new BehaviorSubject<PlaceResource>(null);
     /** Currently active item */
@@ -58,6 +61,8 @@ export class ActiveItemService {
     public readonly item = this._active_item.asObservable();
     /** Observable for list of items */
     public readonly list_items = () => this._list.getValue();
+    /** Observable for whether the item list should show on mobile */
+    public readonly show_options = this._show_options.asObservable();
 
     /** Available API actions for the active type */
     public get actions(): ItemActions<any> {
@@ -70,21 +75,6 @@ export class ActiveItemService {
 
     public moreItems() {
         this.updateList();
-    }
-
-    /** Update the active item */
-    public async setItem(id: string) {
-        if (!this.active_item || this.active_item.id !== id && id.length > 2) {
-            const url = this._router.url.split('/');
-            this._type = url[1] as any;
-            this._loading.next(true);
-            const item = await this.actions.show(id).toPromise();
-            this._active_item.next(item);
-            const name = this._type[0].toUpperCase() + this._type.slice(1);
-            this._name.next(name);
-            this._settings.title = name;
-            this._loading.next(false);
-        }
     }
 
     constructor(
@@ -102,6 +92,26 @@ export class ActiveItemService {
         this._hotkey.listen(['KeyE'], () => this.edit());
         this._hotkey.listen(['KeyD'], () => this.delete());
         setTimeout(() => this.updateType(), 300);
+    }
+
+    /** Update the active item */
+    public async setItem(id: string) {
+        if ((!this.active_item || this.active_item.id !== id) && id.length > 2) {
+            const url = this._router.url.split('/');
+            this._type = url[1] as any;
+            this._loading.next(true);
+            const item = await this.actions.show(id).toPromise();
+            this._active_item.next(item);
+            const name = this._type[0].toUpperCase() + this._type.slice(1);
+            this._name.next(name);
+            this._settings.title = name;
+            this._show_options.next(false);
+            this._loading.next(false);
+        }
+    }
+
+    public toggleOptions() {
+        this._show_options.next(!this._show_options.getValue());
     }
 
     public create(copy: boolean = false) {
@@ -131,7 +141,7 @@ export class ActiveItemService {
                 .pipe(filter((e) => e.reason === 'done'))
                 .subscribe((event) => {
                     this.replaceItem(event.metadata.item);
-                    this._router.navigate([`/${this._type}`, event.metadata.item.id]);
+                    this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
                 });
         }
     }
@@ -159,7 +169,7 @@ export class ActiveItemService {
                             notifySuccess(`Successfully deleted system "${item.name}".`);
                             this._active_item.next(null);
                             this.removeItem(item);
-                            this._router.navigate([`/${this._type}`]);
+                            this._router.navigate([`/${this._type}`, '-', 'about']);
                             ref.close();
                         },
                         (err) => {
@@ -213,9 +223,6 @@ export class ActiveItemService {
         const url = this._router.url.split('/');
         const old_type = this._type;
         this._type = url[1] as any;
-        if (url[2]) {
-            this.setItem(url[2]);
-        }
         log('Service', `Item type set to ${this._type}`);
         if (old_type !== this._type) {
             this._next_query.next(null);
@@ -223,7 +230,14 @@ export class ActiveItemService {
             const name = this._type[0].toUpperCase() + this._type.slice(1);
             this._name.next(name);
             this._settings.title = name;
+            this._show_options.next(true);
             this.updateList();
+        }
+        if (this._type !== 'admin' && url[2]) {
+            this.setItem(url[2]);
+        }
+        if (this._type === 'admin') {
+            this._active_item.next({ name: 'PlaceOS Admin' } as any);
         }
     }
 

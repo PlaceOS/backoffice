@@ -1,19 +1,14 @@
-<div class="container" [class.show]="show_sidebar">
+<div class="container" [class.show]="show_options | async">
     <div class="sidebar">
         <sidebar
             heading="Zones"
             name="zones"
-            [query_fn]="query_fn"
-            [close]="show_sidebar"
-            (event)="sidebarEvent($event)"
         ></sidebar>
     </div>
-    <main (click)="show_sidebar = false">
+    <main>
         <item-display
             name="zone"
             route="zones"
-            [save]="save_fn"
-            [item]="item"
             [tabs]="[
                 { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
                 {
@@ -26,7 +21,6 @@
                 { id: 'metadata', name: 'Metadata', count: metadata_count, icon: { class: 'backoffice-gist' } },
                 { id: 'children', name: 'Children', count: child_count, icon: { class: 'backoffice-flow-tree' } }
             ]"
-            (event)="itemEvent($event)"
         >
         </item-display>
     </main>

@@ -17,8 +17,8 @@ export const ROUTES: Routes = [
             { path: 'triggers', component: ZoneTriggersComponent },
             { path: 'children', component: ZoneChildrenComponent },
             { path: 'metadata', component: ZoneMetadataComponent },
-            { path: '**', redirectTo: 'about' }
-        ]
+            { path: '**', redirectTo: 'about' },
+        ],
     },
-    { path: '**', redirectTo: '-' }
+    { path: '**', redirectTo: '-' },
 ];

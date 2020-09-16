@@ -1,4 +1,4 @@
-<div class="container" [class.show]="show_sidebar">
+<div class="container" [class.show]="show_options | async">
     <div class="sidebar">
         <sidebar
             heading="Modules"
@@ -12,7 +12,7 @@
             </div>
         </sidebar>
     </div>
-    <main (click)="show_sidebar = false">
+    <main>
         <item-display
             name="module"
             route="modules"

@@ -58,6 +58,8 @@ export class SidebarComponent extends BaseClass implements OnInit {
     /** Whether list of items for the active route are loading */
     public readonly loading = this._service.loading_list;
 
+    public readonly show_list = this._service.show_options;
+
     /** List of elements for each associated item */
     @ViewChildren('list_item') private item_list: QueryList<ElementRef>;
     /** Virtual scrolling viewport */
@@ -161,7 +163,7 @@ export class SidebarComponent extends BaseClass implements OnInit {
     }
 
     public toggle() {
-
+        this._service.toggleOptions();
     }
 
     /** Whether to update the list of items */

@@ -11,8 +11,8 @@ export const ROUTES: Routes = [
         children: [
             { path: 'about', component: TriggerAboutComponent },
             { path: 'systems', component: TriggerSystemsComponent },
-            { path: '**', redirectTo: 'about' }
-        ]
+            { path: '**', redirectTo: 'about' },
+        ],
     },
-    { path: '**', redirectTo: '-' }
+    { path: '**', redirectTo: '-' },
 ];

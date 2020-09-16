@@ -1,19 +1,14 @@
-<div class="container" [class.show]="show_sidebar">
+<div class="container" [class.show]="show_options">
     <div class="sidebar">
         <sidebar
             heading="Domains"
             name="domains"
-            [query_fn]="query_fn"
-            [close]="show_sidebar"
-            (event)="sidebarEvent($event)"
         ></sidebar>
     </div>
-    <main (click)="show_sidebar = false">
+    <main>
         <item-display
             name="domain"
             route="domains"
-            [save]="save_fn"
-            [item]="item"
             [tabs]="[
                 {
                     id: 'about',
@@ -34,7 +29,6 @@
                 },
                 { id: 'users', name: 'Users', count: user_count || 0, icon: { class: 'backoffice-users' } }
             ]"
-            (event)="itemEvent($event)"
         >
         </item-display>
     </main>

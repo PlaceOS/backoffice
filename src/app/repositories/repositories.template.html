@@ -1,11 +1,11 @@
-<div class="container" [class.show]="show_sidebar">
+<div class="container" [class.show]="show_options">
     <div class="sidebar">
         <sidebar
             heading="Repositories"
             name="repositories"
         ></sidebar>
     </div>
-    <main (click)="show_sidebar = false">
+    <main>
         <item-display
             name="repository"
             route="repositories"

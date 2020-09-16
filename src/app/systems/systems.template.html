@@ -1,11 +1,11 @@
-<div class="container" [class.show]="show_sidebar">
+<div class="container" [class.show]="show_options | async">
     <div class="sidebar">
         <sidebar
             heading="Systems"
             name="systems"
         ></sidebar>
     </div>
-    <main (click)="show_sidebar = false">
+    <main>
         <item-display
             name="system"
             route="systems"

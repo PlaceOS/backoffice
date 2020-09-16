@@ -11,8 +11,8 @@ export const ROUTES: Routes = [
         children: [
             { path: 'about', component: RepositoryAboutComponent },
             { path: 'drivers', component: RepositoryDriversComponent },
-            { path: '**', redirectTo: 'about' }
-        ]
+            { path: '**', redirectTo: 'about' },
+        ],
     },
-    { path: '**', redirectTo: '-' }
+    { path: '**', redirectTo: '-' },
 ];

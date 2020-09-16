@@ -1,4 +1,3 @@
-
 import { Routes } from '@angular/router';
 
 import { DriversComponent } from './drivers.component';
@@ -7,11 +6,13 @@ import { DriverModulesComponent } from './driver-devices/driver-devices.componen
 
 export const ROUTES: Routes = [
     {
-        path: ':id', component: DriversComponent, children: [
+        path: ':id',
+        component: DriversComponent,
+        children: [
             { path: 'about', component: DriverAboutComponent },
             { path: 'modules', component: DriverModulesComponent },
-            { path: '**',      redirectTo: 'about' }
-        ]
+            { path: '**', redirectTo: 'about' },
+        ],
     },
-    { path: '**',      redirectTo: '-' }
+    { path: '**', redirectTo: '-' },
 ];

@@ -21,6 +21,8 @@ export class SystemsComponent extends BaseClass implements OnInit {
 
     public readonly name = 'systems';
 
+    public readonly show_options = this._service.show_options;
+
     constructor(protected _service: ActiveItemService) {
         super();
     }

@@ -15,6 +15,8 @@ export class DriversComponent extends BaseClass {
 
     public readonly name = 'drivers';
 
+    public readonly show_options = this._service.show_options;
+
     constructor(protected _service: ActiveItemService) {
         super();
     }
@@ -26,6 +28,7 @@ export class DriversComponent extends BaseClass {
     }
 
     protected async loadValues(item: PlaceDriver) {
+        if (!item) return;
         const query: any = { offset: 0, limit: 1, driver_id: item.id };
         this.device_count = (await queryModules(query).toPromise()).total;
     }

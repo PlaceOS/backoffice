@@ -1,6 +1,7 @@
 @import 'variables';
 
 :host {
+    z-index: 999;
 }
 
 .upload-list {
@@ -15,6 +16,7 @@
     border: 1px solid #fff;
     font-size: 0.8em;
     color: rgba(#000, 0.85);
+    z-index: 999;
 
     @include box-shadow();
 }

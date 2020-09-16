@@ -19,6 +19,8 @@ export class DomainsComponent extends BaseClass {
 
     public readonly name = 'domains';
 
+    public readonly show_options = this._service.show_options;
+
     constructor(private _service: ActiveItemService) {
         super();
     }

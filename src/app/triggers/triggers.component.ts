@@ -16,6 +16,8 @@ export class TriggersComponent extends BaseClass {
 
     public readonly name = 'triggers';
 
+    public readonly show_options = this._service.show_options;
+
     constructor(protected _service: ActiveItemService, private _dialog: MatDialog) {
         super();
     }

@@ -17,6 +17,8 @@ export class ModulesComponent extends BaseClass {
 
     public readonly name = 'modules';
 
+    public readonly show_options = this._service.show_options;
+
     constructor(private _service: ActiveItemService) {
         super();
     }
