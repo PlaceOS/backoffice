@@ -14,8 +14,7 @@ import {
     addOAuthSource,
 } from '@placeos/ts-client';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { ApplicationService } from 'src/app/services/app.service';
+import { BaseClass } from 'src/app/common/base.class';
 import { DialogEvent, Identity } from 'src/app/shared/utilities/types.utilities';
 import {
     generateOAuthSourceForm,
@@ -23,6 +22,7 @@ import {
     generateSAMLSourceForm,
 } from 'src/app/shared/utilities/data/auth-sources.utilities';
 import { Observable } from 'rxjs';
+import { notifySuccess, notifyError } from 'src/app/common/notifications';
 
 export interface AuthSourceModalData {
     /** Domain the auth source is associated with */
@@ -38,7 +38,7 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
     templateUrl: './auth-source-modal.component.html',
     styleUrls: ['./auth-source-modal.component.scss'],
 })
-export class AuthSourceModalComponent extends BaseDirective implements OnInit {
+export class AuthSourceModalComponent extends BaseClass implements OnInit {
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether actions are loading */
@@ -71,8 +71,7 @@ export class AuthSourceModalComponent extends BaseDirective implements OnInit {
 
     constructor(
         private _dialog: MatDialogRef<AuthSourceModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: AuthSourceModalData,
-        private _service: ApplicationService
+        @Inject(MAT_DIALOG_DATA) private _data: AuthSourceModalData
     ) {
         super();
     }
@@ -128,14 +127,14 @@ export class AuthSourceModalComponent extends BaseDirective implements OnInit {
         method.toPromise().then(
             (item) => {
                 this.event.emit({ reason: 'done', metadata: { source: item } });
-                this._service.notifySuccess(
+                notifySuccess(
                     `Successfully ${this.is_new ? 'added' : 'updated'} auth source`
                 );
                 this._dialog.close();
             },
             (err) => {
                 this.loading = false;
-                this._service.notifyError(
+                notifyError(
                     `Error ${
                         this.is_new ? 'adding' : 'updating'
                     } auth source. Error: ${JSON.stringify(err.response || err.message || err)}`

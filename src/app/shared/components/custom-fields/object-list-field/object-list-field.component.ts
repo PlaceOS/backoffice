@@ -1,7 +1,7 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { BaseClass } from 'src/app/common/base.class';
 import { HashMap } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
@@ -16,7 +16,7 @@ import { HashMap } from 'src/app/shared/utilities/types.utilities';
         }
     ]
 })
-export class ObjectListFieldComponent extends BaseDirective implements ControlValueAccessor {
+export class ObjectListFieldComponent extends BaseClass implements ControlValueAccessor {
     /** List of fields that can be populated for each object */
     @Input() public fields: string[];
     /** List of objects */

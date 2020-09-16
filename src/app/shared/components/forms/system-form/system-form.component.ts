@@ -1,20 +1,19 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { EncryptionLevel, queryZones } from '@placeos/ts-client';
 import { SPACE, ENTER, COMMA } from '@angular/cdk/keycodes';
-
-import { ApplicationService } from 'src/app/services/app.service';
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { PlaceServiceLike, Identity } from 'src/app/shared/utilities/types.utilities';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { EncryptionLevel, queryZones } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
+
+import { BaseClass } from 'src/app/common/base.class';
+import { Identity } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
     selector: 'system-form',
     templateUrl: './system-form.component.html',
     styleUrls: ['./system-form.component.scss']
 })
-export class SystemFormComponent extends BaseDirective {
+export class SystemFormComponent extends BaseClass {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
     /** Levels of encyption available for the system's settings */
@@ -31,10 +30,6 @@ export class SystemFormComponent extends BaseDirective {
 
     public get feature_list(): string[] {
         return this.form.controls.features.value;
-    }
-
-    constructor(private _service: ApplicationService) {
-        super();
     }
 
     /**

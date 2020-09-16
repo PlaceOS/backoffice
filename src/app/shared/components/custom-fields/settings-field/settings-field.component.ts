@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { BaseClass } from 'src/app/common/base.class';
 import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 import { BackofficeUsersService } from 'src/app/services/data/users.service';
 
@@ -31,7 +31,7 @@ import { BackofficeUsersService } from 'src/app/services/data/users.service';
         },
     ],
 })
-export class SettingsFieldComponent extends BaseDirective
+export class SettingsFieldComponent extends BaseClass
     implements OnInit, OnChanges, OnDestroy, ControlValueAccessor {
     /** Whether form field is readonly */
     @Input() public readonly = true;

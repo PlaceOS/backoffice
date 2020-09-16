@@ -5,7 +5,7 @@ import { switchMap, debounceTime, distinctUntilChanged, map, catchError } from '
 
 import { PlaceModule, PlaceDriverRole } from '@placeos/ts-client';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { BaseClass } from 'src/app/common/base.class';
 import { HashMap, Identity } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
@@ -20,7 +20,7 @@ import { HashMap, Identity } from 'src/app/shared/utilities/types.utilities';
         },
     ],
 })
-export class ItemSearchFieldComponent<T extends Identity = any> extends BaseDirective
+export class ItemSearchFieldComponent<T extends Identity = any> extends BaseClass
     implements OnInit, OnChanges, ControlValueAccessor {
     /** Name of the items being query'd */
     @Input() public name: string;

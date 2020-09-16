@@ -20,7 +20,7 @@
             mat-icon-button
             class="add"
             *ngIf="new && (total < licenses || !licenses)"
-            (click)="post('new')"
+            (click)="newItem()"
             [matTooltip]="'Add ' + heading + ' [N]'"
             i18n-matTooltip
         >
@@ -36,7 +36,7 @@
         >
             <i class="backoffice-warning"></i>
         </div>
-        <button mat-icon-button class="mobile-only" (click)="event.emit({ type: 'toggle' })">
+        <button mat-icon-button class="mobile-only" (click)="toggle()">
             <app-icon [icon]="{ class: 'backoffice-' + (close ? 'cross' : 'list') }"></app-icon>
         </button>
     </header>
@@ -54,7 +54,7 @@
         <ng-content></ng-content>
     </section>
     <section class="list">
-        <ng-container *ngIf="list">
+        <ng-container>
             <cdk-virtual-scroll-viewport
                 itemSize="48"
                 (scroll)="is_scrolled"
@@ -76,19 +76,17 @@
                 </ng-container>
             </cdk-virtual-scroll-viewport>
         </ng-container>
-        <div class="info-block center" *ngIf="!loading && (!list || !list.length)">
+        <div class="info-block center" *ngIf="!(loading | async) && !(items | async).length">
             <div class="icon">
                 <i class="backoffice-cross"></i>
             </div>
             <div class="text">{{ !search ? 'No ' + lowercase_heading : 'No matches found' }}</div>
             <div class="btn" *ngIf="new">
-                <button mat-button (click)="post('new')" i18n>
-                    Add new {{ lowercase_heading }}
-                </button>
+                <button mat-button (click)="newItem()" i18n>Add new {{ lowercase_heading }}</button>
             </div>
         </div>
     </section>
-    <div class="loading" *ngIf="loading">
+    <div class="loading" *ngIf="loading | async">
         <mat-spinner diameter="32"></mat-spinner>
     </div>
 </div>

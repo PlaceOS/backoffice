@@ -1,8 +1,8 @@
 
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { BaseDirective } from '../../globals/base.directive';
-import { ApplicationService } from 'src/app/services/app.service';
+
 import { BackofficeUsersService } from 'src/app/services/data/users.service';
+import { BaseClass } from 'src/app/common/base.class';
 
 
 @Component({
@@ -10,7 +10,7 @@ import { BackofficeUsersService } from 'src/app/services/data/users.service';
     templateUrl: './searchbar.template.html',
     styleUrls: ['./searchbar.styles.scss']
 })
-export class SearchbarComponent extends BaseDirective {
+export class SearchbarComponent extends BaseClass {
     @Input() public filter: string;
     @Input() public limit: string;
     @Input() public dictation = true;
@@ -29,7 +29,7 @@ export class SearchbarComponent extends BaseDirective {
         return this._users.dark_mode;
     }
 
-    constructor(private _service: ApplicationService, private _users: BackofficeUsersService) {
+    constructor(private _users: BackofficeUsersService) {
         super();
         const win = window as any;
         this.model.speech = !!(win.SpeechRecognition || win.webkitSpeechRecognition);

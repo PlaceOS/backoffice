@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { UploadManager, Upload } from '@acaprojects/ngx-uploads';
 
-import { BaseDirective } from '../../globals/base.directive';
-import { ApplicationService } from 'src/app/services/app.service';
 import { copyToClipboard } from '../../utilities/general.utilities';
 
 import * as blobUtil from 'blob-util';
+import { BaseClass } from 'src/app/common/base.class';
+import { SettingsService } from 'src/app/services/settings.service';
+import { notifyInfo } from 'src/app/common/notifications';
 
 export interface UploadDetails {
     /** Name of the file uploaded */
@@ -29,7 +30,7 @@ export interface UploadDetails {
     templateUrl: './upload-list.component.html',
     styleUrls: ['./upload-list.component.scss'],
 })
-export class UploadListComponent extends BaseDirective implements OnInit {
+export class UploadListComponent extends BaseClass implements OnInit {
     /** Whether upload list should be displayed */
     public show: boolean = false;
     /** Whether drop details overlay should be shown */
@@ -38,10 +39,10 @@ export class UploadListComponent extends BaseDirective implements OnInit {
     public uploads: UploadDetails[] = [];
 
     public get enabled() {
-        return !this._service.get('disable_uploads');
+        return !this._settings.value('disable_uploads');
     }
 
-    constructor(private _upload_manager: UploadManager, private _service: ApplicationService) {
+    constructor(private _upload_manager: UploadManager, private _settings: SettingsService) {
         super();
     }
 
@@ -51,7 +52,7 @@ export class UploadListComponent extends BaseDirective implements OnInit {
         }
         this.subscription(
             'show',
-            this._service.listen('show_upload_manager').subscribe((show) => (this.show = show))
+            this._settings.listen('show_upload_manager').subscribe((show) => (this.show = show))
         );
     }
 
@@ -69,7 +70,7 @@ export class UploadListComponent extends BaseDirective implements OnInit {
     }
 
     public hideOverlay() {
-        this.timeout('hide_overlay', () => this.show_overlay = false);
+        this.timeout('hide_overlay', () => (this.show_overlay = false));
     }
 
     /** Upload the image to the cloud */
@@ -97,7 +98,7 @@ export class UploadListComponent extends BaseDirective implements OnInit {
      */
     public copyLink(details: UploadDetails) {
         copyToClipboard(details.link);
-        this._service.notifyInfo(`Copied link for file ${details.name} to clipboard.`);
+        notifyInfo(`Copied link for file ${details.name} to clipboard.`);
     }
 
     /**
@@ -113,7 +114,7 @@ export class UploadListComponent extends BaseDirective implements OnInit {
                     details.error = details.upload.error;
                     this.clearInterval(`upload-${details.name}`);
                 }
-                details.progress = details.upload.progress
+                details.progress = details.upload.progress;
             });
         }
     }
@@ -135,26 +136,29 @@ export class UploadListComponent extends BaseDirective implements OnInit {
                 link: '',
                 formatted_size: this.humanReadableByteCount(file.size),
                 size: file.size,
-                upload
+                upload,
             };
-            upload.promise.then((state) => {
-                if (state.access_url) {
-                    upload_details.link = upload.access_url;
-                    upload_details.progress = 100;
+            upload.promise.then(
+                (state) => {
+                    if (state.access_url) {
+                        upload_details.link = upload.access_url;
+                        upload_details.progress = 100;
+                        this.updateUploadHistory();
+                    }
                     this.updateUploadHistory();
+                    this.clearInterval(`upload-${file.name}`);
+                },
+                (err) => {
+                    upload_details.error = err.message || err;
+                    this.clearInterval(`upload-${file.name}`);
                 }
-                this.updateUploadHistory();
-                this.clearInterval(`upload-${file.name}`);
-            }, (err) => {
-                upload_details.error = err.message || err;
-                this.clearInterval(`upload-${file.name}`);
-            });
+            );
             this.interval(`upload-${file.name}`, () => {
                 if (!upload.uploading && upload.error) {
                     upload_details.error = upload.error;
                     this.clearInterval(`upload-${file.name}`);
                 }
-                upload_details.progress = upload.progress
+                upload_details.progress = upload.progress;
             });
             this.uploads.push(upload_details);
         });
@@ -166,7 +170,7 @@ export class UploadListComponent extends BaseDirective implements OnInit {
      */
     private updateUploadHistory() {
         const done_list = this.uploads.filter((file) => file.progress >= 100);
-        done_list.forEach(i => delete i.upload);
+        done_list.forEach((i) => delete i.upload);
         if (localStorage) {
             localStorage.setItem('BACKOFFICE.uploads', JSON.stringify(done_list));
         }

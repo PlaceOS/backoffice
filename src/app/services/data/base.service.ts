@@ -1,9 +1,8 @@
 import { BehaviorSubject, Observable, Subscription, Subscriber, Subject } from 'rxjs';
-import { get, post, put, del } from '@placeos/ts-client';
+import { get, post, put, del, onlineState, apiEndpoint } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
 
-import { BaseClass } from '../../shared/globals/base.class';
-import { ApplicationService } from '../app.service';
+import { BaseClass } from 'src/app/common/base.class';
 import { HashMap } from '../../shared/utilities/types.utilities';
 import { toQueryString } from '../../shared/utilities/api.utilities';
 
@@ -13,8 +12,6 @@ export interface IPlaceResponse {
 }
 
 export class BaseAPIService<T extends {}> extends BaseClass {
-    /** Application service */
-    public parent: ApplicationService;
     /** List of available items */
     public readonly listing = new BehaviorSubject<T[]>([]);
     /** Display name of the service */
@@ -49,10 +46,7 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      * Initailise service
      */
     public init() {
-        if (!this.parent) {
-            return this.timeout('init', () => this.init());
-        }
-        this.parent.initialised.pipe(first(_ => _)).subscribe(() => {
+        onlineState().pipe(first(_ => _)).subscribe(() => {
             this.load().then(_ => this._initialised.next(true));
         });
     }
@@ -62,24 +56,11 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      * @param engine Whether endpoint is using the application API or engine API
      */
     public route(engine: boolean = false) {
-        const endpoint = this.parent
-            ? engine
-                ? this.parent.engine_endpoint
-                : this.parent.endpoint
-            : '/api';
-        return `${endpoint}${this._api_route}`;
+        return `${apiEndpoint()}`;
     }
     /** API Route of the service */
     public get api_route() {
         return this._api_route;
-    }
-
-    /**
-     * Get a service related setting from the settings service
-     * @param key Name of the setting. i.e. nested items can be grabbed using `.` to seperate key names
-     */
-    public setting(key: string) {
-        return this.parent ? this.parent.setting(`app.${this._name.toLowerCase()}.${key}`) : null;
     }
 
     /**
@@ -440,13 +421,13 @@ export class BaseAPIService<T extends {}> extends BaseClass {
      * @param action Name of the action to post
      */
     protected analyticsEvent(action: string, label?: string) {
-        if (this.parent && this.parent.Analytics) {
-            this.parent.Analytics.event(
-                this._name,
-                `${this.parent.name.toLowerCase()}-${action}`,
-                label
-            );
-        }
+        // if (this.parent && this.parent.Analytics) {
+        //     this.parent.Analytics.event(
+        //         this._name,
+        //         `${this.parent.name.toLowerCase()}-${action}`,
+        //         label
+        //     );
+        // }
     }
 
     /**

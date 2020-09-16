@@ -5,19 +5,17 @@ import {
     AfterViewInit,
     Input,
     HostListener,
-    OnInit
+    OnInit,
 } from '@angular/core';
 import { MatMenuTrigger, MatMenuPanel } from '@angular/material/menu';
-
-import { BaseDirective } from '../../globals/base.directive';
-import { ApplicationService } from 'src/app/services/app.service';
+import { BaseClass } from 'src/app/common/base.class';
 
 @Component({
     selector: '[context-menu]',
     templateUrl: './context-menu.template.html',
-    styleUrls: ['./context-menu.styles.scss']
+    styleUrls: ['./context-menu.styles.scss'],
 })
-export class ContextMenuComponent extends BaseDirective implements OnInit, AfterViewInit {
+export class ContextMenuComponent extends BaseClass implements OnInit, AfterViewInit {
     /** List of context menu items */
     @Input('context-menu') public menu: MatMenuPanel;
     /** Offset of the context menu on the x axis */
@@ -45,7 +43,7 @@ export class ContextMenuComponent extends BaseDirective implements OnInit, After
         this.timeout('update_position', () => this.updatePosition(), 50);
     }
 
-    constructor(private _service: ApplicationService, private _element: ElementRef<HTMLElement>) {
+    constructor(private _element: ElementRef<HTMLElement>) {
         super();
     }
 

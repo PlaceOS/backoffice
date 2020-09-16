@@ -1,0 +1,39 @@
+
+@import 'variables';
+
+.container {
+    padding: 1em;
+}
+
+header {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+section {
+    padding: .5em .25em;
+}
+
+.table-row {
+    .field {
+        width: 12em;
+    }
+}
+
+.details {
+    .field {
+        display: flex;
+        align-items: center;
+        margin: .25em 0;
+
+        .value {
+            padding: 0 .5em;
+            user-select: all;
+        }
+    }
+
+    label {
+        font-size: .8em;
+        font-weight: 500;
+    }
+}

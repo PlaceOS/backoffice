@@ -8,21 +8,23 @@ import {
     addSettings,
 } from '@placeos/ts-client';
 
-import { ApplicationService } from 'src/app/services/app.service';
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { BaseClass } from 'src/app/common/base.class';
 import { Identity } from 'src/app/shared/utilities/types.utilities';
 import { validateYAML } from 'src/app/shared/utilities/data/systems.utilities';
 
 import * as yaml from 'js-yaml';
 import * as merge from 'deepmerge';
 import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
+import { notifyError, notifySuccess } from 'src/app/common/notifications';
+import { HotkeysService } from 'src/app/services/hotkeys.service';
+import { BackofficeUsersService } from 'src/app/services/data/users.service';
 
 @Component({
     selector: 'a-settings-form',
     templateUrl: './settings-form.component.html',
     styleUrls: ['./settings-form.component.scss'],
 })
-export class SettingsFormComponent extends BaseDirective implements OnChanges, OnInit {
+export class SettingsFormComponent extends BaseClass implements OnChanges, OnInit {
     /** ID of the parent object */
     @Input() id: string;
     /** List of settings for the  */
@@ -48,7 +50,7 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
 
     /** Current user */
     public get user(): PlaceUser {
-        return this._service.get('user');
+        return this._users.current();
     }
 
     /** Whether user is admin */
@@ -127,18 +129,18 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
         return 'Never Display';
     }
 
-    constructor(private _service: ApplicationService) {
+    constructor(private _hotkey: HotkeysService, private _users: BackofficeUsersService) {
         super();
     }
 
     public ngOnInit(): void {
         this.subscription(
             'save_all',
-            this._service.Hotkeys.listen(['KeyA'], () => this.saveAll())
+            this._hotkey.listen(['KeyA'], () => this.saveAll())
         );
         this.subscription(
             'clear_all',
-            this._service.Hotkeys.listen(['KeyC'], () => this.clearChanges())
+            this._hotkey.listen(['KeyC'], () => this.clearChanges())
         );
     }
 
@@ -183,7 +185,7 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
                     (new_settings: PlaceSettings) => {
                         this.saving[level] = false;
                         this.settings[level] = new_settings;
-                        this._service.notifySuccess(
+                        notifySuccess(
                             `Successfully saved ${this.type(level)} settings.`
                         );
                         this.used_settings = this.processSettings(this.settings || []);
@@ -191,7 +193,7 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
                     },
                     (err) => {
                         this.saving[level] = false;
-                        this._service.notifyError(
+                        notifyError(
                             `Error updating settings. Error: ${JSON.stringify(
                                 err.response || err.message || err
                             )}`
@@ -228,7 +230,7 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
                         this.saving[result.encryption_level] = false;
                         this.settings[result.encryption_level] = result;
                     }
-                    this._service.notifySuccess('Successfully saved all settings.');
+                    notifySuccess('Successfully saved all settings.');
                     this.used_settings = this.processSettings(this.settings || []);
                     this.initForm();
                 },
@@ -236,7 +238,7 @@ export class SettingsFormComponent extends BaseDirective implements OnChanges, O
                     for (let i = 0; i < EncryptionLevel.NeverDisplay + 1; i++) {
                         this.saving[i] = false;
                     }
-                    this._service.notifyError(
+                    notifyError(
                         `Error updating settings. Error: ${JSON.stringify(
                             err.response || err.message || err
                         )}`

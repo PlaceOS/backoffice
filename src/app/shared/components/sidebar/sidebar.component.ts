@@ -9,38 +9,30 @@ import {
     ElementRef,
     ViewChildren,
     QueryList,
-    SimpleChanges
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Router, NavigationEnd } from '@angular/router';
 import { PlaceModule, PlaceDriverRole } from '@placeos/ts-client';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { first } from 'rxjs/operators';
 
-import { ApplicationService } from '../../../services/app.service';
-import { BaseDirective } from '../../globals/base.directive';
-import { PlaceServiceLike, HashMap, Identity } from '../../utilities/types.utilities';
-import { unique } from '../../utilities/general.utilities';
+import { HashMap } from '../../utilities/types.utilities';
+import { BackofficeUsersService } from 'src/app/services/data/users.service';
+import { BaseClass } from 'src/app/common/base.class';
+import { HotkeysService } from 'src/app/services/hotkeys.service';
+import { SettingsService } from 'src/app/services/settings.service';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 import * as dayjs from 'dayjs';
-import { BackofficeUsersService } from 'src/app/services/data/users.service';
 
 @Component({
     selector: 'sidebar',
     templateUrl: './sidebar.template.html',
-    styleUrls: ['./sidebar.styles.scss']
+    styleUrls: ['./sidebar.styles.scss'],
 })
-export class SidebarComponent extends BaseDirective implements OnChanges, OnInit {
+export class SidebarComponent extends BaseClass implements OnInit {
     /** Module name to display at the top of the sidebar */
     @Input() public heading = '';
-    /** List of items to render on the list */
-    @Input() public list: any[] = [];
     /** Name of the active module */
     @Input() public name: string;
-    /** Name of the active module */
-    @Input() public query_fn: <T>(q: HashMap) => Observable<{ total: number, data: T[] }>;
-    /** Whether the list is being loaded */
-    @Input() public loading: boolean;
     /** Additional query params to add to item load requests */
     @Input('queryParams') public query_params: HashMap = {};
     /** Whether sidebar is closed */
@@ -49,10 +41,6 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     @Input() public search = '';
     /** Emitter for changes to the search string */
     @Output() public searchChange = new EventEmitter();
-    /** Emitter for user actions on the component */
-    @Output() public event = new EventEmitter();
-    /** Async list of items to render on the sidebar list */
-    public items: BehaviorSubject<Identity[]> = new BehaviorSubject([]);
     /** Whether the application has initialised */
     public intialised: boolean;
     /** Last time the list was updated */
@@ -65,6 +53,10 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
     public grand_total: number;
     /** Active subroute for active item */
     public subroute: string;
+    /** List of items for the active route */
+    public readonly items = this._service.list;
+    /** Whether list of items for the active route are loading */
+    public readonly loading = this._service.loading_list;
 
     /** List of elements for each associated item */
     @ViewChildren('list_item') private item_list: QueryList<ElementRef>;
@@ -90,7 +82,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
 
     /** Whether new items for the active module can be created */
     public get new(): boolean {
-        return this._service.setting(`app.${this.name}.can_create`);
+        return this._settings.get(`app.${this.name}.can_create`);
     }
 
     /** Heading value lower cased */
@@ -106,22 +98,24 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
 
     /** Maxiumum allowed items for the active module */
     public get licenses(): number {
-        return this._service.setting(`app.${this.name}.licenses`) || 0;
+        return this._settings.get(`app.${this.name}.licenses`) || 0;
     }
 
     /** Map of item names to their IDs */
     public get item_name(): HashMap<string> {
         const map = {};
-        const list = this.items.getValue() || [];
+        const list = this._service.list_items();
         for (let item of list) {
             if (item instanceof PlaceModule) {
                 const detail =
                     item.role === PlaceDriverRole.Service
                         ? item.uri
                         : item.role === PlaceDriverRole.Logic
-                            ? item.control_system_id
-                            : item.ip;
-                map[item.id] = `${item.custom_name || item.name || '<Unnamed>'} <span class="small">${detail}<span>`;
+                        ? item.control_system_id
+                        : item.ip;
+                map[item.id] = `${
+                    item.custom_name || item.name || '<Unnamed>'
+                } <span class="small">${detail}<span>`;
             } else {
                 map[item.id] = item.custom_name || item.name || '<Unnamed>';
             }
@@ -129,59 +123,45 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         return map;
     }
 
-    constructor(private _service: ApplicationService, private _users: BackofficeUsersService, private _router: Router) {
+    constructor(
+        private _users: BackofficeUsersService,
+        private _router: Router,
+        private _hotkey: HotkeysService,
+        private _settings: SettingsService,
+        private _service: ActiveItemService
+    ) {
         super();
     }
 
     public ngOnInit() {
-        this._service.initialised.pipe(first(_ => _)).subscribe(() => {
-            if (!this._service.get('BACKOFFICE.active_item')) {
-                this._service.set('BACKOFFICE.active_item', null);
-            }
-            if (!this._service.get('BACKOFFICE.removed')) {
-                this._service.set('BACKOFFICE.removed', '');
-            }
-            this.subscription(
-                'active_item',
-                this._service.listen('BACKOFFICE.active_item').subscribe(item => this.replaceActiveItem(item))
-            );
-            this.subscription(
-                'remove_item',
-                this._service.listen('BACKOFFICE.removed').subscribe(id => this.removeItem(id))
-            );
-            this.subscription(
-                'up',
-                this._service.Hotkeys.listen(['Alt', 'ArrowUp'], () => this.changeSelected(-1))
-            );
-            this.subscription(
-                'down',
-                this._service.Hotkeys.listen(['Alt', 'ArrowDown'], () => this.changeSelected(1))
-            );
-            this.items.next(this.list || []);
-            const url = this._router.url.split('/');
-            this.subroute = url[3];
-            this.subscription('router.events', this._router.events.subscribe((event) => {
+        this.subscription(
+            'up',
+            this._hotkey.listen(['Alt', 'ArrowUp'], () => this.changeSelected(-1))
+        );
+        this.subscription(
+            'down',
+            this._hotkey.listen(['Alt', 'ArrowDown'], () => this.changeSelected(1))
+        );
+        const url = this._router.url.split('/');
+        this.subroute = url[3];
+        this.subscription(
+            'router.events',
+            this._router.events.subscribe((event) => {
                 if (event instanceof NavigationEnd) {
                     const url = event.url.split('/');
                     this.subroute = url[3];
                 }
-            }))
-            this.atBottom();
-        });
+            })
+        );
+        this.atBottom();
     }
 
-    public ngOnChanges(changes: SimpleChanges) {
-        if (this._service.is_initialised && (changes.list || changes.close)) {
-            this.last_check = dayjs().valueOf();
-            this.items.next(this.list || []);
-            this.atBottom();
-        }
-        if (changes.query_fn && changes.query_fn.previousValue !== changes.query_fn.currentValue) {
-            this.searching();
-        }
-        if (changes.query_params && this.query_params) {
-            this.searching();
-        }
+    public newItem() {
+        this._service.create();
+    }
+
+    public toggle() {
+
     }
 
     /** Whether to update the list of items */
@@ -189,7 +169,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         const now = dayjs();
         const last_check = dayjs(this.last_check);
         return (
-            this.last_total !== this.items.getValue().length ||
+            this.last_total !== this._service.list_items().length ||
             last_check.add(1, 'm').isBefore(now, 's')
         );
     }
@@ -210,7 +190,7 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
             this.last_total = total;
             this.last_check = dayjs().valueOf();
             if (this.last_total !== this.total) {
-                this.searching(this.list.length);
+                this._service.moreItems();
             }
         }
     }
@@ -224,49 +204,15 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
         return item.id || index;
     }
 
-    /** Emit events to the parent element */
-    public post(type: string) {
-        this.event.emit({ type });
-    }
-
-    /**
-     * Update the list displayed on the sidebar
-     * @param offset Page offset for the list
-     */
-    public searching(offset: number = 0) {
-        this.loading = true;
-        if (this.query_fn) {
-            this.query_fn({ q: this.search, offset, ...(this.query_params || {}) }).toPromise().then(
-                resp => {
-                    this.list = offset ? this.list.concat(resp.data) : resp.data;
-                    this.list = unique(this.list, 'id');
-                    this.list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-                    if (!this.search) {
-                        this.grand_total = resp.total;
-                    }
-                    this.total = resp.total
-                    this.items.next(this.list);
-                    this.loading = false;
-                },
-                err => {
-                    this._service.notifyError(`Error updating ${this.name} list. Error: ${JSON.stringify(err.response || err.message || err)}`);
-                    this.loading = false;
-                }
-            );
-        } else {
-            this.loading = false;
-        }
-    }
-
     /**
      * Update the selected item
      * @param offset Offset with which to select the new item
      */
     public changeSelected(offset: number) {
         const list = this.item_list.toArray();
-        const item_list = this.items.getValue();
+        const item_list = this._service.list_items();
         if (list && list.length > 0) {
-            let index = item_list.findIndex(item => this._router.url.indexOf(`${item.id}`) >= 0);
+            let index = item_list.findIndex((item) => this._router.url.indexOf(`${item.id}`) >= 0);
             index += offset;
             if (index >= 0 && index < list.length) {
                 list[index].nativeElement.scrollIntoView(false);
@@ -274,47 +220,8 @@ export class SidebarComponent extends BaseDirective implements OnChanges, OnInit
                 if (this.subroute) {
                     route.push(this.subroute);
                 }
-                this._service.navigate(route);
+                this._router.navigate(route);
             }
-        }
-    }
-
-    /**
-     * Replaces the active item with the latest local version
-     * @param active_item New active item
-     */
-    private replaceActiveItem(active_item: Identity) {
-        if (!active_item) {
-            return;
-        }
-        const list = this.items.getValue() || [];
-        const index = list.findIndex(item => item.id === active_item.id);
-        if (index >= 0) {
-            list.splice(index, 1, active_item);
-        } else if (list.length > 0 && list[0].constructor === active_item.constructor) {
-            list.push(active_item);
-        } else {
-            list.push(active_item);
-        }
-
-        list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-        this.items.next([...list]);
-    }
-
-    /**
-     * Remove item from the list
-     * @param id
-     */
-    private removeItem(id: string): void {
-        if (!id) {
-            return;
-        }
-        const list = this.items.getValue() || [];
-        const index = list.findIndex(item => item.id === id);
-        if (index >= 0) {
-            list.splice(index, 1);
-
-            this.items.next([...list]);
         }
     }
 }

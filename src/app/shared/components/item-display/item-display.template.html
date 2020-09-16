@@ -1,5 +1,5 @@
 <div class="container" [class.dark-mode]="dark_mode">
-    <header *ngIf="item && !loading">
+    <header *ngIf="item && !(loading | async)">
         <div class="heading-group">
             <div class="heading">
                 {{ item.display_name || item.custom_name || item.name || "&lt;Unnamed&gt;" }}
@@ -32,7 +32,7 @@
             </button>
         </div>
     </header>
-    <main *ngIf="item && !loading">
+    <main *ngIf="item && !(loading | async)">
         <div class="tabs">
             <nav mat-tab-nav-bar [class.scroll]="is_scrolled">
                 <a
@@ -64,7 +64,7 @@
         </div>
     </main>
 </div>
-<div class="not-mobile center" *ngIf="!item && !loading">
+<div class="not-mobile center" *ngIf="!item && !(loading | async)">
     <div class="info-block">
         <div class="icon">
             <i class="backoffice-arrow-left"></i>
@@ -76,7 +76,7 @@
         </div>
     </div>
 </div>
-<div class="mobile-only center" *ngIf="!item && !loading">
+<div class="mobile-only center" *ngIf="!item && !(loading | async)">
     <div class="info-block">
         <div class="icon">
             <i class="backoffice-arrow-up"></i>
@@ -88,7 +88,7 @@
         </div>
     </div>
 </div>
-<div class="info-block center" *ngIf="loading">
+<div class="info-block center" *ngIf="(loading | async)">
     <div class="icon">
         <mat-spinner diameter="32"></mat-spinner>
     </div>

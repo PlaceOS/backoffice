@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { PlaceDriverRole, queryDrivers, querySystems } from '@placeos/ts-client';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { BaseClass } from 'src/app/common/base.class';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -10,7 +10,7 @@ import { map } from 'rxjs/operators';
     templateUrl: './module-form.component.html',
     styleUrls: ['./module-form.component.scss']
 })
-export class ModuleFormComponent extends BaseDirective implements OnDestroy {
+export class ModuleFormComponent extends BaseClass implements OnDestroy {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
     /** Whether system is readonly */

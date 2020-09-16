@@ -18,10 +18,9 @@ import {
 } from '@placeos/ts-client';
 import { FormGroup } from '@angular/forms';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { BaseClass } from 'src/app/common/base.class';
 import { DialogEvent, Identity, HashMap } from 'src/app/shared/utilities/types.utilities';
 import { generateSystemsFormFields } from 'src/app/shared/utilities/data/systems.utilities';
-import { ApplicationService } from 'src/app/services/app.service';
 import { generateModuleFormFields } from 'src/app/shared/utilities/data/modules.utilities';
 import { generateZoneFormFields } from 'src/app/shared/utilities/data/zones.utilites';
 import { generateDriverFormFields } from 'src/app/shared/utilities/data/drivers.utilities';
@@ -35,6 +34,8 @@ import {
 import { generateRepositoryFormFields } from 'src/app/shared/utilities/data/repositories.utilities';
 import { generateBrokerFormFields } from 'src/app/shared/utilities/data/brokers.utilities';
 import { Observable } from 'rxjs';
+import { notifyError, notifySuccess } from 'src/app/common/notifications';
+import { HotkeysService } from 'src/app/services/hotkeys.service';
 
 export interface CreateEditModalData<T extends Identity = any> {
     /** Service associated with the item being created/edited */
@@ -56,7 +57,7 @@ export interface CreateEditModalData<T extends Identity = any> {
     templateUrl: './item-modal.component.html',
     styleUrls: ['./item-modal.component.scss'],
 })
-export class ItemCreateUpdateModalComponent extends BaseDirective implements OnInit {
+export class ItemCreateUpdateModalComponent extends BaseClass implements OnInit {
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether the item is being editing */
@@ -107,7 +108,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
     constructor(
         private _dialog_ref: MatDialogRef<ItemCreateUpdateModalComponent>,
         @Inject(MAT_DIALOG_DATA) private _data: CreateEditModalData,
-        private _service: ApplicationService
+        private _hotkey: HotkeysService
     ) {
         super();
     }
@@ -148,8 +149,8 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
         this.edit = !!this._data.item.id;
         this.form = this.generateFormData();
         this.subscription(
-            'delete_item',
-            this._service.Hotkeys.listen(['KeyS'], () => this.submit())
+            'save_item_key',
+            this._hotkey.listen(['KeyS'], () => this.submit())
         );
     }
 
@@ -173,7 +174,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
                     this.result = item;
                     this._dialog_ref.disableClose = false;
                     this.event.emit({ reason: 'done', metadata: { item } });
-                    this._service.notifySuccess(
+                    notifySuccess(
                         `Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`
                     );
                     if (!this.form.value.id && this.form.controls.settings) {
@@ -187,7 +188,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
                 (err) => {
                     this.loading = null;
                     this._dialog_ref.disableClose = false;
-                    this._service.notifyError(
+                    notifyError(
                         `Error ${this.item.id ? 'editing' : 'adding new'} ${
                             this.name
                         }. Error: ${JSON.stringify(err.response || err.message || err)}`
@@ -211,7 +212,7 @@ export class ItemCreateUpdateModalComponent extends BaseDirective implements OnI
             .toPromise()
             .catch((err) => {
                 this.loading = null;
-                this._service.notifyError(
+                notifyError(
                     `Error saving settings for ${item.name || item.id}. Error: ${JSON.stringify(
                         err.response || err.message || err
                     )}`

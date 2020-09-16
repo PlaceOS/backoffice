@@ -34,7 +34,7 @@ export class StatusListComponent implements OnChanges {
             const saved_item = await this.save({ ...item, id: '' }).toPromise().catch((err) => {
                 this.status[index] = `Error: ${err.message || err}`;
                 console.error(this.status[index])
-                // this._service.notifyError(this.status[index]);
+                // notifyError(this.status[index]);
             });
             list.push(saved_item);
             if (this.status[index] === 'loading') {

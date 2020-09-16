@@ -1,15 +1,15 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { PlaceUser, PlaceUserQueryOptions, logout, authorise, currentUser, queryUsers } from '@placeos/ts-client';
+import { PlaceUser, PlaceUserQueryOptions, logout, authorise, currentUser, queryUsers, onlineState } from '@placeos/ts-client';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
 import { first, map } from 'rxjs/operators';
 
 import { FilterFn } from '../../shared/utilities/types.utilities';
 import { toQueryString } from 'src/app/shared/utilities/api.utilities';
-import { BaseClass } from 'src/app/shared/globals/base.class';
-import { ApplicationService } from '../app.service';
+import { BaseClass } from 'src/app/common/base.class';
+import { SettingsService } from '../settings.service';
 
 import * as dayjs from 'dayjs';
 import * as Sentry from '@sentry/browser';
@@ -28,6 +28,8 @@ export class BackofficeUsersService extends BaseClass {
     private _user = new BehaviorSubject<ServiceItem>(null);
     /** Active User */
     public readonly user = this._user.asObservable();
+    /** Active User */
+    public readonly current = () => this._user.getValue();
     /** State of loading the user */
     public readonly state = new BehaviorSubject<string>('');
 
@@ -52,7 +54,7 @@ export class BackofficeUsersService extends BaseClass {
     public set dark_mode(state: boolean) {
         if (state) {
             localStorage.setItem('BACKOFFICE.theme', 'dark');
-            this._service.set('dark_mode', state);
+            this._settings.post('dark_mode', state);
             document.body.classList.add('dark-mode');
         } else {
             localStorage.setItem('BACKOFFICE.theme', 'light');
@@ -63,11 +65,11 @@ export class BackofficeUsersService extends BaseClass {
     private _filter_fn: FilterFn<ServiceItem> = _ => true;
 
     constructor(
-        private _service: ApplicationService,
+        private _settings: SettingsService,
         private http_unauth: HttpClient
     ) {
         super();
-        this._service.initialised.pipe(first(_ => _)).subscribe(() => this.load());
+        onlineState().pipe(first(_ => _)).subscribe(() => this.load());
     }
 
     /**
@@ -89,9 +91,9 @@ export class BackofficeUsersService extends BaseClass {
                 user => {
                     if (user) {
                         this._user.next(user);
-                        this._service.set('user', user);
                         Sentry.configureScope(scope => scope.setUser({ email: user.email }));
                         this.state.next('success');
+                        this._initialised.next(true);
                         resolve();
                         this.dark_mode = this.dark_mode;
                     } else {
@@ -114,7 +116,7 @@ export class BackofficeUsersService extends BaseClass {
                 .add(7, 'd')
                 .valueOf();
         }
-        const path = `${location.origin}${this._service.setting('composer.route') ||
+        const path = `${location.origin}${this._settings.get('composer.route') ||
             ''}/oauth-resp.html`;
         if (localStorage) {
             const client_id = Md5.hashStr(path);

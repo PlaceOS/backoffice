@@ -1,0 +1,23 @@
+<div class="container" [class.show]="show_sidebar">
+    <div class="sidebar">
+        <sidebar
+            heading="Repositories"
+            name="repositories"
+        ></sidebar>
+    </div>
+    <main (click)="show_sidebar = false">
+        <item-display
+            name="repository"
+            route="repositories"
+            [tabs]="driver_count < 0 ?
+                [
+                    { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } }
+                ] : [
+                    { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
+                    { id: 'drivers', name: 'Drivers', count: driver_count, icon: { class: 'backoffice-documents' } }
+                ]
+            "
+        >
+        </item-display>
+    </main>
+</div>

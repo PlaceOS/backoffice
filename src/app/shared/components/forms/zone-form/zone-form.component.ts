@@ -4,7 +4,7 @@ import { PlaceZone, showZone, queryZones } from '@placeos/ts-client';
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { BaseClass } from 'src/app/common/base.class';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -12,7 +12,7 @@ import { map } from 'rxjs/operators';
     templateUrl: './zone-form.component.html',
     styleUrls: ['./zone-form.component.scss']
 })
-export class ZoneFormComponent extends BaseDirective {
+export class ZoneFormComponent extends BaseClass {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
     /** List of separator characters for tags */

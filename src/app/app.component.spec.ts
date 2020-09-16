@@ -1,22 +1,24 @@
-import { TestBed } from '@angular/core/testing';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
+import { MockDirective } from 'ng-mocks';
+
+import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 
 import { AppComponent } from './app.component';
-import { ApplicationService } from './services/app.service';
+import { BindingDirective } from './ui/binding/binding.directive';
 
 describe('AppComponent', () => {
+    let spectator: Spectator<AppComponent>;
+    let createComponent = createComponentFactory({
+        component: AppComponent,
+        imports: [RouterModule.forRoot([])],
+        declarations: [MockDirective(BindingDirective)],
+    });
     beforeEach(() => {
-        TestBed.configureTestingModule({
-            declarations: [AppComponent],
-            providers: [{ provide: ApplicationService, useValue: jasmine.createSpyObj('ApplicationService', ['log']) }],
-            imports: [CommonModule, RouterModule.forRoot([])]
-        }).compileComponents();
+        spectator = createComponent();
     });
 
-    it('should create the app', () => {
-        const fixture = TestBed.createComponent(AppComponent);
-        const app = fixture.debugElement.componentInstance;
-        expect(app).toBeTruthy();
+    it('should create the application', () => {
+        expect(spectator.component).toBeTruthy();
     });
 });

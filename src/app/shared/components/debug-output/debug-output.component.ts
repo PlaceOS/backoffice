@@ -1,10 +1,10 @@
 import { Component, OnInit, Renderer2, ViewChild, ElementRef } from '@angular/core';
 
 import { PlaceDebugService } from 'src/app/services/debug.service';
-import { ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR } from '../../globals/angular-animations';
-import { BaseDirective } from '../../globals/base.directive';
 import { eventToPoint } from '../../utilities/general.utilities';
 import { Point } from '../../utilities/types.utilities';
+import { BaseClass } from 'src/app/common/base.class';
+import { ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR } from 'src/app/common/angular-animations';
 
 @Component({
     selector: 'app-debug-output',
@@ -12,7 +12,7 @@ import { Point } from '../../utilities/types.utilities';
     styleUrls: ['./debug-output.component.scss'],
     animations: [ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR]
 })
-export class DebugOutputComponent extends BaseDirective implements OnInit {
+export class DebugOutputComponent extends BaseClass implements OnInit {
     /** Whether display output is shown */
     public show_content: boolean = true;
     /** Display string for debug logs */

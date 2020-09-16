@@ -1,12 +1,12 @@
 import { post, apiEndpoint } from '@placeos/ts-client';
 import { Injectable } from '@angular/core';
 
-import { BaseClass } from 'src/app/shared/globals/base.class';
+import { BaseClass } from 'src/app/common/base.class';
 
 @Injectable({
     providedIn: 'root'
 })
-export class PlaceService extends BaseClass {
+export class PlaceDatabase extends BaseClass {
 
     public reindex(backfill: boolean = true) {
         const url = `${apiEndpoint()}/reindex${

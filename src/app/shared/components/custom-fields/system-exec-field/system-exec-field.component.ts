@@ -20,14 +20,13 @@ import {
     executeOnSystem,
     queryModules,
 } from '@placeos/ts-client';
+import { map } from 'rxjs/operators';
 
-import { ApplicationService } from '../../../../services/app.service';
-import { BaseDirective } from '../../../globals/base.directive';
 import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal/view-response-modal.component';
 import { HashMap } from 'src/app/shared/utilities/types.utilities';
-import { COMMA } from '@angular/cdk/keycodes';
 import { validateJSONString } from 'src/app/shared/utilities/validation.utilities';
-import { map } from 'rxjs/operators';
+import { BaseClass } from 'src/app/common/base.class';
+import { notifyError, notifySuccess, notifyInfo } from 'src/app/common/notifications';
 
 interface PlaceModuleLike {
     id: string;
@@ -52,7 +51,7 @@ interface ModuleFunction extends PlaceModuleFunction {
         },
     ],
 })
-export class SystemExecFieldComponent extends BaseDirective
+export class SystemExecFieldComponent extends BaseClass
     implements OnChanges, ControlValueAccessor {
     /** ID of the system to execute command on */
     @Input() public system: PlaceSystem;
@@ -123,7 +122,7 @@ export class SystemExecFieldComponent extends BaseDirective
         return map;
     }
 
-    constructor(private service: ApplicationService, private _dialog: MatDialog) {
+    constructor(private _dialog: MatDialog) {
         super();
     }
 
@@ -200,7 +199,7 @@ export class SystemExecFieldComponent extends BaseDirective
                 }
             },
             () => {
-                this.service.notifyInfo('No executable methods returned.');
+                notifyInfo('No executable methods returned.');
             }
         );
     }
@@ -333,7 +332,7 @@ export class SystemExecFieldComponent extends BaseDirective
                 details.args
             ).subscribe(
                 (result) => {
-                    this.service.notifySuccess(
+                    notifySuccess(
                         'Command successful executed.\nView Response?',
                         'View',
                         () => this.viewDetails(result)
@@ -341,9 +340,9 @@ export class SystemExecFieldComponent extends BaseDirective
                 },
                 (err) => {
                     if (typeof err === 'string' && err.length < 128) {
-                        this.service.notifyError(err);
+                        notifyError(err);
                     } else {
-                        this.service.notifyError(
+                        notifyError(
                             `Executing '${this.active_method.name}' failed.\nView Error?`,
                             'View',
                             () => this.viewDetails(err.response)
@@ -352,7 +351,7 @@ export class SystemExecFieldComponent extends BaseDirective
                 }
             );
         } else {
-            this.service.notifyError('One or more fields are invalid.');
+            notifyError('One or more fields are invalid.');
         }
     }
 

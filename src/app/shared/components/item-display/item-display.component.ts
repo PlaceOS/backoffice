@@ -1,32 +1,15 @@
-import {
-    Component,
-    Input,
-    TemplateRef,
-    Output,
-    EventEmitter,
-    OnInit,
-    ViewChild,
-    ElementRef,
-} from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, Input, TemplateRef, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { PlaceDriver, PlaceDriverRole } from '@placeos/ts-client';
 
-import { ApplicationService } from '../../../services/app.service';
-import { BaseDirective } from '../../globals/base.directive';
-import { DialogEvent, Identity } from '../../utilities/types.utilities';
+import { BaseClass } from 'src/app/common/base.class';
+import { Identity } from '../../utilities/types.utilities';
 import { ApplicationIcon } from '../../utilities/settings.interfaces';
-import {
-    ItemCreateUpdateModalComponent,
-    CreateEditModalData,
-} from 'src/app/overlays/item-modal/item-modal.component';
-import { Router } from '@angular/router';
 import { downloadFile, jsonToCsv } from '../../utilities/general.utilities';
-import {
-    DuplicateModalComponent,
-    DuplicateModalData,
-} from 'src/app/overlays/duplicate-modal/duplicate-modal.component';
-import { Observable } from 'rxjs';
 import { BackofficeUsersService } from 'src/app/services/data/users.service';
+import { ActiveItemService } from 'src/app/common/item.service';
+import { HotkeysService } from 'src/app/services/hotkeys.service';
+import { notifyInfo } from 'src/app/common/notifications';
 
 export interface ApplicationTab {
     id: string;
@@ -41,28 +24,25 @@ export interface ApplicationTab {
     templateUrl: './item-display.template.html',
     styleUrls: ['./item-display.styles.scss'],
 })
-export class ItemDisplayComponent<T extends Identity = any> extends BaseDirective
-    implements OnInit {
+export class ItemDisplayComponent<T extends Identity = any> extends BaseClass implements OnInit {
     /** Name of the type of item being shown */
     @Input() public name: string;
     /** Base route of parent component */
     @Input() public route: string;
-    /** Resource to display details of */
-    @Input() public item: T;
-    /** Whether resouce data is being loaded */
-    @Input() public loading: boolean;
     /** Whether item is allowed to be edited and deleted */
     @Input() public has_change = true;
     /** Tabs available to the item type */
     @Input() public tabs: ApplicationTab[] = [];
-    /** Method to call when saving changes to the item */
-    @Input() public save: (_:T) => Observable<T>;
-    /** Emitter for events on the item display */
-    @Output() public event = new EventEmitter();
     /** ID of the active tab */
     public active_tab: string;
 
+    public readonly loading = this._service.loading;
+
     @ViewChild('content') public content_el: ElementRef<HTMLDivElement>;
+
+    public get item(): T {
+        return this._service.active_item as any;
+    }
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
@@ -96,9 +76,9 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
     }
 
     constructor(
-        private _service: ApplicationService,
+        private _service: ActiveItemService,
+        private _hotkey: HotkeysService,
         private _users: BackofficeUsersService,
-        private _dialog: MatDialog,
         private _router: Router
     ) {
         super();
@@ -107,11 +87,11 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
     public ngOnInit() {
         this.subscription(
             'right',
-            this._service.Hotkeys.listen(['ArrowRight'], () => this.changeTab(1))
+            this._hotkey.listen(['ArrowRight'], () => this.changeTab(1))
         );
         this.subscription(
             'left',
-            this._service.Hotkeys.listen(['ArrowLeft'], () => this.changeTab(-1))
+            this._hotkey.listen(['ArrowLeft'], () => this.changeTab(-1))
         );
     }
 
@@ -139,7 +119,7 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
     public copy() {
         if (this.item && this.item.id) {
             document.execCommand('copy');
-            this._service.notifyInfo('ID copied to clipboard');
+            notifyInfo('ID copied to clipboard');
         }
     }
 
@@ -147,57 +127,25 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseDirectiv
      * Open modal to edit the active item
      */
     public edit() {
-        const ref = this._dialog.open<ItemCreateUpdateModalComponent, CreateEditModalData>(
-            ItemCreateUpdateModalComponent,
-            {
-                data: {
-                    item: this.item,
-                    form: [] as any,
-                    name: this.name,
-                    save: this.save
-                },
-            }
-        );
-        this.subscription(
-            'confirm_ref',
-            ref.componentInstance.event.subscribe((e: DialogEvent) => {
-                if (e.reason === 'done') {
-                    this.item = e.metadata.item;
-                }
-            })
-        );
+        this._service.edit();
     }
 
     /**
      * Delete the active item
      */
     public delete() {
-        this.event.emit({ type: 'delete' });
+        this._service.delete();
     }
 
     /**
      * Delete the active item
      */
     public duplicateItem() {
-        const ref = this._dialog.open<DuplicateModalComponent, DuplicateModalData>(
-            DuplicateModalComponent,
-            { data: { item: this.item, save: this.save as any } }
-        );
-        this.subscription(
-            'confirm_ref',
-            ref.componentInstance.event.subscribe((e: DialogEvent) => {
-                if (e.reason === 'done') {
-                    this.item = e.metadata[0];
-                }
-            })
-        );
+        this._service.duplicate();
     }
 
-    /**
-     * Delete the active item
-     */
     public newFromItem() {
-        this.event.emit({ type: 'copy' });
+        this._service.create(true);
     }
 
     /**

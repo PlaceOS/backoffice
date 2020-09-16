@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
     PlaceModule,
@@ -11,15 +11,15 @@ import {
 
 import { Identity } from 'src/app/shared/utilities/types.utilities';
 import { calculateModuleIndex } from 'src/app/shared/utilities/api.utilities';
-import { ApplicationService } from 'src/app/services/app.service';
 import { map } from 'rxjs/operators';
+import { notifyError } from 'src/app/common/notifications';
 
 @Component({
     selector: 'trigger-condition-comparison-form',
     templateUrl: './comparison-form.component.html',
     styleUrls: ['./comparison-form.component.scss']
 })
-export class TriggerConditionComparisonFormComponent implements OnInit, OnChanges {
+export class TriggerConditionComparisonFormComponent implements OnChanges {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
     /** Systems used for templating the status variables */
@@ -67,10 +67,6 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
         return this.right_side.keys.join(',');
     }
 
-    constructor(private _service: ApplicationService) {}
-
-    public ngOnInit(): void {}
-
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.system && this.system) {
             this.loadSystemModules();
@@ -101,7 +97,7 @@ export class TriggerConditionComparisonFormComponent implements OnInit, OnChange
                 this.addExistingStatusVariables();
             },
             () =>
-                this._service.notifyError(
+                notifyError(
                     `Error loading the status variables for ${this.system.id}, ${mod_name}`
                 )
         );

@@ -26,7 +26,7 @@
             "baseHref": "/",
             "stylePreprocessorOptions": {
               "includePaths": [
-                "src/app/shared/styles"
+                "src/app/styles"
               ]
             },
             "assets": [
@@ -148,7 +148,7 @@
             "karmaConfig": "karma.conf.js",
             "stylePreprocessorOptions": {
               "includePaths": [
-                "src/app/shared/styles"
+                "src/app/styles"
               ]
             },
             "assets": [

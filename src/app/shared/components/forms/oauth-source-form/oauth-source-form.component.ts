@@ -2,14 +2,14 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormGroup, AbstractControl } from '@angular/forms';
 
 import { Identity, HashMap } from 'src/app/shared/utilities/types.utilities';
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { BaseClass } from 'src/app/common/base.class';
 
 @Component({
     selector: 'oauth-source-form',
     templateUrl: './oauth-source-form.component.html',
     styleUrls: ['./oauth-source-form.component.scss'],
 })
-export class OauthSourceFormComponent extends BaseDirective implements OnChanges {
+export class OauthSourceFormComponent extends BaseClass implements OnChanges {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
     /** List of available token request methods */

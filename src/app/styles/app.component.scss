@@ -1,4 +1,4 @@
-@import 'shared.styles';
+@import 'variables';
 @import "~material-design-icons/iconfont/material-icons.css";
 @import "~animate.css/animate.min.css";
 @import '~firacode/distr/fira_code.css';
@@ -15,6 +15,32 @@ body {
     }
     @include respond-to(mobile) {
         font-size: $mobile-size;
+    }
+}
+
+app-root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+
+    > {
+        width: 100%;
+    }
+
+    > main {
+        display: flex;
+        flex: 1;
+        min-height: 50%;
+
+        > * {
+            height: 100%;
+        }
+
+        > .content {
+            flex: 1;
+            min-width: 50%;
+        }
     }
 }
 

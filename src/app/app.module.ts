@@ -8,19 +8,21 @@ import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
+import { TopbarHeaderComponent } from './ui/topbar-header/topbar-header.component';
+import { GlobalSearchComponent } from './ui/global-search/global-search.component';
+import { SidebarMenuComponent } from './ui/sidebar-menu/sidebar-menu.component';
 
 import { SharedOverlaysModule } from './overlays/overlays.module';
-import { SharedContentModule } from './shared/shared.module';
+import { SharedContentModule } from './ui/ui.module';
 import { SentryService } from './services/sentry.service';
 
-import { APP_COMPONENTS } from './shell';
 import { AuthorisedUserGuard } from './shared/guards/authorised-user.guard';
 import { AuthorisedAdminGuard } from './shared/guards/authorised-admin.guard';
 
 import './shared/mocks';
 
 @NgModule({
-    declarations: [AppComponent, ...APP_COMPONENTS],
+    declarations: [AppComponent, TopbarHeaderComponent, GlobalSearchComponent, SidebarMenuComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,

@@ -12,7 +12,7 @@ import {
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { BaseClass } from 'src/app/common/base.class';
 import { Identity } from 'src/app/shared/utilities/types.utilities';
 import { timeFormatString } from 'src/app/shared/utilities/general.utilities';
 
@@ -31,7 +31,7 @@ import { DatePipe } from '@angular/common';
         }
     ]
 })
-export class TimeFieldComponent extends BaseDirective
+export class TimeFieldComponent extends BaseClass
     implements OnInit, OnChanges, ControlValueAccessor {
     /** Time step between each allowed time option */
     @Input() public step = 15;

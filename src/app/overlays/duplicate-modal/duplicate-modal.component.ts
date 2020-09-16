@@ -1,9 +1,9 @@
 import { Component, Inject, Output, EventEmitter } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 
 import { HashMap, DialogEvent } from 'src/app/shared/utilities/types.utilities';
-import { ApplicationService } from 'src/app/services/app.service';
-import { Observable } from 'rxjs';
+import { notifyError } from 'src/app/common/notifications';
 
 export interface DuplicateModalData {
     item: HashMap;
@@ -36,8 +36,7 @@ export class DuplicateModalComponent {
 
     constructor(
         @Inject(MAT_DIALOG_DATA) private _data: DuplicateModalData,
-        private _dialog_ref: MatDialogRef<DuplicateModalComponent>,
-        private _service: ApplicationService
+        private _dialog_ref: MatDialogRef<DuplicateModalComponent>
     ) {}
 
     /**
@@ -58,7 +57,7 @@ export class DuplicateModalComponent {
             this.status[i] = 'loading';
             const saved_item = await this._data.save(new_item).toPromise().catch((err) => {
                 this.status[i] = `Error: ${err.message || err}`;
-                this._service.notifyError(this.status[i]);
+                notifyError(this.status[i]);
             });
             list.push(saved_item);
             if (this.status[i] === 'loading') {

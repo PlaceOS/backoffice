@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Title } from '@angular/platform-browser';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { format, isSameDay } from 'date-fns';
 
-import { getItemWithKeys } from '../shared/utilities/general.utilities';
-import { DEFAULT_SETTINGS } from '../shared/globals/settings';
-import { HashMap } from '../shared/utilities/types.utilities';
+import { log, getItemWithKeys } from 'src/app/common/general';
 import { VERSION } from 'src/environments/version';
-import { BaseClass } from '../shared/globals/base.class';
-
-import * as dayjs from 'dayjs';
+import { DEFAULT_SETTINGS } from 'src/app/common/settings';
+import { HashMap } from 'src/app/common/types';
+import { BaseClass } from '../common/base.class';
 
 declare global {
     interface Window {
@@ -15,39 +15,65 @@ declare global {
     }
 }
 
-export type ConsoleStream = 'debug' | 'warn' | 'log' | 'error';
-
 @Injectable({
     providedIn: 'root',
 })
 export class SettingsService extends BaseClass {
     /** Name of the application */
-    private _app_name = 'ACA';
+    private _app_name = 'PlaceOS';
     /** List of override settings in order of priority */
     private _overrides = new BehaviorSubject<HashMap[]>([]);
+    /** Mapping of behaviour subjects */
+    private _subjects: HashMap<BehaviorSubject<any>> = {};
+    /** Mapping of observables */
+    private _observables: HashMap<Observable<any>> = {};
 
     /**
      * @hidden
      */
     public set overrides(value: HashMap[]) {
-        this._overrides.next(value);
+        this._overrides.next(value || []);
     }
 
-    constructor() {
+    /** Get observable for key */
+    public listen<T = any>(name: string): Observable<T> {
+        if (!this._observables[name]) {
+            this._subjects[name] = new BehaviorSubject<T>(null);
+            this._observables[name] = this._subjects[name].asObservable();
+        }
+        return this._observables[name];
+    }
+
+    /** Update observable value for key */
+    public post<T>(name: string, value: T): void {
+        if (!this._observables[name]) {
+            this._subjects[name] = new BehaviorSubject<T>(null);
+            this._observables[name] = this._subjects[name].asObservable();
+        }
+        this._subjects[name].next(value);
+    }
+
+    public value<T = any>(name: string): T {
+        return !this._observables[name] ? null : this._subjects[name].getValue();
+    }
+
+    /** Page title */
+    public get title() {
+        return this._title.getTitle();
+    }
+    public set title(value: string) {
+        this._title.setTitle(`${value} | ${this._app_name}`);
+    }
+
+    constructor(private _title: Title) {
         super();
-        const now = dayjs();
-        const build = dayjs(VERSION.time);
-        const built = now.isSame(build, 'd')
-            ? `Today at ${build.format('h:mmA')}`
-            : build.format('D MMM YYYY, h:mmA');
-        this.log('CORE', `${VERSION.core_version}`, null, 'debug', true);
-        this.log(
-            'APP',
-            `${VERSION.version} - ${VERSION.hash} | Built: ${built}`,
-            null,
-            'debug',
-            true
-        );
+        const now = new Date();
+        const time = new Date(VERSION.time);
+        const built = isSameDay(now, time)
+            ? `Today at ${format(time, 'h:mmB')}`
+            : format(time, 'do MMM yyyy, h:mmB');
+        log('CORE', `${VERSION.semver}`, null, 'debug', true);
+        log('APP', `${VERSION.hash} | Built: ${built}`, null, 'debug', true);
         this.init();
     }
 
@@ -61,38 +87,13 @@ export class SettingsService extends BaseClass {
         if (this.get('app')?.name) {
             this._app_name = this.get('app').name;
         }
-        this.log('Settings', 'Successfully loaded settings');
+        log('Settings', 'Successfully loaded settings');
         this._initialised.next(true);
     }
 
     /** Whether settings service has initialised */
     public get app_name() {
         return this._app_name;
-    }
-
-    /**
-     * Log data to the browser console
-     * @param type Type of message
-     * @param msg Message body
-     * @param args array of argments to log to the console
-     * @param stream Stream to emit the console on. 'debug', 'log', 'warn' or 'error'
-     * @param force Whether to force message to be emitted when debug is disabled
-     */
-    public log(
-        type: string,
-        msg: string,
-        args?: any,
-        stream: ConsoleStream = 'debug',
-        force: boolean = false
-    ) {
-        if (window.debug || force) {
-            const colors: string[] = ['color: #E91E63', 'color: #3F51B5', 'color: default'];
-            if (args) {
-                console[stream](`%c[${this.app_name}]%c[${type}] %c${msg}`, ...colors, args);
-            } else {
-                console[stream](`%c[${this.app_name}]%c[${type}] %c${msg}`, ...colors);
-            }
-        }
     }
 
     /**
@@ -106,7 +107,7 @@ export class SettingsService extends BaseClass {
         }
         const override_settings = this._overrides.getValue();
         for (const override of override_settings) {
-            const value = getItemWithKeys(keys.slice(1), override);
+            const value = getItemWithKeys(keys.slice(1), override || {});
             if (value != null) { return value; }
         }
         return getItemWithKeys(keys, DEFAULT_SETTINGS);

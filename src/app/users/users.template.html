@@ -1,0 +1,19 @@
+<div class="container" [class.show]="show_sidebar">
+    <div class="sidebar">
+        <sidebar
+            heading="Users"
+            name="users"
+        ></sidebar>
+    </div>
+    <main (click)="show_sidebar = false">
+        <item-display
+            name="user"
+            route="users"
+            [tabs]="[
+                { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
+                { id: 'history', name: 'History', icon: { class: 'backoffice-list' } }
+            ]"
+        >
+        </item-display>
+    </main>
+</div>

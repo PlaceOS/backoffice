@@ -12,9 +12,9 @@ import {
     queryRepositories,
 } from '@placeos/ts-client';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { BaseClass } from 'src/app/common/base.class';
+import { notifyError } from 'src/app/common/notifications';
 import { Identity } from 'src/app/shared/utilities/types.utilities';
-import { ApplicationService } from 'src/app/services/app.service';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 import { of, Subject, Observable } from 'rxjs';
 
@@ -28,7 +28,7 @@ dayjs.extend(relativeTime);
     templateUrl: './driver-form.component.html',
     styleUrls: ['./driver-form.component.scss'],
 })
-export class DriverFormComponent extends BaseDirective implements OnChanges {
+export class DriverFormComponent extends BaseClass implements OnChanges {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
     /** List of driver roles */
@@ -73,10 +73,6 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
         return this.form.controls.id && this.form.controls.id.value;
     }
 
-    constructor(private _service: ApplicationService) {
-        super();
-    }
-
     public ngOnInit(): void {
         this.driver_list$ = this.repo$.pipe(
             debounceTime(100),
@@ -88,7 +84,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                 return listRepositoryDrivers(repo_id);
             }),
             catchError((_) => {
-                this._service.notifyError(`Error loading driver list. Error: ${_.message || _}`);
+                notifyError(`Error loading driver list. Error: ${_.message || _}`);
                 return of([]);
             }),
             map((list: any[]) => {
@@ -114,7 +110,7 @@ export class DriverFormComponent extends BaseDirective implements OnChanges {
                 });
             }),
             catchError((_) => {
-                this._service.notifyError(
+                notifyError(
                     `Error loading driver's commit list. Error: ${_.message || _}`
                 );
                 return of([]);

@@ -1,6 +1,6 @@
 import { SettingsService } from './settings.service';
 
-import * as SETTINGS from '../shared/globals/settings';
+import * as SETTINGS from 'src/app/common/settings';
 
 describe('SettingsService', () => {
     let service: SettingsService;
@@ -19,12 +19,11 @@ describe('SettingsService', () => {
 
     beforeEach(() => {
         (SETTINGS as any).DEFAULT_SETTINGS = test_data;
-        service = new SettingsService();
+        service = new SettingsService({ setTitle: jest.fn() } as any);
     });
 
     it('should initialise settings from DEFAULT_SETTINGS', (done) => {
         service.initialised.subscribe((state) => {
-            expect(service.is_initialised).toBe(state);
             if (state) {
                 expect(service.get('test')).toBe(test_data.test);
                 expect(service.app_name).toBe(test_data.app.name);

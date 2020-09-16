@@ -1,0 +1,19 @@
+<div class="container" [class.show]="show_sidebar">
+    <div class="sidebar">
+        <sidebar
+            heading="Drivers"
+            name="drivers"
+        ></sidebar>
+    </div>
+    <main (click)="show_sidebar = false">
+        <item-display
+            name="Driver"
+            route="drivers"
+            [tabs]="[
+                { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
+                { id: 'modules', name: 'Modules', count: device_count, icon: { class: 'backoffice-tablet' } }
+            ]"
+        >
+        </item-display>
+    </main>
+</div>

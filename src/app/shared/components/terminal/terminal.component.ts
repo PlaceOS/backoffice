@@ -9,15 +9,15 @@ import {
     OnChanges,
 } from '@angular/core';
 import { Terminal } from 'xterm';
+import { BaseClass } from 'src/app/common/base.class';
 
-import { BaseDirective } from '../../globals/base.directive';
 
 @Component({
     selector: 'a-terminal',
     templateUrl: './terminal.component.html',
     styleUrls: ['./terminal.component.scss'],
 })
-export class TerminalComponent extends BaseDirective implements OnInit, OnChanges, OnDestroy {
+export class TerminalComponent extends BaseClass implements OnInit, OnChanges, OnDestroy {
     /** Contents to display on the terminal */
     @Input() public content: string;
     /** Resizes terminal display on change */

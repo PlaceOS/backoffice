@@ -1,0 +1,126 @@
+
+@import 'variables';
+
+.container {
+    padding: 1em;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+section {
+    padding: .5em .25em;
+}
+
+.no-item {
+    font-size: .75em;
+}
+
+.group {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    margin: 2px 0;
+    width: 100%;
+
+    .handle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 2.5rem;
+        width: 2.5rem;
+        app-icon {
+            cursor: grab;
+        }
+    }
+
+    .details {
+        flex: 1;
+        min-width: 50%;
+        font-family: $mono-font;
+        white-space: nowrap;
+        font-size: .6em;
+        padding: 0 .5rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        span {
+            font-family: $mono-font;
+        }
+    }
+
+    &:nth-child(2n) {
+        background-color: #f0f0f0;
+    }
+
+    &:hover {
+        background-color: #ccc;
+    }
+}
+
+button {
+    margin: .25em;
+}
+
+header {
+    button {
+        margin: 0 .5em 0 0;
+        border: 1px solid rgba(#000, .85);
+
+        &[disabled] {
+            border-color: #ccc;
+        }
+    }
+}
+
+.header {
+    padding: 1em;
+    font-size: 1em;
+    font-weight: 500;
+}
+
+.cdk-drag-preview {
+    background-color: #fff;
+    @include box-shadow;
+
+    button {
+        display: none;
+    }
+}
+
+.placeholder {
+    background-color: rgba(#000, .1);
+    border: 4px dashed rgba(#000, .6);
+    height: 3em;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.details {
+    .field {
+        display: flex;
+        align-items: center;
+        margin: .25em 0;
+
+        .value {
+            padding: 0 .5em;
+            user-select: all;
+        }
+    }
+
+    label {
+        font-size: .8em;
+        font-weight: 500;
+    }
+}

@@ -1,10 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { ApplicationService } from 'src/app/services/app.service';
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
-import { generateTriggerActionForm } from 'src/app/shared/utilities/data/triggers.utilities';
 import {
     PlaceTrigger,
     PlaceSystem,
@@ -12,7 +8,11 @@ import {
     TriggerFunction,
     updateTrigger,
 } from '@placeos/ts-client';
-import { FormGroup } from '@angular/forms';
+
+import { BaseClass } from 'src/app/common/base.class';
+import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { generateTriggerActionForm } from 'src/app/shared/utilities/data/triggers.utilities';
+import { notifyError, notifySuccess } from 'src/app/common/notifications';
 
 export interface TriggerActionModalData {
     /** Item to add/update the trigger on */
@@ -28,7 +28,7 @@ export interface TriggerActionModalData {
     templateUrl: './trigger-action-modal.template.html',
     styleUrls: ['./trigger-action-modal.styles.scss'],
 })
-export class TriggerActionModalComponent extends BaseDirective implements OnInit {
+export class TriggerActionModalComponent extends BaseClass implements OnInit {
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether actions are loading */
@@ -55,8 +55,7 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
 
     constructor(
         private _dialog: MatDialogRef<TriggerActionModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: TriggerActionModalData,
-        private _service: ApplicationService
+        @Inject(MAT_DIALOG_DATA) private _data: TriggerActionModalData
     ) {
         super();
     }
@@ -84,14 +83,14 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
             .then(
                 (item) => {
                     this.event.emit({ reason: 'done', metadata: { trigger: item } });
-                    this._service.notifySuccess(
+                    notifySuccess(
                         `Successfully ${this.is_new ? 'added' : 'updated'} condition to trigger`
                     );
                     this._dialog.close();
                 },
                 (err) => {
                     this.loading = false;
-                    this._service.notifyError(
+                    notifyError(
                         `Error ${
                             this.is_new ? 'adding' : 'updating'
                         } condition to trigger. Error: ${JSON.stringify(

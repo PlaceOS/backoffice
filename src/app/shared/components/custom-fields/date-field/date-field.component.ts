@@ -2,7 +2,7 @@ import { Component, OnInit, forwardRef, Input, ViewChild, LOCALE_ID, Inject } fr
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { MatMenuTrigger } from '@angular/material/menu';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { BaseClass } from 'src/app/common/base.class';
 
 import * as dayjs from 'dayjs';
 import { DatePipe } from '@angular/common';
@@ -19,7 +19,7 @@ import { DatePipe } from '@angular/common';
         }
     ]
 })
-export class DateFieldComponent extends BaseDirective implements OnInit, ControlValueAccessor {
+export class DateFieldComponent extends BaseClass implements OnInit, ControlValueAccessor {
     /** Earliest date available the user is allowed to pick */
     @Input('from') public _from: number = dayjs().valueOf();
     /** Latest date available the user is allowed to pick */

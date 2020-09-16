@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { BaseClass } from 'src/app/common/base.class';
 import { HashMap } from 'src/app/shared/utilities/types.utilities';
 
 @Component({
@@ -9,7 +9,7 @@ import { HashMap } from 'src/app/shared/utilities/types.utilities';
   templateUrl: './saml-source-form.component.html',
   styleUrls: ['./saml-source-form.component.scss']
 })
-export class SamlSourceFormComponent extends BaseDirective implements OnChanges {
+export class SamlSourceFormComponent extends BaseClass implements OnChanges {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
 

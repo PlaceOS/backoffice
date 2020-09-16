@@ -2,9 +2,7 @@ import { Component, Input, SimpleChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { PlaceRepositoryType, listRepositoryBranches, listRepositoryCommits } from '@placeos/ts-client';
-
 import { Identity } from 'src/app/shared/utilities/types.utilities';
-import { ApplicationService } from 'src/app/services/app.service';
 
 import * as dayjs from 'dayjs';
 
@@ -45,8 +43,6 @@ export class RepositoryFormComponent {
             this.form.controls.repo_type.value === PlaceRepositoryType.Interface
         );
     }
-
-    constructor(private _service: ApplicationService) {}
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.form && this.form) {
