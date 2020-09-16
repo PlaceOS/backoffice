@@ -18,8 +18,8 @@ import { BaseClass } from 'src/app/common/base.class';
 import { ApplicationLink, ApplicationIcon } from 'src/app/common/types';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 import { BulkItemModalComponent } from 'src/app/overlays/bulk-item-modal/bulk-item-modal.component';
-import { BackofficeUsersService } from 'src/app/services/data/users.service';
-import { SettingsService } from 'src/app/services/settings.service';
+import { BackofficeUsersService } from 'src/app/users/users.service';
+import { SettingsService } from 'src/app/common/settings.service';
 
 import * as dayjs from 'dayjs';
 

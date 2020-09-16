@@ -1,6 +1,6 @@
 <div class="container" *ngIf="item">
     <section class="select">
-        <button mat-button (click)="start()"  i18n="@@systemStartAction">Start System</button>
+        <button mat-button (click)="start()" i18n="@@systemStartAction">Start System</button>
         <button mat-button (click)="stop()" i18n="@@systemStopAction">Stop System</button>
     </section>
     <section class="details">
@@ -38,7 +38,12 @@
     <hr />
     <header class="settings" i18n="@@settingsLabel">Settings</header>
     <section *ngIf="item.settings && other_settings; else load_state">
-        <a-settings-form [id]="item.id" [merge]="true" [settings]="item.settings" [merge_settings]="other_settings || []"></a-settings-form>
+        <a-settings-form
+            [id]="item.id"
+            [merge]="true"
+            [settings]="item.settings"
+            [merge_settings]="other_settings || []"
+        ></a-settings-form>
     </section>
 </div>
 <ng-template #load_state>

@@ -9,7 +9,7 @@ import { first, map } from 'rxjs/operators';
 import { FilterFn } from 'src/app/common/types';
 import { toQueryString } from 'src/app/common/api';
 import { BaseClass } from 'src/app/common/base.class';
-import { SettingsService } from '../settings.service';
+import { SettingsService } from '../common/settings.service';
 
 import * as dayjs from 'dayjs';
 import * as Sentry from '@sentry/browser';

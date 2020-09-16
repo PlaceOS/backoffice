@@ -4,9 +4,9 @@ import { authority } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
 import { ApplicationLinkInternal } from 'src/app/common/types';
-import { SettingsService } from 'src/app/services/settings.service';
-import { BackofficeUsersService } from 'src/app/services/data/users.service';
-import { HotkeysService } from 'src/app/services/hotkeys.service';
+import { SettingsService } from 'src/app/common/settings.service';
+import { BackofficeUsersService } from 'src/app/users/users.service';
+import { HotkeysService } from 'src/app/common/hotkeys.service';
 
 @Component({
     selector: 'sidebar-menu',

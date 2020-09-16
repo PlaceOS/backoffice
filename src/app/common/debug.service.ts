@@ -3,7 +3,7 @@ import { PlaceDebugEvent, PlaceModule, debug_events, debug, ignore } from '@plac
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { HashMap } from 'src/app/common/types';
-import { BaseClass } from '../common/base.class';
+import { BaseClass } from './base.class';
 
 import * as dayjs from 'dayjs';
 

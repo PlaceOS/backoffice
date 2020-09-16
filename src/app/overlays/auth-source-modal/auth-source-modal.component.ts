@@ -20,7 +20,7 @@ import {
     generateOAuthSourceForm,
     generateLDAPSourceForm,
     generateSAMLSourceForm,
-} from 'src/app/shared/utilities/data/auth-sources.utilities';
+} from 'src/app/domains/auth-sources.utilities';
 import { Observable } from 'rxjs';
 import { notifySuccess, notifyError } from 'src/app/common/notifications';
 

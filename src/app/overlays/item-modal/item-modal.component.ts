@@ -20,22 +20,22 @@ import { FormGroup } from '@angular/forms';
 
 import { BaseClass } from 'src/app/common/base.class';
 import { DialogEvent, Identity, HashMap } from 'src/app/common/types';
-import { generateSystemsFormFields } from 'src/app/shared/utilities/data/systems.utilities';
-import { generateModuleFormFields } from 'src/app/shared/utilities/data/modules.utilities';
-import { generateZoneFormFields } from 'src/app/shared/utilities/data/zones.utilites';
-import { generateDriverFormFields } from 'src/app/shared/utilities/data/drivers.utilities';
-import { generateUserFormFields } from 'src/app/shared/utilities/data/users.utilities';
-import { generateDomainFormFields } from 'src/app/shared/utilities/data/domains.utilities';
-import { generateApplicationFormFields } from 'src/app/shared/utilities/data/applications.utilities';
+import { generateSystemsFormFields } from 'src/app/systems/systems.utilities';
+import { generateModuleFormFields } from 'src/app/modules/modules.utilities';
+import { generateZoneFormFields } from 'src/app/zones/zones.utilites';
+import { generateDriverFormFields } from 'src/app/drivers/drivers.utilities';
+import { generateUserFormFields } from 'src/app/users/users.utilities';
+import { generateDomainFormFields } from 'src/app/domains/domains.utilities';
+import { generateApplicationFormFields } from 'src/app/domains/applications.utilities';
 import {
     generateTriggerFormFields,
     generateTriggerSettingsFormFields,
-} from 'src/app/shared/utilities/data/triggers.utilities';
-import { generateRepositoryFormFields } from 'src/app/shared/utilities/data/repositories.utilities';
-import { generateBrokerFormFields } from 'src/app/shared/utilities/data/brokers.utilities';
+} from 'src/app/triggers/triggers.utilities';
+import { generateRepositoryFormFields } from 'src/app/repositories/repositories.utilities';
+import { generateBrokerFormFields } from 'src/app/engine/brokers.utilities';
 import { Observable } from 'rxjs';
 import { notifyError, notifySuccess } from 'src/app/common/notifications';
-import { HotkeysService } from 'src/app/services/hotkeys.service';
+import { HotkeysService } from 'src/app/common/hotkeys.service';
 
 export interface CreateEditModalData<T extends Identity = any> {
     /** Service associated with the item being created/edited */

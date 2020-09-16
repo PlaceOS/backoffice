@@ -1,5 +1,5 @@
 
-const domain = 'pwcme.dev.place.tech';
+const domain = 'localhost:8443';
 const secure = true;
 const valid_ssl = false;
 

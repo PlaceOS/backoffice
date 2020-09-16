@@ -30,7 +30,7 @@ import {
     ViewModuleStateModalComponent,
     ModuleStateModalData,
 } from 'src/app/overlays/view-module-state/view-module-state.component';
-import { PlaceDebugService } from 'src/app/services/debug.service';
+import { PlaceDebugService } from 'src/app/common/debug.service';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
 import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal/view-response-modal.component';
 import { map } from 'rxjs/operators';

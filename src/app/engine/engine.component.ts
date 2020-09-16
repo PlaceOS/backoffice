@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { SettingsService } from '../services/settings.service';
+import { SettingsService } from '../common/settings.service';
 
 @Component({
     selector: 'app-engine',

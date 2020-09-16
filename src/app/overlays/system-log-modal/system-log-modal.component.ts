@@ -2,7 +2,6 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { IPlaceLogEntry } from 'src/app/services/data/logs.service';
 
 export interface SystemLogModalData {
     /** ID of the system to show the logs for */
@@ -18,7 +17,7 @@ export class SystemLogModalComponent extends BaseClass implements OnInit {
     /** ID of the system to get logs for */
     public id: string;
     /** List of the available log entries for the set system */
-    public logs: IPlaceLogEntry[];
+    public logs: any[];
     /** Whether the system's logs are loading */
     public loading: boolean;
     /**  */

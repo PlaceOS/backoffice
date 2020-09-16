@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { authority } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { SettingsService } from '../services/settings.service';
+import { SettingsService } from '../common/settings.service';
 
 import * as dayjs from 'dayjs';
 

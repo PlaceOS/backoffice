@@ -14,7 +14,7 @@ import { SidebarMenuComponent } from './ui/sidebar-menu/sidebar-menu.component';
 
 import { SharedOverlaysModule } from './overlays/overlays.module';
 import { SharedContentModule } from './ui/ui.module';
-import { SentryService } from './services/sentry.service';
+import { SentryService } from './common/sentry.service';
 
 import { AuthorisedUserGuard } from './ui/guards/authorised-user.guard';
 import { AuthorisedAdminGuard } from './ui/guards/authorised-admin.guard';

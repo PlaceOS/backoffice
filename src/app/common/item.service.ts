@@ -11,8 +11,8 @@ import {
     CONFIRM_METADATA,
 } from '../overlays/confirm-modal/confirm-modal.component';
 import { ItemActions, ACTIONS } from './actions';
-import { SettingsService } from '../services/settings.service';
-import { HotkeysService } from '../services/hotkeys.service';
+import { SettingsService } from '../common/settings.service';
+import { HotkeysService } from '../common/hotkeys.service';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
 import { notifySuccess, notifyError } from './notifications';
 import { DialogEvent } from 'src/app/common/types';
@@ -118,7 +118,10 @@ export class ActiveItemService extends BaseClass {
             const url = this._router.url.split('/');
             this._type = url[1] as any;
             this._loading.next(true);
-            const item = await this.actions.show(id).toPromise();
+            const item = await this.actions
+                .show(id)
+                .toPromise()
+                .catch(() => notifyError(`Error loading ${id}`));
             this._active_item.next(item);
             const name = this._type[0].toUpperCase() + this._type.slice(1);
             this._name.next(name);
@@ -242,8 +245,8 @@ export class ActiveItemService extends BaseClass {
         const url = this._router.url.split('/');
         const old_type = this._type;
         this._type = url[1] as any;
-        log('Service', `Item type set to ${this._type}`);
         if (old_type !== this._type) {
+            log('Service', `Item type set to ${this._type}`);
             this._next_query.next(null);
             this._active_item.next(null);
             this._search.next('');
@@ -286,7 +289,9 @@ export class ActiveItemService extends BaseClass {
     private async updateSettings() {
         const item = this.active_item;
         if (item && (item as any).settings) {
-            const settings = await querySettings({ parent_id: item.id }).pipe(map(resp => resp.data)).toPromise();
+            const settings = await querySettings({ parent_id: item.id })
+                .pipe(map((resp) => resp.data))
+                .toPromise();
             this._active_item.next(new this.actions.itemConstructor({ ...item, settings }));
         }
     }

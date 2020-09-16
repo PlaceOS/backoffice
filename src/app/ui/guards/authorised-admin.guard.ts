@@ -12,7 +12,7 @@ import {
 import { PlaceUser, onlineState } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
 
-import { BackofficeUsersService } from 'src/app/services/data/users.service';
+import { BackofficeUsersService } from 'src/app/users/users.service';
 
 @Injectable({
     providedIn: 'root',

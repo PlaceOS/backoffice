@@ -6,9 +6,9 @@ import { BaseClass } from 'src/app/common/base.class';
 import { Identity } from 'src/app/common/types';
 import { ApplicationIcon } from 'src/app/common/types';
 import { downloadFile, jsonToCsv } from 'src/app/common/general';
-import { BackofficeUsersService } from 'src/app/services/data/users.service';
+import { BackofficeUsersService } from 'src/app/users/users.service';
 import { ActiveItemService } from 'src/app/common/item.service';
-import { HotkeysService } from 'src/app/services/hotkeys.service';
+import { HotkeysService } from 'src/app/common/hotkeys.service';
 import { notifyInfo } from 'src/app/common/notifications';
 
 export interface ApplicationTab {

@@ -3,7 +3,7 @@ import { UploadManager, Upload } from '@acaprojects/ngx-uploads';
 
 import { copyToClipboard } from 'src/app/common/general';
 import { BaseClass } from 'src/app/common/base.class';
-import { SettingsService } from 'src/app/services/settings.service';
+import { SettingsService } from 'src/app/common/settings.service';
 import { notifyInfo } from 'src/app/common/notifications';
 
 import * as blobUtil from 'blob-util';

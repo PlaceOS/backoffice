@@ -8,7 +8,7 @@ import {
     ChangelogModalComponent,
     ChangelogModalData
 } from 'src/app/overlays/changelog-modal/changelog-modal.component';
-import { BackofficeUsersService } from 'src/app/services/data/users.service';
+import { BackofficeUsersService } from 'src/app/users/users.service';
 import { notifyError } from 'src/app/common/notifications';
 
 import * as dayjs from 'dayjs';

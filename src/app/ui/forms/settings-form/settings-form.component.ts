@@ -10,11 +10,11 @@ import {
 
 import { BaseClass } from 'src/app/common/base.class';
 import { Identity } from 'src/app/common/types';
-import { validateYAML } from 'src/app/shared/utilities/data/systems.utilities';
+import { validateYAML } from 'src/app/systems/systems.utilities';
 import { HashMap } from 'src/app/common/types';
 import { notifyError, notifySuccess } from 'src/app/common/notifications';
-import { HotkeysService } from 'src/app/services/hotkeys.service';
-import { BackofficeUsersService } from 'src/app/services/data/users.service';
+import { HotkeysService } from 'src/app/common/hotkeys.service';
+import { BackofficeUsersService } from 'src/app/users/users.service';
 
 import * as yaml from 'js-yaml';
 import * as merge from 'deepmerge';

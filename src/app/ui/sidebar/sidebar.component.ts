@@ -15,10 +15,10 @@ import { Router, NavigationEnd } from '@angular/router';
 import { PlaceModule, PlaceDriverRole } from '@placeos/ts-client';
 
 import { HashMap } from 'src/app/common/types';
-import { BackofficeUsersService } from 'src/app/services/data/users.service';
+import { BackofficeUsersService } from 'src/app/users/users.service';
 import { BaseClass } from 'src/app/common/base.class';
-import { HotkeysService } from 'src/app/services/hotkeys.service';
-import { SettingsService } from 'src/app/services/settings.service';
+import { HotkeysService } from 'src/app/common/hotkeys.service';
+import { SettingsService } from 'src/app/common/settings.service';
 import { ActiveItemService } from 'src/app/common/item.service';
 
 import * as dayjs from 'dayjs';

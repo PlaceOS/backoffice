@@ -1,6 +1,6 @@
 import { Component, OnInit, Renderer2, ViewChild, ElementRef } from '@angular/core';
 
-import { PlaceDebugService } from 'src/app/services/debug.service';
+import { PlaceDebugService } from 'src/app/common/debug.service';
 import { eventToPoint } from 'src/app/common/general';
 import { Point } from 'src/app/common/types';
 import { BaseClass } from 'src/app/common/base.class';

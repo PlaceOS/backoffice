@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { PlaceDatabase } from 'src/app/services/data/engine.service';
+import { PlaceDatabase } from 'src/app/common/database.service';
 import { notifyError } from 'src/app/common/notifications';
 
 @Component({

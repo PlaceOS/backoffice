@@ -6,13 +6,13 @@ import { first } from 'rxjs/operators';
 import { invalidateToken, token } from '@placeos/ts-client';
 import { UploadManager, Md5Workers, Amazon, Azure, Google, OpenStack } from '@acaprojects/ngx-uploads';
 
-import { SettingsService } from './services/settings.service';
+import { SettingsService } from './common/settings.service';
 import { setupPlace } from './common/placeos';
 import { setupCache } from './common/application';
 import { setNotifyOutlet } from './common/notifications';
 import { BaseClass } from './common/base.class';
 import { log, detectIE } from './common/general';
-import { BackofficeUsersService } from './services/data/users.service';
+import { BackofficeUsersService } from './users/users.service';
 
 @Component({
     selector: 'app-root',

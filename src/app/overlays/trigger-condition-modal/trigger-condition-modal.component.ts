@@ -13,7 +13,7 @@ import {
 import { BaseClass } from 'src/app/common/base.class';
 import { DialogEvent } from 'src/app/common/types';
 
-import { generateTriggerConditionForm } from 'src/app/shared/utilities/data/triggers.utilities';
+import { generateTriggerConditionForm } from 'src/app/triggers/triggers.utilities';
 import { notifyError, notifySuccess } from 'src/app/common/notifications';
 
 export interface TriggerConditionData {

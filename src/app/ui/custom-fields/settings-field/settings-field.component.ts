@@ -15,7 +15,7 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
 import { BaseClass } from 'src/app/common/base.class';
 import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
-import { BackofficeUsersService } from 'src/app/services/data/users.service';
+import { BackofficeUsersService } from 'src/app/users/users.service';
 
 // import * as monaco_yaml from 'monaco-editor/dev/vs/basic-languages/yaml/yaml.js';
 
