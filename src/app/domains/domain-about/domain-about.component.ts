@@ -1,32 +1,35 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component, Input, SimpleChanges, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 
 import { PlaceDomain, updateDomain } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
 import { validateJSONString } from 'src/app/shared/utilities/validation.utilities';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'app-domain-about',
     templateUrl: './domain-about.component.html',
     styleUrls: ['./domain-about.component.scss'],
 })
-export class DomainAboutComponent extends BaseClass {
-    /** Domain to display details for */
-    @Input() public item: PlaceDomain;
+export class DomainAboutComponent extends BaseClass implements OnInit {
     /** Form group for edit domain settings */
     public form: FormGroup;
     /** Index of the active tab */
     public index: number;
 
-    constructor() {
+    public get item(): PlaceDomain {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _service: ActiveItemService) {
         super();
     }
 
-    public ngOnChanges(changes: SimpleChanges) {
-        if (changes.item && this.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadForm();
-        }
+        }))
     }
 
     /** Load form fields for active item */
@@ -57,7 +60,7 @@ export class DomainAboutComponent extends BaseClass {
                         internals: JSON.parse(this.form.value.internals),
                     });
                     const item = await updateDomain(domain.id, domain).toPromise();
-                    this.item = item as any;
+                    this._service.replaceItem(item);
                 }
             },
             3000

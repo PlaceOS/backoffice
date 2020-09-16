@@ -4,26 +4,30 @@ import { PlaceDomain, queryUsers } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
 import { map } from 'rxjs/operators';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'domain-users',
     templateUrl: './domain-users.template.html',
     styleUrls: ['./domain-users.styles.scss']
 })
-export class DomainUsersComponent extends BaseClass implements OnInit, OnChanges {
-    @Input() public item: PlaceDomain;
+export class DomainUsersComponent extends BaseClass implements OnInit {
 
     public model: any = {};
 
-
-    public ngOnInit(): void {
-        this.loadUsers();
+    public get item(): PlaceDomain {
+        return this._service.active_item as any;
     }
 
-    public ngOnChanges(changes: any) {
-        if (changes.item) {
+    constructor(private _service: ActiveItemService) {
+        super();
+    }
+
+
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadUsers();
-        }
+        }))
     }
 
     public loadUsers(offset: number = 0) {

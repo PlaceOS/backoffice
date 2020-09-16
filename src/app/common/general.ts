@@ -17,10 +17,10 @@ export function log(
     args?: any,
     stream: ConsoleStream = 'debug',
     force: boolean = false,
-    app_name: string = 'PANEL'
+    app_name: string = 'BACKOFFICE'
 ) {
     if (window.debug || force) {
-        const colors: string[] = ['color: #E91E63', 'color: #3F51B5', 'color: default'];
+        const colors: string[] = ['color: #E91E63', 'color: #ffb300', 'color: default'];
         if (args) {
             console[stream](`%c[${app_name}]%c[${type}] %c${msg}`, ...colors, args);
         } else {

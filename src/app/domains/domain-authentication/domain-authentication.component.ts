@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import {
     PlaceDomain,
     PlaceSAMLSource,
@@ -25,6 +25,7 @@ import {
 } from 'src/app/overlays/auth-source-modal/auth-source-modal.component';
 import { map, first } from 'rxjs/operators';
 import { notifyError, notifySuccess } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 export interface PlaceAuthSourceLike extends Identity {
     authority_id: string;
@@ -37,22 +38,24 @@ export interface PlaceAuthSourceLike extends Identity {
     templateUrl: './domain-authentication.template.html',
     styleUrls: ['./domain-authentication.styles.scss'],
 })
-export class DomainAuthenticationComponent extends BaseClass implements OnChanges {
-    /** Active domain item */
-    @Input() public item: PlaceDomain;
+export class DomainAuthenticationComponent extends BaseClass implements OnInit {
     /** List of auth sources associated with the active domain */
     public auth_sources: PlaceAuthSourceLike[] = [];
     /** Mapping of auth sources to their type */
     public source_types: HashMap<'oauth' | 'saml' | 'ldap'> = {};
 
-    constructor(private _dialog: MatDialog) {
+    public get item(): PlaceDomain {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
         super();
     }
 
-    public ngOnChanges(changes: SimpleChanges) {
-        if (changes.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadAuthSources();
-        }
+        }))
     }
 
     /**

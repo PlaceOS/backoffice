@@ -12,15 +12,14 @@ import {
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { notifyError, notifySuccess } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'driver-devices',
     templateUrl: './driver-devices.template.html',
     styleUrls: ['./driver-devices.styles.scss'],
 })
-export class DriverModulesComponent extends BaseClass implements OnChanges, OnInit {
-    @Input() public item: PlaceDriver;
-
+export class DriverModulesComponent extends BaseClass implements OnInit {
     /** Filter string for the system list */
     public search_str: string;
     /** List of Modules associated with the driver */
@@ -32,11 +31,18 @@ export class DriverModulesComponent extends BaseClass implements OnChanges, OnIn
     /** Whether systems are being loaded */
     public loading: boolean;
 
-    constructor(private _dialog: MatDialog) {
+    public get item(): PlaceDriver {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
         super();
     }
 
     public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
+            this.loadModules();
+        }))
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
             distinctUntilChanged(),
@@ -69,12 +75,6 @@ export class DriverModulesComponent extends BaseClass implements OnChanges, OnIn
             'search_results',
             this.search_results$.subscribe((list) => (this.device_list = list))
         );
-    }
-
-    public ngOnChanges(changes: any) {
-        if (changes.item) {
-            this.loadModules();
-        }
     }
 
     public async loadModules(offset: number = 0) {

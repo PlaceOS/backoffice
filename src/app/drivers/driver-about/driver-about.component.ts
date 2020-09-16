@@ -10,6 +10,7 @@ import {
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { notifyError, notifySuccess } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'driver-about',
@@ -17,12 +18,14 @@ import { notifyError, notifySuccess } from 'src/app/common/notifications';
     styleUrls: ['./driver-about.styles.scss'],
 })
 export class DriverAboutComponent extends BaseClass {
-    /** Item to render */
-    @Input() public item: PlaceDriver;
     /** Whether driver has a compiled binary on the server */
     public compiled: boolean;
 
-    constructor(private _dialog: MatDialog) {
+    public get item(): PlaceDriver {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
         super();
     }
 

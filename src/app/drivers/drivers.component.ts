@@ -15,16 +15,18 @@ export class DriversComponent extends BaseClass {
 
     public readonly name = 'drivers';
 
-    public get item(): PlaceDriver {
-        return this._service.active_item as any;
-    }
-
     constructor(protected _service: ActiveItemService) {
         super();
     }
 
-    protected async loadValues() {
-        const query: any = { offset: 0, limit: 1, driver_id: this.item.id };
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
+            this.loadValues(item as any);
+        }))
+    }
+
+    protected async loadValues(item: PlaceDriver) {
+        const query: any = { offset: 0, limit: 1, driver_id: item.id };
         this.device_count = (await queryModules(query).toPromise()).total;
     }
 }

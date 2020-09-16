@@ -17,16 +17,19 @@ export class ModulesComponent extends BaseClass {
 
     public readonly name = 'modules';
 
-    private get item(): PlaceModule {
-        return this._service.active_item as any;
-    }
-
     constructor(private _service: ActiveItemService) {
         super();
     }
 
-    protected async loadValues() {
-        const query: any = { offset: 0, limit: 1, module_id: this.item.id };
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
+            this.loadValues(item as any);
+        }));
+    }
+
+    protected async loadValues(item: PlaceModule) {
+        if (!item) return;
+        const query: any = { offset: 0, limit: 1, module_id: item.id };
         // Get system count
         this.system_count = (await querySystems(query).toPromise()).total;
     }

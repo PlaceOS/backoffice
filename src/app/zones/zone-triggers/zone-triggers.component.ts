@@ -22,28 +22,31 @@ import { BaseClass } from 'src/app/common/base.class';
 import { unique } from 'src/app/shared/utilities/general.utilities';
 import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { notifySuccess, notifyError } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'zone-triggers',
     templateUrl: './zone-triggers.template.html',
     styleUrls: ['./zone-triggers.styles.scss'],
 })
-export class ZoneTriggersComponent extends BaseClass implements OnChanges {
-    /** Zone to display */
-    @Input() public item: PlaceZone;
+export class ZoneTriggersComponent extends BaseClass {
     /** List of triggers associated with the zone */
     public triggers: PlaceTrigger[] = [];
     /** Filter string for zone list */
     public search_str: string;
 
-    constructor(private _dialog: MatDialog) {
+    public get item(): PlaceZone {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _service: ActiveItemService, private _dialog: MatDialog) {
         super();
     }
 
-    public ngOnChanges(changes: any) {
-        if (changes.item && this.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadZoneTriggers();
-        }
+        }))
     }
 
     public loadZoneTriggers(offset: number = 0) {

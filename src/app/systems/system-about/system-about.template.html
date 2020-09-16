@@ -37,7 +37,7 @@
     </section>
     <hr />
     <header class="settings" i18n="@@settingsLabel">Settings</header>
-    <section *ngIf="!loading_settings; else load_state">
+    <section *ngIf="item.settings && other_settings; else load_state">
         <a-settings-form [id]="item.id" [merge]="true" [settings]="item.settings" [merge_settings]="other_settings || []"></a-settings-form>
     </section>
 </div>

@@ -18,34 +18,37 @@ import {
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { map, first } from 'rxjs/operators';
 import { notifySuccess, notifyError } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'system-about',
     templateUrl: './system-about.template.html',
     styleUrls: ['./system-about.styles.scss'],
 })
-export class SystemAboutComponent extends BaseClass implements OnChanges {
-    /** System to render */
-    @Input() public item: PlaceSystem;
+export class SystemAboutComponent extends BaseClass {
     /** List of zones for the active system */
     public zones: PlaceZone[];
     /** List of settings for associated modules, drivers and zones */
-    public other_settings: PlaceSettings[] = [];
+    public other_settings: PlaceSettings[] = null;
 
     /** List of module ids associated with the system */
     public modules(): string[] {
         return [...this.item.modules];
     }
 
-    constructor(private _dialog: MatDialog) {
+    public get item(): PlaceSystem {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
         super();
     }
 
-    public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.item && this.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadZones();
             this.loadSettings();
-        }
+        }))
     }
 
     /**

@@ -27,6 +27,7 @@ import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item
 import { copyToClipboard } from 'src/app/shared/utilities/general.utilities';
 import { map } from 'rxjs/operators';
 import { notifyInfo, notifyError, notifySuccess } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 export interface TriggerInstanceState {
     triggered: boolean;
@@ -41,9 +42,7 @@ export interface TriggerInstanceState {
     templateUrl: './system-triggers.template.html',
     styleUrls: ['./system-triggers.styles.scss'],
 })
-export class SystemTriggersComponent extends BaseClass implements OnChanges {
-    /** Active System */
-    @Input() public item: PlaceSystem;
+export class SystemTriggersComponent extends BaseClass {
     /** List of triggers associated with the active system */
     public trigger_list: PlaceTrigger[] = [];
     /** List of triggers associated with the active system */
@@ -55,14 +54,18 @@ export class SystemTriggersComponent extends BaseClass implements OnChanges {
     /** Mapping of trigger instances to their condition state list */
     public comparisons: HashMap<string> = {};
 
-    constructor(private _dialog: MatDialog) {
+    public get item(): PlaceSystem {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
         super();
     }
 
-    public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadSystemTriggers();
-        }
+        }))
     }
 
     public loadSystemTriggers(offset: number = 0): void {

@@ -4,14 +4,14 @@ import { Observable, Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 
 import { BaseClass } from 'src/app/common/base.class';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'zone-systems',
     templateUrl: './zone-systems.template.html',
     styleUrls: ['./zone-systems.styles.scss'],
 })
-export class ZoneSystemsComponent extends BaseClass implements OnChanges, OnInit {
-    @Input() public item: PlaceZone;
+export class ZoneSystemsComponent extends BaseClass implements OnInit {
     /** List of systems associated with the zone */
     public system_list: PlaceSystem[] = [];
     /** Filter string for the systems */
@@ -23,7 +23,18 @@ export class ZoneSystemsComponent extends BaseClass implements OnChanges, OnInit
     /** Whether systems are being loaded */
     public loading: boolean;
 
+    public get item(): PlaceZone {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _service: ActiveItemService) {
+        super();
+    }
+
     public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
+            this.loadSystems();
+        }));
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
             distinctUntilChanged(),
@@ -55,12 +66,6 @@ export class ZoneSystemsComponent extends BaseClass implements OnChanges, OnInit
             'search_results',
             this.search_results$.subscribe((list) => (this.system_list = list))
         );
-    }
-
-    public ngOnChanges(changes: any) {
-        if (changes.item && this.item) {
-            this.loadSystems();
-        }
     }
 
     public loadSystems(offset: number = 0) {

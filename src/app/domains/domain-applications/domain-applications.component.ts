@@ -25,28 +25,31 @@ import { copyToClipboard } from 'src/app/shared/utilities/general.utilities';
 import { notifyError, notifySuccess, notifyInfo } from 'src/app/common/notifications';
 
 import * as dayjs from 'dayjs';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'domain-applications',
     templateUrl: './domain-applications.template.html',
     styleUrls: ['./domain-applications.styles.scss'],
 })
-export class DomainApplicationsComponent extends BaseClass implements OnChanges {
-    /** Active domain */
-    @Input() public item: PlaceDomain;
+export class DomainApplicationsComponent extends BaseClass implements OnInit {
     /** List of applications associated with the active domain */
     public application_list: PlaceApplication[];
 
     public show_secret: HashMap<boolean> = {};
 
-    constructor(private _dialog: MatDialog) {
+    public get item(): PlaceDomain {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
         super();
     }
 
-    public ngOnChanges(changes: any) {
-        if (changes.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadApplications();
-        }
+        }))
     }
 
     public copySecret(item: PlaceApplication) {

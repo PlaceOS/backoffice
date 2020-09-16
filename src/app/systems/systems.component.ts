@@ -1,14 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PlaceSystem, listSystemTriggers, showMetadata } from '@placeos/ts-client';
 
 import { ActiveItemService } from '../common/item.service';
+import { BaseClass } from '../common/base.class';
 
 @Component({
     selector: 'app-systems',
     templateUrl: './systems.template.html',
     styleUrls: ['./systems.styles.scss'],
 })
-export class SystemsComponent {
+export class SystemsComponent extends BaseClass implements OnInit {
     /** Number of triggers for the active system */
     public trigger_count: number;
     /** Number of devices for the active system */
@@ -20,22 +21,27 @@ export class SystemsComponent {
 
     public readonly name = 'systems';
 
-    public get item(): PlaceSystem {
-        return this._service.active_item as any;
+    constructor(protected _service: ActiveItemService) {
+        super();
     }
 
-    constructor(protected _service: ActiveItemService) {}
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
+            this.loadValues(item as any);
+        }));
+    }
 
-    protected async loadValues() {
-        const query: any = { offset: 0, limit: 1, sys_id: this.item.id };
+    protected async loadValues(item: PlaceSystem) {
+        if (!item) return
+        const query: any = { offset: 0, limit: 1, sys_id: item.id };
         // Get trigger count
-        this.trigger_count = (await listSystemTriggers(this.item.id).toPromise()).total;
+        this.trigger_count = (await listSystemTriggers(item.id).toPromise()).total;
         // Get device count
-        this.device_count = (this.item.modules || []).length;
+        this.device_count = (item.modules || []).length;
         // Get zone count
-        this.zone_count = (this.item.zones || []).length;
+        this.zone_count = (item.zones || []).length;
         // Get metadata
-        const map = await showMetadata(this.item.id).toPromise();
+        const map = await showMetadata(item.id).toPromise();
         this.metadata_count = map.length;
     }
 }

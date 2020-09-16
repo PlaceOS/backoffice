@@ -1,17 +1,17 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, OnChanges, OnInit } from '@angular/core';
 import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
 import { Subject, Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 
 import { BaseClass } from 'src/app/common/base.class';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'module-systems',
     templateUrl: './module-systems.template.html',
     styleUrls: ['./module-systems.styles.scss'],
 })
-export class ModuleSystemsComponent extends BaseClass implements OnChanges, OnInit {
-    @Input() public item: PlaceModule;
+export class ModuleSystemsComponent extends BaseClass implements OnInit {
     /** Filter string for the system list */
     public search_str: string;
     /** List of systems associated with the module */
@@ -23,7 +23,18 @@ export class ModuleSystemsComponent extends BaseClass implements OnChanges, OnIn
     /** Whether systems are being loaded */
     public loading: boolean;
 
+    public get item(): PlaceModule {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _service: ActiveItemService) {
+        super();
+    }
+
     public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
+            this.loadSystems();
+        }))
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
             distinctUntilChanged(),
@@ -54,12 +65,6 @@ export class ModuleSystemsComponent extends BaseClass implements OnChanges, OnIn
             'search_results',
             this.search_results$.subscribe((list) => (this.system_list = list))
         );
-    }
-
-    public ngOnChanges(changes: any) {
-        if (changes.item) {
-            this.loadSystems();
-        }
     }
 
     public async loadSystems(offset: number = 0) {

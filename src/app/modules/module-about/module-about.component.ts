@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, Input, SimpleChanges, OnChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceModule,
@@ -15,34 +15,37 @@ import {
 import { BaseClass } from 'src/app/common/base.class';
 import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal/view-response-modal.component';
 import { notifySuccess, notifyError } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'module-about',
     templateUrl: './module-about.template.html',
     styleUrls: ['./module-about.styles.scss'],
 })
-export class ModuleAboutComponent extends BaseClass implements OnChanges {
-    /** Item to render */
-    @Input() public item: PlaceModule;
+export class ModuleAboutComponent extends BaseClass implements OnInit {
     /** Driver for the active item */
     public driver: PlaceDriver;
     /** Control System for the active item */
     public system: PlaceSystem;
     /** List of settings for associated modules, drivers and zones */
-    public other_settings: PlaceSettings[] = [];
+    public other_settings: PlaceSettings[] = null;
     /** Whether module is being stopped */
     public stopping: boolean;
 
-    constructor(private _dialog: MatDialog) {
+    public get item(): PlaceModule {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
         super();
     }
 
-    public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadDriver();
             this.loadSystem();
             this.loadSettings();
-        }
+        }))
     }
 
     public loadDriver() {

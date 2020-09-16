@@ -4,14 +4,14 @@ import { Observable, Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 
 import { BaseClass } from 'src/app/common/base.class';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'zone-children',
     templateUrl: './zone-children.template.html',
     styleUrls: ['./zone-children.styles.scss'],
 })
-export class ZoneChildrenComponent extends BaseClass implements OnChanges, OnInit {
-    @Input() public item: PlaceZone;
+export class ZoneChildrenComponent extends BaseClass implements OnInit {
     /** List of children associated with the zone */
     public zone_list: PlaceZone[] = [];
     /** Filter string for the children */
@@ -23,7 +23,18 @@ export class ZoneChildrenComponent extends BaseClass implements OnChanges, OnIni
     /** Whether children are being loaded */
     public loading: boolean;
 
+    public get item(): PlaceZone {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _service: ActiveItemService) {
+        super();
+    }
+
     public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
+            this.loadChildren();
+        }));
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
             distinctUntilChanged(),
@@ -55,12 +66,6 @@ export class ZoneChildrenComponent extends BaseClass implements OnChanges, OnIni
             'search_results',
             this.search_results$.subscribe((list) => (this.zone_list = list))
         );
-    }
-
-    public ngOnChanges(changes: any) {
-        if (changes.item && this.item) {
-            this.loadChildren();
-        }
     }
 
     public loadChildren(offset: number = 0) {

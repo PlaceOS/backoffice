@@ -35,15 +35,14 @@ import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item
 import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal/view-response-modal.component';
 import { map } from 'rxjs/operators';
 import { notifySuccess, notifyError } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'system-modules',
     templateUrl: './system-modules.template.html',
     styleUrls: ['./system-modules.styles.scss'],
 })
-export class SystemModulesComponent extends BaseClass implements OnChanges {
-    /** System to grab the devices for */
-    @Input() public item: PlaceSystem;
+export class SystemModulesComponent extends BaseClass {
     /** List of modules associated with the system */
     public devices: PlaceModule[];
     /** Mapping of devices to the module bindings */
@@ -94,6 +93,10 @@ export class SystemModulesComponent extends BaseClass implements OnChanges {
     public readonly exclude_fn = (item: PlaceModule) =>
         item.control_system_id === this.item.id || item.role === PlaceDriverRole.Logic;
 
+    public get item(): PlaceSystem {
+        return this._service.active_item as any;
+    }
+
     /** Map of modules to whether they are listening for debug messages */
     public get debugged_modules(): HashMap<boolean> {
         return this.devices.reduce((map, device) => {
@@ -103,16 +106,17 @@ export class SystemModulesComponent extends BaseClass implements OnChanges {
     }
 
     constructor(
+        private _service: ActiveItemService,
         private _dialog: MatDialog,
         private _debug_service: PlaceDebugService
     ) {
         super();
     }
 
-    public ngOnChanges(changes: SimpleChanges) {
-        if (changes.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadModules();
-        }
+        }))
     }
 
     /**
@@ -410,8 +414,7 @@ export class SystemModulesComponent extends BaseClass implements OnChanges {
                         .then(
                             (item) => {
                                 this.hide_exec = false;
-                                this.item = item;
-                                // this._service.set('BACKOFFICE.active_item', this.item);
+                                this._service.replaceItem(item);
                                 notifySuccess('Succefully removed module.');
                                 this.devices.splice(this.devices.indexOf(device), 1);
                                 ref.close();
@@ -459,8 +462,7 @@ export class SystemModulesComponent extends BaseClass implements OnChanges {
                         .then(
                             (item) => {
                                 this.hide_exec = false;
-                                this.item = item;
-                                // this._service.set('BACKOFFICE.active_item', this.item);
+                                this._service.replaceItem(item);
                                 this.timeout('reload_module_list', () => this.loadModules(), 1000);
                             },
                             (err) => {
@@ -493,8 +495,7 @@ export class SystemModulesComponent extends BaseClass implements OnChanges {
             .then(
                 (item) => {
                     this.hide_exec = false;
-                    this.item = item;
-                    // this._service.set('BACKOFFICE.active_item', this.item);
+                    this._service.replaceItem(item);
                     notifySuccess('Successfully added device to system');
                     this.loadModules();
                 },

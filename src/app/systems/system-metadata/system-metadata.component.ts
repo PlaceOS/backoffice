@@ -18,14 +18,14 @@ import {
     CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { notifySuccess, notifyError } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'system-metadata',
     templateUrl: './system-metadata.template.html',
     styleUrls: ['./system-metadata.styles.scss'],
 })
-export class SystemMetadataComponent extends BaseClass implements OnChanges {
-    @Input() public item: PlaceSystem;
+export class SystemMetadataComponent extends BaseClass {
     /** List of metadata associated with the zone */
     public metadata: PlaceMetadata[] = [];
     /** Map of form field groups to metadata fields */
@@ -35,20 +35,24 @@ export class SystemMetadataComponent extends BaseClass implements OnChanges {
     /** Map of metadata properties to whether they are saving */
     public loading: HashMap<boolean> = {};
 
+    public get item(): PlaceSystem {
+        return this._service.active_item as any;
+    }
+
     private validateName(name_list: string[]) {
         return (control: AbstractControl) => {
             return name_list.indexOf(control.value) >= 0 ? { name: true } : null;
         };
     }
 
-    constructor(private _dialog: MatDialog) {
+    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
         super();
     }
 
-    public ngOnChanges(changes: SimpleChanges) {
-        if (changes.item && this.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadMetadata();
-        }
+        }))
     }
 
     public newMetadata() {

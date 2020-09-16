@@ -7,28 +7,31 @@ import {
     ItemCreateUpdateModalComponent,
     CreateEditModalData,
 } from 'src/app/overlays/item-modal/item-modal.component';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'repository-drivers',
     templateUrl: './repository-drivers.template.html',
     styleUrls: ['./repository-drivers.styles.scss'],
 })
-export class RepositoryDriversComponent extends BaseClass implements OnChanges {
-    /** Active repository */
-    @Input() public item: PlaceRepository;
+export class RepositoryDriversComponent extends BaseClass {
     /** Whether driver list is loading */
     public loading: boolean;
     /** List of drivers available in the repository */
     public driver_list: string[] = [];
 
-    constructor(private _dialog: MatDialog) {
+    public get item(): PlaceRepository {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
         super();
     }
 
-    public ngOnChanges(changes: any) {
-        if (changes.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.load();
-        }
+        }))
     }
 
     public load(offset: number = 0) {

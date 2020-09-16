@@ -54,6 +54,8 @@ export class ActiveItemService {
     public readonly loading_list = this._loading_list.asObservable();
     /** Observable for list of items */
     public readonly list = this._list.asObservable();
+    /** Observable for active item */
+    public readonly item = this._active_item.asObservable();
     /** Observable for list of items */
     public readonly list_items = () => this._list.getValue();
 
@@ -75,11 +77,13 @@ export class ActiveItemService {
         if (!this.active_item || this.active_item.id !== id && id.length > 2) {
             const url = this._router.url.split('/');
             this._type = url[1] as any;
+            this._loading.next(true);
             const item = await this.actions.show(id).toPromise();
             this._active_item.next(item);
             const name = this._type[0].toUpperCase() + this._type.slice(1);
             this._name.next(name);
             this._settings.title = name;
+            this._loading.next(false);
         }
     }
 
@@ -126,6 +130,7 @@ export class ActiveItemService {
             ref.componentInstance.event
                 .pipe(filter((e) => e.reason === 'done'))
                 .subscribe((event) => {
+                    this.replaceItem(event.metadata.item);
                     this._router.navigate([`/${this._type}`, event.metadata.item.id]);
                 });
         }
@@ -153,6 +158,7 @@ export class ActiveItemService {
                         () => {
                             notifySuccess(`Successfully deleted system "${item.name}".`);
                             this._active_item.next(null);
+                            this.removeItem(item);
                             this._router.navigate([`/${this._type}`]);
                             ref.close();
                         },
@@ -179,8 +185,27 @@ export class ActiveItemService {
             ref.componentInstance.event.subscribe((e: DialogEvent) => {
                 if (e.reason === 'done') {
                     this._active_item.next(e.metadata[0]);
+                    this.replaceItem(e.metadata[0])
                 }
             })
+        }
+    }
+
+    public replaceItem(item: any) {
+        if ((this.active_item as Object).constructor === item.constructor) {
+            this._active_item.next(item);
+            const list = this._list.getValue().filter(i => i.id !== item.id);
+            list.push(item);
+            list.sort((a, b) => a.name?.localeCompare(b.name));
+            this._list.next(list);
+        }
+    }
+
+    public removeItem(item: any) {
+        if (item.id) {
+            const list = this._list.getValue().filter(i => i.id !== item.id);
+            list.sort((a, b) => a.name?.localeCompare(b.name));
+            this._list.next(list);
         }
     }
 
@@ -195,6 +220,9 @@ export class ActiveItemService {
         if (old_type !== this._type) {
             this._next_query.next(null);
             this._active_item.next(null);
+            const name = this._type[0].toUpperCase() + this._type.slice(1);
+            this._name.next(name);
+            this._settings.title = name;
             this.updateList();
         }
     }
@@ -210,6 +238,7 @@ export class ActiveItemService {
         const resp = await next().toPromise();
         this._next_query.next(resp.next || (() => of({ data: [], total: resp.total, next: null })));
         const list = this._list.getValue().filter(i => !resp.data.find(item => item.id === i.id));
+        list.sort((a, b) => a.name?.localeCompare(b.name));
         this._list.next(list.concat(resp.data));
         this._loading_list.next(false);
     }

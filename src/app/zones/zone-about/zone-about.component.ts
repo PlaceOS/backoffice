@@ -5,24 +5,31 @@ import { map } from 'rxjs/operators';
 import { BaseClass } from 'src/app/common/base.class';
 
 import * as marked from 'marked';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'zone-about',
     templateUrl: './zone-about.template.html',
     styleUrls: ['./zone-about.styles.scss'],
 })
-export class ZoneAboutComponent extends BaseClass implements OnChanges {
-    /** Item to render */
-    @Input() public item: PlaceZone;
+export class ZoneAboutComponent extends BaseClass {
     /** List of systems associated with the zone */
     public system_list: PlaceSystem[];
     /** Selected system */
     public active_system: PlaceSystem;
 
-    public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.item && this.item) {
+    public get item(): PlaceZone {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _service: ActiveItemService) {
+        super();
+    }
+
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadSystems();
-        }
+        }))
     }
 
     public get parsed_description() {

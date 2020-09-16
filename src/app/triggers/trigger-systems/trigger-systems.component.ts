@@ -12,28 +12,31 @@ import {
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { map } from 'rxjs/operators';
 import { notifyError } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'trigger-systems',
     templateUrl: './trigger-systems.template.html',
     styleUrls: ['./trigger-systems.styles.scss'],
 })
-export class TriggerSystemsComponent extends BaseClass implements OnChanges {
-    /** Active trigger */
-    @Input() public item: PlaceTrigger;
+export class TriggerSystemsComponent extends BaseClass {
     /** List of systems associated with the trigger */
     public system_trigger_list: PlaceSystem[] = [];
     /** Map of systems ids to connected status */
     public connected: HashMap<boolean> = {};
 
-    constructor(private _dialog: MatDialog) {
+    public get item(): PlaceTrigger {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
         super();
     }
 
-    public ngOnChanges(changes: any) {
-        if (changes.item && this.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadSystemTriggers();
-        }
+        }))
     }
 
     public async loadSystemTriggers(offset: number = 0) {

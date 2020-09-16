@@ -15,19 +15,21 @@ export class RepositoriesComponent extends BaseClass {
 
     public readonly name = 'repositories';
 
-    public get item(): PlaceRepository {
-        return this._service.active_item as any;
-    }
-
     constructor(protected _service: ActiveItemService) {
         super();
     }
 
-    protected loadValues() {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
+            this.loadValues(item as any);
+        }));
+    }
+
+    protected loadValues(item: PlaceRepository) {
         const query: any = { offset: 0 };
-        if (this.item.type === PlaceRepositoryType.Driver) {
+        if (item.type === PlaceRepositoryType.Driver) {
             // Get driver count for repository
-            listRepositoryDrivers(this.item.id, query).subscribe(
+            listRepositoryDrivers(item.id, query).subscribe(
                 (list) => (this.driver_count = list.length)
             );
         } else {

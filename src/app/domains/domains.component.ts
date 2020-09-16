@@ -19,22 +19,22 @@ export class DomainsComponent extends BaseClass {
 
     public readonly name = 'domains';
 
-    public get item(): PlaceDomain {
-        return this._service.active_item as any;
-    }
-
     constructor(private _service: ActiveItemService) {
         super();
     }
 
-    protected async loadValues() {
-        if (!this.item) {
-            return;
-        }
-        let query: any = { offset: 0, limit: 1, owner: this.item.id };
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
+            this.loadValues(item as any);
+        }))
+    }
+
+    protected async loadValues(item: PlaceDomain) {
+        if (!item) return;
+        let query: any = { offset: 0, limit: 1, owner: item.id };
         // Get application count
         this.applications = (await queryApplications(query).toPromise()).total;
-        query = { offset: 0, limit: 1, authority_id: this.item.id };
+        query = { offset: 0, limit: 1, authority_id: item.id };
         // Get auth source count
         // this._service.AuthSources.query(query).then(
         //     () => (this.auth_sources = this._service.AuthSources.last_total)

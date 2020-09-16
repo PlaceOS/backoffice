@@ -4,6 +4,7 @@ import { PlaceRepository, pullRepositoryChanges } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
 import { notifyInfo, notifyError } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'repository-about',
@@ -11,10 +12,16 @@ import { notifyInfo, notifyError } from 'src/app/common/notifications';
     styleUrls: ['./repository-about.styles.scss']
 })
 export class RepositoryAboutComponent extends BaseClass {
-    /** Repository to display details about */
-    @Input() public item: PlaceRepository;
     /** Whether the latest commit is being pulled on the server */
     public pulling: boolean;
+
+    public get item(): PlaceRepository {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _service: ActiveItemService) {
+        super();
+    }
 
     /**
      * Send request to server to pull the latest commit for the active repository
@@ -26,7 +33,7 @@ export class RepositoryAboutComponent extends BaseClass {
                 (resp: any) => {
                     this.pulling = false;
                     notifyInfo(`Pulled down commit ${resp.commit_hash} for ${this.item.name}`);
-                    this.item = new PlaceRepository({ ...this.item, ...resp });
+                    // this.item = new PlaceRepository({ ...this.item, ...resp });
                 },
                 err => {
                     this.pulling = false;

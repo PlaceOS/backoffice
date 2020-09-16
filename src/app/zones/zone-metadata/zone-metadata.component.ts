@@ -18,14 +18,14 @@ import {
     CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { notifySuccess, notifyError } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'zone-metadata',
     templateUrl: './zone-metadata.template.html',
     styleUrls: ['./zone-metadata.styles.scss'],
 })
-export class ZoneMetadataComponent extends BaseClass implements OnChanges {
-    @Input() public item: PlaceZone;
+export class ZoneMetadataComponent extends BaseClass {
     /** List of metadata associated with the zone */
     public metadata: PlaceMetadata[] = [];
     /** Map of form field groups to metadata fields */
@@ -41,14 +41,18 @@ export class ZoneMetadataComponent extends BaseClass implements OnChanges {
         };
     }
 
-    constructor(private _dialog: MatDialog) {
+    public get item(): PlaceZone {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _service: ActiveItemService, private _dialog: MatDialog) {
         super();
     }
 
-    public ngOnChanges(changes: any) {
-        if (changes.item && this.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadMetadata();
-        }
+        }))
     }
 
     public newMetadata() {

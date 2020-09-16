@@ -19,15 +19,14 @@ import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
 import { unique } from 'src/app/shared/utilities/general.utilities';
 import { map } from 'rxjs/operators';
 import { notifyError, notifySuccess, notifyInfo } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'system-zones',
     templateUrl: './system-zones.template.html',
     styleUrls: ['./system-zones.styles.scss'],
 })
-export class SystemZonesComponent extends BaseClass implements OnChanges {
-    /** Active item */
-    @Input() public item: PlaceSystem;
+export class SystemZonesComponent extends BaseClass {
     /** Emitter for changes to the loading state of the item */
     @Output() public loading = new EventEmitter<boolean | string>();
     /** List of zones assoicated with the active item */
@@ -39,14 +38,18 @@ export class SystemZonesComponent extends BaseClass implements OnChanges {
 
     public readonly exclude_fn = (zone: PlaceZone) => this.item.zones.indexOf(zone.id) >= 0;
 
-    constructor(private _dialog: MatDialog) {
+    public get item(): PlaceSystem {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
         super();
     }
 
-    public ngOnChanges(changes: SimpleChanges) {
-        if (changes.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             this.loadZones();
-        }
+        }))
     }
 
     /**
@@ -132,7 +135,7 @@ export class SystemZonesComponent extends BaseClass implements OnChanges {
                         updateSystem(this.item.id, { ...this.item.toJSON(), zones }).subscribe(
                             (item: any) => {
                                 this.loading.emit(false);
-                                this.item = item;
+                                this._service.replaceItem(item);
                                 notifySuccess(`Remove zone "${zone.name}" from system`);
                                 ref.close();
                                 this.unsub('confirm_ref');
@@ -181,7 +184,7 @@ export class SystemZonesComponent extends BaseClass implements OnChanges {
                                 (item: any) => {
                                     this.loading.emit(false);
                                     notifySuccess(`Added zone "${this.new_zone.name}" to system`);
-                                    this.item = item;
+                                    this._service.replaceItem(item);
                                     this.loadZones();
                                     ref.close();
                                     this.unsub('confirm_ref');

@@ -28,10 +28,6 @@ export class ZonesComponent extends BaseClass {
 
     public readonly name = 'zones';
 
-    public get item(): PlaceZone {
-        return this._service.active_item as any;
-    }
-
     constructor(
         protected _service: ActiveItemService,
         protected _route: ActivatedRoute,
@@ -40,18 +36,25 @@ export class ZonesComponent extends BaseClass {
         super();
     }
 
-    protected async loadValues() {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
+            this.loadValues(item as any);
+        }));
+    }
+
+    protected async loadValues(item: PlaceZone) {
+        if (!item) return;
         // Get system count
-        const query: any = { offset: 0, limit: 1, zone_id: this.item.id };
+        const query: any = { offset: 0, limit: 1, zone_id: item.id };
         this.system_count = (await querySystems(query).toPromise()).total;
         // Get trigger count
         const tquery: any = { offset: 0, limit: 1 };
-        this.trigger_count = (await listZoneTriggers(this.item.id, tquery).toPromise()).total;
+        this.trigger_count = (await listZoneTriggers(item.id, tquery).toPromise()).total;
         // Get child zone count
-        const cquery: any = { offset: 0, limit: 1, parent: this.item.id };
+        const cquery: any = { offset: 0, limit: 1, parent: item.id };
         this.child_count = (await queryZones(cquery).toPromise()).total;
         // Get metadata
-        const map = await showMetadata(this.item.id).toPromise();
+        const map = await showMetadata(item.id).toPromise();
         this.metadata_count = map.length;
     }
 }

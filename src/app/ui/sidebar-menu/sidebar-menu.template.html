@@ -8,7 +8,7 @@
 >
     <ng-container *ngFor="let item of menu_items">
         <div class="item" [title]="item.name" [matTooltip]="item.name" i18n-matTooltip matTooltipPosition="right">
-            <a [routerLink]="[item.route]" routerLinkActive="active">
+            <a [routerLink]="[item.route, '-', 'about']" routerLinkActive="active">
                 <app-icon [icon]="item?.icon"></app-icon>
                 <div class="text" *ngIf="!item?.hide_name" i18n>
                     { item.name, select, Systems { Systems } Modules { Modules } Zones { Zones }

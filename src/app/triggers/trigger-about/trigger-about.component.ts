@@ -29,15 +29,14 @@ import {
     CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { notifyError, notifySuccess } from 'src/app/common/notifications';
+import { ActiveItemService } from 'src/app/common/item.service';
 
 @Component({
     selector: 'trigger-about',
     templateUrl: './trigger-about.template.html',
     styleUrls: ['./trigger-about.styles.scss'],
 })
-export class TriggerAboutComponent extends BaseClass implements OnChanges {
-    /** Active trigger */
-    @Input() public item: PlaceTrigger;
+export class TriggerAboutComponent extends BaseClass {
     /** System to use for conditions with systen variables and functions */
     public template_system: PlaceSystem;
     /** List of variable comparison trigger conditions */
@@ -53,12 +52,16 @@ export class TriggerAboutComponent extends BaseClass implements OnChanges {
     /** Query function for systems */
     public readonly query_fn = (_) => querySystems({ q: _ }).pipe(map((resp) => resp.data));
 
-    constructor(private _dialog: MatDialog) {
+    public get item(): PlaceTrigger {
+        return this._service.active_item as any;
+    }
+
+    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
         super();
     }
 
-    public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.item) {
+    public ngOnInit(): void {
+        this.subscription('item', this._service.item.subscribe((item) => {
             if (this.item && this.item.conditions) {
                 this.comparisons = this.item.conditions.comparisons || [];
                 this.time_dependents = this.item.conditions.time_dependents || [];
@@ -70,7 +73,7 @@ export class TriggerAboutComponent extends BaseClass implements OnChanges {
                 this.confirm_ref = null;
                 this.unsub('delete_confirm');
             }
-        }
+        }))
     }
 
     /**
