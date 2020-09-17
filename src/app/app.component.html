@@ -17,5 +17,7 @@
     <app-upload-list></app-upload-list>
 </ng-container>
 <ng-template #load_state>
-    <mat-spinner [class.center]="true" [style.position]="'absolute'" [diameter]="64"></mat-spinner>
+    <div class="center spinner">
+        <mat-spinner [diameter]="64"></mat-spinner>
+    </div>
 </ng-template>
