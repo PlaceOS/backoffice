@@ -339,13 +339,14 @@ export class SystemExecFieldComponent extends BaseClass
                     );
                 },
                 (err) => {
+                    console.log('Error:', err);
                     if (typeof err === 'string' && err.length < 128) {
                         notifyError(err);
                     } else {
                         notifyError(
                             `Executing '${this.active_method.name}' failed.\nView Error?`,
                             'View',
-                            () => this.viewDetails(err.response)
+                            () => this.viewDetails(err)
                         );
                     }
                 }
@@ -441,9 +442,9 @@ export class SystemExecFieldComponent extends BaseClass
     }
 
     /** View Results of the execute */
-    private viewDetails(content: any) {
+    private async viewDetails(details: Response | HashMap) {
         this._dialog.open<ViewResponseModalComponent>(ViewResponseModalComponent, {
-            data: { content },
+            data: { content: details instanceof Response ? await details.json() : details },
         });
     }
 
