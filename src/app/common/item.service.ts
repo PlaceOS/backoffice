@@ -145,9 +145,12 @@ export class ActiveItemService extends BaseClass {
         );
     }
 
-    public edit(item?: any) {
+    public async edit(item?: any) {
         item = item || this._active_item.getValue();
         if (item) {
+            if (item.id) {
+                item = await this.actions.show(item.id);
+            }
             const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
                 width: 'auto',
