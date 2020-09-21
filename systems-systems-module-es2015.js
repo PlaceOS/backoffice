@@ -2134,6 +2134,7 @@ class SystemZonesComponent extends src_app_common_base_class__WEBPACK_IMPORTED_M
                     Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["updateSystem"])(this.item.id, Object.assign(Object.assign({}, this.item.toJSON()), { zones })).subscribe((item) => {
                         this.loading.emit(false);
                         this._service.replaceItem(item);
+                        this.zones = this.zones.filter(z => z.id !== zone.id);
                         Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_7__["notifySuccess"])(`Remove zone "${zone.name}" from system`);
                         ref.close();
                         this.unsub('confirm_ref');
@@ -2164,7 +2165,7 @@ class SystemZonesComponent extends src_app_common_base_class__WEBPACK_IMPORTED_M
                             this.loading.emit(false);
                             Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_7__["notifySuccess"])(`Added zone "${this.new_zone.name}" to system`);
                             this._service.replaceItem(item);
-                            this.loadZones();
+                            this.zones.push(this.new_zone);
                             ref.close();
                             this.unsub('confirm_ref');
                             this.new_zone = null;

@@ -4639,6 +4639,9 @@
 
                     _this33._service.replaceItem(item);
 
+                    _this33.zones = _this33.zones.filter(function (z) {
+                      return z.id !== zone.id;
+                    });
                     Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_7__["notifySuccess"])("Remove zone \"".concat(zone.name, "\" from system"));
                     ref.close();
 
@@ -4688,7 +4691,7 @@
 
                       _this34._service.replaceItem(item);
 
-                      _this34.loadZones();
+                      _this34.zones.push(_this34.new_zone);
 
                       ref.close();
 

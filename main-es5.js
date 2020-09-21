@@ -43870,16 +43870,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "e8e5fb5",
-        "hash": "e8e5fb5",
+        "raw": "3afadfa",
+        "hash": "3afadfa",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "e8e5fb5",
+        "suffix": "3afadfa",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1600661729050
+        "time": 1600664964205
       };
       /* tslint:enable */
 
