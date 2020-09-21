@@ -6354,31 +6354,59 @@
         }, {
           key: "edit",
           value: function edit(item) {
-            var _this10 = this;
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+              var _this10 = this;
 
-            item = item || this._active_item.getValue();
+              var ref;
+              return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                while (1) {
+                  switch (_context3.prev = _context3.next) {
+                    case 0:
+                      item = item || this._active_item.getValue();
 
-            if (item) {
-              var ref = this._dialog.open(_overlays_item_modal_item_modal_component__WEBPACK_IMPORTED_MODULE_7__["ItemCreateUpdateModalComponent"], {
-                height: 'auto',
-                width: 'auto',
-                maxHeight: 'calc(100vh - 2em)',
-                maxWidth: 'calc(100vw - 2em)',
-                data: {
-                  item: new this.actions.itemConstructor(item),
-                  name: this._name.getValue().slice(0, -1),
-                  save: this.actions.save
+                      if (!item) {
+                        _context3.next = 8;
+                        break;
+                      }
+
+                      if (!item.id) {
+                        _context3.next = 6;
+                        break;
+                      }
+
+                      _context3.next = 5;
+                      return this.actions.show(item.id);
+
+                    case 5:
+                      item = _context3.sent;
+
+                    case 6:
+                      ref = this._dialog.open(_overlays_item_modal_item_modal_component__WEBPACK_IMPORTED_MODULE_7__["ItemCreateUpdateModalComponent"], {
+                        height: 'auto',
+                        width: 'auto',
+                        maxHeight: 'calc(100vh - 2em)',
+                        maxWidth: 'calc(100vw - 2em)',
+                        data: {
+                          item: new this.actions.itemConstructor(item),
+                          name: this._name.getValue().slice(0, -1),
+                          save: this.actions.save
+                        }
+                      });
+                      ref.componentInstance.event.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["filter"])(function (e) {
+                        return e.reason === 'done';
+                      })).subscribe(function (event) {
+                        _this10.replaceItem(event.metadata.item);
+
+                        _this10._router.navigate(["/".concat(_this10._type), event.metadata.item.id, 'about']);
+                      });
+
+                    case 8:
+                    case "end":
+                      return _context3.stop();
+                  }
                 }
-              });
-
-              ref.componentInstance.event.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["filter"])(function (e) {
-                return e.reason === 'done';
-              })).subscribe(function (event) {
-                _this10.replaceItem(event.metadata.item);
-
-                _this10._router.navigate(["/".concat(_this10._type), event.metadata.item.id, 'about']);
-              });
-            }
+              }, _callee3, this);
+            }));
           }
         }, {
           key: "delete",
@@ -6485,11 +6513,11 @@
         }, {
           key: "updateType",
           value: function updateType() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
               var url, old_type, name;
-              return regeneratorRuntime.wrap(function _callee3$(_context3) {
+              return regeneratorRuntime.wrap(function _callee4$(_context4) {
                 while (1) {
-                  switch (_context3.prev = _context3.next) {
+                  switch (_context4.prev = _context4.next) {
                     case 0:
                       url = this._router.url.split('/');
                       old_type = this._type;
@@ -6516,11 +6544,11 @@
                       }
 
                       if (!(this._type !== 'admin' && url[2])) {
-                        _context3.next = 7;
+                        _context4.next = 7;
                         break;
                       }
 
-                      _context3.next = 7;
+                      _context4.next = 7;
                       return this.setItem(url[2]);
 
                     case 7:
@@ -6532,10 +6560,10 @@
 
                     case 8:
                     case "end":
-                      return _context3.stop();
+                      return _context4.stop();
                   }
                 }
-              }, _callee3, this);
+              }, _callee4, this);
             }));
           }
         }, {
@@ -6544,20 +6572,20 @@
             var _this13 = this;
 
             this.timeout('update', function () {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this13, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this13, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
                 var _this14 = this;
 
                 var next, resp, list;
-                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                return regeneratorRuntime.wrap(function _callee5$(_context5) {
                   while (1) {
-                    switch (_context4.prev = _context4.next) {
+                    switch (_context5.prev = _context5.next) {
                       case 0:
                         if (this.actions) {
-                          _context4.next = 2;
+                          _context5.next = 2;
                           break;
                         }
 
-                        return _context4.abrupt("return");
+                        return _context5.abrupt("return");
 
                       case 2:
                         this._loading_list.next(true);
@@ -6572,11 +6600,11 @@
                           this._list.next([]);
                         }
 
-                        _context4.next = 7;
+                        _context5.next = 7;
                         return next().toPromise();
 
                       case 7:
-                        resp = _context4.sent;
+                        resp = _context5.sent;
 
                         this._next_query.next(resp.next || function () {
                           return Object(rxjs__WEBPACK_IMPORTED_MODULE_3__["of"])({
@@ -6603,30 +6631,30 @@
 
                       case 13:
                       case "end":
-                        return _context4.stop();
+                        return _context5.stop();
                     }
                   }
-                }, _callee4, this);
+                }, _callee5, this);
               }));
             });
           }
         }, {
           key: "updateSettings",
           value: function updateSettings() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
               var item, settings;
-              return regeneratorRuntime.wrap(function _callee5$(_context5) {
+              return regeneratorRuntime.wrap(function _callee6$(_context6) {
                 while (1) {
-                  switch (_context5.prev = _context5.next) {
+                  switch (_context6.prev = _context6.next) {
                     case 0:
                       item = this.active_item;
 
                       if (!(item && item.settings)) {
-                        _context5.next = 6;
+                        _context6.next = 6;
                         break;
                       }
 
-                      _context5.next = 4;
+                      _context6.next = 4;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["querySettings"])({
                         parent_id: item.id
                       }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["map"])(function (resp) {
@@ -6634,7 +6662,7 @@
                       })).toPromise();
 
                     case 4:
-                      settings = _context5.sent;
+                      settings = _context6.sent;
 
                       this._active_item.next(new this.actions.itemConstructor(Object.assign(Object.assign({}, item), {
                         settings: settings
@@ -6642,10 +6670,10 @@
 
                     case 6:
                     case "end":
-                      return _context5.stop();
+                      return _context6.stop();
                   }
                 }
-              }, _callee5, this);
+              }, _callee6, this);
             }));
           }
         }, {
@@ -6893,11 +6921,11 @@
 
 
       function setupPlace(settings) {
-        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
           var protocol, host, port, url, route, mock, config;
-          return regeneratorRuntime.wrap(function _callee6$(_context6) {
+          return regeneratorRuntime.wrap(function _callee7$(_context7) {
             while (1) {
-              switch (_context6.prev = _context6.next) {
+              switch (_context7.prev = _context7.next) {
                 case 0:
                   protocol = settings.protocol || location.protocol;
                   host = settings.domain || location.hostname;
@@ -6924,14 +6952,14 @@
                     localStorage.setItem('mock', "".concat(!!mock && !location.href.includes('mock=false')));
                   }
 
-                  return _context6.abrupt("return", Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["setup"])(config));
+                  return _context7.abrupt("return", Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["setup"])(config));
 
                 case 10:
                 case "end":
-                  return _context6.stop();
+                  return _context7.stop();
               }
             }
-          }, _callee6);
+          }, _callee7);
         }));
       }
       /***/
@@ -7216,10 +7244,10 @@
           value: function init() {
             var _a;
 
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
-              return regeneratorRuntime.wrap(function _callee7$(_context7) {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+              return regeneratorRuntime.wrap(function _callee8$(_context8) {
                 while (1) {
-                  switch (_context7.prev = _context7.next) {
+                  switch (_context8.prev = _context8.next) {
                     case 0:
                       if (this.get('debug')) {
                         window.debug = true;
@@ -7235,10 +7263,10 @@
 
                     case 4:
                     case "end":
-                      return _context7.stop();
+                      return _context8.stop();
                   }
                 }
-              }, _callee7, this);
+              }, _callee8, this);
             }));
           }
           /** Whether settings service has initialised */
@@ -11573,37 +11601,37 @@
         }, {
           key: "saveItems",
           value: function saveItems() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
               var _this22 = this;
 
-              return regeneratorRuntime.wrap(function _callee9$(_context9) {
+              return regeneratorRuntime.wrap(function _callee10$(_context10) {
                 while (1) {
-                  switch (_context9.prev = _context9.next) {
+                  switch (_context10.prev = _context10.next) {
                     case 0:
-                      _context9.prev = 0;
-                      return _context9.delegateYield( /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+                      _context10.prev = 0;
+                      return _context10.delegateYield( /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
                         var list, index, _iterator7, _step7, item, saved_item, clean_list;
 
-                        return regeneratorRuntime.wrap(function _callee8$(_context8) {
+                        return regeneratorRuntime.wrap(function _callee9$(_context9) {
                           while (1) {
-                            switch (_context8.prev = _context8.next) {
+                            switch (_context9.prev = _context9.next) {
                               case 0:
                                 list = [];
                                 index = 0;
                                 _iterator7 = _createForOfIteratorHelper(_this22.list);
-                                _context8.prev = 3;
+                                _context9.prev = 3;
 
                                 _iterator7.s();
 
                               case 5:
                                 if ((_step7 = _iterator7.n()).done) {
-                                  _context8.next = 16;
+                                  _context9.next = 16;
                                   break;
                                 }
 
                                 item = _step7.value;
                                 _this22.status[index] = 'loading';
-                                _context8.next = 10;
+                                _context9.next = 10;
                                 return _this22.save(Object.assign(Object.assign({}, item), {
                                   id: ''
                                 })).toPromise()["catch"](function (err) {
@@ -11612,7 +11640,7 @@
                                 });
 
                               case 10:
-                                saved_item = _context8.sent;
+                                saved_item = _context9.sent;
                                 list.push(saved_item);
 
                                 if (_this22.status[index] === 'loading') {
@@ -11622,25 +11650,25 @@
                                 index++;
 
                               case 14:
-                                _context8.next = 5;
+                                _context9.next = 5;
                                 break;
 
                               case 16:
-                                _context8.next = 21;
+                                _context9.next = 21;
                                 break;
 
                               case 18:
-                                _context8.prev = 18;
-                                _context8.t0 = _context8["catch"](3);
+                                _context9.prev = 18;
+                                _context9.t0 = _context9["catch"](3);
 
-                                _iterator7.e(_context8.t0);
+                                _iterator7.e(_context9.t0);
 
                               case 21:
-                                _context8.prev = 21;
+                                _context9.prev = 21;
 
                                 _iterator7.f();
 
-                                return _context8.finish(21);
+                                return _context9.finish(21);
 
                               case 24:
                                 clean_list = list.filter(function (item) {
@@ -11653,27 +11681,27 @@
 
                               case 26:
                               case "end":
-                                return _context8.stop();
+                                return _context9.stop();
                             }
                           }
-                        }, _callee8, null, [[3, 18, 21, 24]]);
+                        }, _callee9, null, [[3, 18, 21, 24]]);
                       })(), "t0", 2);
 
                     case 2:
-                      _context9.next = 7;
+                      _context10.next = 7;
                       break;
 
                     case 4:
-                      _context9.prev = 4;
-                      _context9.t1 = _context9["catch"](0);
-                      console.error(_context9.t1);
+                      _context10.prev = 4;
+                      _context10.t1 = _context10["catch"](0);
+                      console.error(_context10.t1);
 
                     case 7:
                     case "end":
-                      return _context9.stop();
+                      return _context10.stop();
                   }
                 }
-              }, _callee9, null, [[0, 4]]);
+              }, _callee10, null, [[0, 4]]);
             }));
           }
         }]);
@@ -12732,14 +12760,14 @@
            * Create the specified number of duplicate items
            */
           value: function duplicate() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee11() {
               var _this25 = this;
 
               var ItemConstructor, item, list, _loop, i, clean_list;
 
-              return regeneratorRuntime.wrap(function _callee10$(_context11) {
+              return regeneratorRuntime.wrap(function _callee11$(_context12) {
                 while (1) {
-                  switch (_context11.prev = _context11.next) {
+                  switch (_context12.prev = _context12.next) {
                     case 0:
                       this.loading = true;
                       ItemConstructor = this.item.constructor;
@@ -12748,23 +12776,23 @@
                       this.temp = new Array(this.times).fill(0);
                       _loop = /*#__PURE__*/regeneratorRuntime.mark(function _loop(i) {
                         var new_item, saved_item;
-                        return regeneratorRuntime.wrap(function _loop$(_context10) {
+                        return regeneratorRuntime.wrap(function _loop$(_context11) {
                           while (1) {
-                            switch (_context10.prev = _context10.next) {
+                            switch (_context11.prev = _context11.next) {
                               case 0:
                                 new_item = new ItemConstructor(Object.assign(Object.assign({}, item), {
                                   id: '',
                                   name: "".concat(item.name, " (").concat(i + 1, ")")
                                 }));
                                 _this25.status[i] = 'loading';
-                                _context10.next = 4;
+                                _context11.next = 4;
                                 return _this25._data.save(new_item).toPromise()["catch"](function (err) {
                                   _this25.status[i] = "Error: ".concat(err.message || err);
                                   Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_3__["notifyError"])(_this25.status[i]);
                                 });
 
                               case 4:
-                                saved_item = _context10.sent;
+                                saved_item = _context11.sent;
                                 list.push(saved_item);
 
                                 if (_this25.status[i] === 'loading') {
@@ -12773,7 +12801,7 @@
 
                               case 7:
                               case "end":
-                                return _context10.stop();
+                                return _context11.stop();
                             }
                           }
                         }, _loop);
@@ -12782,15 +12810,15 @@
 
                     case 7:
                       if (!(i < this.times)) {
-                        _context11.next = 12;
+                        _context12.next = 12;
                         break;
                       }
 
-                      return _context11.delegateYield(_loop(i), "t0", 9);
+                      return _context12.delegateYield(_loop(i), "t0", 9);
 
                     case 9:
                       i++;
-                      _context11.next = 7;
+                      _context12.next = 7;
                       break;
 
                     case 12:
@@ -12808,10 +12836,10 @@
 
                     case 16:
                     case "end":
-                      return _context11.stop();
+                      return _context12.stop();
                   }
                 }
-              }, _callee10, this);
+              }, _callee11, this);
             }));
           }
         }, {
@@ -13600,9 +13628,52 @@
                   _this28._dialog_ref.close();
                 }
               }, function (err) {
-                _this28.loading = null;
-                _this28._dialog_ref.disableClose = false;
-                Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_16__["notifyError"])("Error ".concat(_this28.item.id ? 'editing' : 'adding new', " ").concat(_this28.name, ". Error: ").concat(JSON.stringify(err.response || err.message || err)));
+                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this28, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee12() {
+                  return regeneratorRuntime.wrap(function _callee12$(_context13) {
+                    while (1) {
+                      switch (_context13.prev = _context13.next) {
+                        case 0:
+                          this.loading = null;
+                          this._dialog_ref.disableClose = false;
+                          _context13.t0 = Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_16__["notifyError"]);
+                          _context13.t1 = "Error ".concat(this.item.id ? 'editing' : 'adding new', " ").concat(this.name, ". Error: ");
+                          _context13.t2 = JSON;
+                          _context13.next = 7;
+                          return err.text();
+
+                        case 7:
+                          _context13.t4 = _context13.sent;
+
+                          if (_context13.t4) {
+                            _context13.next = 10;
+                            break;
+                          }
+
+                          _context13.t4 = err.message;
+
+                        case 10:
+                          _context13.t3 = _context13.t4;
+
+                          if (_context13.t3) {
+                            _context13.next = 13;
+                            break;
+                          }
+
+                          _context13.t3 = err;
+
+                        case 13:
+                          _context13.t5 = _context13.t3;
+                          _context13.t6 = _context13.t2.stringify.call(_context13.t2, _context13.t5);
+                          _context13.t7 = _context13.t1.concat.call(_context13.t1, _context13.t6);
+                          (0, _context13.t0)(_context13.t7);
+
+                        case 17:
+                        case "end":
+                          return _context13.stop();
+                      }
+                    }
+                  }, _callee12, this);
+                }));
               });
             }
           }
@@ -13613,13 +13684,13 @@
         }, {
           key: "newSettings",
           value: function newSettings(item, settings_string) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee11() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee13() {
               var _this29 = this;
 
               var new_settings, settings;
-              return regeneratorRuntime.wrap(function _callee11$(_context12) {
+              return regeneratorRuntime.wrap(function _callee13$(_context14) {
                 while (1) {
-                  switch (_context12.prev = _context12.next) {
+                  switch (_context14.prev = _context14.next) {
                     case 0:
                       new_settings = new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["PlaceSettings"]({
                         parent_id: item.id,
@@ -13627,22 +13698,22 @@
                         encryption_level: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["EncryptionLevel"].None
                       });
                       console.log('Settings:', new_settings, settings_string);
-                      _context12.next = 4;
+                      _context14.next = 4;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["addSettings"])(new_settings).toPromise()["catch"](function (err) {
                         _this29.loading = null;
                         Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_16__["notifyError"])("Error saving settings for ".concat(item.name || item.id, ". Error: ").concat(JSON.stringify(err.response || err.message || err)));
                       });
 
                     case 4:
-                      settings = _context12.sent;
+                      settings = _context14.sent;
                       item.settings[_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["EncryptionLevel"].None] = settings;
 
                     case 6:
                     case "end":
-                      return _context12.stop();
+                      return _context14.stop();
                   }
                 }
-              }, _callee11);
+              }, _callee13);
             }));
           }
           /**
@@ -19693,47 +19764,47 @@
         }, {
           key: "viewDetails",
           value: function viewDetails(details) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee12() {
-              return regeneratorRuntime.wrap(function _callee12$(_context13) {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee14() {
+              return regeneratorRuntime.wrap(function _callee14$(_context15) {
                 while (1) {
-                  switch (_context13.prev = _context13.next) {
+                  switch (_context15.prev = _context15.next) {
                     case 0:
-                      _context13.t0 = this._dialog;
-                      _context13.t1 = src_app_overlays_view_response_modal_view_response_modal_component__WEBPACK_IMPORTED_MODULE_5__["ViewResponseModalComponent"];
+                      _context15.t0 = this._dialog;
+                      _context15.t1 = src_app_overlays_view_response_modal_view_response_modal_component__WEBPACK_IMPORTED_MODULE_5__["ViewResponseModalComponent"];
 
                       if (!(details instanceof Response)) {
-                        _context13.next = 8;
+                        _context15.next = 8;
                         break;
                       }
 
-                      _context13.next = 5;
+                      _context15.next = 5;
                       return details.json();
 
                     case 5:
-                      _context13.t2 = _context13.sent;
-                      _context13.next = 9;
+                      _context15.t2 = _context15.sent;
+                      _context15.next = 9;
                       break;
 
                     case 8:
-                      _context13.t2 = details;
+                      _context15.t2 = details;
 
                     case 9:
-                      _context13.t3 = _context13.t2;
-                      _context13.t4 = {
-                        content: _context13.t3
+                      _context15.t3 = _context15.t2;
+                      _context15.t4 = {
+                        content: _context15.t3
                       };
-                      _context13.t5 = {
-                        data: _context13.t4
+                      _context15.t5 = {
+                        data: _context15.t4
                       };
 
-                      _context13.t0.open.call(_context13.t0, _context13.t1, _context13.t5);
+                      _context15.t0.open.call(_context15.t0, _context15.t1, _context15.t5);
 
                     case 13:
                     case "end":
-                      return _context13.stop();
+                      return _context15.stop();
                   }
                 }
-              }, _callee12, this);
+              }, _callee14, this);
             }));
           }
           /**
@@ -23670,23 +23741,23 @@
         }, {
           key: "initDriver",
           value: function initDriver() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee13() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee15() {
               var value, repo, driver;
-              return regeneratorRuntime.wrap(function _callee13$(_context14) {
+              return regeneratorRuntime.wrap(function _callee15$(_context16) {
                 while (1) {
-                  switch (_context14.prev = _context14.next) {
+                  switch (_context16.prev = _context16.next) {
                     case 0:
                       if (!(this.form.controls.repository_id && this.form.controls.repository_id.value)) {
-                        _context14.next = 12;
+                        _context16.next = 12;
                         break;
                       }
 
                       value = this.form.controls.repository_id.value;
-                      _context14.next = 4;
+                      _context16.next = 4;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["showRepository"])(value).toPromise();
 
                     case 4:
-                      repo = _context14.sent;
+                      repo = _context16.sent;
                       this.base_repo = repo;
                       this.updateDriverList(this.base_repo);
                       driver = this.form.controls.file_name.value;
@@ -23694,18 +23765,18 @@
                         id: driver,
                         name: driver.split('/').join(' > ')
                       } : driver;
-                      _context14.next = 11;
+                      _context16.next = 11;
                       return this.updateCommitList(this.base_driver);
 
                     case 11:
-                      this.commit_list = _context14.sent;
+                      this.commit_list = _context16.sent;
 
                     case 12:
                     case "end":
-                      return _context14.stop();
+                      return _context16.stop();
                   }
                 }
-              }, _callee13, this);
+              }, _callee15, this);
             }));
           }
         }, {
@@ -27421,26 +27492,26 @@
         }, {
           key: "loadCommits",
           value: function loadCommits() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee14() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee16() {
               var id, commits, active_commit;
-              return regeneratorRuntime.wrap(function _callee14$(_context15) {
+              return regeneratorRuntime.wrap(function _callee16$(_context17) {
                 while (1) {
-                  switch (_context15.prev = _context15.next) {
+                  switch (_context17.prev = _context17.next) {
                     case 0:
                       if (!(!this.is_edit || !this.can_change_commit)) {
-                        _context15.next = 2;
+                        _context17.next = 2;
                         break;
                       }
 
-                      return _context15.abrupt("return");
+                      return _context17.abrupt("return");
 
                     case 2:
                       id = this.form.controls.id.value;
-                      _context15.next = 5;
+                      _context17.next = 5;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["listRepositoryCommits"])(id).toPromise();
 
                     case 5:
-                      commits = _context15.sent;
+                      commits = _context17.sent;
                       this.commit_list = (commits || []).map(function (commit) {
                         var date = dayjs__WEBPACK_IMPORTED_MODULE_3__(commit.date);
                         return {
@@ -27460,52 +27531,52 @@
 
                     case 10:
                     case "end":
-                      return _context15.stop();
+                      return _context17.stop();
                   }
                 }
-              }, _callee14, this);
+              }, _callee16, this);
             }));
           }
         }, {
           key: "loadBranches",
           value: function loadBranches() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee15() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee17() {
               var id;
-              return regeneratorRuntime.wrap(function _callee15$(_context16) {
+              return regeneratorRuntime.wrap(function _callee17$(_context18) {
                 while (1) {
-                  switch (_context16.prev = _context16.next) {
+                  switch (_context18.prev = _context18.next) {
                     case 0:
                       if (!(!this.is_edit || !this.form.controls.branch)) {
-                        _context16.next = 2;
+                        _context18.next = 2;
                         break;
                       }
 
-                      return _context16.abrupt("return");
+                      return _context18.abrupt("return");
 
                     case 2:
                       id = this.form.controls.id.value;
-                      _context16.next = 5;
+                      _context18.next = 5;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["listRepositoryBranches"])(id).toPromise();
 
                     case 5:
-                      _context16.t0 = _context16.sent;
+                      _context18.t0 = _context18.sent;
 
-                      if (_context16.t0) {
-                        _context16.next = 8;
+                      if (_context18.t0) {
+                        _context18.next = 8;
                         break;
                       }
 
-                      _context16.t0 = [];
+                      _context18.t0 = [];
 
                     case 8:
-                      this.branch_list = _context16.t0;
+                      this.branch_list = _context18.t0;
 
                     case 9:
                     case "end":
-                      return _context16.stop();
+                      return _context18.stop();
                   }
                 }
-              }, _callee15, this);
+              }, _callee17, this);
             }));
           }
         }, {
@@ -35971,32 +36042,32 @@
         }, {
           key: "updateZone",
           value: function updateZone() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee16() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee18() {
               var parent_id, zone;
-              return regeneratorRuntime.wrap(function _callee16$(_context17) {
+              return regeneratorRuntime.wrap(function _callee18$(_context19) {
                 while (1) {
-                  switch (_context17.prev = _context17.next) {
+                  switch (_context19.prev = _context19.next) {
                     case 0:
                       parent_id = this.form.controls.parent_id ? this.form.controls.parent_id.value : '';
 
                       if (!parent_id) {
-                        _context17.next = 6;
+                        _context19.next = 6;
                         break;
                       }
 
-                      _context17.next = 4;
+                      _context19.next = 4;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["showZone"])(parent_id).toPromise();
 
                     case 4:
-                      zone = _context17.sent;
+                      zone = _context19.sent;
                       this.form.controls.parent_zone.setValue(zone);
 
                     case 6:
                     case "end":
-                      return _context17.stop();
+                      return _context19.stop();
                   }
                 }
-              }, _callee16, this);
+              }, _callee18, this);
             }));
           }
         }, {
@@ -36780,77 +36851,77 @@
         _createClass(AuthorisedAdminGuard, [{
           key: "canActivate",
           value: function canActivate(next, state) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee17() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee19() {
               var user, can_activate;
-              return regeneratorRuntime.wrap(function _callee17$(_context18) {
+              return regeneratorRuntime.wrap(function _callee19$(_context20) {
                 while (1) {
-                  switch (_context18.prev = _context18.next) {
+                  switch (_context20.prev = _context20.next) {
                     case 0:
-                      _context18.next = 2;
+                      _context20.next = 2;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["onlineState"])().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return _;
                       })).toPromise();
 
                     case 2:
-                      _context18.next = 4;
+                      _context20.next = 4;
                       return this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return !!_;
                       })).toPromise();
 
                     case 4:
-                      user = _context18.sent;
+                      user = _context20.sent;
                       can_activate = user && user.sys_admin;
 
                       if (!can_activate) {
                         this._router.navigate(['/unauthorised']);
                       }
 
-                      return _context18.abrupt("return", can_activate);
+                      return _context20.abrupt("return", can_activate);
 
                     case 8:
                     case "end":
-                      return _context18.stop();
+                      return _context20.stop();
                   }
                 }
-              }, _callee17, this);
+              }, _callee19, this);
             }));
           }
         }, {
           key: "canLoad",
           value: function canLoad(route, segments) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee18() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee20() {
               var user, can_activate;
-              return regeneratorRuntime.wrap(function _callee18$(_context19) {
+              return regeneratorRuntime.wrap(function _callee20$(_context21) {
                 while (1) {
-                  switch (_context19.prev = _context19.next) {
+                  switch (_context21.prev = _context21.next) {
                     case 0:
-                      _context19.next = 2;
+                      _context21.next = 2;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["onlineState"])().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return _;
                       })).toPromise();
 
                     case 2:
-                      _context19.next = 4;
+                      _context21.next = 4;
                       return this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return !!_;
                       })).toPromise();
 
                     case 4:
-                      user = _context19.sent;
+                      user = _context21.sent;
                       can_activate = user && user.sys_admin;
 
                       if (!can_activate) {
                         this._router.navigate(['/unauthorised']);
                       }
 
-                      return _context19.abrupt("return", can_activate);
+                      return _context21.abrupt("return", can_activate);
 
                     case 8:
                     case "end":
-                      return _context19.stop();
+                      return _context21.stop();
                   }
                 }
-              }, _callee18, this);
+              }, _callee20, this);
             }));
           }
         }]);
@@ -36954,77 +37025,77 @@
         _createClass(AuthorisedUserGuard, [{
           key: "canActivate",
           value: function canActivate(next, state) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee19() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee21() {
               var user, can_activate;
-              return regeneratorRuntime.wrap(function _callee19$(_context20) {
+              return regeneratorRuntime.wrap(function _callee21$(_context22) {
                 while (1) {
-                  switch (_context20.prev = _context20.next) {
+                  switch (_context22.prev = _context22.next) {
                     case 0:
-                      _context20.next = 2;
+                      _context22.next = 2;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["onlineState"])().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return _;
                       })).toPromise();
 
                     case 2:
-                      _context20.next = 4;
+                      _context22.next = 4;
                       return this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return !!_;
                       })).toPromise();
 
                     case 4:
-                      user = _context20.sent;
+                      user = _context22.sent;
                       can_activate = user && (user.sys_admin || user.support);
 
                       if (!can_activate) {
                         this._router.navigate(['/unauthorised']);
                       }
 
-                      return _context20.abrupt("return", can_activate);
+                      return _context22.abrupt("return", can_activate);
 
                     case 8:
                     case "end":
-                      return _context20.stop();
+                      return _context22.stop();
                   }
                 }
-              }, _callee19, this);
+              }, _callee21, this);
             }));
           }
         }, {
           key: "canLoad",
           value: function canLoad(route, segments) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee20() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee22() {
               var user, can_activate;
-              return regeneratorRuntime.wrap(function _callee20$(_context21) {
+              return regeneratorRuntime.wrap(function _callee22$(_context23) {
                 while (1) {
-                  switch (_context21.prev = _context21.next) {
+                  switch (_context23.prev = _context23.next) {
                     case 0:
-                      _context21.next = 2;
+                      _context23.next = 2;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["onlineState"])().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return _;
                       })).toPromise();
 
                     case 2:
-                      _context21.next = 4;
+                      _context23.next = 4;
                       return this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return !!_;
                       })).toPromise();
 
                     case 4:
-                      user = _context21.sent;
+                      user = _context23.sent;
                       can_activate = user && (user.sys_admin || user.support);
 
                       if (!can_activate) {
                         this._router.navigate(['/unauthorised']);
                       }
 
-                      return _context21.abrupt("return", can_activate);
+                      return _context23.abrupt("return", can_activate);
 
                     case 8:
                     case "end":
-                      return _context21.stop();
+                      return _context23.stop();
                   }
                 }
-              }, _callee20, this);
+              }, _callee22, this);
             }));
           }
         }]);
@@ -43796,16 +43867,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "2ad760b",
-        "hash": "2ad760b",
+        "raw": "1c1c2f2",
+        "hash": "1c1c2f2",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "2ad760b",
+        "suffix": "1c1c2f2",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1600393041925
+        "time": 1600654113537
       };
       /* tslint:enable */
 

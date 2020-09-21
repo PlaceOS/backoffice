@@ -1522,26 +1522,31 @@ class ActiveItemService extends _base_class__WEBPACK_IMPORTED_MODULE_11__["BaseC
             : new this.actions.itemConstructor());
     }
     edit(item) {
-        item = item || this._active_item.getValue();
-        if (item) {
-            const ref = this._dialog.open(_overlays_item_modal_item_modal_component__WEBPACK_IMPORTED_MODULE_7__["ItemCreateUpdateModalComponent"], {
-                height: 'auto',
-                width: 'auto',
-                maxHeight: 'calc(100vh - 2em)',
-                maxWidth: 'calc(100vw - 2em)',
-                data: {
-                    item: new this.actions.itemConstructor(item),
-                    name: this._name.getValue().slice(0, -1),
-                    save: this.actions.save,
-                },
-            });
-            ref.componentInstance.event
-                .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["filter"])((e) => e.reason === 'done'))
-                .subscribe((event) => {
-                this.replaceItem(event.metadata.item);
-                this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
-            });
-        }
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            item = item || this._active_item.getValue();
+            if (item) {
+                if (item.id) {
+                    item = yield this.actions.show(item.id);
+                }
+                const ref = this._dialog.open(_overlays_item_modal_item_modal_component__WEBPACK_IMPORTED_MODULE_7__["ItemCreateUpdateModalComponent"], {
+                    height: 'auto',
+                    width: 'auto',
+                    maxHeight: 'calc(100vh - 2em)',
+                    maxWidth: 'calc(100vw - 2em)',
+                    data: {
+                        item: new this.actions.itemConstructor(item),
+                        name: this._name.getValue().slice(0, -1),
+                        save: this.actions.save,
+                    },
+                });
+                ref.componentInstance.event
+                    .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["filter"])((e) => e.reason === 'done'))
+                    .subscribe((event) => {
+                    this.replaceItem(event.metadata.item);
+                    this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
+                });
+            }
+        });
     }
     delete() {
         const item = this._active_item.getValue();
@@ -5509,11 +5514,11 @@ class ItemCreateUpdateModalComponent extends src_app_common_base_class__WEBPACK_
                 else {
                     this._dialog_ref.close();
                 }
-            }, (err) => {
+            }, (err) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
                 this.loading = null;
                 this._dialog_ref.disableClose = false;
-                Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_16__["notifyError"])(`Error ${this.item.id ? 'editing' : 'adding new'} ${this.name}. Error: ${JSON.stringify(err.response || err.message || err)}`);
-            });
+                Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_16__["notifyError"])(`Error ${this.item.id ? 'editing' : 'adding new'} ${this.name}. Error: ${JSON.stringify((yield err.text()) || err.message || err)}`);
+            }));
         }
     }
     /**
@@ -21451,16 +21456,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "2ad760b",
-    "hash": "2ad760b",
+    "raw": "1c1c2f2",
+    "hash": "1c1c2f2",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "2ad760b",
+    "suffix": "1c1c2f2",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1600393041925
+    "time": 1600654113537
 };
 /* tslint:enable */
 
