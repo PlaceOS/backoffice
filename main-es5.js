@@ -6375,7 +6375,7 @@
                       }
 
                       _context3.next = 5;
-                      return this.actions.show(item.id);
+                      return this.actions.show(item.id).toPromise();
 
                     case 5:
                       item = _context3.sent;
@@ -6387,7 +6387,7 @@
                         maxHeight: 'calc(100vh - 2em)',
                         maxWidth: 'calc(100vw - 2em)',
                         data: {
-                          item: new this.actions.itemConstructor(item),
+                          item: new this.actions.itemConstructor(Object.assign({}, item)),
                           name: this._name.getValue().slice(0, -1),
                           save: this.actions.save
                         }
@@ -43870,16 +43870,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "4ed6bb6",
-        "hash": "4ed6bb6",
+        "raw": "e8e5fb5",
+        "hash": "e8e5fb5",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "4ed6bb6",
+        "suffix": "e8e5fb5",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1600658465543
+        "time": 1600661729050
       };
       /* tslint:enable */
 

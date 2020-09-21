@@ -1526,7 +1526,7 @@ class ActiveItemService extends _base_class__WEBPACK_IMPORTED_MODULE_11__["BaseC
             item = item || this._active_item.getValue();
             if (item) {
                 if (item.id) {
-                    item = yield this.actions.show(item.id);
+                    item = yield this.actions.show(item.id).toPromise();
                 }
                 const ref = this._dialog.open(_overlays_item_modal_item_modal_component__WEBPACK_IMPORTED_MODULE_7__["ItemCreateUpdateModalComponent"], {
                     height: 'auto',
@@ -1534,7 +1534,7 @@ class ActiveItemService extends _base_class__WEBPACK_IMPORTED_MODULE_11__["BaseC
                     maxHeight: 'calc(100vh - 2em)',
                     maxWidth: 'calc(100vw - 2em)',
                     data: {
-                        item: new this.actions.itemConstructor(item),
+                        item: new this.actions.itemConstructor(Object.assign({}, item)),
                         name: this._name.getValue().slice(0, -1),
                         save: this.actions.save,
                     },
@@ -21459,16 +21459,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "4ed6bb6",
-    "hash": "4ed6bb6",
+    "raw": "e8e5fb5",
+    "hash": "e8e5fb5",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "4ed6bb6",
+    "suffix": "e8e5fb5",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1600658465543
+    "time": 1600661729050
 };
 /* tslint:enable */
 
