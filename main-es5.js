@@ -6571,6 +6571,7 @@
           value: function updateList() {
             var _this13 = this;
 
+            var type = this._type;
             this.timeout('update', function () {
               return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this13, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
                 var _this14 = this;
@@ -6606,30 +6607,32 @@
                       case 7:
                         resp = _context5.sent;
 
-                        this._next_query.next(resp.next || function () {
-                          return Object(rxjs__WEBPACK_IMPORTED_MODULE_3__["of"])({
-                            data: [],
-                            total: resp.total,
-                            next: null
+                        if (type === this._type) {
+                          this._next_query.next(resp.next || function () {
+                            return Object(rxjs__WEBPACK_IMPORTED_MODULE_3__["of"])({
+                              data: [],
+                              total: resp.total,
+                              next: null
+                            });
                           });
-                        });
 
-                        list = this._list.getValue().filter(function (i) {
-                          return !resp.data.find(function (item) {
-                            return item.id === i.id;
+                          list = this._list.getValue().filter(function (i) {
+                            return !resp.data.find(function (item) {
+                              return item.id === i.id;
+                            });
                           });
-                        });
-                        list.sort(function (a, b) {
-                          var _a;
+                          list.sort(function (a, b) {
+                            var _a;
 
-                          return (_a = a.name) === null || _a === void 0 ? void 0 : _a.localeCompare(b.name);
-                        });
+                            return (_a = a.name) === null || _a === void 0 ? void 0 : _a.localeCompare(b.name);
+                          });
 
-                        this._list.next(list.concat(resp.data));
+                          this._list.next(list.concat(resp.data));
 
-                        this._loading_list.next(false);
+                          this._loading_list.next(false);
+                        }
 
-                      case 13:
+                      case 9:
                       case "end":
                         return _context5.stop();
                     }
@@ -43867,16 +43870,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "7a83cc2",
-        "hash": "7a83cc2",
+        "raw": "4ed6bb6",
+        "hash": "4ed6bb6",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "7a83cc2",
+        "suffix": "4ed6bb6",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1600654200701
+        "time": 1600658465543
       };
       /* tslint:enable */
 

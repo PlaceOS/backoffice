@@ -1626,6 +1626,7 @@ class ActiveItemService extends _base_class__WEBPACK_IMPORTED_MODULE_11__["BaseC
         });
     }
     updateList() {
+        const type = this._type;
         this.timeout('update', () => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             if (!this.actions)
                 return;
@@ -1636,13 +1637,15 @@ class ActiveItemService extends _base_class__WEBPACK_IMPORTED_MODULE_11__["BaseC
                 this._list.next([]);
             }
             const resp = yield next().toPromise();
-            this._next_query.next(resp.next || (() => Object(rxjs__WEBPACK_IMPORTED_MODULE_3__["of"])({ data: [], total: resp.total, next: null })));
-            const list = this._list
-                .getValue()
-                .filter((i) => !resp.data.find((item) => item.id === i.id));
-            list.sort((a, b) => { var _a; return (_a = a.name) === null || _a === void 0 ? void 0 : _a.localeCompare(b.name); });
-            this._list.next(list.concat(resp.data));
-            this._loading_list.next(false);
+            if (type === this._type) {
+                this._next_query.next(resp.next || (() => Object(rxjs__WEBPACK_IMPORTED_MODULE_3__["of"])({ data: [], total: resp.total, next: null })));
+                const list = this._list
+                    .getValue()
+                    .filter((i) => !resp.data.find((item) => item.id === i.id));
+                list.sort((a, b) => { var _a; return (_a = a.name) === null || _a === void 0 ? void 0 : _a.localeCompare(b.name); });
+                this._list.next(list.concat(resp.data));
+                this._loading_list.next(false);
+            }
         }));
     }
     updateSettings() {
@@ -21456,16 +21459,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "7a83cc2",
-    "hash": "7a83cc2",
+    "raw": "4ed6bb6",
+    "hash": "4ed6bb6",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "7a83cc2",
+    "suffix": "4ed6bb6",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1600654200701
+    "time": 1600658465543
 };
 /* tslint:enable */
 
