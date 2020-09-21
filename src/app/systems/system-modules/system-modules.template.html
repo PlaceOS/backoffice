@@ -72,7 +72,7 @@
                     <td class="module">
                         <mat-checkbox
                             [checked]="debugged_modules[device.id]"
-                            (click)="toggleDebugEvents(device)"
+                            (change)="toggleDebugEvents(device)"
                         >
                             {{ device_classes[device.id] }}
                         </mat-checkbox>
