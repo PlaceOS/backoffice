@@ -149,7 +149,7 @@ export class ActiveItemService extends BaseClass {
         item = item || this._active_item.getValue();
         if (item) {
             if (item.id) {
-                item = await this.actions.show(item.id);
+                item = await this.actions.show(item.id).toPromise();
             }
             const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
                 height: 'auto',
@@ -157,7 +157,7 @@ export class ActiveItemService extends BaseClass {
                 maxHeight: 'calc(100vh - 2em)',
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
-                    item: new this.actions.itemConstructor(item),
+                    item: new this.actions.itemConstructor({ ...item }),
                     name: this._name.getValue().slice(0, -1),
                     save: this.actions.save,
                 },
