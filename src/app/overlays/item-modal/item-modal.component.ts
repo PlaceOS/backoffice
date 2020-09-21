@@ -185,13 +185,13 @@ export class ItemCreateUpdateModalComponent extends BaseClass implements OnInit 
                         this._dialog_ref.close();
                     }
                 },
-                (err) => {
+                async (err) => {
                     this.loading = null;
                     this._dialog_ref.disableClose = false;
                     notifyError(
                         `Error ${this.item.id ? 'editing' : 'adding new'} ${
                             this.name
-                        }. Error: ${JSON.stringify(err.response || err.message || err)}`
+                        }. Error: ${JSON.stringify(await err.text() || err.message || err)}`
                     );
                 }
             );
