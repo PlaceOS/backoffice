@@ -268,6 +268,7 @@ export class ActiveItemService extends BaseClass {
     }
 
     private updateList() {
+        const type = this._type;
         this.timeout('update', async () => {
             if (!this.actions) return;
             this._loading_list.next(true);
@@ -277,15 +278,17 @@ export class ActiveItemService extends BaseClass {
                 this._list.next([]);
             }
             const resp = await next().toPromise();
-            this._next_query.next(
-                resp.next || (() => of({ data: [], total: resp.total, next: null }))
-            );
-            const list = this._list
-                .getValue()
-                .filter((i) => !resp.data.find((item) => item.id === i.id));
-            list.sort((a, b) => a.name?.localeCompare(b.name));
-            this._list.next(list.concat(resp.data));
-            this._loading_list.next(false);
+            if (type === this._type){
+                this._next_query.next(
+                    resp.next || (() => of({ data: [], total: resp.total, next: null }))
+                );
+                const list = this._list
+                    .getValue()
+                    .filter((i) => !resp.data.find((item) => item.id === i.id));
+                list.sort((a, b) => a.name?.localeCompare(b.name));
+                this._list.next(list.concat(resp.data));
+                this._loading_list.next(false);
+            }
         });
     }
 
