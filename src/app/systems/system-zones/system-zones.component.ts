@@ -136,6 +136,7 @@ export class SystemZonesComponent extends BaseClass {
                             (item: any) => {
                                 this.loading.emit(false);
                                 this._service.replaceItem(item);
+                                this.zones = this.zones.filter(z => z.id !== zone.id);
                                 notifySuccess(`Remove zone "${zone.name}" from system`);
                                 ref.close();
                                 this.unsub('confirm_ref');
@@ -185,7 +186,7 @@ export class SystemZonesComponent extends BaseClass {
                                     this.loading.emit(false);
                                     notifySuccess(`Added zone "${this.new_zone.name}" to system`);
                                     this._service.replaceItem(item);
-                                    this.loadZones();
+                                    this.zones.push(this.new_zone);
                                     ref.close();
                                     this.unsub('confirm_ref');
                                     this.new_zone = null;
