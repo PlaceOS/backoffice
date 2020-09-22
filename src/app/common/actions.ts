@@ -53,12 +53,13 @@ import {
 } from '@placeos/ts-client';
 import { QueryResponse } from '@placeos/ts-client/dist/esm/resources/functions';
 import { Observable } from 'rxjs';
+import { HashMap } from './types';
 
 export interface ItemActions<T> {
     query: (_?: string) => QueryResponse<T>;
     show: (_: string) => Observable<T>;
     save: (_: T) => Observable<T>;
-    remove: (_: T) => Observable<void>;
+    remove: (_: T) => Observable<any>;
     itemConstructor: Type<T>;
     delete_message: string;
 }

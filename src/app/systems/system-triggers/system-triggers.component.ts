@@ -249,7 +249,7 @@ export class SystemTriggersComponent extends BaseClass {
             enabled: true,
             important: false,
             trigger_id: trigger.id,
-        }).toPromise();
+        } as any).toPromise();
         this.trigger_list.push(item);
         this.filter(this.search_str);
     }
