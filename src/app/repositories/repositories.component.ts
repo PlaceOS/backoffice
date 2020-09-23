@@ -31,6 +31,7 @@ export class RepositoriesComponent extends BaseClass {
         if (!item) return;
         const query: any = { offset: 0 };
         if (item.type === PlaceRepositoryType.Driver) {
+            this.driver_count = 0;
             // Get driver count for repository
             listRepositoryDrivers(item.id, query).subscribe(
                 (list) => (this.driver_count = list.length)
