@@ -1,6 +1,6 @@
 <div class="module form" *ngIf="form">
     <form [formGroup]="form">
-        <div class="field" *ngIf="form.controls.driver">
+        <div class="field" *ngIf="form.controls.driver && !form.controls.id.value">
             <label
                 for="driver"
                 [class.error]="form.controls.driver.invalid && form.controls.driver.touched"

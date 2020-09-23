@@ -22,6 +22,7 @@ export function generateModuleFormFields(module: PlaceModule): FormGroup {
         custom_name: new FormControl(module.custom_name || ''),
         system: new FormControl(module.system),
         control_system_id: new FormControl(module.control_system_id),
+        role: new FormControl(module.role || PlaceDriverRole.Logic),
         driver: new FormControl('', [Validators.required]),
         driver_id: new FormControl(module.driver_id),
     };
@@ -34,6 +35,7 @@ export function generateModuleFormFields(module: PlaceModule): FormGroup {
             fields.name.setValue(value.name || value.module_name);
             fields.uri.setValue(value.default_uri);
             fields.port.setValue(value.default_port || 1);
+            fields.role.setValue(value.role || PlaceDriverRole.Logic);
             resetModuleFormValidators(fields);
             switch (value.role) {
                 case PlaceDriverRole.Service:

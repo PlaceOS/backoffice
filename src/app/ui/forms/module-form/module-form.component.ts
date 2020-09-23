@@ -22,14 +22,8 @@ export class ModuleFormComponent extends BaseClass implements OnDestroy {
 
     /** Role of the selected driver */
     public get role(): string {
-        if (!this.form.controls.driver) {
-            return 'service';
-        }
-        const driver = this.form.controls.driver.value;
-        if (!driver) {
-            return 'logic';
-        }
-        switch (driver.role) {
+        const role = this.form.controls.driver?.value || this.form.controls.role.value;
+        switch (role) {
             case PlaceDriverRole.SSH:
                 return 'ssh';
             case PlaceDriverRole.Device:
