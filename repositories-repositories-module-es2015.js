@@ -563,6 +563,7 @@ class RepositoriesComponent extends _common_base_class__WEBPACK_IMPORTED_MODULE_
             return;
         const query = { offset: 0 };
         if (item.type === _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceRepositoryType"].Driver) {
+            this.driver_count = 0;
             // Get driver count for repository
             Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["listRepositoryDrivers"])(item.id, query).subscribe((list) => (this.driver_count = list.length));
         }

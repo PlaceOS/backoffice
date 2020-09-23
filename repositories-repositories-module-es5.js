@@ -1300,7 +1300,8 @@
             };
 
             if (item.type === _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceRepositoryType"].Driver) {
-              // Get driver count for repository
+              this.driver_count = 0; // Get driver count for repository
+
               Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["listRepositoryDrivers"])(item.id, query).subscribe(function (list) {
                 return _this8.driver_count = list.length;
               });
