@@ -185,11 +185,12 @@ export class ActiveItemService extends BaseClass {
                     },
                 }
             );
+            console.log('Item:', item);
             ref.componentInstance.event
                 .pipe(filter((e) => e.reason === 'done'))
                 .subscribe((event: DialogEvent) => {
                     ref.componentInstance.loading = 'Deleting system...';
-                    this.actions.remove(item.id).subscribe(
+                    this.actions.remove(item).subscribe(
                         () => {
                             notifySuccess(`Successfully deleted system "${item.name}".`);
                             this._active_item.next(null);
