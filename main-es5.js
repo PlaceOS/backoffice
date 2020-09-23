@@ -9393,6 +9393,7 @@
           custom_name: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](module.custom_name || ''),
           system: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](module.system),
           control_system_id: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](module.control_system_id),
+          role: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](module.role || _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].Logic),
           driver: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"]('', [_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required]),
           driver_id: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](module.driver_id)
         };
@@ -9406,6 +9407,7 @@
             fields.name.setValue(value.name || value.module_name);
             fields.uri.setValue(value.default_uri);
             fields.port.setValue(value.default_port || 1);
+            fields.role.setValue(value.role || _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].Logic);
             resetModuleFormValidators(fields);
 
             switch (value.role) {
@@ -25381,7 +25383,7 @@
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r0.form.controls.driver);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r0.form.controls.driver && !ctx_r0.form.controls.id.value);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
@@ -25425,17 +25427,11 @@
         _createClass(ModuleFormComponent, [{
           key: "role",
           get: function get() {
-            if (!this.form.controls.driver) {
-              return 'service';
-            }
+            var _a;
 
-            var driver = this.form.controls.driver.value;
+            var role = ((_a = this.form.controls.driver) === null || _a === void 0 ? void 0 : _a.value) || this.form.controls.role.value;
 
-            if (!driver) {
-              return 'logic';
-            }
-
-            switch (driver.role) {
+            switch (role) {
               case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].SSH:
                 return 'ssh';
 
@@ -43871,16 +43867,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "8169583",
-        "hash": "8169583",
+        "raw": "0a35380",
+        "hash": "0a35380",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "8169583",
+        "suffix": "0a35380",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1600838390007
+        "time": 1600851377887
       };
       /* tslint:enable */
 
