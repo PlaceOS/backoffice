@@ -6427,12 +6427,13 @@
                 }
               }));
 
+              console.log('Item:', item);
               ref.componentInstance.event.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["filter"])(function (e) {
                 return e.reason === 'done';
               })).subscribe(function (event) {
                 ref.componentInstance.loading = 'Deleting system...';
 
-                _this11.actions.remove(item.id).subscribe(function () {
+                _this11.actions.remove(item).subscribe(function () {
                   Object(_notifications__WEBPACK_IMPORTED_MODULE_8__["notifySuccess"])("Successfully deleted system \"".concat(item.name, "\"."));
 
                   _this11._active_item.next(null);
@@ -43870,16 +43871,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "b31c2ae",
-        "hash": "b31c2ae",
+        "raw": "8169583",
+        "hash": "8169583",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "b31c2ae",
+        "suffix": "8169583",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1600837991678
+        "time": 1600838390007
       };
       /* tslint:enable */
 
