@@ -1656,6 +1656,21 @@ class ActiveItemService extends _base_class__WEBPACK_IMPORTED_MODULE_11__["BaseC
                 const settings = yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["querySettings"])({ parent_id: item.id })
                     .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["map"])((resp) => resp.data))
                     .toPromise();
+                while (settings.length < 4) {
+                    if (!settings.find(s => s.encryption_level === _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].None)) {
+                        settings.push(new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["PlaceSettings"]({ encryption_level: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].None }));
+                    }
+                    else if (!settings.find(s => s.encryption_level === _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].Support)) {
+                        settings.push(new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["PlaceSettings"]({ encryption_level: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].Support }));
+                    }
+                    else if (!settings.find(s => s.encryption_level === _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].Admin)) {
+                        settings.push(new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["PlaceSettings"]({ encryption_level: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].Admin }));
+                    }
+                    else {
+                        settings.push(new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["PlaceSettings"]({ encryption_level: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].NeverDisplay }));
+                    }
+                }
+                settings.sort((a, b) => a.encryption_level - b.encryption_level);
                 this._active_item.next(new this.actions.itemConstructor(Object.assign(Object.assign({}, item), { settings })));
             }
         });
@@ -21458,16 +21473,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "a5e6f3b",
-    "hash": "a5e6f3b",
+    "raw": "a85d7a6",
+    "hash": "a85d7a6",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "a5e6f3b",
+    "suffix": "a85d7a6",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1600910525218
+    "time": 1600927858330
 };
 /* tslint:enable */
 

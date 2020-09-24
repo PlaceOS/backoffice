@@ -6654,7 +6654,7 @@
                       item = this.active_item;
 
                       if (!(item && item.settings)) {
-                        _context6.next = 6;
+                        _context6.next = 8;
                         break;
                       }
 
@@ -6668,11 +6668,41 @@
                     case 4:
                       settings = _context6.sent;
 
+                      while (settings.length < 4) {
+                        if (!settings.find(function (s) {
+                          return s.encryption_level === _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].None;
+                        })) {
+                          settings.push(new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["PlaceSettings"]({
+                            encryption_level: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].None
+                          }));
+                        } else if (!settings.find(function (s) {
+                          return s.encryption_level === _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].Support;
+                        })) {
+                          settings.push(new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["PlaceSettings"]({
+                            encryption_level: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].Support
+                          }));
+                        } else if (!settings.find(function (s) {
+                          return s.encryption_level === _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].Admin;
+                        })) {
+                          settings.push(new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["PlaceSettings"]({
+                            encryption_level: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].Admin
+                          }));
+                        } else {
+                          settings.push(new _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["PlaceSettings"]({
+                            encryption_level: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_12__["EncryptionLevel"].NeverDisplay
+                          }));
+                        }
+                      }
+
+                      settings.sort(function (a, b) {
+                        return a.encryption_level - b.encryption_level;
+                      });
+
                       this._active_item.next(new this.actions.itemConstructor(Object.assign(Object.assign({}, item), {
                         settings: settings
                       })));
 
-                    case 6:
+                    case 8:
                     case "end":
                       return _context6.stop();
                   }
@@ -43868,16 +43898,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "a5e6f3b",
-        "hash": "a5e6f3b",
+        "raw": "a85d7a6",
+        "hash": "a85d7a6",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "a5e6f3b",
+        "suffix": "a85d7a6",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1600910525218
+        "time": 1600927858330
       };
       /* tslint:enable */
 
