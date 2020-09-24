@@ -25430,7 +25430,7 @@
           get: function get() {
             var _a;
 
-            var role = ((_a = this.form.controls.driver) === null || _a === void 0 ? void 0 : _a.value) || this.form.controls.role.value;
+            var role = ((_a = this.form.controls.driver) === null || _a === void 0 ? void 0 : _a.value.role) || this.form.controls.role.value;
 
             switch (role) {
               case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].SSH:
@@ -43868,16 +43868,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "c8f8c29",
-        "hash": "c8f8c29",
+        "raw": "a5e6f3b",
+        "hash": "a5e6f3b",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "c8f8c29",
+        "suffix": "a5e6f3b",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1600909063714
+        "time": 1600910525218
       };
       /* tslint:enable */
 
