@@ -23,7 +23,7 @@ import {
 import { QueryResponse } from '@placeos/ts-client/dist/esm/resources/functions';
 import { log } from './general';
 import { BaseClass } from './base.class';
-import { querySettings } from '@placeos/ts-client';
+import { EncryptionLevel, PlaceSettings, querySettings } from '@placeos/ts-client';
 
 export type ResourceType =
     | 'domains'
@@ -299,6 +299,18 @@ export class ActiveItemService extends BaseClass {
             const settings = await querySettings({ parent_id: item.id })
                 .pipe(map((resp) => resp.data))
                 .toPromise();
+            while(settings.length < 4) {
+                if (!settings.find(s => s.encryption_level === EncryptionLevel.None)) {
+                    settings.push(new PlaceSettings({ encryption_level: EncryptionLevel.None }));
+                } else if (!settings.find(s => s.encryption_level === EncryptionLevel.Support)) {
+                    settings.push(new PlaceSettings({ encryption_level: EncryptionLevel.Support }));
+                } else if (!settings.find(s => s.encryption_level === EncryptionLevel.Admin)) {
+                    settings.push(new PlaceSettings({ encryption_level: EncryptionLevel.Admin }));
+                } else {
+                    settings.push(new PlaceSettings({ encryption_level: EncryptionLevel.NeverDisplay }));
+                }
+            }
+            settings.sort((a, b) => a.encryption_level - b.encryption_level);
             this._active_item.next(new this.actions.itemConstructor({ ...item, settings }));
         }
     }
