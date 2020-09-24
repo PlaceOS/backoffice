@@ -9381,6 +9381,7 @@
         }
 
         var fields = {
+          id: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](module.id || ''),
           ip: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](module.ip || '', [src_app_common_validation__WEBPACK_IMPORTED_MODULE_2__["validateIpAddress"]]),
           port: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](module.port || null, [_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].min(1), _angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].max(65535)]),
           tls: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](module.tls || false),
@@ -43867,16 +43868,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "a9dfd8e",
-        "hash": "a9dfd8e",
+        "raw": "c8f8c29",
+        "hash": "c8f8c29",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "a9dfd8e",
+        "suffix": "c8f8c29",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1600865954248
+        "time": 1600909063714
       };
       /* tslint:enable */
 
