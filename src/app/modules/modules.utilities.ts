@@ -10,6 +10,7 @@ export function generateModuleFormFields(module: PlaceModule): FormGroup {
         throw Error('No Module passed to generate form fields');
     }
     const fields: HashMap<FormControl> = {
+        id: new FormControl(module.id || ''),
         ip: new FormControl(module.ip || '', [validateIpAddress]),
         port: new FormControl(module.port || null, [Validators.min(1), Validators.max(65535)]),
         tls: new FormControl(module.tls || false),
