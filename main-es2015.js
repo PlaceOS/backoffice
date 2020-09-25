@@ -15599,11 +15599,11 @@ class TriggerConditionComparisonFormComponent {
             const mod_list = this.system.modules;
             this.modules.sort((a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id));
             this.module_list = this.modules.map(mod => {
-                const module_class = mod.custom_name || (mod.driver ? mod.driver.class_name : 'System');
+                const name = mod.custom_name || mod.name || 'Blank';
                 const index = Object(src_app_common_api__WEBPACK_IMPORTED_MODULE_2__["calculateModuleIndex"])(this.modules, mod);
                 return {
                     id: mod.id,
-                    name: `${module_class}_${index}`
+                    name: `${name}_${index}`
                 };
             });
             this.addExistingModules();
@@ -21473,16 +21473,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "1c54947",
-    "hash": "1c54947",
+    "raw": "b6f715a",
+    "hash": "b6f715a",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "1c54947",
+    "suffix": "b6f715a",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1600986045697
+    "time": 1601017186907
 };
 /* tslint:enable */
 

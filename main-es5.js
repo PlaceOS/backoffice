@@ -32641,11 +32641,11 @@
               });
 
               _this85.module_list = _this85.modules.map(function (mod) {
-                var module_class = mod.custom_name || (mod.driver ? mod.driver.class_name : 'System');
+                var name = mod.custom_name || mod.name || 'Blank';
                 var index = Object(src_app_common_api__WEBPACK_IMPORTED_MODULE_2__["calculateModuleIndex"])(_this85.modules, mod);
                 return {
                   id: mod.id,
-                  name: "".concat(module_class, "_").concat(index)
+                  name: "".concat(name, "_").concat(index)
                 };
               });
 
@@ -43898,16 +43898,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "1c54947",
-        "hash": "1c54947",
+        "raw": "b6f715a",
+        "hash": "b6f715a",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "1c54947",
+        "suffix": "b6f715a",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1600986045697
+        "time": 1601017186907
       };
       /* tslint:enable */
 
