@@ -115,12 +115,11 @@ export class TriggerConditionComparisonFormComponent implements OnChanges {
             const mod_list = this.system.modules;
             this.modules.sort((a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id));
             this.module_list = this.modules.map(mod => {
-                const module_class =
-                    mod.custom_name || (mod.driver ? mod.driver.class_name : 'System');
+                const name = mod.custom_name || mod.name || 'Blank';
                 const index = calculateModuleIndex(this.modules, mod);
                 return {
                     id: mod.id,
-                    name: `${module_class}_${index}`
+                    name: `${name}_${index}`
                 };
             });
             this.addExistingModules();
