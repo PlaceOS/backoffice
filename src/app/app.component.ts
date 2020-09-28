@@ -73,6 +73,7 @@ export class AppComponent extends BaseClass implements OnInit {
         this.clearTimeout('wait_for_user');
         this._loading.next(false);
         this.timeout('init_uploads', () => {
+            this._md5_workers.setup('assets/md5_worker.js');
             this._uploads.token = token();
             this._uploads.autoStart = true;
             this._uploads.endpoint = '/api/files/v1/uploads';
