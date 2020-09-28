@@ -279,6 +279,7 @@ class AppComponent extends _common_base_class__WEBPACK_IMPORTED_MODULE_9__["Base
             this.clearTimeout('wait_for_user');
             this._loading.next(false);
             this.timeout('init_uploads', () => {
+                this._md5_workers.setup('assets/md5_worker.js');
                 this._uploads.token = Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_4__["token"])();
                 this._uploads.autoStart = true;
                 this._uploads.endpoint = '/api/files/v1/uploads';
@@ -21473,16 +21474,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "b6f715a",
-    "hash": "b6f715a",
+    "raw": "cb04cd8",
+    "hash": "cb04cd8",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "b6f715a",
+    "suffix": "cb04cd8",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1601017186907
+    "time": 1601263771105
 };
 /* tslint:enable */
 
