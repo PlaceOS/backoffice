@@ -16269,12 +16269,21 @@
           _classCallCheck(this, ViewResponseModalComponent);
 
           this._data = _data;
+          this.updateContentString();
         }
 
         _createClass(ViewResponseModalComponent, [{
-          key: "content_string",
-          get: function get() {
-            return typeof this._data.content === 'object' ? JSON.stringify(this._data.content, undefined, 4) : this._data.content;
+          key: "updateContentString",
+          value: function updateContentString() {
+            if (typeof this._data.content === 'object') {
+              this.content_string = JSON.stringify(this._data.content, undefined, 4);
+            } else {
+              try {
+                this.content_string = JSON.stringify(JSON.parse(this._data.content), undefined, 4);
+              } catch (_a) {
+                this.content_string = this._data.content;
+              }
+            }
           }
         }]);
 
@@ -43900,16 +43909,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "ad74ee1",
-        "hash": "ad74ee1",
+        "raw": "3812ae4",
+        "hash": "3812ae4",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "ad74ee1",
+        "suffix": "3812ae4",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1601349940051
+        "time": 1601371297767
       };
       /* tslint:enable */
 
