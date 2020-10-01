@@ -1486,6 +1486,9 @@ class ActiveItemService extends _base_class__WEBPACK_IMPORTED_MODULE_11__["BaseC
     get active_item() {
         return this._active_item.getValue();
     }
+    get type() {
+        return this._type;
+    }
     moreItems() {
         this.updateList();
     }
@@ -18077,11 +18080,11 @@ __webpack_require__.r(__webpack_exports__);
 const _c0 = ["content"];
 var I18N_2;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_3 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-    I18N_2 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_3;
+    const MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_3 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+    I18N_2 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_3;
 }
 else {
-    I18N_2 = $localize `:␟093538d4070407c4aeff8e6f846024b3a6afa304␟3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}`;
+    I18N_2 = $localize `:␟a7d12a207f1adbb9c121078ed270f22a063cddf6␟4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}`;
 }
 I18N_2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nPostprocess"](I18N_2, { "VAR_SELECT": "\uFFFD0\uFFFD" });
 var I18N_1;
@@ -18090,15 +18093,15 @@ if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
     I18N_1 = MSG_EXTERNAL_copyItemAction$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_4;
 }
 else {
-    I18N_1 = $localize `:@@copyItemAction␟1b32a43f6b66009f73629476c0acac5f1278c91f␟6066848467110836457: Create new from this ${I18N_2}:ICU: `;
+    I18N_1 = $localize `:@@copyItemAction␟a347e07792f8040f8a6255d154e9ed3d45809771␟3571580617510407754: Create new from this ${I18N_2}:ICU: `;
 }
 var I18N_6;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_7 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-    I18N_6 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_7;
+    const MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_7 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+    I18N_6 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_7;
 }
 else {
-    I18N_6 = $localize `:␟093538d4070407c4aeff8e6f846024b3a6afa304␟3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}`;
+    I18N_6 = $localize `:␟a7d12a207f1adbb9c121078ed270f22a063cddf6␟4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}`;
 }
 I18N_6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nPostprocess"](I18N_6, { "VAR_SELECT": "\uFFFD0\uFFFD" });
 var I18N_5;
@@ -18107,15 +18110,15 @@ if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
     I18N_5 = MSG_EXTERNAL_duplicateAction$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_8;
 }
 else {
-    I18N_5 = $localize `:@@duplicateAction␟41bd546356e6e3f040c515d8057a7ad9d13702d3␟6000965021238022836: Duplicate ${I18N_6}:ICU: `;
+    I18N_5 = $localize `:@@duplicateAction␟a31848497c82fc478f8c225abaaa305a530b4763␟6995627517285342533: Duplicate ${I18N_6}:ICU: `;
 }
 var I18N_10;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_11 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-    I18N_10 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_11;
+    const MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_11 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+    I18N_10 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_11;
 }
 else {
-    I18N_10 = $localize `:␟093538d4070407c4aeff8e6f846024b3a6afa304␟3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}`;
+    I18N_10 = $localize `:␟a7d12a207f1adbb9c121078ed270f22a063cddf6␟4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}`;
 }
 I18N_10 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nPostprocess"](I18N_10, { "VAR_SELECT": "\uFFFD0\uFFFD" });
 var I18N_9;
@@ -18124,7 +18127,7 @@ if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
     I18N_9 = MSG_EXTERNAL_exportAction$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_12;
 }
 else {
-    I18N_9 = $localize `:@@exportAction␟9d2eec442dd6661ddc55b1a55606f586dfe92df7␟6976166530197119541: Export ${I18N_10}:ICU: as TSV template `;
+    I18N_9 = $localize `:@@exportAction␟39bfe3e428791531b301af9a065bc6e3d5957876␟7246895040454419816: Export ${I18N_10}:ICU: as TSV template `;
 }
 function ItemDisplayComponent_header_1_div_5_Template(rf, ctx) { if (rf & 1) {
     const _r14 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
@@ -18329,11 +18332,11 @@ function ItemDisplayComponent_main_3_Template(rf, ctx) { if (rf & 1) {
 } }
 var I18N_31;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__32 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-    I18N_31 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__32;
+    const MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__32 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+    I18N_31 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__32;
 }
 else {
-    I18N_31 = $localize `:␟093538d4070407c4aeff8e6f846024b3a6afa304␟3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}`;
+    I18N_31 = $localize `:␟a7d12a207f1adbb9c121078ed270f22a063cddf6␟4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}`;
 }
 I18N_31 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nPostprocess"](I18N_31, { "VAR_SELECT": "\uFFFD0\uFFFD" });
 var I18N_30;
@@ -18342,7 +18345,7 @@ if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
     I18N_30 = MSG_EXTERNAL_selectItem$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__33;
 }
 else {
-    I18N_30 = $localize `:@@selectItem␟079228ff68aec07ed1e85c1135d1c02ec12550a3␟7513824411355833289: Select a ${I18N_31}:ICU: from the sidebar `;
+    I18N_30 = $localize `:@@selectItem␟5c46be977c6d37ae1c57b852b496553599138e41␟7955645077494727066: Select a ${I18N_31}:ICU: from the sidebar `;
 }
 function ItemDisplayComponent_div_5_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 37);
@@ -18363,11 +18366,11 @@ function ItemDisplayComponent_div_5_Template(rf, ctx) { if (rf & 1) {
 } }
 var I18N_35;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__36 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-    I18N_35 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__36;
+    const MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__36 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+    I18N_35 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__36;
 }
 else {
-    I18N_35 = $localize `:␟093538d4070407c4aeff8e6f846024b3a6afa304␟3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}`;
+    I18N_35 = $localize `:␟a7d12a207f1adbb9c121078ed270f22a063cddf6␟4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}`;
 }
 I18N_35 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nPostprocess"](I18N_35, { "VAR_SELECT": "\uFFFD0\uFFFD" });
 var I18N_34;
@@ -18376,7 +18379,7 @@ if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
     I18N_34 = MSG_EXTERNAL_selectItemMobile$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__37;
 }
 else {
-    I18N_34 = $localize `:@@selectItemMobile␟384929f519ae014136d51fc46e276888d6f91823␟2159444929156162707: Select a ${I18N_35}:ICU: from the search bar `;
+    I18N_34 = $localize `:@@selectItemMobile␟5df5a9b7c6d5b1f0ac2f72a89e995d159f6a0561␟5858230458881156815: Select a ${I18N_35}:ICU: from the search bar `;
 }
 function ItemDisplayComponent_div_7_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 40);
@@ -18397,12 +18400,11 @@ function ItemDisplayComponent_div_7_Template(rf, ctx) { if (rf & 1) {
 } }
 var I18N_39;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_1515061680644220493$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__40 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other\n        }}");
-    I18N_39 = MSG_EXTERNAL_1515061680644220493$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__40;
+    const MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__40 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+    I18N_39 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__40;
 }
 else {
-    I18N_39 = $localize `:␟a087d72479f0869cfee2f4b2993c38db8786c16e␟1515061680644220493:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other
-        }}`;
+    I18N_39 = $localize `:␟a7d12a207f1adbb9c121078ed270f22a063cddf6␟4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}`;
 }
 I18N_39 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nPostprocess"](I18N_39, { "VAR_SELECT": "\uFFFD0\uFFFD" });
 var I18N_38;
@@ -18411,7 +18413,7 @@ if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
     I18N_38 = MSG_EXTERNAL_itemLoading$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__41;
 }
 else {
-    I18N_38 = $localize `:@@itemLoading␟52d044ff4297029471c22520db9de1da5f9f5a38␟2653895365641621709: Loading ${I18N_39}:ICU:... `;
+    I18N_38 = $localize `:@@itemLoading␟5c99a9b7ed11f9dcef47f4e4a37b5e557468a1fd␟6952585549650097062: Loading ${I18N_39}:ICU:... `;
 }
 function ItemDisplayComponent_div_9_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 42);
@@ -18430,11 +18432,11 @@ function ItemDisplayComponent_div_9_Template(rf, ctx) { if (rf & 1) {
 } }
 var I18N_43;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__44 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-    I18N_43 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__44;
+    const MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__44 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+    I18N_43 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__44;
 }
 else {
-    I18N_43 = $localize `:␟093538d4070407c4aeff8e6f846024b3a6afa304␟3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}`;
+    I18N_43 = $localize `:␟a7d12a207f1adbb9c121078ed270f22a063cddf6␟4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}`;
 }
 I18N_43 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nPostprocess"](I18N_43, { "VAR_SELECT": "\uFFFD0\uFFFD" });
 var I18N_42;
@@ -18443,7 +18445,7 @@ if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
     I18N_42 = MSG_EXTERNAL_editAction$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__45;
 }
 else {
-    I18N_42 = $localize `:@@editAction␟21ceb22efac889d1779502a913c6a6034fce2762␟3319045061424151644: Edit ${I18N_43}:ICU: [E] `;
+    I18N_42 = $localize `:@@editAction␟89f6b2f3c6345f85eed4b3488233c09eab175319␟7638639174762552483: Edit ${I18N_43}:ICU: [E] `;
 }
 const _c46 = function () { return { class: "backoffice-edit" }; };
 function ItemDisplayComponent_button_13_Template(rf, ctx) { if (rf & 1) {
@@ -18467,11 +18469,11 @@ function ItemDisplayComponent_button_13_Template(rf, ctx) { if (rf & 1) {
 } }
 var I18N_48;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-    I18N_48 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49;
+    const MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+    I18N_48 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49;
 }
 else {
-    I18N_48 = $localize `:␟093538d4070407c4aeff8e6f846024b3a6afa304␟3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}`;
+    I18N_48 = $localize `:␟a7d12a207f1adbb9c121078ed270f22a063cddf6␟4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}`;
 }
 I18N_48 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nPostprocess"](I18N_48, { "VAR_SELECT": "\uFFFD0\uFFFD" });
 var I18N_47;
@@ -18480,7 +18482,7 @@ if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
     I18N_47 = MSG_EXTERNAL_deleteAction$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__50;
 }
 else {
-    I18N_47 = $localize `:@@deleteAction␟61fc382bf58f28881d40c717f4606a554cedc3c4␟721771769947153347: Delete ${I18N_48}:ICU: [D] `;
+    I18N_47 = $localize `:@@deleteAction␟41fc61e049f450868f12165a69eb822fa79ad888␟1314726441116501193: Delete ${I18N_48}:ICU: [D] `;
 }
 const _c51 = function () { return { class: "backoffice-trash" }; };
 function ItemDisplayComponent_button_29_Template(rf, ctx) { if (rf & 1) {
@@ -18517,6 +18519,17 @@ class ItemDisplayComponent extends src_app_common_base_class__WEBPACK_IMPORTED_M
         /** Tabs available to the item type */
         this.tabs = [];
         this.loading = this._service.loading;
+        /** Open modal to edit the active item */
+        this.edit = () => this._service.edit();
+        /** Delete the active item */
+        this.delete = () => this._service.delete();
+        /** Duplicate the active item */
+        this.duplicateItem = () => this._service.duplicate();
+        /** Create a new item using the current as a template */
+        this.newFromItem = () => this._service.create(true);
+    }
+    get name() {
+        return this._service.type;
     }
     get item() {
         return this._service.active_item;
@@ -18576,27 +18589,6 @@ class ItemDisplayComponent extends src_app_common_base_class__WEBPACK_IMPORTED_M
         }
     }
     /**
-     * Open modal to edit the active item
-     */
-    edit() {
-        this._service.edit();
-    }
-    /**
-     * Delete the active item
-     */
-    delete() {
-        this._service.delete();
-    }
-    /**
-     * Delete the active item
-     */
-    duplicateItem() {
-        this._service.duplicate();
-    }
-    newFromItem() {
-        this._service.create(true);
-    }
-    /**
      * Export the active item as a CSV
      */
     exportAsTSV() {
@@ -18613,7 +18605,7 @@ ItemDisplayComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
     } if (rf & 2) {
         var _t;
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.content_el = _t.first);
-    } }, inputs: { name: "name", route: "route", has_change: "has_change", tabs: "tabs" }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]], decls: 30, vars: 28, consts: [[1, "container"], [4, "ngIf"], ["class", "not-mobile center", 4, "ngIf"], ["class", "mobile-only center", 4, "ngIf"], ["class", "info-block center", 4, "ngIf"], ["action_menu", "matMenu"], ["mat-menu-item", "", 3, "click", 4, "ngIf"], ["mat-menu-item", "", 3, "click"], [1, "group"], [3, "icon"], [1, "text"], [1, "heading-group"], [1, "heading"], [1, "info"], ["class", "id", 3, "click", 4, "ngIf"], ["class", "chip driver", 4, "ngIf"], ["class", "chip connect", 3, "active", 4, "ngIf"], ["class", "chip secure", 4, "ngIf"], ["class", "options", 4, "ngIf"], [1, "id", 3, "click"], [1, "chip", "driver"], [1, "chip", "connect"], [1, "chip", "secure"], [1, "icon"], [1, "backoffice-lock"], [1, "options"], ["mat-icon-button", "", 3, "matMenuTriggerFor"], [1, "tabs"], ["mat-tab-nav-bar", ""], ["class", "tab", "mat-tab-link", "", "routerLinkActive", "", 3, "routerLink", "active", 4, "ngFor", "ngForOf"], [1, "content", 3, "scroll"], ["content", ""], ["mat-tab-link", "", "routerLinkActive", "", 1, "tab", 3, "routerLink", "active"], ["rla", "routerLinkActive"], [1, "name"], ["class", "count", 4, "ngIf"], [1, "count"], [1, "not-mobile", "center"], [1, "info-block"], [1, "backoffice-arrow-left"], [1, "mobile-only", "center"], [1, "backoffice-arrow-up"], [1, "info-block", "center"], ["diameter", "32"]], template: function ItemDisplayComponent_Template(rf, ctx) { if (rf & 1) {
+    } }, inputs: { route: "route", has_change: "has_change", tabs: "tabs" }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]], decls: 30, vars: 28, consts: [[1, "container"], [4, "ngIf"], ["class", "not-mobile center", 4, "ngIf"], ["class", "mobile-only center", 4, "ngIf"], ["class", "info-block center", 4, "ngIf"], ["action_menu", "matMenu"], ["mat-menu-item", "", 3, "click", 4, "ngIf"], ["mat-menu-item", "", 3, "click"], [1, "group"], [3, "icon"], [1, "text"], [1, "heading-group"], [1, "heading"], [1, "info"], ["class", "id", 3, "click", 4, "ngIf"], ["class", "chip driver", 4, "ngIf"], ["class", "chip connect", 3, "active", 4, "ngIf"], ["class", "chip secure", 4, "ngIf"], ["class", "options", 4, "ngIf"], [1, "id", 3, "click"], [1, "chip", "driver"], [1, "chip", "connect"], [1, "chip", "secure"], [1, "icon"], [1, "backoffice-lock"], [1, "options"], ["mat-icon-button", "", 3, "matMenuTriggerFor"], [1, "tabs"], ["mat-tab-nav-bar", ""], ["class", "tab", "mat-tab-link", "", "routerLinkActive", "", 3, "routerLink", "active", 4, "ngFor", "ngForOf"], [1, "content", 3, "scroll"], ["content", ""], ["mat-tab-link", "", "routerLinkActive", "", 1, "tab", 3, "routerLink", "active"], ["rla", "routerLinkActive"], [1, "name"], ["class", "count", 4, "ngIf"], [1, "count"], [1, "not-mobile", "center"], [1, "info-block"], [1, "backoffice-arrow-left"], [1, "mobile-only", "center"], [1, "backoffice-arrow-up"], [1, "info-block", "center"], ["diameter", "32"]], template: function ItemDisplayComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, ItemDisplayComponent_header_1_Template, 10, 6, "header", 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](2, "async");
@@ -18696,9 +18688,7 @@ ItemDisplayComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
                 templateUrl: './item-display.template.html',
                 styleUrls: ['./item-display.styles.scss'],
             }]
-    }], function () { return [{ type: src_app_common_item_service__WEBPACK_IMPORTED_MODULE_5__["ActiveItemService"] }, { type: src_app_common_hotkeys_service__WEBPACK_IMPORTED_MODULE_6__["HotkeysService"] }, { type: src_app_users_users_service__WEBPACK_IMPORTED_MODULE_7__["BackofficeUsersService"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_8__["Router"] }]; }, { name: [{
-            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
-        }], route: [{
+    }], function () { return [{ type: src_app_common_item_service__WEBPACK_IMPORTED_MODULE_5__["ActiveItemService"] }, { type: src_app_common_hotkeys_service__WEBPACK_IMPORTED_MODULE_6__["HotkeysService"] }, { type: src_app_users_users_service__WEBPACK_IMPORTED_MODULE_7__["BackofficeUsersService"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_8__["Router"] }]; }, { route: [{
             type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
         }], has_change: [{
             type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
@@ -21483,16 +21473,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "3812ae4",
-    "hash": "3812ae4",
+    "raw": "8a5b734",
+    "hash": "8a5b734",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "3812ae4",
+    "suffix": "8a5b734",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1601371297767
+    "time": 1601530676890
 };
 /* tslint:enable */
 

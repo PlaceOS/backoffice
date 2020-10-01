@@ -230,7 +230,7 @@
   }
 
   function _templateObject324() {
-    var data = _taggedTemplateLiteral([":@@deleteAction\u241F61fc382bf58f28881d40c717f4606a554cedc3c4\u241F721771769947153347: Delete ", ":ICU: [D] "]);
+    var data = _taggedTemplateLiteral([":@@deleteAction\u241F41fc61e049f450868f12165a69eb822fa79ad888\u241F1314726441116501193: Delete ", ":ICU: [D] "]);
 
     _templateObject324 = function _templateObject324() {
       return data;
@@ -240,7 +240,7 @@
   }
 
   function _templateObject323() {
-    var data = _taggedTemplateLiteral([":\u241F093538d4070407c4aeff8e6f846024b3a6afa304\u241F3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}"]);
+    var data = _taggedTemplateLiteral([":\u241Fa7d12a207f1adbb9c121078ed270f22a063cddf6\u241F4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}"]);
 
     _templateObject323 = function _templateObject323() {
       return data;
@@ -250,7 +250,7 @@
   }
 
   function _templateObject322() {
-    var data = _taggedTemplateLiteral([":@@editAction\u241F21ceb22efac889d1779502a913c6a6034fce2762\u241F3319045061424151644: Edit ", ":ICU: [E] "]);
+    var data = _taggedTemplateLiteral([":@@editAction\u241F89f6b2f3c6345f85eed4b3488233c09eab175319\u241F7638639174762552483: Edit ", ":ICU: [E] "]);
 
     _templateObject322 = function _templateObject322() {
       return data;
@@ -260,7 +260,7 @@
   }
 
   function _templateObject321() {
-    var data = _taggedTemplateLiteral([":\u241F093538d4070407c4aeff8e6f846024b3a6afa304\u241F3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}"]);
+    var data = _taggedTemplateLiteral([":\u241Fa7d12a207f1adbb9c121078ed270f22a063cddf6\u241F4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}"]);
 
     _templateObject321 = function _templateObject321() {
       return data;
@@ -270,7 +270,7 @@
   }
 
   function _templateObject320() {
-    var data = _taggedTemplateLiteral([":@@itemLoading\u241F52d044ff4297029471c22520db9de1da5f9f5a38\u241F2653895365641621709: Loading ", ":ICU:... "]);
+    var data = _taggedTemplateLiteral([":@@itemLoading\u241F5c99a9b7ed11f9dcef47f4e4a37b5e557468a1fd\u241F6952585549650097062: Loading ", ":ICU:... "]);
 
     _templateObject320 = function _templateObject320() {
       return data;
@@ -280,7 +280,7 @@
   }
 
   function _templateObject319() {
-    var data = _taggedTemplateLiteral([":\u241Fa087d72479f0869cfee2f4b2993c38db8786c16e\u241F1515061680644220493:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other\n        }}"]);
+    var data = _taggedTemplateLiteral([":\u241Fa7d12a207f1adbb9c121078ed270f22a063cddf6\u241F4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}"]);
 
     _templateObject319 = function _templateObject319() {
       return data;
@@ -290,7 +290,7 @@
   }
 
   function _templateObject318() {
-    var data = _taggedTemplateLiteral([":@@selectItemMobile\u241F384929f519ae014136d51fc46e276888d6f91823\u241F2159444929156162707: Select a ", ":ICU: from the search bar "]);
+    var data = _taggedTemplateLiteral([":@@selectItemMobile\u241F5df5a9b7c6d5b1f0ac2f72a89e995d159f6a0561\u241F5858230458881156815: Select a ", ":ICU: from the search bar "]);
 
     _templateObject318 = function _templateObject318() {
       return data;
@@ -300,7 +300,7 @@
   }
 
   function _templateObject317() {
-    var data = _taggedTemplateLiteral([":\u241F093538d4070407c4aeff8e6f846024b3a6afa304\u241F3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}"]);
+    var data = _taggedTemplateLiteral([":\u241Fa7d12a207f1adbb9c121078ed270f22a063cddf6\u241F4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}"]);
 
     _templateObject317 = function _templateObject317() {
       return data;
@@ -310,7 +310,7 @@
   }
 
   function _templateObject316() {
-    var data = _taggedTemplateLiteral([":@@selectItem\u241F079228ff68aec07ed1e85c1135d1c02ec12550a3\u241F7513824411355833289: Select a ", ":ICU: from the sidebar "]);
+    var data = _taggedTemplateLiteral([":@@selectItem\u241F5c46be977c6d37ae1c57b852b496553599138e41\u241F7955645077494727066: Select a ", ":ICU: from the sidebar "]);
 
     _templateObject316 = function _templateObject316() {
       return data;
@@ -320,7 +320,7 @@
   }
 
   function _templateObject315() {
-    var data = _taggedTemplateLiteral([":\u241F093538d4070407c4aeff8e6f846024b3a6afa304\u241F3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}"]);
+    var data = _taggedTemplateLiteral([":\u241Fa7d12a207f1adbb9c121078ed270f22a063cddf6\u241F4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}"]);
 
     _templateObject315 = function _templateObject315() {
       return data;
@@ -400,7 +400,7 @@
   }
 
   function _templateObject307() {
-    var data = _taggedTemplateLiteral([":@@exportAction\u241F9d2eec442dd6661ddc55b1a55606f586dfe92df7\u241F6976166530197119541: Export ", ":ICU: as TSV template "]);
+    var data = _taggedTemplateLiteral([":@@exportAction\u241F39bfe3e428791531b301af9a065bc6e3d5957876\u241F7246895040454419816: Export ", ":ICU: as TSV template "]);
 
     _templateObject307 = function _templateObject307() {
       return data;
@@ -410,7 +410,7 @@
   }
 
   function _templateObject306() {
-    var data = _taggedTemplateLiteral([":\u241F093538d4070407c4aeff8e6f846024b3a6afa304\u241F3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}"]);
+    var data = _taggedTemplateLiteral([":\u241Fa7d12a207f1adbb9c121078ed270f22a063cddf6\u241F4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}"]);
 
     _templateObject306 = function _templateObject306() {
       return data;
@@ -420,7 +420,7 @@
   }
 
   function _templateObject305() {
-    var data = _taggedTemplateLiteral([":@@duplicateAction\u241F41bd546356e6e3f040c515d8057a7ad9d13702d3\u241F6000965021238022836: Duplicate ", ":ICU: "]);
+    var data = _taggedTemplateLiteral([":@@duplicateAction\u241Fa31848497c82fc478f8c225abaaa305a530b4763\u241F6995627517285342533: Duplicate ", ":ICU: "]);
 
     _templateObject305 = function _templateObject305() {
       return data;
@@ -430,7 +430,7 @@
   }
 
   function _templateObject304() {
-    var data = _taggedTemplateLiteral([":\u241F093538d4070407c4aeff8e6f846024b3a6afa304\u241F3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}"]);
+    var data = _taggedTemplateLiteral([":\u241Fa7d12a207f1adbb9c121078ed270f22a063cddf6\u241F4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}"]);
 
     _templateObject304 = function _templateObject304() {
       return data;
@@ -440,7 +440,7 @@
   }
 
   function _templateObject303() {
-    var data = _taggedTemplateLiteral([":@@copyItemAction\u241F1b32a43f6b66009f73629476c0acac5f1278c91f\u241F6066848467110836457: Create new from this ", ":ICU: "]);
+    var data = _taggedTemplateLiteral([":@@copyItemAction\u241Fa347e07792f8040f8a6255d154e9ed3d45809771\u241F3571580617510407754: Create new from this ", ":ICU: "]);
 
     _templateObject303 = function _templateObject303() {
       return data;
@@ -450,7 +450,7 @@
   }
 
   function _templateObject302() {
-    var data = _taggedTemplateLiteral([":\u241F093538d4070407c4aeff8e6f846024b3a6afa304\u241F3973811633009541633:{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}"]);
+    var data = _taggedTemplateLiteral([":\u241Fa7d12a207f1adbb9c121078ed270f22a063cddf6\u241F4189298974170191535:{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}"]);
 
     _templateObject302 = function _templateObject302() {
       return data;
@@ -6721,6 +6721,11 @@
           key: "active_item",
           get: function get() {
             return this._active_item.getValue();
+          }
+        }, {
+          key: "type",
+          get: function get() {
+            return this._type;
           }
         }]);
 
@@ -37454,8 +37459,8 @@
       var I18N_2;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_3 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-        I18N_2 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_3;
+        var MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_3 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+        I18N_2 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_3;
       } else {
         I18N_2 = $localize(_templateObject302());
       }
@@ -37477,8 +37482,8 @@
       var I18N_6;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_7 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-        I18N_6 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_7;
+        var MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_7 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+        I18N_6 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_7;
       } else {
         I18N_6 = $localize(_templateObject304());
       }
@@ -37500,8 +37505,8 @@
       var I18N_10;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_11 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-        I18N_10 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_11;
+        var MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_11 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+        I18N_10 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS_11;
       } else {
         I18N_10 = $localize(_templateObject306());
       }
@@ -37905,8 +37910,8 @@
       var I18N_31;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__32 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-        I18N_31 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__32;
+        var MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__32 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+        I18N_31 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__32;
       } else {
         I18N_31 = $localize(_templateObject315());
       }
@@ -37962,8 +37967,8 @@
       var I18N_35;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__36 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-        I18N_35 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__36;
+        var MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__36 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+        I18N_35 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__36;
       } else {
         I18N_35 = $localize(_templateObject317());
       }
@@ -38019,8 +38024,8 @@
       var I18N_39;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_1515061680644220493$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__40 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other\n        }}");
-        I18N_39 = MSG_EXTERNAL_1515061680644220493$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__40;
+        var MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__40 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+        I18N_39 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__40;
       } else {
         I18N_39 = $localize(_templateObject319());
       }
@@ -38072,8 +38077,8 @@
       var I18N_43;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__44 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-        I18N_43 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__44;
+        var MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__44 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+        I18N_43 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__44;
       } else {
         I18N_43 = $localize(_templateObject321());
       }
@@ -38145,8 +38150,8 @@
       var I18N_48;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49 = goog.getMsg("{VAR_SELECT, select, system {system } module {module } driver {driver } repository {repository } zone {zone } trigger {trigger } user {user } domain {domain } other {other }}");
-        I18N_48 = MSG_EXTERNAL_3973811633009541633$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49;
+        var MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49 = goog.getMsg("{VAR_SELECT, select, systems {system } modules {module } drivers {driver } repositories {repository } zones {zone } triggers {trigger } users {user } domains {domain } other {other }}");
+        I18N_48 = MSG_EXTERNAL_4189298974170191535$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49;
       } else {
         I18N_48 = $localize(_templateObject323());
       }
@@ -38255,6 +38260,30 @@
 
           _this93.tabs = [];
           _this93.loading = _this93._service.loading;
+          /** Open modal to edit the active item */
+
+          _this93.edit = function () {
+            return _this93._service.edit();
+          };
+          /** Delete the active item */
+
+
+          _this93["delete"] = function () {
+            return _this93._service["delete"]();
+          };
+          /** Duplicate the active item */
+
+
+          _this93.duplicateItem = function () {
+            return _this93._service.duplicate();
+          };
+          /** Create a new item using the current as a template */
+
+
+          _this93.newFromItem = function () {
+            return _this93._service.create(true);
+          };
+
           return _this93;
         }
 
@@ -38300,38 +38329,6 @@
             }
           }
           /**
-           * Open modal to edit the active item
-           */
-
-        }, {
-          key: "edit",
-          value: function edit() {
-            this._service.edit();
-          }
-          /**
-           * Delete the active item
-           */
-
-        }, {
-          key: "delete",
-          value: function _delete() {
-            this._service["delete"]();
-          }
-          /**
-           * Delete the active item
-           */
-
-        }, {
-          key: "duplicateItem",
-          value: function duplicateItem() {
-            this._service.duplicate();
-          }
-        }, {
-          key: "newFromItem",
-          value: function newFromItem() {
-            this._service.create(true);
-          }
-          /**
            * Export the active item as a CSV
            */
 
@@ -38345,6 +38342,11 @@
               return ignore_keys.indexOf(key) < 0;
             }), '\t');
             Object(src_app_common_general__WEBPACK_IMPORTED_MODULE_3__["downloadFile"])(filename, csv_data);
+          }
+        }, {
+          key: "name",
+          get: function get() {
+            return this._service.type;
           }
         }, {
           key: "item",
@@ -38418,7 +38420,6 @@
           }
         },
         inputs: {
-          name: "name",
           route: "route",
           has_change: "has_change",
           tabs: "tabs"
@@ -38609,9 +38610,6 @@
             type: _angular_router__WEBPACK_IMPORTED_MODULE_8__["Router"]
           }];
         }, {
-          name: [{
-            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
-          }],
           route: [{
             type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
           }],
@@ -43909,16 +43907,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "3812ae4",
-        "hash": "3812ae4",
+        "raw": "8a5b734",
+        "hash": "8a5b734",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "3812ae4",
+        "suffix": "8a5b734",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1601371297767
+        "time": 1601530676890
       };
       /* tslint:enable */
 
