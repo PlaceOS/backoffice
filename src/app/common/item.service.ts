@@ -80,6 +80,10 @@ export class ActiveItemService extends BaseClass {
         return this._active_item.getValue();
     }
 
+    public get type() {
+        return this._type;
+    }
+
     public moreItems() {
         this.updateList();
     }

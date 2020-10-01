@@ -25,8 +25,6 @@ export interface ApplicationTab {
     styleUrls: ['./item-display.styles.scss'],
 })
 export class ItemDisplayComponent<T extends Identity = any> extends BaseClass implements OnInit {
-    /** Name of the type of item being shown */
-    @Input() public name: string;
     /** Base route of parent component */
     @Input() public route: string;
     /** Whether item is allowed to be edited and deleted */
@@ -37,6 +35,19 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseClass im
     public active_tab: string;
 
     public readonly loading = this._service.loading;
+
+    /** Open modal to edit the active item */
+    public readonly edit = () => this._service.edit();
+    /** Delete the active item */
+    public readonly delete = () => this._service.delete();
+    /** Duplicate the active item */
+    public readonly duplicateItem = () => this._service.duplicate();
+    /** Create a new item using the current as a template */
+    public readonly newFromItem = () => this._service.create(true);
+
+    public get name() {
+        return this._service.type;
+    }
 
     @ViewChild('content') public content_el: ElementRef<HTMLDivElement>;
 
@@ -121,31 +132,6 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseClass im
             document.execCommand('copy');
             notifyInfo('ID copied to clipboard');
         }
-    }
-
-    /**
-     * Open modal to edit the active item
-     */
-    public edit() {
-        this._service.edit();
-    }
-
-    /**
-     * Delete the active item
-     */
-    public delete() {
-        this._service.delete();
-    }
-
-    /**
-     * Delete the active item
-     */
-    public duplicateItem() {
-        this._service.duplicate();
-    }
-
-    public newFromItem() {
-        this._service.create(true);
     }
 
     /**
