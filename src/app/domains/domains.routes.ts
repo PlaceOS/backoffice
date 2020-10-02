@@ -4,6 +4,7 @@ import { DomainApplicationsComponent } from './domain-applications/domain-applic
 import { DomainAuthenticationComponent } from './domain-authentication/domain-authentication.component';
 import { DomainUsersComponent } from './domain-users/domain-users.component';
 import { DomainAboutComponent } from './domain-about/domain-about.component';
+import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 
 export const ROUTES: Routes = [
     {
@@ -14,6 +15,7 @@ export const ROUTES: Routes = [
             { path: 'applications', component: DomainApplicationsComponent },
             { path: 'authentication', component: DomainAuthenticationComponent },
             { path: 'users', component: DomainUsersComponent },
+            { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' },
         ],
     },

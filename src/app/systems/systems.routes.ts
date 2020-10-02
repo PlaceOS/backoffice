@@ -5,6 +5,7 @@ import { SystemModulesComponent } from './system-modules/system-modules.componen
 import { SystemTriggersComponent } from './system-triggers/system-triggers.component';
 import { SystemZonesComponent } from './system-zones/system-zones.component';
 import { SystemMetadataComponent } from './system-metadata/system-metadata.component';
+import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 
 export const ROUTES: Routes = [
     {
@@ -17,6 +18,7 @@ export const ROUTES: Routes = [
             { path: 'triggers', component: SystemTriggersComponent },
             { path: 'zones', component: SystemZonesComponent },
             { path: 'metadata', component: SystemMetadataComponent },
+            { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' }
         ]
     },

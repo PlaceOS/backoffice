@@ -1,24 +1,8 @@
 <div class="container" [class.show]="show_options | async">
     <div class="sidebar">
-        <sidebar
-            heading="Triggers"
-            name="triggers"
-        ></sidebar>
+        <sidebar heading="Triggers" name="triggers"></sidebar>
     </div>
     <main>
-        <item-display
-            name="trigger"
-            route="triggers"
-            [tabs]="[
-                { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
-                {
-                    id: 'systems',
-                    name: 'Systems',
-                    count: system_count,
-                    icon: { class: 'backoffice-documents' }
-                }
-            ]"
-        >
-        </item-display>
+        <item-display name="trigger" route="triggers" [tabs]="tab_list"> </item-display>
     </main>
 </div>

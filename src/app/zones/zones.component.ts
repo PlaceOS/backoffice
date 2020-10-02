@@ -10,6 +10,7 @@ import {
 
 import { ActiveItemService } from '../common/item.service';
 import { BaseClass } from '../common/base.class';
+import { extensionsForItem } from '../common/api';
 
 @Component({
     selector: 'app-zones',
@@ -30,6 +31,27 @@ export class ZonesComponent extends BaseClass {
 
     public readonly show_options = this._service.show_options;
 
+    public tab_list = [];
+
+    public get extensions() {
+        return extensionsForItem(this._service.active_item, this.name);
+    }
+
+    public updateTabList() {
+        this.tab_list = [
+            { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
+            {
+                id: 'systems',
+                name: 'Systems',
+                count: this.system_count,
+                icon: { class: 'backoffice-documents' }
+            },
+            { id: 'triggers', name: 'Triggers', count: this.trigger_count, icon: { class: 'backoffice-stopwatch' } },
+            { id: 'metadata', name: 'Metadata', count: this.metadata_count, icon: { class: 'backoffice-gist' } },
+            { id: 'children', name: 'Children', count: this.child_count, icon: { class: 'backoffice-flow-tree' } }
+        ].concat(this.extensions);
+    }
+
     constructor(
         protected _service: ActiveItemService,
         protected _route: ActivatedRoute,
@@ -42,6 +64,7 @@ export class ZonesComponent extends BaseClass {
         this.subscription('item', this._service.item.subscribe((item) => {
             this.loadValues(item as any);
         }));
+        this.updateTabList();
     }
 
     protected async loadValues(item: PlaceZone) {
@@ -58,5 +81,6 @@ export class ZonesComponent extends BaseClass {
         // Get metadata
         const map = await showMetadata(item.id).toPromise();
         this.metadata_count = map.length;
+        this.updateTabList();
     }
 }

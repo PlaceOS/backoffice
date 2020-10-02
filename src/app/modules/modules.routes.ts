@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { ModulesComponent } from './modules.component';
 import { ModuleAboutComponent } from './module-about/module-about.component';
 import { ModuleSystemsComponent } from './module-systems/module-systems.component';
+import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 
 export const ROUTES: Routes = [
     {
@@ -11,6 +12,7 @@ export const ROUTES: Routes = [
         children: [
             { path: 'about', component: ModuleAboutComponent },
             { path: 'systems', component: ModuleSystemsComponent },
+            { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' },
         ],
     },

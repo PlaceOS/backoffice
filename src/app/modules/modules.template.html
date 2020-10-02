@@ -6,26 +6,17 @@
             [queryParams]="only_disconnected ? { connected: false, running: true } : {}"
         >
             <div class="toggle">
-                <mat-slide-toggle [(ngModel)]="only_disconnected" labelPosition="before"  i18n="@@moduleDisconnectedFilterToggle">
+                <mat-slide-toggle
+                    [(ngModel)]="only_disconnected"
+                    labelPosition="before"
+                    i18n="@@moduleDisconnectedFilterToggle"
+                >
                     Only Disconnected
                 </mat-slide-toggle>
             </div>
         </sidebar>
     </div>
     <main>
-        <item-display
-            name="module"
-            route="modules"
-            [tabs]="[
-                { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
-                {
-                    id: 'systems',
-                    name: 'Systems',
-                    count: system_count,
-                    icon: { class: 'backoffice-documents' }
-                }
-            ]"
-        >
-        </item-display>
+        <item-display name="module" route="modules" [tabs]="tab_list"> </item-display>
     </main>
 </div>

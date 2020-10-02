@@ -1,35 +1,8 @@
 <div class="container" [class.show]="show_options">
     <div class="sidebar">
-        <sidebar
-            heading="Domains"
-            name="domains"
-        ></sidebar>
+        <sidebar heading="Domains" name="domains"></sidebar>
     </div>
     <main>
-        <item-display
-            name="domain"
-            route="domains"
-            [tabs]="[
-                {
-                    id: 'about',
-                    name: 'About',
-                    icon: { class: 'backoffice-info-with-circle' }
-                },
-                {
-                    id: 'applications',
-                    name: 'Applications',
-                    count: applications || 0,
-                    icon: { class: 'backoffice-publish' }
-                },
-                {
-                    id: 'authentication',
-                    name: 'Authentication',
-                    count: auth_sources || 0,
-                    icon: { class: 'backoffice-lock-open' }
-                },
-                { id: 'users', name: 'Users', count: user_count || 0, icon: { class: 'backoffice-users' } }
-            ]"
-        >
-        </item-display>
+        <item-display name="domain" route="domains" [tabs]="tab_list"> </item-display>
     </main>
 </div>

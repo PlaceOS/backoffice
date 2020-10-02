@@ -3,6 +3,7 @@ import { PlaceSystem, listSystemTriggers, showMetadata } from '@placeos/ts-clien
 
 import { ActiveItemService } from '../common/item.service';
 import { BaseClass } from '../common/base.class';
+import { extensionsForItem } from '../common/api';
 
 @Component({
     selector: 'app-systems',
@@ -23,6 +24,37 @@ export class SystemsComponent extends BaseClass implements OnInit {
 
     public readonly show_options = this._service.show_options;
 
+    public tab_list = [];
+
+    public get extensions() {
+        return extensionsForItem(this._service.active_item, this.name);
+    }
+
+    public updateTabList() {
+        this.tab_list = [
+            { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
+            {
+                id: 'modules',
+                name: 'Modules',
+                count: this.device_count,
+                icon: { class: 'backoffice-tablet' }
+            },
+            { id: 'zones', name: 'Zones', count: this.zone_count, icon: { class: 'backoffice-layers' } },
+            {
+                id: 'triggers',
+                name: 'Triggers',
+                count: this.trigger_count,
+                icon: { class: 'backoffice-stopwatch' }
+            },
+            {
+                id: 'metadata',
+                name: 'Metadata',
+                count: this.metadata_count,
+                icon: { class: 'backoffice-gist' }
+            }
+        ].concat(this.extensions);
+    }
+
     constructor(protected _service: ActiveItemService) {
         super();
     }
@@ -31,6 +63,7 @@ export class SystemsComponent extends BaseClass implements OnInit {
         this.subscription('item', this._service.item.subscribe((item) => {
             this.loadValues(item as any);
         }));
+        this.updateTabList();
     }
 
     protected async loadValues(item: PlaceSystem) {
@@ -45,5 +78,6 @@ export class SystemsComponent extends BaseClass implements OnInit {
         // Get metadata
         const map = await showMetadata(item.id).toPromise();
         this.metadata_count = map.length;
+        this.updateTabList();
     }
 }

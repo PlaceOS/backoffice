@@ -3,6 +3,7 @@ import { PlaceDriver, queryModules } from '@placeos/ts-client';
 
 import { ActiveItemService } from '../common/item.service';
 import { BaseClass } from '../common/base.class';
+import { extensionsForItem } from '../common/api';
 
 @Component({
     selector: 'app-drivers',
@@ -17,6 +18,20 @@ export class DriversComponent extends BaseClass {
 
     public readonly show_options = this._service.show_options;
 
+    public tab_list = [];
+
+    public get extensions() {
+        return extensionsForItem(this._service.active_item, this.name);
+    }
+
+    public updateTabList() {
+        this.tab_list = [
+            { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
+            { id: 'modules', name: 'Modules', count: this.device_count, icon: { class: 'backoffice-tablet' } }
+
+        ].concat(this.extensions);
+    }
+
     constructor(protected _service: ActiveItemService) {
         super();
     }
@@ -24,7 +39,9 @@ export class DriversComponent extends BaseClass {
     public ngOnInit(): void {
         this.subscription('item', this._service.item.subscribe((item) => {
             this.loadValues(item as any);
-        }))
+            this.updateTabList();
+        }));
+        this.updateTabList();
     }
 
     protected async loadValues(item: PlaceDriver) {

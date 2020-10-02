@@ -1,19 +1,8 @@
 <div class="container" [class.show]="show_options | async">
     <div class="sidebar">
-        <sidebar
-            heading="Users"
-            name="users"
-        ></sidebar>
+        <sidebar heading="Users" name="users"></sidebar>
     </div>
     <main>
-        <item-display
-            name="user"
-            route="users"
-            [tabs]="[
-                { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
-                { id: 'history', name: 'History', icon: { class: 'backoffice-list' } }
-            ]"
-        >
-        </item-display>
+        <item-display name="user" route="users" [tabs]="tab_list"> </item-display>
     </main>
 </div>

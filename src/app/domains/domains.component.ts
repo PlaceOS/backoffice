@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
-import { PlaceDomain, queryApplications, queryUsers } from '@placeos/ts-client';
+import { authority, PlaceDomain, queryApplications, queryUsers } from '@placeos/ts-client';
 
 import { ActiveItemService } from '../common/item.service';
 import { BaseClass } from '../common/base.class';
+import { AppComponentExtensions } from '../common/types';
+import { extensionsForItem } from '../common/api';
 
 @Component({
     selector: 'app-domains',
@@ -25,10 +27,48 @@ export class DomainsComponent extends BaseClass {
         super();
     }
 
+    public tab_list = [];
+
+    public get extensions() {
+        return extensionsForItem(this._service.active_item, this.name);
+    }
+
+    public updateTabList() {
+        this.tab_list = [
+            {
+                id: 'about',
+                name: 'About',
+                icon: { class: 'backoffice-info-with-circle' },
+            },
+            {
+                id: 'applications',
+                name: 'Applications',
+                count: this.applications || 0,
+                icon: { class: 'backoffice-publish' },
+            },
+            {
+                id: 'authentication',
+                name: 'Authentication',
+                count: this.auth_sources || 0,
+                icon: { class: 'backoffice-lock-open' },
+            },
+            {
+                id: 'users',
+                name: 'Users',
+                count: this.user_count || 0,
+                icon: { class: 'backoffice-users' },
+            },
+        ].concat(this.extensions);
+    }
+
     public ngOnInit(): void {
-        this.subscription('item', this._service.item.subscribe((item) => {
-            this.loadValues(item as any);
-        }))
+        this.subscription(
+            'item',
+            this._service.item.subscribe((item) => {
+                this.loadValues(item as any);
+            })
+        );
+        this.updateTabList();
     }
 
     protected async loadValues(item: PlaceDomain) {
@@ -43,5 +83,6 @@ export class DomainsComponent extends BaseClass {
         // );
         // Get users count
         this.user_count = (await queryUsers(query).toPromise()).total;
+        this.updateTabList();
     }
 }
