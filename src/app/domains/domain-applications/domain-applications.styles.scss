@@ -30,6 +30,8 @@
 .id,
 .secret {
     font-family: $mono-font;
+    user-select: all;
+    cursor: cell;
     font-size: .8em;
 }
 
