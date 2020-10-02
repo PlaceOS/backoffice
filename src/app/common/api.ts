@@ -38,7 +38,6 @@ export function calculateModuleIndex(module_list: PlaceModule[], module: PlaceMo
 
 export function extensionsForItem(item: PlaceResource, type: string) {
     let authority_config = authority()?.config?.backoffice;
-    console.log('Extensions Config:', authority_config)
     if (!authority_config || !item) return [];
     const app_extend = authority_config.extend || {};
     const extension_list: AppComponentExtensions = app_extend[type];
@@ -51,14 +50,20 @@ export function extensionsForItem(item: PlaceResource, type: string) {
             matches += item[key] && item[key] === value ? 1 : 0;
         }
         if (matches >= extension_list[name].conditions.length) {
+            let url = extension_list[name].url;
+            for (const key in item) {
+                if (item[key] && (typeof item[key] === 'string' || typeof item[key] === 'number')) {
+                    if (typeof item[key] === 'string' && item[key].length > 64) continue;
+                    url = url.replace(`{{${key}}}`, encodeURIComponent(`${item[key]}`));
+                }
+            }
             extensions.push({
                 id: `extend/${name.split(' ').join('-').toLowerCase()}`,
                 name,
                 icon: extension_list[name].icon,
-                query: { embed: extension_list[name].url },
+                query: { embed: url },
             });
         }
     }
-    console.log('Extensions:', extensions)
     return extensions;
 }
