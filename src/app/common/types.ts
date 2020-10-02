@@ -4,6 +4,19 @@ export interface HashMap<T = any> {
     [key: string]: T;
 }
 
+export interface AppComponentExtensions {
+    [name: string]: AppComponentExtension
+}
+
+export interface AppComponentExtension {
+    /** URL to embed in the application extension */
+    url: string;
+    /** Conditions to allow the extension to show */
+    conditions: [string, any][];
+    /** Icon to draw of the associated tab */
+    icon?: ApplicationIcon;
+}
+
 /** Generic data type with identification details */
 export interface Identity extends HashMap {
     id: string | number;

@@ -69,6 +69,7 @@ import { BrokerFormComponent } from './forms/broker-form/broker-form.component';
 import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
 import { UploadListComponent } from './upload-list/upload-list.component';
 import { BindingDirective } from './binding/binding.directive';
+import { ExtensionOutletComponent } from './extension-outlet.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -88,6 +89,7 @@ const FORM_COMPONENTS: Type<any>[] = [
     SamlSourceFormComponent,
     SettingsFormComponent,
     BrokerFormComponent,
+    ExtensionOutletComponent
 ];
 
 const COMPONENTS: Type<any>[] = [

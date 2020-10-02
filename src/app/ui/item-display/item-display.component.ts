@@ -10,12 +10,14 @@ import { BackofficeUsersService } from 'src/app/users/users.service';
 import { ActiveItemService } from 'src/app/common/item.service';
 import { HotkeysService } from 'src/app/common/hotkeys.service';
 import { notifyInfo } from 'src/app/common/notifications';
+import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 
 export interface ApplicationTab {
     id: string;
     name: string;
     icon: ApplicationIcon;
     template: TemplateRef<any>;
+    query?: HashMap<string>;
     count?: number;
 }
 

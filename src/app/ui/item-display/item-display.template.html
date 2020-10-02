@@ -39,7 +39,8 @@
                     class="tab"
                     mat-tab-link
                     *ngFor="let link of tabs"
-                    [routerLink]="item.id ? ['/' + route, item.id, link.id] : ['/' + route, link.id]"
+                    [routerLink]="item.id ? ('/' + route + '/' + item.id + '/' + link.id) : ('/' + route  + '/' + link.id)"
+                    [queryParams]="link.query"
                     routerLinkActive
                     #rla="routerLinkActive"
                     [active]="rla.isActive"
@@ -51,7 +52,7 @@
                         Children } Drivers { Drivers } History { History } Applications {
                         Applications } Authentication { Authentication } Users { Users } Database {
                         Database } Clusters { Clusters } Interfaces { Interfaces } MQTT Brokers {
-                        MQTT Brokers } other { Other }} &nbsp;
+                        MQTT Brokers } other { {{ link.name }} }} &nbsp;
                     </div>
                     <div class="count" *ngIf="link.count || link.count === 0">
                         ({{ link.count || '0' }})

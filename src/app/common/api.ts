@@ -1,7 +1,8 @@
 
-import { PlaceModule } from '@placeos/ts-client';
+import { authority, PlaceModule } from '@placeos/ts-client';
+import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
 
-import { HashMap } from "./types";
+import { AppComponentExtensions, HashMap } from "./types";
 
 /**
  * Convert map into a query string
@@ -33,4 +34,31 @@ export function calculateModuleIndex(module_list: PlaceModule[], module: PlaceMo
         return mod_class === module_class;
     });
     return Math.max(1, modules_with_class.findIndex(mod => mod.id === module.id) + 1);
+}
+
+export function extensionsForItem(item: PlaceResource, type: string) {
+    let authority_config = authority()?.config?.backoffice;
+    console.log('Extensions Config:', authority_config)
+    if (!authority_config || !item) return [];
+    const app_extend = authority_config.extend || {};
+    const extension_list: AppComponentExtensions = app_extend[type];
+    if (!extension_list || !item) return [];
+    const extensions = [];
+    for (const name in extension_list) {
+        let matches = 0;
+        for (const condition of extension_list[name].conditions) {
+            const [key, value] = condition;
+            matches += item[key] && item[key] === value ? 1 : 0;
+        }
+        if (matches >= extension_list[name].conditions.length) {
+            extensions.push({
+                id: `extend/${name.split(' ').join('-').toLowerCase()}`,
+                name,
+                icon: extension_list[name].icon,
+                query: { embed: extension_list[name].url },
+            });
+        }
+    }
+    console.log('Extensions:', extensions)
+    return extensions;
 }

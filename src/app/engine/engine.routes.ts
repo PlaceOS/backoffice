@@ -7,6 +7,7 @@ import { AuthorisedAdminGuard } from 'src/app/ui/guards/authorised-admin.guard';
 import { PlaceClusterDetailsComponent } from './cluster-details/cluster-details.component';
 import { AdminInterfacesComponent } from './interfaces/interfaces.component';
 import { AdminBrokersComponent } from './brokers/brokers.component';
+import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 
 export const ROUTES: Routes = [
     {
@@ -19,6 +20,7 @@ export const ROUTES: Routes = [
             { path: 'clusters', component: PlaceClusterDetailsComponent },
             { path: 'interfaces', component: AdminInterfacesComponent },
             { path: 'brokers', component: AdminBrokersComponent },
+            { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' }
         ]
     },

@@ -19,6 +19,7 @@ import { BackofficeUsersService } from './users/users.service';
     templateUrl: './app.component.html',
     styleUrls: [
         './styles/app.component.scss',
+        './styles/utility.scss',
         './styles/custom-element.styles.scss',
         './styles/native-element.styles.scss',
     ],
