@@ -1647,8 +1647,9 @@ class ActiveItemService extends _base_class__WEBPACK_IMPORTED_MODULE_11__["BaseC
                 const list = this._list
                     .getValue()
                     .filter((i) => !resp.data.find((item) => item.id === i.id));
-                list.sort((a, b) => { var _a; return (_a = a.name) === null || _a === void 0 ? void 0 : _a.localeCompare(b.name); });
-                this._list.next(list.concat(resp.data));
+                const new_list = list.concat(resp.data);
+                new_list.sort((a, b) => { var _a; return (_a = a.name) === null || _a === void 0 ? void 0 : _a.localeCompare(b.name); });
+                this._list.next(new_list);
                 this._loading_list.next(false);
             }
         }));
@@ -5590,7 +5591,7 @@ ItemCreateUpdateModalComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1_
     } if (rf & 2) {
         const _r3 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵreference"](8);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("", ctx.item && ctx.edit ? "Edit" : "New", " ", ctx.name, "");
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("", ctx.item && ctx.edit ? "Edit" : "New", " ", ctx.name === "Repositorie" ? "Repository" : ctx.name, "");
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", !ctx.loading);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
@@ -21473,16 +21474,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "8a5b734",
-    "hash": "8a5b734",
+    "raw": "b59dbff",
+    "hash": "b59dbff",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "8a5b734",
+    "suffix": "b59dbff",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1601530676890
+    "time": 1601613414066
 };
 /* tslint:enable */
 

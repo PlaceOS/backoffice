@@ -6579,7 +6579,7 @@
               return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this13, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
                 var _this14 = this;
 
-                var next, resp, list;
+                var next, resp, list, new_list;
                 return regeneratorRuntime.wrap(function _callee5$(_context5) {
                   while (1) {
                     switch (_context5.prev = _context5.next) {
@@ -6624,13 +6624,14 @@
                               return item.id === i.id;
                             });
                           });
-                          list.sort(function (a, b) {
+                          new_list = list.concat(resp.data);
+                          new_list.sort(function (a, b) {
                             var _a;
 
                             return (_a = a.name) === null || _a === void 0 ? void 0 : _a.localeCompare(b.name);
                           });
 
-                          this._list.next(list.concat(resp.data));
+                          this._list.next(new_list);
 
                           this._loading_list.next(false);
                         }
@@ -13855,7 +13856,7 @@
 
             _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
 
-            _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("", ctx.item && ctx.edit ? "Edit" : "New", " ", ctx.name, "");
+            _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"]("", ctx.item && ctx.edit ? "Edit" : "New", " ", ctx.name === "Repositorie" ? "Repository" : ctx.name, "");
 
             _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
 
@@ -43907,16 +43908,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "8a5b734",
-        "hash": "8a5b734",
+        "raw": "b59dbff",
+        "hash": "b59dbff",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "8a5b734",
+        "suffix": "b59dbff",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1601530676890
+        "time": 1601613414066
       };
       /* tslint:enable */
 
