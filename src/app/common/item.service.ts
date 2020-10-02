@@ -290,8 +290,9 @@ export class ActiveItemService extends BaseClass {
                 const list = this._list
                     .getValue()
                     .filter((i) => !resp.data.find((item) => item.id === i.id));
-                list.sort((a, b) => a.name?.localeCompare(b.name));
-                this._list.next(list.concat(resp.data));
+                const new_list = list.concat(resp.data)
+                new_list.sort((a, b) => a.name?.localeCompare(b.name));
+                this._list.next(new_list);
                 this._loading_list.next(false);
             }
         });
