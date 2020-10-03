@@ -605,14 +605,30 @@ function extensionsForItem(item, type) {
     for (const name in extension_list) {
         let matches = 0;
         for (const condition of extension_list[name].conditions) {
-            const [key, value] = condition;
+            const [key, type, value] = condition;
+            switch (type) {
+                case 'includes':
+                    matches += item[key] && item[key].includes(value) ? 1 : 0;
+                    break;
+                case 'equals':
+                    matches += item[key] && item[key] === value ? 1 : 0;
+                    break;
+                case 'true':
+                    matches += !!item[key] ? 1 : 0;
+                    break;
+                case 'false':
+                    matches += !item[key] ? 1 : 0;
+                    break;
+                default:
+                    matches += 1;
+            }
             matches += item[key] && item[key] === value ? 1 : 0;
         }
         if (matches >= extension_list[name].conditions.length) {
             let url = extension_list[name].url;
             for (const key in item) {
                 if (item[key] && (typeof item[key] === 'string' || typeof item[key] === 'number')) {
-                    if (typeof item[key] === 'string' && item[key].length > 64)
+                    if (typeof item[key] === 'string' && item[key].length > 128)
                         continue;
                     url = url.replace(`{{${key}}}`, encodeURIComponent(`${item[key]}`));
                 }
@@ -21580,16 +21596,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "f911483",
-    "hash": "f911483",
+    "raw": "e690734",
+    "hash": "e690734",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "f911483",
+    "suffix": "e690734",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1601698077407
+    "time": 1601704387908
 };
 /* tslint:enable */
 

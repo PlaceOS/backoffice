@@ -4786,9 +4786,31 @@
             for (_iterator.s(); !(_step = _iterator.n()).done;) {
               var condition = _step.value;
 
-              var _condition = _slicedToArray(condition, 2),
+              var _condition = _slicedToArray(condition, 3),
                   _key = _condition[0],
-                  value = _condition[1];
+                  _type = _condition[1],
+                  value = _condition[2];
+
+              switch (_type) {
+                case 'includes':
+                  matches += item[_key] && item[_key].includes(value) ? 1 : 0;
+                  break;
+
+                case 'equals':
+                  matches += item[_key] && item[_key] === value ? 1 : 0;
+                  break;
+
+                case 'true':
+                  matches += !!item[_key] ? 1 : 0;
+                  break;
+
+                case 'false':
+                  matches += !item[_key] ? 1 : 0;
+                  break;
+
+                default:
+                  matches += 1;
+              }
 
               matches += item[_key] && item[_key] === value ? 1 : 0;
             }
@@ -4803,7 +4825,7 @@
 
             for (var key in item) {
               if (item[key] && (typeof item[key] === 'string' || typeof item[key] === 'number')) {
-                if (typeof item[key] === 'string' && item[key].length > 64) continue;
+                if (typeof item[key] === 'string' && item[key].length > 128) continue;
                 url = url.replace("{{".concat(key, "}}"), encodeURIComponent("".concat(item[key])));
               }
             }
@@ -44131,16 +44153,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "f911483",
-        "hash": "f911483",
+        "raw": "e690734",
+        "hash": "e690734",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "f911483",
+        "suffix": "e690734",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1601698077407
+        "time": 1601704387908
       };
       /* tslint:enable */
 
