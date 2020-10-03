@@ -8,11 +8,13 @@ export interface AppComponentExtensions {
     [name: string]: AppComponentExtension
 }
 
+export type ExtensionConditions = 'equals' | 'true' | 'false' | 'includes' | 'none';
+
 export interface AppComponentExtension {
     /** URL to embed in the application extension */
     url: string;
     /** Conditions to allow the extension to show */
-    conditions: [string, any][];
+    conditions: [string, ExtensionConditions, any][];
     /** Icon to draw of the associated tab */
     icon?: ApplicationIcon;
 }
