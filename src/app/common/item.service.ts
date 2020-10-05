@@ -183,7 +183,7 @@ export class ActiveItemService extends BaseClass {
                 {
                     ...CONFIRM_METADATA,
                     data: {
-                        title: `Delete system`,
+                        title: `Delete ${this.actions.singular}`,
                         content: this.actions.delete_message,
                         icon: { type: 'icon', class: 'backoffice-trash' },
                     },

@@ -62,6 +62,7 @@ export interface ItemActions<T> {
     remove: (_: T) => Observable<any>;
     itemConstructor: Type<T>;
     delete_message: string;
+    singular?: string;
 }
 
 const domains: ItemActions<PlaceDomain> = {
@@ -70,7 +71,8 @@ const domains: ItemActions<PlaceDomain> = {
     save: (item) => (item.id ? updateDomain(item.id, item) : addDomain(item)),
     remove: (item) => removeDomain(item.id),
     itemConstructor: PlaceDomain,
-    delete_message: `<p>Are you sure you want delete this domain?</p><p>The domain will be deleted <strong>immediately.</strong></p>`
+    delete_message: `<p>Are you sure you want delete this domain?</p><p>The domain will be deleted <strong>immediately.</strong></p>`,
+    singular: 'domain'
 };
 
 const drivers: ItemActions<PlaceDriver> = {
@@ -79,7 +81,8 @@ const drivers: ItemActions<PlaceDriver> = {
     save: (item) => (item.id ? updateDriver(item.id, item) : addDriver(item)),
     remove: (item) => removeDriver(item.id),
     itemConstructor: PlaceDriver,
-    delete_message: `<p>Are you sure you want delete this driver?</p><p>All modules that rely on this driver will be <strong>immediately</strong> removed.</p>`
+    delete_message: `<p>Are you sure you want delete this driver?</p><p>All modules that rely on this driver will be <strong>immediately</strong> removed.</p>`,
+    singular: 'driver'
 };
 
 const modules: ItemActions<PlaceModule> = {
@@ -88,7 +91,8 @@ const modules: ItemActions<PlaceModule> = {
     save: (item) => (item.id ? updateModule(item.id, item) : addModule(item)),
     remove: (item) => removeModule(item.id),
     itemConstructor: PlaceModule,
-    delete_message: `<p>Are you sure you want delete this module?</p><p>Deleting this will module <strong>immediately</strong> remove it from any system associated with it</p>`
+    delete_message: `<p>Are you sure you want delete this module?</p><p>Deleting this will module <strong>immediately</strong> remove it from any system associated with it</p>`,
+    singular: 'module'
 };
 
 const repositories: ItemActions<PlaceRepository> = {
@@ -97,7 +101,8 @@ const repositories: ItemActions<PlaceRepository> = {
     save: (item) => (item.id ? updateRepository(item.id, item) : addRepository(item)),
     remove: (item) => removeRepository(item.id),
     itemConstructor: PlaceRepository,
-    delete_message: `<p>Deleting this repository will <strong>immediately</strong> remove assoicated drivers and modules</p>'`
+    delete_message: `<p>Deleting this repository will <strong>immediately</strong> remove assoicated drivers and modules</p>'`,
+    singular: 'repository'
 };
 
 const systems: ItemActions<PlaceSystem> = {
@@ -106,7 +111,8 @@ const systems: ItemActions<PlaceSystem> = {
     save: (item) => (item.id ? updateSystem(item.id, item) : addSystem(item)),
     remove: (item) => removeSystem(item.id),
     itemConstructor: PlaceSystem,
-    delete_message: `<p>Are you sure you want delete this system?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>`
+    delete_message: `<p>Are you sure you want delete this system?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>`,
+    singular: 'system'
 };
 
 const triggers: ItemActions<PlaceTrigger> = {
@@ -115,7 +121,8 @@ const triggers: ItemActions<PlaceTrigger> = {
     save: (item) => (item.id ? updateTrigger(item.id, item) : addTrigger(item)),
     remove: (item) => removeTrigger(item.id),
     itemConstructor: PlaceTrigger,
-    delete_message: `<p>Are you sure you want delete this trigger?</p><p>Deleting this trigger will <strong>immediately</strong> remove it from all associated systems and zones</p>`
+    delete_message: `<p>Are you sure you want delete this trigger?</p><p>Deleting this trigger will <strong>immediately</strong> remove it from all associated systems and zones</p>`,
+    singular: 'trigger'
 };
 
 const users: ItemActions<PlaceUser> = {
@@ -124,7 +131,8 @@ const users: ItemActions<PlaceUser> = {
     save: (item) => (item.id ? updateUser(item.id, item) : addUser(item)),
     remove: (item) => removeUser(item.id),
     itemConstructor: PlaceUser,
-    delete_message: `<p>Are you sure you want delete this user?</p><p>The user will be removed from the system within 24 hours</p>`
+    delete_message: `<p>Are you sure you want delete this user?</p><p>The user will be removed from the system within 24 hours</p>`,
+    singular: 'user'
 };
 
 const zones: ItemActions<PlaceZone> = {
@@ -133,7 +141,8 @@ const zones: ItemActions<PlaceZone> = {
     save: (item) => (item.id ? updateZone(item.id, item) : addZone(item)),
     remove: (item) => removeZone(item.id),
     itemConstructor: PlaceZone,
-    delete_message: `<p>Are you sure you want delete this zone?</p><p>Deleting this zone will <strong>immediately</strong> remove systems without another zone</p>`
+    delete_message: `<p>Are you sure you want delete this zone?</p><p>Deleting this zone will <strong>immediately</strong> remove systems without another zone</p>`,
+    singular: 'zone'
 };
 
 export const ACTIONS = {
