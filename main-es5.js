@@ -4474,7 +4474,8 @@
           return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeDomain"])(item.id);
         },
         itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceDomain"],
-        delete_message: "<p>Are you sure you want delete this domain?</p><p>The domain will be deleted <strong>immediately.</strong></p>"
+        delete_message: "<p>Are you sure you want delete this domain?</p><p>The domain will be deleted <strong>immediately.</strong></p>",
+        singular: 'domain'
       };
       var drivers = {
         query: function query(_) {
@@ -4492,7 +4493,8 @@
           return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeDriver"])(item.id);
         },
         itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceDriver"],
-        delete_message: "<p>Are you sure you want delete this driver?</p><p>All modules that rely on this driver will be <strong>immediately</strong> removed.</p>"
+        delete_message: "<p>Are you sure you want delete this driver?</p><p>All modules that rely on this driver will be <strong>immediately</strong> removed.</p>",
+        singular: 'driver'
       };
       var modules = {
         query: function query(_) {
@@ -4510,7 +4512,8 @@
           return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeModule"])(item.id);
         },
         itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceModule"],
-        delete_message: "<p>Are you sure you want delete this module?</p><p>Deleting this will module <strong>immediately</strong> remove it from any system associated with it</p>"
+        delete_message: "<p>Are you sure you want delete this module?</p><p>Deleting this will module <strong>immediately</strong> remove it from any system associated with it</p>",
+        singular: 'module'
       };
       var repositories = {
         query: function query(_) {
@@ -4528,7 +4531,8 @@
           return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeRepository"])(item.id);
         },
         itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceRepository"],
-        delete_message: "<p>Deleting this repository will <strong>immediately</strong> remove assoicated drivers and modules</p>'"
+        delete_message: "<p>Deleting this repository will <strong>immediately</strong> remove assoicated drivers and modules</p>'",
+        singular: 'repository'
       };
       var systems = {
         query: function query(_) {
@@ -4546,7 +4550,8 @@
           return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeSystem"])(item.id);
         },
         itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceSystem"],
-        delete_message: "<p>Are you sure you want delete this system?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>"
+        delete_message: "<p>Are you sure you want delete this system?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>",
+        singular: 'system'
       };
       var triggers = {
         query: function query(_) {
@@ -4564,7 +4569,8 @@
           return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeTrigger"])(item.id);
         },
         itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceTrigger"],
-        delete_message: "<p>Are you sure you want delete this trigger?</p><p>Deleting this trigger will <strong>immediately</strong> remove it from all associated systems and zones</p>"
+        delete_message: "<p>Are you sure you want delete this trigger?</p><p>Deleting this trigger will <strong>immediately</strong> remove it from all associated systems and zones</p>",
+        singular: 'trigger'
       };
       var users = {
         query: function query(_) {
@@ -4582,7 +4588,8 @@
           return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeUser"])(item.id);
         },
         itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceUser"],
-        delete_message: "<p>Are you sure you want delete this user?</p><p>The user will be removed from the system within 24 hours</p>"
+        delete_message: "<p>Are you sure you want delete this user?</p><p>The user will be removed from the system within 24 hours</p>",
+        singular: 'user'
       };
       var zones = {
         query: function query(_) {
@@ -4600,7 +4607,8 @@
           return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeZone"])(item.id);
         },
         itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceZone"],
-        delete_message: "<p>Are you sure you want delete this zone?</p><p>Deleting this zone will <strong>immediately</strong> remove systems without another zone</p>"
+        delete_message: "<p>Are you sure you want delete this zone?</p><p>Deleting this zone will <strong>immediately</strong> remove systems without another zone</p>",
+        singular: 'zone'
       };
       var ACTIONS = {
         domains: domains,
@@ -6518,7 +6526,7 @@
             if (item) {
               var ref = this._dialog.open(_overlays_confirm_modal_confirm_modal_component__WEBPACK_IMPORTED_MODULE_5__["ConfirmModalComponent"], Object.assign(Object.assign({}, _overlays_confirm_modal_confirm_modal_component__WEBPACK_IMPORTED_MODULE_5__["CONFIRM_METADATA"]), {
                 data: {
-                  title: "Delete system",
+                  title: "Delete ".concat(this.actions.singular),
                   content: this.actions.delete_message,
                   icon: {
                     type: 'icon',
@@ -44153,16 +44161,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "e690734",
-        "hash": "e690734",
+        "raw": "6f8e823",
+        "hash": "6f8e823",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "e690734",
+        "suffix": "6f8e823",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1601704387908
+        "time": 1601866178962
       };
       /* tslint:enable */
 

@@ -438,7 +438,8 @@ const domains = {
     save: (item) => (item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["updateDomain"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["addDomain"])(item)),
     remove: (item) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeDomain"])(item.id),
     itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceDomain"],
-    delete_message: `<p>Are you sure you want delete this domain?</p><p>The domain will be deleted <strong>immediately.</strong></p>`
+    delete_message: `<p>Are you sure you want delete this domain?</p><p>The domain will be deleted <strong>immediately.</strong></p>`,
+    singular: 'domain'
 };
 const drivers = {
     query: (_) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["queryDrivers"])({ q: _ }),
@@ -446,7 +447,8 @@ const drivers = {
     save: (item) => (item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["updateDriver"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["addDriver"])(item)),
     remove: (item) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeDriver"])(item.id),
     itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceDriver"],
-    delete_message: `<p>Are you sure you want delete this driver?</p><p>All modules that rely on this driver will be <strong>immediately</strong> removed.</p>`
+    delete_message: `<p>Are you sure you want delete this driver?</p><p>All modules that rely on this driver will be <strong>immediately</strong> removed.</p>`,
+    singular: 'driver'
 };
 const modules = {
     query: (_) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["queryModules"])({ q: _ }),
@@ -454,7 +456,8 @@ const modules = {
     save: (item) => (item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["updateModule"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["addModule"])(item)),
     remove: (item) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeModule"])(item.id),
     itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceModule"],
-    delete_message: `<p>Are you sure you want delete this module?</p><p>Deleting this will module <strong>immediately</strong> remove it from any system associated with it</p>`
+    delete_message: `<p>Are you sure you want delete this module?</p><p>Deleting this will module <strong>immediately</strong> remove it from any system associated with it</p>`,
+    singular: 'module'
 };
 const repositories = {
     query: (_) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["queryRepositories"])({ q: _ }),
@@ -462,7 +465,8 @@ const repositories = {
     save: (item) => (item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["updateRepository"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["addRepository"])(item)),
     remove: (item) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeRepository"])(item.id),
     itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceRepository"],
-    delete_message: `<p>Deleting this repository will <strong>immediately</strong> remove assoicated drivers and modules</p>'`
+    delete_message: `<p>Deleting this repository will <strong>immediately</strong> remove assoicated drivers and modules</p>'`,
+    singular: 'repository'
 };
 const systems = {
     query: (_) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["querySystems"])({ q: _ }),
@@ -470,7 +474,8 @@ const systems = {
     save: (item) => (item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["updateSystem"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["addSystem"])(item)),
     remove: (item) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeSystem"])(item.id),
     itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceSystem"],
-    delete_message: `<p>Are you sure you want delete this system?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>`
+    delete_message: `<p>Are you sure you want delete this system?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>`,
+    singular: 'system'
 };
 const triggers = {
     query: (_) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["queryTriggers"])({ q: _ }),
@@ -478,7 +483,8 @@ const triggers = {
     save: (item) => (item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["updateTrigger"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["addTrigger"])(item)),
     remove: (item) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeTrigger"])(item.id),
     itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceTrigger"],
-    delete_message: `<p>Are you sure you want delete this trigger?</p><p>Deleting this trigger will <strong>immediately</strong> remove it from all associated systems and zones</p>`
+    delete_message: `<p>Are you sure you want delete this trigger?</p><p>Deleting this trigger will <strong>immediately</strong> remove it from all associated systems and zones</p>`,
+    singular: 'trigger'
 };
 const users = {
     query: (_) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["queryUsers"])({ q: _ }),
@@ -486,7 +492,8 @@ const users = {
     save: (item) => (item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["updateUser"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["addUser"])(item)),
     remove: (item) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeUser"])(item.id),
     itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceUser"],
-    delete_message: `<p>Are you sure you want delete this user?</p><p>The user will be removed from the system within 24 hours</p>`
+    delete_message: `<p>Are you sure you want delete this user?</p><p>The user will be removed from the system within 24 hours</p>`,
+    singular: 'user'
 };
 const zones = {
     query: (_) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["queryZones"])({ q: _ }),
@@ -494,7 +501,8 @@ const zones = {
     save: (item) => (item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["updateZone"])(item.id, item) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["addZone"])(item)),
     remove: (item) => Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["removeZone"])(item.id),
     itemConstructor: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_0__["PlaceZone"],
-    delete_message: `<p>Are you sure you want delete this zone?</p><p>Deleting this zone will <strong>immediately</strong> remove systems without another zone</p>`
+    delete_message: `<p>Are you sure you want delete this zone?</p><p>Deleting this zone will <strong>immediately</strong> remove systems without another zone</p>`,
+    singular: 'zone'
 };
 const ACTIONS = {
     domains,
@@ -1611,7 +1619,7 @@ class ActiveItemService extends _base_class__WEBPACK_IMPORTED_MODULE_11__["BaseC
         const item = this._active_item.getValue();
         if (item) {
             const ref = this._dialog.open(_overlays_confirm_modal_confirm_modal_component__WEBPACK_IMPORTED_MODULE_5__["ConfirmModalComponent"], Object.assign(Object.assign({}, _overlays_confirm_modal_confirm_modal_component__WEBPACK_IMPORTED_MODULE_5__["CONFIRM_METADATA"]), { data: {
-                    title: `Delete system`,
+                    title: `Delete ${this.actions.singular}`,
                     content: this.actions.delete_message,
                     icon: { type: 'icon', class: 'backoffice-trash' },
                 } }));
@@ -21596,16 +21604,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "e690734",
-    "hash": "e690734",
+    "raw": "6f8e823",
+    "hash": "6f8e823",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "e690734",
+    "suffix": "6f8e823",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1601704387908
+    "time": 1601866178962
 };
 /* tslint:enable */
 
