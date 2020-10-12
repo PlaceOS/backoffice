@@ -9280,30 +9280,46 @@ DebugOutputComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ExtensionOutletComponent", function() { return ExtensionOutletComponent; });
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
-/* harmony import */ var _common_base_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../common/base.class */ "./src/app/common/base.class.ts");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
-/* harmony import */ var _acaprojects_ngx_pipes__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @acaprojects/ngx-pipes */ "./node_modules/@acaprojects/ngx-pipes/__ivy_ngcc__/fesm2015/acaprojects-ngx-pipes.js");
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @placeos/ts-client */ "./node_modules/@placeos/ts-client/dist/esm/index.js");
+/* harmony import */ var _common_base_class__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../common/base.class */ "./src/app/common/base.class.ts");
+/* harmony import */ var _common_notifications__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../common/notifications */ "./src/app/common/notifications.ts");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
+/* harmony import */ var _common_item_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../common/item.service */ "./src/app/common/item.service.ts");
+/* harmony import */ var _acaprojects_ngx_pipes__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @acaprojects/ngx-pipes */ "./node_modules/@acaprojects/ngx-pipes/__ivy_ngcc__/fesm2015/acaprojects-ngx-pipes.js");
 
 
 
 
 
 
+
+
+
+
+const _c0 = ["frame"];
 function ExtensionOutletComponent_iframe_0_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "iframe", 1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](1, "safe");
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](0, "iframe", 1, 2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipe"](2, "safe");
 } if (rf & 2) {
-    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](1, 1, ctx_r0.url, "resource"), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeResourceUrl"]);
+    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("src", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipeBind2"](2, 1, ctx_r0.url, "resource"), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵsanitizeResourceUrl"]);
 } }
-class ExtensionOutletComponent extends _common_base_class__WEBPACK_IMPORTED_MODULE_1__["BaseClass"] {
-    constructor(_route, _location) {
+class ExtensionOutletComponent extends _common_base_class__WEBPACK_IMPORTED_MODULE_3__["BaseClass"] {
+    constructor(_route, _location, _service) {
         super();
         this._route = _route;
         this._location = _location;
+        this._service = _service;
         this.url = '';
+        this.onMessage = (m) => {
+            if (typeof m.data !== 'string')
+                return;
+            console.log('Message:', m);
+            this.handleMessage(JSON.parse(m.data));
+        };
     }
     ngOnInit() {
         this._route.queryParamMap.subscribe((params) => {
@@ -9314,21 +9330,79 @@ class ExtensionOutletComponent extends _common_base_class__WEBPACK_IMPORTED_MODU
                 this._location.back();
             }
         });
+        window.addEventListener('message', this.onMessage);
+        this.subscription('message', () => window.removeEventListener('message', this.onMessage));
+    }
+    handleMessage(message) {
+        var _a, _b;
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            const item = this._service.active_item;
+            if (message.type === 'backoffice' && item) {
+                console.log('Update:', message);
+                if (message.action === 'update') {
+                    // Handle update to item model
+                    const updated_item = yield this._service.actions
+                        .save(Object.assign(Object.assign({}, item), message.content))
+                        .toPromise()
+                        .catch((e) => Object(_common_notifications__WEBPACK_IMPORTED_MODULE_4__["notifyError"])(`Error updating ${this._service.actions.singular || 'item'}.`));
+                    if ((_a = this._frame_el) === null || _a === void 0 ? void 0 : _a.nativeElement) {
+                        if (updated_item) {
+                            Object(_common_notifications__WEBPACK_IMPORTED_MODULE_4__["notifySuccess"])(`Successfully updated ${this._service.actions.singular || 'item'}`);
+                        }
+                        this._frame_el.nativeElement.contentWindow.postMessage(JSON.stringify({
+                            type: 'backoffice',
+                            status: updated_item ? 'success' : 'error',
+                        }), '*');
+                    }
+                }
+                else if (message.action === 'metadata' && message.name) {
+                    // Handle updating metadata
+                    const exists = yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["showMetadata"])(item.id, { name: message.name }).toPromise();
+                    console.log('Name:', message.name, exists);
+                    yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["updateMetadata"])(item.id, {
+                        id: item.id,
+                        name: message.name,
+                        description: `Metadata from ${this.url}`,
+                        details: message.content,
+                    }).toPromise();
+                    Object(_common_notifications__WEBPACK_IMPORTED_MODULE_4__["notifySuccess"])(`Successfully updated ${this._service.actions.singular || 'item'} metadata`);
+                    if ((_b = this._frame_el) === null || _b === void 0 ? void 0 : _b.nativeElement) {
+                        this._frame_el.nativeElement.contentWindow.postMessage(JSON.stringify({
+                            type: 'backoffice',
+                            status: 'success',
+                        }), '*');
+                    }
+                }
+            }
+        });
     }
 }
-ExtensionOutletComponent.ɵfac = function ExtensionOutletComponent_Factory(t) { return new (t || ExtensionOutletComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_common__WEBPACK_IMPORTED_MODULE_3__["Location"])); };
-ExtensionOutletComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: ExtensionOutletComponent, selectors: [["app-extension-outlet"]], features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]], decls: 1, vars: 1, consts: [["class", "absolute inset-0 w-full h-full border-none", 3, "src", 4, "ngIf"], [1, "absolute", "inset-0", "w-full", "h-full", "border-none", 3, "src"]], template: function ExtensionOutletComponent_Template(rf, ctx) { if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, ExtensionOutletComponent_iframe_0_Template, 2, 4, "iframe", 0);
+ExtensionOutletComponent.ɵfac = function ExtensionOutletComponent_Factory(t) { return new (t || ExtensionOutletComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_5__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_common__WEBPACK_IMPORTED_MODULE_6__["Location"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_common_item_service__WEBPACK_IMPORTED_MODULE_7__["ActiveItemService"])); };
+ExtensionOutletComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: ExtensionOutletComponent, selectors: [["app-extension-outlet"]], viewQuery: function ExtensionOutletComponent_Query(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵviewQuery"](_c0, true);
     } if (rf & 2) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.url);
-    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_3__["NgIf"]], pipes: [_acaprojects_ngx_pipes__WEBPACK_IMPORTED_MODULE_4__["ɵa"]], encapsulation: 2 });
-/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](ExtensionOutletComponent, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
+        var _t;
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵloadQuery"]()) && (ctx._frame_el = _t.first);
+    } }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵInheritDefinitionFeature"]], decls: 1, vars: 1, consts: [["class", "absolute inset-0 w-full h-full border-none", 3, "src", 4, "ngIf"], [1, "absolute", "inset-0", "w-full", "h-full", "border-none", 3, "src"], ["farme", ""]], template: function ExtensionOutletComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](0, ExtensionOutletComponent_iframe_0_Template, 3, 4, "iframe", 0);
+    } if (rf & 2) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx.url);
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_6__["NgIf"]], pipes: [_acaprojects_ngx_pipes__WEBPACK_IMPORTED_MODULE_8__["ɵa"]], encapsulation: 2 });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](ExtensionOutletComponent, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"],
         args: [{
                 selector: 'app-extension-outlet',
-                template: `<iframe *ngIf="url" class="absolute inset-0 w-full h-full border-none" [src]="url | safe:'resource'"></iframe>`,
+                template: `<iframe
+        *ngIf="url"
+        #farme
+        class="absolute inset-0 w-full h-full border-none"
+        [src]="url | safe: 'resource'"
+    ></iframe>`,
             }]
-    }], function () { return [{ type: _angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"] }, { type: _angular_common__WEBPACK_IMPORTED_MODULE_3__["Location"] }]; }, null); })();
+    }], function () { return [{ type: _angular_router__WEBPACK_IMPORTED_MODULE_5__["ActivatedRoute"] }, { type: _angular_common__WEBPACK_IMPORTED_MODULE_6__["Location"] }, { type: _common_item_service__WEBPACK_IMPORTED_MODULE_7__["ActiveItemService"] }]; }, { _frame_el: [{
+            type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["ViewChild"],
+            args: ['frame']
+        }] }); })();
 
 
 /***/ }),
@@ -21604,16 +21678,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "d429cee",
-    "hash": "d429cee",
+    "raw": "97d9c7f",
+    "hash": "97d9c7f",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "d429cee",
+    "suffix": "97d9c7f",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1602467474587
+    "time": 1602498565990
 };
 /* tslint:enable */
 
