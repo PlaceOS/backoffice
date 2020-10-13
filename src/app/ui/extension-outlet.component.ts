@@ -1,7 +1,8 @@
 import { Location } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { addMetadata, showMetadata, updateMetadata } from '@placeos/ts-client';
+import { addMetadata, onlineState, showMetadata, updateMetadata } from '@placeos/ts-client';
+import { first } from 'rxjs/operators';
 import { BaseClass } from '../common/base.class';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -9,7 +10,7 @@ import { HashMap } from '../common/types';
 
 export interface FrameMessage {
     type: 'backoffice';
-    action: 'update' | 'metadata';
+    action: 'update' | 'load' | 'metadata';
     name?: string;
     content: HashMap;
 }
@@ -17,18 +18,18 @@ export interface FrameMessage {
 @Component({
     selector: 'app-extension-outlet',
     template: `<iframe
-        *ngIf="url"
-        #farme
+        *ngIf="url && app_loaded"
+        #frame
         class="absolute inset-0 w-full h-full border-none"
         [src]="url | safe: 'resource'"
     ></iframe>`,
 })
 export class ExtensionOutletComponent extends BaseClass {
     public url = '';
+    public app_loaded = false;
 
     public readonly onMessage = (m) => {
         if (typeof m.data !== 'string') return;
-        console.log('Message:', m);
         this.handleMessage(JSON.parse(m.data));
     };
 
@@ -37,12 +38,13 @@ export class ExtensionOutletComponent extends BaseClass {
     constructor(
         private _route: ActivatedRoute,
         private _location: Location,
-        private _service: ActiveItemService
+        private _service: ActiveItemService,
     ) {
         super();
     }
 
     public ngOnInit(): void {
+        onlineState().pipe(first(_ => _)).subscribe(() => this.timeout('init', () => this.app_loaded = true));
         this._route.queryParamMap.subscribe((params) => {
             if (params.has('embed')) {
                 this.url = decodeURIComponent(params.get('embed'));
@@ -55,55 +57,80 @@ export class ExtensionOutletComponent extends BaseClass {
     }
 
     private async handleMessage(message: FrameMessage) {
-        const item = this._service.active_item;
-        if (message.type === 'backoffice' && item) {
-            console.log('Update:', message);
-            if (message.action === 'update') {
-                // Handle update to item model
-                const updated_item = await this._service.actions
-                    .save({ ...item, ...message.content })
-                    .toPromise()
-                    .catch((e) =>
-                        notifyError(`Error updating ${this._service.actions.singular || 'item'}.`)
-                    );
-
-                if (this._frame_el?.nativeElement) {
-                    if (updated_item) {
-                        notifySuccess(
-                            `Successfully updated ${this._service.actions.singular || 'item'}`
-                        );
-                    }
-                    this._frame_el.nativeElement.contentWindow.postMessage(
-                        JSON.stringify({
-                            type: 'backoffice',
-                            status: updated_item ? 'success' : 'error',
-                        }),
-                        '*'
-                    );
-                }
-            } else if (message.action === 'metadata' && message.name) {
-                // Handle updating metadata
-                const exists = await showMetadata(item.id, { name: message.name }).toPromise();
-                console.log('Name:', message.name, exists);
-                await updateMetadata(item.id, {
-                    id: item.id,
-                    name: message.name,
-                    description: `Metadata from ${this.url}`,
-                    details: message.content,
-                }).toPromise();
-                notifySuccess(
-                    `Successfully updated ${this._service.actions.singular || 'item'} metadata`
-                );
-                if (this._frame_el?.nativeElement) {
-                    this._frame_el.nativeElement.contentWindow.postMessage(
-                        JSON.stringify({
-                            type: 'backoffice',
-                            status: 'success',
-                        }),
-                        '*'
-                    );
+        if (!this._frame_el?.nativeElement) {
+            return this.timeout('not_ready', () => this.handleMessage(message));
+        }
+        this.timeout('on_message', () => {
+            const item = this._service.active_item;
+            if (message.type === 'backoffice' && item) {
+                if (message.action === 'update') {
+                    // Handle update to item model
+                    this.updateItem(item, message);
+                } else if (message.action === 'metadata' && message.name) {
+                    // Handle updating metadata
+                    this.updateMetadata(item, message)
+                } else if (message.action === 'load' && message.name) {
+                    // Handle updating metadata
+                    this.loadMetadata(item, message)
                 }
             }
+        });
+    }
+
+    private async updateItem(item: any, message: FrameMessage) {
+        const updated_item = await this._service.actions
+            .save({ ...item, ...message.content })
+            .toPromise()
+            .catch((e) =>
+                notifyError(`Error updating ${this._service.actions.singular || 'item'}.`)
+            );
+
+        if (this._frame_el?.nativeElement) {
+            if (updated_item) {
+                notifySuccess(
+                    `Successfully updated ${this._service.actions.singular || 'item'}`
+                );
+            }
+            this._frame_el.nativeElement.contentWindow.postMessage(
+                JSON.stringify({
+                    type: 'backoffice',
+                    status: updated_item ? 'success' : 'error',
+                }),
+                '*'
+            );
+        }
+    }
+
+    private async updateMetadata(item: any, message: FrameMessage) {
+        const exists = await showMetadata(item.id, { name: message.name }).toPromise();
+        await updateMetadata(item.id, {
+            id: item.id,
+            name: message.name,
+            description: `Metadata from ${this.url}`,
+            details: message.content,
+        }).toPromise();
+        notifySuccess(
+            `Successfully updated ${this._service.actions.singular || 'item'} metadata`
+        );
+        this._frame_el.nativeElement.contentWindow.postMessage(
+            JSON.stringify({
+                type: 'backoffice',
+                status: 'success',
+            }),
+            '*'
+        );
+    }
+
+    private async loadMetadata(item: any, message: FrameMessage) {
+        const metadata = await showMetadata(item.id, { name: message.name }).toPromise();
+        if (metadata) {
+            this._frame_el.nativeElement.contentWindow.postMessage(
+                JSON.stringify({
+                    type: 'backoffice',
+                    content: (metadata as any).details
+                }),
+                '*'
+            );
         }
     }
 }
