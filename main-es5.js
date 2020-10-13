@@ -21068,37 +21068,43 @@
       /* harmony import */
 
 
-      var _common_base_class__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
+      var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
+      /*! rxjs/operators */
+      "./node_modules/rxjs/_esm2015/operators/index.js");
+      /* harmony import */
+
+
+      var _common_base_class__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(
       /*! ../common/base.class */
       "./src/app/common/base.class.ts");
       /* harmony import */
 
 
-      var _common_notifications__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(
+      var _common_notifications__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(
       /*! ../common/notifications */
       "./src/app/common/notifications.ts");
       /* harmony import */
 
 
-      var _angular_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(
+      var _angular_router__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
       /*! @angular/router */
       "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
       /* harmony import */
 
 
-      var _angular_common__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
+      var _angular_common__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
       /*! @angular/common */
       "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
       /* harmony import */
 
 
-      var _common_item_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
+      var _common_item_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(
       /*! ../common/item.service */
       "./src/app/common/item.service.ts");
       /* harmony import */
 
 
-      var _acaprojects_ngx_pipes__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(
+      var _acaprojects_ngx_pipes__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(
       /*! @acaprojects/ngx-pipes */
       "./node_modules/@acaprojects/ngx-pipes/__ivy_ngcc__/fesm2015/acaprojects-ngx-pipes.js");
 
@@ -21133,10 +21139,10 @@
           _this68._location = _location;
           _this68._service = _service;
           _this68.url = '';
+          _this68.app_loaded = false;
 
           _this68.onMessage = function (m) {
             if (typeof m.data !== 'string') return;
-            console.log('Message:', m);
 
             _this68.handleMessage(JSON.parse(m.data));
           };
@@ -21148,6 +21154,14 @@
           key: "ngOnInit",
           value: function ngOnInit() {
             var _this69 = this;
+
+            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["onlineState"])().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
+              return _;
+            })).subscribe(function () {
+              return _this69.timeout('init', function () {
+                return _this69.app_loaded = true;
+              });
+            });
 
             this._route.queryParamMap.subscribe(function (params) {
               if (params.has('embed')) {
@@ -21165,41 +21179,74 @@
         }, {
           key: "handleMessage",
           value: function handleMessage(message) {
-            var _a, _b;
+            var _a;
 
             return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee15() {
               var _this70 = this;
 
-              var item, updated_item, exists;
               return regeneratorRuntime.wrap(function _callee15$(_context16) {
                 while (1) {
                   switch (_context16.prev = _context16.next) {
                     case 0:
-                      item = this._service.active_item;
-
-                      if (!(message.type === 'backoffice' && item)) {
-                        _context16.next = 19;
+                      if ((_a = this._frame_el) === null || _a === void 0 ? void 0 : _a.nativeElement) {
+                        _context16.next = 2;
                         break;
                       }
 
-                      console.log('Update:', message);
+                      return _context16.abrupt("return", this.timeout('not_ready', function () {
+                        return _this70.handleMessage(message);
+                      }));
 
-                      if (!(message.action === 'update')) {
-                        _context16.next = 10;
-                        break;
-                      }
+                    case 2:
+                      this.timeout('on_message', function () {
+                        var item = _this70._service.active_item;
 
-                      _context16.next = 6;
-                      return this._service.actions.save(Object.assign(Object.assign({}, item), message.content)).toPromise()["catch"](function (e) {
-                        return Object(_common_notifications__WEBPACK_IMPORTED_MODULE_4__["notifyError"])("Error updating ".concat(_this70._service.actions.singular || 'item', "."));
+                        if (message.type === 'backoffice' && item) {
+                          if (message.action === 'update') {
+                            // Handle update to item model
+                            _this70.updateItem(item, message);
+                          } else if (message.action === 'metadata' && message.name) {
+                            // Handle updating metadata
+                            _this70.updateMetadata(item, message);
+                          } else if (message.action === 'load' && message.name) {
+                            // Handle updating metadata
+                            _this70.loadMetadata(item, message);
+                          }
+                        }
                       });
 
-                    case 6:
-                      updated_item = _context16.sent;
+                    case 3:
+                    case "end":
+                      return _context16.stop();
+                  }
+                }
+              }, _callee15, this);
+            }));
+          }
+        }, {
+          key: "updateItem",
+          value: function updateItem(item, message) {
+            var _a;
+
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee16() {
+              var _this71 = this;
+
+              var updated_item;
+              return regeneratorRuntime.wrap(function _callee16$(_context17) {
+                while (1) {
+                  switch (_context17.prev = _context17.next) {
+                    case 0:
+                      _context17.next = 2;
+                      return this._service.actions.save(Object.assign(Object.assign({}, item), message.content)).toPromise()["catch"](function (e) {
+                        return Object(_common_notifications__WEBPACK_IMPORTED_MODULE_5__["notifyError"])("Error updating ".concat(_this71._service.actions.singular || 'item', "."));
+                      });
+
+                    case 2:
+                      updated_item = _context17.sent;
 
                       if ((_a = this._frame_el) === null || _a === void 0 ? void 0 : _a.nativeElement) {
                         if (updated_item) {
-                          Object(_common_notifications__WEBPACK_IMPORTED_MODULE_4__["notifySuccess"])("Successfully updated ".concat(this._service.actions.singular || 'item'));
+                          Object(_common_notifications__WEBPACK_IMPORTED_MODULE_5__["notifySuccess"])("Successfully updated ".concat(this._service.actions.singular || 'item'));
                         }
 
                         this._frame_el.nativeElement.contentWindow.postMessage(JSON.stringify({
@@ -21208,24 +21255,31 @@
                         }), '*');
                       }
 
-                      _context16.next = 19;
-                      break;
-
-                    case 10:
-                      if (!(message.action === 'metadata' && message.name)) {
-                        _context16.next = 19;
-                        break;
-                      }
-
-                      _context16.next = 13;
+                    case 4:
+                    case "end":
+                      return _context17.stop();
+                  }
+                }
+              }, _callee16, this);
+            }));
+          }
+        }, {
+          key: "updateMetadata",
+          value: function updateMetadata(item, message) {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee17() {
+              var exists;
+              return regeneratorRuntime.wrap(function _callee17$(_context18) {
+                while (1) {
+                  switch (_context18.prev = _context18.next) {
+                    case 0:
+                      _context18.next = 2;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["showMetadata"])(item.id, {
                         name: message.name
                       }).toPromise();
 
-                    case 13:
-                      exists = _context16.sent;
-                      console.log('Name:', message.name, exists);
-                      _context16.next = 17;
+                    case 2:
+                      exists = _context18.sent;
+                      _context18.next = 5;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["updateMetadata"])(item.id, {
                         id: item.id,
                         name: message.name,
@@ -21233,31 +21287,61 @@
                         details: message.content
                       }).toPromise();
 
-                    case 17:
-                      Object(_common_notifications__WEBPACK_IMPORTED_MODULE_4__["notifySuccess"])("Successfully updated ".concat(this._service.actions.singular || 'item', " metadata"));
+                    case 5:
+                      Object(_common_notifications__WEBPACK_IMPORTED_MODULE_5__["notifySuccess"])("Successfully updated ".concat(this._service.actions.singular || 'item', " metadata"));
 
-                      if ((_b = this._frame_el) === null || _b === void 0 ? void 0 : _b.nativeElement) {
+                      this._frame_el.nativeElement.contentWindow.postMessage(JSON.stringify({
+                        type: 'backoffice',
+                        status: 'success'
+                      }), '*');
+
+                    case 7:
+                    case "end":
+                      return _context18.stop();
+                  }
+                }
+              }, _callee17, this);
+            }));
+          }
+        }, {
+          key: "loadMetadata",
+          value: function loadMetadata(item, message) {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee18() {
+              var metadata;
+              return regeneratorRuntime.wrap(function _callee18$(_context19) {
+                while (1) {
+                  switch (_context19.prev = _context19.next) {
+                    case 0:
+                      _context19.next = 2;
+                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["showMetadata"])(item.id, {
+                        name: message.name
+                      }).toPromise();
+
+                    case 2:
+                      metadata = _context19.sent;
+
+                      if (metadata) {
                         this._frame_el.nativeElement.contentWindow.postMessage(JSON.stringify({
                           type: 'backoffice',
-                          status: 'success'
+                          content: metadata.details
                         }), '*');
                       }
 
-                    case 19:
+                    case 4:
                     case "end":
-                      return _context16.stop();
+                      return _context19.stop();
                   }
                 }
-              }, _callee15, this);
+              }, _callee18, this);
             }));
           }
         }]);
 
         return ExtensionOutletComponent;
-      }(_common_base_class__WEBPACK_IMPORTED_MODULE_3__["BaseClass"]);
+      }(_common_base_class__WEBPACK_IMPORTED_MODULE_4__["BaseClass"]);
 
       ExtensionOutletComponent.ɵfac = function ExtensionOutletComponent_Factory(t) {
-        return new (t || ExtensionOutletComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_5__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_common__WEBPACK_IMPORTED_MODULE_6__["Location"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_common_item_service__WEBPACK_IMPORTED_MODULE_7__["ActiveItemService"]));
+        return new (t || ExtensionOutletComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_6__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_common__WEBPACK_IMPORTED_MODULE_7__["Location"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_common_item_service__WEBPACK_IMPORTED_MODULE_8__["ActiveItemService"]));
       };
 
       ExtensionOutletComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({
@@ -21277,18 +21361,18 @@
         features: [_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵInheritDefinitionFeature"]],
         decls: 1,
         vars: 1,
-        consts: [["class", "absolute inset-0 w-full h-full border-none", 3, "src", 4, "ngIf"], [1, "absolute", "inset-0", "w-full", "h-full", "border-none", 3, "src"], ["farme", ""]],
+        consts: [["class", "absolute inset-0 w-full h-full border-none", 3, "src", 4, "ngIf"], [1, "absolute", "inset-0", "w-full", "h-full", "border-none", 3, "src"], ["frame", ""]],
         template: function ExtensionOutletComponent_Template(rf, ctx) {
           if (rf & 1) {
             _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](0, ExtensionOutletComponent_iframe_0_Template, 3, 4, "iframe", 0);
           }
 
           if (rf & 2) {
-            _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx.url);
+            _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx.url && ctx.app_loaded);
           }
         },
-        directives: [_angular_common__WEBPACK_IMPORTED_MODULE_6__["NgIf"]],
-        pipes: [_acaprojects_ngx_pipes__WEBPACK_IMPORTED_MODULE_8__["ɵa"]],
+        directives: [_angular_common__WEBPACK_IMPORTED_MODULE_7__["NgIf"]],
+        pipes: [_acaprojects_ngx_pipes__WEBPACK_IMPORTED_MODULE_9__["ɵa"]],
         encapsulation: 2
       });
       /*@__PURE__*/
@@ -21298,15 +21382,15 @@
           type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"],
           args: [{
             selector: 'app-extension-outlet',
-            template: "<iframe\n        *ngIf=\"url\"\n        #farme\n        class=\"absolute inset-0 w-full h-full border-none\"\n        [src]=\"url | safe: 'resource'\"\n    ></iframe>"
+            template: "<iframe\n        *ngIf=\"url && app_loaded\"\n        #frame\n        class=\"absolute inset-0 w-full h-full border-none\"\n        [src]=\"url | safe: 'resource'\"\n    ></iframe>"
           }]
         }], function () {
           return [{
-            type: _angular_router__WEBPACK_IMPORTED_MODULE_5__["ActivatedRoute"]
+            type: _angular_router__WEBPACK_IMPORTED_MODULE_6__["ActivatedRoute"]
           }, {
-            type: _angular_common__WEBPACK_IMPORTED_MODULE_6__["Location"]
+            type: _angular_common__WEBPACK_IMPORTED_MODULE_7__["Location"]
           }, {
-            type: _common_item_service__WEBPACK_IMPORTED_MODULE_7__["ActiveItemService"]
+            type: _common_item_service__WEBPACK_IMPORTED_MODULE_8__["ActiveItemService"]
           }];
         }, {
           _frame_el: [{
@@ -23993,14 +24077,14 @@
         var _super23 = _createSuper(DriverFormComponent);
 
         function DriverFormComponent() {
-          var _this71;
+          var _this72;
 
           _classCallCheck(this, DriverFormComponent);
 
-          _this71 = _super23.apply(this, arguments);
+          _this72 = _super23.apply(this, arguments);
           /** List of driver roles */
 
-          _this71.role_types = [{
+          _this72.role_types = [{
             id: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceDriverRole"].SSH,
             name: 'SSH'
           }, {
@@ -24018,19 +24102,19 @@
           }];
           /** List of available drivers for the active repository */
 
-          _this71.driver_list = [];
+          _this72.driver_list = [];
           /** List of available commits for the active driver */
 
-          _this71.commit_list = [];
+          _this72.commit_list = [];
           /** Subject holding the value of the search */
 
-          _this71.repo$ = new rxjs__WEBPACK_IMPORTED_MODULE_6__["Subject"]();
+          _this72.repo$ = new rxjs__WEBPACK_IMPORTED_MODULE_6__["Subject"]();
           /** Subject holding the value of the search */
 
-          _this71.driver$ = new rxjs__WEBPACK_IMPORTED_MODULE_6__["Subject"]();
+          _this72.driver$ = new rxjs__WEBPACK_IMPORTED_MODULE_6__["Subject"]();
           /** Function to query repositories */
 
-          _this71.query_fn = function (_) {
+          _this72.query_fn = function (_) {
             return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryRepositories"])({
               q: _
             }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])(function (resp) {
@@ -24040,28 +24124,28 @@
           /** Function to check repo that are excluded from being listed */
 
 
-          _this71.exclude_fn = function (repo) {
+          _this72.exclude_fn = function (repo) {
             return repo.type === _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceRepositoryType"].Interface;
           };
 
-          return _this71;
+          return _this72;
         }
 
         _createClass(DriverFormComponent, [{
           key: "ngOnInit",
           value: function ngOnInit() {
-            var _this72 = this;
+            var _this73 = this;
 
             this.driver_list$ = this.repo$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["debounceTime"])(100), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["distinctUntilChanged"])(), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["switchMap"])(function (repo_id) {
-              _this72.loading_drivers = true;
-              _this72.driver_list = [];
-              _this72.commit_list = [];
+              _this73.loading_drivers = true;
+              _this73.driver_list = [];
+              _this73.commit_list = [];
               return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["listRepositoryDrivers"])(repo_id);
             }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["catchError"])(function (_) {
               Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_4__["notifyError"])("Error loading driver list. Error: ".concat(_.message || _));
               return Object(rxjs__WEBPACK_IMPORTED_MODULE_6__["of"])([]);
             }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])(function (list) {
-              _this72.loading_drivers = false;
+              _this73.loading_drivers = false;
               return (list || []).map(function (driver) {
                 return {
                   id: driver,
@@ -24070,23 +24154,23 @@
               });
             }));
             this.subscription('driver_list', this.driver_list$.subscribe(function (list) {
-              return _this72.driver_list = list;
+              return _this73.driver_list = list;
             }));
             this.commit_list$ = this.driver$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["debounceTime"])(120), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["distinctUntilChanged"])(), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["switchMap"])(function (driver_id) {
-              _this72.loading_commits = true;
-              _this72.commit_list = [];
-              return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["listRepositoryCommits"])(_this72.base_repo.id, {
+              _this73.loading_commits = true;
+              _this73.commit_list = [];
+              return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["listRepositoryCommits"])(_this73.base_repo.id, {
                 driver: "".concat(driver_id)
               });
             }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["catchError"])(function (_) {
               Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_4__["notifyError"])("Error loading driver's commit list. Error: ".concat(_.message || _));
               return Object(rxjs__WEBPACK_IMPORTED_MODULE_6__["of"])([]);
             }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])(function (list) {
-              _this72.loading_commits = false;
+              _this73.loading_commits = false;
 
-              if (_this72.form.controls.commit) {
-                _this72.base_commit = _this72.commit_list.find(function (commit) {
-                  return commit.id === _this72.form.controls.commit.value;
+              if (_this73.form.controls.commit) {
+                _this73.base_commit = _this73.commit_list.find(function (commit) {
+                  return commit.id === _this73.form.controls.commit.value;
                 });
               }
 
@@ -24100,7 +24184,7 @@
               });
             }));
             this.subscription('commit_list', this.commit_list$.subscribe(function (list) {
-              return _this72.commit_list = list;
+              return _this73.commit_list = list;
             }));
           }
         }, {
@@ -24152,7 +24236,7 @@
         }, {
           key: "setDriverBase",
           value: function setDriverBase(event) {
-            var _this73 = this;
+            var _this74 = this;
 
             this.form.controls.commit.setValue(event.id);
             this.base_commit = event;
@@ -24161,28 +24245,28 @@
               driver: "".concat(this.base_driver.id),
               commit: "".concat(event.id)
             }).subscribe(function (driver) {
-              _this73.loading = false;
+              _this74.loading = false;
               console.log('ID:');
 
-              if (!_this73.form.controls.id.value) {
-                _this73.form.controls.name.setValue(driver.descriptive_name || '');
+              if (!_this74.form.controls.id.value) {
+                _this74.form.controls.name.setValue(driver.descriptive_name || '');
 
-                _this73.form.controls.module_name.setValue(driver.generic_name || '');
+                _this74.form.controls.module_name.setValue(driver.generic_name || '');
 
-                _this73.form.controls.class_name.setValue(_this73.base_driver.id || '');
+                _this74.form.controls.class_name.setValue(_this74.base_driver.id || '');
 
-                _this73.form.controls.default_port.setValue(driver.tcp_port || driver.udp_port || null);
+                _this74.form.controls.default_port.setValue(driver.tcp_port || driver.udp_port || null);
 
-                _this73.form.controls.default_uri.setValue(driver.uri_base || '');
+                _this74.form.controls.default_uri.setValue(driver.uri_base || '');
 
-                _this73.form.controls.role.setValue(driver.tcp_port || driver.udp_port ? _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceDriverRole"].Device : driver.uri_base ? _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceDriverRole"].Service : _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceDriverRole"].Logic);
+                _this74.form.controls.role.setValue(driver.tcp_port || driver.udp_port ? _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceDriverRole"].Device : driver.uri_base ? _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceDriverRole"].Service : _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceDriverRole"].Logic);
 
-                _this73.form.controls.settings.setValue(driver.default_settings || '');
+                _this74.form.controls.settings.setValue(driver.default_settings || '');
 
-                _this73.form.controls.description.setValue(driver.description || '');
+                _this74.form.controls.description.setValue(driver.description || '');
               }
             }, function () {
-              return _this73.loading = false;
+              return _this74.loading = false;
             });
           }
           /**
@@ -24192,23 +24276,23 @@
         }, {
           key: "initDriver",
           value: function initDriver() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee16() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee19() {
               var value, repo, driver;
-              return regeneratorRuntime.wrap(function _callee16$(_context17) {
+              return regeneratorRuntime.wrap(function _callee19$(_context20) {
                 while (1) {
-                  switch (_context17.prev = _context17.next) {
+                  switch (_context20.prev = _context20.next) {
                     case 0:
                       if (!(this.form.controls.repository_id && this.form.controls.repository_id.value)) {
-                        _context17.next = 12;
+                        _context20.next = 12;
                         break;
                       }
 
                       value = this.form.controls.repository_id.value;
-                      _context17.next = 4;
+                      _context20.next = 4;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["showRepository"])(value).toPromise();
 
                     case 4:
-                      repo = _context17.sent;
+                      repo = _context20.sent;
                       this.base_repo = repo;
                       this.updateDriverList(this.base_repo);
                       driver = this.form.controls.file_name.value;
@@ -24216,18 +24300,18 @@
                         id: driver,
                         name: driver.split('/').join(' > ')
                       } : driver;
-                      _context17.next = 11;
+                      _context20.next = 11;
                       return this.updateCommitList(this.base_driver);
 
                     case 11:
-                      this.commit_list = _context17.sent;
+                      this.commit_list = _context20.sent;
 
                     case 12:
                     case "end":
-                      return _context17.stop();
+                      return _context20.stop();
                   }
                 }
-              }, _callee16, this);
+              }, _callee19, this);
             }));
           }
         }, {
@@ -25842,13 +25926,13 @@
         var _super24 = _createSuper(ModuleFormComponent);
 
         function ModuleFormComponent() {
-          var _this74;
+          var _this75;
 
           _classCallCheck(this, ModuleFormComponent);
 
-          _this74 = _super24.apply(this, arguments);
+          _this75 = _super24.apply(this, arguments);
 
-          _this74.driver_query_fn = function (_) {
+          _this75.driver_query_fn = function (_) {
             return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryDrivers"])({
               q: _
             }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (resp) {
@@ -25856,7 +25940,7 @@
             }));
           };
 
-          _this74.system_query_fn = function (_) {
+          _this75.system_query_fn = function (_) {
             return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["querySystems"])({
               q: _
             }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (resp) {
@@ -25864,7 +25948,7 @@
             }));
           };
 
-          return _this74;
+          return _this75;
         }
         /** Role of the selected driver */
 
@@ -26843,14 +26927,14 @@
         var _super25 = _createSuper(OauthSourceFormComponent);
 
         function OauthSourceFormComponent() {
-          var _this75;
+          var _this76;
 
           _classCallCheck(this, OauthSourceFormComponent);
 
-          _this75 = _super25.apply(this, arguments);
+          _this76 = _super25.apply(this, arguments);
           /** List of available token request methods */
 
-          _this75.token_methods = [{
+          _this76.token_methods = [{
             id: 'get',
             name: 'GET'
           }, {
@@ -26862,7 +26946,7 @@
           }];
           /** List of available authentication schemes */
 
-          _this75.auth_schemes = [{
+          _this76.auth_schemes = [{
             id: 'request_body',
             name: 'Request Body'
           }, {
@@ -26871,14 +26955,14 @@
           }];
           /** List of info mapping pairs */
 
-          _this75.info_mapping_list = [];
+          _this76.info_mapping_list = [];
           /** List of authorize params pairs */
 
-          _this75.auth_params_list = [];
+          _this76.auth_params_list = [];
           /** List of ensure_matching pairs */
 
-          _this75.ensure_matching_list = [];
-          return _this75;
+          _this76.ensure_matching_list = [];
+          return _this76;
         }
 
         _createClass(OauthSourceFormComponent, [{
@@ -27937,26 +28021,26 @@
         }, {
           key: "loadCommits",
           value: function loadCommits() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee17() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee20() {
               var id, commits, active_commit;
-              return regeneratorRuntime.wrap(function _callee17$(_context18) {
+              return regeneratorRuntime.wrap(function _callee20$(_context21) {
                 while (1) {
-                  switch (_context18.prev = _context18.next) {
+                  switch (_context21.prev = _context21.next) {
                     case 0:
                       if (!(!this.is_edit || !this.can_change_commit)) {
-                        _context18.next = 2;
+                        _context21.next = 2;
                         break;
                       }
 
-                      return _context18.abrupt("return");
+                      return _context21.abrupt("return");
 
                     case 2:
                       id = this.form.controls.id.value;
-                      _context18.next = 5;
+                      _context21.next = 5;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["listRepositoryCommits"])(id).toPromise();
 
                     case 5:
-                      commits = _context18.sent;
+                      commits = _context21.sent;
                       this.commit_list = (commits || []).map(function (commit) {
                         var date = dayjs__WEBPACK_IMPORTED_MODULE_3__(commit.date);
                         return {
@@ -27976,52 +28060,52 @@
 
                     case 10:
                     case "end":
-                      return _context18.stop();
+                      return _context21.stop();
                   }
                 }
-              }, _callee17, this);
+              }, _callee20, this);
             }));
           }
         }, {
           key: "loadBranches",
           value: function loadBranches() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee18() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee21() {
               var id;
-              return regeneratorRuntime.wrap(function _callee18$(_context19) {
+              return regeneratorRuntime.wrap(function _callee21$(_context22) {
                 while (1) {
-                  switch (_context19.prev = _context19.next) {
+                  switch (_context22.prev = _context22.next) {
                     case 0:
                       if (!(!this.is_edit || !this.form.controls.branch)) {
-                        _context19.next = 2;
+                        _context22.next = 2;
                         break;
                       }
 
-                      return _context19.abrupt("return");
+                      return _context22.abrupt("return");
 
                     case 2:
                       id = this.form.controls.id.value;
-                      _context19.next = 5;
+                      _context22.next = 5;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["listRepositoryBranches"])(id).toPromise();
 
                     case 5:
-                      _context19.t0 = _context19.sent;
+                      _context22.t0 = _context22.sent;
 
-                      if (_context19.t0) {
-                        _context19.next = 8;
+                      if (_context22.t0) {
+                        _context22.next = 8;
                         break;
                       }
 
-                      _context19.t0 = [];
+                      _context22.t0 = [];
 
                     case 8:
-                      this.branch_list = _context19.t0;
+                      this.branch_list = _context22.t0;
 
                     case 9:
                     case "end":
-                      return _context19.stop();
+                      return _context22.stop();
                   }
                 }
-              }, _callee18, this);
+              }, _callee21, this);
             }));
           }
         }, {
@@ -29147,18 +29231,18 @@
         var _super26 = _createSuper(SamlSourceFormComponent);
 
         function SamlSourceFormComponent() {
-          var _this76;
+          var _this77;
 
           _classCallCheck(this, SamlSourceFormComponent);
 
-          _this76 = _super26.apply(this, arguments);
+          _this77 = _super26.apply(this, arguments);
           /** List of attribute statement pairs */
 
-          _this76.attribute_statement_mappings = [];
+          _this77.attribute_statement_mappings = [];
           /** List of runtime param pairs */
 
-          _this76.runtime_param_list = [];
-          return _this76;
+          _this77.runtime_param_list = [];
+          return _this77;
         }
 
         _createClass(SamlSourceFormComponent, [{
@@ -29195,7 +29279,7 @@
         }, {
           key: "updateAttributeStatements",
           value: function updateAttributeStatements(mappings) {
-            var _this77 = this;
+            var _this78 = this;
 
             this.timeout('mappings', function () {
               var map = {};
@@ -29217,7 +29301,7 @@
                 _iterator15.f();
               }
 
-              _this77.form.controls.attribute_statements.setValue(map);
+              _this78.form.controls.attribute_statements.setValue(map);
             }, 200);
           }
           /**
@@ -29228,7 +29312,7 @@
         }, {
           key: "updateRuntimeParams",
           value: function updateRuntimeParams(mappings) {
-            var _this78 = this;
+            var _this79 = this;
 
             this.timeout('mappings', function () {
               var map = {};
@@ -29250,7 +29334,7 @@
                 _iterator16.f();
               }
 
-              _this78.form.controls.idp_sso_target_url_runtime_params.setValue(map);
+              _this79.form.controls.idp_sso_target_url_runtime_params.setValue(map);
             }, 200);
           }
         }]);
@@ -29746,26 +29830,26 @@
         var _super27 = _createSuper(SettingsFormComponent);
 
         function SettingsFormComponent(_hotkey, _users) {
-          var _this79;
+          var _this80;
 
           _classCallCheck(this, SettingsFormComponent);
 
-          _this79 = _super27.call(this);
-          _this79._hotkey = _hotkey;
-          _this79._users = _users;
+          _this80 = _super27.call(this);
+          _this80._hotkey = _hotkey;
+          _this80._users = _users;
           /** Whether a setting is being saved */
 
-          _this79.saving = [false, false, false, false];
+          _this80.saving = [false, false, false, false];
           /** Settings available to display on the UI */
 
-          _this79.used_settings = [];
+          _this80.used_settings = [];
           /** List of available settings to view */
 
-          _this79.available_levels = _this79.levels;
+          _this80.available_levels = _this80.levels;
           /** List of decorations to apply to the merge settings */
 
-          _this79.merge_decorations = [];
-          return _this79;
+          _this80.merge_decorations = [];
+          return _this80;
         }
         /** Current user */
 
@@ -29789,19 +29873,19 @@
         }, {
           key: "ngOnInit",
           value: function ngOnInit() {
-            var _this80 = this;
+            var _this81 = this;
 
             this.subscription('save_all', this._hotkey.listen(['KeyA'], function () {
-              return _this80.saveAll();
+              return _this81.saveAll();
             }));
             this.subscription('clear_all', this._hotkey.listen(['KeyC'], function () {
-              return _this80.clearChanges();
+              return _this81.clearChanges();
             }));
           }
         }, {
           key: "ngOnChanges",
           value: function ngOnChanges(changes) {
-            var _this81 = this;
+            var _this82 = this;
 
             if (changes.merge) {
               this.encryption_level = this.merge ? _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["EncryptionLevel"].NeverDisplay + 1 : _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["EncryptionLevel"].None;
@@ -29810,9 +29894,9 @@
 
             if (changes.merge_settings) {
               this.timeout('update_merge', function () {
-                _this81.used_settings = _this81.processSettings(_this81.settings || []);
+                _this82.used_settings = _this82.processSettings(_this82.settings || []);
 
-                _this81.initForm();
+                _this82.initForm();
               }, 50);
             }
 
@@ -29826,7 +29910,7 @@
         }, {
           key: "save",
           value: function save(level) {
-            var _this82 = this;
+            var _this83 = this;
 
             var item = this.used_settings[level];
 
@@ -29836,14 +29920,14 @@
                 settings_string: this.form.controls["settings".concat(level)].value
               });
               (this.settings[level].id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["updateSettings"])(this.settings[level].id, details) : Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["addSettings"])(details)).toPromise().then(function (new_settings) {
-                _this82.saving[level] = false;
-                _this82.settings[level] = new_settings;
-                Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_5__["notifySuccess"])("Successfully saved ".concat(_this82.type(level), " settings."));
-                _this82.used_settings = _this82.processSettings(_this82.settings || []);
+                _this83.saving[level] = false;
+                _this83.settings[level] = new_settings;
+                Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_5__["notifySuccess"])("Successfully saved ".concat(_this83.type(level), " settings."));
+                _this83.used_settings = _this83.processSettings(_this83.settings || []);
 
-                _this82.initForm();
+                _this83.initForm();
               }, function (err) {
-                _this82.saving[level] = false;
+                _this83.saving[level] = false;
                 Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_5__["notifyError"])("Error updating settings. Error: ".concat(JSON.stringify(err.response || err.message || err)));
               });
             }
@@ -29853,7 +29937,7 @@
         }, {
           key: "saveAll",
           value: function saveAll() {
-            var _this83 = this;
+            var _this84 = this;
 
             if (this.has_errors) {
               return;
@@ -29879,8 +29963,8 @@
                 try {
                   for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
                     var result = _step17.value;
-                    _this83.saving[result.encryption_level] = false;
-                    _this83.settings[result.encryption_level] = result;
+                    _this84.saving[result.encryption_level] = false;
+                    _this84.settings[result.encryption_level] = result;
                   }
                 } catch (err) {
                   _iterator17.e(err);
@@ -29889,12 +29973,12 @@
                 }
 
                 Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_5__["notifySuccess"])('Successfully saved all settings.');
-                _this83.used_settings = _this83.processSettings(_this83.settings || []);
+                _this84.used_settings = _this84.processSettings(_this84.settings || []);
 
-                _this83.initForm();
+                _this84.initForm();
               }, function (err) {
                 for (var _i4 = 0; _i4 < _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["EncryptionLevel"].NeverDisplay + 1; _i4++) {
-                  _this83.saving[_i4] = false;
+                  _this84.saving[_i4] = false;
                 }
 
                 Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_5__["notifyError"])("Error updating settings. Error: ".concat(JSON.stringify(err.response || err.message || err)));
@@ -29970,14 +30054,14 @@
         }, {
           key: "generateMergedSettings",
           value: function generateMergedSettings() {
-            var _this84 = this;
+            var _this85 = this;
 
             var settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
             var _a;
 
             var merge_settings = ((_a = this.merge_settings) === null || _a === void 0 ? void 0 : _a.filter(function (item) {
-              return item.parent_id !== _this84.id;
+              return item.parent_id !== _this85.id;
             })) || [];
             var local_settings = (settings || []).map(function (item) {
               var obj = {};
@@ -30111,10 +30195,10 @@
         }, {
           key: "shown_option",
           get: function get() {
-            var _this85 = this;
+            var _this86 = this;
 
             return this.available_levels.find(function (i) {
-              return i.id === _this85.encryption_level;
+              return i.id === _this86.encryption_level;
             });
           }
           /** Whether the currently active settings have been edited */
@@ -31232,14 +31316,14 @@
         var _super28 = _createSuper(SystemFormComponent);
 
         function SystemFormComponent() {
-          var _this86;
+          var _this87;
 
           _classCallCheck(this, SystemFormComponent);
 
-          _this86 = _super28.apply(this, arguments);
+          _this87 = _super28.apply(this, arguments);
           /** Levels of encyption available for the system's settings */
 
-          _this86.encryption_levels = [{
+          _this87.encryption_levels = [{
             id: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["EncryptionLevel"].None,
             name: 'None'
           }, {
@@ -31254,7 +31338,7 @@
           }];
           /** Function for querying zones */
 
-          _this86.query_fn = function (_) {
+          _this87.query_fn = function (_) {
             return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryZones"])({
               q: _
             }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (resp) {
@@ -31264,8 +31348,8 @@
           /** List of separator characters for features */
 
 
-          _this86.separators = [_angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_1__["ENTER"], _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_1__["COMMA"], _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_1__["SPACE"]];
-          return _this86;
+          _this87.separators = [_angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_1__["ENTER"], _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_1__["COMMA"], _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_1__["SPACE"]];
+          return _this87;
         }
 
         _createClass(SystemFormComponent, [{
@@ -33009,7 +33093,7 @@
         }, {
           key: "loadSystemStatusVariables",
           value: function loadSystemStatusVariables(mod_name, side) {
-            var _this87 = this;
+            var _this88 = this;
 
             var name = (mod_name || '').split('_');
             Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["systemModuleState"])(this.system.id, name[0], +name[1]).subscribe(function (var_map) {
@@ -33017,16 +33101,16 @@
                 var_map.connected = true;
               }
 
-              _this87["".concat(side, "_status_variables")] = Object.keys(var_map).map(function (key) {
+              _this88["".concat(side, "_status_variables")] = Object.keys(var_map).map(function (key) {
                 return {
                   id: key,
                   name: key
                 };
               });
 
-              _this87.addExistingStatusVariables();
+              _this88.addExistingStatusVariables();
             }, function () {
-              return Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_4__["notifyError"])("Error loading the status variables for ".concat(_this87.system.id, ", ").concat(mod_name));
+              return Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_4__["notifyError"])("Error loading the status variables for ".concat(_this88.system.id, ", ").concat(mod_name));
             });
           }
           /**
@@ -33036,7 +33120,7 @@
         }, {
           key: "loadSystemModules",
           value: function loadSystemModules() {
-            var _this88 = this;
+            var _this89 = this;
 
             if (!this.system) {
               return;
@@ -33047,23 +33131,23 @@
             }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (resp) {
               return resp.data;
             })).subscribe(function (module_list) {
-              _this88.modules = module_list;
-              var mod_list = _this88.system.modules;
+              _this89.modules = module_list;
+              var mod_list = _this89.system.modules;
 
-              _this88.modules.sort(function (a, b) {
+              _this89.modules.sort(function (a, b) {
                 return mod_list.indexOf(a.id) - mod_list.indexOf(b.id);
               });
 
-              _this88.module_list = _this88.modules.map(function (mod) {
+              _this89.module_list = _this89.modules.map(function (mod) {
                 var name = mod.custom_name || mod.name || 'Blank';
-                var index = Object(src_app_common_api__WEBPACK_IMPORTED_MODULE_2__["calculateModuleIndex"])(_this88.modules, mod);
+                var index = Object(src_app_common_api__WEBPACK_IMPORTED_MODULE_2__["calculateModuleIndex"])(_this89.modules, mod);
                 return {
                   id: mod.id,
                   name: "".concat(name, "_").concat(index)
                 };
               });
 
-              _this88.addExistingModules();
+              _this89.addExistingModules();
             });
           }
           /**
@@ -33113,11 +33197,11 @@
         }, {
           key: "addExistingStatusVariables",
           value: function addExistingStatusVariables() {
-            var _this89 = this;
+            var _this90 = this;
 
             if (this.left_side.status) {
               if (!this.left_status_variables.find(function (status) {
-                return status.name === _this89.left_side.status;
+                return status.name === _this90.left_side.status;
               })) {
                 this.left_status_variables.unshift({
                   id: this.left_side.status,
@@ -33128,7 +33212,7 @@
 
             if (this.right_side.status) {
               if (!this.right_status_variables.find(function (status) {
-                return status.name === _this89.right_side.status;
+                return status.name === _this90.right_side.status;
               })) {
                 this.right_status_variables.unshift({
                   id: this.right_side.status,
@@ -36408,17 +36492,17 @@
         var _super29 = _createSuper(ZoneFormComponent);
 
         function ZoneFormComponent() {
-          var _this90;
+          var _this91;
 
           _classCallCheck(this, ZoneFormComponent);
 
-          _this90 = _super29.apply(this, arguments);
+          _this91 = _super29.apply(this, arguments);
           /** List of separator characters for tags */
 
-          _this90.separators = [_angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_3__["ENTER"], _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_3__["COMMA"], _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_3__["SPACE"]];
+          _this91.separators = [_angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_3__["ENTER"], _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_3__["COMMA"], _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_3__["SPACE"]];
           /** Query function for zones */
 
-          _this90.query_fn = function (_) {
+          _this91.query_fn = function (_) {
             return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryZones"])({
               q: _
             }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])(function (resp) {
@@ -36428,11 +36512,11 @@
           /** Function to exclude zones */
 
 
-          _this90.exclude = function (zone) {
-            return zone.id === _this90.form.controls.id.value;
+          _this91.exclude = function (zone) {
+            return zone.id === _this91.form.controls.id.value;
           };
 
-          return _this90;
+          return _this91;
         }
 
         _createClass(ZoneFormComponent, [{
@@ -36487,32 +36571,32 @@
         }, {
           key: "updateZone",
           value: function updateZone() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee19() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee22() {
               var parent_id, zone;
-              return regeneratorRuntime.wrap(function _callee19$(_context20) {
+              return regeneratorRuntime.wrap(function _callee22$(_context23) {
                 while (1) {
-                  switch (_context20.prev = _context20.next) {
+                  switch (_context23.prev = _context23.next) {
                     case 0:
                       parent_id = this.form.controls.parent_id ? this.form.controls.parent_id.value : '';
 
                       if (!parent_id) {
-                        _context20.next = 6;
+                        _context23.next = 6;
                         break;
                       }
 
-                      _context20.next = 4;
+                      _context23.next = 4;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["showZone"])(parent_id).toPromise();
 
                     case 4:
-                      zone = _context20.sent;
+                      zone = _context23.sent;
                       this.form.controls.parent_zone.setValue(zone);
 
                     case 6:
                     case "end":
-                      return _context20.stop();
+                      return _context23.stop();
                   }
                 }
-              }, _callee19, this);
+              }, _callee22, this);
             }));
           }
         }, {
@@ -36880,23 +36964,23 @@
         var _super30 = _createSuper(GlobalSearchComponent);
 
         function GlobalSearchComponent(_users, _dialog, _router) {
-          var _this91;
+          var _this92;
 
           _classCallCheck(this, GlobalSearchComponent);
 
-          _this91 = _super30.call(this);
-          _this91._users = _users;
-          _this91._dialog = _dialog;
-          _this91._router = _router;
+          _this92 = _super30.call(this);
+          _this92._users = _users;
+          _this92._dialog = _dialog;
+          _this92._router = _router;
           /** Search query string */
 
-          _this91.searchChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+          _this92.searchChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
           /** Minimum number of characters needed to start a server query */
 
-          _this91.min_length = 2;
+          _this92.min_length = 2;
           /** Mapping of item types to routes */
 
-          _this91.route_map = {
+          _this92.route_map = {
             system: 'Systems',
             device: 'Modules',
             user: 'Users',
@@ -36905,11 +36989,11 @@
           };
           /** Current page offset to get the next list of items */
 
-          _this91.offset = 0;
+          _this92.offset = 0;
           /** Subject holding the value of the search */
 
-          _this91.search$ = new rxjs__WEBPACK_IMPORTED_MODULE_5__["Subject"]();
-          return _this91;
+          _this92.search$ = new rxjs__WEBPACK_IMPORTED_MODULE_5__["Subject"]();
+          return _this92;
         }
         /** Whether dark mode is enabled */
 
@@ -36917,41 +37001,41 @@
         _createClass(GlobalSearchComponent, [{
           key: "ngOnInit",
           value: function ngOnInit() {
-            var _this92 = this;
+            var _this93 = this;
 
             // Listen for input changes
             this.search_results$ = this.search$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["debounceTime"])(400), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["distinctUntilChanged"])(), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["switchMap"])(function (query_string) {
-              _this92.loading = true;
-              _this92.offset = 20;
-              return !_this92.min_length || query_string.length >= _this92.min_length ? _this92.queryEndpoints(query_string) : Promise.resolve([]);
+              _this93.loading = true;
+              _this93.offset = 20;
+              return !_this93.min_length || query_string.length >= _this93.min_length ? _this93.queryEndpoints(query_string) : Promise.resolve([]);
             }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["catchError"])(function () {
               return Object(rxjs__WEBPACK_IMPORTED_MODULE_5__["of"])([]);
             }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["map"])(function (list) {
-              _this92.loading = false;
+              _this93.loading = false;
               return [].concat.apply([], list);
             })); // Process API results
 
             this.subscription('search_results', this.search_results$.subscribe(function (list) {
-              _this92.results = list;
+              _this93.results = list;
 
-              _this92.results.forEach(function (item) {
-                return item.type = _this92.itemType(item);
+              _this93.results.forEach(function (item) {
+                return item.type = _this93.itemType(item);
               });
             }));
             this.subscription('navigate_end', this._router.events.subscribe(function (event) {
               if (event instanceof _angular_router__WEBPACK_IMPORTED_MODULE_1__["NavigationEnd"]) {
-                _this92.afterNavigate();
+                _this93.afterNavigate();
               }
             }));
           }
         }, {
           key: "ngOnChanges",
           value: function ngOnChanges(change) {
-            var _this93 = this;
+            var _this94 = this;
 
             if (change.search) {
               this.timeout('search', function () {
-                return _this93.search$.next(_this93.search);
+                return _this94.search$.next(_this94.search);
               }, 100);
             }
           }
@@ -36962,7 +37046,7 @@
         }, {
           key: "loadMoreItems",
           value: function loadMoreItems() {
-            var _this94 = this;
+            var _this95 = this;
 
             this.loading = true;
             this.queryEndpoints(this.search, this.offset).then(function (results_list) {
@@ -36972,7 +37056,7 @@
               try {
                 for (_iterator22.s(); !(_step22 = _iterator22.n()).done;) {
                   var list = _step22.value;
-                  _this94.results = Object(src_app_common_general__WEBPACK_IMPORTED_MODULE_7__["unique"])(_this94.results.concat(list), 'id');
+                  _this95.results = Object(src_app_common_general__WEBPACK_IMPORTED_MODULE_7__["unique"])(_this95.results.concat(list), 'id');
                 }
               } catch (err) {
                 _iterator22.e(err);
@@ -36980,15 +37064,15 @@
                 _iterator22.f();
               }
 
-              _this94.results.forEach(function (item) {
-                return item.type = _this94.itemType(item);
+              _this95.results.forEach(function (item) {
+                return item.type = _this95.itemType(item);
               });
 
-              _this94.offset += 20;
-              _this94.loading = false;
+              _this95.offset += 20;
+              _this95.loading = false;
 
-              _this94.timeout('load_more', function () {
-                return _this94.atBottom();
+              _this95.timeout('load_more', function () {
+                return _this95.atBottom();
               }, 2000);
             });
           }
@@ -37073,11 +37157,11 @@
         }, {
           key: "atBottom",
           value: function atBottom() {
-            var _this95 = this;
+            var _this96 = this;
 
             if (!this.list_el) {
               return this.timeout('bottom', function () {
-                return _this95.atBottom();
+                return _this96.atBottom();
               });
             }
 
@@ -37296,77 +37380,77 @@
         _createClass(AuthorisedAdminGuard, [{
           key: "canActivate",
           value: function canActivate(next, state) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee20() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee23() {
               var user, can_activate;
-              return regeneratorRuntime.wrap(function _callee20$(_context21) {
+              return regeneratorRuntime.wrap(function _callee23$(_context24) {
                 while (1) {
-                  switch (_context21.prev = _context21.next) {
+                  switch (_context24.prev = _context24.next) {
                     case 0:
-                      _context21.next = 2;
+                      _context24.next = 2;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["onlineState"])().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return _;
                       })).toPromise();
 
                     case 2:
-                      _context21.next = 4;
+                      _context24.next = 4;
                       return this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return !!_;
                       })).toPromise();
 
                     case 4:
-                      user = _context21.sent;
+                      user = _context24.sent;
                       can_activate = user && user.sys_admin;
 
                       if (!can_activate) {
                         this._router.navigate(['/unauthorised']);
                       }
 
-                      return _context21.abrupt("return", can_activate);
+                      return _context24.abrupt("return", can_activate);
 
                     case 8:
                     case "end":
-                      return _context21.stop();
+                      return _context24.stop();
                   }
                 }
-              }, _callee20, this);
+              }, _callee23, this);
             }));
           }
         }, {
           key: "canLoad",
           value: function canLoad(route, segments) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee21() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee24() {
               var user, can_activate;
-              return regeneratorRuntime.wrap(function _callee21$(_context22) {
+              return regeneratorRuntime.wrap(function _callee24$(_context25) {
                 while (1) {
-                  switch (_context22.prev = _context22.next) {
+                  switch (_context25.prev = _context25.next) {
                     case 0:
-                      _context22.next = 2;
+                      _context25.next = 2;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["onlineState"])().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return _;
                       })).toPromise();
 
                     case 2:
-                      _context22.next = 4;
+                      _context25.next = 4;
                       return this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return !!_;
                       })).toPromise();
 
                     case 4:
-                      user = _context22.sent;
+                      user = _context25.sent;
                       can_activate = user && user.sys_admin;
 
                       if (!can_activate) {
                         this._router.navigate(['/unauthorised']);
                       }
 
-                      return _context22.abrupt("return", can_activate);
+                      return _context25.abrupt("return", can_activate);
 
                     case 8:
                     case "end":
-                      return _context22.stop();
+                      return _context25.stop();
                   }
                 }
-              }, _callee21, this);
+              }, _callee24, this);
             }));
           }
         }]);
@@ -37470,77 +37554,77 @@
         _createClass(AuthorisedUserGuard, [{
           key: "canActivate",
           value: function canActivate(next, state) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee22() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee25() {
               var user, can_activate;
-              return regeneratorRuntime.wrap(function _callee22$(_context23) {
+              return regeneratorRuntime.wrap(function _callee25$(_context26) {
                 while (1) {
-                  switch (_context23.prev = _context23.next) {
+                  switch (_context26.prev = _context26.next) {
                     case 0:
-                      _context23.next = 2;
+                      _context26.next = 2;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["onlineState"])().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return _;
                       })).toPromise();
 
                     case 2:
-                      _context23.next = 4;
+                      _context26.next = 4;
                       return this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return !!_;
                       })).toPromise();
 
                     case 4:
-                      user = _context23.sent;
+                      user = _context26.sent;
                       can_activate = user && (user.sys_admin || user.support);
 
                       if (!can_activate) {
                         this._router.navigate(['/unauthorised']);
                       }
 
-                      return _context23.abrupt("return", can_activate);
+                      return _context26.abrupt("return", can_activate);
 
                     case 8:
                     case "end":
-                      return _context23.stop();
+                      return _context26.stop();
                   }
                 }
-              }, _callee22, this);
+              }, _callee25, this);
             }));
           }
         }, {
           key: "canLoad",
           value: function canLoad(route, segments) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee23() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee26() {
               var user, can_activate;
-              return regeneratorRuntime.wrap(function _callee23$(_context24) {
+              return regeneratorRuntime.wrap(function _callee26$(_context27) {
                 while (1) {
-                  switch (_context24.prev = _context24.next) {
+                  switch (_context27.prev = _context27.next) {
                     case 0:
-                      _context24.next = 2;
+                      _context27.next = 2;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["onlineState"])().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return _;
                       })).toPromise();
 
                     case 2:
-                      _context24.next = 4;
+                      _context27.next = 4;
                       return this._users.user.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["first"])(function (_) {
                         return !!_;
                       })).toPromise();
 
                     case 4:
-                      user = _context24.sent;
+                      user = _context27.sent;
                       can_activate = user && (user.sys_admin || user.support);
 
                       if (!can_activate) {
                         this._router.navigate(['/unauthorised']);
                       }
 
-                      return _context24.abrupt("return", can_activate);
+                      return _context27.abrupt("return", can_activate);
 
                     case 8:
                     case "end":
-                      return _context24.stop();
+                      return _context27.stop();
                   }
                 }
-              }, _callee23, this);
+              }, _callee26, this);
             }));
           }
         }]);
@@ -38639,77 +38723,77 @@
         var _super32 = _createSuper(ItemDisplayComponent);
 
         function ItemDisplayComponent(_service, _hotkey, _users, _router) {
-          var _this96;
+          var _this97;
 
           _classCallCheck(this, ItemDisplayComponent);
 
-          _this96 = _super32.call(this);
-          _this96._service = _service;
-          _this96._hotkey = _hotkey;
-          _this96._users = _users;
-          _this96._router = _router;
+          _this97 = _super32.call(this);
+          _this97._service = _service;
+          _this97._hotkey = _hotkey;
+          _this97._users = _users;
+          _this97._router = _router;
           /** Whether item is allowed to be edited and deleted */
 
-          _this96.has_change = true;
+          _this97.has_change = true;
           /** Tabs available to the item type */
 
-          _this96.tabs = [];
-          _this96.loading = _this96._service.loading;
+          _this97.tabs = [];
+          _this97.loading = _this97._service.loading;
           /** Open modal to edit the active item */
 
-          _this96.edit = function () {
-            return _this96._service.edit();
+          _this97.edit = function () {
+            return _this97._service.edit();
           };
           /** Delete the active item */
 
 
-          _this96["delete"] = function () {
-            return _this96._service["delete"]();
+          _this97["delete"] = function () {
+            return _this97._service["delete"]();
           };
           /** Duplicate the active item */
 
 
-          _this96.duplicateItem = function () {
-            return _this96._service.duplicate();
+          _this97.duplicateItem = function () {
+            return _this97._service.duplicate();
           };
           /** Create a new item using the current as a template */
 
 
-          _this96.newFromItem = function () {
-            return _this96._service.create(true);
+          _this97.newFromItem = function () {
+            return _this97._service.create(true);
           };
 
-          return _this96;
+          return _this97;
         }
 
         _createClass(ItemDisplayComponent, [{
           key: "ngOnInit",
           value: function ngOnInit() {
-            var _this97 = this;
+            var _this98 = this;
 
             this.subscription('right', this._hotkey.listen(['ArrowRight'], function () {
-              return _this97.changeTab(1);
+              return _this98.changeTab(1);
             }));
             this.subscription('left', this._hotkey.listen(['ArrowLeft'], function () {
-              return _this97.changeTab(-1);
+              return _this98.changeTab(-1);
             }));
           }
         }, {
           key: "changeTab",
           value: function changeTab(direction) {
-            var _this98 = this;
+            var _this99 = this;
 
             if (!this.item) {
               return;
             }
 
             this.timeout('change_tab', function () {
-              var index = _this98.tabs.findIndex(function (tab) {
-                return _this98._router.url.indexOf(tab.id) >= 0;
+              var index = _this99.tabs.findIndex(function (tab) {
+                return _this99._router.url.indexOf(tab.id) >= 0;
               });
 
-              if (index >= 0 && _this98.tabs[index + direction]) {
-                _this98._router.navigate(["/".concat(_this98.route), _this98.item.id, _this98.tabs[index + direction].id]);
+              if (index >= 0 && _this99.tabs[index + direction]) {
+                _this99._router.navigate(["/".concat(_this99.route), _this99.item.id, _this99.tabs[index + direction].id]);
               }
             }, 100);
           }
@@ -39415,22 +39499,22 @@
         var _super33 = _createSuper(SearchbarComponent);
 
         function SearchbarComponent(_users) {
-          var _this99;
+          var _this100;
 
           _classCallCheck(this, SearchbarComponent);
 
-          _this99 = _super33.call(this);
-          _this99._users = _users;
-          _this99.dictation = true;
-          _this99.clearable = true;
-          _this99.placeholder = 'Search...';
-          _this99.filterChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
-          _this99.focus = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
-          _this99.blur = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
-          _this99.model = {};
+          _this100 = _super33.call(this);
+          _this100._users = _users;
+          _this100.dictation = true;
+          _this100.clearable = true;
+          _this100.placeholder = 'Search...';
+          _this100.filterChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+          _this100.focus = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+          _this100.blur = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+          _this100.model = {};
           var win = window;
-          _this99.model.speech = !!(win.SpeechRecognition || win.webkitSpeechRecognition);
-          return _this99;
+          _this100.model.speech = !!(win.SpeechRecognition || win.webkitSpeechRecognition);
+          return _this100;
         }
         /** Whether dark mode is enabled */
 
@@ -39442,7 +39526,7 @@
            * Activate dictation search
            */
           value: function startDictation() {
-            var _this100 = this;
+            var _this101 = this;
 
             if (!this.input) {
               return;
@@ -39468,34 +39552,34 @@
 
               this.model.recognition.onresult = function (e) {
                 // Update search field with dictation result
-                _this100.input.nativeElement.value = e.results[0][0].transcript;
-                _this100.filter = e.results[0][0].transcript;
+                _this101.input.nativeElement.value = e.results[0][0].transcript;
+                _this101.filter = e.results[0][0].transcript;
 
-                _this100.model.recognition.stop();
+                _this101.model.recognition.stop();
 
-                _this100.post();
+                _this101.post();
 
-                _this100.model.dictate = false;
+                _this101.model.dictate = false;
               };
 
               this.model.recognition.onerror = function (e) {
-                _this100.model.recognition.stop();
+                _this101.model.recognition.stop();
 
-                _this100.model.dictate = false;
+                _this101.model.dictate = false;
               };
             }
           }
         }, {
           key: "focusInput",
           value: function focusInput() {
-            var _this101 = this;
+            var _this102 = this;
 
             this.model.focus = true;
             this.timeout('focus', function () {
-              if (_this101.input && _this101.input.nativeElement) {
-                _this101.input.nativeElement.focus();
+              if (_this102.input && _this102.input.nativeElement) {
+                _this102.input.nativeElement.focus();
 
-                _this101.focus.emit();
+                _this102.focus.emit();
               }
             }, 50);
           }
@@ -39508,11 +39592,11 @@
         }, {
           key: "post",
           value: function post() {
-            var _this102 = this;
+            var _this103 = this;
 
             this.checkLimitations();
             this.timeout('post', function () {
-              _this102.filterChange.emit(_this102.filter);
+              _this103.filterChange.emit(_this103.filter);
             });
           }
         }, {
@@ -39918,25 +40002,25 @@
         var _super34 = _createSuper(SidebarMenuComponent);
 
         function SidebarMenuComponent(_settings, _users, _hotkey, _router) {
-          var _this103;
+          var _this104;
 
           _classCallCheck(this, SidebarMenuComponent);
 
-          _this103 = _super34.call(this);
-          _this103._settings = _settings;
-          _this103._users = _users;
-          _this103._hotkey = _hotkey;
-          _this103._router = _router;
+          _this104 = _super34.call(this);
+          _this104._settings = _settings;
+          _this104._users = _users;
+          _this104._hotkey = _hotkey;
+          _this104._router = _router;
           /** Emitter for changes to the sidebar show state */
 
-          _this103.showChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
-          return _this103;
+          _this104.showChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+          return _this104;
         }
 
         _createClass(SidebarMenuComponent, [{
           key: "ngOnInit",
           value: function ngOnInit() {
-            var _this104 = this;
+            var _this105 = this;
 
             this.menu_items = this._settings.get('app.general.menu');
 
@@ -39960,10 +40044,10 @@
               return !item.needs_role || !!user[item.needs_role];
             });
             this.subscription('up', this._hotkey.listen(['Control', 'Shift', 'ArrowUp'], function () {
-              return _this104.changeSelected(-1);
+              return _this105.changeSelected(-1);
             }));
             this.subscription('down', this._hotkey.listen(['Control', 'Shift', 'ArrowDown'], function () {
-              return _this104.changeSelected(1);
+              return _this105.changeSelected(1);
             }));
           }
         }, {
@@ -39980,12 +40064,12 @@
         }, {
           key: "close",
           value: function close() {
-            var _this105 = this;
+            var _this106 = this;
 
             this.timeout('close', function () {
-              _this105.show = false;
+              _this106.show = false;
 
-              _this105.showChange.emit(_this105.show);
+              _this106.showChange.emit(_this106.show);
             }, 100);
           }
           /**
@@ -39995,20 +40079,20 @@
         }, {
           key: "cancelClose",
           value: function cancelClose() {
-            var _this106 = this;
+            var _this107 = this;
 
             this.timeout('cancel_close', function () {
-              return _this106.clearTimeout('close');
+              return _this107.clearTimeout('close');
             }, 10);
           }
         }, {
           key: "changeSelected",
           value: function changeSelected() {
-            var _this107 = this;
+            var _this108 = this;
 
             var offset = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
             var index = this.menu_items.findIndex(function (item) {
-              return _this107._router.url.indexOf(item.route) >= 0;
+              return _this108._router.url.indexOf(item.route) >= 0;
             });
             var new_index = index + offset;
 
@@ -40447,39 +40531,39 @@
         var _super35 = _createSuper(SidebarComponent);
 
         function SidebarComponent(_users, _router, _hotkey, _settings, _service) {
-          var _this108;
+          var _this109;
 
           _classCallCheck(this, SidebarComponent);
 
-          _this108 = _super35.call(this);
-          _this108._users = _users;
-          _this108._router = _router;
-          _this108._hotkey = _hotkey;
-          _this108._settings = _settings;
-          _this108._service = _service;
+          _this109 = _super35.call(this);
+          _this109._users = _users;
+          _this109._router = _router;
+          _this109._hotkey = _hotkey;
+          _this109._settings = _settings;
+          _this109._service = _service;
           /** Module name to display at the top of the sidebar */
 
-          _this108.heading = '';
+          _this109.heading = '';
           /** Additional query params to add to item load requests */
 
-          _this108.query_params = {};
+          _this109.query_params = {};
           /** Whether sidebar is closed */
 
-          _this108.close = false;
+          _this109.close = false;
           /** Search string */
 
-          _this108.search = '';
+          _this109.search = '';
           /** Emitter for changes to the search string */
 
-          _this108.searchChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+          _this109.searchChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
           /** List of items for the active route */
 
-          _this108.items = _this108._service.list;
+          _this109.items = _this109._service.list;
           /** Whether list of items for the active route are loading */
 
-          _this108.loading = _this108._service.loading_list;
-          _this108.show_list = _this108._service.show_options;
-          return _this108;
+          _this109.loading = _this109._service.loading_list;
+          _this109.show_list = _this109._service.show_options;
+          return _this109;
         }
         /** Whether dark mode is enabled */
 
@@ -40487,13 +40571,13 @@
         _createClass(SidebarComponent, [{
           key: "ngOnInit",
           value: function ngOnInit() {
-            var _this109 = this;
+            var _this110 = this;
 
             this.subscription('up', this._hotkey.listen(['Alt', 'ArrowUp'], function () {
-              return _this109.changeSelected(-1);
+              return _this110.changeSelected(-1);
             }));
             this.subscription('down', this._hotkey.listen(['Alt', 'ArrowDown'], function () {
-              return _this109.changeSelected(1);
+              return _this110.changeSelected(1);
             }));
 
             var url = this._router.url.split('/');
@@ -40503,7 +40587,7 @@
               if (event instanceof _angular_router__WEBPACK_IMPORTED_MODULE_2__["NavigationEnd"]) {
                 var _url = event.url.split('/');
 
-                _this109.subroute = _url[3];
+                _this110.subroute = _url[3];
               }
             }));
             this.atBottom();
@@ -40532,7 +40616,7 @@
            * Check if user has scrolled to the bottom of the sidebar and emit an event to get next page of items
            */
           value: function atBottom() {
-            var _this110 = this;
+            var _this111 = this;
 
             if (this.loading || !this.is_stale) {
               return;
@@ -40540,7 +40624,7 @@
 
             if (!this.viewport) {
               return this.timeout('atBottom', function () {
-                return _this110.atBottom();
+                return _this111.atBottom();
               });
             }
 
@@ -40575,7 +40659,7 @@
         }, {
           key: "changeSelected",
           value: function changeSelected(offset) {
-            var _this111 = this;
+            var _this112 = this;
 
             var list = this.item_list.toArray();
 
@@ -40583,7 +40667,7 @@
 
             if (list && list.length > 0) {
               var index = item_list.findIndex(function (item) {
-                return _this111._router.url.indexOf("".concat(item.id)) >= 0;
+                return _this112._router.url.indexOf("".concat(item.id)) >= 0;
               });
               index += offset;
 
@@ -41003,7 +41087,7 @@
         _createClass(TerminalComponent, [{
           key: "ngOnInit",
           value: function ngOnInit() {
-            var _this112 = this;
+            var _this113 = this;
 
             if (this.terminal) {
               this.ngOnDestroy();
@@ -41021,15 +41105,15 @@
             });
             this.terminal.open(this.terminal_element.nativeElement);
             this.timeout('init', function () {
-              _this112.resizeTerminal();
+              _this113.resizeTerminal();
 
-              _this112.updateTerminalContents(_this112.content || '');
+              _this113.updateTerminalContents(_this113.content || '');
             });
           }
         }, {
           key: "ngOnChanges",
           value: function ngOnChanges(changes) {
-            var _this113 = this;
+            var _this114 = this;
 
             if (changes.content) {
               this.updateTerminalContents(this.content || '');
@@ -41037,7 +41121,7 @@
 
             if (changes.resize) {
               this.timeout('resize', function () {
-                return _this113.resizeTerminal();
+                return _this114.resizeTerminal();
               });
             }
           }
@@ -41073,7 +41157,7 @@
         }, {
           key: "updateTerminalContents",
           value: function updateTerminalContents(new_content) {
-            var _this114 = this;
+            var _this115 = this;
 
             if (!this.terminal) {
               return;
@@ -41097,7 +41181,7 @@
             }
 
             this.timeout('scroll', function () {
-              return _this114.terminal.scrollToBottom();
+              return _this115.terminal.scrollToBottom();
             }, 50);
           }
         }]);
@@ -41733,24 +41817,24 @@
         var _super37 = _createSuper(TopbarHeaderComponent);
 
         function TopbarHeaderComponent(_settings, _users, _dialog) {
-          var _this115;
+          var _this116;
 
           _classCallCheck(this, TopbarHeaderComponent);
 
-          _this115 = _super37.call(this);
-          _this115._settings = _settings;
-          _this115._users = _users;
-          _this115._dialog = _dialog;
+          _this116 = _super37.call(this);
+          _this116._settings = _settings;
+          _this116._users = _users;
+          _this116._dialog = _dialog;
           /** Emitter for changes to the sidebar menu show state */
 
-          _this115.show_menu_change = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+          _this116.show_menu_change = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
           /** Emitter for changes to the search input */
 
-          _this115.filterChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+          _this116.filterChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
           /** Whether the user wishes to bulk add items */
 
-          _this115.bulk = false;
-          return _this115;
+          _this116.bulk = false;
+          return _this116;
         }
         /** Whether dark mode is enabled */
 
@@ -41810,7 +41894,7 @@
         }, {
           key: "newItem",
           value: function newItem(item, save, name, constr) {
-            var _this116 = this;
+            var _this117 = this;
 
             if (this.bulk) {
               this._settings.post('disable_uploads', true);
@@ -41828,7 +41912,7 @@
               });
 
               ref.afterClosed().subscribe(function () {
-                return _this116._settings.post('disable_uploads', false);
+                return _this117._settings.post('disable_uploads', false);
               });
             } else {
               this._dialog.open(src_app_overlays_item_modal_item_modal_component__WEBPACK_IMPORTED_MODULE_3__["ItemCreateUpdateModalComponent"], {
@@ -41849,12 +41933,12 @@
         }, {
           key: "toggleMenu",
           value: function toggleMenu() {
-            var _this117 = this;
+            var _this118 = this;
 
             this.timeout('toggle_menu', function () {
-              _this117.show_menu = !_this117.show_menu;
+              _this118.show_menu = !_this118.show_menu;
 
-              _this117.show_menu_change.emit(_this117.show_menu);
+              _this118.show_menu_change.emit(_this118.show_menu);
             }, 100);
           }
           /**
@@ -43531,36 +43615,36 @@
         var _super38 = _createSuper(UploadListComponent);
 
         function UploadListComponent(_upload_manager, _settings) {
-          var _this118;
+          var _this119;
 
           _classCallCheck(this, UploadListComponent);
 
-          _this118 = _super38.call(this);
-          _this118._upload_manager = _upload_manager;
-          _this118._settings = _settings;
+          _this119 = _super38.call(this);
+          _this119._upload_manager = _upload_manager;
+          _this119._settings = _settings;
           /** Whether upload list should be displayed */
 
-          _this118.show = false;
+          _this119.show = false;
           /** Whether drop details overlay should be shown */
 
-          _this118.show_overlay = false;
+          _this119.show_overlay = false;
           /** List of uploads */
 
-          _this118.uploads = [];
-          return _this118;
+          _this119.uploads = [];
+          return _this119;
         }
 
         _createClass(UploadListComponent, [{
           key: "ngOnInit",
           value: function ngOnInit() {
-            var _this119 = this;
+            var _this120 = this;
 
             if (localStorage) {
               this.uploads = JSON.parse(localStorage.getItem('BACKOFFICE.uploads') || '[]');
             }
 
             this.subscription('show', this._settings.listen('show_upload_manager').subscribe(function (show) {
-              return _this119.show = show;
+              return _this120.show = show;
             }));
           }
         }, {
@@ -43580,10 +43664,10 @@
         }, {
           key: "hideOverlay",
           value: function hideOverlay() {
-            var _this120 = this;
+            var _this121 = this;
 
             this.timeout('hide_overlay', function () {
-              return _this120.show_overlay = false;
+              return _this121.show_overlay = false;
             });
           }
           /** Upload the image to the cloud */
@@ -43591,10 +43675,10 @@
         }, {
           key: "handleFileEvent",
           value: function handleFileEvent(event) {
-            var _this121 = this;
+            var _this122 = this;
 
             this.timeout('file_event', function () {
-              _this121.show_overlay = false;
+              _this122.show_overlay = false;
               var element = event.target;
               /* istanbul ignore else */
 
@@ -43603,10 +43687,10 @@
                 /* istanbul ignore else */
 
                 if (files.length) {
-                  _this121.show = true;
+                  _this122.show = true;
 
                   for (var i = 0; i < files.length; i++) {
-                    _this121.uploadFile(files[i]);
+                    _this122.uploadFile(files[i]);
                   }
                 }
               }
@@ -43631,7 +43715,7 @@
         }, {
           key: "retry",
           value: function retry(details) {
-            var _this122 = this;
+            var _this123 = this;
 
             if (details.error) {
               details.error = null;
@@ -43640,7 +43724,7 @@
                 if (!details.upload.uploading && details.upload.error) {
                   details.error = details.upload.error;
 
-                  _this122.clearInterval("upload-".concat(details.name));
+                  _this123.clearInterval("upload-".concat(details.name));
                 }
 
                 details.progress = details.upload.progress;
@@ -43655,14 +43739,14 @@
         }, {
           key: "uploadFile",
           value: function uploadFile(file) {
-            var _this123 = this;
+            var _this124 = this;
 
             var fileReader = new FileReader();
             fileReader.addEventListener('loadend', function (e) {
               var arrayBuffer = e.target.result;
               var blob = blob_util__WEBPACK_IMPORTED_MODULE_4__["arrayBufferToBlob"](arrayBuffer, file.type);
 
-              var upload_list = _this123._upload_manager.upload([blob], {
+              var upload_list = _this124._upload_manager.upload([blob], {
                 file_name: file.name
               });
 
@@ -43671,7 +43755,7 @@
                 name: file.name,
                 progress: 0,
                 link: '',
-                formatted_size: _this123.humanReadableByteCount(file.size),
+                formatted_size: _this124.humanReadableByteCount(file.size),
                 size: file.size,
                 upload: upload
               };
@@ -43680,29 +43764,29 @@
                   upload_details.link = upload.access_url;
                   upload_details.progress = 100;
 
-                  _this123.updateUploadHistory();
+                  _this124.updateUploadHistory();
                 }
 
-                _this123.updateUploadHistory();
+                _this124.updateUploadHistory();
 
-                _this123.clearInterval("upload-".concat(file.name));
+                _this124.clearInterval("upload-".concat(file.name));
               }, function (err) {
                 upload_details.error = err.message || err;
 
-                _this123.clearInterval("upload-".concat(file.name));
+                _this124.clearInterval("upload-".concat(file.name));
               });
 
-              _this123.interval("upload-".concat(file.name), function () {
+              _this124.interval("upload-".concat(file.name), function () {
                 if (!upload.uploading && upload.error) {
                   upload_details.error = upload.error;
 
-                  _this123.clearInterval("upload-".concat(file.name));
+                  _this124.clearInterval("upload-".concat(file.name));
                 }
 
                 upload_details.progress = upload.progress;
               });
 
-              _this123.uploads.push(upload_details);
+              _this124.uploads.push(upload_details);
             });
             fileReader.readAsArrayBuffer(file);
           }
@@ -43893,46 +43977,46 @@
         var _super39 = _createSuper(BackofficeUsersService);
 
         function BackofficeUsersService(_settings, http_unauth) {
-          var _this124;
+          var _this125;
 
           _classCallCheck(this, BackofficeUsersService);
 
-          _this124 = _super39.call(this);
-          _this124._settings = _settings;
-          _this124.http_unauth = http_unauth;
+          _this125 = _super39.call(this);
+          _this125._settings = _settings;
+          _this125.http_unauth = http_unauth;
           /** Name for a single user */
 
-          _this124.singular = 'user';
+          _this125.singular = 'user';
           /** Behavior subject with the currently available list of users */
 
-          _this124.listing = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"]([]);
-          _this124._user = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"](null);
+          _this125.listing = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"]([]);
+          _this125._user = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"](null);
           /** Active User */
 
-          _this124.user = _this124._user.asObservable();
+          _this125.user = _this125._user.asObservable();
           /** Active User */
 
-          _this124.current = function () {
-            return _this124._user.getValue();
+          _this125.current = function () {
+            return _this125._user.getValue();
           };
           /** State of loading the user */
 
 
-          _this124.state = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"]('');
-          _this124.can_create = false;
-          _this124.can_edit = true;
+          _this125.state = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"]('');
+          _this125.can_create = false;
+          _this125.can_edit = true;
           /** Default method for filtering the available list */
 
-          _this124._filter_fn = function (_) {
+          _this125._filter_fn = function (_) {
             return true;
           };
 
           Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["onlineState"])().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["first"])(function (_) {
             return _;
           })).subscribe(function () {
-            return _this124.load();
+            return _this125.load();
           });
-          return _this124;
+          return _this125;
         }
         /** Whether dark mode is enabled */
 
@@ -43958,14 +44042,14 @@
         }, {
           key: "load",
           value: function load() {
-            var _this125 = this;
+            var _this126 = this;
 
             return new Promise(function (resolve) {
-              _this125.state.next('loading');
+              _this126.state.next('loading');
 
               Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["currentUser"])().subscribe(function (user) {
                 if (user) {
-                  _this125._user.next(user);
+                  _this126._user.next(user);
 
                   _sentry_browser__WEBPACK_IMPORTED_MODULE_9__["configureScope"](function (scope) {
                     return scope.setUser({
@@ -43973,22 +44057,22 @@
                     });
                   });
 
-                  _this125.state.next('success');
+                  _this126.state.next('success');
 
-                  _this125._initialised.next(true);
+                  _this126._initialised.next(true);
 
                   resolve();
-                  _this125.dark_mode = _this125.dark_mode;
+                  _this126.dark_mode = _this126.dark_mode;
                 } else {
-                  _this125.timeout('load', function () {
-                    return _this125.load().then(function (_) {
+                  _this126.timeout('load', function () {
+                    return _this126.load().then(function (_) {
                       return resolve();
                     });
                   }, 600);
                 }
               }, function () {
-                return _this125.timeout('load', function () {
-                  return _this125.load().then(function (_) {
+                return _this126.timeout('load', function () {
+                  return _this126.load().then(function (_) {
                     return resolve();
                   });
                 }, 600);
@@ -44027,17 +44111,17 @@
         }, {
           key: "login",
           value: function login() {
-            var _this126 = this;
+            var _this127 = this;
 
             var fields = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
             return new Promise(function (resolve, reject) {
-              _this126.state.next('loading');
+              _this127.state.next('loading');
 
               var query = Object(src_app_common_api__WEBPACK_IMPORTED_MODULE_6__["toQueryString"])(fields);
               var headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpHeaders"]();
               headers = headers.append('Content-Type', 'application/x-www-form-urlencoded');
 
-              _this126.http_unauth.post('/auth/signin', query, {
+              _this127.http_unauth.post('/auth/signin', query, {
                 headers: headers
               }).subscribe(function (res) {
                 if (sessionStorage) {
@@ -44050,7 +44134,7 @@
                 });
               }, function (err) {
                 if (err.status >= 400) {
-                  _this126.state.next('error');
+                  _this127.state.next('error');
                 } else {
                   if (sessionStorage) {
                     var clientId = ts_md5_dist_md5__WEBPACK_IMPORTED_MODULE_4__["Md5"].hashStr("".concat(location.origin, "/oauth-resp.html"));
@@ -44062,7 +44146,7 @@
 
                 reject();
               }, function () {
-                return _this126.load();
+                return _this127.load();
               });
             });
           }
@@ -44308,16 +44392,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "97d9c7f",
-        "hash": "97d9c7f",
+        "raw": "4c5e933",
+        "hash": "4c5e933",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "97d9c7f",
+        "suffix": "4c5e933",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1602498565990
+        "time": 1602553146326
       };
       /* tslint:enable */
 
