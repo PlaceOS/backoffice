@@ -1,5 +1,6 @@
 import { Component, OnInit, EventEmitter, Output, Input, Type } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { format } from 'date-fns';
 import {
     PlaceSystem,
     PlaceZone,
@@ -14,6 +15,7 @@ import {
     authority,
 } from '@placeos/ts-client';
 
+import { VERSION } from 'src/environments/version';
 import { BaseClass } from 'src/app/common/base.class';
 import { ApplicationLink, ApplicationIcon } from 'src/app/common/types';
 import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
@@ -54,6 +56,13 @@ export class TopbarHeaderComponent extends BaseClass implements OnInit {
 
     public get title() {
         return document.title.split(' | ')[0];
+    }
+
+    public get github_link() {
+        const title = `Issue on page ${this.title}`;
+        const description = `**Hash:** ${VERSION.hash}\n**Built:** ${format(new Date(VERSION.time), 'dd MMM yyyy, h:mm a')}`;
+        console.log('Github:', title, description);
+        return `https://github.com/PlaceOS/backoffice/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(description)}`;
     }
 
     public get is_fools_day(): boolean {
