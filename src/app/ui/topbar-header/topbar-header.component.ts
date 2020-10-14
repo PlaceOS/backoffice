@@ -24,6 +24,7 @@ import { BackofficeUsersService } from 'src/app/users/users.service';
 import { SettingsService } from 'src/app/common/settings.service';
 
 import * as dayjs from 'dayjs';
+import { issueDescription } from 'src/app/common/general';
 
 @Component({
     selector: 'topbar-header',
@@ -60,9 +61,13 @@ export class TopbarHeaderComponent extends BaseClass implements OnInit {
 
     public get github_link() {
         const title = `Issue on page ${this.title}`;
-        const description = `**Hash:** ${VERSION.hash}\n**Built:** ${format(new Date(VERSION.time), 'dd MMM yyyy, h:mm a')}`;
-        console.log('Github:', title, description);
-        return `https://github.com/PlaceOS/backoffice/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(description)}`;
+        const description = issueDescription(
+            VERSION.hash,
+            format(new Date(VERSION.time), 'dd MMM yyyy, h:mm a')
+        );
+        return `https://github.com/PlaceOS/backoffice/issues/new?title=${encodeURIComponent(
+            title
+        )}&body=${encodeURIComponent(description)}&labels=bug`;
     }
 
     public get is_fools_day(): boolean {
@@ -168,10 +173,14 @@ export class TopbarHeaderComponent extends BaseClass implements OnInit {
 
     /** Toggle the show state of the sidebar menu */
     public toggleMenu() {
-        this.timeout('toggle_menu', () => {
-            this.show_menu = !this.show_menu;
-            this.show_menu_change.emit(this.show_menu);
-        }, 100);
+        this.timeout(
+            'toggle_menu',
+            () => {
+                this.show_menu = !this.show_menu;
+                this.show_menu_change.emit(this.show_menu);
+            },
+            100
+        );
     }
 
     /**
