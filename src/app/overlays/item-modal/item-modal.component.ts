@@ -163,7 +163,7 @@ export class ItemCreateUpdateModalComponent extends BaseClass implements OnInit 
             this.loading = `${this.item.id ? 'Updating' : 'Creating'} ${this.name}...`;
             this._dialog_ref.disableClose = true;
             const item = this.item.id
-                ? cleanObject({ ...this.item.toJSON(), ...this.form.value }, [undefined, null, ''])
+                ? cleanObject({ ...this.item.toJSON(), ...this.form.value }, [undefined, null])
                 : { ...this.item.toJSON(), ...this.form.value };
             if (this._data.external_save) {
                 this.event.emit({ reason: 'action', metadata: item });
