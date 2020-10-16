@@ -163,7 +163,10 @@ export class ItemCreateUpdateModalComponent extends BaseClass implements OnInit 
             this.loading = `${this.item.id ? 'Updating' : 'Creating'} ${this.name}...`;
             this._dialog_ref.disableClose = true;
             const item = this.item.id
-                ? cleanObject({ ...this.item.toJSON(), ...this.form.value }, [undefined, null])
+                ? cleanObject(
+                      { ...this.item.toJSON(), ...this.form.value },
+                      this.item_type === 'user' ? [undefined, null, ''] : [undefined, null]
+                  )
                 : { ...this.item.toJSON(), ...this.form.value };
             if (this._data.external_save) {
                 this.event.emit({ reason: 'action', metadata: item });
@@ -191,7 +194,7 @@ export class ItemCreateUpdateModalComponent extends BaseClass implements OnInit 
                     notifyError(
                         `Error ${this.item.id ? 'editing' : 'adding new'} ${
                             this.name
-                        }. Error: ${JSON.stringify(await err.text() || err.message || err)}`
+                        }. Error: ${JSON.stringify((await err.text()) || err.message || err)}`
                     );
                 }
             );
