@@ -72,6 +72,11 @@ export class PlaceDebugService extends BaseClass {
                             (i) => i !== event && i.mod_id === event.mod_id && i.time === event.time && i.message === event.message
                         )
                 );
+                let size = event_list.reduce((c, i) => c + (i.message || '').length, 0);
+                while (event_list.length > 1000 || size > 32 * 1024 * 1024) {
+                    event_list.shift();
+                    size = event_list.reduce((c, i) => c + (i.message || '').length, 0);
+                }
                 this._events.next(event_list);
             }
         });
