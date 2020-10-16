@@ -13768,7 +13768,7 @@
             if (this.item && this.form.valid) {
               this.loading = "".concat(this.item.id ? 'Updating' : 'Creating', " ").concat(this.name, "...");
               this._dialog_ref.disableClose = true;
-              var item = this.item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["cleanObject"])(Object.assign(Object.assign({}, this.item.toJSON()), this.form.value), this.item_type === 'user' ? [undefined, null, ''] : [undefined, null]) : Object.assign(Object.assign({}, this.item.toJSON()), this.form.value);
+              var item = this.item.id ? Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["cleanObject"])(Object.assign(Object.assign({}, this.item.toJSON()), this.form.value), [undefined, null]) : Object.assign(Object.assign({}, this.item.toJSON()), this.form.value);
 
               if (this._data.external_save) {
                 this.event.emit({
@@ -44437,16 +44437,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "e4a9a08",
-        "hash": "e4a9a08",
+        "raw": "a52ba9c",
+        "hash": "a52ba9c",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "e4a9a08",
+        "suffix": "a52ba9c",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1602823153236
+        "time": 1602824159531
       };
       /* tslint:enable */
 
