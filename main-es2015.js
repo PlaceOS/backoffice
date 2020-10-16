@@ -916,6 +916,11 @@ class PlaceDebugService extends _base_class__WEBPACK_IMPORTED_MODULE_3__["BaseCl
                 let event_list = this.event_list;
                 event_list.push(event);
                 event_list = event_list.filter((event) => !event_list.find((i) => i !== event && i.mod_id === event.mod_id && i.time === event.time && i.message === event.message));
+                let size = event_list.reduce((c, i) => c + (i.message || '').length, 0);
+                while (event_list.length > 1000 || size > 32 * 1024 * 1024) {
+                    event_list.shift();
+                    size = event_list.reduce((c, i) => c + (i.message || '').length, 0);
+                }
                 this._events.next(event_list);
             }
         });
@@ -21753,16 +21758,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "1c31858",
-    "hash": "1c31858",
+    "raw": "84ed719",
+    "hash": "84ed719",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "1c31858",
+    "suffix": "84ed719",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1602717553874
+    "time": 1602822710280
 };
 /* tslint:enable */
 

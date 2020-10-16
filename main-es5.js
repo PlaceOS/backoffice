@@ -5290,6 +5290,16 @@
                   return i !== event && i.mod_id === event.mod_id && i.time === event.time && i.message === event.message;
                 });
               });
+              var size = event_list.reduce(function (c, i) {
+                return c + (i.message || '').length;
+              }, 0);
+
+              while (event_list.length > 1000 || size > 32 * 1024 * 1024) {
+                event_list.shift();
+                size = event_list.reduce(function (c, i) {
+                  return c + (i.message || '').length;
+                }, 0);
+              }
 
               _this4._events.next(event_list);
             }
@@ -44427,16 +44437,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "1c31858",
-        "hash": "1c31858",
+        "raw": "84ed719",
+        "hash": "84ed719",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "1c31858",
+        "suffix": "84ed719",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1602717553874
+        "time": 1602822710280
       };
       /* tslint:enable */
 
