@@ -1,0 +1,37 @@
+
+:host {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.field {
+    display: flex;
+    align-items: center;
+
+    > * + * {
+        margin-left: 1rem;
+    }
+}
+
+label {
+    font-size: .75rem;
+    font-weight: 500;
+}
+
+button {
+    height: 2.5rem;
+}
+
+mat-form-field {
+    height: 3.25rem;
+}
+
+.capitalize {
+    text-transform: capitalize;
+}

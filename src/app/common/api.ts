@@ -55,9 +55,11 @@ export function extensionsForItem(item: PlaceResource, type: string) {
                     matches += item[key] && item[key] === value ? 1 : 0;
                     break;
                 case 'true':
+                case 'truthy':
                     matches += !!item[key] ? 1 : 0;
                     break;
                 case 'false':
+                case 'falsy':
                     matches += !item[key] ? 1 : 0;
                     break;
                 default:

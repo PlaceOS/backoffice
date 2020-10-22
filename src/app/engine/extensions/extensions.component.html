@@ -1,0 +1,54 @@
+<h2>Backoffice extensions</h2>
+<div *ngIf="!loading; else load_state">
+    <div class="field type">
+        <label for="type">Domain: </label>
+        <mat-form-field appearance="outline">
+            <mat-select
+                name="type"
+                [(ngModel)]="domain"
+                (ngModelChange)="setDomain($event)"
+                placeholder="Select Domain..."
+            >
+                <mat-option *ngFor="let domain of domain_list" [value]="domain">
+                    {{ domain.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <button mat-button (click)="editExtension()">Add Extension</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <td>Type</td>
+                <td>Name</td>
+                <td>URL</td>
+                <td>Conditions</td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let extension of extension_list">
+                <td class="capitalize">{{ extension.type }}</td>
+                <td>{{ extension.name }}</td>
+                <td>{{ extension.url }}</td>
+                <td>{{ extension.conditions.length }}</td>
+                <td style="text-align: right;">
+                    <button mat-icon-button (click)="editExtension(extension)">
+                        <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+                    </button>
+                    <button mat-icon-button (click)="removeExtension(extension)">
+                        <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<ng-template #load_state>
+    <div class="info-block">
+        <div class="icon">
+            <mat-spinner [diameter]="32"></mat-spinner>
+        </div>
+        <div class="text">{{ loading }}</div>
+    </div>
+</ng-template>

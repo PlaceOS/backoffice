@@ -24,7 +24,8 @@ export class PlaceComponent extends BaseClass {
             { id: 'database', name: 'Database', icon: { class: 'backoffice-database' } },
             { id: 'clusters', name: 'Clusters', icon: { class: 'backoffice-server' } },
             { id: 'interfaces', name: 'Interfaces', icon: { class: 'backoffice-browser' } },
-            { id: 'brokers', name: 'MQTT Brokers', icon: { class: 'backoffice-server' } }
+            { id: 'brokers', name: 'MQTT Brokers', icon: { class: 'backoffice-server' } },
+            { id: 'extensions', name: 'Extensions', icon: { class: 'backoffice-gist' } }
         ].concat(this.extensions);
     }
 

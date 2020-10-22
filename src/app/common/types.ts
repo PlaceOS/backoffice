@@ -8,7 +8,7 @@ export interface AppComponentExtensions {
     [name: string]: AppComponentExtension
 }
 
-export type ExtensionConditions = 'equals' | 'true' | 'false' | 'includes' | 'none';
+export type ExtensionConditions = 'equals' | 'true' | 'truthy' | 'false' | 'falsy' | 'includes' | 'none';
 
 export interface AppComponentExtension {
     /** URL to embed in the application extension */

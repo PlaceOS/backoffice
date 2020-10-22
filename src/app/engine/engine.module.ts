@@ -1,7 +1,7 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { ROUTES } from './engine.routes';
@@ -15,6 +15,8 @@ import { PlaceClusterItemComponent } from './cluster-details/item/item.component
 import { PlaceClusterTaskListComponent } from './cluster-details/task-list/task-list.component';
 import { AdminInterfacesComponent } from './interfaces/interfaces.component';
 import { AdminBrokersComponent } from './brokers/brokers.component';
+import { PlaceExtensionsComponent } from './extensions/extensions.component';
+import { ExtensionModalComponent } from './extensions/extension-modal/extension-modal.component';
 
 
 @NgModule({
@@ -25,12 +27,15 @@ import { AdminBrokersComponent } from './brokers/brokers.component';
         PlaceClusterDetailsComponent,
         PlaceClusterItemComponent,
         PlaceClusterTaskListComponent,
+        PlaceExtensionsComponent,
         AdminInterfacesComponent,
-        AdminBrokersComponent
+        AdminBrokersComponent,
+        ExtensionModalComponent
     ],
     imports: [
         CommonModule,
         FormsModule,
+        ReactiveFormsModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule
     ]

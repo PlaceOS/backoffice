@@ -8,6 +8,7 @@ import { PlaceClusterDetailsComponent } from './cluster-details/cluster-details.
 import { AdminInterfacesComponent } from './interfaces/interfaces.component';
 import { AdminBrokersComponent } from './brokers/brokers.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
+import { PlaceExtensionsComponent } from './extensions/extensions.component';
 
 export const ROUTES: Routes = [
     {
@@ -20,6 +21,7 @@ export const ROUTES: Routes = [
             { path: 'clusters', component: PlaceClusterDetailsComponent },
             { path: 'interfaces', component: AdminInterfacesComponent },
             { path: 'brokers', component: AdminBrokersComponent },
+            { path: 'extensions', component: PlaceExtensionsComponent },
             { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' }
         ]
