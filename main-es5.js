@@ -4809,10 +4809,12 @@
                   break;
 
                 case 'true':
+                case 'truthy':
                   matches += !!item[_key] ? 1 : 0;
                   break;
 
                 case 'false':
+                case 'falsy':
                   matches += !item[_key] ? 1 : 0;
                   break;
 
@@ -44437,16 +44439,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "e9f28cd",
-        "hash": "e9f28cd",
+        "raw": "5e9dc7d",
+        "hash": "5e9dc7d",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "e9f28cd",
+        "suffix": "5e9dc7d",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1603323224944
+        "time": 1603335214370
       };
       /* tslint:enable */
 
