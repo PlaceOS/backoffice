@@ -60,7 +60,7 @@
     "@compodoc/compodoc": "^1.1.11",
     "@cypress/webpack-preprocessor": "^4.1.1",
     "@ngneat/spectator": "^5.13.3",
-    "@placeos/ts-client": "^3.3.16",
+    "@placeos/ts-client": "^3.3.17",
     "@schematics/angular": "^8.3.25",
     "@semantic-release/changelog": "^3.0.5",
     "@semantic-release/commit-analyzer": "^6.3.2",
