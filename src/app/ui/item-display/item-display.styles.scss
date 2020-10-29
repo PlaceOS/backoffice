@@ -29,7 +29,8 @@ header {
         font-size: 1.8em;
         height: 1.5em;
         white-space: nowrap;
-        font-family: $heading-font;
+        font-family: Roboto, $heading-font;
+        font-weight: 400;
         overflow: hidden;
         text-overflow: ellipsis;
         width: 100%;
