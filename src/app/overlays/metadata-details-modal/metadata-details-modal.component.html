@@ -5,7 +5,7 @@
     </button>
 </header>
 <mat-dialog-content>
-    <main [formGroup]="form">
+    <main *ngIf="form" [formGroup]="form">
         <div class="field" *ngIf="form.controls.name">
             <label
                 for="property-name"
@@ -38,11 +38,35 @@
                 ></textarea>
             </mat-form-field>
         </div>
+        <div class="field" *ngIf="form.controls.editors">
+            <label for="system-email" i18n="@@editorssLabel">Editors:</label>
+            <mat-form-field appearance="outline">
+                <mat-chip-list #chipList aria-label="Editor Groups">
+                    <mat-chip
+                        *ngFor="let editor of editors"
+                        [selectable]="true"
+                        [removable]="true"
+                        (removed)="removeEditor(editor)"
+                    >
+                        {{ editor }}
+                        <app-icon matChipRemove [icon]="{ class: 'backoffice-cross' }"></app-icon>
+                    </mat-chip>
+                    <input
+                        placeholder="Editors user groups..."
+                        i18n-placeholder="@@editorsPlaceholder"
+                        [matChipInputFor]="chipList"
+                        [matChipInputSeparatorKeyCodes]="separators"
+                        [matChipInputAddOnBlur]="true"
+                        (matChipInputTokenEnd)="addEditor($event)"
+                    />
+                </mat-chip-list>
+            </mat-form-field>
+        </div>
     </main>
 </mat-dialog-content>
 <mat-dialog-actions>
     <footer>
-        <button [disabled]="!form.controls.name.valid" mat-button (click)="updateDetails()">
+        <button [disabled]="!form?.controls.name.valid" mat-button (click)="updateDetails()">
             Update
         </button>
     </footer>

@@ -50,9 +50,12 @@ export class SystemMetadataComponent extends BaseClass {
     }
 
     public ngOnInit(): void {
-        this.subscription('item', this._service.item.subscribe((item) => {
-            this.loadMetadata();
-        }))
+        this.subscription(
+            'item',
+            this._service.item.subscribe((item) => {
+                this.loadMetadata();
+            })
+        );
     }
 
     public newMetadata() {
@@ -172,6 +175,7 @@ export class SystemMetadataComponent extends BaseClass {
                     ),
                 ]),
                 description: new FormControl(group.name),
+                editors: new FormControl(group.editors),
                 details: new FormControl(JSON.stringify(group.details || {}, undefined, 4), [
                     Validators.required,
                     validateJSONString,

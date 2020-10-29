@@ -172,6 +172,7 @@ export class ZoneMetadataComponent extends BaseClass {
                     ),
                 ]),
                 description: new FormControl(group.name),
+                editors: new FormControl(group.editors),
                 details: new FormControl(JSON.stringify(group.details || {}, undefined, 4), [
                     Validators.required,
                     validateJSONString,

@@ -6,6 +6,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 
 import { BaseClass } from 'src/app/common/base.class';
 import { map } from 'rxjs/operators';
+import { addChipItem, removeChipItem } from 'src/app/common/forms';
 
 @Component({
     selector: 'zone-form',
@@ -22,6 +23,9 @@ export class ZoneFormComponent extends BaseClass {
     /** Function to exclude zones */
     public readonly exclude = (zone: PlaceZone) => zone.id === this.form.controls.id.value;
 
+    public readonly addTag = (e) => addChipItem(this.form.controls.tags as any, e);
+    public readonly removeTag = (i) => removeChipItem(this.form.controls.tags as any, i);
+
     public get tag_list(): string[] {
         return this.form.controls.tags.value;
     }
@@ -29,41 +33,6 @@ export class ZoneFormComponent extends BaseClass {
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.form) {
             this.updateZone();
-        }
-    }
-
-    /**
-     * Add a tag to the list of tags for the item
-     * @param event Input event
-     */
-    public addTag(event: MatChipInputEvent): void {
-        if (!this.form || !this.form.controls.tags) return;
-        const input = event.input;
-        const value = event.value;
-        const tag_list = this.tag_list;
-        if ((value || '').trim()) {
-            tag_list.push(value);
-            this.form.controls.tags.setValue(tag_list);
-        }
-
-        // Reset the input value
-        if (input) {
-            input.value = '';
-        }
-    }
-
-    /**
-     * Remove tag from the list
-     * @param existing_tag Tag to remove
-     */
-    public removeTag(existing_tag: string): void {
-        if (!this.form || !this.form.controls.tags) return;
-        const tag_list = this.tag_list;
-        const index = tag_list.indexOf(existing_tag);
-
-        if (index >= 0) {
-            tag_list.splice(index, 1);
-            this.form.controls.tags.setValue(tag_list);
         }
     }
 
