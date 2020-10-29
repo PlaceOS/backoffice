@@ -3602,6 +3602,7 @@ class ZoneMetadataComponent extends src_app_common_base_class__WEBPACK_IMPORTED_
                     this.validateName(this.metadata.filter((i) => i.name !== group.name).map((i) => i.name)),
                 ]),
                 description: new _angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormControl"](group.name),
+                editors: new _angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormControl"](group.editors),
                 details: new _angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormControl"](JSON.stringify(group.details || {}, undefined, 4), [
                     _angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].required,
                     src_app_common_validation__WEBPACK_IMPORTED_MODULE_4__["validateJSONString"],
