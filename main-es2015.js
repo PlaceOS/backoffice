@@ -2543,7 +2543,9 @@ function generateSAMLSourceForm(auth_source) {
     const fields = {
         name: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](auth_source.name || '', [_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required]),
         issuer: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](auth_source.issuer || '', [_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required]),
-        idp_sso_target_url: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](auth_source.issuer || '', [_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required]),
+        idp_sso_target_url: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](auth_source.idp_sso_target_url || '', [
+            _angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required
+        ]),
         name_identifier_format: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](auth_source.name_identifier_format || '', [
             _angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required
         ]),
@@ -21863,16 +21865,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "f69953e",
-    "hash": "f69953e",
+    "raw": "5a33efc",
+    "hash": "5a33efc",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "f69953e",
+    "suffix": "5a33efc",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1603957996890
+    "time": 1604627986688
 };
 /* tslint:enable */
 
