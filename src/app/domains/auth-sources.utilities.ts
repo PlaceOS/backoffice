@@ -41,7 +41,9 @@ export function generateSAMLSourceForm(auth_source: PlaceSAMLSource): FormGroup 
     const fields: HashMap<FormControl> = {
         name: new FormControl(auth_source.name || '', [Validators.required]),
         issuer: new FormControl(auth_source.issuer || '', [Validators.required]),
-        idp_sso_target_url: new FormControl(auth_source.issuer || '', [Validators.required]),
+        idp_sso_target_url: new FormControl(auth_source.idp_sso_target_url || '',[
+            Validators.required
+        ]),
         name_identifier_format: new FormControl(auth_source.name_identifier_format || '', [
             Validators.required
         ]),
