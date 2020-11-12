@@ -116,7 +116,7 @@ export class SystemModulesComponent extends BaseClass {
     public ngOnInit(): void {
         this.subscription('item', this._service.item.subscribe((item) => {
             this.loadModules();
-        }))
+        }));
     }
 
     /**
@@ -414,7 +414,9 @@ export class SystemModulesComponent extends BaseClass {
                         .then(
                             (item) => {
                                 this.hide_exec = false;
-                                this._service.replaceItem(item);
+                                if (item instanceof PlaceSystem) {
+                                    this._service.replaceItem(item);
+                                }
                                 notifySuccess('Succefully removed module.');
                                 this.devices.splice(this.devices.indexOf(device), 1);
                                 ref.close();

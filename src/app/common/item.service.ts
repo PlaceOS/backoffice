@@ -15,7 +15,7 @@ import { SettingsService } from '../common/settings.service';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
 import { notifySuccess, notifyError } from './notifications';
-import { DialogEvent } from 'src/app/common/types';
+import { DialogEvent, Identity } from 'src/app/common/types';
 import {
     DuplicateModalComponent,
     DuplicateModalData,
@@ -231,9 +231,9 @@ export class ActiveItemService extends BaseClass {
         }
     }
 
-    public replaceItem(item: any) {
-        if ((this.active_item as Object).constructor === item.constructor) {
-            this._active_item.next(item);
+    public replaceItem(item: Identity) {
+        if (item?.id && (this.active_item as Object).constructor === item.constructor) {
+            this._active_item.next(item as any);
             const list = this._list.getValue().filter((i) => i.id !== item.id);
             list.push(item);
             list.sort((a, b) => a.name?.localeCompare(b.name));
