@@ -49,7 +49,7 @@ export class DomainApplicationsComponent extends BaseClass implements OnInit {
     public ngOnInit(): void {
         this.subscription('item', this._service.item.subscribe((item) => {
             this.loadApplications();
-        }))
+        }));
     }
 
     public copySecret(item: PlaceApplication) {
@@ -62,7 +62,7 @@ export class DomainApplicationsComponent extends BaseClass implements OnInit {
         if (!this.item) {
             return;
         }
-        this.application_list = await queryApplications()
+        this.application_list = await queryApplications({ authority: this.item?.id } as any)
             .pipe(map((resp) => resp.data))
             .toPromise();
     }

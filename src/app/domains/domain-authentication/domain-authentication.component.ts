@@ -67,13 +67,13 @@ export class DomainAuthenticationComponent extends BaseClass implements OnInit {
             return;
         }
         Promise.all([
-            queryOAuthSources({ authority_id: this.item.id, offset } as any)
+            queryOAuthSources({ authority: this.item.id, offset } as any)
                 .pipe(map((resp) => resp.data))
                 .toPromise(),
-            querySAMLSources({ authority_id: this.item.id, offset } as any)
+            querySAMLSources({ authority: this.item.id, offset } as any)
                 .pipe(map((resp) => resp.data))
                 .toPromise(),
-            queryLDAPSources({ authority_id: this.item.id, offset } as any)
+            queryLDAPSources({ authority: this.item.id, offset } as any)
                 .pipe(map((resp) => resp.data))
                 .toPromise(),
         ]).then(

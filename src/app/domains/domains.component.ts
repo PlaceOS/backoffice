@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { authority, PlaceDomain, queryApplications, queryUsers } from '@placeos/ts-client';
+import { PlaceDomain, queryApplications, queryLDAPSources, queryOAuthSources, querySAMLSources, queryUsers } from '@placeos/ts-client';
+import { map } from 'rxjs/operators';
 
 import { ActiveItemService } from '../common/item.service';
 import { BaseClass } from '../common/base.class';
-import { AppComponentExtensions } from '../common/types';
 import { extensionsForItem } from '../common/api';
 
 @Component({
@@ -73,14 +73,19 @@ export class DomainsComponent extends BaseClass {
 
     protected async loadValues(item: PlaceDomain) {
         if (!item) return;
-        let query: any = { offset: 0, limit: 1, owner: item.id };
+        let query: any = { offset: 0, limit: 1, authority: item.id };
         // Get application count
         this.applications = (await queryApplications(query).toPromise()).total;
         query = { offset: 0, limit: 1, authority_id: item.id };
         // Get auth source count
-        // this._service.AuthSources.query(query).then(
-        //     () => (this.auth_sources = this._service.AuthSources.last_total)
-        // );
+        this.auth_sources = (await Promise.all([
+            queryOAuthSources({ authority: item.id, limit: 1 } as any)
+                .toPromise(),
+            querySAMLSources({ authority: item.id, limit: 1 } as any)
+                .toPromise(),
+            queryLDAPSources({ authority: item.id, limit: 1 } as any)
+                .toPromise(),
+        ])).reduce((c, i) => c + (i.total || 0), 0);
         // Get users count
         this.user_count = (await queryUsers(query).toPromise()).total;
         this.updateTabList();
