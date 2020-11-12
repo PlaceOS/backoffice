@@ -2000,7 +2000,7 @@
   }
 
   function _templateObject149() {
-    var data = _taggedTemplateLiteral([":@@folderNameError\u241F4b8ffbe0f0c47ba9de9dd43a3abf5d8fb0ab5870\u241F4146577678883073642:Folder name is required"]);
+    var data = _taggedTemplateLiteral([":@@folderNameError\u241Fff19dad6e317dccaaeff79fe46e3f37081dabb10\u241F2028997771638435136: A valid folder name is required "]);
 
     _templateObject149 = function _templateObject149() {
       return data;
@@ -16813,7 +16813,7 @@
           commit_hash: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](repository.commit_hash || 'HEAD'),
           branch: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](repository.branch || 'master', [_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required]),
           name: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](repository.name || '', [_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required]),
-          folder_name: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](repository.folder_name || '', [_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required]),
+          folder_name: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](repository.folder_name || '', [_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required, _angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].pattern(/^[a-zA-Z0-9_+\-\(\)\.]*$/)]),
           description: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](repository.description || ''),
           uri: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](repository.uri || '', [_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required]),
           repo_type: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](repository.repo_type || _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceRepositoryType"].Driver),
@@ -27809,7 +27809,7 @@
       var I18N_27;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_folderNameError$$SRC_APP_UI_FORMS_REPOSITORY_FORM_REPOSITORY_FORM_COMPONENT_TS___28 = goog.getMsg("Folder name is required");
+        var MSG_EXTERNAL_folderNameError$$SRC_APP_UI_FORMS_REPOSITORY_FORM_REPOSITORY_FORM_COMPONENT_TS___28 = goog.getMsg(" A valid folder name is required ");
         I18N_27 = MSG_EXTERNAL_folderNameError$$SRC_APP_UI_FORMS_REPOSITORY_FORM_REPOSITORY_FORM_COMPONENT_TS___28;
       } else {
         I18N_27 = $localize(_templateObject149());
@@ -44683,16 +44683,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "49daedb",
-        "hash": "49daedb",
+        "raw": "edc70af",
+        "hash": "edc70af",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "49daedb",
+        "suffix": "edc70af",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1605165699775
+        "time": 1605176177500
       };
       /* tslint:enable */
 
