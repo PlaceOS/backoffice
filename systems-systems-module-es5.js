@@ -3007,7 +3007,9 @@
                 Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["removeSystemModule"])(_this19.item.id, device.id).toPromise().then(function (item) {
                   _this19.hide_exec = false;
 
-                  _this19._service.replaceItem(item);
+                  if (item instanceof _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceSystem"]) {
+                    _this19._service.replaceItem(item);
+                  }
 
                   Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_9__["notifySuccess"])('Succefully removed module.');
 

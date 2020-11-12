@@ -6700,7 +6700,7 @@
         }, {
           key: "replaceItem",
           value: function replaceItem(item) {
-            if (this.active_item.constructor === item.constructor) {
+            if ((item === null || item === void 0 ? void 0 : item.id) && this.active_item.constructor === item.constructor) {
               this._active_item.next(item);
 
               var list = this._list.getValue().filter(function (i) {
@@ -44683,16 +44683,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "5c15b02",
-        "hash": "5c15b02",
+        "raw": "49daedb",
+        "hash": "49daedb",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "5c15b02",
+        "suffix": "49daedb",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1605164191846
+        "time": 1605165699775
       };
       /* tslint:enable */
 

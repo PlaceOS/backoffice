@@ -1342,7 +1342,9 @@ class SystemModulesComponent extends src_app_common_base_class__WEBPACK_IMPORTED
                     .toPromise()
                     .then((item) => {
                     this.hide_exec = false;
-                    this._service.replaceItem(item);
+                    if (item instanceof _placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["PlaceSystem"]) {
+                        this._service.replaceItem(item);
+                    }
                     Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_9__["notifySuccess"])('Succefully removed module.');
                     this.devices.splice(this.devices.indexOf(device), 1);
                     ref.close();
