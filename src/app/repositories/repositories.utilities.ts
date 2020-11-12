@@ -15,7 +15,10 @@ export function generateRepositoryFormFields(repository: PlaceRepository): FormG
         commit_hash: new FormControl(repository.commit_hash || 'HEAD'),
         branch: new FormControl(repository.branch || 'master', [Validators.required]),
         name: new FormControl(repository.name || '', [Validators.required]),
-        folder_name: new FormControl(repository.folder_name || '', [Validators.required]),
+        folder_name: new FormControl(repository.folder_name || '', [
+            Validators.required,
+            Validators.pattern(/^[a-zA-Z0-9_+\-\(\)\.]*$/),
+        ]),
         description: new FormControl(repository.description || ''),
         uri: new FormControl(repository.uri || '', [Validators.required]),
         repo_type: new FormControl(repository.repo_type || PlaceRepositoryType.Driver),
@@ -36,7 +39,7 @@ export function generateRepositoryFormFields(repository: PlaceRepository): FormG
             } else {
                 fields.commit_hash.enable();
             }
-        })
+        });
     }
     return new FormGroup(fields);
 }

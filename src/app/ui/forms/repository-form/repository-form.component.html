@@ -93,7 +93,9 @@
                     formControlName="folder_name"
                     required
                 />
-                <mat-error i18n="@@folderNameError">Folder name is required</mat-error>
+                <mat-error i18n="@@folderNameError">
+                    A valid folder name is required
+                </mat-error>
             </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.description">
