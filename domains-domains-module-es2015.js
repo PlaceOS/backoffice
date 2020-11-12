@@ -354,11 +354,12 @@ class DomainApplicationsComponent extends src_app_common_base_class__WEBPACK_IMP
         Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyInfo"])('Copied client secret to clipboard');
     }
     loadApplications(offset = 0) {
+        var _a;
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             if (!this.item) {
                 return;
             }
-            this.application_list = yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryApplications"])()
+            this.application_list = yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryApplications"])({ authority: (_a = this.item) === null || _a === void 0 ? void 0 : _a.id })
                 .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])((resp) => resp.data))
                 .toPromise();
         });
@@ -614,13 +615,13 @@ class DomainAuthenticationComponent extends src_app_common_base_class__WEBPACK_I
             return;
         }
         Promise.all([
-            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryOAuthSources"])({ authority_id: this.item.id, offset })
+            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryOAuthSources"])({ authority: this.item.id, offset })
                 .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])((resp) => resp.data))
                 .toPromise(),
-            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["querySAMLSources"])({ authority_id: this.item.id, offset })
+            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["querySAMLSources"])({ authority: this.item.id, offset })
                 .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])((resp) => resp.data))
                 .toPromise(),
-            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryLDAPSources"])({ authority_id: this.item.id, offset })
+            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryLDAPSources"])({ authority: this.item.id, offset })
                 .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])((resp) => resp.data))
                 .toPromise(),
         ]).then((responses) => {
@@ -1006,14 +1007,19 @@ class DomainsComponent extends _common_base_class__WEBPACK_IMPORTED_MODULE_3__["
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             if (!item)
                 return;
-            let query = { offset: 0, limit: 1, owner: item.id };
+            let query = { offset: 0, limit: 1, authority: item.id };
             // Get application count
             this.applications = (yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryApplications"])(query).toPromise()).total;
             query = { offset: 0, limit: 1, authority_id: item.id };
             // Get auth source count
-            // this._service.AuthSources.query(query).then(
-            //     () => (this.auth_sources = this._service.AuthSources.last_total)
-            // );
+            this.auth_sources = (yield Promise.all([
+                Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryOAuthSources"])({ authority: item.id, limit: 1 })
+                    .toPromise(),
+                Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["querySAMLSources"])({ authority: item.id, limit: 1 })
+                    .toPromise(),
+                Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryLDAPSources"])({ authority: item.id, limit: 1 })
+                    .toPromise(),
+            ])).reduce((c, i) => c + (i.total || 0), 0);
             // Get users count
             this.user_count = (yield Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryUsers"])(query).toPromise()).total;
             this.updateTabList();

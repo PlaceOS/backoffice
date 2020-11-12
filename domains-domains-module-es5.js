@@ -952,6 +952,9 @@
           key: "loadApplications",
           value: function loadApplications() {
             var offset = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+
+            var _a;
+
             return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
               return regeneratorRuntime.wrap(function _callee2$(_context2) {
                 while (1) {
@@ -966,7 +969,9 @@
 
                     case 2:
                       _context2.next = 4;
-                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryApplications"])().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (resp) {
+                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryApplications"])({
+                        authority: (_a = this.item) === null || _a === void 0 ? void 0 : _a.id
+                      }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (resp) {
                         return resp.data;
                       })).toPromise();
 
@@ -1478,17 +1483,17 @@
             }
 
             Promise.all([Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryOAuthSources"])({
-              authority_id: this.item.id,
+              authority: this.item.id,
               offset: offset
             }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])(function (resp) {
               return resp.data;
             })).toPromise(), Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["querySAMLSources"])({
-              authority_id: this.item.id,
+              authority: this.item.id,
               offset: offset
             }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])(function (resp) {
               return resp.data;
             })).toPromise(), Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryLDAPSources"])({
-              authority_id: this.item.id,
+              authority: this.item.id,
               offset: offset
             }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])(function (resp) {
               return resp.data;
@@ -2238,7 +2243,7 @@
                       query = {
                         offset: 0,
                         limit: 1,
-                        owner: item.id
+                        authority: item.id
                       }; // Get application count
 
                       _context3.next = 5;
@@ -2251,19 +2256,31 @@
                         limit: 1,
                         authority_id: item.id
                       }; // Get auth source count
-                      // this._service.AuthSources.query(query).then(
-                      //     () => (this.auth_sources = this._service.AuthSources.last_total)
-                      // );
-                      // Get users count
 
                       _context3.next = 9;
-                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryUsers"])(query).toPromise();
+                      return Promise.all([Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryOAuthSources"])({
+                        authority: item.id,
+                        limit: 1
+                      }).toPromise(), Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["querySAMLSources"])({
+                        authority: item.id,
+                        limit: 1
+                      }).toPromise(), Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryLDAPSources"])({
+                        authority: item.id,
+                        limit: 1
+                      }).toPromise()]);
 
                     case 9:
+                      this.auth_sources = _context3.sent.reduce(function (c, i) {
+                        return c + (i.total || 0);
+                      }, 0);
+                      _context3.next = 12;
+                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["queryUsers"])(query).toPromise();
+
+                    case 12:
                       this.user_count = _context3.sent.total;
                       this.updateTabList();
 
-                    case 11:
+                    case 14:
                     case "end":
                       return _context3.stop();
                   }

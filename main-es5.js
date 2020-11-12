@@ -44683,16 +44683,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "b746e20",
-        "hash": "b746e20",
+        "raw": "5c15b02",
+        "hash": "5c15b02",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "b746e20",
+        "suffix": "5c15b02",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1604882565064
+        "time": 1605164191846
       };
       /* tslint:enable */
 
