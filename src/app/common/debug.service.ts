@@ -66,14 +66,8 @@ export class PlaceDebugService extends BaseClass {
             if (this._bound_modules.find((mod) => mod.id === event.mod_id)) {
                 let event_list = this.event_list;
                 event_list.push(event);
-                event_list = event_list.filter(
-                    (event) =>
-                        !event_list.find(
-                            (i) => i !== event && i.mod_id === event.mod_id && i.time === event.time && i.message === event.message
-                        )
-                );
                 let size = event_list.reduce((c, i) => c + (i.message || '').length, 0);
-                while (event_list.length > 1000 || size > 32 * 1024 * 1024) {
+                while (event_list.length > 8000 || size > 32 * 1024 * 1024) {
                     event_list.shift();
                     size = event_list.reduce((c, i) => c + (i.message || '').length, 0);
                 }
