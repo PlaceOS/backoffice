@@ -47,7 +47,7 @@ export class ViewModuleStateModalComponent extends BaseClass implements OnInit {
 
     constructor(
         private _dialog: MatDialogRef<ViewModuleStateModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: ModuleStateModalData,
+        @Inject(MAT_DIALOG_DATA) private _data: ModuleStateModalData
     ) {
         super();
     }
@@ -82,13 +82,17 @@ export class ViewModuleStateModalComponent extends BaseClass implements OnInit {
         }
         this.loading = true;
         const class_parts = class_name.split('_');
-        systemModuleState(this.system.id, class_parts[0], +class_parts[1]).subscribe(
+        const num = !isNaN(+class_parts[class_parts.length - 1])
+            ? +class_parts[class_parts.length - 1]
+            : 1;
+        systemModuleState(
+            this.system.id,
+            class_parts.slice(0, class_parts.length - 1).join('_'),
+            num
+        ).subscribe(
             (state) => {
-                const pre_state =
-                typeof state === 'string'
-                    ? JSON.parse(state)
-                    : state;
-                Object.keys(pre_state).forEach(key => {
+                const pre_state = typeof state === 'string' ? JSON.parse(state) : state;
+                Object.keys(pre_state).forEach((key) => {
                     pre_state[key] = JSON.parse(pre_state[key]);
                 });
                 this.state = JSON.stringify(pre_state, undefined, 4);
