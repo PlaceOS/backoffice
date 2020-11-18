@@ -41445,7 +41445,7 @@
             this.terminal.selectAll();
             this.terminal.clearSelection();
             var lines = new_content.split('\n');
-            this.terminal.writeln(lines.pop());
+            new_content ? this.terminal.writeln(lines.pop()) : this.terminal.write('\x1b[H\x1b[2J');
             this.timeout('scroll', function () {
               return _this116.terminal.scrollToBottom();
             }, 50);
@@ -44683,16 +44683,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "8d80d84",
-        "hash": "8d80d84",
+        "raw": "d4d9ef4",
+        "hash": "d4d9ef4",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "8d80d84",
+        "suffix": "d4d9ef4",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1605662565015
+        "time": 1605668976505
       };
       /* tslint:enable */
 
