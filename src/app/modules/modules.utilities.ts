@@ -43,13 +43,13 @@ export function generateModuleFormFields(module: PlaceModule): FormGroup {
                 case PlaceDriverRole.Websocket:
                     fields.uri.setValidators([Validators.required, validateURI]);
                     fields.udp.setValue(false);
-                    fields.control_system_id.setValue('');
+                    fields.control_system_id.setValue(null);
                     break;
                 case PlaceDriverRole.Device:
                 case PlaceDriverRole.SSH:
                     fields.ip.setValidators([validateIpAddress, Validators.required]);
                     fields.port.setValidators([Validators.min(1), Validators.max(65535), Validators.required]);
-                    fields.control_system_id.setValue('');
+                    fields.control_system_id.setValue(null);
                     break;
                 case PlaceDriverRole.Logic:
                     fields.system.setValidators([Validators.required]);
