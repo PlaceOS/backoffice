@@ -27,7 +27,7 @@ export function toQueryString(map: HashMap) {
  */
 export function calculateModuleIndex(module_list: PlaceModule[], module: PlaceModule): number {
     const driver = module.driver || { class_name: 'System' };
-    const module_class = module.custom_name || driver.class_name;
+    const module_class = module.custom_name || module.name || driver.class_name;
     const modules_with_class = module_list.filter(mod => {
         const d = mod.driver || { class_name: 'System' };
         const mod_class = mod.custom_name || d.class_name;
