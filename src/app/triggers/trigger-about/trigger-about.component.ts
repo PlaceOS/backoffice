@@ -11,7 +11,7 @@ import {
     updateTrigger,
     querySystems,
 } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 
 import { BaseClass } from 'src/app/common/base.class';
 import {
@@ -61,77 +61,55 @@ export class TriggerAboutComponent extends BaseClass {
     }
 
     public ngOnInit(): void {
-        this.subscription('item', this._service.item.subscribe((item) => {
-            if (this.item && this.item.conditions) {
-                this.comparisons = this.item.conditions.comparisons || [];
-                this.time_dependents = this.item.conditions.time_dependents || [];
-                this.functions = this.item.actions.functions || [];
-                this.mailers = this.item.actions.mailers || [];
-            }
-            if (this.confirm_ref) {
-                this.confirm_ref.close();
-                this.confirm_ref = null;
-                this.unsub('delete_confirm');
-            }
-        }))
-    }
-
-    /**
-     * Add new condition to trigger
-     */
-    public addCondition() {
-        this._dialog.open<TriggerConditionModalComponent, TriggerConditionData>(
-            TriggerConditionModalComponent,
-            {
-                width: 'auto',
-                height: 'auto',
-                data: {
-                    trigger: this.item,
-                    system: this.template_system,
-                },
-            }
+        this.subscription(
+            'item',
+            this._service.item.subscribe((item) => {
+                if (this.item && this.item.conditions) {
+                    this.comparisons = this.item.conditions.comparisons || [];
+                    this.time_dependents = this.item.conditions.time_dependents || [];
+                    this.functions = this.item.actions.functions || [];
+                    this.mailers = this.item.actions.mailers || [];
+                }
+                if (this.confirm_ref) {
+                    this.confirm_ref.close();
+                    this.confirm_ref = null;
+                    this.unsub('delete_confirm');
+                }
+            })
         );
     }
 
     /**
      * Add new condition to trigger
      */
-    public editCondition(condition: TriggerComparison | TriggerTimeCondition) {
-        this._dialog.open<TriggerConditionModalComponent, TriggerConditionData>(
+    public async editCondition(condition?: TriggerComparison | TriggerTimeCondition) {
+        const ref = this._dialog.open<TriggerConditionModalComponent, TriggerConditionData>(
             TriggerConditionModalComponent,
             {
                 width: 'auto',
                 height: 'auto',
                 data: {
                     trigger: this.item,
-                    condition: JSON.parse(JSON.stringify(condition)),
+                    condition: condition ? JSON.parse(JSON.stringify(condition)) : undefined,
                     system: this.template_system,
                 },
             }
         );
-    }
-
-    /**
-     * Add new action to active trigger
-     */
-    public addAction() {
-        this._dialog.open<TriggerActionModalComponent, TriggerActionModalData>(
-            TriggerActionModalComponent,
-            {
-                data: {
-                    trigger: this.item,
-                    system: this.template_system,
-                },
-            }
-        );
+        const result = await Promise.race([
+            ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).toPromise(),
+            ref.afterClosed().toPromise(),
+        ]);
+        if (result && result?.metadata?.trigger) {
+            this._service.replaceItem(result.metadata.trigger);
+        }
     }
 
     /**
      * Edit existing action on active trigger
      * @param action Action to edit
      */
-    public editAction(action: TriggerFunction | TriggerMailer) {
-        this._dialog.open<TriggerActionModalComponent, TriggerActionModalData>(
+    public async editAction(action?: TriggerFunction | TriggerMailer) {
+        const ref = this._dialog.open<TriggerActionModalComponent, TriggerActionModalData>(
             TriggerActionModalComponent,
             {
                 data: {
@@ -141,6 +119,13 @@ export class TriggerAboutComponent extends BaseClass {
                 },
             }
         );
+        const result = await Promise.race([
+            ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).toPromise(),
+            ref.afterClosed().toPromise(),
+        ]);
+        if (result && result?.metadata?.trigger) {
+            this._service.replaceItem(result.metadata.trigger);
+        }
     }
 
     public confirmRemoveCondition(condition: TriggerComparison | TriggerTimeCondition) {
@@ -157,10 +142,11 @@ export class TriggerAboutComponent extends BaseClass {
         );
         this.subscription(
             'delete_confirm',
-            this.confirm_ref.componentInstance.event.subscribe((event: DialogEvent) => {
+            this.confirm_ref.componentInstance.event.subscribe(async (event: DialogEvent) => {
                 if (event.reason === 'done') {
                     this.confirm_ref.componentInstance.loading = 'Removing trigger condition...';
-                    this.removeCondition(condition);
+                    await this.removeCondition(condition).catch((_) => null);
+                    this.confirm_ref.close();
                 }
             })
         );
@@ -170,7 +156,7 @@ export class TriggerAboutComponent extends BaseClass {
      * Remove a condition from the active trigger
      * @param condition Condition to remove
      */
-    public removeCondition(condition: TriggerComparison | TriggerTimeCondition) {
+    public async removeCondition(condition: TriggerComparison | TriggerTimeCondition) {
         const conditions = {
             comparisons: [...this.comparisons],
             time_dependents: [...this.time_dependents],
@@ -186,15 +172,20 @@ export class TriggerAboutComponent extends BaseClass {
             );
             conditions.comparisons.splice(index, 1);
         }
-        updateTrigger(this.item.id, { ...this.item.toJSON(), conditions }).subscribe(
-            () => notifySuccess('Successfully removed trigger condition.'),
-            (err) =>
+        const trigger = await updateTrigger(this.item.id, { ...this.item.toJSON(), conditions })
+            .toPromise()
+            .catch((err) => {
                 notifyError(
                     `Error removing trigger condition. Error: ${JSON.stringify(
                         err.response || err.message || err
                     )}`
-                )
-        );
+                );
+                return null;
+            });
+        if (trigger) {
+            this._service.replaceItem(trigger);
+            notifySuccess('Successfully removed trigger condition.');
+        }
     }
 
     /**
