@@ -86,11 +86,10 @@ export class TerminalComponent extends BaseClass implements OnInit, OnChanges, O
         if (!this.terminal) {
             return;
         }
-        this.terminal.clear();
+        this.terminal.selectAll();
+        this.terminal.clearSelection();
         const lines: string[] = new_content.split('\n');
-        for (const line of lines) {
-            this.terminal.writeln(line);
-        }
+        this.terminal.writeln(lines.pop());
         this.timeout('scroll', () => this.terminal.scrollToBottom(), 50);
     }
 }

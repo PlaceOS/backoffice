@@ -43,7 +43,7 @@ export class PlaceDebugService extends BaseClass {
 
     /** Get terminal display string for all the events */
     public get terminal_string(): string {
-        return this.event_list
+        const list = this.event_list
             .map(
                 (event) =>
                     `${TERMINAL_COLOURS[event.level] || TERMINAL_COLOURS.debug}${dayjs().format(
@@ -51,8 +51,8 @@ export class PlaceDebugService extends BaseClass {
                     )}, ${
                         this._module_names[event.mod_id] || event.mod_id || '<UNKNOWN>'
                     }, [${event.level.toUpperCase()}]\u001b[0m ${event.message}`
-            )
-            .join('\n');
+            );
+        return list.join('\n');
     }
 
     /** Whether there are modules listening for debug messages */
@@ -64,7 +64,7 @@ export class PlaceDebugService extends BaseClass {
         super();
         debug_events.subscribe((event) => {
             if (this._bound_modules.find((mod) => mod.id === event.mod_id)) {
-                let event_list = this.event_list;
+                const event_list = [...this.event_list];
                 event_list.push(event);
                 let size = event_list.reduce((c, i) => c + (i.message || '').length, 0);
                 while (event_list.length > 8000 || size > 32 * 1024 * 1024) {
