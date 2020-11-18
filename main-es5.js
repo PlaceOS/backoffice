@@ -5307,16 +5307,11 @@
             })) {
               var event_list = _this4.event_list;
               event_list.push(event);
-              event_list = event_list.filter(function (event) {
-                return !event_list.find(function (i) {
-                  return i !== event && i.mod_id === event.mod_id && i.time === event.time && i.message === event.message;
-                });
-              });
               var size = event_list.reduce(function (c, i) {
                 return c + (i.message || '').length;
               }, 0);
 
-              while (event_list.length > 1000 || size > 32 * 1024 * 1024) {
+              while (event_list.length > 8000 || size > 32 * 1024 * 1024) {
                 event_list.shift();
                 size = event_list.reduce(function (c, i) {
                   return c + (i.message || '').length;
@@ -16477,7 +16472,8 @@
 
             this.loading = true;
             var class_parts = class_name.split('_');
-            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["systemModuleState"])(this.system.id, class_parts[0], +class_parts[1]).subscribe(function (state) {
+            var num = !isNaN(+class_parts[class_parts.length - 1]) ? +class_parts[class_parts.length - 1] : 1;
+            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["systemModuleState"])(this.system.id, class_parts.slice(0, class_parts.length - 1).join('_'), num).subscribe(function (state) {
               var pre_state = typeof state === 'string' ? JSON.parse(state) : state;
               Object.keys(pre_state).forEach(function (key) {
                 pre_state[key] = JSON.parse(pre_state[key]);
@@ -33374,6 +33370,10 @@
           key: "updateFormForSide",
           value: function updateFormForSide(side) {
             if (this.form.controls[side]) {
+              if (!this[side + '_side'].keys) {
+                this[side + '_side'].keys = [];
+              }
+
               this.form.controls[side].setValue(this[side + '_side']);
             }
           }
@@ -33388,9 +33388,11 @@
             var _this89 = this;
 
             var name = (mod_name || '').split('_');
-            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["systemModuleState"])(this.system.id, name[0], +name[1]).subscribe(function (var_map) {
-              if (Object.keys(var_map).length <= 0) {
-                var_map.connected = true;
+            Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["systemModuleState"])(this.system.id, name.length > 1 ? name.slice(0, name.length - 1).join('_') : name[0], +name[name.length - 1] || 1).subscribe(function (var_map) {
+              if (Object.keys(var_map || {}).length <= 0) {
+                var_map = {
+                  connected: true
+                };
               }
 
               _this89["".concat(side, "_status_variables")] = Object.keys(var_map).map(function (key) {
@@ -33435,7 +33437,8 @@
                 var index = Object(src_app_common_api__WEBPACK_IMPORTED_MODULE_2__["calculateModuleIndex"])(_this90.modules, mod);
                 return {
                   id: mod.id,
-                  name: "".concat(name, "_").concat(index)
+                  name: "".concat(name, "_").concat(index),
+                  keys: []
                 };
               });
 
@@ -33457,7 +33460,8 @@
               })) {
                 this.module_list.unshift({
                   id: 'old_left_value',
-                  name: _module3
+                  name: _module3,
+                  keys: []
                 });
               }
 
@@ -33474,7 +33478,8 @@
               })) {
                 this.module_list.unshift({
                   id: 'old_right_value',
-                  name: _module4
+                  name: _module4,
+                  keys: []
                 });
               }
 
@@ -33497,7 +33502,8 @@
               })) {
                 this.left_status_variables.unshift({
                   id: this.left_side.status,
-                  name: this.left_side.status
+                  name: this.left_side.status,
+                  keys: []
                 });
               }
             }
@@ -33508,7 +33514,8 @@
               })) {
                 this.right_status_variables.unshift({
                   id: this.right_side.status,
-                  name: this.right_side.status
+                  name: this.right_side.status,
+                  keys: []
                 });
               }
             }
@@ -33516,12 +33523,16 @@
         }, {
           key: "left_keys",
           get: function get() {
-            return this.left_side.keys.join(',');
+            var _a, _b;
+
+            return ((_b = (_a = this.left_side) === null || _a === void 0 ? void 0 : _a.keys) === null || _b === void 0 ? void 0 : _b.join(',')) || '';
           }
         }, {
           key: "right_keys",
           get: function get() {
-            return this.right_side.keys.join(',');
+            var _a, _b;
+
+            return ((_b = (_a = this.right_side) === null || _a === void 0 ? void 0 : _a.keys) === null || _b === void 0 ? void 0 : _b.join(',')) || '';
           }
         }]);
 
@@ -44683,16 +44694,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "edc70af",
-        "hash": "edc70af",
+        "raw": "3d577ef",
+        "hash": "3d577ef",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "edc70af",
+        "suffix": "3d577ef",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1605176177500
+        "time": 1605657944232
       };
       /* tslint:enable */
 

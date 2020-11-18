@@ -917,9 +917,8 @@ class PlaceDebugService extends _base_class__WEBPACK_IMPORTED_MODULE_3__["BaseCl
             if (this._bound_modules.find((mod) => mod.id === event.mod_id)) {
                 let event_list = this.event_list;
                 event_list.push(event);
-                event_list = event_list.filter((event) => !event_list.find((i) => i !== event && i.mod_id === event.mod_id && i.time === event.time && i.message === event.message));
                 let size = event_list.reduce((c, i) => c + (i.message || '').length, 0);
-                while (event_list.length > 1000 || size > 32 * 1024 * 1024) {
+                while (event_list.length > 8000 || size > 32 * 1024 * 1024) {
                     event_list.shift();
                     size = event_list.reduce((c, i) => c + (i.message || '').length, 0);
                 }
@@ -6924,11 +6923,12 @@ class ViewModuleStateModalComponent extends src_app_common_base_class__WEBPACK_I
         }
         this.loading = true;
         const class_parts = class_name.split('_');
-        Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["systemModuleState"])(this.system.id, class_parts[0], +class_parts[1]).subscribe((state) => {
-            const pre_state = typeof state === 'string'
-                ? JSON.parse(state)
-                : state;
-            Object.keys(pre_state).forEach(key => {
+        const num = !isNaN(+class_parts[class_parts.length - 1])
+            ? +class_parts[class_parts.length - 1]
+            : 1;
+        Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_2__["systemModuleState"])(this.system.id, class_parts.slice(0, class_parts.length - 1).join('_'), num).subscribe((state) => {
+            const pre_state = typeof state === 'string' ? JSON.parse(state) : state;
+            Object.keys(pre_state).forEach((key) => {
                 pre_state[key] = JSON.parse(pre_state[key]);
             });
             this.state = JSON.stringify(pre_state, undefined, 4);
@@ -15961,7 +15961,7 @@ class TriggerConditionComparisonFormComponent {
         /** Types of trigger conditions */
         this.right_var_type = [
             { id: 'constant', name: 'Constant Value' },
-            { id: 'status_var', name: 'Status Variable' }
+            { id: 'status_var', name: 'Status Variable' },
         ];
         /** Allowed comparison operators */
         this.compare_types = [
@@ -15973,14 +15973,16 @@ class TriggerConditionComparisonFormComponent {
             { id: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["TriggerConditionOperator"].LTE, name: 'less than or equal' },
             { id: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["TriggerConditionOperator"].AND, name: 'truthy AND' },
             { id: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["TriggerConditionOperator"].OR, name: 'truthy OR' },
-            { id: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["TriggerConditionOperator"].XOR, name: 'truthy XOR' }
+            { id: _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["TriggerConditionOperator"].XOR, name: 'truthy XOR' },
         ];
     }
     get left_keys() {
-        return this.left_side.keys.join(',');
+        var _a, _b;
+        return ((_b = (_a = this.left_side) === null || _a === void 0 ? void 0 : _a.keys) === null || _b === void 0 ? void 0 : _b.join(',')) || '';
     }
     get right_keys() {
-        return this.right_side.keys.join(',');
+        var _a, _b;
+        return ((_b = (_a = this.right_side) === null || _a === void 0 ? void 0 : _a.keys) === null || _b === void 0 ? void 0 : _b.join(',')) || '';
     }
     ngOnChanges(changes) {
         if (changes.system && this.system) {
@@ -15989,6 +15991,9 @@ class TriggerConditionComparisonFormComponent {
     }
     updateFormForSide(side) {
         if (this.form.controls[side]) {
+            if (!this[side + '_side'].keys) {
+                this[side + '_side'].keys = [];
+            }
             this.form.controls[side].setValue(this[side + '_side']);
         }
     }
@@ -15998,13 +16003,13 @@ class TriggerConditionComparisonFormComponent {
      */
     loadSystemStatusVariables(mod_name, side) {
         const name = (mod_name || '').split('_');
-        Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["systemModuleState"])(this.system.id, name[0], +name[1]).subscribe(var_map => {
-            if (Object.keys(var_map).length <= 0) {
-                var_map.connected = true;
+        Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["systemModuleState"])(this.system.id, name.length > 1 ? name.slice(0, name.length - 1).join('_') : name[0], +name[name.length - 1] || 1).subscribe((var_map) => {
+            if (Object.keys(var_map || {}).length <= 0) {
+                var_map = { connected: true };
             }
-            this[`${side}_status_variables`] = Object.keys(var_map).map(key => ({
+            this[`${side}_status_variables`] = Object.keys(var_map).map((key) => ({
                 id: key,
-                name: key
+                name: key,
             }));
             this.addExistingStatusVariables();
         }, () => Object(src_app_common_notifications__WEBPACK_IMPORTED_MODULE_4__["notifyError"])(`Error loading the status variables for ${this.system.id}, ${mod_name}`));
@@ -16016,16 +16021,19 @@ class TriggerConditionComparisonFormComponent {
         if (!this.system) {
             return;
         }
-        Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryModules"])({ control_system_id: this.system.id }).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(resp => resp.data)).subscribe(module_list => {
+        Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["queryModules"])({ control_system_id: this.system.id })
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])((resp) => resp.data))
+            .subscribe((module_list) => {
             this.modules = module_list;
             const mod_list = this.system.modules;
             this.modules.sort((a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id));
-            this.module_list = this.modules.map(mod => {
+            this.module_list = this.modules.map((mod) => {
                 const name = mod.custom_name || mod.name || 'Blank';
                 const index = Object(src_app_common_api__WEBPACK_IMPORTED_MODULE_2__["calculateModuleIndex"])(this.modules, mod);
                 return {
                     id: mod.id,
-                    name: `${name}_${index}`
+                    name: `${name}_${index}`,
+                    keys: [],
                 };
             });
             this.addExistingModules();
@@ -16037,8 +16045,8 @@ class TriggerConditionComparisonFormComponent {
     addExistingModules() {
         if (this.form.controls.left && this.form.controls.left.value) {
             const module = this.form.controls.left.value.mod;
-            if (!this.module_list.find(mod => mod.name === module)) {
-                this.module_list.unshift({ id: 'old_left_value', name: module });
+            if (!this.module_list.find((mod) => mod.name === module)) {
+                this.module_list.unshift({ id: 'old_left_value', name: module, keys: [] });
             }
             this.loadSystemStatusVariables(module, 'left');
             this.left_side = this.form.controls.left.value;
@@ -16048,8 +16056,8 @@ class TriggerConditionComparisonFormComponent {
             this.form.controls.right.value.mod) {
             this.rhs_type = 'status_var';
             const module = this.form.controls.right.value.mod;
-            if (!this.module_list.find(mod => mod.name === module)) {
-                this.module_list.unshift({ id: 'old_right_value', name: module });
+            if (!this.module_list.find((mod) => mod.name === module)) {
+                this.module_list.unshift({ id: 'old_right_value', name: module, keys: [] });
             }
             this.loadSystemStatusVariables(module, 'right');
             this.right_side = this.form.controls.right_side.value;
@@ -16060,18 +16068,20 @@ class TriggerConditionComparisonFormComponent {
      */
     addExistingStatusVariables() {
         if (this.left_side.status) {
-            if (!this.left_status_variables.find(status => status.name === this.left_side.status)) {
+            if (!this.left_status_variables.find((status) => status.name === this.left_side.status)) {
                 this.left_status_variables.unshift({
                     id: this.left_side.status,
-                    name: this.left_side.status
+                    name: this.left_side.status,
+                    keys: [],
                 });
             }
         }
         if (this.right_side.status) {
-            if (!this.right_status_variables.find(status => status.name === this.right_side.status)) {
+            if (!this.right_status_variables.find((status) => status.name === this.right_side.status)) {
                 this.right_status_variables.unshift({
                     id: this.right_side.status,
-                    name: this.right_side.status
+                    name: this.right_side.status,
+                    keys: [],
                 });
             }
         }
@@ -16090,7 +16100,7 @@ TriggerConditionComparisonFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_
         args: [{
                 selector: 'trigger-condition-comparison-form',
                 templateUrl: './comparison-form.component.html',
-                styleUrls: ['./comparison-form.component.scss']
+                styleUrls: ['./comparison-form.component.scss'],
             }]
     }], null, { form: [{
             type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
@@ -21868,16 +21878,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "edc70af",
-    "hash": "edc70af",
+    "raw": "3d577ef",
+    "hash": "3d577ef",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "edc70af",
+    "suffix": "3d577ef",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1605176177500
+    "time": 1605657944232
 };
 /* tslint:enable */
 
