@@ -21880,16 +21880,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "7f4bdbf",
-    "hash": "7f4bdbf",
+    "raw": "efe70da",
+    "hash": "efe70da",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "7f4bdbf",
+    "suffix": "efe70da",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1605681720121
+    "time": 1605742002256
 };
 /* tslint:enable */
 
