@@ -55,6 +55,8 @@ export class SystemModulesComponent extends BaseClass {
     public hide_exec: boolean;
     /** Whether to refresh the list of active modules in the exec options */
     public refresh_modules: boolean;
+
+    public loading: boolean = false;
     /** Actions available for the context menu */
     public menu_options: AppLink[] = [
         {
@@ -114,6 +116,7 @@ export class SystemModulesComponent extends BaseClass {
     }
 
     public ngOnInit(): void {
+        this.loading = true;
         this.subscription('item', this._service.item.subscribe((item) => {
             this.loadModules();
         }));
@@ -123,27 +126,26 @@ export class SystemModulesComponent extends BaseClass {
      * Load the modules for the active system
      * @param offset Offset to load
      */
-    public loadModules(offset: number = 0) {
+    public async loadModules(offset: number = 0) {
         if (!this.item) {
             return;
         }
-        queryModules({
+        this.loading = true;
+        const module_list = await queryModules({
             control_system_id: this.item.id,
             complete: true,
             offset,
         } as any)
             .pipe(map((resp) => resp.data))
-            .toPromise()
-            .then(
-                (list) => {
-                    list.sort(
-                        (a, b) => this.item.modules.indexOf(a.id) - this.item.modules.indexOf(b.id)
-                    );
-                    this.devices = list;
-                    this.generateModuleBindings();
-                },
-                () => null
+            .toPromise();
+        if (module_list) {
+            module_list.sort(
+                (a, b) => this.item.modules.indexOf(a.id) - this.item.modules.indexOf(b.id)
             );
+            this.devices = module_list;
+            this.generateModuleBindings();
+        }
+        this.loading = false;
     }
 
     /**
