@@ -5305,7 +5305,8 @@
             if (_this4._bound_modules.find(function (mod) {
               return mod.id === event.mod_id;
             })) {
-              var event_list = _this4.event_list;
+              var event_list = _toConsumableArray(_this4.event_list);
+
               event_list.push(event);
               var size = event_list.reduce(function (c, i) {
                 return c + (i.message || '').length;
@@ -5411,9 +5412,10 @@
           get: function get() {
             var _this6 = this;
 
-            return this.event_list.map(function (event) {
+            var list = this.event_list.map(function (event) {
               return "".concat(TERMINAL_COLOURS[event.level] || TERMINAL_COLOURS.debug).concat(dayjs__WEBPACK_IMPORTED_MODULE_4__().format('h:mm A'), ", ").concat(_this6._module_names[event.mod_id] || event.mod_id || '<UNKNOWN>', ", [").concat(event.level.toUpperCase(), "]\x1B[0m ").concat(event.message);
-            }).join('\n');
+            });
+            return list.join('\n');
           }
           /** Whether there are modules listening for debug messages */
 
@@ -41440,23 +41442,10 @@
               return;
             }
 
-            this.terminal.clear();
+            this.terminal.selectAll();
+            this.terminal.clearSelection();
             var lines = new_content.split('\n');
-
-            var _iterator24 = _createForOfIteratorHelper(lines),
-                _step24;
-
-            try {
-              for (_iterator24.s(); !(_step24 = _iterator24.n()).done;) {
-                var line = _step24.value;
-                this.terminal.writeln(line);
-              }
-            } catch (err) {
-              _iterator24.e(err);
-            } finally {
-              _iterator24.f();
-            }
-
+            this.terminal.writeln(lines.pop());
             this.timeout('scroll', function () {
               return _this116.terminal.scrollToBottom();
             }, 50);
@@ -44694,16 +44683,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "3d577ef",
-        "hash": "3d577ef",
+        "raw": "8d80d84",
+        "hash": "8d80d84",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "3d577ef",
+        "suffix": "8d80d84",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1605657944232
+        "time": 1605662565015
       };
       /* tslint:enable */
 

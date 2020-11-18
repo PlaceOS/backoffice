@@ -915,7 +915,7 @@ class PlaceDebugService extends _base_class__WEBPACK_IMPORTED_MODULE_3__["BaseCl
         this._module_names = {};
         _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["debug_events"].subscribe((event) => {
             if (this._bound_modules.find((mod) => mod.id === event.mod_id)) {
-                let event_list = this.event_list;
+                const event_list = [...this.event_list];
                 event_list.push(event);
                 let size = event_list.reduce((c, i) => c + (i.message || '').length, 0);
                 while (event_list.length > 8000 || size > 32 * 1024 * 1024) {
@@ -936,9 +936,9 @@ class PlaceDebugService extends _base_class__WEBPACK_IMPORTED_MODULE_3__["BaseCl
     }
     /** Get terminal display string for all the events */
     get terminal_string() {
-        return this.event_list
-            .map((event) => `${TERMINAL_COLOURS[event.level] || TERMINAL_COLOURS.debug}${dayjs__WEBPACK_IMPORTED_MODULE_4__().format('h:mm A')}, ${this._module_names[event.mod_id] || event.mod_id || '<UNKNOWN>'}, [${event.level.toUpperCase()}]\u001b[0m ${event.message}`)
-            .join('\n');
+        const list = this.event_list
+            .map((event) => `${TERMINAL_COLOURS[event.level] || TERMINAL_COLOURS.debug}${dayjs__WEBPACK_IMPORTED_MODULE_4__().format('h:mm A')}, ${this._module_names[event.mod_id] || event.mod_id || '<UNKNOWN>'}, [${event.level.toUpperCase()}]\u001b[0m ${event.message}`);
+        return list.join('\n');
     }
     /** Whether there are modules listening for debug messages */
     get is_listening() {
@@ -20101,11 +20101,10 @@ class TerminalComponent extends src_app_common_base_class__WEBPACK_IMPORTED_MODU
         if (!this.terminal) {
             return;
         }
-        this.terminal.clear();
+        this.terminal.selectAll();
+        this.terminal.clearSelection();
         const lines = new_content.split('\n');
-        for (const line of lines) {
-            this.terminal.writeln(line);
-        }
+        this.terminal.writeln(lines.pop());
         this.timeout('scroll', () => this.terminal.scrollToBottom(), 50);
     }
 }
@@ -21878,16 +21877,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "3d577ef",
-    "hash": "3d577ef",
+    "raw": "8d80d84",
+    "hash": "8d80d84",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "3d577ef",
+    "suffix": "8d80d84",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1605657944232
+    "time": 1605662565015
 };
 /* tslint:enable */
 
