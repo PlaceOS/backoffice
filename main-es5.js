@@ -9672,12 +9672,14 @@
               case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].Websocket:
                 fields.uri.setValidators([_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required, src_app_common_validation__WEBPACK_IMPORTED_MODULE_2__["validateURI"]]);
                 fields.udp.setValue(false);
+                fields.control_system_id.setValue('');
                 break;
 
               case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].Device:
               case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].SSH:
                 fields.ip.setValidators([src_app_common_validation__WEBPACK_IMPORTED_MODULE_2__["validateIpAddress"], _angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required]);
                 fields.port.setValidators([_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].min(1), _angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].max(65535), _angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required]);
+                fields.control_system_id.setValue('');
                 break;
 
               case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].Logic:
@@ -44683,16 +44685,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "d4d9ef4",
-        "hash": "d4d9ef4",
+        "raw": "d01ccc6",
+        "hash": "d01ccc6",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "d4d9ef4",
+        "suffix": "d01ccc6",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1605668976505
+        "time": 1605674519716
       };
       /* tslint:enable */
 
