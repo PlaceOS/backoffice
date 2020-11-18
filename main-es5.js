@@ -4781,7 +4781,7 @@
         var driver = module.driver || {
           class_name: 'System'
         };
-        var module_class = module.custom_name || driver.class_name;
+        var module_class = module.custom_name || module.name || driver.class_name;
         var modules_with_class = module_list.filter(function (mod) {
           var d = mod.driver || {
             class_name: 'System'
@@ -9672,14 +9672,14 @@
               case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].Websocket:
                 fields.uri.setValidators([_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required, src_app_common_validation__WEBPACK_IMPORTED_MODULE_2__["validateURI"]]);
                 fields.udp.setValue(false);
-                fields.control_system_id.setValue('');
+                fields.control_system_id.setValue(null);
                 break;
 
               case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].Device:
               case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].SSH:
                 fields.ip.setValidators([src_app_common_validation__WEBPACK_IMPORTED_MODULE_2__["validateIpAddress"], _angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required]);
                 fields.port.setValidators([_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].min(1), _angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].max(65535), _angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required]);
-                fields.control_system_id.setValue('');
+                fields.control_system_id.setValue(null);
                 break;
 
               case _placeos_ts_client__WEBPACK_IMPORTED_MODULE_1__["PlaceDriverRole"].Logic:
@@ -44685,16 +44685,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "d01ccc6",
-        "hash": "d01ccc6",
+        "raw": "0926faf",
+        "hash": "0926faf",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "d01ccc6",
+        "suffix": "0926faf",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1605674519716
+        "time": 1605679184653
       };
       /* tslint:enable */
 
