@@ -41446,8 +41446,11 @@
 
             this.terminal.selectAll();
             this.terminal.clearSelection();
+            this.terminal.write('\x1b[H\x1b[2J');
             var lines = new_content.split('\n');
-            new_content ? this.terminal.writeln(lines.pop()) : this.terminal.write('\x1b[H\x1b[2J');
+            lines.forEach(function (line) {
+              return _this116.terminal.writeln(line);
+            });
             this.timeout('scroll', function () {
               return _this116.terminal.scrollToBottom();
             }, 50);
@@ -44685,16 +44688,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "0926faf",
-        "hash": "0926faf",
+        "raw": "7f4bdbf",
+        "hash": "7f4bdbf",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "0926faf",
+        "suffix": "7f4bdbf",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1605679184653
+        "time": 1605681720121
       };
       /* tslint:enable */
 
