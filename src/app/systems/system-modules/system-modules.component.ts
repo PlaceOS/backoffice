@@ -117,9 +117,7 @@ export class SystemModulesComponent extends BaseClass {
 
     public ngOnInit(): void {
         this.loading = true;
-        this.subscription('item', this._service.item.subscribe((item) => {
-            this.loadModules();
-        }));
+        this.subscription('item', this._service.item.subscribe(_ => this.loadModules()));
     }
 
     /**
