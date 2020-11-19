@@ -2763,8 +2763,8 @@
             var _this13 = this;
 
             this.loading = true;
-            this.subscription('item', this._service.item.subscribe(function (item) {
-              _this13.loadModules();
+            this.subscription('item', this._service.item.subscribe(function (_) {
+              return _this13.loadModules();
             }));
           }
           /**

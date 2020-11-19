@@ -230,7 +230,7 @@
   }
 
   function _templateObject326() {
-    var data = _taggedTemplateLiteral([":@@deleteAction\u241F41fc61e049f450868f12165a69eb822fa79ad888\u241F1314726441116501193: Delete ", ":ICU: [D] "]);
+    var data = _taggedTemplateLiteral([":@@deleteAction\u241F3658ae2a7ccce2f97288efeec5faa587aa971055\u241F5569000866417167830: Delete ", ":ICU: [Del] "]);
 
     _templateObject326 = function _templateObject326() {
       return data;
@@ -6471,7 +6471,7 @@
             return _this9.edit();
           });
 
-          _this9._hotkey.listen(['KeyD'], function () {
+          _this9._hotkey.listen(['Delete'], function () {
             return _this9["delete"]();
           });
 
@@ -38922,7 +38922,7 @@
       var I18N_46;
 
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-        var MSG_EXTERNAL_deleteAction$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49 = goog.getMsg(" Delete {$icu} [D] ", {
+        var MSG_EXTERNAL_deleteAction$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49 = goog.getMsg(" Delete {$icu} [Del] ", {
           "icu": I18N_47
         });
         I18N_46 = MSG_EXTERNAL_deleteAction$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49;
@@ -44688,16 +44688,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "efe70da",
-        "hash": "efe70da",
+        "raw": "e96fbd6",
+        "hash": "e96fbd6",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "efe70da",
+        "suffix": "e96fbd6",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1605742002256
+        "time": 1605766329783
       };
       /* tslint:enable */
 

@@ -1160,9 +1160,7 @@ class SystemModulesComponent extends src_app_common_base_class__WEBPACK_IMPORTED
     }
     ngOnInit() {
         this.loading = true;
-        this.subscription('item', this._service.item.subscribe((item) => {
-            this.loadModules();
-        }));
+        this.subscription('item', this._service.item.subscribe(_ => this.loadModules()));
     }
     /**
      * Load the modules for the active system

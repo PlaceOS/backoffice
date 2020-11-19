@@ -1623,7 +1623,7 @@ class ActiveItemService extends _base_class__WEBPACK_IMPORTED_MODULE_11__["BaseC
         });
         this._hotkey.listen(['KeyN'], () => this.create());
         this._hotkey.listen(['KeyE'], () => this.edit());
-        this._hotkey.listen(['KeyD'], () => this.delete());
+        this._hotkey.listen(['Delete'], () => this.delete());
         this._search.subscribe((str) => {
             this._loading_list.next(true);
             this._next_query.next(null);
@@ -18869,11 +18869,11 @@ else {
 I18N_47 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵi18nPostprocess"](I18N_47, { "VAR_SELECT": "\uFFFD0\uFFFD" });
 var I18N_46;
 if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
-    const MSG_EXTERNAL_deleteAction$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49 = goog.getMsg(" Delete {$icu} [D] ", { "icu": I18N_47 });
+    const MSG_EXTERNAL_deleteAction$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49 = goog.getMsg(" Delete {$icu} [Del] ", { "icu": I18N_47 });
     I18N_46 = MSG_EXTERNAL_deleteAction$$SRC_APP_UI_ITEM_DISPLAY_ITEM_DISPLAY_COMPONENT_TS__49;
 }
 else {
-    I18N_46 = $localize `:@@deleteAction␟41fc61e049f450868f12165a69eb822fa79ad888␟1314726441116501193: Delete ${I18N_47}:ICU: [D] `;
+    I18N_46 = $localize `:@@deleteAction␟3658ae2a7ccce2f97288efeec5faa587aa971055␟5569000866417167830: Delete ${I18N_47}:ICU: [Del] `;
 }
 const _c50 = function () { return { class: "backoffice-trash" }; };
 function ItemDisplayComponent_button_29_Template(rf, ctx) { if (rf & 1) {
@@ -21880,16 +21880,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "efe70da",
-    "hash": "efe70da",
+    "raw": "e96fbd6",
+    "hash": "e96fbd6",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "efe70da",
+    "suffix": "e96fbd6",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1605742002256
+    "time": 1605766329783
 };
 /* tslint:enable */
 
