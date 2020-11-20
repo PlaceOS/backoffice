@@ -17,8 +17,8 @@ win.control.systems = win.control.systems || {};
 win.control.systems['sys-B0'] = {
     System: [
         {
-            name: 'Demo System'
-        }
+            name: 'Demo System',
+        },
     ],
     Demo: [
         {
@@ -26,16 +26,13 @@ win.control.systems['sys-B0'] = {
             mute: false,
             views: 0,
             state: 'Idle',
-
-            $play: () => {
-                win.control.systems['sys-B0'].Demo[0].state = 'Playing';
+            $play() {
+                this.state = 'Playing';
             },
-
-            $stop: () => {
-                win.control.systems['sys-B0'].Demo[0].state = 'Stopped';
+            $stop() {
+                this.state = 'Stopped';
             },
-
-            $volume: (value: number) => {
+            $volume(value: number) {
                 this.volume = value;
                 if (this.volume > 100) {
                     this.volume = 100;
@@ -43,16 +40,15 @@ win.control.systems['sys-B0'] = {
                     this.volume = 0;
                 }
             },
-
-            $mute: (state: boolean) => {
+            $mute(state: boolean) {
                 this.mute = state;
             },
 
-            $state: (status: string) => {
+            $state(status: string) {
                 this.state = status;
-            }
-        }
-    ]
+            },
+        },
+    ],
 };
 
 setTimeout(() => initMessages(), 500);
@@ -66,8 +62,8 @@ function initMessages() {
             `Hello ${win.backend.model.user.name}, this is the concierge`,
             'Can I book a room for tomorrow at 9:30am?',
             'Sure, how does Activity Space 31.04 sound?',
-            'That\'s exactly what I\'m looking for, thanks',
-            'Alright, you now have a booking for Activity Space 31.04 at 9:30am tomorrow.'
+            "That's exactly what I'm looking for, thanks",
+            'Alright, you now have a booking for Activity Space 31.04 at 9:30am tomorrow.',
         ];
         const time = dayjs()
             .add(-messages.length * 30, 'm')
@@ -77,7 +73,7 @@ function initMessages() {
             win.control.systems['sys-B0'].Slack[0].threads.local.push({
                 text: msg,
                 username: index % 2 === 0 ? win.backend.model.user.name : '',
-                ts: time.valueOf()
+                ts: time.valueOf(),
             });
             index++;
             time.add(30, 'm');

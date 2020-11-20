@@ -26,7 +26,7 @@ import { BackofficeUsersService } from './users/users.service';
     template: `
         <ng-container *ngIf="!(loading | async); else load_state">
             <header [class.dark-mode]="dark_mode" [class.joke]="is_fools_day">
-                <topbar-header [(showMenu)]="show" [(filter)]="filter"></topbar-header>
+                <topbar-header class="w-full" [(showMenu)]="show" [(filter)]="filter"></topbar-header>
             </header>
             <main class="flex flex-1 h-0" [class.filtered]="filter">
                 <sidebar-menu class="h-full" [(show)]="show"></sidebar-menu>
