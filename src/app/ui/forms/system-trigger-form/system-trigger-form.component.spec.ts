@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SystemTriggerFormComponent } from './system-trigger-form.component';
 
@@ -6,7 +6,7 @@ describe('SystemTriggerFormComponent', () => {
   let component: SystemTriggerFormComponent;
   let fixture: ComponentFixture<SystemTriggerFormComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SystemTriggerFormComponent ]
     })

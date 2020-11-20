@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { PlaceClusterTaskListComponent } from './task-list.component';
 
@@ -6,7 +6,7 @@ describe('PlaceClusterTaskListComponent', () => {
     let component: PlaceClusterTaskListComponent;
     let fixture: ComponentFixture<PlaceClusterTaskListComponent>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [PlaceClusterTaskListComponent]
         }).compileComponents();

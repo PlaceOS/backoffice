@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { LdapSourceFormComponent } from './ldap-source-form.component';
 
@@ -6,7 +6,7 @@ describe('LdapSourceFormComponent', () => {
   let component: LdapSourceFormComponent;
   let fixture: ComponentFixture<LdapSourceFormComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ LdapSourceFormComponent ]
     })

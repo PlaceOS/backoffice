@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { PlaceClusterDetailsComponent } from './cluster-details.component';
 
@@ -6,7 +6,7 @@ describe('PlaceClusterDetailsComponent', () => {
     let component: PlaceClusterDetailsComponent;
     let fixture: ComponentFixture<PlaceClusterDetailsComponent>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [PlaceClusterDetailsComponent]
         }).compileComponents();
