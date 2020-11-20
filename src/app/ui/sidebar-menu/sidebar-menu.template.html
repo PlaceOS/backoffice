@@ -1,22 +1,30 @@
 <div
-    class="container"
+    [class]="'absolute h-screen w-screen z-40 bottom-0 pointer-events-auto ' + (show ? 'block' : 'hidden')"
+    (click)="show = false; showChange.emit(false)"
+></div>
+<div
+    class="h-full bg-gray-800 shadow z-20 absolute sm:relative text-white"
     *ngIf="menu_items"
     [class.show]="show"
     (mouseleave)="tooltip = 'false'"
-    (click)="cancelClose()"
-    (window:click)="close()"
 >
-    <ng-container *ngFor="let item of menu_items">
-        <div class="item" [title]="item.name" [matTooltip]="item.name" i18n-matTooltip matTooltipPosition="right">
-            <a [routerLink]="[item.route]" routerLinkActive="active">
-                <app-icon [icon]="item?.icon"></app-icon>
-                <div class="text" *ngIf="!item?.hide_name" i18n>
-                    { item.name, select, Systems { Systems } Modules { Modules } Zones { Zones }
-                    Drivers { Drivers } Repos { Repos } Triggers { Triggers } Users { Users }
-                    Domains { Domains } Admin { Admin } other { Other } }
-                </div>
-                <div class="bar"></div>
-            </a>
+    <a
+        class="flex flex-col items-center justify-center relative border-b border-white border-opacity-30 hover:bg-white hover:bg-opacity-20"
+        *ngFor="let item of menu_items"
+        [routerLink]="[item.route]"
+        routerLinkActive="active"
+        [title]="item.name"
+        [matTooltip]="item.name"
+        i18n-matTooltip
+        matTooltipPosition="right"
+        (click)="show = false; showChange.emit(false)"
+    >
+        <app-icon [icon]="item?.icon"></app-icon>
+        <div class="text-sm" *ngIf="!item?.hide_name" i18n>
+            { item.name, select, Systems { Systems } Modules { Modules } Zones { Zones } Drivers {
+            Drivers } Repos { Repos } Triggers { Triggers } Users { Users } Domains { Domains }
+            Admin { Admin } other { Other } }
         </div>
-    </ng-container>
+        <div bar class="opacity-0 absolute top-0 right-0 bottom-0 bg-primary"></div>
+    </a>
 </div>
