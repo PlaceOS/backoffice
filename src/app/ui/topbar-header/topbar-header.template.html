@@ -1,5 +1,5 @@
 <div class="w-full flex items-center bg-secondary text-white shadow z-30 py-2">
-    <button mat-icon-button class="sm:hidden mx-4" (click)="toggleMenu()">
+    <button mat-icon-button class="sm:hidden ml-4" (click)="toggleMenu()">
         <app-icon [className]="'backoffice-' + (show_menu ? 'cross' : 'menu')"></app-icon>
     </button>
     <a [routerLink]="['/']" *ngIf="logo"  class="text-3xl leading-none font-heading mx-4 mt-2 relative">

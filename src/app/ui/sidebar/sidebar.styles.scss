@@ -1,6 +1,10 @@
 
 @import 'variables';
 
+:host.show {
+    height: 100% !important;
+}
+
 .container {
     position: relative;
     background-color: $background;
