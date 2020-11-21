@@ -1,21 +1,8 @@
 @import 'variables';
 
-.dropdown[widget] {
-    border-radius: 4px;
-
-    &.fill {
-        width: 100%;
-    }
-}
-
-.dropdown-list[widget] {
-    border-radius: 4px;
-}
-
-.spinner {
-    svg {
-        width: 100%;
-    }
+label {
+    font-size: .8rem;
+    font-weight: 500;
 }
 
 button[mat-button].mat-button,

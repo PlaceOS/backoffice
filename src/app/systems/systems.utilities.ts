@@ -1,4 +1,4 @@
-import { PlaceSystem, PlaceZone, EncryptionLevel } from '@placeos/ts-client';
+import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
 import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 

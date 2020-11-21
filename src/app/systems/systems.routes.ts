@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { SystemsComponent } from './systems.component';
-import { SystemAboutComponent } from './system-about/system-about.component';
+import { SystemAboutComponent } from './system-about.component';
 import { SystemModulesComponent } from './system-modules/system-modules.component';
 import { SystemTriggersComponent } from './system-triggers/system-triggers.component';
 import { SystemZonesComponent } from './system-zones/system-zones.component';
