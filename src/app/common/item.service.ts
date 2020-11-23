@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, of } from 'rxjs';
@@ -140,38 +140,50 @@ export class ActiveItemService extends BaseClass {
         this._show_options.next(!this._show_options.getValue());
     }
 
-    public create(copy: boolean = false) {
-        const item = this._active_item.getValue();
-        this.edit(
+    public create(item?: any, copy: boolean = false) {
+        item = item || this._active_item.getValue();
+        const actions = (
+            Object.values(ACTIONS).find((v) => v.itemConstructor === item?.prototype?.constructor) ||
+            this.actions
+        );
+        console.log('Create:', item, actions);
+        return this.edit(
             copy
-                ? new this.actions.itemConstructor({ ...item, id: '', name: `${item.name} (1)` })
-                : new this.actions.itemConstructor()
+                ? new actions.itemConstructor({ ...item, id: '', name: `${item.name} (1)` })
+                : new actions.itemConstructor()
         );
     }
 
-    public async edit(item?: any) {
-        item = item || this._active_item.getValue();
+    public async edit<T extends PlaceResource = any>(item?: T) {
+        item = item || this._active_item.getValue() as any;
         if (item) {
-            if (item.id) {
-                item = await this.actions.show(item.id).toPromise();
-            }
-            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
-                height: 'auto',
-                width: 'auto',
-                maxHeight: 'calc(100vh - 2em)',
-                maxWidth: 'calc(100vw - 2em)',
-                data: {
-                    item: new this.actions.itemConstructor({ ...item }),
-                    name: this._name.getValue().slice(0, -1),
-                    save: this.actions.save,
-                },
-            });
-            ref.componentInstance.event
-                .pipe(filter((e) => e.reason === 'done'))
-                .subscribe((event) => {
-                    this.replaceItem(event.metadata.item);
-                    this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
+            return new Promise<T>(async (resolve) => {
+                const actions = (
+                    Object.values(ACTIONS).find((v) => v.itemConstructor === (item as any)?.prototype?.constructor) ||
+                    this.actions
+                );
+                if (item.id) {
+                    item = await actions.show(item.id).toPromise();
+                }
+                const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+                    height: 'auto',
+                    width: 'auto',
+                    maxHeight: 'calc(100vh - 2em)',
+                    maxWidth: 'calc(100vw - 2em)',
+                    data: {
+                        item: new actions.itemConstructor({ ...item }),
+                        name: actions.singular,
+                        save: actions.save,
+                    },
                 });
+                ref.componentInstance.event
+                    .pipe(filter((e) => e.reason === 'done'))
+                    .subscribe((event) => {
+                        resolve(event.metadata.id);
+                        this.replaceItem(event.metadata.item);
+                        this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
+                    });
+            })
         }
     }
 
@@ -283,14 +295,14 @@ export class ActiveItemService extends BaseClass {
                 this._list.next([]);
             }
             const resp = await next().toPromise();
-            if (type === this._type){
+            if (type === this._type) {
                 this._next_query.next(
                     resp.next || (() => of({ data: [], total: resp.total, next: null }))
                 );
                 const list = this._list
                     .getValue()
                     .filter((i) => !resp.data.find((item) => item.id === i.id));
-                const new_list = list.concat(resp.data)
+                const new_list = list.concat(resp.data);
                 new_list.sort((a, b) => a.name?.localeCompare(b.name));
                 this._list.next(new_list);
                 this._loading_list.next(false);
@@ -304,15 +316,17 @@ export class ActiveItemService extends BaseClass {
             const settings = await querySettings({ parent_id: item.id })
                 .pipe(map((resp) => resp.data))
                 .toPromise();
-            while(settings.length < 4) {
-                if (!settings.find(s => s.encryption_level === EncryptionLevel.None)) {
+            while (settings.length < 4) {
+                if (!settings.find((s) => s.encryption_level === EncryptionLevel.None)) {
                     settings.push(new PlaceSettings({ encryption_level: EncryptionLevel.None }));
-                } else if (!settings.find(s => s.encryption_level === EncryptionLevel.Support)) {
+                } else if (!settings.find((s) => s.encryption_level === EncryptionLevel.Support)) {
                     settings.push(new PlaceSettings({ encryption_level: EncryptionLevel.Support }));
-                } else if (!settings.find(s => s.encryption_level === EncryptionLevel.Admin)) {
+                } else if (!settings.find((s) => s.encryption_level === EncryptionLevel.Admin)) {
                     settings.push(new PlaceSettings({ encryption_level: EncryptionLevel.Admin }));
                 } else {
-                    settings.push(new PlaceSettings({ encryption_level: EncryptionLevel.NeverDisplay }));
+                    settings.push(
+                        new PlaceSettings({ encryption_level: EncryptionLevel.NeverDisplay })
+                    );
                 }
             }
             settings.sort((a, b) => a.encryption_level - b.encryption_level);

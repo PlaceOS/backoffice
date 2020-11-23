@@ -9,7 +9,7 @@ import { ROUTES } from './systems.routes';
 
 import { SystemsComponent } from './systems.component';
 import { SystemAboutComponent } from './system-about.component';
-import { SystemModulesComponent } from './system-modules/system-modules.component';
+import { SystemModulesComponent } from './system-modules.component';
 import { SystemTriggersComponent } from './system-triggers/system-triggers.component';
 import { SystemZonesComponent } from './system-zones/system-zones.component';
 import { SystemMetadataComponent } from './system-metadata/system-metadata.component';

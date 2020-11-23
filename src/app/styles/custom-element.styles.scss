@@ -1,9 +1,6 @@
 @import 'variables';
 
-label {
-    font-size: .8rem;
-    font-weight: 500;
-}
+
 
 button[mat-button].mat-button,
 a[button] {
@@ -18,6 +15,10 @@ a[button] {
         color: $color-primary;
     }
 
+    &:focus {
+        outline: none;
+    }
+
     &[disabled] {
         background-color: rgba(#000, 0.12);
         color: rgba(#000, 0.2);
@@ -26,13 +27,17 @@ a[button] {
     }
 }
 
-.mat-icon-button {
+button.mat-icon-button {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 2em;
     width: 2em;
     font-size: 1em;
+
+    &:focus {
+        outline: none;
+    }
 
     .mat-button-wrapper {
         display: flex;

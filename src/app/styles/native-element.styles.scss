@@ -22,6 +22,11 @@ textarea {
     }
 }
 
+div > label {
+    font-size: .8rem;
+    font-weight: 500;
+}
+
 .dark-mode {
     input,
     textarea {
