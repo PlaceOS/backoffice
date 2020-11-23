@@ -41,7 +41,7 @@
         ></div>
         <div class="text">{{user?.name || 'Guest'}}</div>
     </a>
-    <a mat-menu-item [routerLink]="['/profile']" routerLinkActive="active">
+    <a mat-menu-item [routerLink]="['/users', user.id]" routerLinkActive="active">
         <app-icon className="backoffice-user"></app-icon>
         <div class="text" i18n="@@profileAction">Profile</div>
     </a>
