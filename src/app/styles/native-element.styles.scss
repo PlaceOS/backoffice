@@ -25,6 +25,9 @@ textarea {
 div > label {
     font-size: .8rem;
     font-weight: 500;
+    span {
+        color: $pending;
+    }
 }
 
 .dark-mode {

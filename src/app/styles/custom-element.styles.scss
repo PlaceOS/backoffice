@@ -322,3 +322,11 @@ mat-expansion-panel {
         margin-left: 3px;
     }
 }
+
+[table-head] {
+    @apply flex items-center bg-gray-300 border-b border-black divide-x divide-gray-400 font-medium;
+}
+
+[table-row] {
+    @apply flex items-center border-b border-gray-300 divide-x divide-gray-300 hover:bg-gray-100
+}

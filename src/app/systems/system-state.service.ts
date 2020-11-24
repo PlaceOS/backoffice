@@ -22,6 +22,7 @@ import { BehaviorSubject } from 'rxjs';
 import { filter, first, map, shareReplay, switchMap } from 'rxjs/operators';
 import { calculateModuleIndex } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
+import { openConfirmModal } from '../common/general';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -348,20 +349,6 @@ export class SystemStateService {
     }
 
     private async confirm(data: ConfirmModalData) {
-        const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
-            ConfirmModalComponent,
-            {
-                ...CONFIRM_METADATA,
-                data,
-            }
-        );
-        return {
-            ...(await Promise.race([
-                ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).toPromise(),
-                ref.afterClosed().toPromise(),
-            ])),
-            loading: (s) => (ref.componentInstance.loading = s),
-            close: () => ref.close(),
-        };
+        return openConfirmModal(data, this._dialog);
     }
 }

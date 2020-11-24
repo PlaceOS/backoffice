@@ -146,7 +146,6 @@ export class ActiveItemService extends BaseClass {
             Object.values(ACTIONS).find((v) => v.itemConstructor === item?.prototype?.constructor) ||
             this.actions
         );
-        console.log('Create:', item, actions);
         return this.edit(
             copy
                 ? new actions.itemConstructor({ ...item, id: '', name: `${item.name} (1)` })
