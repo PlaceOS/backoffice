@@ -2,7 +2,7 @@ import { Injectable, Type } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, of } from 'rxjs';
-import { filter, map, debounce, debounceTime } from 'rxjs/operators';
+import { filter, map, debounce, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
 
 import {
@@ -65,7 +65,11 @@ export class ActiveItemService extends BaseClass {
     /** Observable for list of items */
     public readonly list = this._list.asObservable();
     /** Observable for active item */
-    public readonly item = this._active_item.asObservable().pipe(debounceTime(1000));
+    public readonly item = this._active_item
+        .asObservable()
+        .pipe(
+            distinctUntilChanged((a, b) => !a || !b || (a.id === b.id && a.version === b.version))
+        );
     /** Observable for list of items */
     public readonly list_items = () => this._list.getValue();
     /** Observable for whether the item list should show on mobile */
@@ -122,6 +126,7 @@ export class ActiveItemService extends BaseClass {
             const url = this._router.url.split('/');
             this._type = url[1] as any;
             this._loading.next(true);
+            this._active_item.next(null);
             const item = await this.actions
                 .show(id)
                 .toPromise()
@@ -142,10 +147,10 @@ export class ActiveItemService extends BaseClass {
 
     public create(item?: any, copy: boolean = false) {
         item = item || this._active_item.getValue();
-        const actions = (
-            Object.values(ACTIONS).find((v) => v.itemConstructor === item?.prototype?.constructor) ||
-            this.actions
-        );
+        const actions =
+            Object.values(ACTIONS).find(
+                (v) => v.itemConstructor === item?.prototype?.constructor
+            ) || this.actions;
         return this.edit(
             copy
                 ? new actions.itemConstructor({ ...item, id: '', name: `${item.name} (1)` })
@@ -154,13 +159,13 @@ export class ActiveItemService extends BaseClass {
     }
 
     public async edit<T extends PlaceResource = any>(item?: T) {
-        item = item || this._active_item.getValue() as any;
+        item = item || (this._active_item.getValue() as any);
         if (item) {
             return new Promise<T>(async (resolve) => {
-                const actions = (
-                    Object.values(ACTIONS).find((v) => v.itemConstructor === (item as any)?.prototype?.constructor) ||
-                    this.actions
-                );
+                const actions =
+                    Object.values(ACTIONS).find(
+                        (v) => v.itemConstructor === (item as any)?.prototype?.constructor
+                    ) || this.actions;
                 if (item.id) {
                     item = await actions.show(item.id).toPromise();
                 }
@@ -182,7 +187,7 @@ export class ActiveItemService extends BaseClass {
                         this.replaceItem(event.metadata.item);
                         this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
                     });
-            })
+            });
         }
     }
 

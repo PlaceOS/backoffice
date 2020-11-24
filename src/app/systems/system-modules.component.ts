@@ -57,7 +57,7 @@ import { SystemStateService } from './system-state.service';
             </section>
             <section device-list>
                 <h3 class="font-medium text-lg mb-2" i18n="@@moduleListHeader">Module List</h3>
-                <ng-container *ngIf="(loading | async) === null; else load_state">
+                <ng-container *ngIf="!(loading | async).modules; else load_state">
                     <div role="table" class="overflow-x-auto" *ngIf="(modules | async)?.length; else empty_state">
                         <div table-head >
                             <div class="w-12 p-2"></div>

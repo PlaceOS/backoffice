@@ -81,6 +81,7 @@ export class SystemsComponent extends BaseClass implements OnInit {
     }
 
     public ngOnInit(): void {
+        this.updateTabList({});
         this.subscription(
             'counts',
             this._service.counts.subscribe((counts) => this.updateTabList(counts))

@@ -19,12 +19,12 @@ import { SystemStateService } from './system-state.service';
             <button mat-button [disabled]="!new_zone" (click)="joinZone(new_zone)">Join zone</button>
         </section>
         <section>
-            <ng-container *ngIf="!(loading | async); else load_state">
+            <ng-container *ngIf="!(loading | async).zones; else load_state">
                 <div role="table" class="overflow-x-auto" *ngIf="(zones | async)?.length">
                     <div table-head>
                         <div class="w-12 p-2"></div>
                         <div class="w-48 p-2" i18n="@@nameLabel">Name</div>
-                        <div class="flex-1 p-2" i18n="@@descriptionLabel">Description</div>
+                        <div desc class="flex-1 p-2" i18n="@@descriptionLabel">Description</div>
                         <div class="w-16 p-2"></div>
                     </div>
                     <div
@@ -47,7 +47,7 @@ import { SystemStateService } from './system-state.service';
                             <div class="w-48 p-2">
                                 <a [routerLink]="['/zones', zone.id]">{{ zone.name }}</a>
                             </div>
-                            <div class="flex-1 truncate">{{ zone.description }}</div>
+                            <div desc class="flex-1 truncate">{{ zone.description }}</div>
                             <div class="w-16 p-2 items-center justify-center">
                                 <button mat-icon-button *ngIf="(zones | async).length > 1" (click)="removeZone(zone)">
                                     <app-icon className="backoffice-trash"></app-icon>
@@ -71,6 +71,10 @@ import { SystemStateService } from './system-state.service';
                 height: 100%;
                 width: 100%;
                 padding: 1rem;
+            }
+
+            [desc] {
+                min-width: 8rem;
             }
         `,
     ],

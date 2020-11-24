@@ -27,23 +27,24 @@ import { openConfirmModal, unique } from '../common/general';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import {
-    ConfirmModalData,
-} from '../overlays/confirm-modal/confirm-modal.component';
+import { HashMap } from '../common/types';
+import { ConfirmModalData } from '../overlays/confirm-modal/confirm-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal/view-response-modal.component';
 
 @Injectable({
     providedIn: 'root',
 })
 export class SystemStateService {
-    private _loading = new BehaviorSubject<'settings' | 'modules' | 'zones' | 'triggers' | null>(
-        null
-    );
+    private _loading = new BehaviorSubject<HashMap<boolean>>({});
     private _modules = new BehaviorSubject<PlaceModule[]>([]);
     /** Observable of the counts of the active item */
     public counts = this._state.item.pipe(
         filter((item) => !!item && item instanceof PlaceSystem),
         switchMap(async (item: PlaceSystem) => {
+            this._loading.next({
+                ...this._loading.getValue(),
+                settings: true
+            });
             const details = await Promise.all([
                 listSystemTriggers(item.id)
                     .pipe(map((d) => d.total))
@@ -51,6 +52,10 @@ export class SystemStateService {
                 showMetadata(item.id).toPromise(),
             ]);
             const [triggers, metadata] = details;
+            this._loading.next({
+                ...this._loading.getValue(),
+                settings: false
+            });
             return {
                 devices: item.modules.length,
                 zones: item.zones.length,
@@ -62,15 +67,21 @@ export class SystemStateService {
     );
     /** Observable for associated settings of the active item */
     public readonly associated_settings = this._state.item.pipe(
-        filter((item) => !!item && item instanceof PlaceSystem),
-        switchMap((item) => systemSettings(item.id)),
+        switchMap(async (item: PlaceSystem) => {
+            if (!item || !(item instanceof PlaceSystem)) return [];
+            return systemSettings(item.id);
+        }),
         shareReplay()
     );
     /** Observable for modules associated with system */
     public readonly modules = this._state.item.pipe(
-        filter((item) => !!item && item instanceof PlaceSystem),
         switchMap(async (item: PlaceSystem) => {
-            this._loading.next('modules');
+            console.log('Item:', item);
+            if (!item || !(item instanceof PlaceSystem)) return [];
+            this._loading.next({
+                ...this._loading.getValue(),
+                modules: true
+            });
             const modules = await queryModules({
                 control_system_id: item.id,
                 complete: true,
@@ -78,8 +89,10 @@ export class SystemStateService {
             } as any)
                 .pipe(map((i) => i.data))
                 .toPromise();
-            console.log('Modules:', modules);
-            this._loading.next(null);
+                this._loading.next({
+                    ...this._loading.getValue(),
+                    modules: false
+                });
             this._modules.next(modules);
             return modules;
         }),
@@ -108,13 +121,19 @@ export class SystemStateService {
     );
     /** Observable for zones associated with system */
     public readonly zones = this._state.item.pipe(
-        filter((item) => !!item && item instanceof PlaceSystem),
         switchMap(async (item: PlaceSystem) => {
-            this._loading.next('zones');
+            if (!item || !(item instanceof PlaceSystem)) return [];
+            this._loading.next({
+                ...this._loading.getValue(),
+                zones: true
+            });
             const zones = await listSystemZones(item.id)
                 .pipe(map((i) => i.data))
                 .toPromise();
-            this._loading.next(null);
+                this._loading.next({
+                    ...this._loading.getValue(),
+                    zones: false
+                });
             return zones;
         }),
         shareReplay()
@@ -123,11 +142,17 @@ export class SystemStateService {
     public readonly triggers = this._state.item.pipe(
         filter((item) => !!item && item instanceof PlaceSystem),
         switchMap(async (item: PlaceSystem) => {
-            this._loading.next('triggers');
+            this._loading.next({
+                ...this._loading.getValue(),
+                triggers: true
+            });
             const triggers = await listSystemTriggers(item.id)
                 .pipe(map((i) => i.data))
                 .toPromise();
-            this._loading.next(null);
+            this._loading.next({
+                ...this._loading.getValue(),
+                triggers: false
+            });
             return triggers;
         }),
         shareReplay()
@@ -203,10 +228,13 @@ export class SystemStateService {
         if (this._debug.isListening(device)) {
             this._debug.unbind(device);
         } else {
-            this._debug.bind(device, `${device.custom_name || device.name || 'Blank'}_${calculateModuleIndex(
-                this._modules.getValue(),
-                device
-            )}`);
+            this._debug.bind(
+                device,
+                `${device.custom_name || device.name || 'Blank'}_${calculateModuleIndex(
+                    this._modules.getValue(),
+                    device
+                )}`
+            );
         }
     }
 
@@ -370,7 +398,7 @@ export class SystemStateService {
             icon: { type: 'icon', class: 'backoffice-trash' },
         });
         if (!details || !details.reason) return;
-        const zones = this.active_item.zones.filter(z => z !== zone.id);
+        const zones = this.active_item.zones.filter((z) => z !== zone.id);
         const system = await updateSystem(this.active_item.id, { ...this.active_item, zones })
             .toPromise()
             .catch((err) => {
