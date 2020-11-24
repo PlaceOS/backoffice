@@ -7,6 +7,7 @@ import {
     listSystemZones,
     PlaceModule,
     PlaceSystem,
+    PlaceZone,
     queryModules,
     recompileDriver,
     removeSystemModule,
@@ -22,7 +23,7 @@ import { BehaviorSubject } from 'rxjs';
 import { filter, map, shareReplay, switchMap } from 'rxjs/operators';
 import { calculateModuleIndex } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
-import { openConfirmModal } from '../common/general';
+import { openConfirmModal, unique } from '../common/general';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -243,6 +244,30 @@ export class SystemStateService {
         details.close();
     }
 
+    public async reorderZones(fst: number, snd: number) {
+        const details = await this.confirm({
+            title: 'Change order?',
+            content: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
+            icon: { type: 'icon', class: 'backoffice-layers' },
+        });
+        if (!details || !details.reason) return;
+        details.loading('Updating zone order...');
+        const list: string[] = [...this.active_item.zones];
+        moveItemInArray(list, fst, snd);
+        const resp = await updateSystem(this.active_item.id, { ...this.active_item, zones: list })
+            .toPromise()
+            .catch((err) => {
+                notifyError(
+                    `Failed to reorder system zones: ${JSON.stringify(
+                        err.response || err.message || err
+                    )}`
+                );
+                return err;
+            });
+        if (!resp) notifySuccess(`Successfully reordered system zones.`);
+        details.close();
+    }
+
     /**
      * Associate module with the active system
      * @param id ID of the module to associate with the active system
@@ -282,6 +307,7 @@ export class SystemStateService {
                     }`
                 );
             });
+        details.close();
         if (!system) return;
         this._state.replaceItem(system);
         notifySuccess(`Successfully removed module from system.`);
@@ -311,6 +337,53 @@ export class SystemStateService {
             });
         notifySuccess(`Successfully removed module from system.`);
         details.close();
+    }
+
+    /**
+     * Remove associated module from the active system
+     * @param id ID of the module to disassociate with the active system
+     */
+    public async addZone(zone: PlaceZone) {
+        const zones = unique([...this.active_item.zones, zone.id]);
+        const system = await updateSystem(this.active_item.id, { ...this.active_item, zones })
+            .toPromise()
+            .catch((err) => {
+                notifyError(
+                    `Error adding zone ${zone.id} to system. Error: ${
+                        err.statusText || err.message || err
+                    }`
+                );
+            });
+        if (!system) return;
+        this._state.replaceItem(system);
+        notifySuccess(`Successfully added zone to system.`);
+    }
+
+    /**
+     * Remove associated module from the active system
+     * @param id ID of the module to disassociate with the active system
+     */
+    public async removeZone(zone: PlaceZone) {
+        const details = await this.confirm({
+            title: 'Remove zone?',
+            content: `<p>Are you sure you want remove zone "${zone.name}" from the system?</p>Configuration will be updated immediately.`,
+            icon: { type: 'icon', class: 'backoffice-trash' },
+        });
+        if (!details || !details.reason) return;
+        const zones = this.active_item.zones.filter(z => z !== zone.id);
+        const system = await updateSystem(this.active_item.id, { ...this.active_item, zones })
+            .toPromise()
+            .catch((err) => {
+                notifyError(
+                    `Error removing zone ${zone.id} from system. Error: ${
+                        err.statusText || err.message || err
+                    }`
+                );
+            });
+        details.close();
+        if (!system) return;
+        this._state.replaceItem(system);
+        notifySuccess(`Successfully removed zone from system.`);
     }
 
     /**

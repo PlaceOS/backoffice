@@ -325,6 +325,11 @@ mat-expansion-panel {
 
 [table-head] {
     @apply flex items-center bg-gray-300 border-b border-black divide-x divide-gray-400 font-medium;
+
+    > div {
+        @apply flex items-center;
+        height: 2.75rem;
+    }
 }
 
 [table-row] {
@@ -335,4 +340,8 @@ mat-expansion-panel {
         @apply flex items-center;
         height: 2.75rem;
     }
+}
+
+.cdk-drag-preview {
+    @apply bg-white rounded border-none shadow;
 }

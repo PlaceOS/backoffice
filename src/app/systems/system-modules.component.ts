@@ -80,6 +80,10 @@ import { SystemStateService } from './system-state.service';
                                 (contextAction)="handleContextEvent($event, device)"
                             >
                                 <div
+                                    class="w-full h-10 border-2 border-dashed border-gray-600 bg-gray-300 bg-opacity-25"
+                                    *cdkDragPlaceholder
+                                ></div>
+                                <div
                                     class="w-12 flex justify-center h-full p-2"
                                     style="cursor: grab"
                                 >
@@ -155,10 +159,6 @@ import { SystemStateService } from './system-state.service';
                                     </mat-menu>
                                 </div>
                             </div>
-                            <div
-                                class="w-full p-8 border-4 border-dashed bg-gray-300"
-                                *cdkDragPlaceholder
-                            ></div>
                         </div>
                     </div>
                 </ng-container>
