@@ -12,7 +12,7 @@ import { SystemAboutComponent } from './system-about.component';
 import { SystemModulesComponent } from './system-modules.component';
 import { SystemTriggersComponent } from './system-triggers.component';
 import { SystemZonesComponent } from './system-zones.component';
-import { SystemMetadataComponent } from './system-metadata/system-metadata.component';
+import { SystemMetadataComponent } from './system-metadata.component';
 import { SharedContentModule } from 'src/app/ui/ui.module';
 
 @NgModule({
