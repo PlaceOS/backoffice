@@ -27,7 +27,7 @@ import {
     updateTrigger,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { filter, first, map, shareReplay, switchMap } from 'rxjs/operators';
+import { debounceTime, filter, first, map, shareReplay, switchMap } from 'rxjs/operators';
 import { calculateModuleIndex } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { openConfirmModal, unique } from '../common/general';
@@ -54,18 +54,18 @@ export class SystemStateService {
     private _modules = new BehaviorSubject<PlaceModule[]>([]);
     private _change = new BehaviorSubject<boolean>(false);
     /** Observable for associated settings of the active item */
-    public readonly associated_settings = this.item.pipe(
+    public readonly associated_settings = this._state.all_item.pipe(
+        debounceTime(300),
         switchMap((item: PlaceSystem) => {
             if (!item || !(item instanceof PlaceSystem)) return [];
             return systemSettings(item.id);
-        }),
-        shareReplay()
+        })
     );
     /** Observable of the counts of the active item */
-    public readonly counts = combineLatest([this.item, this._change]).pipe(
+    public readonly counts = combineLatest([this._state.all_item, this._change]).pipe(
+        debounceTime(300),
         switchMap(async (_) => {
             const [item] = _;
-            console.log('Count:', item);
             if (!item || !(item instanceof PlaceSystem)) return {};
             this._loading.next({
                 ...this._loading.getValue(),
@@ -83,13 +83,12 @@ export class SystemStateService {
                 settings: false,
             });
             return {
-                devices: item.modules.length,
-                zones: item.zones.length,
+                devices: (item as any).modules.length,
+                zones: (item as any).zones.length,
                 triggers,
                 metadata: metadata.length,
             };
-        }),
-        shareReplay()
+        })
     );
     /** Observable for modules associated with system */
     public readonly modules = this._state.item.pipe(
