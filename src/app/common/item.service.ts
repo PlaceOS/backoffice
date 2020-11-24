@@ -15,7 +15,7 @@ import { SettingsService } from '../common/settings.service';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
 import { notifySuccess, notifyError } from './notifications';
-import { DialogEvent, Identity } from 'src/app/common/types';
+import { DialogEvent, HashMap, Identity } from 'src/app/common/types';
 import {
     DuplicateModalComponent,
     DuplicateModalData,
@@ -149,7 +149,7 @@ export class ActiveItemService extends BaseClass {
         item = item || this._active_item.getValue();
         const actions =
             Object.values(ACTIONS).find(
-                (v) => v.itemConstructor === item?.prototype?.constructor
+                (v) => item instanceof v.itemConstructor
             ) || this.actions;
         return this.edit(
             copy
@@ -158,13 +158,13 @@ export class ActiveItemService extends BaseClass {
         );
     }
 
-    public async edit<T extends PlaceResource = any>(item?: T) {
+    public async edit<T extends PlaceResource = any>(item?: T, options: HashMap = {}) {
         item = item || (this._active_item.getValue() as any);
         if (item) {
             return new Promise<T>(async (resolve) => {
                 const actions =
                     Object.values(ACTIONS).find(
-                        (v) => v.itemConstructor === (item as any)?.prototype?.constructor
+                        (v) => item instanceof v.itemConstructor
                     ) || this.actions;
                 if (item.id) {
                     item = await actions.show(item.id).toPromise();
@@ -178,6 +178,7 @@ export class ActiveItemService extends BaseClass {
                         item: new actions.itemConstructor({ ...item }),
                         name: actions.singular,
                         save: actions.save,
+                        ...options
                     },
                 });
                 ref.componentInstance.event
@@ -274,7 +275,7 @@ export class ActiveItemService extends BaseClass {
             this._next_query.next(null);
             this._active_item.next(null);
             this._search.next('');
-            const name = this._type[0].toUpperCase() + this._type.slice(1);
+            const name = this._type[0]?.toUpperCase() + this._type.slice(1);
             this._name.next(name);
             this._settings.title = name;
             this._show_options.next(true);

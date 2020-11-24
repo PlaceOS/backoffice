@@ -31,10 +31,8 @@ export function calculateModuleIndex(module_list: PlaceModule[], module: PlaceMo
     const modules_with_class = module_list.filter(mod => {
         const d = mod.driver || { class_name: 'System' };
         const mod_class = mod.custom_name || mod.name || d.class_name;
-        console.log('Class:', module_class, mod_class)
         return mod_class === module_class;
     });
-    console.log('Modules:', module, module_list, module_class, modules_with_class);
     return Math.max(1, modules_with_class.findIndex(mod => mod.id === module.id) + 1);
 }
 

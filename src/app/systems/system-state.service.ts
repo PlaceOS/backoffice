@@ -3,14 +3,20 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addSystemModule,
+    addSystemTrigger,
+    apiEndpoint,
     listSystemTriggers,
     listSystemZones,
     PlaceModule,
     PlaceSystem,
+    PlaceTrigger,
     PlaceZone,
+    put,
     queryModules,
+    queryTriggers,
     recompileDriver,
     removeSystemModule,
+    removeSystemTrigger,
     showMetadata,
     startModule,
     startSystem,
@@ -18,9 +24,10 @@ import {
     stopSystem,
     systemSettings,
     updateSystem,
+    updateTrigger,
 } from '@placeos/ts-client';
-import { BehaviorSubject } from 'rxjs';
-import { filter, map, shareReplay, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { filter, first, map, shareReplay, switchMap } from 'rxjs/operators';
 import { calculateModuleIndex } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { openConfirmModal, unique } from '../common/general';
@@ -29,21 +36,40 @@ import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { ConfirmModalData } from '../overlays/confirm-modal/confirm-modal.component';
+import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
+import {
+    SelectItemModalComponent,
+    SelectItemModalData,
+} from '../overlays/select-item-modal/select-item-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal/view-response-modal.component';
 
 @Injectable({
     providedIn: 'root',
 })
 export class SystemStateService {
+    /** Observable of the active item */
+    public readonly item = this._state.item;
+
     private _loading = new BehaviorSubject<HashMap<boolean>>({});
     private _modules = new BehaviorSubject<PlaceModule[]>([]);
+    private _change = new BehaviorSubject<boolean>(false);
+    /** Observable for associated settings of the active item */
+    public readonly associated_settings = this.item.pipe(
+        switchMap((item: PlaceSystem) => {
+            if (!item || !(item instanceof PlaceSystem)) return [];
+            return systemSettings(item.id);
+        }),
+        shareReplay()
+    );
     /** Observable of the counts of the active item */
-    public counts = this._state.item.pipe(
-        filter((item) => !!item && item instanceof PlaceSystem),
-        switchMap(async (item: PlaceSystem) => {
+    public readonly counts = combineLatest([this.item, this._change]).pipe(
+        switchMap(async (_) => {
+            const [item] = _;
+            console.log('Count:', item);
+            if (!item || !(item instanceof PlaceSystem)) return {};
             this._loading.next({
                 ...this._loading.getValue(),
-                settings: true
+                settings: true,
             });
             const details = await Promise.all([
                 listSystemTriggers(item.id)
@@ -54,7 +80,7 @@ export class SystemStateService {
             const [triggers, metadata] = details;
             this._loading.next({
                 ...this._loading.getValue(),
-                settings: false
+                settings: false,
             });
             return {
                 devices: item.modules.length,
@@ -65,22 +91,13 @@ export class SystemStateService {
         }),
         shareReplay()
     );
-    /** Observable for associated settings of the active item */
-    public readonly associated_settings = this._state.item.pipe(
-        switchMap(async (item: PlaceSystem) => {
-            if (!item || !(item instanceof PlaceSystem)) return [];
-            return systemSettings(item.id);
-        }),
-        shareReplay()
-    );
     /** Observable for modules associated with system */
     public readonly modules = this._state.item.pipe(
         switchMap(async (item: PlaceSystem) => {
-            console.log('Item:', item);
             if (!item || !(item instanceof PlaceSystem)) return [];
             this._loading.next({
                 ...this._loading.getValue(),
-                modules: true
+                modules: true,
             });
             const modules = await queryModules({
                 control_system_id: item.id,
@@ -89,10 +106,10 @@ export class SystemStateService {
             } as any)
                 .pipe(map((i) => i.data))
                 .toPromise();
-                this._loading.next({
-                    ...this._loading.getValue(),
-                    modules: false
-                });
+            this._loading.next({
+                ...this._loading.getValue(),
+                modules: false,
+            });
             this._modules.next(modules);
             return modules;
         }),
@@ -125,40 +142,39 @@ export class SystemStateService {
             if (!item || !(item instanceof PlaceSystem)) return [];
             this._loading.next({
                 ...this._loading.getValue(),
-                zones: true
+                zones: true,
             });
             const zones = await listSystemZones(item.id)
                 .pipe(map((i) => i.data))
                 .toPromise();
-                this._loading.next({
-                    ...this._loading.getValue(),
-                    zones: false
-                });
+            this._loading.next({
+                ...this._loading.getValue(),
+                zones: false,
+            });
             return zones;
         }),
         shareReplay()
     );
     /** Observable for triggers associated with system */
-    public readonly triggers = this._state.item.pipe(
-        filter((item) => !!item && item instanceof PlaceSystem),
-        switchMap(async (item: PlaceSystem) => {
+    public readonly triggers = combineLatest([this.item, this._change]).pipe(
+        switchMap(async (_) => {
+            const [item] = _;
+            if (!item || !(item instanceof PlaceSystem)) return [];
             this._loading.next({
                 ...this._loading.getValue(),
-                triggers: true
+                triggers: true,
             });
             const triggers = await listSystemTriggers(item.id)
                 .pipe(map((i) => i.data))
                 .toPromise();
             this._loading.next({
                 ...this._loading.getValue(),
-                triggers: false
+                triggers: false,
             });
             return triggers;
         }),
         shareReplay()
     );
-    /** Observable of the active item */
-    public readonly item = this._state.item;
     /** Observable of the active item */
     public readonly loading = this._loading.asObservable();
 
@@ -246,6 +262,98 @@ export class SystemStateService {
 
     public editModule(device: PlaceModule) {
         this._state.edit(device).catch((_) => null);
+    }
+
+    public async selectTrigger() {
+        const ref = this._dialog.open<SelectItemModalComponent, SelectItemModalData>(
+            SelectItemModalComponent,
+            {
+                data: {
+                    service_name: 'Triggers',
+                    query_fn: (_) => queryTriggers({ q: _ }).pipe(map((resp) => resp.data)),
+                },
+            }
+        );
+        const details = await Promise.race([
+            ref.componentInstance.event.pipe(first((_) => _.reason === 'action')).toPromise(),
+            ref.afterClosed().toPromise(),
+        ]);
+        if (!details || !details.reason) return ref.close();
+        await this.addTrigger(ref.componentInstance.item);
+        ref.close();
+        this._change.next(!this._change.getValue());
+    }
+
+    public async addTrigger(trigger: PlaceTrigger) {
+        return addSystemTrigger(this.active_item.id, {
+            control_system_id: this.active_item.id,
+            enabled: true,
+            important: false,
+            trigger_id: trigger.id,
+        } as any).toPromise();
+    }
+
+    public async editTrigger(trigger: PlaceTrigger) {
+        if (this.item && trigger) {
+            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+                height: 'auto',
+                width: 'auto',
+                maxHeight: 'calc(100vh - 2em)',
+                maxWidth: 'calc(100vw - 2em)',
+                data: {
+                    item: trigger,
+                    name: 'Trigger',
+                    save: (item) => updateTrigger(item.id, item),
+                    external_save: true,
+                },
+            });
+            const details = await Promise.race([
+                ref.componentInstance.event.pipe(first(_ => _.reason === 'action')).toPromise(),
+                ref.afterClosed().toPromise()
+            ]);
+            if (!details || !details.reason) return;
+            ref.componentInstance.loading = 'Saving trigger settings...';
+
+            const url = `${apiEndpoint()}/systems/${this.active_item.id}/triggers/${
+                trigger.id
+            }`;
+            const trig = await put(url, details.metadata).toPromise().catch(err => {
+                notifyError(
+                    `Error updating trigger settings. Error: ${JSON.stringify(
+                        err.response || err.message || err
+                    )}`
+                );
+                throw err;
+            });
+            ref.close();
+            if (trig) return;
+            notifySuccess(`Successfully updated trigger settings.`);
+            ref.close();
+            this._change.next(!this._change.getValue());
+        }
+    }
+
+    public async removeTrigger(trigger: PlaceTrigger) {
+        const details = await this.confirm({
+            title: `Remove trigger`,
+            content: `<p>Are you sure you want remove trigger "${trigger.name}"?</p><p>Configuration will be updated <strong>immediately</strong>.</p>`,
+            icon: { type: 'icon', class: 'backoffice-trash' },
+        });
+        if (!details || !details.reason) return;
+        await removeSystemTrigger(this.active_item.id, trigger.id)
+            .toPromise()
+            .catch((err) => {
+                details.close();
+                notifyError(
+                    `Error removing trigger ${trigger.id} from system. Error: ${
+                        err.statusText || err.message || err
+                    }`
+                );
+                throw err;
+            });
+        details.close();
+        notifySuccess(`Successfully removed trigger from system.`);
+        this._change.next(!this._change.getValue());
     }
 
     public async reorderModules(fst: number, snd: number) {
