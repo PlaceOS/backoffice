@@ -3,8 +3,15 @@ import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { invalidateToken, token } from '@placeos/ts-client';
-import { UploadManager, Md5Workers, Amazon, Azure, Google, OpenStack } from '@acaprojects/ngx-uploads';
+import { invalidateToken, isMock, token } from '@placeos/ts-client';
+import {
+    UploadManager,
+    Md5Workers,
+    Amazon,
+    Azure,
+    Google,
+    OpenStack,
+} from '@acaprojects/ngx-uploads';
 
 import { SettingsService } from './common/settings.service';
 import { setupPlace } from './common/placeos';
@@ -16,7 +23,29 @@ import { BackofficeUsersService } from './users/users.service';
 
 @Component({
     selector: 'app-root',
-    templateUrl: './app.component.html',
+    template: `
+        <ng-container *ngIf="!(loading | async); else load_state">
+            <header [class.dark-mode]="dark_mode" [class.joke]="is_fools_day">
+                <topbar-header class="w-full" [(showMenu)]="show" [(filter)]="filter"></topbar-header>
+            </header>
+            <main class="flex flex-1 h-0" [class.filtered]="filter">
+                <sidebar-menu class="h-full" [(show)]="show"></sidebar-menu>
+                <div class="flex-1 w-0">
+                    <router-outlet></router-outlet>
+                </div>
+            </main>
+            <ng-container *ngIf="filter">
+                <global-search [(search)]="filter"></global-search>
+            </ng-container>
+            <app-debug-output></app-debug-output>
+            <app-upload-list></app-upload-list>
+        </ng-container>
+        <ng-template #load_state>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <mat-spinner [diameter]="64"></mat-spinner>
+            </div>
+        </ng-template>
+    `,
     styleUrls: [
         './styles/app.component.scss',
         './styles/utility.scss',
@@ -63,14 +92,14 @@ export class AppComponent extends BaseClass implements OnInit {
         setNotifyOutlet(this._snackbar);
         this._loading.next(true);
         /** Wait for settings to initialise */
-        await this._settings.initialised.pipe(first(_ => _)).toPromise();
+        await this._settings.initialised.pipe(first((_) => _)).toPromise();
         const settings = this._settings.get('composer') || {};
         settings.mock = !!this._settings.get('mock');
         /** Wait for authentication details to load */
         await setupPlace(settings).catch(() => this.onInitError());
         setupCache(this._cache);
         this.timeout('wait_for_user', () => this.onInitError(), 5 * 1000);
-        await this._users.initialised.pipe(first(_ => _)).toPromise();
+        await this._users.initialised.pipe(first((_) => _)).toPromise();
         this.clearTimeout('wait_for_user');
         this._loading.next(false);
         this.timeout('init_uploads', () => {
@@ -86,6 +115,7 @@ export class AppComponent extends BaseClass implements OnInit {
     }
 
     private onInitError() {
+        if (isMock()) { return; }
         log('Init', 'Failed to initialise user. Restarting application...');
         invalidateToken();
         location.reload();

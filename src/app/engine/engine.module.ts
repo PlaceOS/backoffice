@@ -17,6 +17,8 @@ import { AdminInterfacesComponent } from './interfaces/interfaces.component';
 import { AdminBrokersComponent } from './brokers/brokers.component';
 import { PlaceExtensionsComponent } from './extensions/extensions.component';
 import { ExtensionModalComponent } from './extensions/extension-modal/extension-modal.component';
+import { PlaceStaffAPIComponent } from './staff-api.component';
+import { StaffTenantModalComponent } from './staff-tenant-modal.component';
 
 
 @NgModule({
@@ -30,7 +32,9 @@ import { ExtensionModalComponent } from './extensions/extension-modal/extension-
         PlaceExtensionsComponent,
         AdminInterfacesComponent,
         AdminBrokersComponent,
-        ExtensionModalComponent
+        ExtensionModalComponent,
+        PlaceStaffAPIComponent,
+        StaffTenantModalComponent
     ],
     imports: [
         CommonModule,

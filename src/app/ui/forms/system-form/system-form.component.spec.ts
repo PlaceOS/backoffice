@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SystemFormComponent } from './system-form.component';
 
@@ -6,7 +6,7 @@ describe('SystemFormComponent', () => {
   let component: SystemFormComponent;
   let fixture: ComponentFixture<SystemFormComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SystemFormComponent ]
     })

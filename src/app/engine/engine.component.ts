@@ -7,11 +7,18 @@ import { SettingsService } from '../common/settings.service';
 
 @Component({
     selector: 'app-engine',
-    templateUrl: './engine.component.html',
-    styleUrls: ['./engine.component.scss']
+    template: `
+        <item-display class="w-full h-full" name="Admin" route="admin" [has_change]="false" [tabs]="tab_list">
+        </item-display>
+    `,
+    styles: [`
+        :host {
+            width: 100%;
+            height: 100%;
+        }
+    `],
 })
 export class PlaceComponent extends BaseClass {
-
     public tab_list = [];
 
     public get extensions() {
@@ -25,7 +32,8 @@ export class PlaceComponent extends BaseClass {
             { id: 'clusters', name: 'Clusters', icon: { class: 'backoffice-server' } },
             { id: 'interfaces', name: 'Interfaces', icon: { class: 'backoffice-browser' } },
             { id: 'brokers', name: 'MQTT Brokers', icon: { class: 'backoffice-server' } },
-            { id: 'extensions', name: 'Extensions', icon: { class: 'backoffice-gist' } }
+            { id: 'staff-api', name: 'Staff API', icon: { class: 'backoffice-gist' } },
+            { id: 'extensions', name: 'Extensions', icon: { class: 'backoffice-gist' } },
         ].concat(this.extensions);
     }
 
@@ -33,7 +41,7 @@ export class PlaceComponent extends BaseClass {
         super();
     }
 
-    public ngOnInit(): void {;
+    public ngOnInit(): void {
         this._settings.title = 'Admin';
         this.updateTabList();
     }

@@ -58,33 +58,6 @@ export class SidebarMenuComponent extends BaseClass implements OnInit {
         );
     }
 
-    public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.show) {
-            this.clearTimeout('close');
-        }
-    }
-
-    /**
-     * Delayed close of the sidebar menu. Mobile Only
-     */
-    public close() {
-        this.timeout(
-            'close',
-            () => {
-                this.show = false;
-                this.showChange.emit(this.show);
-            },
-            100
-        );
-    }
-
-    /**
-     * Cancel delayed close
-     */
-    public cancelClose() {
-        this.timeout('cancel_close', () => this.clearTimeout('close'), 10);
-    }
-
     private changeSelected(offset: number = 1) {
         const index = this.menu_items.findIndex(item => this._router.url.indexOf(item.route) >= 0);
         const new_index = index + offset;

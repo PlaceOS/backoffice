@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { AuthorisedAdminGuard } from './ui/guards/authorised-admin.guard';
 import { AuthorisedUserGuard } from './ui/guards/authorised-user.guard';
-import { UnauthorisedComponent } from './ui/unauthorised/unauthorised.component';
+import { UnauthorisedComponent } from './ui/unauthorised.component';
 
 const routes: Routes = [
     { path: 'unauthorised', component: UnauthorisedComponent },

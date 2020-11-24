@@ -66,7 +66,7 @@ import { ObjectListFieldComponent } from './custom-fields/object-list-field/obje
 import { DebugOutputComponent } from './debug-output/debug-output.component';
 import { SettingsFormComponent } from './forms/settings-form/settings-form.component';
 import { BrokerFormComponent } from './forms/broker-form/broker-form.component';
-import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
+import { UnauthorisedComponent } from './unauthorised.component';
 import { UploadListComponent } from './upload-list/upload-list.component';
 import { BindingDirective } from './binding/binding.directive';
 import { ExtensionOutletComponent } from './extension-outlet.component';

@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, of } from 'rxjs';
-import { filter, map, debounce, debounceTime } from 'rxjs/operators';
+import { filter, map, debounce, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
 
 import {
@@ -15,7 +15,7 @@ import { SettingsService } from '../common/settings.service';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
 import { notifySuccess, notifyError } from './notifications';
-import { DialogEvent, Identity } from 'src/app/common/types';
+import { DialogEvent, HashMap, Identity } from 'src/app/common/types';
 import {
     DuplicateModalComponent,
     DuplicateModalData,
@@ -65,7 +65,13 @@ export class ActiveItemService extends BaseClass {
     /** Observable for list of items */
     public readonly list = this._list.asObservable();
     /** Observable for active item */
-    public readonly item = this._active_item.asObservable().pipe(debounceTime(1000));
+    public readonly all_item = this._active_item.asObservable()
+    /** Observable for active item */
+    public readonly item = this._active_item
+        .asObservable()
+        .pipe(
+            distinctUntilChanged((a, b) => !a || !b || (a.id === b.id && a.version === b.version))
+        );
     /** Observable for list of items */
     public readonly list_items = () => this._list.getValue();
     /** Observable for whether the item list should show on mobile */
@@ -122,6 +128,7 @@ export class ActiveItemService extends BaseClass {
             const url = this._router.url.split('/');
             this._type = url[1] as any;
             this._loading.next(true);
+            this._active_item.next(null);
             const item = await this.actions
                 .show(id)
                 .toPromise()
@@ -140,38 +147,50 @@ export class ActiveItemService extends BaseClass {
         this._show_options.next(!this._show_options.getValue());
     }
 
-    public create(copy: boolean = false) {
-        const item = this._active_item.getValue();
-        this.edit(
+    public create(item?: any, copy: boolean = false) {
+        item = item || this._active_item.getValue();
+        const actions =
+            Object.values(ACTIONS).find(
+                (v) => item instanceof v.itemConstructor
+            ) || this.actions;
+        return this.edit(
             copy
-                ? new this.actions.itemConstructor({ ...item, id: '', name: `${item.name} (1)` })
-                : new this.actions.itemConstructor()
+                ? new actions.itemConstructor({ ...item, id: '', name: `${item.name} (1)` })
+                : new actions.itemConstructor()
         );
     }
 
-    public async edit(item?: any) {
-        item = item || this._active_item.getValue();
+    public async edit<T extends PlaceResource = any>(item?: T, options: HashMap = {}) {
+        item = item || (this._active_item.getValue() as any);
         if (item) {
-            if (item.id) {
-                item = await this.actions.show(item.id).toPromise();
-            }
-            const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
-                height: 'auto',
-                width: 'auto',
-                maxHeight: 'calc(100vh - 2em)',
-                maxWidth: 'calc(100vw - 2em)',
-                data: {
-                    item: new this.actions.itemConstructor({ ...item }),
-                    name: this._name.getValue().slice(0, -1),
-                    save: this.actions.save,
-                },
-            });
-            ref.componentInstance.event
-                .pipe(filter((e) => e.reason === 'done'))
-                .subscribe((event) => {
-                    this.replaceItem(event.metadata.item);
-                    this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
+            return new Promise<T>(async (resolve) => {
+                const actions =
+                    Object.values(ACTIONS).find(
+                        (v) => item instanceof v.itemConstructor
+                    ) || this.actions;
+                if (item.id) {
+                    item = await actions.show(item.id).toPromise();
+                }
+                const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
+                    height: 'auto',
+                    width: 'auto',
+                    maxHeight: 'calc(100vh - 2em)',
+                    maxWidth: 'calc(100vw - 2em)',
+                    data: {
+                        item: new actions.itemConstructor({ ...item }),
+                        name: actions.singular,
+                        save: actions.save,
+                        ...options
+                    },
                 });
+                ref.componentInstance.event
+                    .pipe(filter((e) => e.reason === 'done'))
+                    .subscribe((event) => {
+                        resolve(event.metadata.id);
+                        this.replaceItem(event.metadata.item);
+                        this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
+                    });
+            });
         }
     }
 
@@ -258,7 +277,7 @@ export class ActiveItemService extends BaseClass {
             this._next_query.next(null);
             this._active_item.next(null);
             this._search.next('');
-            const name = this._type[0].toUpperCase() + this._type.slice(1);
+            const name = this._type[0]?.toUpperCase() + this._type.slice(1);
             this._name.next(name);
             this._settings.title = name;
             this._show_options.next(true);
@@ -283,14 +302,14 @@ export class ActiveItemService extends BaseClass {
                 this._list.next([]);
             }
             const resp = await next().toPromise();
-            if (type === this._type){
+            if (type === this._type) {
                 this._next_query.next(
                     resp.next || (() => of({ data: [], total: resp.total, next: null }))
                 );
                 const list = this._list
                     .getValue()
                     .filter((i) => !resp.data.find((item) => item.id === i.id));
-                const new_list = list.concat(resp.data)
+                const new_list = list.concat(resp.data);
                 new_list.sort((a, b) => a.name?.localeCompare(b.name));
                 this._list.next(new_list);
                 this._loading_list.next(false);
@@ -304,15 +323,17 @@ export class ActiveItemService extends BaseClass {
             const settings = await querySettings({ parent_id: item.id })
                 .pipe(map((resp) => resp.data))
                 .toPromise();
-            while(settings.length < 4) {
-                if (!settings.find(s => s.encryption_level === EncryptionLevel.None)) {
+            while (settings.length < 4) {
+                if (!settings.find((s) => s.encryption_level === EncryptionLevel.None)) {
                     settings.push(new PlaceSettings({ encryption_level: EncryptionLevel.None }));
-                } else if (!settings.find(s => s.encryption_level === EncryptionLevel.Support)) {
+                } else if (!settings.find((s) => s.encryption_level === EncryptionLevel.Support)) {
                     settings.push(new PlaceSettings({ encryption_level: EncryptionLevel.Support }));
-                } else if (!settings.find(s => s.encryption_level === EncryptionLevel.Admin)) {
+                } else if (!settings.find((s) => s.encryption_level === EncryptionLevel.Admin)) {
                     settings.push(new PlaceSettings({ encryption_level: EncryptionLevel.Admin }));
                 } else {
-                    settings.push(new PlaceSettings({ encryption_level: EncryptionLevel.NeverDisplay }));
+                    settings.push(
+                        new PlaceSettings({ encryption_level: EncryptionLevel.NeverDisplay })
+                    );
                 }
             }
             settings.sort((a, b) => a.encryption_level - b.encryption_level);

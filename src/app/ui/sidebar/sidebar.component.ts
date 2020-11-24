@@ -126,6 +126,7 @@ export class SidebarComponent extends BaseClass implements OnInit {
     }
 
     constructor(
+        private _el: ElementRef<HTMLElement>,
         private _users: BackofficeUsersService,
         private _router: Router,
         private _hotkey: HotkeysService,
@@ -163,7 +164,7 @@ export class SidebarComponent extends BaseClass implements OnInit {
     }
 
     public toggle() {
-        this._service.toggleOptions();
+        this._el.nativeElement.classList.toggle('show');
     }
 
     public updateSearch(str: string) {

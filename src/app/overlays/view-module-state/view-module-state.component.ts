@@ -91,7 +91,7 @@ export class ViewModuleStateModalComponent extends BaseClass implements OnInit {
             num
         ).subscribe(
             (state) => {
-                const pre_state = typeof state === 'string' ? JSON.parse(state) : state;
+                const pre_state = (typeof state === 'string' ? JSON.parse(state) : state) || {};
                 Object.keys(pre_state).forEach((key) => {
                     pre_state[key] = JSON.parse(pre_state[key]);
                 });

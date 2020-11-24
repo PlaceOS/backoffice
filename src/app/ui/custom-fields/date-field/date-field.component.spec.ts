@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
@@ -22,7 +22,7 @@ describe('DateFieldComponent', () => {
     let component: DateFieldComponent;
     let fixture: ComponentFixture<DateFieldComponent>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [DateFieldComponent, MockAppIconComponent],
             imports: [FormsModule, ADatePickerModule, MatMenuModule, NoopAnimationsModule]

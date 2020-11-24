@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { Component, SimpleChange } from '@angular/core';
@@ -20,7 +20,7 @@ describe('TimeFieldComponent', () => {
     let component: TimeFieldComponent;
     let fixture: ComponentFixture<TimeFieldComponent>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [TimeFieldComponent, MockAppIconComponent],
             imports: [FormsModule, MatFormFieldModule, MatSelectModule, NoopAnimationsModule]

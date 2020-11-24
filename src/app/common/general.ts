@@ -1,3 +1,10 @@
+import { MatDialog } from '@angular/material/dialog';
+import { first } from 'rxjs/operators';
+import {
+    ConfirmModalComponent,
+    ConfirmModalData,
+    CONFIRM_METADATA,
+} from '../overlays/confirm-modal/confirm-modal.component';
 import { HashMap, Point } from './types';
 
 /** Available console output streams. */
@@ -27,6 +34,21 @@ export function log(
             console[stream](`%c[${app_name}]%c[${type}] %c${msg}`, ...colors);
         }
     }
+}
+
+export async function openConfirmModal(data: ConfirmModalData, dialog: MatDialog) {
+    const ref = dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
+        ...CONFIRM_METADATA,
+        data,
+    });
+    return {
+        ...(await Promise.race([
+            ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).toPromise(),
+            ref.afterClosed().toPromise(),
+        ])),
+        loading: (s) => (ref.componentInstance.loading = s),
+        close: () => ref.close(),
+    };
 }
 
 /* istanbul ignore next */
@@ -164,8 +186,11 @@ export function csvToJson(csv: string, seperator: string = ',') {
                 /* istanbul ignore else */
                 if (part !== undefined) {
                     let value = '';
-                    try { value = JSON.parse(part) }
-                    catch (e) { value = part; }
+                    try {
+                        value = JSON.parse(part);
+                    } catch (e) {
+                        value = part;
+                    }
                     item[(fields[i] || '').split(' ').join('_').toLowerCase()] = value;
                 }
             }
@@ -274,7 +299,7 @@ export function flatten<T = any>(an_array: T[]) {
 }
 
 const seed = xmur3('PlaceOS');
-const rand = sfc32(0x9E3779B9, 0x243F6A88, 0xB7E15162, seed());
+const rand = sfc32(0x9e3779b9, 0x243f6a88, 0xb7e15162, seed());
 
 export function predictableRandomInt(ceil: number = 100, floor: number = 0) {
     return Math.floor(rand() * (ceil - floor)) + floor;
@@ -282,28 +307,30 @@ export function predictableRandomInt(ceil: number = 100, floor: number = 0) {
 
 // https://stackoverflow.com/questions/521295/seeding-the-random-number-generator-in-javascript
 function xmur3(str) {
-    for(var i = 0, h = 1779033703 ^ str.length; i < str.length; i++)
-        h = Math.imul(h ^ str.charCodeAt(i), 3432918353),
-        h = h << 13 | h >>> 19;
-    return function() {
-        h = Math.imul(h ^ h >>> 16, 2246822507);
-        h = Math.imul(h ^ h >>> 13, 3266489909);
+    for (var i = 0, h = 1779033703 ^ str.length; i < str.length; i++)
+        (h = Math.imul(h ^ str.charCodeAt(i), 3432918353)), (h = (h << 13) | (h >>> 19));
+    return function () {
+        h = Math.imul(h ^ (h >>> 16), 2246822507);
+        h = Math.imul(h ^ (h >>> 13), 3266489909);
         return (h ^= h >>> 16) >>> 0;
-    }
+    };
 }
 
 function sfc32(a, b, c, d) {
-    return function() {
-      a >>>= 0; b >>>= 0; c >>>= 0; d >>>= 0;
-      var t = (a + b) | 0;
-      a = b ^ b >>> 9;
-      b = c + (c << 3) | 0;
-      c = (c << 21 | c >>> 11);
-      d = d + 1 | 0;
-      t = t + d | 0;
-      c = c + t | 0;
-      return (t >>> 0) / 4294967296;
-    }
+    return function () {
+        a >>>= 0;
+        b >>>= 0;
+        c >>>= 0;
+        d >>>= 0;
+        var t = (a + b) | 0;
+        a = b ^ (b >>> 9);
+        b = (c + (c << 3)) | 0;
+        c = (c << 21) | (c >>> 11);
+        d = (d + 1) | 0;
+        t = (t + d) | 0;
+        c = (c + t) | 0;
+        return (t >>> 0) / 4294967296;
+    };
 }
 
 export const issueDescription = (hash, date) => `

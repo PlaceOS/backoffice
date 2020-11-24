@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { TriggerActionFormComponent } from './trigger-action-form.component';
 
@@ -6,7 +6,7 @@ describe('TriggerActionFormComponent', () => {
   let component: TriggerActionFormComponent;
   let fixture: ComponentFixture<TriggerActionFormComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ TriggerActionFormComponent ]
     })

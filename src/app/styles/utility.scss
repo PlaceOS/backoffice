@@ -1,23 +1,10 @@
 
-.absolute {
-    position: absolute;
+@import 'variables';
+
+.font-heading {
+    font-family: $heading-font;
 }
 
-.inset-0 {
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-
-.w-full {
-    width: 100%;
-}
-
-.h-full {
-    height: 100%;
-}
-
-.border-none {
-    border: none;
+.font-code {
+    font-family: $mono-font;
 }

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DriverFormComponent } from './driver-form.component';
 
@@ -6,7 +6,7 @@ describe('DriverFormComponent', () => {
   let component: DriverFormComponent;
   let fixture: ComponentFixture<DriverFormComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DriverFormComponent ]
     })

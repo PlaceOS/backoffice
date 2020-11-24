@@ -9,6 +9,7 @@ import { AdminInterfacesComponent } from './interfaces/interfaces.component';
 import { AdminBrokersComponent } from './brokers/brokers.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 import { PlaceExtensionsComponent } from './extensions/extensions.component';
+import { PlaceStaffAPIComponent } from './staff-api.component';
 
 export const ROUTES: Routes = [
     {
@@ -22,6 +23,7 @@ export const ROUTES: Routes = [
             { path: 'interfaces', component: AdminInterfacesComponent },
             { path: 'brokers', component: AdminBrokersComponent },
             { path: 'extensions', component: PlaceExtensionsComponent },
+            { path: 'staff-api', component: PlaceStaffAPIComponent },
             { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' }
         ]
