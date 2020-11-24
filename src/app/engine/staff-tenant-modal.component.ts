@@ -136,7 +136,9 @@ export class StaffTenantModalComponent implements OnInit {
         if (!this.form.valid) return;
         this._dialog_ref.disableClose = true;
         this.loading = true;
-        const tenant = await post('/api/staff/v1/tenants', this.form.value).toPromise().catch(_ => null);
+        const tenant = await post('/api/staff/v1/tenants', this.form.value)
+            .toPromise()
+            .catch((_) => null);
         this.loading = false;
         this._dialog_ref.disableClose = false;
         if (!tenant) return notifyError('Error adding new tenant.');

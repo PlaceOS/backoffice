@@ -19,7 +19,7 @@ import {
     updateSystem,
 } from '@placeos/ts-client';
 import { BehaviorSubject } from 'rxjs';
-import { filter, first, map, shareReplay, switchMap } from 'rxjs/operators';
+import { filter, map, shareReplay, switchMap } from 'rxjs/operators';
 import { calculateModuleIndex } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { openConfirmModal } from '../common/general';
@@ -27,9 +27,7 @@ import { openConfirmModal } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import {
-    ConfirmModalComponent,
     ConfirmModalData,
-    CONFIRM_METADATA,
 } from '../overlays/confirm-modal/confirm-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal/view-response-modal.component';
 

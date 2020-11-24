@@ -30,7 +30,7 @@ export function calculateModuleIndex(module_list: PlaceModule[], module: PlaceMo
     const module_class = module.custom_name || module.name || driver.class_name;
     const modules_with_class = module_list.filter(mod => {
         const d = mod.driver || { class_name: 'System' };
-        const mod_class = mod.custom_name || d.class_name;
+        const mod_class = mod.custom_name || module.name || d.class_name;
         return mod_class === module_class;
     });
     return Math.max(1, modules_with_class.findIndex(mod => mod.id === module.id) + 1);

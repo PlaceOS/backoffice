@@ -31,8 +31,8 @@ button.mat-icon-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 2em;
-    width: 2em;
+    height: 2.5em;
+    width: 2.5em;
     font-size: 1em;
 
     &:focus {
@@ -328,5 +328,11 @@ mat-expansion-panel {
 }
 
 [table-row] {
-    @apply flex items-center border-b border-gray-300 divide-x divide-gray-300 hover:bg-gray-100
+    @apply flex items-center border-b border-gray-300 divide-x divide-gray-300 hover:bg-gray-100;
+    height: 2.75rem;
+
+    > div {
+        @apply flex items-center;
+        height: 2.75rem;
+    }
 }
