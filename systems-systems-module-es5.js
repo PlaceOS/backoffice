@@ -2853,26 +2853,28 @@
           }));
           /** Observable for modules associated with system */
 
-          this.modules = this._state.item.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["switchMap"])(function (item) {
+          this.modules = Object(rxjs__WEBPACK_IMPORTED_MODULE_4__["combineLatest"])([this.item, this._change]).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["switchMap"])(function (_) {
             return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-              var modules;
+              var item, modules;
               return regeneratorRuntime.wrap(function _callee4$(_context4) {
                 while (1) {
                   switch (_context4.prev = _context4.next) {
                     case 0:
+                      item = _[0];
+
                       if (!(!item || !(item instanceof _placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["PlaceSystem"]))) {
-                        _context4.next = 2;
+                        _context4.next = 3;
                         break;
                       }
 
                       return _context4.abrupt("return", []);
 
-                    case 2:
+                    case 3:
                       this._loading.next(Object.assign(Object.assign({}, this._loading.getValue()), {
                         modules: true
                       }));
 
-                      _context4.next = 5;
+                      _context4.next = 6;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["queryModules"])({
                         control_system_id: item.id,
                         complete: true,
@@ -2881,7 +2883,7 @@
                         return i.data;
                       })).toPromise();
 
-                    case 5:
+                    case 6:
                       modules = _context4.sent;
 
                       this._loading.next(Object.assign(Object.assign({}, this._loading.getValue()), {
@@ -2892,7 +2894,7 @@
 
                       return _context4.abrupt("return", modules);
 
-                    case 9:
+                    case 10:
                     case "end":
                       return _context4.stop();
                   }
@@ -3169,18 +3171,35 @@
         }, {
           key: "editModule",
           value: function editModule(device) {
-            this._state.edit(device)["catch"](function (_) {
-              return null;
-            });
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
+              return regeneratorRuntime.wrap(function _callee10$(_context10) {
+                while (1) {
+                  switch (_context10.prev = _context10.next) {
+                    case 0:
+                      _context10.next = 2;
+                      return this._state.edit(device)["catch"](function (_) {
+                        return null;
+                      });
+
+                    case 2:
+                      this._change.next(!this._change.getValue());
+
+                    case 3:
+                    case "end":
+                      return _context10.stop();
+                  }
+                }
+              }, _callee10, this);
+            }));
           }
         }, {
           key: "selectTrigger",
           value: function selectTrigger() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee11() {
               var ref, details;
-              return regeneratorRuntime.wrap(function _callee10$(_context10) {
+              return regeneratorRuntime.wrap(function _callee11$(_context11) {
                 while (1) {
-                  switch (_context10.prev = _context10.next) {
+                  switch (_context11.prev = _context11.next) {
                     case 0:
                       ref = this._dialog.open(_overlays_select_item_modal_select_item_modal_component__WEBPACK_IMPORTED_MODULE_10__["SelectItemModalComponent"], {
                         data: {
@@ -3194,23 +3213,23 @@
                           }
                         }
                       });
-                      _context10.next = 3;
+                      _context11.next = 3;
                       return Promise.race([ref.componentInstance.event.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["first"])(function (_) {
                         return _.reason === 'action';
                       })).toPromise(), ref.afterClosed().toPromise()]);
 
                     case 3:
-                      details = _context10.sent;
+                      details = _context11.sent;
 
                       if (!(!details || !details.reason)) {
-                        _context10.next = 6;
+                        _context11.next = 6;
                         break;
                       }
 
-                      return _context10.abrupt("return", ref.close());
+                      return _context11.abrupt("return", ref.close());
 
                     case 6:
-                      _context10.next = 8;
+                      _context11.next = 8;
                       return this.addTrigger(ref.componentInstance.item);
 
                     case 8:
@@ -3220,21 +3239,21 @@
 
                     case 10:
                     case "end":
-                      return _context10.stop();
+                      return _context11.stop();
                   }
                 }
-              }, _callee10, this);
+              }, _callee11, this);
             }));
           }
         }, {
           key: "addTrigger",
           value: function addTrigger(trigger) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee11() {
-              return regeneratorRuntime.wrap(function _callee11$(_context11) {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee12() {
+              return regeneratorRuntime.wrap(function _callee12$(_context12) {
                 while (1) {
-                  switch (_context11.prev = _context11.next) {
+                  switch (_context12.prev = _context12.next) {
                     case 0:
-                      return _context11.abrupt("return", Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["addSystemTrigger"])(this.active_item.id, {
+                      return _context12.abrupt("return", Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["addSystemTrigger"])(this.active_item.id, {
                         control_system_id: this.active_item.id,
                         enabled: true,
                         important: false,
@@ -3243,23 +3262,23 @@
 
                     case 1:
                     case "end":
-                      return _context11.stop();
+                      return _context12.stop();
                   }
                 }
-              }, _callee11, this);
+              }, _callee12, this);
             }));
           }
         }, {
           key: "editTrigger",
           value: function editTrigger(trigger) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee12() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee13() {
               var ref, details, url, trig;
-              return regeneratorRuntime.wrap(function _callee12$(_context12) {
+              return regeneratorRuntime.wrap(function _callee13$(_context13) {
                 while (1) {
-                  switch (_context12.prev = _context12.next) {
+                  switch (_context13.prev = _context13.next) {
                     case 0:
                       if (!(this.item && trigger)) {
-                        _context12.next = 18;
+                        _context13.next = 18;
                         break;
                       }
 
@@ -3277,40 +3296,40 @@
                           external_save: true
                         }
                       });
-                      _context12.next = 4;
+                      _context13.next = 4;
                       return Promise.race([ref.componentInstance.event.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["first"])(function (_) {
                         return _.reason === 'action';
                       })).toPromise(), ref.afterClosed().toPromise()]);
 
                     case 4:
-                      details = _context12.sent;
+                      details = _context13.sent;
 
                       if (!(!details || !details.reason)) {
-                        _context12.next = 7;
+                        _context13.next = 7;
                         break;
                       }
 
-                      return _context12.abrupt("return");
+                      return _context13.abrupt("return");
 
                     case 7:
                       ref.componentInstance.loading = 'Saving trigger settings...';
                       url = "".concat(Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["apiEndpoint"])(), "/systems/").concat(this.active_item.id, "/triggers/").concat(trigger.id);
-                      _context12.next = 11;
+                      _context13.next = 11;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["put"])(url, details.metadata).toPromise()["catch"](function (err) {
                         Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])("Error updating trigger settings. Error: ".concat(JSON.stringify(err.response || err.message || err)));
                         throw err;
                       });
 
                     case 11:
-                      trig = _context12.sent;
+                      trig = _context13.sent;
                       ref.close();
 
                       if (!trig) {
-                        _context12.next = 15;
+                        _context13.next = 15;
                         break;
                       }
 
-                      return _context12.abrupt("return");
+                      return _context13.abrupt("return");
 
                     case 15:
                       Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifySuccess"])("Successfully updated trigger settings.");
@@ -3320,57 +3339,6 @@
 
                     case 18:
                     case "end":
-                      return _context12.stop();
-                  }
-                }
-              }, _callee12, this);
-            }));
-          }
-        }, {
-          key: "removeTrigger",
-          value: function removeTrigger(trigger) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee13() {
-              var details;
-              return regeneratorRuntime.wrap(function _callee13$(_context13) {
-                while (1) {
-                  switch (_context13.prev = _context13.next) {
-                    case 0:
-                      _context13.next = 2;
-                      return this.confirm({
-                        title: "Remove trigger",
-                        content: "<p>Are you sure you want remove trigger \"".concat(trigger.name, "\"?</p><p>Configuration will be updated <strong>immediately</strong>.</p>"),
-                        icon: {
-                          type: 'icon',
-                          "class": 'backoffice-trash'
-                        }
-                      });
-
-                    case 2:
-                      details = _context13.sent;
-
-                      if (!(!details || !details.reason)) {
-                        _context13.next = 5;
-                        break;
-                      }
-
-                      return _context13.abrupt("return");
-
-                    case 5:
-                      _context13.next = 7;
-                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["removeSystemTrigger"])(this.active_item.id, trigger.id).toPromise()["catch"](function (err) {
-                        details.close();
-                        Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])("Error removing trigger ".concat(trigger.id, " from system. Error: ").concat(err.statusText || err.message || err));
-                        throw err;
-                      });
-
-                    case 7:
-                      details.close();
-                      Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifySuccess"])("Successfully removed trigger from system.");
-
-                      this._change.next(!this._change.getValue());
-
-                    case 10:
-                    case "end":
                       return _context13.stop();
                   }
                 }
@@ -3378,21 +3346,21 @@
             }));
           }
         }, {
-          key: "reorderModules",
-          value: function reorderModules(fst, snd) {
+          key: "removeTrigger",
+          value: function removeTrigger(trigger) {
             return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee14() {
-              var details, list, resp;
+              var details;
               return regeneratorRuntime.wrap(function _callee14$(_context14) {
                 while (1) {
                   switch (_context14.prev = _context14.next) {
                     case 0:
                       _context14.next = 2;
                       return this.confirm({
-                        title: 'Change order?',
-                        content: "Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.",
+                        title: "Remove trigger",
+                        content: "<p>Are you sure you want remove trigger \"".concat(trigger.name, "\"?</p><p>Configuration will be updated <strong>immediately</strong>.</p>"),
                         icon: {
                           type: 'icon',
-                          "class": 'backoffice-layers'
+                          "class": 'backoffice-trash'
                         }
                       });
 
@@ -3407,23 +3375,20 @@
                       return _context14.abrupt("return");
 
                     case 5:
-                      details.loading('Updating module order...');
-                      list = _toConsumableArray(this.active_item.modules);
-                      Object(_angular_cdk_drag_drop__WEBPACK_IMPORTED_MODULE_1__["moveItemInArray"])(list, fst, snd);
-                      _context14.next = 10;
-                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["updateSystem"])(this.active_item.id, Object.assign(Object.assign({}, this.active_item), {
-                        modules: list
-                      })).toPromise()["catch"](function (err) {
-                        Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])("Failed to reorder system modules: ".concat(JSON.stringify(err.response || err.message || err)));
-                        return err;
+                      _context14.next = 7;
+                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["removeSystemTrigger"])(this.active_item.id, trigger.id).toPromise()["catch"](function (err) {
+                        details.close();
+                        Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])("Error removing trigger ".concat(trigger.id, " from system. Error: ").concat(err.statusText || err.message || err));
+                        throw err;
                       });
 
-                    case 10:
-                      resp = _context14.sent;
-                      if (!resp) Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifySuccess"])("Successfully reordered system modules.");
+                    case 7:
                       details.close();
+                      Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifySuccess"])("Successfully removed trigger from system.");
 
-                    case 13:
+                      this._change.next(!this._change.getValue());
+
+                    case 10:
                     case "end":
                       return _context14.stop();
                   }
@@ -3432,8 +3397,8 @@
             }));
           }
         }, {
-          key: "reorderZones",
-          value: function reorderZones(fst, snd) {
+          key: "reorderModules",
+          value: function reorderModules(fst, snd) {
             return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee15() {
               var details, list, resp;
               return regeneratorRuntime.wrap(function _callee15$(_context15) {
@@ -3443,7 +3408,7 @@
                       _context15.next = 2;
                       return this.confirm({
                         title: 'Change order?',
-                        content: "Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.",
+                        content: "Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.",
                         icon: {
                           type: 'icon',
                           "class": 'backoffice-layers'
@@ -3461,20 +3426,20 @@
                       return _context15.abrupt("return");
 
                     case 5:
-                      details.loading('Updating zone order...');
-                      list = _toConsumableArray(this.active_item.zones);
+                      details.loading('Updating module order...');
+                      list = _toConsumableArray(this.active_item.modules);
                       Object(_angular_cdk_drag_drop__WEBPACK_IMPORTED_MODULE_1__["moveItemInArray"])(list, fst, snd);
                       _context15.next = 10;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["updateSystem"])(this.active_item.id, Object.assign(Object.assign({}, this.active_item), {
-                        zones: list
+                        modules: list
                       })).toPromise()["catch"](function (err) {
-                        Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])("Failed to reorder system zones: ".concat(JSON.stringify(err.response || err.message || err)));
+                        Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])("Failed to reorder system modules: ".concat(JSON.stringify(err.response || err.message || err)));
                         return err;
                       });
 
                     case 10:
                       resp = _context15.sent;
-                      if (!resp) Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifySuccess"])("Successfully reordered system zones.");
+                      if (!resp) Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifySuccess"])("Successfully reordered system modules.");
                       details.close();
 
                     case 13:
@@ -3485,6 +3450,60 @@
               }, _callee15, this);
             }));
           }
+        }, {
+          key: "reorderZones",
+          value: function reorderZones(fst, snd) {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee16() {
+              var details, list, resp;
+              return regeneratorRuntime.wrap(function _callee16$(_context16) {
+                while (1) {
+                  switch (_context16.prev = _context16.next) {
+                    case 0:
+                      _context16.next = 2;
+                      return this.confirm({
+                        title: 'Change order?',
+                        content: "Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.",
+                        icon: {
+                          type: 'icon',
+                          "class": 'backoffice-layers'
+                        }
+                      });
+
+                    case 2:
+                      details = _context16.sent;
+
+                      if (!(!details || !details.reason)) {
+                        _context16.next = 5;
+                        break;
+                      }
+
+                      return _context16.abrupt("return");
+
+                    case 5:
+                      details.loading('Updating zone order...');
+                      list = _toConsumableArray(this.active_item.zones);
+                      Object(_angular_cdk_drag_drop__WEBPACK_IMPORTED_MODULE_1__["moveItemInArray"])(list, fst, snd);
+                      _context16.next = 10;
+                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["updateSystem"])(this.active_item.id, Object.assign(Object.assign({}, this.active_item), {
+                        zones: list
+                      })).toPromise()["catch"](function (err) {
+                        Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])("Failed to reorder system zones: ".concat(JSON.stringify(err.response || err.message || err)));
+                        return err;
+                      });
+
+                    case 10:
+                      resp = _context16.sent;
+                      if (!resp) Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifySuccess"])("Successfully reordered system zones.");
+                      details.close();
+
+                    case 13:
+                    case "end":
+                      return _context16.stop();
+                  }
+                }
+              }, _callee16, this);
+            }));
+          }
           /**
            * Associate module with the active system
            * @param id ID of the module to associate with the active system
@@ -3493,26 +3512,26 @@
         }, {
           key: "joinModule",
           value: function joinModule(id) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee16() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee17() {
               var system;
-              return regeneratorRuntime.wrap(function _callee16$(_context16) {
+              return regeneratorRuntime.wrap(function _callee17$(_context17) {
                 while (1) {
-                  switch (_context16.prev = _context16.next) {
+                  switch (_context17.prev = _context17.next) {
                     case 0:
-                      _context16.next = 2;
+                      _context17.next = 2;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["addSystemModule"])(this.active_item.id, id).toPromise()["catch"](function (err) {
                         Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])("Error adding module ".concat(id, " to system. Error: ").concat(err.statusText || err.message || err));
                       });
 
                     case 2:
-                      system = _context16.sent;
+                      system = _context17.sent;
 
                       if (system) {
-                        _context16.next = 5;
+                        _context17.next = 5;
                         break;
                       }
 
-                      return _context16.abrupt("return");
+                      return _context17.abrupt("return");
 
                     case 5:
                       this._state.replaceItem(system);
@@ -3521,10 +3540,10 @@
 
                     case 7:
                     case "end":
-                      return _context16.stop();
+                      return _context17.stop();
                   }
                 }
-              }, _callee16, this);
+              }, _callee17, this);
             }));
           }
           /**
@@ -3535,85 +3554,19 @@
         }, {
           key: "removeModule",
           value: function removeModule(device) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee17() {
-              var details, system;
-              return regeneratorRuntime.wrap(function _callee17$(_context17) {
-                while (1) {
-                  switch (_context17.prev = _context17.next) {
-                    case 0:
-                      _context17.next = 2;
-                      return this.confirm({
-                        title: 'Remove module?',
-                        content: "Remove ".concat(device.driver_id, " from this system?<br>If this is not used elsewhere the associated data will be removed immediately."),
-                        icon: {
-                          type: 'icon',
-                          "class": 'backoffice-trash'
-                        }
-                      });
-
-                    case 2:
-                      details = _context17.sent;
-
-                      if (!(!details || !details.reason)) {
-                        _context17.next = 5;
-                        break;
-                      }
-
-                      return _context17.abrupt("return");
-
-                    case 5:
-                      _context17.next = 7;
-                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["removeSystemModule"])(this.active_item.id, device.id).toPromise()["catch"](function (err) {
-                        Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])("Error removing module ".concat(device.id, " from system. Error: ").concat(err.statusText || err.message || err));
-                      });
-
-                    case 7:
-                      system = _context17.sent;
-                      details.close();
-
-                      if (system) {
-                        _context17.next = 11;
-                        break;
-                      }
-
-                      return _context17.abrupt("return");
-
-                    case 11:
-                      this._state.replaceItem(system);
-
-                      Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifySuccess"])("Successfully removed module from system.");
-
-                    case 13:
-                    case "end":
-                      return _context17.stop();
-                  }
-                }
-              }, _callee17, this);
-            }));
-          }
-          /**
-           * Reload module from the active system
-           * @param id ID of the module to disassociate with the active system
-           */
-
-        }, {
-          key: "reloadModule",
-          value: function reloadModule(device) {
-            var _a;
-
             return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee18() {
-              var details;
+              var details, system;
               return regeneratorRuntime.wrap(function _callee18$(_context18) {
                 while (1) {
                   switch (_context18.prev = _context18.next) {
                     case 0:
                       _context18.next = 2;
                       return this.confirm({
-                        title: 'Recompile module?',
-                        content: "New driver code will be loaded and the device settings will be reloaded.",
+                        title: 'Remove module?',
+                        content: "Remove ".concat(device.driver_id, " from this system?<br>If this is not used elsewhere the associated data will be removed immediately."),
                         icon: {
                           type: 'icon',
-                          "class": 'backoffice-install'
+                          "class": 'backoffice-trash'
                         }
                       });
 
@@ -3628,8 +3581,74 @@
                       return _context18.abrupt("return");
 
                     case 5:
+                      _context18.next = 7;
+                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["removeSystemModule"])(this.active_item.id, device.id).toPromise()["catch"](function (err) {
+                        Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])("Error removing module ".concat(device.id, " from system. Error: ").concat(err.statusText || err.message || err));
+                      });
+
+                    case 7:
+                      system = _context18.sent;
+                      details.close();
+
+                      if (system) {
+                        _context18.next = 11;
+                        break;
+                      }
+
+                      return _context18.abrupt("return");
+
+                    case 11:
+                      this._state.replaceItem(system);
+
+                      Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifySuccess"])("Successfully removed module from system.");
+
+                    case 13:
+                    case "end":
+                      return _context18.stop();
+                  }
+                }
+              }, _callee18, this);
+            }));
+          }
+          /**
+           * Reload module from the active system
+           * @param id ID of the module to disassociate with the active system
+           */
+
+        }, {
+          key: "reloadModule",
+          value: function reloadModule(device) {
+            var _a;
+
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee19() {
+              var details;
+              return regeneratorRuntime.wrap(function _callee19$(_context19) {
+                while (1) {
+                  switch (_context19.prev = _context19.next) {
+                    case 0:
+                      _context19.next = 2;
+                      return this.confirm({
+                        title: 'Recompile module?',
+                        content: "New driver code will be loaded and the device settings will be reloaded.",
+                        icon: {
+                          type: 'icon',
+                          "class": 'backoffice-install'
+                        }
+                      });
+
+                    case 2:
+                      details = _context19.sent;
+
+                      if (!(!details || !details.reason)) {
+                        _context19.next = 5;
+                        break;
+                      }
+
+                      return _context19.abrupt("return");
+
+                    case 5:
                       details.loading('Recompiling and reloading driver...');
-                      _context18.next = 8;
+                      _context19.next = 8;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["recompileDriver"])(((_a = device.driver) === null || _a === void 0 ? void 0 : _a.id) || device.driver_id).toPromise()["catch"](function (err) {
                         Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])("Error removing module ".concat(device.id, " from system. Error: ").concat(err.statusText || err.message || err));
                         throw err;
@@ -3640,51 +3659,6 @@
                       details.close();
 
                     case 10:
-                    case "end":
-                      return _context18.stop();
-                  }
-                }
-              }, _callee18, this);
-            }));
-          }
-          /**
-           * Remove associated module from the active system
-           * @param id ID of the module to disassociate with the active system
-           */
-
-        }, {
-          key: "addZone",
-          value: function addZone(zone) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee19() {
-              var zones, system;
-              return regeneratorRuntime.wrap(function _callee19$(_context19) {
-                while (1) {
-                  switch (_context19.prev = _context19.next) {
-                    case 0:
-                      zones = Object(_common_general__WEBPACK_IMPORTED_MODULE_7__["unique"])([].concat(_toConsumableArray(this.active_item.zones), [zone.id]));
-                      _context19.next = 3;
-                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["updateSystem"])(this.active_item.id, Object.assign(Object.assign({}, this.active_item), {
-                        zones: zones
-                      })).toPromise()["catch"](function (err) {
-                        Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])("Error adding zone ".concat(zone.id, " to system. Error: ").concat(err.statusText || err.message || err));
-                      });
-
-                    case 3:
-                      system = _context19.sent;
-
-                      if (system) {
-                        _context19.next = 6;
-                        break;
-                      }
-
-                      return _context19.abrupt("return");
-
-                    case 6:
-                      this._state.replaceItem(system);
-
-                      Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifySuccess"])("Successfully added zone to system.");
-
-                    case 8:
                     case "end":
                       return _context19.stop();
                   }
@@ -3698,15 +3672,60 @@
            */
 
         }, {
-          key: "removeZone",
-          value: function removeZone(zone) {
+          key: "addZone",
+          value: function addZone(zone) {
             return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee20() {
-              var details, zones, system;
+              var zones, system;
               return regeneratorRuntime.wrap(function _callee20$(_context20) {
                 while (1) {
                   switch (_context20.prev = _context20.next) {
                     case 0:
-                      _context20.next = 2;
+                      zones = Object(_common_general__WEBPACK_IMPORTED_MODULE_7__["unique"])([].concat(_toConsumableArray(this.active_item.zones), [zone.id]));
+                      _context20.next = 3;
+                      return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["updateSystem"])(this.active_item.id, Object.assign(Object.assign({}, this.active_item), {
+                        zones: zones
+                      })).toPromise()["catch"](function (err) {
+                        Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])("Error adding zone ".concat(zone.id, " to system. Error: ").concat(err.statusText || err.message || err));
+                      });
+
+                    case 3:
+                      system = _context20.sent;
+
+                      if (system) {
+                        _context20.next = 6;
+                        break;
+                      }
+
+                      return _context20.abrupt("return");
+
+                    case 6:
+                      this._state.replaceItem(system);
+
+                      Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifySuccess"])("Successfully added zone to system.");
+
+                    case 8:
+                    case "end":
+                      return _context20.stop();
+                  }
+                }
+              }, _callee20, this);
+            }));
+          }
+          /**
+           * Remove associated module from the active system
+           * @param id ID of the module to disassociate with the active system
+           */
+
+        }, {
+          key: "removeZone",
+          value: function removeZone(zone) {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee21() {
+              var details, zones, system;
+              return regeneratorRuntime.wrap(function _callee21$(_context21) {
+                while (1) {
+                  switch (_context21.prev = _context21.next) {
+                    case 0:
+                      _context21.next = 2;
                       return this.confirm({
                         title: 'Remove zone?',
                         content: "<p>Are you sure you want remove zone \"".concat(zone.name, "\" from the system?</p>Configuration will be updated immediately."),
@@ -3717,20 +3736,20 @@
                       });
 
                     case 2:
-                      details = _context20.sent;
+                      details = _context21.sent;
 
                       if (!(!details || !details.reason)) {
-                        _context20.next = 5;
+                        _context21.next = 5;
                         break;
                       }
 
-                      return _context20.abrupt("return");
+                      return _context21.abrupt("return");
 
                     case 5:
                       zones = this.active_item.zones.filter(function (z) {
                         return z !== zone.id;
                       });
-                      _context20.next = 8;
+                      _context21.next = 8;
                       return Object(_placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["updateSystem"])(this.active_item.id, Object.assign(Object.assign({}, this.active_item), {
                         zones: zones
                       })).toPromise()["catch"](function (err) {
@@ -3738,15 +3757,15 @@
                       });
 
                     case 8:
-                      system = _context20.sent;
+                      system = _context21.sent;
                       details.close();
 
                       if (system) {
-                        _context20.next = 12;
+                        _context21.next = 12;
                         break;
                       }
 
-                      return _context20.abrupt("return");
+                      return _context21.abrupt("return");
 
                     case 12:
                       this._state.replaceItem(system);
@@ -3755,10 +3774,10 @@
 
                     case 14:
                     case "end":
-                      return _context20.stop();
+                      return _context21.stop();
                   }
                 }
-              }, _callee20, this);
+              }, _callee21, this);
             }));
           }
           /**
@@ -3769,16 +3788,16 @@
         }, {
           key: "toggleModulePower",
           value: function toggleModulePower(device) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee21() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee22() {
               var _this5 = this;
 
               var method;
-              return regeneratorRuntime.wrap(function _callee21$(_context21) {
+              return regeneratorRuntime.wrap(function _callee22$(_context22) {
                 while (1) {
-                  switch (_context21.prev = _context21.next) {
+                  switch (_context22.prev = _context22.next) {
                     case 0:
                       method = device.running ? _placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["stopModule"] : _placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["startModule"];
-                      _context21.next = 3;
+                      _context22.next = 3;
                       return method(device.id).toPromise()["catch"](function (err) {
                         if (typeof err === 'string' && err.length < 64) {
                           Object(_common_notifications__WEBPACK_IMPORTED_MODULE_8__["notifyError"])(err);
@@ -3797,10 +3816,10 @@
 
                     case 5:
                     case "end":
-                      return _context21.stop();
+                      return _context22.stop();
                   }
                 }
-              }, _callee21);
+              }, _callee22);
             }));
           }
           /** View Results of the execute */
@@ -3817,19 +3836,19 @@
         }, {
           key: "confirm",
           value: function confirm(data) {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee22() {
-              return regeneratorRuntime.wrap(function _callee22$(_context22) {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee23() {
+              return regeneratorRuntime.wrap(function _callee23$(_context23) {
                 while (1) {
-                  switch (_context22.prev = _context22.next) {
+                  switch (_context23.prev = _context23.next) {
                     case 0:
-                      return _context22.abrupt("return", Object(_common_general__WEBPACK_IMPORTED_MODULE_7__["openConfirmModal"])(data, this._dialog));
+                      return _context23.abrupt("return", Object(_common_general__WEBPACK_IMPORTED_MODULE_7__["openConfirmModal"])(data, this._dialog));
 
                     case 1:
                     case "end":
-                      return _context22.stop();
+                      return _context23.stop();
                   }
                 }
-              }, _callee22, this);
+              }, _callee23, this);
             }));
           }
         }, {

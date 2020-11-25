@@ -1520,7 +1520,8 @@ class SystemStateService {
             };
         })));
         /** Observable for modules associated with system */
-        this.modules = this._state.item.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["switchMap"])((item) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+        this.modules = Object(rxjs__WEBPACK_IMPORTED_MODULE_4__["combineLatest"])([this.item, this._change]).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["switchMap"])((_) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            const item = _[0];
             if (!item || !(item instanceof _placeos_ts_client__WEBPACK_IMPORTED_MODULE_3__["PlaceSystem"]))
                 return [];
             this._loading.next(Object.assign(Object.assign({}, this._loading.getValue()), { modules: true }));
@@ -1642,7 +1643,10 @@ class SystemStateService {
         });
     }
     editModule(device) {
-        this._state.edit(device).catch((_) => null);
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            yield this._state.edit(device).catch((_) => null);
+            this._change.next(!this._change.getValue());
+        });
     }
     selectTrigger() {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {

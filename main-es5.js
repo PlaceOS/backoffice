@@ -35847,16 +35847,16 @@
 
       var VERSION = {
         "dirty": false,
-        "raw": "d407325",
-        "hash": "d407325",
+        "raw": "43c5f43",
+        "hash": "43c5f43",
         "distance": null,
         "tag": null,
         "semver": null,
-        "suffix": "d407325",
+        "suffix": "43c5f43",
         "semverString": null,
         "version": "2.0.2",
         "core_version": "1.0.0",
-        "time": 1606266369319
+        "time": 1606275118554
       };
       /* tslint:enable */
 
@@ -38074,7 +38074,9 @@
 
                                     _this102.replaceItem(event.metadata.item);
 
-                                    _this102._router.navigate(["/".concat(_this102._type), event.metadata.item.id, 'about']);
+                                    if (event.metadata.item instanceof _this102.actions.itemConstructor) {
+                                      _this102._router.navigate(["/".concat(_this102._type), event.metadata.item.id, 'about']);
+                                    }
                                   });
 
                                 case 7:

@@ -16801,16 +16801,16 @@ __webpack_require__.r(__webpack_exports__);
 /* tslint:disable */
 const VERSION = {
     "dirty": false,
-    "raw": "d407325",
-    "hash": "d407325",
+    "raw": "43c5f43",
+    "hash": "43c5f43",
     "distance": null,
     "tag": null,
     "semver": null,
-    "suffix": "d407325",
+    "suffix": "43c5f43",
     "semverString": null,
     "version": "2.0.2",
     "core_version": "1.0.0",
-    "time": 1606266369319
+    "time": 1606275118554
 };
 /* tslint:enable */
 
@@ -17941,7 +17941,9 @@ class ActiveItemService extends _base_class__WEBPACK_IMPORTED_MODULE_11__["BaseC
                         .subscribe((event) => {
                         resolve(event.metadata.id);
                         this.replaceItem(event.metadata.item);
-                        this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
+                        if (event.metadata.item instanceof this.actions.itemConstructor) {
+                            this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
+                        }
                     });
                 }));
             }
