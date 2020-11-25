@@ -7,8 +7,8 @@ import { RouterModule } from '@angular/router';
 import { ROUTES } from './drivers.routes';
 
 import { DriversComponent } from './drivers.component';
-import { DriverAboutComponent } from './driver-about/driver-about.component';
-import { DriverModulesComponent } from './driver-devices/driver-devices.component';
+import { DriverAboutComponent } from './driver-about.component';
+import { DriverModulesComponent } from './driver-devices.component';
 import { SharedContentModule } from 'src/app/ui/ui.module';
 
 
