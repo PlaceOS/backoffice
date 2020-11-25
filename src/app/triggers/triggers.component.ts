@@ -8,8 +8,35 @@ import { ActiveItemService } from '../common/item.service';
 
 @Component({
     selector: 'app-triggers',
-    templateUrl: './triggers.template.html',
-    styleUrls: ['./triggers.styles.scss'],
+    template: `
+        <div
+            class="flex-1 flex-col sm:flex-row flex h-full w-full relative"
+        >
+            <sidebar
+                heading="Triggers"
+                name="triggers"
+                class="absolute top-0 left-0 h-12 w-full sm:h-full sm:static"
+            ></sidebar>
+            <item-display
+                name="trigger"
+                route="triggers"
+                [tabs]="tab_list"
+                class="flex-1 relative mt-12 sm:mt-0"
+            ></item-display>
+        </div>
+    `,
+    styles: [
+        `
+            sidebar {
+                transition: height 300ms;
+            }
+            @media screen and (min-width: 640px) {
+                sidebar {
+                    width: 20em !important;
+                }
+            }
+        `,
+    ],
 })
 export class TriggersComponent extends BaseClass {
     /** Number of system triggers */
