@@ -91,8 +91,9 @@ export class SystemStateService {
         })
     );
     /** Observable for modules associated with system */
-    public readonly modules = this._state.item.pipe(
-        switchMap(async (item: PlaceSystem) => {
+    public readonly modules = combineLatest([this.item, this._change]).pipe(
+        switchMap(async (_) => {
+            const item = _[0];
             if (!item || !(item instanceof PlaceSystem)) return [];
             this._loading.next({
                 ...this._loading.getValue(),
@@ -259,8 +260,9 @@ export class SystemStateService {
         this.joinModule(module.id);
     }
 
-    public editModule(device: PlaceModule) {
-        this._state.edit(device).catch((_) => null);
+    public async editModule(device: PlaceModule) {
+        await this._state.edit(device).catch((_) => null);
+        this._change.next(!this._change.getValue());
     }
 
     public async selectTrigger() {
