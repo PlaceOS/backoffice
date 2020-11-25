@@ -81,6 +81,18 @@ export class StaffTenantModalComponent implements OnInit {
 
     public get office_form() {
         return new FormGroup({
+            tenant: new FormControl(this.tenant?.credentials?.tenant || '', [Validators.required]),
+            client_id: new FormControl(this.tenant?.credentials?.client_id || '', [
+                Validators.required,
+            ]),
+            client_secret: new FormControl(this.tenant?.credentials?.client_secret || '', [
+                Validators.required,
+            ]),
+        });
+    }
+
+    public get google_form() {
+       return new FormGroup({
             issuer: new FormControl(this.tenant?.credentials?.issue || '', [Validators.required]),
             signing_key: new FormControl(this.tenant?.credentials?.signing_key || '', [
                 Validators.required,
@@ -89,18 +101,6 @@ export class StaffTenantModalComponent implements OnInit {
             domain: new FormControl(this.tenant?.credentials?.domain || '', [Validators.required]),
             sub: new FormControl(this.tenant?.credentials?.sub || '', [Validators.required]),
             user_agent: new FormControl(this.tenant?.credentials?.user_agent || '', [
-                Validators.required,
-            ]),
-        });
-    }
-
-    public get google_form() {
-        return new FormGroup({
-            tenant: new FormControl(this.tenant?.credentials?.tenant || '', [Validators.required]),
-            client_id: new FormControl(this.tenant?.credentials?.client_id || '', [
-                Validators.required,
-            ]),
-            client_secret: new FormControl(this.tenant?.credentials?.client_secret || '', [
                 Validators.required,
             ]),
         });
