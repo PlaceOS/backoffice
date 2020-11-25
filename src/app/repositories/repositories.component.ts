@@ -13,7 +13,7 @@ import { ActiveItemService } from '../common/item.service';
         >
             <sidebar
                 heading="Repositories"
-                name="repos"
+                name="repositories"
                 class="absolute top-0 left-0 h-12 w-full sm:h-full sm:static"
             ></sidebar>
             <item-display
