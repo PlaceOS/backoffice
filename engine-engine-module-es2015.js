@@ -21534,6 +21534,18 @@ class StaffTenantModalComponent {
         this.loading = false;
     }
     get office_form() {
+        var _a, _b, _c, _d, _e, _f;
+        return new _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormGroup"]({
+            tenant: new _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormControl"](((_b = (_a = this.tenant) === null || _a === void 0 ? void 0 : _a.credentials) === null || _b === void 0 ? void 0 : _b.tenant) || '', [_angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required]),
+            client_id: new _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormControl"](((_d = (_c = this.tenant) === null || _c === void 0 ? void 0 : _c.credentials) === null || _d === void 0 ? void 0 : _d.client_id) || '', [
+                _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required,
+            ]),
+            client_secret: new _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormControl"](((_f = (_e = this.tenant) === null || _e === void 0 ? void 0 : _e.credentials) === null || _f === void 0 ? void 0 : _f.client_secret) || '', [
+                _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required,
+            ]),
+        });
+    }
+    get google_form() {
         var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
         return new _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormGroup"]({
             issuer: new _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormControl"](((_b = (_a = this.tenant) === null || _a === void 0 ? void 0 : _a.credentials) === null || _b === void 0 ? void 0 : _b.issue) || '', [_angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required]),
@@ -21544,18 +21556,6 @@ class StaffTenantModalComponent {
             domain: new _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormControl"](((_h = (_g = this.tenant) === null || _g === void 0 ? void 0 : _g.credentials) === null || _h === void 0 ? void 0 : _h.domain) || '', [_angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required]),
             sub: new _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormControl"](((_k = (_j = this.tenant) === null || _j === void 0 ? void 0 : _j.credentials) === null || _k === void 0 ? void 0 : _k.sub) || '', [_angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required]),
             user_agent: new _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormControl"](((_m = (_l = this.tenant) === null || _l === void 0 ? void 0 : _l.credentials) === null || _m === void 0 ? void 0 : _m.user_agent) || '', [
-                _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required,
-            ]),
-        });
-    }
-    get google_form() {
-        var _a, _b, _c, _d, _e, _f;
-        return new _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormGroup"]({
-            tenant: new _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormControl"](((_b = (_a = this.tenant) === null || _a === void 0 ? void 0 : _a.credentials) === null || _b === void 0 ? void 0 : _b.tenant) || '', [_angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required]),
-            client_id: new _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormControl"](((_d = (_c = this.tenant) === null || _c === void 0 ? void 0 : _c.credentials) === null || _d === void 0 ? void 0 : _d.client_id) || '', [
-                _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required,
-            ]),
-            client_secret: new _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormControl"](((_f = (_e = this.tenant) === null || _e === void 0 ? void 0 : _e.credentials) === null || _f === void 0 ? void 0 : _f.client_secret) || '', [
                 _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required,
             ]),
         });
