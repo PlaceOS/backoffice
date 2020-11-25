@@ -7,8 +7,35 @@ import { extensionsForItem } from '../common/api';
 
 @Component({
     selector: 'app-modules',
-    templateUrl: './modules.template.html',
-    styleUrls: ['./modules.styles.scss'],
+    template: `
+        <div
+            class="flex-1 flex-col sm:flex-row flex h-full w-full relative"
+        >
+            <sidebar
+                heading="Modules"
+                name="modules"
+                class="absolute top-0 left-0 h-12 w-full sm:h-full sm:static"
+            ></sidebar>
+            <item-display
+                name="module"
+                route="modules"
+                [tabs]="tab_list"
+                class="flex-1 relative mt-12 sm:mt-0"
+            ></item-display>
+        </div>
+    `,
+    styles: [
+        `
+            sidebar {
+                transition: height 300ms;
+            }
+            @media screen and (min-width: 640px) {
+                sidebar {
+                    width: 20em !important;
+                }
+            }
+        `,
+    ],
 })
 export class ModulesComponent extends BaseClass {
     /** Number of systems for the active device */

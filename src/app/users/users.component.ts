@@ -7,8 +7,35 @@ import { extensionsForItem } from '../common/api';
 
 @Component({
     selector: 'app-users',
-    templateUrl: './users.template.html',
-    styleUrls: ['./users.styles.scss'],
+    template: `
+        <div
+            class="flex-1 flex-col sm:flex-row flex h-full w-full relative"
+        >
+            <sidebar
+                heading="Users"
+                name="users"
+                class="absolute top-0 left-0 h-12 w-full sm:h-full sm:static"
+            ></sidebar>
+            <item-display
+                name="user"
+                route="users"
+                [tabs]="tab_list"
+                class="flex-1 relative mt-12 sm:mt-0"
+            ></item-display>
+        </div>
+    `,
+    styles: [
+        `
+            sidebar {
+                transition: height 300ms;
+            }
+            @media screen and (min-width: 640px) {
+                sidebar {
+                    width: 20em !important;
+                }
+            }
+        `,
+    ],
 })
 export class UsersComponent extends BaseClass {
     public readonly name = 'users';
