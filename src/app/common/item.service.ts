@@ -188,7 +188,9 @@ export class ActiveItemService extends BaseClass {
                     .subscribe((event) => {
                         resolve(event.metadata.id);
                         this.replaceItem(event.metadata.item);
-                        this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
+                        if (event.metadata.item instanceof this.actions.itemConstructor) {
+                            this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
+                        }
                     });
             });
         }
