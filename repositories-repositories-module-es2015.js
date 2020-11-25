@@ -421,7 +421,7 @@ class RepositoriesComponent extends _common_base_class__WEBPACK_IMPORTED_MODULE_
     }
 }
 RepositoriesComponent.ɵfac = function RepositoriesComponent_Factory(t) { return new (t || RepositoriesComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_common_item_service__WEBPACK_IMPORTED_MODULE_5__["ActiveItemService"])); };
-RepositoriesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: RepositoriesComponent, selectors: [["app-repositories"]], features: [_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵInheritDefinitionFeature"]], decls: 3, vars: 1, consts: [[1, "flex-1", "flex-col", "sm:flex-row", "flex", "h-full", "w-full", "relative"], ["heading", "Repositories", "name", "repos", 1, "absolute", "top-0", "left-0", "h-12", "w-full", "sm:h-full", "sm:static"], ["name", "repo", "route", "repositories", 1, "flex-1", "relative", "mt-12", "sm:mt-0", 3, "tabs"]], template: function RepositoriesComponent_Template(rf, ctx) { if (rf & 1) {
+RepositoriesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: RepositoriesComponent, selectors: [["app-repositories"]], features: [_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵInheritDefinitionFeature"]], decls: 3, vars: 1, consts: [[1, "flex-1", "flex-col", "sm:flex-row", "flex", "h-full", "w-full", "relative"], ["heading", "Repositories", "name", "repositories", 1, "absolute", "top-0", "left-0", "h-12", "w-full", "sm:h-full", "sm:static"], ["name", "repo", "route", "repositories", 1, "flex-1", "relative", "mt-12", "sm:mt-0", 3, "tabs"]], template: function RepositoriesComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "sidebar", 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "item-display", 2);
@@ -440,7 +440,7 @@ RepositoriesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵde
         >
             <sidebar
                 heading="Repositories"
-                name="repos"
+                name="repositories"
                 class="absolute top-0 left-0 h-12 w-full sm:h-full sm:static"
             ></sidebar>
             <item-display

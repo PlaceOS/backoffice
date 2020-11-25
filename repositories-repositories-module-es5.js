@@ -1049,7 +1049,7 @@
         features: [_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵInheritDefinitionFeature"]],
         decls: 3,
         vars: 1,
-        consts: [[1, "flex-1", "flex-col", "sm:flex-row", "flex", "h-full", "w-full", "relative"], ["heading", "Repositories", "name", "repos", 1, "absolute", "top-0", "left-0", "h-12", "w-full", "sm:h-full", "sm:static"], ["name", "repo", "route", "repositories", 1, "flex-1", "relative", "mt-12", "sm:mt-0", 3, "tabs"]],
+        consts: [[1, "flex-1", "flex-col", "sm:flex-row", "flex", "h-full", "w-full", "relative"], ["heading", "Repositories", "name", "repositories", 1, "absolute", "top-0", "left-0", "h-12", "w-full", "sm:h-full", "sm:static"], ["name", "repo", "route", "repositories", 1, "flex-1", "relative", "mt-12", "sm:mt-0", 3, "tabs"]],
         template: function RepositoriesComponent_Template(rf, ctx) {
           if (rf & 1) {
             _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 0);
@@ -1077,7 +1077,7 @@
           type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"],
           args: [{
             selector: 'app-repositories',
-            template: "\n        <div\n            class=\"flex-1 flex-col sm:flex-row flex h-full w-full relative\"\n        >\n            <sidebar\n                heading=\"Repositories\"\n                name=\"repos\"\n                class=\"absolute top-0 left-0 h-12 w-full sm:h-full sm:static\"\n            ></sidebar>\n            <item-display\n                name=\"repo\"\n                route=\"repositories\"\n                [tabs]=\"tab_list\"\n                class=\"flex-1 relative mt-12 sm:mt-0\"\n            ></item-display>\n        </div>\n    ",
+            template: "\n        <div\n            class=\"flex-1 flex-col sm:flex-row flex h-full w-full relative\"\n        >\n            <sidebar\n                heading=\"Repositories\"\n                name=\"repositories\"\n                class=\"absolute top-0 left-0 h-12 w-full sm:h-full sm:static\"\n            ></sidebar>\n            <item-display\n                name=\"repo\"\n                route=\"repositories\"\n                [tabs]=\"tab_list\"\n                class=\"flex-1 relative mt-12 sm:mt-0\"\n            ></item-display>\n        </div>\n    ",
             styles: ["\n            sidebar {\n                transition: height 300ms;\n            }\n            @media screen and (min-width: 640px) {\n                sidebar {\n                    width: 20em !important;\n                }\n            }\n        "]
           }]
         }], function () {
