@@ -58,8 +58,12 @@ import { SystemStateService } from './system-state.service';
             <section device-list>
                 <h3 class="font-medium text-lg mb-2" i18n="@@moduleListHeader">Module List</h3>
                 <ng-container *ngIf="!(loading | async).modules; else load_state">
-                    <div role="table" class="overflow-x-auto" *ngIf="(modules | async)?.length; else empty_state">
-                        <div table-head >
+                    <div
+                        role="table"
+                        class="overflow-x-auto"
+                        *ngIf="(modules | async)?.length; else empty_state"
+                    >
+                        <div table-head>
                             <div class="w-12 p-2"></div>
                             <div class="w-12 p-2" i18n="@@moduleStateLabel">State</div>
                             <div class="flex-1 p-2" i18n="@@moduleNameLabel">Name</div>
@@ -73,7 +77,8 @@ import { SystemStateService } from './system-state.service';
                             (cdkDropListDropped)="drop($event)"
                             class="overflow-y-auto"
                         >
-                            <div table-row
+                            <div
+                                table-row
                                 cdkDrag
                                 *ngFor="let device of modules | async; let i = index"
                                 [context-menu]="menu"
@@ -95,6 +100,13 @@ import { SystemStateService } from './system-state.service';
                                 <div class="w-12 flex items-center justify-center p-2 h-10">
                                     <div
                                         dot
+
+                                        binding
+                                        [sys]="item.id"
+                                        [mod]="(bindings | async)[i]"
+                                        bind="connected"
+                                        [(model)]="device.connected"
+
                                         class="h-4 w-4 rounded-full"
                                         [class.bg-black]="!device.running"
                                         [class.bg-error]="device.running && !device.connected"
@@ -195,14 +207,14 @@ import { SystemStateService } from './system-state.service';
                 margin-left: 1rem;
             }
 
-            [role="table"] > div {
+            [role='table'] > div {
                 width: 100%;
                 min-width: 48rem;
             }
 
             .bg-success {
-                height: .5rem !important;
-                width: .5rem !important;
+                height: 0.5rem !important;
+                width: 0.5rem !important;
             }
 
             [dot] {
