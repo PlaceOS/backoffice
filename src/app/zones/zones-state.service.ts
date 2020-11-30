@@ -10,8 +10,8 @@ import {
     showMetadata,
     updateZone,
 } from '@placeos/ts-client';
-import { BehaviorSubject } from 'rxjs';
-import { catchError, first, map, shareReplay, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { catchError, debounceTime, first, map, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal, unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -26,13 +26,16 @@ import {
 export class ZonesStateService {
 
     private _loading = new BehaviorSubject<boolean>(false);
+    private _change = new BehaviorSubject<boolean>(false);
 
     public readonly loading = this._loading.asObservable();
 
     public readonly item = this._service.item;
 
-    public readonly counts = this.item.pipe(
-        switchMap(async (item) => {
+    public readonly counts = combineLatest([this._service.all_item, this._change]).pipe(
+        debounceTime(300),
+        switchMap(async (d) => {
+            const [item] = d;
             if (!(item instanceof PlaceZone)) return {};
             this._loading.next(true);
             const details = await Promise.all([
@@ -103,7 +106,9 @@ export class ZonesStateService {
         return this._service.active_item as any;
     }
 
-    constructor(private _service: ActiveItemService, private _dialog: MatDialog) {}
+    constructor(private _service: ActiveItemService, private _dialog: MatDialog) {
+        setTimeout(() => this._change.next(!this._change.getValue()), 1000);
+    }
 
     public async selectTrigger() {
         const ref = this._dialog.open<SelectItemModalComponent, SelectItemModalData>(
