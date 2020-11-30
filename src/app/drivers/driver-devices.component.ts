@@ -44,16 +44,20 @@ import { DriverStateService } from './driver-state.service';
                                 bind="connected"
                             ></i>
                             <div
-                                class="h-2 w-2 rounded-full"
-                                [class.bg-black]="!module.connected"
-                                [class.bg-success]="module.connected"
+                                class="h-2 w-2 rounded-full bg-black"
+                                [class.bg-error]="module.running && !module.connected"
+                                [class.bg-success]="module.running && module.connected"
                             ></div>
                         </div>
-                        <div flex class="flex-1 p-2" i18n="@@nameLabel">
-                            {{ module.custom_name || module.name }}
+                        <div flex class="flex-1 p-2 underline" i18n="@@nameLabel">
+                            <a [routerLink]="['/modules', module.id]">
+                                {{ module.custom_name || module.name }}
+                            </a>
                         </div>
-                        <div class="w-48 p-2" i18n="@@triggerCountLabel">
-                            {{ module.system?.name || '~No System~' }}
+                        <div class="w-48 p-2 underline" i18n="@@triggerCountLabel">
+                            <a [routerLink]="['/systems', module.system?.id]">
+                                {{ module.system?.name }}
+                            </a>
                         </div>
                         <div class="w-12 p-2">
                             <button mat-icon-button (click)="removeModule(module)">

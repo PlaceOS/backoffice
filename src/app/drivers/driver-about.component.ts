@@ -81,7 +81,7 @@ export class DriverAboutComponent {
     public readonly recompileDriver = () => this._service.recompileDriver();
 
     public get item(): PlaceDriver {
-        return this._service.active_item as any;
+        return (this._service.active_item || {}) as any;
     }
 
     constructor(private _service: DriverStateService) {}
