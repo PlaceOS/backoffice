@@ -1,10 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
-    PlaceSystem,
     PlaceMetadata,
     removeMetadata,
     updateMetadata,
-    showMetadata,
+    PlaceZone,
 } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
@@ -18,16 +17,16 @@ import {
     CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { notifySuccess, notifyError } from 'src/app/common/notifications';
-import { ActiveItemService } from 'src/app/common/item.service';
+import { ZonesStateService } from './zones-state.service';
 
 @Component({
-    selector: 'system-metadata',
+    selector: 'zone-metadata',
     template: `
         <div class="p-4" *ngIf="item">
             <button mat-button (click)="newMetadata()" i18n="@@addMetadataAction">
                 Add new Metadata Field
             </button>
-            <div class="mt-4" *ngIf="metadata && metadata.length > 0; else empty_state">
+            <div class="mt-4" *ngIf="metadata?.length; else empty_state">
                 <mat-accordion>
                     <ng-container *ngFor="let item of metadata">
                         <mat-expansion-panel
@@ -83,9 +82,7 @@ import { ActiveItemService } from 'src/app/common/item.service';
             </div>
         </div>
         <ng-template #empty_state>
-            <div class="info-block">
-                <div class="text" i18n="@@zoneMetadataEmpty">No zone metadata found</div>
-            </div>
+            <div class="p-8 text-center" i18n="@@zoneMetadataEmpty">No zone metadata found</div>
         </ng-template>
         <ng-template #load_state>
             <mat-spinner diameter="32"></mat-spinner>
@@ -139,9 +136,9 @@ import { ActiveItemService } from 'src/app/common/item.service';
         `,
     ],
 })
-export class SystemMetadataComponent extends BaseClass {
+export class ZoneMetadataComponent extends BaseClass implements OnInit {
     /** List of metadata associated with the zone */
-    public metadata: PlaceMetadata[] = [];
+    public metadata: PlaceMetadata[];
     /** Map of form field groups to metadata fields */
     public form_map: HashMap<FormGroup> = {};
     /** Map of metadata fields to whether they have been edited */
@@ -149,7 +146,7 @@ export class SystemMetadataComponent extends BaseClass {
     /** Map of metadata properties to whether they are saving */
     public loading: HashMap<boolean> = {};
 
-    public get item(): PlaceSystem {
+    public get item(): PlaceZone {
         return this._service.active_item as any;
     }
 
@@ -159,17 +156,15 @@ export class SystemMetadataComponent extends BaseClass {
         };
     }
 
-    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
+    constructor(private _dialog: MatDialog, private _service: ZonesStateService) {
         super();
     }
 
-    public ngOnInit(): void {
-        this.subscription(
-            'item',
-            this._service.item.subscribe((item) => {
-                this.loadMetadata();
-            })
-        );
+    public ngOnInit() {
+        this.subscription('metadata', this._service.metadata.subscribe(d => {
+            this.metadata = d;
+            this.generateForms();
+        }));
     }
 
     public newMetadata() {
@@ -311,13 +306,6 @@ export class SystemMetadataComponent extends BaseClass {
                     () => (this.edited[group.name] = true)
                 )
             );
-        });
-    }
-
-    private loadMetadata() {
-        showMetadata(this.item.id).subscribe((map) => {
-            this.metadata = Object.keys(map).map((key) => map[key]);
-            this.generateForms();
         });
     }
 }

@@ -114,7 +114,7 @@ import { SystemStateService } from './system-state.service';
                                         (click)="power(device)"
                                     ></div>
                                 </div>
-                                <div class="flex-1 p-2 h-10">
+                                <div class="flex-1 p-2 h-10 underline">
                                     <a
                                         [routerLink]="['/modules', device.id]"
                                         (contextmenu)="$event.stopPropagation()"
@@ -146,7 +146,7 @@ import { SystemStateService } from './system-state.service';
                                         >{{ device.ip || device.uri }}</a
                                     >
                                 </div>
-                                <div class="w-24 flex px-2">
+                                <div class="w-24 flex px-2 justify-center">
                                     <button mat-icon-button (click)="editModule(device)">
                                         <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
                                     </button>

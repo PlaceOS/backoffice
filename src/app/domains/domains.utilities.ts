@@ -9,7 +9,10 @@ export function generateDomainFormFields(domain: PlaceDomain): FormGroup {
     }
     const fields: HashMap<FormControl> = {
         name: new FormControl(domain.name || '', [Validators.required]),
-        domain: new FormControl(domain.domain || '', [Validators.required]),
+        domain: new FormControl(domain.domain || '', [
+            Validators.required,
+            Validators.pattern(/^([a-zA-Z0-9._-])+$/),
+        ]),
         login_url: new FormControl(domain.login_url || ''),
         logout_url: new FormControl(domain.logout_url || ''),
         config: new FormControl(domain.config || ''),

@@ -181,7 +181,7 @@ export class SystemStateService {
     public readonly getModules = () => this._modules.getValue();
     /** Observable of the active item */
     public get active_item(): PlaceSystem {
-        return this._state.active_item as any;
+        return this._state.active_item || {} as any;
     }
 
     constructor(
@@ -377,8 +377,11 @@ export class SystemStateService {
                 );
                 return err;
             });
-        if (!resp) notifySuccess(`Successfully reordered system modules.`);
         details.close();
+        if (resp instanceof PlaceSystem) {
+            notifySuccess(`Successfully reordered system modules.`);
+            this._state.replaceItem(resp);
+        }
     }
 
     public async reorderZones(fst: number, snd: number) {
@@ -401,7 +404,10 @@ export class SystemStateService {
                 );
                 return err;
             });
-        if (!resp) notifySuccess(`Successfully reordered system zones.`);
+        if (resp instanceof PlaceSystem) {
+            notifySuccess(`Successfully reordered system zones.`);
+            this._state.replaceItem(resp);
+        }
         details.close();
     }
 

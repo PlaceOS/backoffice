@@ -7,8 +7,8 @@ import { RouterModule } from '@angular/router';
 import { ROUTES } from './modules.routes';
 
 import { ModulesComponent } from './modules.component';
-import { ModuleAboutComponent } from './module-about/module-about.component';
-import { ModuleSystemsComponent } from './module-systems/module-systems.component';
+import { ModuleAboutComponent } from './module-about.component';
+import { ModuleSystemsComponent } from './module-systems.component';
 import { SharedContentModule } from 'src/app/ui/ui.module';
 
 

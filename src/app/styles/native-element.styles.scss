@@ -22,7 +22,8 @@ textarea {
     }
 }
 
-div > label {
+div > label,
+section > label {
     font-size: .8rem;
     font-weight: 500;
     span {
