@@ -1,6 +1,11 @@
 
 @import 'variables';
 
+:host {
+    flex: 1;
+    width: 50%;
+}
+
 [item-display] {
     background-color: #fff;
     display: flex;
