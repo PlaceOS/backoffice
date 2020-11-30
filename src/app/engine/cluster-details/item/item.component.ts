@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, SimpleChanges, OnChanges } from '@angular/core';
 import { PlaceCluster } from '@placeos/ts-client';
 
-import Chart from 'chart.js/dist/Chart.bundle.js'
+import { Chart } from 'chart.js'
 import * as dayjs from 'dayjs';
 
 @Component({
@@ -9,7 +9,7 @@ import * as dayjs from 'dayjs';
     templateUrl: './item.component.html',
     styleUrls: ['./item.component.scss']
 })
-export class PlaceClusterItemComponent implements OnInit {
+export class PlaceClusterItemComponent implements OnInit, OnChanges {
     /** Cluster to display details for */
     @Input() public cluster: PlaceCluster;
     /** List of historical data for cluster's CPU usage */
@@ -27,7 +27,7 @@ export class PlaceClusterItemComponent implements OnInit {
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.cpu_history) {
-            this.generateCharts;
+            this.generateCharts();
         }
     }
 
@@ -43,22 +43,20 @@ export class PlaceClusterItemComponent implements OnInit {
                 }
             },
             scales: {
-                yAxes: [
-                    {
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'CPU Usage(%)'
-                        },
+                y:{
+                    scaleLabel: {
                         display: true,
-                        ticks: {
-                            suggestedMin: 0, // minimum will be 0, unless there is a lower value.
-                            suggestedMax: 100,
-                            stepSize: 25,
-                            // OR //
-                            beginAtZero: true // minimum value will be 0.
-                        }
+                        labelString: 'CPU Usage(%)'
+                    },
+                    display: true,
+                    ticks: {
+                        suggestedMin: 0, // minimum will be 0, unless there is a lower value.
+                        suggestedMax: 100,
+                        stepSize: 25,
+                        // OR //
+                        beginAtZero: true // minimum value will be 0.
                     }
-                ]
+                }
             }
         };
         const list = this.cpu_history || [];
@@ -70,7 +68,7 @@ export class PlaceClusterItemComponent implements OnInit {
             }));
         this.cpu_chart = new Chart(context, {
             type: 'line',
-            showXLabels: 6,
+            // showXLabels: 6,
             data: {
                 labels: data.map(point => point.x),
                 datasets: [
