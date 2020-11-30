@@ -35,7 +35,9 @@ import { ModuleStateService } from './module-state.service';
                 </div>
                 <div table-body class="overflow-y-auto">
                     <div table-row *ngFor="let system of system_list | async; let i = index">
-                        <div flex class="flex-1 p-2">{{ system.name }}</div>
+                        <div flex class="flex-1 p-2 underline">
+                            <a [routerLink]="['/systems', system.id]">{{ system.name }}</a>
+                        </div>
                         <div class="w-48 p-2">{{ system.installed_ui_devices || '0' }}</div>
                         <div class="w-36 p-2">{{ system.created_at * 1000 | dateFrom }}</div>
                     </div>

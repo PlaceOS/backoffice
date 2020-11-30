@@ -339,6 +339,7 @@ mat-expansion-panel {
     > div {
         @apply flex items-center;
         height: 2.75rem;
+        user-select: text;
     }
 }
 

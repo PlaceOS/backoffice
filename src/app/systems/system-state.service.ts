@@ -181,7 +181,7 @@ export class SystemStateService {
     public readonly getModules = () => this._modules.getValue();
     /** Observable of the active item */
     public get active_item(): PlaceSystem {
-        return this._state.active_item as any;
+        return this._state.active_item || {} as any;
     }
 
     constructor(
