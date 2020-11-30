@@ -53,7 +53,6 @@ export function generateBasicHandlers<T = any>(
     data: T[],
     filter: FilterFn<T> = (_: T, q: HashMap) => true
 ): Observable<T[]> {
-    console.log('Generate handlers:', endpoint);
     if (ENDPOINT_SUBJECTS[endpoint]) {
         ENDPOINT_SUBJECTS[endpoint].complete();
         delete ENDPOINT_SUBJECTS[endpoint];

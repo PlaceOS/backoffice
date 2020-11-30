@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 
 import { RepositoriesComponent } from './repositories.component';
-import { RepositoryAboutComponent } from './about/repository-about.component';
-import { RepositoryDriversComponent } from './drivers/repository-drivers.component';
+import { RepositoryAboutComponent } from './repository-about.component';
+import { RepositoryDriversComponent } from './repository-drivers.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 
 export const ROUTES: Routes = [

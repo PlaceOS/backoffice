@@ -7,8 +7,8 @@ import { RouterModule } from '@angular/router';
 import { ROUTES } from './repositories.routes';
 
 import { RepositoriesComponent } from './repositories.component';
-import { RepositoryAboutComponent } from './about/repository-about.component';
-import { RepositoryDriversComponent } from './drivers/repository-drivers.component';
+import { RepositoryAboutComponent } from './repository-about.component';
+import { RepositoryDriversComponent } from './repository-drivers.component';
 import { SharedContentModule } from 'src/app/ui/ui.module';
 
 
