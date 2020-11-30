@@ -110,6 +110,7 @@ export class SystemStateService {
                 ...this._loading.getValue(),
                 modules: false,
             });
+            modules.sort((a, b) => item.modules.indexOf(a.id) - item.modules.indexOf(b.id));
             this._modules.next(modules);
             return modules;
         }),
