@@ -186,7 +186,7 @@ export class ActiveItemService extends BaseClass {
                 ref.componentInstance.event
                     .pipe(filter((e) => e.reason === 'done'))
                     .subscribe((event) => {
-                        resolve(event.metadata.id);
+                        resolve(event.metadata.item);
                         this.replaceItem(event.metadata.item);
                         if (event.metadata.item instanceof this.actions.itemConstructor) {
                             this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
