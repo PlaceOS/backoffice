@@ -270,7 +270,7 @@ export class SystemModulesComponent extends BaseClass {
         },
     ];
     /** Query method for modules */
-    public readonly query_fn = (_: string) => queryModules({ q: _ }).pipe(map((_) => _.data));
+    public readonly query_fn = (_: string) => queryModules({ q: _ }).pipe(map((_) => _.data.map(_ => ({..._, extra: _.driver?.name }))));
     /** Function for excluding modules already within this system */
     public readonly exclude_fn = (item: PlaceModule) =>
         item.control_system_id === this.item.id || item.role === PlaceDriverRole.Logic;
