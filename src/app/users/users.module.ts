@@ -7,8 +7,8 @@ import { RouterModule } from '@angular/router';
 import { ROUTES } from './users.routes';
 
 import { UsersComponent } from './users.component';
-import { UserAboutComponent } from './user-about/user-about.component';
-import { UserHistoryComponent } from './user-history/user-history.component';
+import { UserAboutComponent } from './user-about.component';
+import { UserHistoryComponent } from './user-history.component';
 import { SharedContentModule } from 'src/app/ui/ui.module';
 
 

@@ -27,10 +27,11 @@ export function generateModuleFormFields(module: PlaceModule): FormGroup {
         driver: new FormControl('', [Validators.required]),
         driver_id: new FormControl(module.driver_id),
     };
+    const system = module.system || fields.system.value || null;
     if (!module.id) {
-        fields.system.valueChanges.subscribe((value: PlaceSystem) =>
-            fields.control_system_id.setValue(value.id)
-        )
+        fields.system.valueChanges.subscribe((value: PlaceSystem) =>{
+            fields.control_system_id.setValue(value?.id);
+        })
         fields.driver.valueChanges.subscribe((value: PlaceDriver) => {
             fields.driver_id.setValue(value.id)
             fields.name.setValue(value.name || value.module_name);
@@ -43,16 +44,17 @@ export function generateModuleFormFields(module: PlaceModule): FormGroup {
                 case PlaceDriverRole.Websocket:
                     fields.uri.setValidators([Validators.required, validateURI]);
                     fields.udp.setValue(false);
-                    fields.control_system_id.setValue(null);
+                    fields.system.setValue(null);
                     break;
                 case PlaceDriverRole.Device:
                 case PlaceDriverRole.SSH:
                     fields.ip.setValidators([validateIpAddress, Validators.required]);
                     fields.port.setValidators([Validators.min(1), Validators.max(65535), Validators.required]);
-                    fields.control_system_id.setValue(null);
+                    fields.system.setValue(null);
                     break;
                 case PlaceDriverRole.Logic:
                     fields.system.setValidators([Validators.required]);
+                    fields.system.setValue(system);
                     break;
             }
         });

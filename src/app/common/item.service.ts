@@ -210,7 +210,6 @@ export class ActiveItemService extends BaseClass {
                     },
                 }
             );
-            console.log('Item:', item);
             ref.componentInstance.event
                 .pipe(filter((e) => e.reason === 'done'))
                 .subscribe((event: DialogEvent) => {

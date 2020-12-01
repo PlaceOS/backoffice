@@ -182,7 +182,7 @@ export class SystemStateService {
     public readonly getModules = () => this._modules.getValue();
     /** Observable of the active item */
     public get active_item(): PlaceSystem {
-        return this._state.active_item || {} as any;
+        return this._state.active_item || ({} as any);
     }
 
     constructor(
@@ -256,7 +256,14 @@ export class SystemStateService {
     }
 
     public async newModule() {
-        const module = await this._state.create(new PlaceModule()).catch((_) => null);
+        const module = await this._state
+            .edit(
+                new PlaceModule({
+                    system: this.active_item,
+                    control_system_id: this.active_item.id,
+                })
+            )
+            .catch((_) => null);
         if (!module) return;
         this.joinModule(module.id);
     }
@@ -310,23 +317,23 @@ export class SystemStateService {
                 },
             });
             const details = await Promise.race([
-                ref.componentInstance.event.pipe(first(_ => _.reason === 'action')).toPromise(),
-                ref.afterClosed().toPromise()
+                ref.componentInstance.event.pipe(first((_) => _.reason === 'action')).toPromise(),
+                ref.afterClosed().toPromise(),
             ]);
             if (!details || !details.reason) return;
             ref.componentInstance.loading = 'Saving trigger settings...';
 
-            const url = `${apiEndpoint()}/systems/${this.active_item.id}/triggers/${
-                trigger.id
-            }`;
-            const trig = await put(url, details.metadata).toPromise().catch(err => {
-                notifyError(
-                    `Error updating trigger settings. Error: ${JSON.stringify(
-                        err.response || err.message || err
-                    )}`
-                );
-                throw err;
-            });
+            const url = `${apiEndpoint()}/systems/${this.active_item.id}/triggers/${trigger.id}`;
+            const trig = await put(url, details.metadata)
+                .toPromise()
+                .catch((err) => {
+                    notifyError(
+                        `Error updating trigger settings. Error: ${JSON.stringify(
+                            err.response || err.message || err
+                        )}`
+                    );
+                    throw err;
+                });
             ref.close();
             if (trig) return;
             notifySuccess(`Successfully updated trigger settings.`);
