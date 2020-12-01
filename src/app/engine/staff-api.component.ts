@@ -113,7 +113,7 @@ export class PlaceStaffAPIComponent implements OnInit {
 
     public editTenant(tenant?: PlaceTenant) {
         this._dialog.open(StaffTenantModalComponent, {
-            data: { tenant },
+            data: { tenant, domain: this.domain.getValue() },
         });
     }
 
