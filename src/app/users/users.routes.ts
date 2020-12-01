@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 
 import { UsersComponent } from './users.component';
-import { UserAboutComponent } from './user-about/user-about.component';
-import { UserHistoryComponent } from './user-history/user-history.component';
+import { UserAboutComponent } from './user-about.component';
+import { UserHistoryComponent } from './user-history.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 
 export const ROUTES: Routes = [
