@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 
 import { TriggersComponent } from './triggers.component';
-import { TriggerAboutComponent } from './trigger-about/trigger-about.component';
-import { TriggerSystemsComponent } from './trigger-systems/trigger-systems.component';
+import { TriggerAboutComponent } from './trigger-about.component';
+import { TriggerSystemsComponent } from './trigger-systems.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 
 export const ROUTES: Routes = [

@@ -17,8 +17,8 @@ import { DriverStateService } from './driver-state.service';
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@driverDetailsCompiled">Compiled:</label>
-                <div class="value">{{ compiled || 'false' }}</div>
-                <mat-spinner diameter="24" *ngIf="!compiled"></mat-spinner>
+                <div class="value">{{ (compiled | async) ? 'true' : 'false' }}</div>
+                <mat-spinner diameter="24" *ngIf="!(compiled | async)"></mat-spinner>
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@driverDetailsCommit">Commit:</label>
@@ -73,10 +73,8 @@ import { DriverStateService } from './driver-state.service';
     ],
 })
 export class DriverAboutComponent {
-    /** Whether driver has a compiled binary on the server */
-    public compiled: boolean;
 
-    public readonly is_compiled = this._service.is_compiled;
+    public readonly compiled = this._service.is_compiled;
 
     public readonly recompileDriver = () => this._service.recompileDriver();
 

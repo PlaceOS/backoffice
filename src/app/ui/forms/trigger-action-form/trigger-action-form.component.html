@@ -11,7 +11,7 @@
             </mat-form-field>
         </div>
         <ng-container [ngSwitch]="form.controls.action_type.value">
-            <ng-container *ngSwitchCase="'email'">
+            <ng-container *ngSwitchCase="'emails'">
                 <div class="field" *ngIf="form.controls.emails">
                     <label
                         for="description"

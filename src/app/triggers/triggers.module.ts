@@ -8,8 +8,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ROUTES } from './triggers.routes';
 
 import { TriggersComponent } from './triggers.component';
-import { TriggerAboutComponent } from './trigger-about/trigger-about.component';
-import { TriggerSystemsComponent } from './trigger-systems/trigger-systems.component';
+import { TriggerAboutComponent } from './trigger-about.component';
+import { TriggerSystemsComponent } from './trigger-systems.component';
 import { SharedContentModule } from 'src/app/ui/ui.module';
 
 
