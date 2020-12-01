@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { post } from '@placeos/ts-client';
+import { PlaceDomain, post } from '@placeos/ts-client';
 import { notifyError, notifyInfo, notifySuccess } from '../common/notifications';
 import { DialogEvent } from '../common/types';
 
@@ -9,6 +9,7 @@ import { PlaceTenant } from './staff-api.component';
 
 export interface StaffTenantModalData {
     tenant?: PlaceTenant;
+    domain?: PlaceDomain;
 }
 
 @Component({
@@ -74,6 +75,7 @@ export class StaffTenantModalComponent implements OnInit {
     @Output() public readonly event = new EventEmitter<DialogEvent>();
 
     public readonly tenant = this._data.tenant;
+    public readonly domain = this._data.domain;
 
     public form: FormGroup;
 
@@ -117,6 +119,7 @@ export class StaffTenantModalComponent implements OnInit {
 
     public ngOnInit() {
         this.form = new FormGroup({
+            domain: new FormControl(this.domain?.domain || this.tenant.domain || 'localhost'),
             name: new FormControl(this.tenant?.name || '', [Validators.required]),
             platform: new FormControl(this.tenant?.name || 'google', [Validators.required]),
             credentials:
