@@ -7,6 +7,7 @@ import { SettingsService } from 'src/app/common/settings.service';
 import { notifyInfo } from 'src/app/common/notifications';
 
 import * as blobUtil from 'blob-util';
+import { MatDialog } from '@angular/material/dialog';
 
 export interface UploadDetails {
     /** Name of the file uploaded */
@@ -42,7 +43,11 @@ export class UploadListComponent extends BaseClass implements OnInit {
         return !this._settings.value('disable_uploads');
     }
 
-    constructor(private _upload_manager: UploadManager, private _settings: SettingsService) {
+    constructor(
+        private _upload_manager: UploadManager,
+        private _settings: SettingsService,
+        private _dialog: MatDialog
+    ) {
         super();
     }
 
@@ -53,6 +58,18 @@ export class UploadListComponent extends BaseClass implements OnInit {
         this.subscription(
             'show',
             this._settings.listen('show_upload_manager').subscribe((show) => (this.show = show))
+        );
+        this.subscription(
+            'on_dialog_open',
+            this._dialog.afterOpened.subscribe(() => {
+                this._settings.post('disable_uploads', true);
+            })
+        );
+        this.subscription(
+            'on_dialog_closed',
+            this._dialog.afterAllClosed.subscribe(() => {
+                this._settings.post('disable_uploads', false);
+            })
         );
     }
 
