@@ -100,13 +100,11 @@ import { SystemStateService } from './system-state.service';
                                 <div class="w-12 flex items-center justify-center p-2 h-10">
                                     <div
                                         dot
-
                                         binding
                                         [sys]="item.id"
                                         [mod]="(bindings | async)[i]"
                                         bind="connected"
                                         [(model)]="device.connected"
-
                                         class="h-4 w-4 rounded-full"
                                         [class.bg-black]="!device.running"
                                         [class.bg-error]="device.running && !device.connected"
@@ -270,7 +268,10 @@ export class SystemModulesComponent extends BaseClass {
         },
     ];
     /** Query method for modules */
-    public readonly query_fn = (_: string) => queryModules({ q: _ }).pipe(map((_) => _.data.map(_ => ({..._, extra: _.driver?.name }))));
+    public readonly query_fn = (_: string) =>
+        queryModules({ q: _ }).pipe(
+            map((_) => _.data.map((mod) => ({ ...mod, extra: mod.driver?.name })))
+        );
     /** Function for excluding modules already within this system */
     public readonly exclude_fn = (item: PlaceModule) =>
         item.control_system_id === this.item.id || item.role === PlaceDriverRole.Logic;
