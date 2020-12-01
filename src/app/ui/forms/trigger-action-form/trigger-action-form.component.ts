@@ -26,7 +26,7 @@ export class TriggerActionFormComponent {
     /** List of available trigger action types */
     public action_types: Identity[] = [
         { id: 'function', name: 'Execute Method' },
-        { id: 'email', name: 'Send Email' }
+        { id: 'emails', name: 'Send Email' }
     ];
 
     public get email_list(): string[] {

@@ -129,15 +129,15 @@ export function validateEmailList(control: AbstractControl) {
  * Generate form controls for creating a trigger action
  */
 export function generateTriggerActionForm(action: TriggerFunction | TriggerMailer = {} as any) {
-    const type = action && (action as TriggerMailer).emails ? 'email' : 'function';
+    const type = action && (action as TriggerMailer)?.emails ? 'emails' : 'function';
     const fields: HashMap<FormControl> = {
         action_type: new FormControl(type),
-        emails: new FormControl((action as TriggerMailer).emails || [], [
+        emails: new FormControl((action as TriggerMailer)?.emails || [], [
             Validators.min(1),
             Validators.required,
             validateEmailList
         ]),
-        content: new FormControl((action as TriggerMailer).emails || '', [Validators.required]),
+        content: new FormControl((action as TriggerMailer)?.content || '', [Validators.required]),
         method_call: new FormControl((action as TriggerFunction) || null, [])
     };
     const subscriptions = [];

@@ -66,6 +66,7 @@ export class TriggerActionModalComponent extends BaseClass implements OnInit {
 
     public save() {
         this.form.markAllAsTouched();
+        console.log('Form:', this.form, this._data);
         if (
             (this.form.controls.action_type.value === 'emails' && !this.form.valid) ||
             (this.form.controls.action_type.value === 'function' && !this.form.value.method_call)
@@ -73,7 +74,7 @@ export class TriggerActionModalComponent extends BaseClass implements OnInit {
             return;
         }
         this.loading = true;
-        if (this.form.controls.action_type.value === 'emails') {
+        if (this.form.value.action_type === 'emails') {
             this.updateMailers();
         } else {
             this.updateFunctions();
@@ -108,13 +109,14 @@ export class TriggerActionModalComponent extends BaseClass implements OnInit {
             content: this.form.value.content,
         };
         if (this._data.action) {
-            const old_mailer = JSON.stringify(this._data.action);
+            const old_mailer = JSON.stringify(this._data.action || {});
             const index = mailers.findIndex((a_mailer) => JSON.stringify(a_mailer) === old_mailer);
             mailers.splice(index, 1, new_mailer);
         } else {
             mailers.push(new_mailer);
         }
         this.actions = { ...this.trigger.actions, mailers };
+        console.log('Actions:', this.actions, mailers);
     }
 
     private updateFunctions() {
