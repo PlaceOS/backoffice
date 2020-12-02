@@ -9,8 +9,58 @@ import * as dayjs from 'dayjs';
 
 @Component({
     selector: 'engine-cluster-details',
-    templateUrl: './cluster-details.component.html',
-    styleUrls: ['./cluster-details.component.scss'],
+    template: `
+        <ng-container *ngIf="cluster_list && cluster_list.length; else empty_state">
+            <ng-container *ngIf="!active_cluster; else process_state">
+                <ng-container *ngFor="let cluster of cluster_list">
+                    <mat-card class="m-2 text-center">
+                        <mat-card-header>
+                            <mat-card-title clas="capitalize"
+                                >{{ cluster.hostname || 'Undefined Cluster' }}
+                            </mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <engine-cluster-item
+                                [cluster]="cluster"
+                                [cpu_history]="cpu_history[cluster.id] || []"
+                            ></engine-cluster-item>
+                        </mat-card-content>
+                        <mat-card-actions>
+                            <button
+                                mat-button
+                                (click)="active_cluster = cluster"
+                                i18n="@@viewClusterProcesses"
+                            >
+                                View Processes
+                            </button>
+                        </mat-card-actions>
+                    </mat-card>
+                </ng-container>
+            </ng-container>
+        </ng-container>
+        <ng-template #empty_state>
+            <div class="info-block center">
+                <div class="icon">
+                    <app-icon [icon]="{ class: 'backoffice-cross' }"></app-icon>
+                </div>
+                <div class="text" i18n="@@clusterListEmpty">No Cluster details to show</div>
+            </div>
+        </ng-template>
+        <ng-template #process_state>
+            <engine-cluster-task-list
+                [cluster]="active_cluster"
+                (close)="active_cluster = null"
+            ></engine-cluster-task-list>
+        </ng-template>
+    `,
+    styles: [
+        `
+            :host {
+                display: flex;
+                flex-wrap: wrap;
+            }
+        `,
+    ],
 })
 export class PlaceClusterDetailsComponent extends BaseClass implements OnInit {
     /** List of available clusters on this instance of engine */
@@ -33,7 +83,10 @@ export class PlaceClusterDetailsComponent extends BaseClass implements OnInit {
         }
         this.loading = true;
         queryClusters({ include_status: true } as any)
-            .pipe(map((resp) => resp.data), catchError(_ => []))
+            .pipe(
+                map((resp) => resp.data),
+                catchError((_) => [])
+            )
             .subscribe((list) => {
                 this.cluster_list = list || [];
                 const date = dayjs().valueOf();
