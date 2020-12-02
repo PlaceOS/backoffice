@@ -1,16 +1,44 @@
-import { Component, Input, SimpleChanges, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 
-import { PlaceDomain, updateDomain } from '@placeos/ts-client';
+import { PlaceDomain } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
 import { validateJSONString } from 'src/app/common/validation';
-import { ActiveItemService } from 'src/app/common/item.service';
+import { DomainStateService } from './domain-state.service';
 
 @Component({
     selector: 'app-domain-about',
-    templateUrl: './domain-about.component.html',
-    styleUrls: ['./domain-about.component.scss'],
+    template: `
+        <h3 class="text-lg font-medium mb-2">Settings</h3>
+        <section *ngIf="form" [formGroup]="form">
+            <mat-tab-group [(selectedIndex)]="index">
+                <mat-tab label="Config"> </mat-tab>
+                <mat-tab label="Internals"> </mat-tab>
+            </mat-tab-group>
+            <settings-form-field
+                *ngIf="index !== 1"
+                formControlName="config"
+                lang="json"
+                [readonly]="false"
+            ></settings-form-field>
+            <settings-form-field
+                *ngIf="index === 1"
+                formControlName="internals"
+                lang="json"
+                [readonly]="false"
+            ></settings-form-field>
+        </section>
+    `,
+    styles: [
+        `
+            :host {
+                padding: 1rem;
+                height: 100%;
+                width: 100%;
+            }
+        `,
+    ],
 })
 export class DomainAboutComponent extends BaseClass implements OnInit {
     /** Form group for edit domain settings */
@@ -22,14 +50,15 @@ export class DomainAboutComponent extends BaseClass implements OnInit {
         return this._service.active_item as any;
     }
 
-    constructor(private _service: ActiveItemService) {
+    constructor(private _service: DomainStateService) {
         super();
     }
 
     public ngOnInit(): void {
-        this.subscription('item', this._service.item.subscribe((item) => {
-            this.loadForm();
-        }))
+        this.subscription(
+            'item',
+            this._service.item.subscribe((_) => this.loadForm())
+        );
     }
 
     /** Load form fields for active item */
@@ -59,8 +88,7 @@ export class DomainAboutComponent extends BaseClass implements OnInit {
                         config: JSON.parse(this.form.value.config),
                         internals: JSON.parse(this.form.value.internals),
                     });
-                    const item = await updateDomain(domain.id, domain).toPromise();
-                    this._service.replaceItem(item);
+                    this._service.update(domain);
                 }
             },
             3000

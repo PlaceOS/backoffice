@@ -343,6 +343,10 @@ mat-expansion-panel {
     }
 }
 
+[empty-state] {
+    @apply flex flex-col items-center p-8 space-y-4;
+}
+
 #placeos .dark-mode [table-head] {
     @apply bg-gray-600 border-gray-300;
 }
