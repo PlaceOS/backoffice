@@ -1,19 +1,63 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { PlaceCluster, PlaceProcess, terminateProcess, queryProcesses, onlineState } from '@placeos/ts-client';
-import { first } from 'rxjs/operators';
+import {
+    PlaceCluster,
+    PlaceProcess,
+    terminateProcess,
+    queryProcesses,
+} from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
 import {
     ConfirmModalComponent,
-    CONFIRM_METADATA
+    CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { notifyError } from 'src/app/common/notifications';
 
 @Component({
     selector: 'engine-cluster-task-list',
-    templateUrl: './task-list.component.html',
-    styleUrls: ['./task-list.component.scss']
+    template: `
+        <div class="flex items-center mb-4">
+            <button mat-icon-button (click)="close.emit()">
+                <app-icon [icon]="{ type: 'icon', class: 'backoffice-arrow-left' }"></app-icon>
+            </button>
+            <h3 class="text-lg font-medium" i18n="@@clusterHeader">Cluster - {{ cluster?.hostname }}</h3>
+        </div>
+        <div role="table">
+            <div table-head>
+                <div class="flex-1 p-2">Name</div>
+                <div class="w-24 p-2">CPU %</div>
+                <div class="w-24 p-2">Memory</div>
+                <div class="w-24 p-2">Instances</div>
+                <div class="w-12 p-2"></div>
+            </div>
+            <div table-body>
+                <div table-row *ngFor="let element of process_list">
+                    <div class="flex-1 p-2" [innerHTML]="element.id | driverFormat"></div>
+                    <div class="w-24 p-2">{{ element.cpu_usage.toFixed(2) }}%</div>
+                    <div class="w-24 p-2">{{ element.used_memory }}</div>
+                    <div class="w-24 p-2">{{ element.module_instances }}%</div>
+                    <div class="w-12 flex items-center justify-center">
+                        <button mat-icon-button (click)="confirmKillProcess(element)">
+                            <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col items-center p-8" *ngIf="!process_list || !process_list.length">
+            <p i18n="@@processTableEmpty">No tasks running on cluster</p>
+        </div>
+    `,
+    styles: [
+        `
+            :host {
+                padding: 1rem;
+                height: 100%;
+                width: 100%;
+            }
+        `,
+    ],
 })
 export class PlaceClusterTaskListComponent extends BaseClass implements OnInit {
     /** Cluster to display tasks details for */
@@ -32,7 +76,7 @@ export class PlaceClusterTaskListComponent extends BaseClass implements OnInit {
         'cpu_usage',
         'memory_usage',
         'module_instances',
-        'running'
+        'running',
     ];
 
     constructor(private _dialog: MatDialog) {
@@ -54,12 +98,12 @@ export class PlaceClusterTaskListComponent extends BaseClass implements OnInit {
                     <p>The process will be terminated <strong>immediately</strong>.
                     The process may be restarted after a short while.</p>
                 `,
-                icon: { type: 'icon', class: 'backoffice-trash' }
-            }
+                icon: { type: 'icon', class: 'backoffice-trash' },
+            },
         });
         this.subscription(
             'confirm_kil',
-            ref.componentInstance.event.subscribe(event => {
+            ref.componentInstance.event.subscribe((event) => {
                 if (event.reason === 'done') {
                     this.killing = process.id;
                     ref.componentInstance.loading = 'Processing request...';
@@ -68,11 +112,13 @@ export class PlaceClusterTaskListComponent extends BaseClass implements OnInit {
                             this.killing = null;
                             ref.close();
                         },
-                        err => {
+                        (err) => {
                             ref.componentInstance.loading = null;
                             this.killing = null;
                             notifyError(
-                                `Error killing process. Error: ${JSON.stringify(err.response || err.message || err)}`
+                                `Error killing process. Error: ${JSON.stringify(
+                                    err.response || err.message || err
+                                )}`
                             );
                             ref.close();
                         }
@@ -88,7 +134,7 @@ export class PlaceClusterTaskListComponent extends BaseClass implements OnInit {
 
     private loadProcesses(): void {
         this.loading = true;
-        queryProcesses(this.cluster.id, { include_status: true } as any).subscribe(list => {
+        queryProcesses(this.cluster.id, { include_status: true } as any).subscribe((list) => {
             this.process_list = list || [];
             this.loading = false;
         });

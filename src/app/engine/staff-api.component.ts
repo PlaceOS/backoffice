@@ -42,7 +42,7 @@ export interface PlaceTenant {
                     <div class="flex-1 p-2">Platform</div>
                     <div class="w-16 p-2 h-10"></div>
                 </div>
-                <div class="">
+                <div table-body>
                     <div table-row *ngFor="let item of tenants | async">
                         <div class="w-1/2 p-2 truncate">{{ item.name }}</div>
                         <div class="flex-1 p-2 truncate">{{ item.platform }}</div>

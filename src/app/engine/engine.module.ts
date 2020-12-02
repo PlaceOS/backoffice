@@ -8,15 +8,15 @@ import { ROUTES } from './engine.routes';
 import { SharedContentModule } from 'src/app/ui/ui.module';
 
 import { PlaceComponent } from './engine.component';
-import { PlaceDatabaseDetailsComponent } from './database-details/database-details.component';
-import { PlaceDetailsComponent } from './details/details.component';
+import { PlaceDatabaseDetailsComponent } from './database-details.component';
+import { PlaceDetailsComponent } from './details.component';
 import { PlaceClusterDetailsComponent } from './cluster-details/cluster-details.component';
-import { PlaceClusterItemComponent } from './cluster-details/item/item.component';
-import { PlaceClusterTaskListComponent } from './cluster-details/task-list/task-list.component';
-import { AdminInterfacesComponent } from './interfaces/interfaces.component';
-import { AdminBrokersComponent } from './brokers/brokers.component';
-import { PlaceExtensionsComponent } from './extensions/extensions.component';
-import { ExtensionModalComponent } from './extensions/extension-modal/extension-modal.component';
+import { PlaceClusterItemComponent } from './cluster-details/cluster-item.component';
+import { PlaceClusterTaskListComponent } from './cluster-details/cluster-task-list.component';
+import { AdminInterfacesComponent } from './interfaces.component';
+import { AdminBrokersComponent } from './brokers.component';
+import { PlaceExtensionsComponent } from './extensions.component';
+import { ExtensionModalComponent } from './extension-modal/extension-modal.component';
 import { PlaceStaffAPIComponent } from './staff-api.component';
 import { StaffTenantModalComponent } from './staff-tenant-modal.component';
 

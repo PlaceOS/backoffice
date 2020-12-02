@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
 import { DomainsComponent } from './domains.component';
-import { DomainApplicationsComponent } from './domain-applications/domain-applications.component';
-import { DomainAuthenticationComponent } from './domain-authentication/domain-authentication.component';
-import { DomainUsersComponent } from './domain-users/domain-users.component';
-import { DomainAboutComponent } from './domain-about/domain-about.component';
+import { DomainApplicationsComponent } from './domain-applications.component';
+import { DomainAuthenticationComponent } from './domain-authentication.component';
+import { DomainUsersComponent } from './domain-users.component';
+import { DomainAboutComponent } from './domain-about.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 
 export const ROUTES: Routes = [

@@ -5,6 +5,8 @@ import { map } from 'rxjs/operators';
 import { ActiveItemService } from '../common/item.service';
 import { BaseClass } from '../common/base.class';
 import { extensionsForItem } from '../common/api';
+import { DomainStateService } from './domain-state.service';
+import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 
 @Component({
     selector: 'app-domains',
@@ -48,9 +50,7 @@ export class DomainsComponent extends BaseClass {
 
     public readonly name = 'domains';
 
-    public readonly show_options = this._service.show_options;
-
-    constructor(private _service: ActiveItemService) {
+    constructor(private _service: DomainStateService) {
         super();
     }
 
@@ -60,7 +60,7 @@ export class DomainsComponent extends BaseClass {
         return extensionsForItem(this._service.active_item, this.name);
     }
 
-    public updateTabList() {
+    public updateTabList(count: HashMap<number>) {
         this.tab_list = [
             {
                 id: 'about',
@@ -70,19 +70,19 @@ export class DomainsComponent extends BaseClass {
             {
                 id: 'applications',
                 name: 'Applications',
-                count: this.applications || 0,
+                count: count.applications || 0,
                 icon: { class: 'backoffice-publish' },
             },
             {
                 id: 'authentication',
                 name: 'Authentication',
-                count: this.auth_sources || 0,
+                count: count.auth_sources || 0,
                 icon: { class: 'backoffice-lock-open' },
             },
             {
                 id: 'users',
                 name: 'Users',
-                count: this.user_count || 0,
+                count: count.users || 0,
                 icon: { class: 'backoffice-users' },
             },
         ].concat(this.extensions);
@@ -91,30 +91,8 @@ export class DomainsComponent extends BaseClass {
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.item.subscribe((item) => {
-                this.loadValues(item as any);
-            })
+            this._service.counts.subscribe((c) => this.updateTabList(c))
         );
-        this.updateTabList();
-    }
-
-    protected async loadValues(item: PlaceDomain) {
-        if (!item) return;
-        let query: any = { offset: 0, limit: 1, authority: item.id };
-        // Get application count
-        this.applications = (await queryApplications(query).toPromise()).total;
-        query = { offset: 0, limit: 1, authority_id: item.id };
-        // Get auth source count
-        this.auth_sources = (await Promise.all([
-            queryOAuthSources({ authority: item.id, limit: 1 } as any)
-                .toPromise(),
-            querySAMLSources({ authority: item.id, limit: 1 } as any)
-                .toPromise(),
-            queryLDAPSources({ authority: item.id, limit: 1 } as any)
-                .toPromise(),
-        ])).reduce((c, i) => c + (i.total || 0), 0);
-        // Get users count
-        this.user_count = (await queryUsers(query).toPromise()).total;
-        this.updateTabList();
+        this.updateTabList({});
     }
 }

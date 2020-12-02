@@ -34,8 +34,67 @@ export interface BackofficeExtension {
 
 @Component({
     selector: '[app-extensions]',
-    templateUrl: './extensions.component.html',
-    styleUrls: ['./extensions.component.scss'],
+    template: `
+        <h2 class="text-lg font-medium mb-4">Backoffice extensions</h2>
+        <div *ngIf="!loading; else load_state">
+            <div class="flex items-center space-x-2 mb-4">
+                <label for="type">Domain: </label>
+                <mat-form-field appearance="outline" class="h-12">
+                    <mat-select
+                        name="type"
+                        [(ngModel)]="domain"
+                        (ngModelChange)="setDomain($event)"
+                        placeholder="Select Domain..."
+                    >
+                        <mat-option *ngFor="let domain of domain_list" [value]="domain">
+                            {{ domain.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <button mat-button (click)="editExtension()">Add Extension</button>
+            </div>
+            <div role="table">
+                <div table-head>
+                    <div class="w-24 p-2">Type</div>
+                    <div class="w-40 p-2">Name</div>
+                    <div class="flex-1 p-2">URL</div>
+                    <div class="w-28 p-2">Conditions</div>
+                    <div class="w-24 p-2"></div>
+                </div>
+                <div table-body>
+                    <div table-row *ngFor="let extension of extension_list">
+                        <div class="w-24 p-2 capitalize">{{ extension.type }}</div>
+                        <div class="w-40 p-2">{{ extension.name }}</div>
+                        <div class="flex-1 p-2">{{ extension.url }}</div>
+                        <div class="w-28 p-2">{{ extension.conditions.length }}</div>
+                        <div class="w-24 flex items-center justify-center">
+                            <button mat-icon-button (click)="editExtension(extension)">
+                                <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+                            </button>
+                            <button mat-icon-button (click)="removeExtension(extension)">
+                                <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ng-template #load_state>
+            <div class="info-block">
+                <div class="icon">
+                    <mat-spinner [diameter]="32"></mat-spinner>
+                </div>
+                <div class="text">{{ loading }}</div>
+            </div>
+        </ng-template>
+    `,
+    styles: [`
+        :host {
+            padding: 1rem;
+            width: 100%;
+            height: 100%;
+        }
+    `],
 })
 export class PlaceExtensionsComponent implements OnInit {
     /** Loading state */
@@ -112,17 +171,13 @@ export class PlaceExtensionsComponent implements OnInit {
                 },
             }
         );
-        ref.componentInstance.event
-            .pipe(first((_) => _.reason === 'done'))
-            .subscribe(async _ => {
-                ref.componentInstance.loading = 'Removing extension...';
-                this.extension_list = this.extension_list.filter((i) => i !== item);
-                await this.updateDomain().catch((e) =>
-                    notifyError(`Error removing extension: ${e}`)
-                );
-                ref.componentInstance.loading = '';
-                ref.close();
-            });
+        ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).subscribe(async (_) => {
+            ref.componentInstance.loading = 'Removing extension...';
+            this.extension_list = this.extension_list.filter((i) => i !== item);
+            await this.updateDomain().catch((e) => notifyError(`Error removing extension: ${e}`));
+            ref.componentInstance.loading = '';
+            ref.close();
+        });
     }
 
     public async updateDomain() {
