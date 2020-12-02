@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PlaceRepository } from '@placeos/ts-client';
+import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
 
 import { RepositoriesStateService } from './repositories-state.service';
 
@@ -13,10 +13,15 @@ import { RepositoriesStateService } from './repositories-state.service';
                     this repository
                 </mat-card-content>
                 <mat-card-actions>
-                    <button mat-button class="w-40" [disabled]="pulling" (click)="pullLatestCommit()">
-                        <ng-container *ngIf="!pulling; else spinner" i18n="@@repoPullAction"
-                            >Pull</ng-container
-                        >
+                    <button
+                        mat-button
+                        class="w-40"
+                        [disabled]="pulling"
+                        (click)="pullLatestCommit()"
+                    >
+                        <ng-container *ngIf="!pulling; else spinner" i18n="@@repoPullAction">
+                            Pull
+                        </ng-container>
                     </button>
                 </mat-card-actions>
             </mat-card>
@@ -31,7 +36,9 @@ import { RepositoriesStateService } from './repositories-state.service';
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@repoFolderNameLabel">Folder name:</label>
-                <div class="value">{{ item.folder_name || 'No folder set' }}</div>
+                <div class="value" [class.underline]="item.type === 'Interface'">
+                    <a [href]="local_url">{{ item.folder_name || 'No folder set' }}</a>
+                </div>
             </div>
             <div class="flex items-center space-x-2" *ngIf="item.type === 'Interface'">
                 <label i18n="@@repoBranchLabel">Branch:</label>
@@ -39,8 +46,8 @@ import { RepositoriesStateService } from './repositories-state.service';
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@repoUriLabel">Repository URI:</label>
-                <div class="value">
-                    <a [href]="item.uri | safe: 'url'">{{ item.uri || 'No URI set' }}</a>
+                <div class="value underline">
+                    <a [href]="item.uri | safe: 'url'">{{ repo_uri || 'No URI set' }}</a>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
@@ -69,13 +76,15 @@ import { RepositoriesStateService } from './repositories-state.service';
             <mat-spinner diameter="32"></mat-spinner>
         </ng-template>
     `,
-    styles: [`
-        :host {
-            padding: 1rem;
-            height: 100%;
-            width: 100%;
-        }
-    `],
+    styles: [
+        `
+            :host {
+                padding: 1rem;
+                height: 100%;
+                width: 100%;
+            }
+        `,
+    ],
 })
 export class RepositoryAboutComponent {
     /** Whether the latest commit is being pulled on the server */
@@ -85,6 +94,16 @@ export class RepositoryAboutComponent {
 
     public get item(): PlaceRepository {
         return this._service.active_item as any;
+    }
+
+    public get local_url() {
+        return this.item.type === PlaceRepositoryType.Interface
+            ? `${location.origin}/${this.item.folder_name}/`
+            : `${location.hash}`;
+    }
+
+    public get repo_uri() {
+        return this.item?.uri.replace(/\/[a-zA-Z0-9\-\.:]*@/, '/...@');
     }
 
     constructor(private _service: RepositoriesStateService) {}

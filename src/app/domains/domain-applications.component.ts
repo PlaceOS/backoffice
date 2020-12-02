@@ -25,9 +25,9 @@ import { DomainStateService } from './domain-state.service';
                     <div class="flex-1 p-2 underline overflow-hidden">
                         <a [href]="item.redirect_uri" class="truncate">{{ item.redirect_uri }}</a>
                     </div>
-                    <div class="w-48 p-2 truncate select-all">{{ item.uid }}</div>
+                    <div class="w-48 p-2 truncate text-xs">{{ item.uid }}</div>
                     <div
-                        class="w-48 p-2 truncate underline text-center"
+                        class="w-48 p-2 truncate underline text-center text-xs"
                         (click)="
                             !show_secret[item.id] ? (show_secret[item.id] = true) : copySecret(item)
                         "

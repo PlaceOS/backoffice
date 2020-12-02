@@ -6,7 +6,7 @@ import { DomainStateService } from './domain-state.service';
 @Component({
     selector: 'domain-users',
     template: `
-        <div role="table" *ngIf="(users | async).length; else empty_state">
+        <div role="table" *ngIf="(users | async)?.length; else empty_state">
             <div table-head>
                 <div class="w-64 p-2" i18n="@@userTableName">Name</div>
                 <div class="flex-1 p-2" i18n="@@userTableEmail">Email</div>
@@ -26,7 +26,11 @@ import { DomainStateService } from './domain-state.service';
                     <div class="flex-1 p-2 underline">
                         <a [href]="'mailto:' + item.email">{{ item.email }}</a>
                     </div>
-                    <div class="w-24 p-2">{{ item.sys_admin ? 'Admin' : item.support ? 'Support' : 'None' }}</div>
+                    <div class="w-24 p-2">
+                        <span class="text-black" [class.text-opacity-20]="!item.sys_admin && !item.support">
+                            {{ item.sys_admin ? 'Admin' : item.support ? 'Support' : 'None' }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
