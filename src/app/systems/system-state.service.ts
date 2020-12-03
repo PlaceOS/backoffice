@@ -135,7 +135,8 @@ export class SystemStateService {
                         mod
                     )}`
             )
-        )
+        ),
+        shareReplay()
     );
     /** Observable for zones associated with system */
     public readonly zones = this._state.item.pipe(
