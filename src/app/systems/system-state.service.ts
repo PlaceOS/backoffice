@@ -149,6 +149,7 @@ export class SystemStateService {
             const zones = await listSystemZones(item.id)
                 .pipe(map((i) => i.data))
                 .toPromise();
+            zones.sort((a, b) => item.zones.indexOf(a.id) - item.zones.indexOf(b.id));
             this._loading.next({
                 ...this._loading.getValue(),
                 zones: false,
