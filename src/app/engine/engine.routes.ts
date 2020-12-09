@@ -10,6 +10,7 @@ import { AdminBrokersComponent } from './brokers.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 import { PlaceExtensionsComponent } from './extensions.component';
 import { PlaceStaffAPIComponent } from './staff-api.component';
+import { PlaceEdgeComponent } from './edge.component';
 
 export const ROUTES: Routes = [
     {
@@ -22,6 +23,7 @@ export const ROUTES: Routes = [
             { path: 'clusters', component: PlaceClusterDetailsComponent },
             { path: 'interfaces', component: AdminInterfacesComponent },
             { path: 'brokers', component: AdminBrokersComponent },
+            { path: 'edge', component: PlaceEdgeComponent },
             { path: 'extensions', component: PlaceExtensionsComponent },
             { path: 'staff-api', component: PlaceStaffAPIComponent },
             { path: 'extend/:id', component: ExtensionOutletComponent },
