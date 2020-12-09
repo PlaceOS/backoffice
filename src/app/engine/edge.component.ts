@@ -3,10 +3,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { PlaceEdge, queryEdges, removeEdge, retrieveEdgeToken } from '@placeos/ts-client';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
-
 import { copyToClipboard, openConfirmModal } from '../common/general';
 import { notifyError, notifyInfo, notifySuccess } from '../common/notifications';
 import { EdgeModalComponent } from './edge-modal.component';
+
 
 @Component({
     selector: 'admin-edge',
@@ -80,7 +80,8 @@ export class PlaceEdgeComponent {
 
     public readonly token = async (edge: PlaceEdge) => {
         const details = await retrieveEdgeToken(edge.id).toPromise();
-        notifyInfo(`Token: ${details.token}`, 'Copy', () => copyToClipboard(details.token));
+        copyToClipboard(details.token)
+        notifyInfo(`Token copied to clickboard.`);
     };
 
     public readonly edit = async (edge?: PlaceEdge) =>
