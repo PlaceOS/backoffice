@@ -23,7 +23,7 @@ import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
                 name="domain"
                 route="domains"
                 [tabs]="tab_list"
-                class="flex-1 relative mt-12 sm:mt-0"
+                class="flex-1 relative mt-12 sm:mt-0 w-full sm:w-1/2"
             ></item-display>
         </div>
     `,
