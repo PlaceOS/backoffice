@@ -25,6 +25,12 @@ import * as marked from 'marked';
             ></system-exec-field>
         </section>
         <section class="space-y-2">
+            <div class="flex items-center space-x-2" *ngIf="item?.parent_id">
+                <label i18n="@@zoneParentLabel">Parent ID:</label>
+                <div class="value underline">
+                    <a [routerLink]="['/zones', item?.parent_id, 'about']">{{ item?.parent_id }}</a>
+                </div>
+            </div>
             <div class="flex items-center space-x-2" *ngIf="item?.created_at">
                 <label i18n="@@zoneCreatedAtLabel">Created:</label>
                 <div class="value">{{ item?.created_at * 1000 | dateFrom }}</div>
@@ -58,7 +64,9 @@ import * as marked from 'marked';
                 <a class="underline" [href]="item?.map_id">{{ item?.map_id }}</a>
             </div>
         </section>
-        <header class="font-medium text-lg" *ngIf="item?.description" i18n="@@descriptionLabel">Description</header>
+        <header class="font-medium text-lg" *ngIf="item?.description" i18n="@@descriptionLabel">
+            Description
+        </header>
         <section
             class="description"
             *ngIf="item?.description"
@@ -83,7 +91,7 @@ import * as marked from 'marked';
         </section>
         <ng-template #load_state>
             <div class="flex flex-col items-center p-8">
-                    <mat-spinner class="mb-4" diameter="48"></mat-spinner>
+                <mat-spinner class="mb-4" diameter="48"></mat-spinner>
                 <p i18n="@@zoneLoadingLabel">Loading zone settings...</p>
             </div>
         </ng-template>
@@ -91,13 +99,15 @@ import * as marked from 'marked';
             <p class="text-center py-1" i18n="@@zoneTagsEmpty">&lt;No Tags&gt;</p>
         </ng-template>
     `,
-    styles: [`
-        :host {
-            padding: 1rem;
-            height: 100%;
-            width: 100%;
-        }
-    `],
+    styles: [
+        `
+            :host {
+                padding: 1rem;
+                height: 100%;
+                width: 100%;
+            }
+        `,
+    ],
 })
 export class ZoneAboutComponent {
     /** List of associated systems */
