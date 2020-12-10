@@ -27,7 +27,7 @@ export function generateModuleFormFields(module: PlaceModule): FormGroup {
         driver: new FormControl('', [Validators.required]),
         driver_id: new FormControl(module.driver_id),
         edge: new FormControl(''),
-        edge_id: new FormControl(module.edge_id),
+        edge_id: new FormControl(module.edge_id || null),
     };
     const system = module.system || fields.system.value || null;
     if (!module.id) {
@@ -35,7 +35,7 @@ export function generateModuleFormFields(module: PlaceModule): FormGroup {
             fields.control_system_id.setValue(value?.id);
         })
         fields.edge.valueChanges.subscribe((value: PlaceEdge) =>{
-            fields.edge_id.setValue(value?.id);
+            fields.edge_id.setValue(value?.id || null);
         })
         fields.driver.valueChanges.subscribe((value: PlaceDriver) => {
             fields.driver_id.setValue(value.id)
