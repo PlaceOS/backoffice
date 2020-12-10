@@ -1,6 +1,6 @@
 
 import { FormControl, Validators, FormGroup } from '@angular/forms';
-import { PlaceModule, PlaceSystem, PlaceDriver, PlaceDriverRole } from '@placeos/ts-client';
+import { PlaceModule, PlaceSystem, PlaceDriver, PlaceDriverRole, PlaceEdge } from '@placeos/ts-client';
 
 import { HashMap } from 'src/app/common/types';
 import { validateURI, validateIpAddress } from 'src/app/common/validation';
@@ -26,11 +26,16 @@ export function generateModuleFormFields(module: PlaceModule): FormGroup {
         role: new FormControl(module.role || PlaceDriverRole.Logic),
         driver: new FormControl('', [Validators.required]),
         driver_id: new FormControl(module.driver_id),
+        edge: new FormControl(''),
+        edge_id: new FormControl(module.edge_id),
     };
     const system = module.system || fields.system.value || null;
     if (!module.id) {
         fields.system.valueChanges.subscribe((value: PlaceSystem) =>{
             fields.control_system_id.setValue(value?.id);
+        })
+        fields.edge.valueChanges.subscribe((value: PlaceEdge) =>{
+            fields.edge_id.setValue(value?.id);
         })
         fields.driver.valueChanges.subscribe((value: PlaceDriver) => {
             fields.driver_id.setValue(value.id)

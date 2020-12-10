@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { PlaceDriverRole, queryDrivers, querySystems } from '@placeos/ts-client';
+import { PlaceDriverRole, queryDrivers, queryEdges, querySystems } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
 import { map } from 'rxjs/operators';
@@ -19,6 +19,8 @@ export class ModuleFormComponent extends BaseClass implements OnDestroy {
     public readonly driver_query_fn = (_: string) => queryDrivers({ q: _ } as any).pipe(map(resp => resp.data));
 
     public readonly system_query_fn = (_: string) => querySystems({ q: _ }).pipe(map(resp => resp.data));
+
+    public readonly edge_query_fn = (_: string) => queryEdges({ q: _ }).pipe(map(resp => resp.data));
 
     /** Role of the selected driver */
     public get role(): string {
