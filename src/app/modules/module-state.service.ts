@@ -9,7 +9,7 @@ import {
     startModule,
     stopModule,
 } from '@placeos/ts-client';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { catchError, debounceTime, map, shareReplay, switchMap } from 'rxjs/operators';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -39,7 +39,7 @@ export class ModuleStateService {
     );
     /** System assoicated with the active module */
     public readonly system = this._state.item.pipe(
-        switchMap((item: PlaceModule) => (item.system_id ? showSystem(item.system_id) : null)),
+        switchMap((item: PlaceModule) => (item.system_id ? showSystem(item.system_id) : of(null))),
         shareReplay()
     );
     /** System assoicated with the active module */
