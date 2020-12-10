@@ -95,7 +95,7 @@ export class ZonesStateService {
     public readonly children = this.item.pipe(
         switchMap((item) => {
             if (!(item instanceof PlaceZone)) return [];
-            return queryZones({ parent: item.id, limit: 1 });
+            return queryZones({ parent: item.id });
         }),
         map((list) => list.data),
         catchError((_) => []),
