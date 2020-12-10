@@ -213,10 +213,10 @@ export class ActiveItemService extends BaseClass {
             ref.componentInstance.event
                 .pipe(filter((e) => e.reason === 'done'))
                 .subscribe((event: DialogEvent) => {
-                    ref.componentInstance.loading = 'Deleting system...';
+                    ref.componentInstance.loading = `Deleting ${this.actions.singular}...`;
                     this.actions.remove(item).subscribe(
                         () => {
-                            notifySuccess(`Successfully deleted system "${item.name}".`);
+                            notifySuccess(`Successfully deleted ${this.actions.singular} "${item.name}".`);
                             this._active_item.next(null);
                             this.removeItem(item);
                             this._router.navigate([`/${this._type}`, '-', 'about']);
@@ -225,7 +225,7 @@ export class ActiveItemService extends BaseClass {
                         (err) => {
                             ref.componentInstance.loading = null;
                             notifyError(
-                                `Error deleting system. Error: ${JSON.stringify(
+                                `Error deleting ${this.actions.singular}. Error: ${JSON.stringify(
                                     err.response || err.message || err
                                 )}`
                             );
