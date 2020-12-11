@@ -36,7 +36,7 @@ import { notifyError } from 'src/app/common/notifications';
                     <div class="flex-1 p-2" [innerHTML]="element.id | driverFormat"></div>
                     <div class="w-24 p-2">{{ element.cpu_usage.toFixed(2) }}%</div>
                     <div class="w-24 p-2">{{ element.used_memory }}</div>
-                    <div class="w-24 p-2">{{ element.module_instances }}%</div>
+                    <div class="w-24 p-2">{{ element.module_instances }}</div>
                     <div class="w-12 flex items-center justify-center">
                         <button mat-icon-button (click)="confirmKillProcess(element)">
                             <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
