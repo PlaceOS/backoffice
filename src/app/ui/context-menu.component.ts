@@ -12,8 +12,18 @@ import { BaseClass } from 'src/app/common/base.class';
 
 @Component({
     selector: '[context-menu]',
-    templateUrl: './context-menu.template.html',
-    styleUrls: ['./context-menu.styles.scss'],
+    template: `
+        <ng-content></ng-content>
+        <div
+            class="pointer-events-none fixed h-px w-px"
+            style="opacity: 0; height: 0"
+            #container
+            [style.top]="position.top + 'px'"
+            [style.left]="position.left + 'px'"
+            [matMenuTriggerFor]="menu"
+        ></div>
+    `,
+    styles: [``],
 })
 export class ContextMenuComponent extends BaseClass implements OnInit, AfterViewInit {
     /** List of context menu items */

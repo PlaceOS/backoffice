@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UploadManager, Upload } from '@acaprojects/ngx-uploads';
+import { MatDialog } from '@angular/material/dialog';
 
 import { copyToClipboard } from 'src/app/common/general';
 import { BaseClass } from 'src/app/common/base.class';
@@ -7,7 +8,6 @@ import { SettingsService } from 'src/app/common/settings.service';
 import { notifyInfo } from 'src/app/common/notifications';
 
 import * as blobUtil from 'blob-util';
-import { MatDialog } from '@angular/material/dialog';
 
 export interface UploadDetails {
     /** Name of the file uploaded */

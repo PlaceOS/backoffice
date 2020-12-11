@@ -9,8 +9,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
 import { TopbarHeaderComponent } from './ui/topbar-header/topbar-header.component';
-import { GlobalSearchComponent } from './ui/global-search/global-search.component';
-import { SidebarMenuComponent } from './ui/sidebar-menu/sidebar-menu.component';
+import { GlobalSearchComponent } from './ui/global-search.component';
+import { SidebarMenuComponent } from './ui/sidebar-menu.component';
 
 import { SharedOverlaysModule } from './overlays/overlays.module';
 import { SharedContentModule } from './ui/ui.module';

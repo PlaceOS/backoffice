@@ -28,12 +28,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { CdkTableModule } from '@angular/cdk/table';
 
-import { ContextMenuComponent } from './context-menu/context-menu.component';
+import { ContextMenuComponent } from './context-menu.component';
 import { ItemDisplayComponent } from './item-display/item-display.component';
-import { SearchbarComponent } from './searchbar/searchbar.component';
+import { SearchbarComponent } from './searchbar.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { IconComponent } from './icon/icon.component';
-import { TerminalComponent } from './terminal/terminal.component';
+import { TerminalComponent } from './terminal.component';
 
 import { SettingsFieldComponent } from './custom-fields/settings-field/settings-field.component';
 import { ItemSearchFieldComponent } from './custom-fields/item-search-field/item-search-field.component';
