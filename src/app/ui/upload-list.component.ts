@@ -1,13 +1,11 @@
+import { Upload, UploadManager } from '@acaprojects/ngx-uploads';
 import { Component, OnInit } from '@angular/core';
-import { UploadManager, Upload } from '@acaprojects/ngx-uploads';
-
-import { copyToClipboard } from 'src/app/common/general';
-import { BaseClass } from 'src/app/common/base.class';
-import { SettingsService } from 'src/app/common/settings.service';
-import { notifyInfo } from 'src/app/common/notifications';
-
-import * as blobUtil from 'blob-util';
 import { MatDialog } from '@angular/material/dialog';
+import * as blobUtil from 'blob-util';
+import { BaseClass } from 'src/app/common/base.class';
+import { copyToClipboard } from 'src/app/common/general';
+import { notifyInfo } from 'src/app/common/notifications';
+import { SettingsService } from 'src/app/common/settings.service';
 
 export interface UploadDetails {
     /** Name of the file uploaded */
@@ -28,8 +26,112 @@ export interface UploadDetails {
 
 @Component({
     selector: 'app-upload-list',
-    templateUrl: './upload-list.component.html',
-    styleUrls: ['./upload-list.component.scss'],
+    template: `
+        <div
+            *ngIf="show"
+            class="absolute bottom-2 left-2 rounded overflow-hidden bg-white border border-gray-200 text-sm text-black shadow"
+        >
+            <div class="flex items-center bg-gray-700">
+                <div class="flex-1">Uploads({{ uploads.length || '0' }})</div>
+                <button mat-icon-button (click)="show = false">
+                    <app-icon [icon]="{ class: 'backoffice-cross' }"></app-icon>
+                </button>
+            </div>
+            <div list class="overflow-auto">
+                <ul *ngIf="uploads && uploads.length; else no_uploads">
+                    <li
+                        *ngFor="let item of uploads"
+                        class="my-1 h-12 hover:bg-gray-200"
+                        [class.error]="item.error"
+                    >
+                        <div class="flex items-center p-2" [title]="item.name">
+                            <div class="flex-1 w-1/2">{{ item.name }}</div>
+                            <a
+                                mat-button
+                                *ngIf="item.progress >= 100 && item.link"
+                                (click)="copyLink(item)"
+                                i18n="@@uploadLink"
+                            >
+                                Link
+                            </a>
+                            <a
+                                mat-button
+                                *ngIf="item.error"
+                                (click)="retry(item)"
+                                i18n="@@uploadRetry"
+                            >
+                                Retry
+                            </a>
+                            <div class="size">{{ item.formatted_size }}</div>
+                            <div class="progress" *ngIf="item.progress < 100 && !item.error">
+                                {{ item.progress }}%
+                            </div>
+                            <app-icon
+                                *ngIf="item.progress >= 100 && !item.error"
+                                className="backoffice-check"
+                                class="bg-success"
+                            ></app-icon>
+                            <app-icon
+                                *ngIf="item.error"
+                                className="backoffice-cross"
+                                class="bg-error"
+                                [matTooltip]="item.error"
+                            ></app-icon>
+                        </div>
+                        <mat-progress-bar
+                            *ngIf="item.progress < 100 && !item.error"
+                            mode="determinate"
+                            [value]="item.progress"
+                        ></mat-progress-bar>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div
+            class="absolute inset-0"
+            *ngIf="enabled"
+            (document:dragenter)="show_overlay = true"
+            (drop)="hideOverlay()"
+            hidden
+        ></div>
+        <div
+            class="absolute inset-0 bg-black bg-opacity-60"
+            (dragend)="show_overlay = false"
+            (dragleave)="show_overlay = false"
+            (drop)="handleFileEvent($event)"
+            *ngIf="show_overlay"
+        >
+            <div class="absolute bottom-0 p-4 left-1/2 -translate-x-1/2 flex flex-col items-center">
+                <app-icon
+                    class="animate-bounce mb-4 text-7xl"
+                    [icon]="{ class: 'backoffice-upload-to-cloud' }"
+                ></app-icon>
+                <div class="bg-white rounded p-4 text-black shadow">
+                    Drop files to upload them to the cloud
+                </div>
+            </div>
+            <input
+                class="absolute inset-0 opacity-0 z-50"
+                type="file"
+                multiple
+                (change)="handleFileEvent($event)"
+            />
+        </div>
+        <ng-template #no_uploads>
+            <div class="absolute center">
+                <app-icon className="backoffice-cross"></app-icon>
+                <p>No uploads to show</p>
+            </div>
+        </ng-template>
+    `,
+    styles: [
+        `
+            :host {
+                position: relative;
+                z-index: 999;
+            }
+        `,
+    ],
 })
 export class UploadListComponent extends BaseClass implements OnInit {
     /** Whether upload list should be displayed */

@@ -1,19 +1,29 @@
 import {
-    Component,
-    ViewChild,
-    ElementRef,
     AfterViewInit,
-    Input,
+    Component,
+    ElementRef,
     HostListener,
+    Input,
     OnInit,
+    ViewChild
 } from '@angular/core';
-import { MatMenuTrigger, MatMenuPanel } from '@angular/material/menu';
+import { MatMenuPanel, MatMenuTrigger } from '@angular/material/menu';
 import { BaseClass } from 'src/app/common/base.class';
 
 @Component({
     selector: '[context-menu]',
-    templateUrl: './context-menu.template.html',
-    styleUrls: ['./context-menu.styles.scss'],
+    template: `
+        <ng-content></ng-content>
+        <div
+            class="fixed pointer-events-none h-px w-px"
+            style="opacity: 0; height: 0"
+            #container
+            [style.top]="position.top + 'px'"
+            [style.left]="position.left + 'px'"
+            [matMenuTriggerFor]="menu"
+        ></div>
+    `,
+    styles: [``],
 })
 export class ContextMenuComponent extends BaseClass implements OnInit, AfterViewInit {
     /** List of context menu items */

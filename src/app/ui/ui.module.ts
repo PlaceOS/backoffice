@@ -1,75 +1,75 @@
 
-import { NgModule, Type } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ScrollingModule } from '@angular/cdk/scrolling';
-import { RouterModule } from '@angular/router';
-
-import { APipesModule } from '@acaprojects/ngx-pipes';
 import { ADatePickerModule } from '@acaprojects/ngx-date-picker';
-
+import { APipesModule } from '@acaprojects/ngx-pipes';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { CdkTableModule } from '@angular/cdk/table';
+import { CommonModule } from '@angular/common';
+import { NgModule, Type } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatCardModule } from '@angular/material/card';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { CdkTableModule } from '@angular/cdk/table';
-
-import { ContextMenuComponent } from './context-menu/context-menu.component';
-import { ItemDisplayComponent } from './item-display/item-display.component';
-import { SearchbarComponent } from './searchbar/searchbar.component';
-import { SidebarComponent } from './sidebar/sidebar.component';
-import { IconComponent } from './icon/icon.component';
-import { TerminalComponent } from './terminal/terminal.component';
-
-import { SettingsFieldComponent } from './custom-fields/settings-field/settings-field.component';
-import { ItemSearchFieldComponent } from './custom-fields/item-search-field/item-search-field.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
+import { BindingDirective } from './binding/binding.directive';
+import { ContextMenuComponent } from './context-menu.component';
 import { DateFieldComponent } from './custom-fields/date-field/date-field.component';
-import { TimeFieldComponent } from './custom-fields/time-field/time-field.component';
+import { ItemSearchFieldComponent } from './custom-fields/item-search-field/item-search-field.component';
+import { ObjectListFieldComponent } from './custom-fields/object-list-field/object-list-field.component';
+import { SettingsFieldComponent } from './custom-fields/settings-field/settings-field.component';
 import { SystemExecFieldComponent } from './custom-fields/system-exec-field/system-exec-field.component';
-
-import { SystemFormComponent } from './forms/system-form/system-form.component';
-import { ModuleFormComponent } from './forms/module-form/module-form.component';
-import { ZoneFormComponent } from './forms/zone-form/zone-form.component';
-import { DriverFormComponent } from './forms/driver-form/driver-form.component';
-import { UserFormComponent } from './forms/user-form/user-form.component';
-import { DomainFormComponent } from './forms/domain-form/domain-form.component';
+import { TimeFieldComponent } from './custom-fields/time-field/time-field.component';
+import { DebugOutputComponent } from './debug-output/debug-output.component';
+import { ExtensionOutletComponent } from './extension-outlet.component';
 import { ApplicationFormComponent } from './forms/application-form/application-form.component';
+import { BrokerFormComponent } from './forms/broker-form/broker-form.component';
+import { DomainFormComponent } from './forms/domain-form/domain-form.component';
+import { DriverFormComponent } from './forms/driver-form/driver-form.component';
+import { LdapSourceFormComponent } from './forms/ldap-source-form/ldap-source-form.component';
+import { ModuleFormComponent } from './forms/module-form/module-form.component';
+import { OauthSourceFormComponent } from './forms/oauth-source-form/oauth-source-form.component';
 import { RepositoryFormComponent } from './forms/repository-form/repository-form.component';
-import { TriggerFormComponent } from './forms/trigger-form/trigger-form.component';
-import { TriggerConditionFormComponent } from './forms/trigger-condition-form/trigger-condition-form.component';
+import { SamlSourceFormComponent } from './forms/saml-source-form/saml-source-form.component';
+import { SettingsFormComponent } from './forms/settings-form/settings-form.component';
+import { SystemFormComponent } from './forms/system-form/system-form.component';
+import { SystemTriggerFormComponent } from './forms/system-trigger-form/system-trigger-form.component';
+import { TriggerActionFormComponent } from './forms/trigger-action-form/trigger-action-form.component';
 import { TriggerConditionComparisonFormComponent } from './forms/trigger-condition-form/comparison-form/comparison-form.component';
 import { TriggerConditionTimeFormComponent } from './forms/trigger-condition-form/time-form/time-form.component';
-import { TriggerActionFormComponent } from './forms/trigger-action-form/trigger-action-form.component';
-import { SystemTriggerFormComponent } from './forms/system-trigger-form/system-trigger-form.component';
-
-import { DriverFormatPipe } from './pipes/driver-format.pipe';
+import { TriggerConditionFormComponent } from './forms/trigger-condition-form/trigger-condition-form.component';
+import { TriggerFormComponent } from './forms/trigger-form/trigger-form.component';
+import { UserFormComponent } from './forms/user-form/user-form.component';
+import { ZoneFormComponent } from './forms/zone-form/zone-form.component';
+import { IconComponent } from './icon/icon.component';
+import { ItemDisplayComponent } from './item-display/item-display.component';
 import { DateFromPipe } from './pipes/date-from.pipe';
+import { DriverFormatPipe } from './pipes/driver-format.pipe';
 import { FormatListPipe } from './pipes/format-list.pipe';
-import { OauthSourceFormComponent } from './forms/oauth-source-form/oauth-source-form.component';
-import { LdapSourceFormComponent } from './forms/ldap-source-form/ldap-source-form.component';
-import { SamlSourceFormComponent } from './forms/saml-source-form/saml-source-form.component';
-import { ObjectListFieldComponent } from './custom-fields/object-list-field/object-list-field.component';
-import { DebugOutputComponent } from './debug-output/debug-output.component';
-import { SettingsFormComponent } from './forms/settings-form/settings-form.component';
-import { BrokerFormComponent } from './forms/broker-form/broker-form.component';
+import { SearchbarComponent } from './searchbar/searchbar.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import { TerminalComponent } from './terminal/terminal.component';
 import { UnauthorisedComponent } from './unauthorised.component';
-import { UploadListComponent } from './upload-list/upload-list.component';
-import { BindingDirective } from './binding/binding.directive';
-import { ExtensionOutletComponent } from './extension-outlet.component';
+import { UploadListComponent } from './upload-list.component';
+
+
+
+
+
+
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
