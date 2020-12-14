@@ -1,30 +1,33 @@
-import { Component, OnInit, EventEmitter, Output, Input, Type } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, Type } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { format } from 'date-fns';
 import {
-    PlaceSystem,
-    PlaceZone,
-    PlaceDriver,
-    PlaceModule,
-    PlaceUser,
     addDriver,
     addModule,
-    addZone,
+
     addSystem,
-    addUser,
+    addUser, addZone,
+
+
     authority,
+    logout, PlaceDriver,
+    PlaceModule, PlaceSystem,
+
+
+
+    PlaceUser, PlaceZone
 } from '@placeos/ts-client';
-
-import { VERSION } from 'src/environments/version';
-import { BaseClass } from 'src/app/common/base.class';
-import { ApplicationLink, ApplicationIcon } from 'src/app/common/types';
-import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
-import { BulkItemModalComponent } from 'src/app/overlays/bulk-item-modal/bulk-item-modal.component';
-import { BackofficeUsersService } from 'src/app/users/users.service';
-import { SettingsService } from 'src/app/common/settings.service';
-
+import { format } from 'date-fns';
 import * as dayjs from 'dayjs';
+import { BaseClass } from 'src/app/common/base.class';
 import { issueDescription } from 'src/app/common/general';
+import { SettingsService } from 'src/app/common/settings.service';
+import { ApplicationIcon, ApplicationLink } from 'src/app/common/types';
+import { BulkItemModalComponent } from 'src/app/overlays/bulk-item-modal/bulk-item-modal.component';
+import { ItemCreateUpdateModalComponent } from 'src/app/overlays/item-modal/item-modal.component';
+import { BackofficeUsersService } from 'src/app/users/users.service';
+import { VERSION } from 'src/environments/version';
+
+
 
 @Component({
     selector: 'topbar-header',
@@ -136,6 +139,10 @@ export class TopbarHeaderComponent extends BaseClass implements OnInit {
 
     public showUploadHistory() {
         this._settings.post('show_upload_manager', true);
+    }
+
+    public logout() {
+        logout();
     }
 
     /**

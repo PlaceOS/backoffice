@@ -45,10 +45,10 @@
         <app-icon className="backoffice-user"></app-icon>
         <div class="text" i18n="@@profileAction">Profile</div>
     </a>
-    <a mat-menu-item href="/logout">
+    <button mat-menu-item (click)="logout()">
         <app-icon className="backoffice-log-out"></app-icon>
         <div class="text" i18n="@@logoutAction">Logout</div>
-    </a>
+    </button>
     <button mat-menu-item (click)="showUploadHistory()">
         <app-icon className="backoffice-clock"></app-icon>
         <div class="text" i18n="@@logoutAction">Upload History</div>
