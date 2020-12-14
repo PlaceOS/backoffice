@@ -1,13 +1,13 @@
 import {
-    AfterViewInit,
     Component,
+    ViewChild,
     ElementRef,
-    HostListener,
+    AfterViewInit,
     Input,
+    HostListener,
     OnInit,
-    ViewChild
 } from '@angular/core';
-import { MatMenuPanel, MatMenuTrigger } from '@angular/material/menu';
+import { MatMenuTrigger, MatMenuPanel } from '@angular/material/menu';
 import { BaseClass } from 'src/app/common/base.class';
 
 @Component({
@@ -15,7 +15,7 @@ import { BaseClass } from 'src/app/common/base.class';
     template: `
         <ng-content></ng-content>
         <div
-            class="fixed pointer-events-none h-px w-px"
+            class="pointer-events-none fixed h-px w-px"
             style="opacity: 0; height: 0"
             #container
             [style.top]="position.top + 'px'"

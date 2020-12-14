@@ -358,3 +358,7 @@ mat-expansion-panel {
 .cdk-drag-preview {
     @apply bg-white rounded border-none shadow;
 }
+
+.mat-button-wrapper {
+    @apply flex items-center justify-center h-full;
+}

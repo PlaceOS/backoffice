@@ -6,7 +6,7 @@ import {
     ElementRef,
     SimpleChanges,
     EventEmitter,
-    Output
+    Output,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, NavigationEnd } from '@angular/router';
@@ -17,7 +17,7 @@ import {
     PlaceZone,
     queryModules,
     queryZones,
-    querySystems
+    querySystems,
 } from '@placeos/ts-client';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 import { Subject, Observable, of } from 'rxjs';
@@ -30,8 +30,95 @@ import { BackofficeUsersService } from 'src/app/users/users.service';
 
 @Component({
     selector: 'global-search',
-    templateUrl: './global-search.template.html',
-    styleUrls: ['./global-search.styles.scss'],
+    template: `
+        <div
+            class="fixed bottom-0 left-0 right-0 bg-white bg-opacity-25"
+            [class.dark-mode]="dark_mode"
+            #item_list
+            [@listAnimation]="results ? results.length : 0"
+            (scroll)="atBottom()"
+        >
+            <ng-container *ngIf="!loading; else load_state">
+                <div
+                    class="flex items-center bg-white rounded m-2 p-2 space-x-2 border border-gray-400"
+                    #list_item
+                    *ngFor="let item of results || []"
+                    [title]="item.name"
+                >
+                    <a class="flex-1" [routerLink]="['/' + item.type, item.id]">
+                        {{ item.name }}
+                    </a>
+                    <a class="flex items-center" [routerLink]="['/' + item.type, item.id]">
+                        <div class="underline text-sm">{{ item.id }}</div>
+                        <div
+                            [class]="
+                                'text-sm p-1 shadow rounded capitalize w-20 text-center ml-4 ' +
+                                item.type
+                            "
+                        >
+                            {{ item.type }}
+                        </div>
+                    </a>
+                    <button mat-icon-button (click)="edit(item)">
+                        <app-icon className="backoffice-edit"></app-icon>
+                    </button>
+                    <a mat-icon-button [routerLink]="['/' + item.type, item.id]">
+                        <app-icon class="text-2xl" className="backoffice-eye"></app-icon>
+                    </a>
+                </div>
+            </ng-container>
+        </div>
+        <ng-template #load_state>
+            <div class="p-8 flex flex-col items-center">
+                <mat-spinner diameter="32"></mat-spinner>
+                <p>Searching...</p>
+            </div>
+        </ng-template>
+        <ng-template #empty_state>
+            <div class="p-8 flex flex-col items-center">
+                <mat-spinner diameter="32"></mat-spinner>
+                <p>No matches found</p>
+            </div>
+        </ng-template>
+    `,
+    styles: [
+        `
+            :host > div {
+                top: 3.5rem;
+                z-index: 999;
+            }
+
+            .systems {
+                background-color: #9c27b0;
+                color: #fff;
+            }
+
+            .devices {
+                background-color: #3f51b5;
+                color: #fff;
+            }
+
+            .triggers {
+                background-color: #00bcd4;
+                color: #fff;
+            }
+
+            .users {
+                background-color: #43a047;
+                color: #fff;
+            }
+
+            .zones {
+                background-color: #f4511e;
+                color: #fff;
+            }
+
+            .modules {
+                background-color: #00796b;
+                color: #fff;
+            }
+        `,
+    ],
     animations: [
         trigger('listAnimation', [
             transition('* => *', [
@@ -39,12 +126,12 @@ import { BackofficeUsersService } from 'src/app/users/users.service';
                 query(':enter', [
                     style({ transform: 'translateY(100%)', opacity: 0 }),
                     stagger(50, [
-                        animate('.2s', style({ transform: 'translateY(0%)', opacity: 1 }))
-                    ])
-                ])
-            ])
-        ])
-    ]
+                        animate('.2s', style({ transform: 'translateY(0%)', opacity: 1 })),
+                    ]),
+                ]),
+            ]),
+        ]),
+    ],
 })
 export class GlobalSearchComponent extends BaseClass implements OnChanges {
     /** Search query string */
@@ -59,7 +146,7 @@ export class GlobalSearchComponent extends BaseClass implements OnChanges {
         device: 'Modules',
         user: 'Users',
         trigger: 'Triggers',
-        zone: 'Zones'
+        zone: 'Zones',
     };
     /** Whether search data is being loaded */
     public loading: boolean;
@@ -95,7 +182,7 @@ export class GlobalSearchComponent extends BaseClass implements OnChanges {
         this.search_results$ = this.search$.pipe(
             debounceTime(400),
             distinctUntilChanged(),
-            switchMap(query_string => {
+            switchMap((query_string) => {
                 this.loading = true;
                 this.offset = 20;
                 return !this.min_length || query_string.length >= this.min_length
@@ -111,14 +198,14 @@ export class GlobalSearchComponent extends BaseClass implements OnChanges {
         // Process API results
         this.subscription(
             'search_results',
-            this.search_results$.subscribe(list => {
+            this.search_results$.subscribe((list) => {
                 this.results = list;
                 this.results.forEach((item: HashMap) => (item.type = this.itemType(item as any)));
             })
         );
         this.subscription(
             'navigate_end',
-            this._router.events.subscribe(event => {
+            this._router.events.subscribe((event) => {
                 if (event instanceof NavigationEnd) {
                     this.afterNavigate();
                 }
@@ -137,17 +224,15 @@ export class GlobalSearchComponent extends BaseClass implements OnChanges {
      */
     public loadMoreItems() {
         this.loading = true;
-        this.queryEndpoints(this.search, this.offset).then(
-            (results_list: any[][]) => {
-                for (const list of results_list) {
-                    this.results = unique(this.results.concat(list), 'id');
-                }
-                this.results.forEach((item: HashMap) => (item.type = this.itemType(item as any)));
-                this.offset += 20;
-                this.loading = false;
-                this.timeout('load_more', () => this.atBottom(), 2000);
+        this.queryEndpoints(this.search, this.offset).then((results_list: any[][]) => {
+            for (const list of results_list) {
+                this.results = unique(this.results.concat(list), 'id');
             }
-        );
+            this.results.forEach((item: HashMap) => (item.type = this.itemType(item as any)));
+            this.offset += 20;
+            this.loading = false;
+            this.timeout('load_more', () => this.atBottom(), 2000);
+        });
     }
 
     /**
@@ -174,8 +259,8 @@ export class GlobalSearchComponent extends BaseClass implements OnChanges {
                 maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item,
-                    service: (item as any)._service
-                }
+                    service: (item as any)._service,
+                },
             });
         }
     }
@@ -195,9 +280,15 @@ export class GlobalSearchComponent extends BaseClass implements OnChanges {
      */
     private queryEndpoints(query_str: string, offset: number = 0) {
         return Promise.all([
-            querySystems({ q: query_str || '', offset, cache: 60 * 1000 }).pipe(map(resp => resp.data)).toPromise(),
-            queryZones({ q: query_str || '', offset, cache: 60 * 1000 }).pipe(map(resp => resp.data)).toPromise(),
-            queryModules({ q: query_str || '', offset, cache: 60 * 1000 }).pipe(map(resp => resp.data)).toPromise()
+            querySystems({ q: query_str || '', offset, cache: 60 * 1000 })
+                .pipe(map((resp) => resp.data))
+                .toPromise(),
+            queryZones({ q: query_str || '', offset, cache: 60 * 1000 })
+                .pipe(map((resp) => resp.data))
+                .toPromise(),
+            queryModules({ q: query_str || '', offset, cache: 60 * 1000 })
+                .pipe(map((resp) => resp.data))
+                .toPromise(),
         ]);
     }
 

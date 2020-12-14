@@ -11,11 +11,24 @@ import {
 import { Terminal } from 'xterm';
 import { BaseClass } from 'src/app/common/base.class';
 
-
 @Component({
     selector: 'a-terminal',
-    templateUrl: './terminal.component.html',
-    styleUrls: ['./terminal.component.scss'],
+    template: `
+        <div
+            class="p-2 w-full h-full overflow-hidden"
+            #container
+            (window:resize)="resizeTerminal()"
+        >
+            <div class="max-w-full min-h-full" #terminal></div>
+        </div>
+    `,
+    styles: [
+        `
+            :host > div {
+                background-color: #263238;
+            }
+        `,
+    ],
 })
 export class TerminalComponent extends BaseClass implements OnInit, OnChanges, OnDestroy {
     /** Contents to display on the terminal */
@@ -90,7 +103,7 @@ export class TerminalComponent extends BaseClass implements OnInit, OnChanges, O
         this.terminal.clearSelection();
         this.terminal.write('\x1b[H\x1b[2J');
         const lines: string[] = new_content.split('\n');
-        lines.forEach(line => this.terminal.writeln(line));
+        lines.forEach((line) => this.terminal.writeln(line));
         this.timeout('scroll', () => this.terminal.scrollToBottom(), 50);
     }
 }
