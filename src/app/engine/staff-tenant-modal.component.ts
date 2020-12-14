@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PlaceDomain, post } from '@placeos/ts-client';
-import { notifyError, notifyInfo, notifySuccess } from '../common/notifications';
+import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent } from '../common/types';
-
 import { PlaceTenant } from './staff-api.component';
+
 
 export interface StaffTenantModalData {
     tenant?: PlaceTenant;
@@ -45,7 +45,20 @@ export interface StaffTenantModalData {
                 <div class="flex flex-col" *ngFor="let item of credentials.controls | keyvalue">
                     <label class="capitalize">{{ item.key }}<span>*</span>:</label>
                     <mat-form-field appearance="outline">
-                        <input matInput [formControlName]="item.key" [placeholder]="item.key" />
+                        <ng-container [ngSwitch]="item.key">
+                            <input
+                                matInput
+                                *ngSwitchDefault
+                                [formControlName]="item.key"
+                                [placeholder]="item.key"
+                            />
+                            <textarea
+                                matInput
+                                *ngSwitchCase="'signing_key'"
+                                [formControlName]="item.key"
+                                [placeholder]="item.key"
+                            ></textarea>
+                        </ng-container>
                         <mat-error>A {{ item.key }} is required</mat-error>
                     </mat-form-field>
                 </div>
@@ -94,7 +107,7 @@ export class StaffTenantModalComponent implements OnInit {
     }
 
     public get google_form() {
-       return new FormGroup({
+        return new FormGroup({
             issuer: new FormControl(this.tenant?.credentials?.issue || '', [Validators.required]),
             signing_key: new FormControl(this.tenant?.credentials?.signing_key || '', [
                 Validators.required,
