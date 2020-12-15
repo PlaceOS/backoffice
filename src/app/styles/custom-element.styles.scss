@@ -13,6 +13,12 @@ a[button] {
         color: $color-primary;
     }
 
+    &.clear {
+        background: none;
+        border: none;
+        color: inherit;
+    }
+
     &:focus {
         outline: none;
     }
