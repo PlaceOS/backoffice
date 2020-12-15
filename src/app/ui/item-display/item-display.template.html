@@ -1,7 +1,7 @@
 <div item-display [class.dark-mode]="dark_mode">
     <header *ngIf="item && !(loading | async)">
         <div class="heading-group">
-            <div class="heading">
+            <div class="heading select-text">
                 {{ item.display_name || item.custom_name || item.name || "&lt;Unnamed&gt;" }}
             </div>
             <div class="info">
