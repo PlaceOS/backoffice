@@ -362,3 +362,7 @@ mat-expansion-panel {
 .mat-button-wrapper {
     @apply flex items-center justify-center h-full;
 }
+
+.monaco-editor-hover {
+    @apply pointer-events-none;
+}
