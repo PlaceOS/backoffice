@@ -8,15 +8,44 @@ import { SettingsService } from '../common/settings.service';
 @Component({
     selector: 'app-engine',
     template: `
-        <item-display class="w-full h-full" name="Admin" route="admin" [has_change]="false" [tabs]="tab_list">
-        </item-display>
+        <div class="h-16 p-4 text-2xl bg-white border-b border-gray-300 shadow z-10">
+            PlaceOS Admin
+        </div>
+        <div class="flex flex-1 z-0">
+            <div class="relative w-64 h-full bg-white border-r border-gray-300 shadow z-10">
+                <a
+                    *ngFor="let item of tab_list"
+                    class="flex items-center space-x-2 my-2 rounded-l-2xl h-8 px-3 ml-3 hover:bg-primary hover:bg-opacity-25"
+                    [routerLink]="['/admin', item.id]"
+                    routerLinkActive="active"
+                >
+                    <app-icon [icon]="item.icon"></app-icon>
+                    <p>{{ item.name }}</p>
+                </a>
+            </div>
+            <div class="relative flex-1 w-1/2 h-full z-0 bg-white px-4">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+        <!-- <item-display class="w-full h-full" name="Admin" route="admin" [has_change]="false" [tabs]="tab_list">
+        </item-display> -->
     `,
-    styles: [`
-        :host {
-            width: 100%;
-            height: 100%;
-        }
-    `],
+    styles: [
+        `
+            :host {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                height: 100%;
+            }
+
+            .active {
+                background-color: #c2185b !important;
+                color: #fff;
+                margin-right: -1px;
+            }
+        `,
+    ],
 })
 export class PlaceComponent extends BaseClass {
     public tab_list = [];
