@@ -15,8 +15,8 @@ const routes: Routes = [
     },
     {
         path: 'domains',
-        canLoad: [AuthorisedUserGuard],
-        canActivate: [AuthorisedUserGuard],
+        canLoad: [AuthorisedAdminGuard],
+        canActivate: [AuthorisedAdminGuard],
         loadChildren: () => import('./domains/domains.module').then((m) => m.AppDomainsModule),
     },
     {
@@ -39,8 +39,8 @@ const routes: Routes = [
     },
     {
         path: 'repositories',
-        canLoad: [AuthorisedUserGuard],
-        canActivate: [AuthorisedUserGuard],
+        canLoad: [AuthorisedAdminGuard],
+        canActivate: [AuthorisedAdminGuard],
         loadChildren: () =>
             import('./repositories/repositories.module').then((m) => m.AppRepositoriesModule),
     },
@@ -52,8 +52,8 @@ const routes: Routes = [
     },
     {
         path: 'users',
-        canLoad: [AuthorisedUserGuard],
-        canActivate: [AuthorisedUserGuard],
+        canLoad: [AuthorisedAdminGuard],
+        canActivate: [AuthorisedAdminGuard],
         loadChildren: () => import('./users/users.module').then((m) => m.AppUsersModule),
     },
     {
