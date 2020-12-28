@@ -29,10 +29,11 @@ export interface UploadDetails {
     template: `
         <div
             *ngIf="show"
+            upload-list
             class="absolute bottom-2 left-2 rounded overflow-hidden bg-white border border-gray-200 text-sm text-black shadow"
         >
-            <div class="flex items-center bg-gray-700">
-                <div class="flex-1">Uploads({{ uploads.length || '0' }})</div>
+            <div class="flex items-center bg-gray-700 text-white">
+                <div class="flex-1 px-4">Uploads({{ uploads.length || '0' }})</div>
                 <button mat-icon-button (click)="show = false">
                     <app-icon [icon]="{ class: 'backoffice-cross' }"></app-icon>
                 </button>
@@ -62,19 +63,19 @@ export interface UploadDetails {
                             >
                                 Retry
                             </a>
-                            <div class="size">{{ item.formatted_size }}</div>
+                            <div class="size mr-2">{{ item.formatted_size }}</div>
                             <div class="progress" *ngIf="item.progress < 100 && !item.error">
                                 {{ item.progress }}%
                             </div>
                             <app-icon
                                 *ngIf="item.progress >= 100 && !item.error"
                                 className="backoffice-check"
-                                class="bg-success"
+                                class="bg-success text-white rounded-full"
                             ></app-icon>
                             <app-icon
                                 *ngIf="item.error"
                                 className="backoffice-cross"
-                                class="bg-error"
+                                class="bg-error text-white rounded-full"
                                 [matTooltip]="item.error"
                             ></app-icon>
                         </div>
@@ -100,7 +101,7 @@ export interface UploadDetails {
             (drop)="handleFileEvent($event)"
             *ngIf="show_overlay"
         >
-            <div class="absolute bottom-0 p-4 left-1/2 -translate-x-1/2 flex flex-col items-center">
+            <div class="absolute bottom-0 p-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center pointer-events-none">
                 <app-icon
                     class="animate-bounce mb-4 text-7xl text-white"
                     className="backoffice-upload-to-cloud"
@@ -110,14 +111,14 @@ export interface UploadDetails {
                 </div>
             </div>
             <input
-                class="absolute inset-0 opacity-0 z-50"
+                class="absolute inset-0 opacity-0 z-50 w-full"
                 type="file"
                 multiple
                 (change)="handleFileEvent($event)"
             />
         </div>
         <ng-template #no_uploads>
-            <div class="absolute center">
+            <div class="w-full flex flex-col items-center m-auto p-8">
                 <app-icon className="backoffice-cross"></app-icon>
                 <p>No uploads to show</p>
             </div>
@@ -128,6 +129,11 @@ export interface UploadDetails {
             :host {
                 position: relative;
                 z-index: 999;
+            }
+
+            [upload-list] {
+                width: 32rem;
+                max-width: calc(100vw - 2rem);
             }
         `,
     ],
