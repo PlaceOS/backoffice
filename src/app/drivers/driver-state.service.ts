@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { isDriverCompiled, PlaceDriver, PlaceModule, queryModules, recompileDriver, removeSystemModule } from '@placeos/ts-client';
 import { BehaviorSubject } from 'rxjs';
-import { delay, filter, map, retry, shareReplay, switchMap } from 'rxjs/operators';
+import { delay, filter, map, retry, retryWhen, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -20,8 +20,7 @@ export class DriverStateService {
     public readonly is_compiled = this.item.pipe(
         filter((d) => !!d && d instanceof PlaceDriver),
         switchMap((driver) => isDriverCompiled(driver.id)),
-        delay(1000),
-        retry()
+        retryWhen(delay(1000)),
     );
 
     public readonly modules = this.item.pipe(
