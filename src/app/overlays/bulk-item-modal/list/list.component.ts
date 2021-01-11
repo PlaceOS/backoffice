@@ -1,6 +1,6 @@
 import { Component, Input, SimpleChanges, OnChanges, Output, EventEmitter } from '@angular/core';
 
-import { Identity, HashMap } from 'src/app/shared/utilities/types.utilities';
+import { Identity, HashMap } from 'src/app/common/types';
 
 @Component({
     selector: 'bulk-item-list',

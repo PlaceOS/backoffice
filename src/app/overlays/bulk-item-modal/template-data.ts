@@ -1,12 +1,13 @@
 
 import { PlaceDriverRole } from '@placeos/ts-client';
 
-export const SYSTEM_TEMPLATE = {
+export const SYSTEM_TEMPLATE: any = {
     name: 'A System',
+    display_name: "Your System",
     description: 'A description',
     email: 'system@place.tech',
     capacity: 10,
-    features: 'vidConf',
+    features: ['vidConf'],
     bookable: true,
     installed_ui_devices: 4,
     support_url: 'https://place.tech/support/test',
@@ -16,7 +17,7 @@ export const SYSTEM_TEMPLATE = {
     module_data: [{ id: 'mod-001', name: 'A Module' }],
 };
 
-export const MODULE_TEMPLATE = {
+export const MODULE_TEMPLATE: any = {
     name: 'A Module',
     driver_id: 'dep-001',
     control_system_id: 'sys-001',
@@ -32,7 +33,7 @@ export const MODULE_TEMPLATE = {
     ignore_connected: false,
 };
 
-export const DRIVER_TEMPLATE = {
+export const DRIVER_TEMPLATE: any = {
     name: 'A Driver',
     description: 'In a galaxy far far away...',
     module_name: 'SteamShip',
@@ -47,7 +48,7 @@ export const DRIVER_TEMPLATE = {
     commit: 'some-hash'
 };
 
-export const USER_TEMPLATE = {
+export const USER_TEMPLATE: any = {
     name: 'A User',
     authority_id: 'On who\'s authority',
     email: 'jon@place.tech',
@@ -61,7 +62,7 @@ export const USER_TEMPLATE = {
     last_name: 'Marley'
 };
 
-export const ZONE_TEMPLATE = {
+export const ZONE_TEMPLATE: any = {
     name: 'A Zone',
     description: 'In a galaxy far far away...',
     triggers: ['trig-001'],

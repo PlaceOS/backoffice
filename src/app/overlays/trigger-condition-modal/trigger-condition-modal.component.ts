@@ -10,11 +10,11 @@ import {
     updateTrigger,
 } from '@placeos/ts-client';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { ApplicationService } from 'src/app/services/app.service';
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
+import { BaseClass } from 'src/app/common/base.class';
+import { DialogEvent } from 'src/app/common/types';
 
-import { generateTriggerConditionForm } from 'src/app/shared/utilities/data/triggers.utilities';
+import { generateTriggerConditionForm } from 'src/app/triggers/triggers.utilities';
+import { notifyError, notifySuccess } from 'src/app/common/notifications';
 
 export interface TriggerConditionData {
     /** Item to add/update the trigger on */
@@ -30,7 +30,7 @@ export interface TriggerConditionData {
     templateUrl: './trigger-condition-modal.template.html',
     styleUrls: ['./trigger-condition-modal.styles.scss'],
 })
-export class TriggerConditionModalComponent extends BaseDirective implements OnInit {
+export class TriggerConditionModalComponent extends BaseClass implements OnInit {
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether actions are loading */
@@ -57,8 +57,7 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
 
     constructor(
         private _dialog: MatDialogRef<TriggerConditionModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: TriggerConditionData,
-        private _service: ApplicationService
+        @Inject(MAT_DIALOG_DATA) private _data: TriggerConditionData
     ) {
         super();
     }
@@ -81,14 +80,14 @@ export class TriggerConditionModalComponent extends BaseDirective implements OnI
         updateTrigger(this.trigger.id, { ...this.trigger, conditions: this.conditions }).subscribe(
             (item) => {
                 this.event.emit({ reason: 'done', metadata: { trigger: item } });
-                this._service.notifySuccess(
+                notifySuccess(
                     `Successfully ${this.is_new ? 'added' : 'updated'} condition to trigger`
                 );
                 this._dialog.close();
             },
             (err) => {
                 this.loading = false;
-                this._service.notifyError(
+                notifyError(
                     `Error ${
                         this.is_new ? 'adding' : 'updating'
                     } condition to trigger. Error: ${JSON.stringify(

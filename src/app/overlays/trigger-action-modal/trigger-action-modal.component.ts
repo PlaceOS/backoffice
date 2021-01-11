@@ -1,10 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { ApplicationService } from 'src/app/services/app.service';
-import { DialogEvent } from 'src/app/shared/utilities/types.utilities';
-import { generateTriggerActionForm } from 'src/app/shared/utilities/data/triggers.utilities';
 import {
     PlaceTrigger,
     PlaceSystem,
@@ -12,7 +8,11 @@ import {
     TriggerFunction,
     updateTrigger,
 } from '@placeos/ts-client';
-import { FormGroup } from '@angular/forms';
+
+import { BaseClass } from 'src/app/common/base.class';
+import { DialogEvent } from 'src/app/common/types';
+import { generateTriggerActionForm } from 'src/app/triggers/triggers.utilities';
+import { notifyError, notifySuccess } from 'src/app/common/notifications';
 
 export interface TriggerActionModalData {
     /** Item to add/update the trigger on */
@@ -28,7 +28,7 @@ export interface TriggerActionModalData {
     templateUrl: './trigger-action-modal.template.html',
     styleUrls: ['./trigger-action-modal.styles.scss'],
 })
-export class TriggerActionModalComponent extends BaseDirective implements OnInit {
+export class TriggerActionModalComponent extends BaseClass implements OnInit {
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether actions are loading */
@@ -55,8 +55,7 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
 
     constructor(
         private _dialog: MatDialogRef<TriggerActionModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: TriggerActionModalData,
-        private _service: ApplicationService
+        @Inject(MAT_DIALOG_DATA) private _data: TriggerActionModalData
     ) {
         super();
     }
@@ -67,6 +66,7 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
 
     public save() {
         this.form.markAllAsTouched();
+        console.log('Form:', this.form, this._data);
         if (
             (this.form.controls.action_type.value === 'emails' && !this.form.valid) ||
             (this.form.controls.action_type.value === 'function' && !this.form.value.method_call)
@@ -74,7 +74,7 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
             return;
         }
         this.loading = true;
-        if (this.form.controls.action_type.value === 'emails') {
+        if (this.form.value.action_type === 'emails') {
             this.updateMailers();
         } else {
             this.updateFunctions();
@@ -84,14 +84,14 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
             .then(
                 (item) => {
                     this.event.emit({ reason: 'done', metadata: { trigger: item } });
-                    this._service.notifySuccess(
+                    notifySuccess(
                         `Successfully ${this.is_new ? 'added' : 'updated'} condition to trigger`
                     );
                     this._dialog.close();
                 },
                 (err) => {
                     this.loading = false;
-                    this._service.notifyError(
+                    notifyError(
                         `Error ${
                             this.is_new ? 'adding' : 'updating'
                         } condition to trigger. Error: ${JSON.stringify(
@@ -109,13 +109,14 @@ export class TriggerActionModalComponent extends BaseDirective implements OnInit
             content: this.form.value.content,
         };
         if (this._data.action) {
-            const old_mailer = JSON.stringify(this._data.action);
+            const old_mailer = JSON.stringify(this._data.action || {});
             const index = mailers.findIndex((a_mailer) => JSON.stringify(a_mailer) === old_mailer);
             mailers.splice(index, 1, new_mailer);
         } else {
             mailers.push(new_mailer);
         }
         this.actions = { ...this.trigger.actions, mailers };
+        console.log('Actions:', this.actions, mailers);
     }
 
     private updateFunctions() {

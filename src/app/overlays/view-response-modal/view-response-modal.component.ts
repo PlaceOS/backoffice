@@ -12,11 +12,21 @@ export interface ViewResponseModalData {
 })
 export class ViewResponseModalComponent {
 
-    public get content_string(): string {
-        return typeof this._data.content === 'object'
-            ? JSON.stringify(this._data.content, undefined, 4)
-            : this._data.content;
+    public content_string: string;
+
+    constructor(@Inject(MAT_DIALOG_DATA) private _data: ViewResponseModalData) {
+        this.updateContentString();
     }
 
-    constructor(@Inject(MAT_DIALOG_DATA) private _data: ViewResponseModalData) {}
+    public updateContentString() {
+        if (typeof this._data.content === 'object') {
+            this.content_string = JSON.stringify(this._data.content, undefined, 4)
+        } else {
+            try {
+                this.content_string = JSON.stringify(JSON.parse(this._data.content), undefined, 4);
+            } catch {
+                this.content_string = this._data.content;
+            }
+        }
+    }
 }

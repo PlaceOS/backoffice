@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
 
-import { ApplicationService } from 'src/app/services/app.service';
-import { HashMap } from 'src/app/shared/utilities/types.utilities';
-import { csvToJson, jsonToCsv, downloadFile } from 'src/app/shared/utilities/general.utilities';
+import { HashMap } from 'src/app/common/types';
+import { csvToJson, jsonToCsv, downloadFile } from 'src/app/common/general';
+import { notifyError } from 'src/app/common/notifications';
 
 @Component({
     selector: 'bulk-item-csv-upload',
@@ -19,7 +19,7 @@ export class CsvUploadComponent {
     /** Whether CSV data is being processed */
     public loading: boolean;
 
-    constructor(private _service: ApplicationService) {}
+    constructor() {}
 
     public loadCSVData(event: InputEvent) {
         this.loading = true;
@@ -37,7 +37,7 @@ export class CsvUploadComponent {
                 });
                 reader.addEventListener('error', (_) => {
                     this.loading = false;
-                    this._service.notifyError('Error reading file.');
+                    notifyError('Error reading file.');
                 });
             }
         }

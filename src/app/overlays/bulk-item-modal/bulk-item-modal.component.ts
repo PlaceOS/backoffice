@@ -8,8 +8,8 @@ import {
     PlaceUser,
     PlaceZone,
 } from '@placeos/ts-client';
-import { HashMap, PlaceServiceLike, Identity } from 'src/app/shared/utilities/types.utilities';
-import { unique } from 'src/app/shared/utilities/general.utilities';
+import { HashMap, Identity } from 'src/app/common/types';
+import { unique } from 'src/app/common/general';
 import {
     SYSTEM_TEMPLATE,
     MODULE_TEMPLATE,
@@ -17,10 +17,13 @@ import {
     USER_TEMPLATE,
     ZONE_TEMPLATE,
 } from './template-data';
+import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
+import { Observable } from 'rxjs';
 
 export interface BulkItemModalData<T = HashMap<any>> {
     constr: Type<T>;
-    service: PlaceServiceLike;
+    name: string;
+    save: (item: PlaceResource) => Observable<PlaceResource>
 }
 
 @Component({
@@ -43,7 +46,11 @@ export class BulkItemModalComponent<T = HashMap<any>> {
     public available_fields: Identity[] = [];
 
     public get type(): string {
-        return this._data.service._name;
+        return this._data.name;
+    }
+
+    public get save() {
+        return this._data.save;
     }
 
     constructor(
@@ -62,7 +69,21 @@ export class BulkItemModalComponent<T = HashMap<any>> {
         if (data.length) {
             if (is_mapped) {
                 const Resource = this._data.constr;
-                this.item_list = data.map((item) => new Resource(item));
+                this.item_list = data.map((item) => {
+                    const new_item = {};
+                    Object.keys(item).forEach(key => {
+                        if (typeof item[key] === 'string') {
+                            try {
+                                new_item[key] = JSON.parse(item[key]);
+                            } catch (e) {
+                                new_item[key] = item[key];
+                            }
+                        } else {
+                            new_item[key] = item[key];
+                        }
+                    });
+                    return new Resource(new_item)
+                });
                 this.flow_step = 'list';
             } else {
                 this.data_list = data;
@@ -84,7 +105,7 @@ export class BulkItemModalComponent<T = HashMap<any>> {
         return unique(
             list.map((i) => ({ id: i, name: i.split('_').join(' ') })),
             'id'
-        );
+        ).filter(field => field.id !== 'id' && field.id[0] !== '_');
     }
 
     private generateTemplate(): HashMap[] {

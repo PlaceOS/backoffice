@@ -2,9 +2,9 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PlaceModule, PlaceSystem, systemModuleState } from '@placeos/ts-client';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { ApplicationService } from 'src/app/services/app.service';
-import { HashMap } from 'src/app/shared/utilities/types.utilities';
+import { BaseClass } from 'src/app/common/base.class';
+import { HashMap } from 'src/app/common/types';
+import { notifyError } from 'src/app/common/notifications';
 
 export interface ModuleStateModalData {
     /** System Data to show the details for */
@@ -20,7 +20,7 @@ export interface ModuleStateModalData {
     templateUrl: './view-module-state.template.html',
     styleUrls: ['./view-module-state.styles.scss'],
 })
-export class ViewModuleStateModalComponent extends BaseDirective implements OnInit {
+export class ViewModuleStateModalComponent extends BaseClass implements OnInit {
     /** Current state of the selected module */
     public state: string;
     /** Whether the module state is being loaded */
@@ -47,8 +47,7 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
 
     constructor(
         private _dialog: MatDialogRef<ViewModuleStateModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: ModuleStateModalData,
-        private _service: ApplicationService
+        @Inject(MAT_DIALOG_DATA) private _data: ModuleStateModalData
     ) {
         super();
     }
@@ -83,20 +82,24 @@ export class ViewModuleStateModalComponent extends BaseDirective implements OnIn
         }
         this.loading = true;
         const class_parts = class_name.split('_');
-        systemModuleState(this.system.id, class_parts[0], +class_parts[1]).subscribe(
+        const num = !isNaN(+class_parts[class_parts.length - 1])
+            ? +class_parts[class_parts.length - 1]
+            : 1;
+        systemModuleState(
+            this.system.id,
+            class_parts.slice(0, class_parts.length - 1).join('_'),
+            num
+        ).subscribe(
             (state) => {
-                const pre_state =
-                typeof state === 'string'
-                    ? JSON.parse(state)
-                    : state;
-                Object.keys(pre_state).forEach(key => {
+                const pre_state = (typeof state === 'string' ? JSON.parse(state) : state) || {};
+                Object.keys(pre_state).forEach((key) => {
                     pre_state[key] = JSON.parse(pre_state[key]);
                 });
                 this.state = JSON.stringify(pre_state, undefined, 4);
                 this.loading = false;
             },
             (err) => {
-                this._service.notifyError(JSON.stringify(err.response || err.message || err));
+                notifyError(JSON.stringify(err.response || err.message || err));
                 this.loading = false;
             }
         );

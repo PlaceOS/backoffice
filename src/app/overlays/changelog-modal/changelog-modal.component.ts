@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { BaseClass } from 'src/app/common/base.class';
 
 export interface ChangelogModalData {
     changelog: string;
@@ -12,7 +12,7 @@ export interface ChangelogModalData {
     templateUrl: './changelog-modal.template.html',
     styleUrls: ['./changelog-modal.styles.scss']
 })
-export class ChangelogModalComponent extends BaseDirective {
+export class ChangelogModalComponent extends BaseClass {
     /** Whether the changelog is loading */
     public loading: boolean;
     /** Changelog Markdown */

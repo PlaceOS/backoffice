@@ -1,7 +1,7 @@
-@import 'shared.styles';
-@import "~material-design-icons/iconfont/material-icons.css";
-@import "~animate.css/animate.min.css";
-@import '~firacode/distr/fira_code.css';
+@import 'variables';
+@import "material-design-icons/iconfont/material-icons.css";
+@import "animate.css/animate.min.css";
+@import 'firacode/distr/fira_code.css';
 @import '../../custom/style.css';
 @import '../../custom/place-fonts.css';
 
@@ -15,6 +15,32 @@ body {
     }
     @include respond-to(mobile) {
         font-size: $mobile-size;
+    }
+}
+
+app-root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+
+    > {
+        width: 100%;
+    }
+
+    > main {
+        display: flex;
+        flex: 1;
+        min-height: 50%;
+
+        > * {
+            height: 100%;
+        }
+
+        > .content {
+            flex: 1;
+            min-width: 50%;
+        }
     }
 }
 
@@ -88,6 +114,12 @@ span.highlight {
     .text {
         margin: .5em 0 0;
         text-align: center;
+    }
+}
+
+item-display .content {
+    .info-block {
+        margin: 5em .5em;
     }
 }
 

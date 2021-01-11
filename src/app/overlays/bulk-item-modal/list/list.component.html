@@ -1,19 +1,20 @@
 <div class="info"></div>
-<table cdk-table [dataSource]="list">
-    <ng-container *ngFor="let field of fields">
-        <ng-container [cdkColumnDef]="field.id">
-            <th cdk-header-cell *cdkHeaderCellDef>{{ field.name }}</th>
-            <td cdk-cell *cdkCellDef="let row">
-                <input matInput [(ngModel)]="row[field.id]" />
-            </td>
+<div class="details">
+    <table cdk-table [dataSource]="list">
+        <ng-container *ngFor="let field of fields">
+            <ng-container [cdkColumnDef]="field.id">
+                <th cdk-header-cell *cdkHeaderCellDef>{{ field.name }}</th>
+                <td cdk-cell *cdkCellDef="let row">
+                    <input matInput [(ngModel)]="row[field.id]" />
+                </td>
+            </ng-container>
         </ng-container>
-    </ng-container>
 
-    <tr cdk-header-row *cdkHeaderRowDef="field_ids"></tr>
-    <tr cdk-row *cdkRowDef="let row; columns: field_ids"></tr>
-</table>
+        <tr cdk-header-row *cdkHeaderRowDef="field_ids"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: field_ids"></tr>
+    </table>
+</div>
 <div class="actions">
     <button mat-button class="inverse" (click)="previous.emit()">Back</button>
     <button mat-button (click)="next.emit()">Create items</button>
 </div>
-

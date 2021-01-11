@@ -1,0 +1,153 @@
+<div item-display [class.dark-mode]="dark_mode">
+    <header *ngIf="item && !(loading | async)">
+        <div class="heading-group">
+            <div class="heading select-text">
+                {{ item.display_name || item.custom_name || item.name || "&lt;Unnamed&gt;" }}
+            </div>
+            <div class="info">
+                <div class="id" *ngIf="item.id" (click)="copy()">
+                    <span>{{ item.id }}</span>
+                </div>
+                <div class="chip driver" *ngIf="driver_type" i18n="@@driverType">
+                    { driver_type, select, Device { Device } Logic { Logic } SSH { SSH } Websocket {
+                    Websocket } Service { Service } other { Other } }
+                </div>
+                <div
+                    class="chip connect"
+                    *ngIf="item.running !== null && item.running !== undefined"
+                    [class.active]="item.running"
+                    i18n="@@onlineState"
+                >
+                    { item.running, select, true { Online } false { Offline } other { Other } }
+                </div>
+                <div class="chip secure" *ngIf="item.tls">
+                    <div class="icon"><i class="backoffice-lock"></i></div>
+                    <div class="text" i18n="@@secure">Secure</div>
+                </div>
+            </div>
+        </div>
+        <div class="options" *ngIf="has_change">
+            <button [matMenuTriggerFor]="action_menu" mat-icon-button>
+                <app-icon [icon]="{ class: 'backoffice-dots-three-vertical' }"></app-icon>
+            </button>
+        </div>
+    </header>
+    <main *ngIf="item && !(loading | async)">
+        <div class="tabs">
+            <nav mat-tab-nav-bar [class.scroll]="is_scrolled">
+                <a
+                    class="tab"
+                    mat-tab-link
+                    *ngFor="let link of tabs"
+                    [routerLink]="item.id ? ('/' + route + '/' + item.id + '/' + link.id) : ('/' + route  + '/' + link.id)"
+                    [queryParams]="link.query || {}"
+                    routerLinkActive
+                    #rla="routerLinkActive"
+                    [active]="rla.isActive"
+                >
+                    <app-icon [icon]="link.icon"></app-icon>&nbsp;
+                    <div class="name" i18n="@@tabNames">
+                        { link.name, select, About { About } Modules { Modules } Zones { Zones }
+                        Triggers { Triggers } Systems { Systems } Metadata { Metadata } Children {
+                        Children } Drivers { Drivers } History { History } Applications {
+                        Applications } Authentication { Authentication } Users { Users } Database {
+                        Database } Clusters { Clusters } Interfaces { Interfaces } MQTT Brokers {
+                        MQTT Brokers } other { {{ link.name }} }} &nbsp;
+                    </div>
+                    <div class="count" *ngIf="link.count || link.count === 0">
+                        ({{ link.count || '0' }})
+                    </div>
+                </a>
+            </nav>
+            <div class="content h-12" #content (scroll)="is_scrolled">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+    </main>
+</div>
+<div class="not-mobile center" *ngIf="!item && !(loading | async)">
+    <div class="info-block">
+        <div class="icon">
+            <i class="backoffice-arrow-left"></i>
+        </div>
+        <div class="text" i18n="@@selectItem">
+            Select a { name, select, systems { system } modules { module } drivers { driver }
+            repositories { repository } zones { zone } triggers { trigger } users { user } domains {
+            domain } other { other } } from the sidebar
+        </div>
+    </div>
+</div>
+<div class="mobile-only center" *ngIf="!item && !(loading | async)">
+    <div class="info-block">
+        <div class="icon">
+            <i class="backoffice-arrow-up"></i>
+        </div>
+        <div class="text" i18n="@@selectItemMobile">
+            Select a { name, select, systems { system } modules { module } drivers { driver }
+            repositories { repository } zones { zone } triggers { trigger } users { user } domains {
+            domain } other { other } } from the search bar
+        </div>
+    </div>
+</div>
+<div class="info-block center" *ngIf="(loading | async)">
+    <div class="icon">
+        <mat-spinner diameter="32"></mat-spinner>
+    </div>
+    <div class="text" i18n="@@itemLoading">
+        Loading { name, select, systems { system } modules { module } drivers { driver }
+        repositories { repository } zones { zone } triggers { trigger } users { user } domains {
+        domain } other { other } }...
+    </div>
+</div>
+<mat-menu #action_menu="matMenu">
+    <button *ngIf="has_change" mat-menu-item (click)="edit()">
+        <div class="group">
+            <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+            <div class="text" i18n="@@editAction">
+                Edit { name, select, systems { system } modules { module } drivers { driver }
+                repositories { repository } zones { zone } triggers { trigger } users { user } domains {
+                domain } other { other } } [E]
+            </div>
+        </div>
+    </button>
+    <button mat-menu-item disabled="true" (click)="newFromItem()">
+        <div class="group">
+            <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
+            <div class="text" i18n="@@copyItemAction">
+                Create new from this { name, select, systems { system } modules { module } drivers { driver }
+                repositories { repository } zones { zone } triggers { trigger } users { user } domains {
+                domain } other { other } }
+            </div>
+        </div>
+    </button>
+    <button mat-menu-item disabled="true" (click)="duplicateItem()">
+        <div class="group">
+            <app-icon [icon]="{ class: 'backoffice-flow-branch' }"></app-icon>
+            <div class="text" i18n="@@duplicateAction">
+                Duplicate { name, select, systems { system } modules { module } drivers { driver }
+                repositories { repository } zones { zone } triggers { trigger } users { user } domains {
+                domain } other { other } }
+            </div>
+        </div>
+    </button>
+    <button mat-menu-item (click)="exportAsTSV()">
+        <div class="group">
+            <app-icon [icon]="{ class: 'backoffice-download' }"></app-icon>
+            <div class="text" i18n="@@exportAction">
+                Export { name, select, systems { system } modules { module } drivers { driver }
+                repositories { repository } zones { zone } triggers { trigger } users { user } domains {
+                domain } other { other } } as TSV template
+            </div>
+        </div>
+    </button>
+    <button *ngIf="has_change" mat-menu-item (click)="delete()">
+        <div class="group">
+            <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+            <div class="text" i18n="@@deleteAction">
+                Delete { name, select, systems { system } modules { module } drivers { driver }
+                repositories { repository } zones { zone } triggers { trigger } users { user } domains {
+                domain } other { other } } [⌦]
+            </div>
+        </div>
+    </button>
+</mat-menu>

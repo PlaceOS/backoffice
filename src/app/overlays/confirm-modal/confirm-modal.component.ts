@@ -1,9 +1,9 @@
 import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { ApplicationIcon } from '../../shared/utilities/settings.interfaces';
-import { DialogEvent } from '../../shared/utilities/types.utilities';
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
+import { ApplicationIcon } from 'src/app/common/types';
+import { DialogEvent } from 'src/app/common/types';
+import { BaseClass } from 'src/app/common/base.class';
 
 export interface ConfirmModalData {
     /** Title of the modal */
@@ -28,7 +28,7 @@ export const CONFIRM_METADATA = {
     templateUrl: './confirm-modal.component.html',
     styleUrls: ['./confirm-modal.component.scss']
 })
-export class ConfirmModalComponent extends BaseDirective implements OnInit {
+export class ConfirmModalComponent extends BaseClass implements OnInit {
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Title of the confirm modal */

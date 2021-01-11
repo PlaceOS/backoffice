@@ -1,9 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { BaseDirective } from 'src/app/shared/globals/base.directive';
-import { ApplicationService } from 'src/app/services/app.service';
-import { IPlaceLogEntry } from 'src/app/services/data/logs.service';
+import { BaseClass } from 'src/app/common/base.class';
 
 export interface SystemLogModalData {
     /** ID of the system to show the logs for */
@@ -15,11 +13,11 @@ export interface SystemLogModalData {
     templateUrl: './system-log-modal.component.html',
     styleUrls: ['./system-log-modal.component.scss']
 })
-export class SystemLogModalComponent extends BaseDirective implements OnInit {
+export class SystemLogModalComponent extends BaseClass implements OnInit {
     /** ID of the system to get logs for */
     public id: string;
     /** List of the available log entries for the set system */
-    public logs: IPlaceLogEntry[];
+    public logs: any[];
     /** Whether the system's logs are loading */
     public loading: boolean;
     /**  */
@@ -30,7 +28,6 @@ export class SystemLogModalComponent extends BaseDirective implements OnInit {
     constructor(
         private _dialog: MatDialogRef<SystemLogModalComponent>,
         @Inject(MAT_DIALOG_DATA) private _data: SystemLogModalData,
-        private _service: ApplicationService
     ) {
         super();
     }

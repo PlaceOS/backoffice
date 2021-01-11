@@ -2,7 +2,7 @@
 import { NgModule, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { SharedContentModule } from '../shared/shared.module';
+import { SharedContentModule } from '../ui/ui.module';
 
 import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
 import { ChangelogModalComponent } from './changelog-modal/changelog-modal.component';
