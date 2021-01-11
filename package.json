@@ -97,7 +97,7 @@
     "postcss-import": "13.0.0",
     "postcss-loader": "4.0.4",
     "postcss-scss": "3.0.4",
-    "semantic-release": "^15.13.30",
+    "semantic-release": "^17.2.3",
     "tailwindcss": "2.0.1",
     "ts-loader": "^6.2.1",
     "ts-md5": "^1.2.7",
