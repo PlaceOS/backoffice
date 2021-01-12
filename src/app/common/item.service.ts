@@ -58,6 +58,14 @@ export class ActiveItemService extends BaseClass {
     private _name = new BehaviorSubject<string>(null);
     /** Type of the active item */
     private _type: ResourceType;
+    /** Number of items */
+    private _count = new BehaviorSubject<number>(0);
+
+    public readonly count = this._count.asObservable();
+
+    public get total() {
+        return this._count.getValue();
+    }
     /** Observable for item loading state */
     public readonly loading = this._loading.asObservable();
     /** Observable for item loading state */
@@ -307,6 +315,7 @@ export class ActiveItemService extends BaseClass {
                 this._next_query.next(
                     resp.next || (() => of({ data: [], total: resp.total, next: null }))
                 );
+                this._count.next(resp.total)
                 const list = this._list
                     .getValue()
                     .filter((i) => !resp.data.find((item) => item.id === i.id));

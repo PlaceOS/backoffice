@@ -48,7 +48,7 @@ export class SidebarComponent extends BaseClass implements OnInit {
     /** Last total number of items when the list was fetched */
     public last_total: number;
     /** Total number of items in the last request */
-    public total: number;
+    public total = this._service.count;
     /** Total number of items */
     public grand_total: number;
     /** Active subroute for active item */
@@ -196,7 +196,7 @@ export class SidebarComponent extends BaseClass implements OnInit {
         if (end === total) {
             this.last_total = total;
             this.last_check = dayjs().valueOf();
-            if (this.last_total !== this.total) {
+            if (this.last_total !== this._service.total) {
                 this._service.moreItems();
             }
         }
