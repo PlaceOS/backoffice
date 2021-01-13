@@ -273,6 +273,7 @@ export class ActiveItemService extends BaseClass {
         if (item.id) {
             const list = this._list.getValue().filter((i) => i.id !== item.id);
             list.sort((a, b) => a.name?.localeCompare(b.name));
+            this._count.next(this._count.getValue() - 1);
             this._list.next(list);
         }
     }
