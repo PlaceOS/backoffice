@@ -24,6 +24,7 @@ import { QueryResponse } from '@placeos/ts-client/dist/esm/resources/functions';
 import { log } from './general';
 import { BaseClass } from './base.class';
 import { EncryptionLevel, PlaceSettings, querySettings } from '@placeos/ts-client';
+import { BackofficeUsersService } from '../users/users.service';
 
 export type ResourceType =
     | 'domains'
@@ -110,7 +111,8 @@ export class ActiveItemService extends BaseClass {
         private _router: Router,
         private _settings: SettingsService,
         private _hotkey: HotkeysService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
+        private _user: BackofficeUsersService
     ) {
         super();
         this._router.events.subscribe((event) => {
@@ -156,6 +158,7 @@ export class ActiveItemService extends BaseClass {
     }
 
     public create(item?: any, copy: boolean = false) {
+        if (!this._user.current().sys_admin) return;
         item = item || this._active_item.getValue();
         const actions =
             Object.values(ACTIONS).find(
@@ -169,6 +172,7 @@ export class ActiveItemService extends BaseClass {
     }
 
     public async edit<T extends PlaceResource = any>(item?: T, options: HashMap = {}) {
+        if (!this._user.current().sys_admin) return;
         item = item || (this._active_item.getValue() as any);
         if (item) {
             return new Promise<T>(async (resolve) => {
@@ -205,6 +209,7 @@ export class ActiveItemService extends BaseClass {
     }
 
     public delete() {
+        if (!this._user.current().sys_admin) return;
         const item = this._active_item.getValue();
         if (item) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
@@ -244,6 +249,7 @@ export class ActiveItemService extends BaseClass {
     }
 
     public duplicate() {
+        if (!this._user.current().sys_admin) return;
         const item = this._active_item.getValue();
         if (item) {
             const ref = this._dialog.open<DuplicateModalComponent, DuplicateModalData>(
