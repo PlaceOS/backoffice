@@ -69,6 +69,10 @@ export class ItemDisplayComponent<T extends Identity = any> extends BaseClass im
         return false;
     }
 
+    public get is_admin() {
+        return this._users.current().sys_admin;
+    }
+
     public get driver_type(): string {
         const item: any = this.item;
         if (!item.role) {

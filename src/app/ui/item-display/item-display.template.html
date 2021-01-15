@@ -26,7 +26,7 @@
                 </div>
             </div>
         </div>
-        <div class="options" *ngIf="has_change">
+        <div class="options" *ngIf="has_change && is_admin">
             <button [matMenuTriggerFor]="action_menu" mat-icon-button>
                 <app-icon [icon]="{ class: 'backoffice-dots-three-vertical' }"></app-icon>
             </button>

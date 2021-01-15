@@ -58,6 +58,10 @@ export class TopbarHeaderComponent extends BaseClass implements OnInit {
         this._users.dark_mode = state;
     }
 
+    public get is_admin() {
+        return this._users.current().sys_admin;
+    }
+
     public get title() {
         return document.title.split(' | ')[0];
     }

@@ -87,6 +87,10 @@ export class SidebarComponent extends BaseClass implements OnInit {
         return this._settings.get(`app.${this.name}.can_create`);
     }
 
+    public get is_admin() {
+        return this._users.current().sys_admin;
+    }
+
     /** Heading value lower cased */
     public get lowercase_heading() {
         return (this.heading || '').toLowerCase();

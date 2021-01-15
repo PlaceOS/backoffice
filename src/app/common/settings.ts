@@ -89,6 +89,7 @@ const general = {
         {
             name: 'Repos',
             route: '/repositories',
+            needs_role: 'sys_admin',
             icon: {
                 type: 'icon',
                 class: 'backoffice-package',
@@ -116,6 +117,7 @@ const general = {
         {
             name: 'Users',
             route: '/users',
+            needs_role: 'sys_admin',
             icon: {
                 type: 'icon',
                 class: 'backoffice-users',
@@ -125,6 +127,7 @@ const general = {
         {
             name: 'Domains',
             route: '/domains',
+            needs_role: 'sys_admin',
             icon: {
                 type: 'icon',
                 class: 'backoffice-browser',
