@@ -25,7 +25,7 @@
         </div>
         <div class="field" *ngIf="form.controls.last_name">
             <label for="system-name" i18n="@@lastNameLabel">
-                Last Name:
+                Last Name<span>*</span>:
             </label>
             <mat-form-field appearance="outline">
                 <input
@@ -36,6 +36,7 @@
                     formControlName="last_name"
                     required
                 />
+                <mat-error i18n="@@userLastNameError">User's last name is required</mat-error>
             </mat-form-field>
         </div>
     </div>
