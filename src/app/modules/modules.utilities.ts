@@ -30,9 +30,9 @@ export function generateModuleFormFields(module: PlaceModule): FormGroup {
         edge_id: new FormControl(module.edge_id || null),
     };
     const system = module.system || fields.system.value || null;
-    fields.custom_name.valueChanges.subscribe((value: string) =>{
+    fields.custom_name.valueChanges.subscribe((value: string) => {
         fields.custom_name.setValue(value?.replace(/ /g, '_'), { emitEvent: false });
-    })
+    });
     if (!module.id) {
         fields.system.valueChanges.subscribe((value: PlaceSystem) =>{
             fields.control_system_id.setValue(value?.id);

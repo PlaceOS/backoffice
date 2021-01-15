@@ -29,6 +29,9 @@ export function generateDriverFormFields(driver: PlaceDriver): FormGroup {
         ignore_connected: new FormControl(driver.ignore_connected || false),
         settings: new FormControl('')
     };
+    fields.module_name.valueChanges.subscribe((value: string) => {
+        fields.module_name.setValue(value?.replace(/ /g, '_'), { emitEvent: false });
+    });
     if (driver.id) {
         delete fields.class_name;
         delete fields.role;
