@@ -9,7 +9,7 @@ import {
     pullRepositoryChanges,
 } from '@placeos/ts-client';
 import { BehaviorSubject } from 'rxjs';
-import { catchError, filter, map, shareReplay, switchMap } from 'rxjs/operators';
+import { catchError, filter, map, share, shareReplay, switchMap } from 'rxjs/operators';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError } from '../common/notifications';
@@ -28,8 +28,7 @@ export class RepositoriesStateService {
     public readonly commit = this._state.all_item.pipe(
         filter((i) => i instanceof PlaceRepository),
         switchMap((item) => listRepositoryCommits(item.id, { count: 1 } as any)),
-        map((details) => details[0]?.commit || 'HEAD'),
-        shareReplay()
+        map((details) => details[0]?.commit || 'HEAD')
     );
     /** List of available drivers for repository */
     public readonly driver_list = this._state.item.pipe(

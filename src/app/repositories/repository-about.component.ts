@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
+import { BaseClass } from '../common/base.class';
 
 import { RepositoriesStateService } from './repositories-state.service';
 
@@ -54,8 +55,8 @@ import { RepositoriesStateService } from './repositories-state.service';
                 <label i18n="@@repoCommitHashLabel">Commit hash:</label>
                 <div class="value">
                     {{ item.commit_hash || 'No Commit hash set' }}
-                    <span *ngIf="(commit | async) !== item.commit_hash">
-                        ({{ commit | async }})
+                    <span *ngIf="commit && commit !== item.commit_hash">
+                        ({{ commit }})
                     </span>
                 </div>
             </div>
@@ -86,11 +87,11 @@ import { RepositoriesStateService } from './repositories-state.service';
         `,
     ],
 })
-export class RepositoryAboutComponent {
+export class RepositoryAboutComponent extends BaseClass {
     /** Whether the latest commit is being pulled on the server */
     public pulling: boolean;
 
-    public readonly commit = this._service.commit;
+    public commit = '';
 
     public get item(): PlaceRepository {
         return this._service.active_item as any;
@@ -106,7 +107,14 @@ export class RepositoryAboutComponent {
         return this.item?.uri.replace(/\/[a-zA-Z0-9\-\.:]*@/, '/...@');
     }
 
-    constructor(private _service: RepositoriesStateService) {}
+    constructor(private _service: RepositoriesStateService) {
+        super();
+    }
+
+    public ngOnInit(): void {
+        this.commit = ''
+        this.subscription('commit', this._service.commit.subscribe(_ => this.commit = _));
+    }
 
     /**
      * Send request to server to pull the latest commit for the active repository
