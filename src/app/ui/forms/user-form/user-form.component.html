@@ -150,4 +150,34 @@
             <mat-error i18n="@@checkPasswordError">Passwords don't match</mat-error>
         </mat-form-field>
     </div>
+    <div class="field" *ngIf="form.controls.groups">
+        <label
+            for="user-groups"
+            i18n="@@groupssLabel"
+            >
+            User Groups:
+            </label
+        >
+        <mat-form-field appearance="outline">
+            <mat-chip-list #chipList aria-label="Zone Tags">
+                <mat-chip
+                    *ngFor="let group of group_list"
+                    [selectable]="true"
+                    [removable]="true"
+                    (removed)="removeGroup(group)"
+                >
+                    {{ group }}
+                    <app-icon matChipRemove [icon]="{ class: 'backoffice-cross' }"></app-icon>
+                </mat-chip>
+                <input
+                    placeholder="User groups..."
+                    i18n-placeholder="@@userGroupsPlaceholder"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separators"
+                    [matChipInputAddOnBlur]="true"
+                    (matChipInputTokenEnd)="addGroup($event)"
+                />
+            </mat-chip-list>
+        </mat-form-field>
+    </div>
 </form>

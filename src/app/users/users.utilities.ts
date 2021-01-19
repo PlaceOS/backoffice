@@ -25,6 +25,7 @@ export function generateUserFormFields(user: PlaceUser): FormGroup {
         staff_id: new FormControl(user.staff_id || ''),
         support: new FormControl(user.support || false),
         sys_admin: new FormControl(user.sys_admin || false),
+        groups: new FormControl(user.groups || []),
         password: new FormControl('', !user.id ? [Validators.required] : undefined),
         confirm_password: new FormControl('', [validateMatch('password')]),
     };
