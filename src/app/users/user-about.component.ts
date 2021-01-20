@@ -21,6 +21,14 @@ import { ActiveItemService } from 'src/app/common/item.service';
                 <label i18n="@userUpdatedAtLabel">Updated:</label>
                 <div class="value">{{ item?.updated_at * 1000 | dateFrom }}</div>
             </div>
+            <div class="flex items-center space-x-2" *ngIf="item?.groups">
+                <label class="my-1" for="groups" i18n="@@userGroupsLabel">User Groups:</label>
+                <div class="value" *ngIf="item.groups?.length; else empty_group_state">
+                    <mat-chip-list name="groups">
+                        <mat-chip *ngFor="let group of item.groups">{{ group }}</mat-chip>
+                    </mat-chip-list>
+                </div>
+            </div>
         </section>
         <section>
             <div role="table">
@@ -40,6 +48,9 @@ import { ActiveItemService } from 'src/app/common/item.service';
                 </div>
             </div>
         </section>
+        <ng-template #empty_group_state>
+                <div class="value">No Access Groups</div>
+        </ng-template>
     `,
     styles: [
         `
