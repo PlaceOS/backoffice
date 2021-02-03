@@ -125,9 +125,11 @@ export class ActiveItemService extends BaseClass {
         this._hotkey.listen(['Delete'], () => this.delete());
         this._search.subscribe((str) => {
             this._loading_list.next(true);
-            this._next_query.next(null);
-            this._list.next([]);
-            this.updateList();
+            if (str || this._next_query.getValue()) {
+                this._next_query.next(null);
+                this._list.next([]);
+                this.updateList();
+            }
         });
         setTimeout(() => this.updateType(), 300);
     }
@@ -309,6 +311,7 @@ export class ActiveItemService extends BaseClass {
 
     private updateList() {
         const type = this._type;
+        const search = this._search.getValue()
         this.timeout('update', async () => {
             if (!this.actions) return;
             this._loading_list.next(true);
@@ -331,7 +334,7 @@ export class ActiveItemService extends BaseClass {
                 this._list.next(new_list);
                 this._loading_list.next(false);
             }
-        });
+        }, search ? 300 : 10);
     }
 
     private async updateSettings() {
