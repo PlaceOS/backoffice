@@ -281,8 +281,11 @@ export class SystemModulesComponent extends BaseClass {
     public readonly editModule = (d) => this._service.editModule(d);
     public readonly joinModule = (id) => this._service.joinModule(id);
     public readonly reloadModule = (d) => this._service.reloadModule(d);
-    public readonly power = (d) => this._service.toggleModulePower(d);
     public readonly toggleDebug = (d) => this._service.toggleModuleDebug(d);
+    public readonly power = (d) => {
+        this._service.toggleModulePower(d);
+        this.refresh_modules = !this.refresh_modules;
+    };
 
     public get item(): PlaceSystem {
         return this._service.active_item as any;
