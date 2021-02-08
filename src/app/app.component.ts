@@ -20,6 +20,7 @@ import { setNotifyOutlet } from './common/notifications';
 import { BaseClass } from './common/base.class';
 import { log, detectIE } from './common/general';
 import { BackofficeUsersService } from './users/users.service';
+import { setUploadService } from './common/uploads';
 
 @Component({
     selector: 'app-root',
@@ -111,6 +112,7 @@ export class AppComponent extends BaseClass implements OnInit {
             UploadManager.addProvider(Azure);
             UploadManager.addProvider(Google);
             UploadManager.addProvider(OpenStack);
+            setUploadService(this._uploads);
         });
     }
 

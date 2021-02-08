@@ -48,6 +48,7 @@ export function generateSystemsFormFields(system: PlaceSystem): FormGroup {
         capacity: new FormControl(system.capacity || 0, [Validators.pattern('[0-9]*')]),
         bookable: new FormControl(system.bookable || false),
         description: new FormControl(system.description || ''),
+        images: new FormControl(system.images || []),
         map_id: new FormControl(system.map_id || ''),
         zone: new FormControl('', [Validators.required]),
         zones: new FormControl(system.zones, [Validators.required]),
