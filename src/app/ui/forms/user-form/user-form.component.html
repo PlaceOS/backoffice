@@ -2,6 +2,20 @@
     <!--  fake fields are a workaround for chrome/opera autofill getting the wrong fields -->
     <input id="email" style="display: none;" type="text" name="fakeusernameremembered" />
     <input id="password" style="display: none;" type="password" name="fakepasswordremembered" />
+    <div class="field mb-4">
+        <label for="domain">Domain</label>
+        <mat-form-field appearance="outline" class="h-12">
+            <mat-select
+                name="type"
+                formControlName="authority_id"
+                placeholder="Select Domain..."
+            >
+                <mat-option *ngFor="let domain of domain_list" [value]="domain.id">
+                    {{ domain.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
     <div class="fieldset">
         <div class="field" *ngIf="form.controls.first_name">
             <label

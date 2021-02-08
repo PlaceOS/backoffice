@@ -19,6 +19,7 @@ export function generateUserFormFields(user: PlaceUser): FormGroup {
         throw Error('No User passed to generate form fields');
     }
     const fields: HashMap<FormControl> = {
+        authority_id: new FormControl(user.authority_id || '', [Validators.required]),
         first_name: new FormControl(user.first_name || user.name || '', [Validators.required]),
         last_name: new FormControl(user.last_name || '', [Validators.required]),
         email: new FormControl(user.email || '', [Validators.email, Validators.required]),
@@ -29,6 +30,9 @@ export function generateUserFormFields(user: PlaceUser): FormGroup {
         password: new FormControl('', !user.id ? [Validators.required] : undefined),
         confirm_password: new FormControl('', [validateMatch('password')]),
     };
+    if (user.id) {
+        fields.authority_id.disable();
+    }
     fields.password.valueChanges.subscribe(() => {
         fields.confirm_password.updateValueAndValidity();
     });
