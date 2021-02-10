@@ -139,6 +139,7 @@ export class ActiveItemService extends BaseClass {
         if ((!this.active_item || this.active_item.id !== id) && id.length > 2) {
             const url = this._router.url.split('/');
             this._type = url[1] as any;
+            if (!this.type) return this.timeout('setItem', () => this.setItem(id));
             this._loading.next(true);
             this._active_item.next(null);
             const item = await this.actions

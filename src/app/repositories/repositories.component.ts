@@ -1,16 +1,13 @@
 import { Component } from '@angular/core';
-import { PlaceRepository, PlaceRepositoryType, listRepositoryDrivers } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 
 import { BaseClass } from '../common/base.class';
-import { ActiveItemService } from '../common/item.service';
+import { RepositoriesStateService } from './repositories-state.service';
 
 @Component({
     selector: 'app-repositories',
     template: `
-        <div
-            class="flex-1 flex-col sm:flex-row flex h-full w-full relative"
-        >
+        <div class="flex-1 flex-col sm:flex-row flex h-full w-full relative">
             <sidebar
                 heading="Repositories"
                 name="repositories"
@@ -43,8 +40,6 @@ export class RepositoriesComponent extends BaseClass {
 
     public readonly name = 'repositories';
 
-    public readonly show_options = this._service.show_options;
-
     public tab_list = [];
 
     public get extensions() {
@@ -52,7 +47,7 @@ export class RepositoriesComponent extends BaseClass {
     }
 
     public updateTabList() {
-        this.tab_list = (this.driver_count < 0
+        this.tab_list = (this.driver_count < 0 || !this.driver_count
             ? [{ id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } }]
             : [
                   { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
@@ -66,31 +61,18 @@ export class RepositoriesComponent extends BaseClass {
         ).concat(this.extensions);
     }
 
-    constructor(protected _service: ActiveItemService) {
+    constructor(protected _service: RepositoriesStateService) {
         super();
     }
 
-    public ngOnInit(): void {
+    public async ngOnInit() {
         this.subscription(
             'item',
-            this._service.item.subscribe((item) => {
-                this.loadValues(item as any);
+            this._service.driver_list.subscribe((list) => {
+                this.driver_count = list ? list.length : -1;
+                this.updateTabList();
             })
         );
-        this.updateTabList();
-    }
-
-    protected async loadValues(item: PlaceRepository) {
-        if (!item) return;
-        const query: any = { offset: 0 };
-        if (item.type === PlaceRepositoryType.Driver) {
-            this.driver_count = 0;
-            // Get driver count for repository
-            const list = await listRepositoryDrivers(item.id, query).toPromise();
-            (this.driver_count = list.length);
-        } else {
-            this.driver_count = -1;
-        }
         this.updateTabList();
     }
 }
