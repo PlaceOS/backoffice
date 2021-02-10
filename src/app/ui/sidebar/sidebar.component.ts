@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Router, NavigationEnd } from '@angular/router';
-import { PlaceModule, PlaceDriverRole } from '@placeos/ts-client';
+import { PlaceModule, PlaceDriverRole, PlaceRepository } from '@placeos/ts-client';
 
 import { HashMap } from 'src/app/common/types';
 import { BackofficeUsersService } from 'src/app/users/users.service';
@@ -119,11 +119,13 @@ export class SidebarComponent extends BaseClass implements OnInit {
                         : item.role === PlaceDriverRole.Logic
                         ? item.control_system_id
                         : item.ip;
-                map[item.id] = `${
+                map[item.id] = `<div class="flex-1">${
                     item.custom_name || item.name || '<Unnamed>'
-                } <span class="small">${detail}<span>`;
+                }</div><div class="small truncate">${detail}<div>`;
+            } else if (item instanceof PlaceRepository) {
+                map[item.id] = `<div class="flex-1">${ item.name || '<Unnamed>'}</div> <div class="small truncate">${item.repo_type}<div>`;
             } else {
-                map[item.id] = item.custom_name || item.name || '<Unnamed>';
+                map[item.id] = `<div class="flex-1">${item.custom_name || item.name || '<Unnamed>'}</div>`;
             }
         }
         return map;
