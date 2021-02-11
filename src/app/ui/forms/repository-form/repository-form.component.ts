@@ -22,6 +22,8 @@ export class RepositoryFormComponent {
     public loading_commits: boolean;
     /** Currently selected commit for the repository */
     public base_commit: Identity;
+    /** Whether to follow the latest branch commits(Auto-update) */
+    public follow_latest: boolean;
     /** List of available types of repositories */
     public repo_types: Identity[] = [
         { id: PlaceRepositoryType.Driver, name: 'Driver' },
@@ -57,7 +59,7 @@ export class RepositoryFormComponent {
         }
         const id = this.form.controls.id.value;
         const commits: any[] = await listRepositoryCommits(id).toPromise();
-        this.commit_list = (commits || []).map((commit) => {
+        const commit_list = (commits || []).map((commit) => {
             const date = dayjs(commit.date);
             return {
                 id: commit.commit,
@@ -67,10 +69,26 @@ export class RepositoryFormComponent {
                     : date.format('DD MMM YYYY'),
             };
         });
+        this.commit_list = [{
+            ...commit_list[0],
+            id: 'HEAD'
+        }, ...commit_list];
         const active_commit = this.form.controls.commit_hash.value;
         this.base_commit = this.commit_list.find((commit) => `${commit.id}` === active_commit);
         if (!this.base_commit) {
             this.base_commit = this.commit_list[0] || null;
+        }
+        if (this.base_commit?.id === 'HEAD') {
+            this.setFollow(true);
+        }
+    }
+
+    public setFollow(value: boolean) {
+        this.follow_latest = value;
+        if (value) {
+            this.form.controls.commit_hash.setValue('HEAD');
+        } else if (!value && this.form.controls.commit_hash.value === 'HEAD') {
+            this.form.controls.commit_hash.setValue(this.commit_list[1].id);
         }
     }
 
