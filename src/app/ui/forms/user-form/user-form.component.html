@@ -2,6 +2,20 @@
     <!--  fake fields are a workaround for chrome/opera autofill getting the wrong fields -->
     <input id="email" style="display: none;" type="text" name="fakeusernameremembered" />
     <input id="password" style="display: none;" type="password" name="fakepasswordremembered" />
+    <div class="field mb-4">
+        <label for="domain">Domain</label>
+        <mat-form-field appearance="outline" class="h-12">
+            <mat-select
+                name="type"
+                formControlName="authority_id"
+                placeholder="Select Domain..."
+            >
+                <mat-option *ngFor="let domain of domain_list" [value]="domain.id">
+                    {{ domain.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
     <div class="fieldset">
         <div class="field" *ngIf="form.controls.first_name">
             <label
@@ -25,7 +39,7 @@
         </div>
         <div class="field" *ngIf="form.controls.last_name">
             <label for="system-name" i18n="@@lastNameLabel">
-                Last Name:
+                Last Name<span>*</span>:
             </label>
             <mat-form-field appearance="outline">
                 <input
@@ -36,6 +50,7 @@
                     formControlName="last_name"
                     required
                 />
+                <mat-error i18n="@@userLastNameError">User's last name is required</mat-error>
             </mat-form-field>
         </div>
     </div>
@@ -147,6 +162,36 @@
                 (window:touchend)="show_confirm = false"
             ></app-icon>
             <mat-error i18n="@@checkPasswordError">Passwords don't match</mat-error>
+        </mat-form-field>
+    </div>
+    <div class="field" *ngIf="form.controls.groups">
+        <label
+            for="user-groups"
+            i18n="@@groupssLabel"
+            >
+            User Groups:
+            </label
+        >
+        <mat-form-field appearance="outline">
+            <mat-chip-list #chipList aria-label="Zone Tags">
+                <mat-chip
+                    *ngFor="let group of group_list"
+                    [selectable]="true"
+                    [removable]="true"
+                    (removed)="removeGroup(group)"
+                >
+                    {{ group }}
+                    <app-icon matChipRemove [icon]="{ class: 'backoffice-cross' }"></app-icon>
+                </mat-chip>
+                <input
+                    placeholder="User groups..."
+                    i18n-placeholder="@@userGroupsPlaceholder"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separators"
+                    [matChipInputAddOnBlur]="true"
+                    (matChipInputTokenEnd)="addGroup($event)"
+                />
+            </mat-chip-list>
         </mat-form-field>
     </div>
 </form>

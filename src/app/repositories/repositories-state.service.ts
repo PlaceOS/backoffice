@@ -6,14 +6,18 @@ import {
     listRepositoryDrivers,
     PlaceDriver,
     PlaceRepository,
+    PlaceRepositoryType,
     pullRepositoryChanges,
 } from '@placeos/ts-client';
-import { BehaviorSubject } from 'rxjs';
-import { catchError, filter, map, shareReplay, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, of } from 'rxjs';
+import { catchError, filter, map, share, shareReplay, switchMap } from 'rxjs/operators';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError } from '../common/notifications';
-import { CreateEditModalData, ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
+import {
+    CreateEditModalData,
+    ItemCreateUpdateModalComponent,
+} from '../overlays/item-modal/item-modal.component';
 
 @Injectable({
     providedIn: 'root',
@@ -24,16 +28,14 @@ export class RepositoriesStateService {
     public readonly loading = this._loading.asObservable();
     /** Active module */
     public readonly item = this._state.item;
-
-    public readonly commit = this._state.all_item.pipe(
-        filter((i) => i instanceof PlaceRepository),
-        switchMap((item) => listRepositoryCommits(item.id, { count: 1 } as any)),
-        map((details) => details[0]?.commit || 'HEAD'),
-        shareReplay()
-    );
     /** List of available drivers for repository */
-    public readonly driver_list = this._state.item.pipe(
+    public readonly driver_list = this._state.all_item.pipe(
         switchMap((item: PlaceRepository) => {
+            if (
+                !(item instanceof PlaceRepository) ||
+                item.repo_type === PlaceRepositoryType.Interface
+            )
+                return of(null);
             this._loading.next(true);
             return listRepositoryDrivers(item.id, { limit: 2000 });
         }),
@@ -42,6 +44,13 @@ export class RepositoriesStateService {
             this._loading.next(false);
             return _;
         })
+    );
+    /** Get latest commit for the active repository */
+    public readonly commit = this._state.all_item.pipe(
+        filter((i) => i instanceof PlaceRepository),
+        switchMap((item) => listRepositoryCommits(item.id, { count: 1 } as any)),
+        catchError(_ => []),
+        map((details) => details[0]?.commit || 'HEAD')
     );
 
     public get active_item(): PlaceRepository {

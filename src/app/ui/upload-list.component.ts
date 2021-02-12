@@ -1,28 +1,11 @@
-import { Upload, UploadManager } from '@acaprojects/ngx-uploads';
+import { Upload } from '@acaprojects/ngx-uploads';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import * as blobUtil from 'blob-util';
 import { BaseClass } from 'src/app/common/base.class';
 import { copyToClipboard } from 'src/app/common/general';
 import { notifyInfo } from 'src/app/common/notifications';
 import { SettingsService } from 'src/app/common/settings.service';
-
-export interface UploadDetails {
-    /** Name of the file uploaded */
-    name: string;
-    /** Progress of the file upload */
-    progress: number;
-    /** Link to the uploaded file */
-    link: string;
-    /** Formatted file size */
-    formatted_size: string;
-    /** Size of the file being uploaded */
-    size: number;
-    /** Error with upload request */
-    error?: string;
-    /** Upload object associated with the file */
-    upload: Upload;
-}
+import { UploadDetails, uploadFile } from '../common/uploads';
 
 @Component({
     selector: 'app-upload-list',
@@ -101,7 +84,9 @@ export interface UploadDetails {
             (drop)="handleFileEvent($event)"
             *ngIf="show_overlay"
         >
-            <div class="absolute bottom-0 p-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center pointer-events-none">
+            <div
+                class="absolute bottom-0 p-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center pointer-events-none"
+            >
                 <app-icon
                     class="animate-bounce mb-4 text-7xl text-white"
                     className="backoffice-upload-to-cloud"
@@ -150,11 +135,7 @@ export class UploadListComponent extends BaseClass implements OnInit {
         return !this._settings.value('disable_uploads');
     }
 
-    constructor(
-        private _upload_manager: UploadManager,
-        private _settings: SettingsService,
-        private _dialog: MatDialog
-    ) {
+    constructor(private _settings: SettingsService, private _dialog: MatDialog) {
         super();
     }
 
@@ -180,19 +161,6 @@ export class UploadListComponent extends BaseClass implements OnInit {
         );
     }
 
-    public humanReadableByteCount(bytes: number, si: boolean = false) {
-        const unit = si ? 1000.0 : 1024.0;
-
-        if (bytes < unit) {
-            return bytes + (si ? ' iB' : ' B');
-        }
-
-        const exp = Math.floor(Math.log(bytes) / Math.log(unit));
-        const pre = (si ? 'kMGTPE' : 'KMGTPE').charAt(exp - 1) + (si ? 'iB' : 'B');
-
-        return (bytes / Math.pow(unit, exp)).toFixed(1) + ' ' + pre;
-    }
-
     public hideOverlay() {
         this.timeout('hide_overlay', () => (this.show_overlay = false));
     }
@@ -209,7 +177,19 @@ export class UploadListComponent extends BaseClass implements OnInit {
                 if (files.length) {
                     this.show = true;
                     for (let i = 0; i < files.length; i++) {
-                        this.uploadFile(files[i]);
+                        uploadFile(files[i]).subscribe(
+                            (details) =>
+                                (this.uploads = [
+                                    ...this.uploads.filter((_) => _.id !== details.id),
+                                    details,
+                                ]),
+                            (details) =>
+                                (this.uploads = [
+                                    ...this.uploads.filter((_) => _.id !== details.id),
+                                    details,
+                                ]),
+                            () => this.updateUploadHistory()
+                        );
                     }
                 }
             }
@@ -241,52 +221,6 @@ export class UploadListComponent extends BaseClass implements OnInit {
                 details.progress = details.upload.progress;
             });
         }
-    }
-
-    /**
-     * Upload the given file to the cloud
-     * @param file File to upload
-     */
-    private uploadFile(file: File) {
-        const fileReader = new FileReader();
-        fileReader.addEventListener('loadend', (e: any) => {
-            const arrayBuffer = e.target.result;
-            const blob = blobUtil.arrayBufferToBlob(arrayBuffer, file.type);
-            const upload_list = this._upload_manager.upload([blob], { file_name: file.name });
-            const upload = upload_list[0];
-            const upload_details: UploadDetails = {
-                name: file.name,
-                progress: 0,
-                link: '',
-                formatted_size: this.humanReadableByteCount(file.size),
-                size: file.size,
-                upload,
-            };
-            upload.promise.then(
-                (state) => {
-                    if (state.access_url) {
-                        upload_details.link = upload.access_url;
-                        upload_details.progress = 100;
-                        this.updateUploadHistory();
-                    }
-                    this.updateUploadHistory();
-                    this.clearInterval(`upload-${file.name}`);
-                },
-                (err) => {
-                    upload_details.error = err.message || err;
-                    this.clearInterval(`upload-${file.name}`);
-                }
-            );
-            this.interval(`upload-${file.name}`, () => {
-                if (!upload.uploading && upload.error) {
-                    upload_details.error = upload.error;
-                    this.clearInterval(`upload-${file.name}`);
-                }
-                upload_details.progress = upload.progress;
-            });
-            this.uploads.push(upload_details);
-        });
-        fileReader.readAsArrayBuffer(file);
     }
 
     /**

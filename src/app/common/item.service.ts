@@ -24,6 +24,7 @@ import { QueryResponse } from '@placeos/ts-client/dist/esm/resources/functions';
 import { log } from './general';
 import { BaseClass } from './base.class';
 import { EncryptionLevel, PlaceSettings, querySettings } from '@placeos/ts-client';
+import { BackofficeUsersService } from '../users/users.service';
 
 export type ResourceType =
     | 'domains'
@@ -58,6 +59,14 @@ export class ActiveItemService extends BaseClass {
     private _name = new BehaviorSubject<string>(null);
     /** Type of the active item */
     private _type: ResourceType;
+    /** Number of items */
+    private _count = new BehaviorSubject<number>(0);
+
+    public readonly count = this._count.asObservable();
+
+    public get total() {
+        return this._count.getValue();
+    }
     /** Observable for item loading state */
     public readonly loading = this._loading.asObservable();
     /** Observable for item loading state */
@@ -102,7 +111,8 @@ export class ActiveItemService extends BaseClass {
         private _router: Router,
         private _settings: SettingsService,
         private _hotkey: HotkeysService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
+        private _user: BackofficeUsersService
     ) {
         super();
         this._router.events.subscribe((event) => {
@@ -115,9 +125,11 @@ export class ActiveItemService extends BaseClass {
         this._hotkey.listen(['Delete'], () => this.delete());
         this._search.subscribe((str) => {
             this._loading_list.next(true);
-            this._next_query.next(null);
-            this._list.next([]);
-            this.updateList();
+            if (str || this._next_query.getValue()) {
+                this._next_query.next(null);
+                this._list.next([]);
+                this.updateList();
+            }
         });
         setTimeout(() => this.updateType(), 300);
     }
@@ -127,6 +139,7 @@ export class ActiveItemService extends BaseClass {
         if ((!this.active_item || this.active_item.id !== id) && id.length > 2) {
             const url = this._router.url.split('/');
             this._type = url[1] as any;
+            if (!this.type) return this.timeout('setItem', () => this.setItem(id));
             this._loading.next(true);
             this._active_item.next(null);
             const item = await this.actions
@@ -148,6 +161,7 @@ export class ActiveItemService extends BaseClass {
     }
 
     public create(item?: any, copy: boolean = false) {
+        if (!this._user.current().sys_admin) return;
         item = item || this._active_item.getValue();
         const actions =
             Object.values(ACTIONS).find(
@@ -161,6 +175,7 @@ export class ActiveItemService extends BaseClass {
     }
 
     public async edit<T extends PlaceResource = any>(item?: T, options: HashMap = {}) {
+        if (!this._user.current().sys_admin) return;
         item = item || (this._active_item.getValue() as any);
         if (item) {
             return new Promise<T>(async (resolve) => {
@@ -197,6 +212,7 @@ export class ActiveItemService extends BaseClass {
     }
 
     public delete() {
+        if (!this._user.current().sys_admin) return;
         const item = this._active_item.getValue();
         if (item) {
             const ref = this._dialog.open<ConfirmModalComponent, ConfirmModalData>(
@@ -236,6 +252,7 @@ export class ActiveItemService extends BaseClass {
     }
 
     public duplicate() {
+        if (!this._user.current().sys_admin) return;
         const item = this._active_item.getValue();
         if (item) {
             const ref = this._dialog.open<DuplicateModalComponent, DuplicateModalData>(
@@ -265,6 +282,7 @@ export class ActiveItemService extends BaseClass {
         if (item.id) {
             const list = this._list.getValue().filter((i) => i.id !== item.id);
             list.sort((a, b) => a.name?.localeCompare(b.name));
+            this._count.next(this._count.getValue() - 1);
             this._list.next(list);
         }
     }
@@ -294,6 +312,7 @@ export class ActiveItemService extends BaseClass {
 
     private updateList() {
         const type = this._type;
+        const search = this._search.getValue()
         this.timeout('update', async () => {
             if (!this.actions) return;
             this._loading_list.next(true);
@@ -307,6 +326,7 @@ export class ActiveItemService extends BaseClass {
                 this._next_query.next(
                     resp.next || (() => of({ data: [], total: resp.total, next: null }))
                 );
+                this._count.next(resp.total)
                 const list = this._list
                     .getValue()
                     .filter((i) => !resp.data.find((item) => item.id === i.id));
@@ -315,7 +335,7 @@ export class ActiveItemService extends BaseClass {
                 this._list.next(new_list);
                 this._loading_list.next(false);
             }
-        });
+        }, search ? 300 : 10);
     }
 
     private async updateSettings() {

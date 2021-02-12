@@ -12,14 +12,14 @@
                     [matTooltip]="heading + ' count / License count'"
                     i18n-matTooltip
                 >
-                    {{ total || 0 }} of {{ (search ? grand_total : licenses) || '∞' }}
+                    {{ (total | async) || 0 }} of {{ (search ? grand_total : licenses) || '∞' }}
                 </div>
             </div>
         </div>
         <button
             mat-icon-button
             class="add"
-            *ngIf="new && (total < licenses || !licenses)"
+            *ngIf="new && ((total | async) < licenses || !licenses) && is_admin"
             (click)="newItem()"
             [matTooltip]="'Add ' + heading + ' [N]'"
             i18n-matTooltip
@@ -28,7 +28,7 @@
         </button>
         <div
             class="error"
-            *ngIf="new && (total >= licenses && licenses)"
+            *ngIf="new && ((total | async) >= licenses && licenses) && is_admin"
             matTooltip="
             Exceeded quota! No new item can be created
             until the total is below you license count."

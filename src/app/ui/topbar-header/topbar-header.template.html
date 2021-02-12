@@ -20,7 +20,7 @@
         [(filter)]="filter"
         (filterChange)="postFilter()"
     ></searchbar>
-    <button mat-icon-button class="hidden sm:flex ml-2" [matMenuTriggerFor]="more_actions">
+    <button mat-icon-button class="hidden sm:flex ml-2" *ngIf="is_admin" [matMenuTriggerFor]="more_actions">
         <app-icon>more_vert</app-icon>
     </button>
     <!-- TODO Add user details display -->

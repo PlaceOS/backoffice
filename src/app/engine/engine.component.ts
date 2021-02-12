@@ -4,15 +4,16 @@ import { BaseClass } from 'src/app/common/base.class';
 import { extensionsForItem } from '../common/api';
 import { ActiveItemService } from '../common/item.service';
 import { SettingsService } from '../common/settings.service';
+import { BackofficeUsersService } from '../users/users.service';
 
 @Component({
     selector: 'app-engine',
     template: `
-        <div class="h-16 p-4 text-2xl bg-white border-b border-gray-300 shadow z-10">
+        <div class="h-16 p-4 text-2xl bg-white border-b border-gray-300 shadow z-10" [class.dark-mode]="dark_mode">
             PlaceOS Admin
         </div>
         <div class="flex flex-1 z-0">
-            <div class="relative w-64 h-full bg-white border-r border-gray-300 shadow z-10">
+            <div class="relative w-64 h-full bg-white border-r border-gray-300 shadow z-10" [class.dark-mode]="dark_mode">
                 <a
                     *ngFor="let item of tab_list"
                     class="flex items-center space-x-2 my-2 rounded-l-2xl h-8 px-3 ml-3 hover:bg-primary hover:bg-opacity-25"
@@ -23,7 +24,7 @@ import { SettingsService } from '../common/settings.service';
                     <p>{{ item.name }}</p>
                 </a>
             </div>
-            <div class="relative flex-1 w-1/2 h-full z-0 bg-white px-4">
+            <div class="relative flex-1 w-1/2 h-full z-0 bg-white px-4" [class.dark-mode]="dark_mode">
                 <router-outlet></router-outlet>
             </div>
         </div>
@@ -44,6 +45,10 @@ import { SettingsService } from '../common/settings.service';
                 color: #fff;
                 margin-right: -1px;
             }
+
+            .dark-mode {
+                background: #424242 !important;
+            }
         `,
     ],
 })
@@ -52,6 +57,10 @@ export class PlaceComponent extends BaseClass {
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, 'admin');
+    }
+
+    public get dark_mode() {
+        return this._users.dark_mode;
     }
 
     public updateTabList() {
@@ -67,7 +76,11 @@ export class PlaceComponent extends BaseClass {
         ].concat(this.extensions);
     }
 
-    constructor(private _settings: SettingsService, private _service: ActiveItemService) {
+    constructor(
+        private _settings: SettingsService,
+        private _service: ActiveItemService,
+        private _users: BackofficeUsersService
+    ) {
         super();
     }
 

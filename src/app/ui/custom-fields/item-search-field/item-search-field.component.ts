@@ -26,6 +26,8 @@ export class ItemSearchFieldComponent<T extends Identity = any> extends BaseClas
     @Input() public name: string;
     /** Limit available options to these */
     @Input() public options: T[];
+    /** Whether the form field should be disabled */
+    @Input() public disabled: boolean;
     /** Function for filtering out options */
     @Input() public exclude: (_: T) => boolean;
     /** Minimum number of characters needed to start a server query */

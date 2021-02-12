@@ -41,17 +41,17 @@ export class ZonesStateService {
             const details = await Promise.all([
                 querySystems({ zone_id: item.id, limit: 1 })
                     .pipe(map((d) => d.total))
-                    .toPromise(),
+                    .toPromise().catch(_ => 0),
                 listZoneTriggers(item.id)
                     .pipe(map((d) => d.total))
-                    .toPromise(),
+                    .toPromise().catch(_ => 0),
                 showMetadata(item.id)
                     .pipe(map((d) => d.length))
-                    .toPromise(),
+                    .toPromise().catch(_ => 0),
                 queryZones({ parent: item.id, limit: 1 })
                     .pipe(map((d) => d.total))
-                    .toPromise(),
-            ]).catch(_ => [0, 0, 0, 0]);
+                    .toPromise().catch(_ => 0),
+            ]);
             const [systems, triggers, metadata, children] = details;
             this._loading.next(false);
             return {

@@ -207,5 +207,9 @@
                 />
             </mat-form-field>
         </div>
+        <div class="field" *ngIf="form.controls.images">
+            <label for="images" i18n="@@imagesLabel">Images:</label>
+            <image-list-field name="images" formControlName="images"></image-list-field>
+        </div>
     </form>
 </div>

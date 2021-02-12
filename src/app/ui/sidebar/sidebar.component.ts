@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Router, NavigationEnd } from '@angular/router';
-import { PlaceModule, PlaceDriverRole } from '@placeos/ts-client';
+import { PlaceModule, PlaceDriverRole, PlaceRepository } from '@placeos/ts-client';
 
 import { HashMap } from 'src/app/common/types';
 import { BackofficeUsersService } from 'src/app/users/users.service';
@@ -48,7 +48,7 @@ export class SidebarComponent extends BaseClass implements OnInit {
     /** Last total number of items when the list was fetched */
     public last_total: number;
     /** Total number of items in the last request */
-    public total: number;
+    public total = this._service.count;
     /** Total number of items */
     public grand_total: number;
     /** Active subroute for active item */
@@ -87,6 +87,10 @@ export class SidebarComponent extends BaseClass implements OnInit {
         return this._settings.get(`app.${this.name}.can_create`);
     }
 
+    public get is_admin() {
+        return this._users.current().sys_admin;
+    }
+
     /** Heading value lower cased */
     public get lowercase_heading() {
         return (this.heading || '').toLowerCase();
@@ -115,11 +119,13 @@ export class SidebarComponent extends BaseClass implements OnInit {
                         : item.role === PlaceDriverRole.Logic
                         ? item.control_system_id
                         : item.ip;
-                map[item.id] = `${
+                map[item.id] = `<div class="flex-1">${
                     item.custom_name || item.name || '<Unnamed>'
-                } <span class="small">${detail}<span>`;
+                }</div><div class="small truncate">${detail}<div>`;
+            } else if (item instanceof PlaceRepository) {
+                map[item.id] = `<div class="flex-1">${ item.name || '<Unnamed>'}</div> <div class="small truncate">${item.repo_type}<div>`;
             } else {
-                map[item.id] = item.custom_name || item.name || '<Unnamed>';
+                map[item.id] = `<div class="flex-1">${item.custom_name || item.name || '<Unnamed>'}</div>`;
             }
         }
         return map;
@@ -196,7 +202,7 @@ export class SidebarComponent extends BaseClass implements OnInit {
         if (end === total) {
             this.last_total = total;
             this.last_check = dayjs().valueOf();
-            if (this.last_total !== this.total) {
+            if (this.last_total !== this._service.total) {
                 this._service.moreItems();
             }
         }

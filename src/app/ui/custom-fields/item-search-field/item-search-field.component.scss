@@ -4,6 +4,10 @@ mat-form-field {
     width: 100%;
 }
 
+.disabled {
+    color: rgba(0,0,0, .35);
+}
+
 app-icon {
     font-size: 1.5em;
     position: relative;

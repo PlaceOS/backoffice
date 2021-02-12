@@ -1,9 +1,10 @@
-<div class="item-search-field" form-field>
+<div class="item-search-field" form-field [class.disabled]="disabled">
     <mat-form-field appearance="outline">
         <input
             matInput
             name="item-search"
             [(ngModel)]="search_str"
+            [disabled]="disabled"
             (ngModelChange)="search$.next($event)"
             [placeholder]="'Search' + (name ? ' for ' + name : '') + '...'"
             i18n-placeholder

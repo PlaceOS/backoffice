@@ -4,42 +4,37 @@
             <label for="commit" i18n="@@repoCommitLabel">Repository Commit: </label>
             <item-search-field
                 name="commit"
-                [options]="commit_list"
+                [options]="commit_list | slice:1"
+                [disabled]="follow_latest"
                 [loading]="loading_commits"
                 [ngModel]="base_commit"
                 [ngModelOptions]="{ standalone: true }"
                 (ngModelChange)="form.controls.commit_hash.setValue($event.id)"
             ></item-search-field>
         </div>
-        <div class="field" *ngIf="form.controls.commit_hash && is_edit">
-            <label for="repository-commit" i18n="@@commitLabel">Commit Hash:</label>
-            <mat-form-field appearance="outline">
-                <input
-                    matInput
-                    name="repository-commit"
-                    placeholder="Repository Commit"
-                    i18n-placeholder="@@repositoryCommitPLaceholder"
-                    formControlName="commit_hash"
-                    readonly
-                />
-                <mat-hint *ngIf="form.controls.commit_hash.disabled"
-                    >Commit hash is set to HEAD on branch changes</mat-hint
-                >
-            </mat-form-field>
+        <div class="field">
+            <mat-checkbox
+                class="mb-4"
+                [ngModel]="follow_latest"
+                [ngModelOptions]="{ standalone: true }"
+                (ngModelChange)="setFollow($event)"
+            >
+                Follow latest commit
+            </mat-checkbox>
         </div>
         <div class="field" *ngIf="form.controls.branch && is_edit">
             <label
                 for="repository-name"
                 [class.error]="form.controls.branch.invalid && form.controls.branch.touched"
                 i18n="@@branchLabel"
-                >Branch<span>*</span>:</label
             >
+                Branch<span>*</span>:
+            </label>
             <mat-form-field appearance="outline">
                 <input
                     *ngIf="!branch_list || !branch_list.length; else options"
                     matInput
                     name="branch-name"
-
                     placeholder="Branch Name"
                     i18n-placeholder="@@repositoryBranchPlaceholder"
                     formControlName="branch"
@@ -93,9 +88,7 @@
                     formControlName="folder_name"
                     required
                 />
-                <mat-error i18n="@@folderNameError">
-                    A valid folder name is required
-                </mat-error>
+                <mat-error i18n="@@folderNameError"> A valid folder name is required </mat-error>
             </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.description">

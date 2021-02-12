@@ -1,8 +1,7 @@
-
 import { authority, PlaceModule } from '@placeos/ts-client';
 import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
 
-import { AppComponentExtensions, HashMap } from "./types";
+import { AppComponentExtensions, HashMap } from './types';
 
 /**
  * Convert map into a query string
@@ -13,7 +12,9 @@ export function toQueryString(map: HashMap) {
     if (map) {
         for (const key in map) {
             if (map.hasOwnProperty(key) && map[key] !== undefined && map[key] !== null) {
-                str += `${(str ? '&' : '')}${key}=${map[key]}`;
+                str += `${str ? '&' : ''}${key}=${encodeURIComponent(
+                    map[key] instanceof Object ? JSON.stringify(map[key]) : map[key]
+                )}`;
             }
         }
     }
@@ -28,12 +29,12 @@ export function toQueryString(map: HashMap) {
 export function calculateModuleIndex(module_list: PlaceModule[], module: PlaceModule): number {
     const driver = module.driver || { class_name: 'System' };
     const module_class = module.custom_name || module.name || driver.class_name;
-    const modules_with_class = module_list.filter(mod => {
+    const modules_with_class = module_list.filter((mod) => {
         const d = mod.driver || { class_name: 'System' };
         const mod_class = mod.custom_name || mod.name || d.class_name;
         return mod_class === module_class;
     });
-    return Math.max(1, modules_with_class.findIndex(mod => mod.id === module.id) + 1);
+    return Math.max(1, modules_with_class.findIndex((mod) => mod.id === module.id) + 1);
 }
 
 export function extensionsForItem(item: PlaceResource, type: string) {
@@ -71,7 +72,6 @@ export function extensionsForItem(item: PlaceResource, type: string) {
             let url = extension_list[name].url;
             for (const key in item) {
                 if (item[key] && (typeof item[key] === 'string' || typeof item[key] === 'number')) {
-
                     if (typeof item[key] === 'string' && item[key].length > 128) continue;
                     url = url.replace(`{{${key}}}`, encodeURIComponent(`${item[key]}`));
                 }
