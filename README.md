@@ -1,4 +1,4 @@
-# ACA Angular Backoffice UI
+# PlaceOS Angular Backoffice UI
 
 ![PROD](https://github.com/PlaceOS/backoffice/workflows/PROD/badge.svg)
 ![UAT](https://github.com/PlaceOS/backoffice/workflows/UAT/badge.svg)
