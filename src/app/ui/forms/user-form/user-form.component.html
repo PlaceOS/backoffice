@@ -124,10 +124,7 @@
             <app-icon
                 matSuffix
                 [icon]="{ class: 'material-icons', content: 'visibility' }"
-                (mousedown)="show_password = true"
-                (window:mouseup)="show_password = false"
-                (touchstart)="show_password = true"
-                (window:touchend)="show_password = false"
+                (click)="show_password = !show_password"
             ></app-icon>
             <mat-error i18n="@@passordError">A valid password is required</mat-error>
         </mat-form-field>
@@ -156,10 +153,7 @@
             <app-icon
                 matSuffix
                 [icon]="{ class: 'material-icons', content: 'visibility' }"
-                (mousedown)="show_confirm = true"
-                (window:mouseup)="show_confirm = false"
-                (touchstart)="show_confirm = true"
-                (window:touchend)="show_confirm = false"
+                (click)="show_confirm = !show_confirm"
             ></app-icon>
             <mat-error i18n="@@checkPasswordError">Passwords don't match</mat-error>
         </mat-form-field>

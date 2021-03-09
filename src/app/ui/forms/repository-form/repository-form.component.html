@@ -162,10 +162,7 @@
                 <app-icon
                     matSuffix
                     [icon]="{ class: 'material-icons', content: 'visibility' }"
-                    (mousedown)="show_password = true"
-                    (window:mouseup)="show_password = false"
-                    (touchstart)="show_password = true"
-                    (window:touchend)="show_password = false"
+                    (click)="show_password = !show_password"
                 ></app-icon>
             </mat-form-field>
         </div>
