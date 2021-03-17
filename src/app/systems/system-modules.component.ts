@@ -112,14 +112,17 @@ import { SystemStateService } from './system-state.service';
                                         (click)="power(device)"
                                     ></div>
                                 </div>
-                                <div class="flex-1 p-2 h-10 underline">
+                                <div class="flex-1 p-2 h-10 flex flex-col justify-center">
+                                    <div>
                                     <a
                                         [routerLink]="['/modules', device.id]"
                                         (contextmenu)="$event.stopPropagation()"
-                                        class="truncate"
+                                        class="truncate underline"
                                     >
-                                        {{ device.driver?.name || '&lt;Unnamed&gt;' }}
-                                    </a>
+                                        {{ device.driver?.name || '&lt;Unnamed&gt;' }} </a
+                                    >
+</div>
+                                    <div class="text-xs truncate" *ngIf="device.notes">{{ device.notes }}</div>
                                 </div>
                                 <div class="w-48 p-2">
                                     <mat-checkbox
