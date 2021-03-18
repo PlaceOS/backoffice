@@ -22,6 +22,7 @@ import { StaffTenantModalComponent } from './staff-tenant-modal.component';
 import { PlaceEdgeComponent } from './edge.component';
 import { EdgeModalComponent } from './edge-modal.component';
 import { AdminClusterNodeComponent } from './cluster-details/cluster-node.component';
+import { AdminSchemasComponent } from './schemas.component';
 
 @NgModule({
     declarations: [
@@ -39,7 +40,8 @@ import { AdminClusterNodeComponent } from './cluster-details/cluster-node.compon
         StaffTenantModalComponent,
         PlaceEdgeComponent,
         EdgeModalComponent,
-        AdminClusterNodeComponent
+        AdminClusterNodeComponent,
+        AdminSchemasComponent
     ],
     imports: [
         CommonModule,
