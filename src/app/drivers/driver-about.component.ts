@@ -19,6 +19,7 @@ import { DriverStateService } from './driver-state.service';
                 <label i18n="@@driverDetailsCompiled">Compiled:</label>
                 <div class="value">{{ (compiled | async) ? 'true' : 'false' }}</div>
                 <mat-spinner diameter="24" *ngIf="!(compiled | async)"></mat-spinner>
+                <button mat-button *ngIf="compilation_error | async" (click)="viewErrors()">View Errors</button>
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@driverDetailsCommit">Commit:</label>
@@ -75,8 +76,10 @@ import { DriverStateService } from './driver-state.service';
 export class DriverAboutComponent {
 
     public readonly compiled = this._service.is_compiled;
+    public readonly compilation_error = this._service.last_error;
 
     public readonly recompileDriver = () => this._service.recompileDriver();
+    public readonly viewErrors = () => this._service.viewError();
 
     public get item(): PlaceDriver {
         return (this._service.active_item || {}) as any;
