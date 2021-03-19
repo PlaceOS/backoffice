@@ -31,7 +31,8 @@ import { BackofficeUsersService } from 'src/app/users/users.service';
         },
     ],
 })
-export class SettingsFieldComponent extends BaseClass
+export class SettingsFieldComponent
+    extends BaseClass
     implements OnInit, OnChanges, OnDestroy, ControlValueAccessor {
     /** Whether form field is readonly */
     @Input() public readonly = true;
@@ -41,6 +42,8 @@ export class SettingsFieldComponent extends BaseClass
     @Input() public decorations: HashMap[];
     /** Input language for syntax highlighting and error checking */
     @Input() public lang = 'yaml';
+    /** Schema for input validation and key auto-completion */
+    @Input() public schema: string | HashMap;
     /** Current value for the */
     public settings_string = ' ';
     /** Form control on change handler */
@@ -73,10 +76,13 @@ export class SettingsFieldComponent extends BaseClass
         if (changes.resize) {
             this.resizeEditor();
         }
+        if (changes.schema && this.schema) {
+            this.setSchema(this.schema);
+        }
         if (changes.decorations && this.editor) {
             this._active_decorators = this.editor.deltaDecorations(
                 this._active_decorators,
-                (this.decorations || []).map(i =>({...i}))
+                (this.decorations || []).map((i) => ({ ...i }))
             );
         }
     }
@@ -162,12 +168,47 @@ export class SettingsFieldComponent extends BaseClass
             this.editor.onDidChangeModelContent(() => {
                 this.setValue(this.editor.getValue());
             });
-            this.timeout('decorations', () => {
-                this._active_decorators = this.editor.deltaDecorations(
-                    this._active_decorators,
-                    (this.decorations || []).map(i =>({...i}))
-                );
-            }, 50);
+            this.timeout(
+                'decorations',
+                () => {
+                    this._active_decorators = this.editor.deltaDecorations(
+                        this._active_decorators,
+                        (this.decorations || []).map((i) => ({ ...i }))
+                    );
+                },
+                50
+            );
+        }
+    }
+
+    private setSchema(schema: string | HashMap) {
+        if (this.editor) {
+            if (typeof schema !== 'string') {
+                // load from source
+                monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                    enableSchemaRequest: true,
+                    validate: true,
+                    schemas: [
+                        // @ts-ignore
+                        {
+                            fileMatch: ['file:///schema'],
+                            schema,
+                        },
+                    ],
+                });
+            } else {
+                // load from server e.g. http://localhost:8000/schema.json
+                monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                    enableSchemaRequest: true,
+                    validate: true,
+                    schemas: [
+                        {
+                            uri: schema,
+                            fileMatch: ['file:///schema'],
+                        },
+                    ],
+                });
+            }
         }
     }
 }
