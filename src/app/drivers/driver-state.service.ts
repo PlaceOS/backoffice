@@ -42,7 +42,8 @@ export class DriverStateService {
         filter((d) => !!d && d instanceof PlaceDriver),
         switchMap((driver) => isDriverCompiled(driver.id)),
         catchError((_) => {
-            this._last_error.next(_?.compilation_error);
+            this._last_error.next(_?.compilation_error || _);
+            console.log('Driver Error:', _);
             return throwError(_);
         }),
         retryWhen(delay(1000)),
