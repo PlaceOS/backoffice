@@ -330,6 +330,11 @@ mat-expansion-panel {
     }
 }
 
+mat-panel-title {
+    display: flex;
+    align-items: center;
+}
+
 [table-head] {
     @apply flex items-center bg-gray-300 border-b border-black divide-x divide-gray-400 font-medium;
 

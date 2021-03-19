@@ -37,22 +37,13 @@ import { ActiveItemService } from 'src/app/common/item.service';
                         >
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
-                                    <div
-                                        edit
-                                        class="flex items-center"
-                                        [matTooltip]="
-                                            form_map[item.name].controls.description.value
-                                        "
-                                        (click)="
-                                            editMetadataDetails(item); $event.stopPropagation()
-                                        "
-                                    >
+                                    <div edit class="flex-1">
                                         {{ form_map[item.name].controls.name.value }}
-                                        <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
                                     </div>
                                     <ng-container *ngIf="edited[item.name]">
                                         <button
                                             mat-button
+                                            save
                                             *ngIf="!loading[item.name]; else load_state"
                                             (click)="$event.stopPropagation()"
                                             (click)="saveMetadata(item)"
@@ -61,8 +52,21 @@ import { ActiveItemService } from 'src/app/common/item.service';
                                             Save
                                         </button>
                                     </ng-container>
+                                    <button
+                                        mat-icon-button
+                                        matTooltip="Edit Metadata Settings"
+                                        (click)="
+                                            editMetadataDetails(item); $event.stopPropagation()
+                                        "
+                                    >
+                                        <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+                                    </button>
                                     <div class="contents" *ngIf="!item.new">
-                                        <button mat-icon-button (click)="deleteMetadata(item.name)">
+                                        <button
+                                            mat-icon-button
+                                            matTooltip="Remove Metadata"
+                                            (click)="deleteMetadata(item.name)"
+                                        >
                                             <app-icon
                                                 [icon]="{ class: 'backoffice-trash' }"
                                             ></app-icon>
