@@ -20,6 +20,13 @@ export class SchemaStateService {
         this.loadSchemas();
     }
 
+    public getSchema(id: string): HashMap {
+        const schema_list = this._schemas.getValue();
+        const schema = schema_list.find(_ => _.id === id);
+        if (!schema) return null;
+        return JSON.parse(schema.schema || '{}');
+    }
+
     public loadSchemas(): void {
         const schema_list = JSON.parse(localStorage.getItem('BACKOFFICE.schemas') || '[]');
         schema_list.sort((a, b) => a.name?.localeCompare(b.name));

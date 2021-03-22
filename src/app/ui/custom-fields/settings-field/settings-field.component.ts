@@ -17,7 +17,7 @@ import { BaseClass } from 'src/app/common/base.class';
 import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 import { BackofficeUsersService } from 'src/app/users/users.service';
 
-// import * as monaco_yaml from 'monaco-editor/dev/vs/basic-languages/yaml/yaml.js';
+let MODEL: monaco.editor.ITextModel = null;
 
 @Component({
     selector: 'settings-form-field',
@@ -60,6 +60,9 @@ export class SettingsFieldComponent
 
     constructor(private _users: BackofficeUsersService) {
         super();
+        if (!MODEL) {
+            MODEL = monaco.editor.createModel('', 'json', monaco.Uri.parse(`http://backoffice/schema`));
+        }
     }
 
     public ngOnInit(): void {
@@ -158,6 +161,7 @@ export class SettingsFieldComponent
             this.editor = monaco.editor.create(this.element.nativeElement, {
                 value: this.settings_string || '',
                 language: this.lang || 'yaml',
+                model: MODEL,
                 fontFamily: `"Fira Code", monospace`,
                 lineNumbers: 'on',
                 roundedSelection: false,
@@ -165,8 +169,12 @@ export class SettingsFieldComponent
                 readOnly: this.readonly,
                 theme: !this._users.dark_mode ? 'vs' : 'vs-dark',
             });
-            this.editor.onDidChangeModelContent(() => {
+            this.editor.onDidChangeModelContent((e) => {
                 this.setValue(this.editor.getValue());
+                console.log('Event:', e);
+                if (e.changes[0]?.text === '""') {
+                    this.editor.trigger('Show Autocomplete', 'editor.action.triggerSuggest', {});
+                }
             });
             this.timeout(
                 'decorations',
@@ -182,33 +190,36 @@ export class SettingsFieldComponent
     }
 
     private setSchema(schema: string | HashMap) {
-        if (this.editor) {
-            if (typeof schema !== 'string') {
-                // load from source
-                monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-                    enableSchemaRequest: true,
-                    validate: true,
-                    schemas: [
-                        // @ts-ignore
-                        {
-                            fileMatch: ['file:///schema'],
-                            schema,
-                        },
-                    ],
-                });
-            } else {
-                // load from server e.g. http://localhost:8000/schema.json
-                monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-                    enableSchemaRequest: true,
-                    validate: true,
-                    schemas: [
-                        {
-                            uri: schema,
-                            fileMatch: ['file:///schema'],
-                        },
-                    ],
-                });
-            }
+        console.log('Set Schema:', schema, this.editor);
+        if (!this.editor) return;
+        if (typeof schema !== 'string') {
+            console.log('Schema 1');
+            // load from source
+            monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                enableSchemaRequest: true,
+                validate: true,
+                schemas: [
+                    // @ts-ignore
+                    {
+                        uri: 'http://backoffice/schema.json',
+                        fileMatch: ['http://backoffice/schema'],
+                        schema,
+                    }
+                ],
+            });
+        } else {
+            console.log('Schema 2');
+            // load from server e.g. http://localhost:8000/schema.json
+            monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                enableSchemaRequest: true,
+                validate: true,
+                schemas: [
+                    {
+                        uri: schema,
+                        fileMatch: ['http://backoffice/schema'],
+                    }
+                ],
+            });
         }
     }
 }

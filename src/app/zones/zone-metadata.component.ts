@@ -13,6 +13,7 @@ import {
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { notifySuccess, notifyError } from 'src/app/common/notifications';
 import { ZonesStateService } from './zones-state.service';
+import { SchemaStateService } from '../engine/schema-state.service';
 
 @Component({
     selector: 'zone-metadata',
@@ -72,6 +73,7 @@ import { ZonesStateService } from './zones-state.service';
                                 <settings-form-field
                                     formControlName="details"
                                     lang="json"
+                                    [schema]="this.schema_map[item.name]"
                                     [readonly]="false"
                                 ></settings-form-field>
                             </div>
@@ -144,6 +146,8 @@ export class ZoneMetadataComponent extends BaseClass implements OnInit {
     public edited: HashMap<boolean> = {};
     /** Map of metadata properties to whether they are saving */
     public loading: HashMap<boolean> = {};
+    /** Map of metadata schemas to the associated metadata */
+    public schema_map: HashMap<HashMap | string> = {};
 
     public get item(): PlaceZone {
         return this._service.active_item as any;
@@ -155,7 +159,11 @@ export class ZoneMetadataComponent extends BaseClass implements OnInit {
         };
     }
 
-    constructor(private _dialog: MatDialog, private _service: ZonesStateService) {
+    constructor(
+        private _dialog: MatDialog,
+        private _service: ZonesStateService,
+        private _schemas: SchemaStateService
+    ) {
         super();
     }
 
@@ -289,24 +297,27 @@ export class ZoneMetadataComponent extends BaseClass implements OnInit {
                     Validators.required,
                     validateJSONString,
                 ]),
+                schema: new FormControl(group.schema),
             });
             this.subscription(
-                `${group.name}_name`,
-                this.form_map[group.name].controls.name.valueChanges.subscribe(
+                `${group.name}_changes`,
+                this.form_map[group.name].valueChanges.subscribe(
                     () => (this.edited[group.name] = true)
                 )
             );
             this.subscription(
-                `${group.name}_description`,
-                this.form_map[group.name].controls.description.valueChanges.subscribe(
-                    () => (this.edited[group.name] = true)
-                )
-            );
-            this.subscription(
-                `${group.name}_details`,
-                this.form_map[group.name].controls.details.valueChanges.subscribe(
-                    () => (this.edited[group.name] = true)
-                )
+                `${group.name}_schema`,
+                this.form_map[group.name].controls.schema.valueChanges.subscribe((_) => {
+                    let schema = this._schemas.getSchema(_);
+                    if (!schema) {
+                        try {
+                            schema = JSON.parse(_);
+                        } catch (e) {
+                            schema = {};
+                        }
+                    }
+                    this.schema_map[group.name] = schema;
+                })
             );
         });
     }
