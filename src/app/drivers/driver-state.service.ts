@@ -41,13 +41,14 @@ export class DriverStateService {
     public readonly is_compiled = this.item.pipe(
         filter((d) => !!d && d instanceof PlaceDriver),
         switchMap((driver) => isDriverCompiled(driver.id)),
-        catchError((_) => {
-            this._last_error.next(_?.compilation_error || _);
-            console.log('Driver Error:', _);
-            return throwError(_);
+        catchError(async (_: Response) => {
+            const err = await _?.json();
+            this._last_error.next(err?.compilation_output || _);
+            console.log('Driver Error:', err);
+            if (!err?.compilation_output) throw _;
         }),
         retryWhen(delay(1000)),
-        tap(_ => this._last_error.next(null))
+        tap(_ => _ ? this._last_error.next(null) : '')
     );
 
     public readonly modules = this.item.pipe(
