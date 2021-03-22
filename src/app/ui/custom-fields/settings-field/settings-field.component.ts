@@ -17,7 +17,7 @@ import { BaseClass } from 'src/app/common/base.class';
 import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 import { BackofficeUsersService } from 'src/app/users/users.service';
 
-let MODEL: monaco.editor.ITextModel = null;
+let MODEL: HashMap<monaco.editor.ITextModel> = {};
 
 @Component({
     selector: 'settings-form-field',
