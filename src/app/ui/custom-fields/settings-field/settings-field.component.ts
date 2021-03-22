@@ -61,7 +61,10 @@ export class SettingsFieldComponent
     constructor(private _users: BackofficeUsersService) {
         super();
         if (!MODEL) {
-            MODEL = monaco.editor.createModel('', 'json', monaco.Uri.parse(`http://backoffice/schema`));
+            MODEL = {
+                json:  monaco.editor.createModel('', 'json', monaco.Uri.parse(`http://backoffice/schema.json`)),
+                yaml:  monaco.editor.createModel('', 'yaml', monaco.Uri.parse(`http://backoffice/schema.yaml`))
+            }
         }
     }
 
@@ -161,7 +164,7 @@ export class SettingsFieldComponent
             this.editor = monaco.editor.create(this.element.nativeElement, {
                 value: this.settings_string || '',
                 language: this.lang || 'yaml',
-                model: MODEL,
+                model: MODEL[this.lang || 'yaml'],
                 fontFamily: `"Fira Code", monospace`,
                 lineNumbers: 'on',
                 roundedSelection: false,
@@ -201,7 +204,7 @@ export class SettingsFieldComponent
                 schemas: [
                     // @ts-ignore
                     {
-                        uri: 'http://backoffice/schema.json',
+                        uri: 'http://backoffice/schema/base.json',
                         fileMatch: ['http://backoffice/schema'],
                         schema,
                     }
