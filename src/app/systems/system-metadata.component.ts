@@ -298,7 +298,7 @@ export class SystemMetadataComponent extends BaseClass {
                         this.metadata.filter((i) => i.name !== group.name).map((i) => i.name)
                     ),
                 ]),
-                description: new FormControl(group.name),
+                description: new FormControl(group.description),
                 editors: new FormControl(group.editors),
                 details: new FormControl(JSON.stringify(group.details || {}, undefined, 4), [
                     Validators.required,
