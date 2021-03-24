@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { PlaceMetadata, removeMetadata, updateMetadata, PlaceZone } from '@placeos/ts-client';
+import { PlaceMetadata, removeMetadata, updateMetadata, PlaceUser } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
 import { HashMap } from 'src/app/common/types';
@@ -12,11 +12,11 @@ import {
     CONFIRM_METADATA,
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { notifySuccess, notifyError } from 'src/app/common/notifications';
-import { ZonesStateService } from './zones-state.service';
 import { SchemaStateService } from '../engine/schema-state.service';
+import { UsersStateService } from './users-state.service';
 
 @Component({
-    selector: 'zone-metadata',
+    selector: 'user-metadata',
     template: `
         <div class="p-4" *ngIf="item">
             <button mat-button (click)="newMetadata()" i18n="@@addMetadataAction">
@@ -83,7 +83,7 @@ import { SchemaStateService } from '../engine/schema-state.service';
             </div>
         </div>
         <ng-template #empty_state>
-            <div class="p-8 text-center" i18n="@@zoneMetadataEmpty">No zone metadata found</div>
+            <div class="p-8 text-center" i18n="@@userMetadataEmpty">No user metadata found</div>
         </ng-template>
         <ng-template #load_state>
             <mat-spinner diameter="32"></mat-spinner>
@@ -137,8 +137,8 @@ import { SchemaStateService } from '../engine/schema-state.service';
         `,
     ],
 })
-export class ZoneMetadataComponent extends BaseClass implements OnInit {
-    /** List of metadata associated with the zone */
+export class UserMetadataComponent extends BaseClass implements OnInit {
+    /** List of metadata associated with the user */
     public metadata: PlaceMetadata[];
     /** Map of form field groups to metadata fields */
     public form_map: HashMap<FormGroup> = {};
@@ -149,7 +149,7 @@ export class ZoneMetadataComponent extends BaseClass implements OnInit {
     /** Map of metadata schemas to the associated metadata */
     public schema_map: HashMap<HashMap | string> = {};
 
-    public get item(): PlaceZone {
+    public get item(): PlaceUser {
         return this._service.active_item as any;
     }
 
@@ -161,7 +161,7 @@ export class ZoneMetadataComponent extends BaseClass implements OnInit {
 
     constructor(
         private _dialog: MatDialog,
-        private _service: ZonesStateService,
+        private _service: UsersStateService,
         private _schemas: SchemaStateService
     ) {
         super();
@@ -171,14 +171,13 @@ export class ZoneMetadataComponent extends BaseClass implements OnInit {
         this.subscription(
             'metadata',
             this._service.metadata.subscribe((d) => {
-                this.metadata = d || [];
+                this.metadata = d;
                 this.generateForms();
             })
         );
     }
 
     public newMetadata() {
-        if (!this.metadata) this.metadata = [];
         this.metadata.push({
             name: `new_field_${Math.floor(Math.random() * 999_999_999)}`,
             description: '',
