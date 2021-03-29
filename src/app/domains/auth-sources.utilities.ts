@@ -44,16 +44,12 @@ export function generateSAMLSourceForm(auth_source: PlaceSAMLSource): FormGroup 
         idp_sso_target_url: new FormControl(auth_source.idp_sso_target_url || '',[
             Validators.required
         ]),
-        name_identifier_format: new FormControl(auth_source.name_identifier_format || '', [
-            Validators.required
-        ]),
+        name_identifier_format: new FormControl(auth_source.name_identifier_format || ''),
         assertion_consumer_service_url: new FormControl(
             auth_source.assertion_consumer_service_url || '',
             [Validators.required]
         ),
-        request_attributes: new FormControl(auth_source.request_attributes || [], [
-            Validators.required
-        ]),
+        request_attributes: new FormControl(auth_source.request_attributes || []),
         idp_sso_target_url_runtime_params: new FormControl(
             auth_source.idp_sso_target_url_runtime_params || {}
         ),
