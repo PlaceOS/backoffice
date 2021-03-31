@@ -36,21 +36,26 @@ export type PlaceAuthSource = PlaceOAuthSource | PlaceSAMLSource | PlaceLDAPSour
 export class DomainStateService {
     private _loading = new BehaviorSubject<boolean>(false);
 
+    private _changed = new BehaviorSubject<number>(0);
+
     public readonly item: Observable<PlaceDomain> = this._state.item as any;
 
     public readonly loading = this._loading.asObservable();
 
-    public readonly users: Observable<PlaceUser[]> = this.item.pipe(
-        filter((item) => item instanceof PlaceDomain),
-        switchMap((item) => queryUsers({ authority: item.id } as any)),
+    public readonly users: Observable<PlaceUser[]> = combineLatest([this._changed, this.item]).pipe(
+        filter(([_, item]) => item instanceof PlaceDomain),
+        switchMap(([_, item]) => queryUsers({ authority: item.id } as any)),
         map((_) => _.data),
         catchError((_) => []),
         shareReplay(1)
     );
 
-    public readonly auth_sources: Observable<PlaceAuthSource[]> = this.item.pipe(
-        filter((item) => item instanceof PlaceDomain),
-        switchMap((item) => {
+    public readonly auth_sources: Observable<PlaceAuthSource[]> = combineLatest([
+        this._changed,
+        this.item,
+    ]).pipe(
+        filter(([_, item]) => item instanceof PlaceDomain),
+        switchMap(([_, item]) => {
             const q = { authority: item.id };
             return combineLatest([
                 querySAMLSources(q as any).pipe(map((_) => _.data)),
@@ -67,17 +72,23 @@ export class DomainStateService {
         shareReplay(1)
     );
 
-    public readonly applications: Observable<PlaceApplication[]> = this.item.pipe(
-        filter((item) => item instanceof PlaceDomain),
-        switchMap((item) => queryApplications({ authority: item.id } as any)),
+    public readonly applications: Observable<PlaceApplication[]> = combineLatest([
+        this._changed,
+        this.item,
+    ]).pipe(
+        filter(([_, item]) => item instanceof PlaceDomain),
+        switchMap(([_, item]) => queryApplications({ authority: item.id } as any)),
         map((_) => _.data),
         catchError((_) => []),
         shareReplay(1)
     );
 
-    public readonly counts = this.item.pipe(
-        filter((item) => item instanceof PlaceDomain),
-        switchMap(async (item: PlaceDomain) => {
+    public readonly counts = combineLatest([
+        this._changed,
+        this.item,
+    ]).pipe(
+        filter(([_, item]) => item instanceof PlaceDomain),
+        switchMap(async ([_, item]) => {
             const q = { authority: item?.id };
             const details = await Promise.all([
                 queryApplications(q as any)
@@ -136,7 +147,7 @@ export class DomainStateService {
             ref.afterClosed().toPromise(),
         ]);
         if (!details) return;
-        this._state.replaceItem(this.active_item);
+        this._changed.next(new Date().valueOf());
     }
 
     /**
@@ -165,6 +176,7 @@ export class DomainStateService {
                 }`
             );
         notifySuccess('Successfully removed domain application.');
+        this._changed.next(new Date().valueOf());
     }
 
     /**
@@ -186,7 +198,7 @@ export class DomainStateService {
             ref.afterClosed().toPromise(),
         ]);
         if (!details) return;
-        this._state.replaceItem(this.active_item);
+        this._changed.next(new Date().valueOf());
     }
 
     /**
@@ -208,8 +220,8 @@ export class DomainStateService {
             item instanceof PlaceSAMLSource
                 ? removeSAMLSource
                 : item instanceof PlaceOAuthSource
-                    ? removeOAuthSource
-                    : removeLDAPSource;
+                ? removeOAuthSource
+                : removeLDAPSource;
         const err = await method(item.id)
             .toPromise()
             .catch((_) => _);
@@ -221,5 +233,6 @@ export class DomainStateService {
                 }`
             );
         notifySuccess('Successfully removed domain auth source.');
+        this._changed.next(new Date().valueOf());
     }
 }
