@@ -3,9 +3,18 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PlaceDomain, post } from '@placeos/ts-client';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { DialogEvent } from '../common/types';
+import { DialogEvent, HashMap } from '../common/types';
 import { PlaceTenant } from './staff-api.component';
 
+const FIELD_NAME_MAPPING: HashMap<string> = {
+    issuer: 'Client Email',
+    signing_key: 'Private Key',
+    sub: 'Service User',
+    client_id: 'Client ID',
+    client_secret: 'Client Secret',
+    domain: 'Domain',
+    scopes: 'Scopes'
+};
 
 export interface StaffTenantModalData {
     tenant?: PlaceTenant;
@@ -43,20 +52,22 @@ export interface StaffTenantModalData {
             </div>
             <form *ngIf="credentials" [formGroup]="credentials">
                 <div class="flex flex-col" *ngFor="let item of credentials.controls | keyvalue">
-                    <label class="capitalize">{{ item.key }}<span>*</span>:</label>
+                    <label class="capitalize"
+                        >{{ name_map[item.key] || item.key }}<span>*</span>:</label
+                    >
                     <mat-form-field appearance="outline">
                         <ng-container [ngSwitch]="item.key">
                             <input
                                 matInput
                                 *ngSwitchDefault
                                 [formControlName]="item.key"
-                                [placeholder]="item.key"
+                                [placeholder]="name_map[item.key] || item.key"
                             />
                             <textarea
                                 matInput
                                 *ngSwitchCase="'signing_key'"
                                 [formControlName]="item.key"
-                                [placeholder]="item.key"
+                                [placeholder]="name_map[item.key] || item.key"
                             ></textarea>
                         </ng-container>
                         <mat-error>A {{ item.key }} is required</mat-error>
@@ -94,6 +105,8 @@ export class StaffTenantModalComponent implements OnInit {
 
     public loading = false;
 
+    public readonly name_map = FIELD_NAME_MAPPING;
+
     public get office_form() {
         return new FormGroup({
             tenant: new FormControl(this.tenant?.credentials?.tenant || '', [Validators.required]),
@@ -113,11 +126,11 @@ export class StaffTenantModalComponent implements OnInit {
                 Validators.required,
             ]),
             scopes: new FormControl(this.tenant?.credentials?.scopes || '', [Validators.required]),
-            domain: new FormControl(this.tenant?.credentials?.domain || '', [Validators.required]),
-            sub: new FormControl(this.tenant?.credentials?.sub || '', [Validators.required]),
-            user_agent: new FormControl(this.tenant?.credentials?.user_agent || '', [
-                Validators.required,
-            ]),
+            domain: new FormControl(
+                this.tenant?.credentials?.domain || this._data.domain?.domain || '',
+                [Validators.required]
+            ),
+            sub: new FormControl(this.tenant?.credentials?.sub || '', [Validators.required])
         });
     }
 
