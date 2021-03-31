@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { PlaceDomain, post } from '@placeos/ts-client';
+import { PlaceDomain, post, put } from '@placeos/ts-client';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent, HashMap } from '../common/types';
 import { PlaceTenant } from './staff-api.component';
@@ -13,7 +13,7 @@ const FIELD_NAME_MAPPING: HashMap<string> = {
     client_id: 'Client ID',
     client_secret: 'Client Secret',
     domain: 'Domain',
-    scopes: 'Scopes'
+    scopes: 'Scopes',
 };
 
 export interface StaffTenantModalData {
@@ -130,7 +130,7 @@ export class StaffTenantModalComponent implements OnInit {
                 this.tenant?.credentials?.domain || this._data.domain?.domain || '',
                 [Validators.required]
             ),
-            sub: new FormControl(this.tenant?.credentials?.sub || '', [Validators.required])
+            sub: new FormControl(this.tenant?.credentials?.sub || '', [Validators.required]),
         });
     }
 
@@ -165,9 +165,13 @@ export class StaffTenantModalComponent implements OnInit {
         if (!this.form.valid) return;
         this._dialog_ref.disableClose = true;
         this.loading = true;
-        const tenant = await post('/api/staff/v1/tenants', this.form.value)
-            .toPromise()
-            .catch((_) => null);
+        const call = this.tenant?.id
+            ? put(`/api/staff/v1/tenants/${this.tenant.id}`, {
+                  ...(this.tenant || {}),
+                  ...this.form.value,
+              })
+            : post('/api/staff/v1/tenants', { ...(this.tenant || {}), ...this.form.value });
+        const tenant = await call.toPromise().catch((_) => null);
         this.loading = false;
         this._dialog_ref.disableClose = false;
         if (!tenant) return notifyError('Error adding new tenant.');
