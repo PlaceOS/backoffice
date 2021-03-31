@@ -112,9 +112,10 @@ export class PlaceStaffAPIComponent implements OnInit {
     }
 
     public editTenant(tenant?: PlaceTenant) {
-        this._dialog.open(StaffTenantModalComponent, {
+        const ref = this._dialog.open(StaffTenantModalComponent, {
             data: { tenant, domain: this.domain.getValue() },
         });
+        ref.afterClosed().subscribe(_ => this.domain.next(this.domain.getValue()));
     }
 
     public async removeTenant(tenant: PlaceTenant) {
