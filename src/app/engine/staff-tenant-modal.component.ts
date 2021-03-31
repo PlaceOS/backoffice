@@ -134,7 +134,7 @@ export class StaffTenantModalComponent implements OnInit {
         this.form = new FormGroup({
             domain: new FormControl(this.domain?.domain || this.tenant.domain || 'localhost'),
             name: new FormControl(this.tenant?.name || '', [Validators.required]),
-            platform: new FormControl(this.tenant?.name || 'google', [Validators.required]),
+            platform: new FormControl(this.tenant?.platform || 'google', [Validators.required]),
             credentials:
                 this.tenant?.platform === 'office365' ? this.office_form : this.google_form,
         });

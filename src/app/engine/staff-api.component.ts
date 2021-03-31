@@ -40,13 +40,16 @@ export interface PlaceTenant {
                 <div table-head>
                     <div class="w-1/2 p-2">Name</div>
                     <div class="flex-1 p-2">Platform</div>
-                    <div class="w-16 p-2 h-10"></div>
+                    <div class="w-24 p-2 h-10"></div>
                 </div>
                 <div table-body>
                     <div table-row *ngFor="let item of tenants | async">
                         <div class="w-1/2 p-2 truncate">{{ item.name }}</div>
                         <div class="flex-1 p-2 truncate">{{ item.platform }}</div>
-                        <div class="w-16 px-2 flex items-center justify-end ">
+                        <div class="w-24 px-2 flex items-center justify-end ">
+                            <button mat-icon-button class="h-10 w-10" (click)="editTenant(item)">
+                                <app-icon className="backoffice-edit"></app-icon>
+                            </button>
                             <button mat-icon-button class="h-10 w-10" (click)="removeTenant(item)">
                                 <app-icon className="backoffice-trash"></app-icon>
                             </button>
