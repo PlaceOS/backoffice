@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface ViewResponseModalData {
+    title?: string;
     content: any;
 }
 
@@ -12,6 +13,7 @@ export interface ViewResponseModalData {
 })
 export class ViewResponseModalComponent {
 
+    public readonly title = this._data.title || '';
     public content_string: string;
 
     constructor(@Inject(MAT_DIALOG_DATA) private _data: ViewResponseModalData) {

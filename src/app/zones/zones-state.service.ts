@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     listZoneTriggers,
+    PlaceMetadata,
     PlaceTrigger,
     PlaceZone,
     querySystems,
@@ -10,7 +11,7 @@ import {
     showMetadata,
     updateZone,
 } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { catchError, debounceTime, first, map, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal, unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
@@ -24,7 +25,6 @@ import {
     providedIn: 'root',
 })
 export class ZonesStateService {
-
     private _loading = new BehaviorSubject<boolean>(false);
     private _change = new BehaviorSubject<boolean>(false);
 
@@ -41,16 +41,20 @@ export class ZonesStateService {
             const details = await Promise.all([
                 querySystems({ zone_id: item.id, limit: 1 })
                     .pipe(map((d) => d.total))
-                    .toPromise().catch(_ => 0),
+                    .toPromise()
+                    .catch((_) => 0),
                 listZoneTriggers(item.id)
                     .pipe(map((d) => d.total))
-                    .toPromise().catch(_ => 0),
+                    .toPromise()
+                    .catch((_) => 0),
                 showMetadata(item.id)
                     .pipe(map((d) => d.length))
-                    .toPromise().catch(_ => 0),
+                    .toPromise()
+                    .catch((_) => 0),
                 queryZones({ parent: item.id, limit: 1 })
                     .pipe(map((d) => d.total))
-                    .toPromise().catch(_ => 0),
+                    .toPromise()
+                    .catch((_) => 0),
             ]);
             const [systems, triggers, metadata, children] = details;
             this._loading.next(false);
@@ -83,13 +87,13 @@ export class ZonesStateService {
         shareReplay()
     );
 
-    public readonly metadata = this.item.pipe(
+    public readonly metadata: Observable<PlaceMetadata[]> = this.item.pipe(
         switchMap((item) => {
-            if (!(item instanceof PlaceZone)) return [];
+            if (!(item instanceof PlaceZone)) return of([]);
             return showMetadata(item.id);
         }),
         catchError((_) => []),
-        shareReplay()
+        shareReplay(1)
     );
 
     public readonly children = this.item.pipe(

@@ -19,6 +19,7 @@ import {
 } from 'src/app/overlays/confirm-modal/confirm-modal.component';
 import { notifySuccess, notifyError } from 'src/app/common/notifications';
 import { ActiveItemService } from 'src/app/common/item.service';
+import { SchemaStateService } from '../engine/schema-state.service';
 
 @Component({
     selector: 'system-metadata',
@@ -37,22 +38,13 @@ import { ActiveItemService } from 'src/app/common/item.service';
                         >
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
-                                    <div
-                                        edit
-                                        class="flex items-center"
-                                        [matTooltip]="
-                                            form_map[item.name].controls.description.value
-                                        "
-                                        (click)="
-                                            editMetadataDetails(item); $event.stopPropagation()
-                                        "
-                                    >
+                                    <div edit class="flex-1">
                                         {{ form_map[item.name].controls.name.value }}
-                                        <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
                                     </div>
                                     <ng-container *ngIf="edited[item.name]">
                                         <button
                                             mat-button
+                                            save
                                             *ngIf="!loading[item.name]; else load_state"
                                             (click)="$event.stopPropagation()"
                                             (click)="saveMetadata(item)"
@@ -61,8 +53,21 @@ import { ActiveItemService } from 'src/app/common/item.service';
                                             Save
                                         </button>
                                     </ng-container>
+                                    <button
+                                        mat-icon-button
+                                        matTooltip="Edit Metadata Settings"
+                                        (click)="
+                                            editMetadataDetails(item); $event.stopPropagation()
+                                        "
+                                    >
+                                        <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+                                    </button>
                                     <div class="contents" *ngIf="!item.new">
-                                        <button mat-icon-button (click)="deleteMetadata(item.name)">
+                                        <button
+                                            mat-icon-button
+                                            matTooltip="Remove Metadata"
+                                            (click)="deleteMetadata(item.name)"
+                                        >
                                             <app-icon
                                                 [icon]="{ class: 'backoffice-trash' }"
                                             ></app-icon>
@@ -74,6 +79,7 @@ import { ActiveItemService } from 'src/app/common/item.service';
                                 <settings-form-field
                                     formControlName="details"
                                     lang="json"
+                                    [schema]="this.schema_map[item.name]"
                                     [readonly]="false"
                                 ></settings-form-field>
                             </div>
@@ -148,6 +154,8 @@ export class SystemMetadataComponent extends BaseClass {
     public edited: HashMap<boolean> = {};
     /** Map of metadata properties to whether they are saving */
     public loading: HashMap<boolean> = {};
+    /** Map of metadata schemas to the associated metadata */
+    public schema_map: HashMap<HashMap | string> = {};
 
     public get item(): PlaceSystem {
         return this._service.active_item as any;
@@ -159,7 +167,11 @@ export class SystemMetadataComponent extends BaseClass {
         };
     }
 
-    constructor(private _dialog: MatDialog, private _service: ActiveItemService) {
+    constructor(
+        private _dialog: MatDialog,
+        private _service: ActiveItemService,
+        private _schemas: SchemaStateService
+    ) {
         super();
     }
 
@@ -286,30 +298,33 @@ export class SystemMetadataComponent extends BaseClass {
                         this.metadata.filter((i) => i.name !== group.name).map((i) => i.name)
                     ),
                 ]),
-                description: new FormControl(group.name),
+                description: new FormControl(group.description),
                 editors: new FormControl(group.editors),
                 details: new FormControl(JSON.stringify(group.details || {}, undefined, 4), [
                     Validators.required,
                     validateJSONString,
                 ]),
+                schema: new FormControl(group.schema),
             });
             this.subscription(
-                `${group.name}_name`,
-                this.form_map[group.name].controls.name.valueChanges.subscribe(
+                `${group.name}_changes`,
+                this.form_map[group.name].valueChanges.subscribe(
                     () => (this.edited[group.name] = true)
                 )
             );
             this.subscription(
-                `${group.name}_description`,
-                this.form_map[group.name].controls.description.valueChanges.subscribe(
-                    () => (this.edited[group.name] = true)
-                )
-            );
-            this.subscription(
-                `${group.name}_details`,
-                this.form_map[group.name].controls.details.valueChanges.subscribe(
-                    () => (this.edited[group.name] = true)
-                )
+                `${group.name}_schema`,
+                this.form_map[group.name].controls.schema.valueChanges.subscribe((_) => {
+                    let schema = this._schemas.getSchema(_);
+                    if (!schema) {
+                        try {
+                            schema = JSON.parse(_);
+                        } catch (e) {
+                            schema = {};
+                        }
+                    }
+                    this.schema_map[group.name] = schema;
+                })
             );
         });
     }

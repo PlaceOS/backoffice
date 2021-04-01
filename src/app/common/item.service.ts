@@ -79,7 +79,7 @@ export class ActiveItemService extends BaseClass {
     public readonly item = this._active_item
         .asObservable()
         .pipe(
-            distinctUntilChanged((a, b) => !a || !b || (a.id === b.id && a.version === b.version))
+            distinctUntilChanged((a, b) => a?.id === b?.id && a?.version === b?.version)
         );
     /** Observable for list of items */
     public readonly list_items = () => this._list.getValue();

@@ -11,6 +11,7 @@ import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 import { PlaceExtensionsComponent } from './extensions.component';
 import { PlaceStaffAPIComponent } from './staff-api.component';
 import { PlaceEdgeComponent } from './edge.component';
+import { AdminSchemasComponent } from './schemas.component';
 
 export const ROUTES: Routes = [
     {
@@ -26,6 +27,7 @@ export const ROUTES: Routes = [
             { path: 'edge', component: PlaceEdgeComponent },
             { path: 'extensions', component: PlaceExtensionsComponent },
             { path: 'staff-api', component: PlaceStaffAPIComponent },
+            { path: 'schemas', component: AdminSchemasComponent },
             { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' }
         ]

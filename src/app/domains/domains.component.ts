@@ -89,10 +89,10 @@ export class DomainsComponent extends BaseClass {
     }
 
     public ngOnInit(): void {
+        this.updateTabList({});
         this.subscription(
             'item',
-            this._service.counts.subscribe((c) => this.updateTabList(c))
+            this._service.counts.subscribe((c) => this.updateTabList(c as any))
         );
-        this.updateTabList({});
     }
 }

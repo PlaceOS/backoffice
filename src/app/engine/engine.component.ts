@@ -73,6 +73,7 @@ export class PlaceComponent extends BaseClass {
             { id: 'brokers', name: 'MQTT Brokers', icon: { class: 'backoffice-server' } },
             { id: 'staff-api', name: 'Staff API', icon: { class: 'backoffice-gist' } },
             { id: 'extensions', name: 'Extensions', icon: { class: 'backoffice-gist' } },
+            { id: 'schemas', name: 'Custom Schemas', icon: { class: 'backoffice-list' } },
         ].concat(this.extensions);
     }
 

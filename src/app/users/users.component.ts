@@ -4,6 +4,7 @@ import { PlaceUser } from '@placeos/ts-client';
 import { ActiveItemService } from '../common/item.service';
 import { BaseClass } from '../common/base.class';
 import { extensionsForItem } from '../common/api';
+import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 
 @Component({
     selector: 'app-users',
@@ -48,9 +49,15 @@ export class UsersComponent extends BaseClass {
         return extensionsForItem(this._service.active_item, this.name);
     }
 
-    public updateTabList() {
+    public updateTabList(details?: HashMap) {
         this.tab_list = [
             { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
+            {
+                id: 'metadata',
+                name: 'Metadata',
+                count: details?.metadata,
+                icon: { class: 'backoffice-gist' },
+            },
             { id: 'history', name: 'History', icon: { class: 'backoffice-list' } }
         ].concat(this.extensions);
     }

@@ -20,7 +20,7 @@ import {
     updateApplication,
     updateDomain,
 } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest, merge, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, merge, Observable, of } from 'rxjs';
 import { catchError, filter, first, map, share, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
@@ -45,7 +45,7 @@ export class DomainStateService {
         switchMap((item) => queryUsers({ authority: item.id } as any)),
         map((_) => _.data),
         catchError((_) => []),
-        shareReplay()
+        shareReplay(1)
     );
 
     public readonly auth_sources: Observable<PlaceAuthSource[]> = this.item.pipe(
@@ -61,11 +61,10 @@ export class DomainStateService {
         map((_) => {
             let list = [];
             _.forEach((array) => (list = list.concat(array)));
-            console.log('Auth Sources:', _, list);
             return list;
         }),
         catchError((_) => []),
-        shareReplay()
+        shareReplay(1)
     );
 
     public readonly applications: Observable<PlaceApplication[]> = this.item.pipe(
@@ -73,13 +72,13 @@ export class DomainStateService {
         switchMap((item) => queryApplications({ authority: item.id } as any)),
         map((_) => _.data),
         catchError((_) => []),
-        shareReplay()
+        shareReplay(1)
     );
 
     public readonly counts = this.item.pipe(
         filter((item) => item instanceof PlaceDomain),
         switchMap(async (item: PlaceDomain) => {
-            const q = { authority: item.id };
+            const q = { authority: item?.id };
             const details = await Promise.all([
                 queryApplications(q as any)
                     .pipe(map((_) => _.total))
@@ -89,7 +88,7 @@ export class DomainStateService {
                     queryOAuthSources(q as any),
                     queryLDAPSources(q as any),
                 ])
-                    .pipe(map((count) => count[0].total + count[1].total + count[2].total))
+                    .pipe(map(([saml, oauth, ldap]) => saml.total + oauth.total + ldap.total))
                     .toPromise(),
                 queryUsers(q as any)
                     .pipe(map((_) => _.total))
@@ -98,10 +97,11 @@ export class DomainStateService {
             const [applications, auth_sources, users] = details;
             return {
                 applications,
-                auth_sources,
+                auth_sources: auth_sources || 0,
                 users,
             };
-        })
+        }),
+        shareReplay(1)
     );
 
     public get active_item() {

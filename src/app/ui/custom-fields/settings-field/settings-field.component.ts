@@ -17,7 +17,7 @@ import { BaseClass } from 'src/app/common/base.class';
 import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 import { BackofficeUsersService } from 'src/app/users/users.service';
 
-// import * as monaco_yaml from 'monaco-editor/dev/vs/basic-languages/yaml/yaml.js';
+let MODEL: HashMap<monaco.editor.ITextModel> = {};
 
 @Component({
     selector: 'settings-form-field',
@@ -31,7 +31,8 @@ import { BackofficeUsersService } from 'src/app/users/users.service';
         },
     ],
 })
-export class SettingsFieldComponent extends BaseClass
+export class SettingsFieldComponent
+    extends BaseClass
     implements OnInit, OnChanges, OnDestroy, ControlValueAccessor {
     /** Whether form field is readonly */
     @Input() public readonly = true;
@@ -41,6 +42,8 @@ export class SettingsFieldComponent extends BaseClass
     @Input() public decorations: HashMap[];
     /** Input language for syntax highlighting and error checking */
     @Input() public lang = 'yaml';
+    /** Schema for input validation and key auto-completion */
+    @Input() public schema: string | HashMap;
     /** Current value for the */
     public settings_string = ' ';
     /** Form control on change handler */
@@ -57,6 +60,12 @@ export class SettingsFieldComponent extends BaseClass
 
     constructor(private _users: BackofficeUsersService) {
         super();
+        if (!MODEL) {
+            MODEL = {
+                json:  monaco.editor.createModel('', 'json', monaco.Uri.parse(`http://backoffice/schema.json`)),
+                yaml:  monaco.editor.createModel('', 'yaml', monaco.Uri.parse(`http://backoffice/schema.yaml`))
+            }
+        }
     }
 
     public ngOnInit(): void {
@@ -73,10 +82,13 @@ export class SettingsFieldComponent extends BaseClass
         if (changes.resize) {
             this.resizeEditor();
         }
+        if (changes.schema && this.schema) {
+            this.setSchema(this.schema);
+        }
         if (changes.decorations && this.editor) {
             this._active_decorators = this.editor.deltaDecorations(
                 this._active_decorators,
-                (this.decorations || []).map(i =>({...i}))
+                (this.decorations || []).map((i) => ({ ...i }))
             );
         }
     }
@@ -152,6 +164,7 @@ export class SettingsFieldComponent extends BaseClass
             this.editor = monaco.editor.create(this.element.nativeElement, {
                 value: this.settings_string || '',
                 language: this.lang || 'yaml',
+                model: MODEL[this.lang || 'yaml'],
                 fontFamily: `"Fira Code", monospace`,
                 lineNumbers: 'on',
                 roundedSelection: false,
@@ -159,15 +172,57 @@ export class SettingsFieldComponent extends BaseClass
                 readOnly: this.readonly,
                 theme: !this._users.dark_mode ? 'vs' : 'vs-dark',
             });
-            this.editor.onDidChangeModelContent(() => {
+            this.editor.onDidChangeModelContent((e) => {
                 this.setValue(this.editor.getValue());
+                console.log('Event:', e);
+                if (e.changes[0]?.text === '""') {
+                    this.editor.trigger('Show Autocomplete', 'editor.action.triggerSuggest', {});
+                }
             });
-            this.timeout('decorations', () => {
-                this._active_decorators = this.editor.deltaDecorations(
-                    this._active_decorators,
-                    (this.decorations || []).map(i =>({...i}))
-                );
-            }, 50);
+            this.timeout(
+                'decorations',
+                () => {
+                    this._active_decorators = this.editor.deltaDecorations(
+                        this._active_decorators,
+                        (this.decorations || []).map((i) => ({ ...i }))
+                    );
+                },
+                50
+            );
+        }
+    }
+
+    private setSchema(schema: string | HashMap) {
+        console.log('Set Schema:', schema, this.editor);
+        if (!this.editor) return;
+        if (typeof schema !== 'string') {
+            console.log('Schema 1');
+            // load from source
+            monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                enableSchemaRequest: true,
+                validate: true,
+                schemas: [
+                    // @ts-ignore
+                    {
+                        uri: 'http://backoffice/schema/base.json',
+                        fileMatch: ['http://backoffice/schema'],
+                        schema,
+                    }
+                ],
+            });
+        } else {
+            console.log('Schema 2');
+            // load from server e.g. http://localhost:8000/schema.json
+            monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                enableSchemaRequest: true,
+                validate: true,
+                schemas: [
+                    {
+                        uri: schema,
+                        fileMatch: ['http://backoffice/schema'],
+                    }
+                ],
+            });
         }
     }
 }

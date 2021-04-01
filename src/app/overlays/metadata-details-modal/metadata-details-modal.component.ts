@@ -37,7 +37,8 @@ export class MetadataDetailsModalComponent implements OnInit {
                 this._data.form.controls.name.validator
             ),
             description: new FormControl(this._data.form.controls.description.value),
-            editors: new FormControl(this._data.form.controls.editors.value)
+            editors: new FormControl(this._data.form.controls.editors.value),
+            schema: new FormControl(this._data.form.controls.schema.value)
         });
     }
 
@@ -45,6 +46,7 @@ export class MetadataDetailsModalComponent implements OnInit {
         this._data.form.controls.name.setValue(this.form.controls.name.value);
         this._data.form.controls.description.setValue(this.form.controls.description.value);
         this._data.form.controls.editors.setValue(this.form.controls.editors.value);
+        this._data.form.controls.schema.setValue(this.form.controls.schema.value);
         this._dialog_ref.close();
     }
 }

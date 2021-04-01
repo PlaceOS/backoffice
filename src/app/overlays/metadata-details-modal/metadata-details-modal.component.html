@@ -62,6 +62,12 @@
                 </mat-chip-list>
             </mat-form-field>
         </div>
+        <div class="field" *ngIf="form.controls.schema">
+            <label for="schema">Schema:</label>
+            <mat-form-field appearance="outline">
+                <input matInput name="schema" placeholder="Schema" formControlName="schema" />
+            </mat-form-field>
+        </div>
     </main>
 </mat-dialog-content>
 <mat-dialog-actions>

@@ -20,6 +20,7 @@
                 >
                     { item.running, select, true { Online } false { Offline } other { Other } }
                 </div>
+                <div class="chip edge" *ngIf="item?.edge_id" i18n="@@edgeState">Edge</div>
                 <div class="chip secure" *ngIf="item.tls">
                     <div class="icon"><i class="backoffice-lock"></i></div>
                     <div class="text" i18n="@@secure">Secure</div>
@@ -105,8 +106,8 @@
             <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
             <div class="text" i18n="@@editAction">
                 Edit { name, select, systems { system } modules { module } drivers { driver }
-                repositories { repository } zones { zone } triggers { trigger } users { user } domains {
-                domain } other { other } } [E]
+                repositories { repository } zones { zone } triggers { trigger } users { user }
+                domains { domain } other { other } } [E]
             </div>
         </div>
     </button>
@@ -114,9 +115,9 @@
         <div class="group">
             <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
             <div class="text" i18n="@@copyItemAction">
-                Create new from this { name, select, systems { system } modules { module } drivers { driver }
-                repositories { repository } zones { zone } triggers { trigger } users { user } domains {
-                domain } other { other } }
+                Create new from this { name, select, systems { system } modules { module } drivers {
+                driver } repositories { repository } zones { zone } triggers { trigger } users {
+                user } domains { domain } other { other } }
             </div>
         </div>
     </button>
@@ -125,8 +126,8 @@
             <app-icon [icon]="{ class: 'backoffice-flow-branch' }"></app-icon>
             <div class="text" i18n="@@duplicateAction">
                 Duplicate { name, select, systems { system } modules { module } drivers { driver }
-                repositories { repository } zones { zone } triggers { trigger } users { user } domains {
-                domain } other { other } }
+                repositories { repository } zones { zone } triggers { trigger } users { user }
+                domains { domain } other { other } }
             </div>
         </div>
     </button>
@@ -135,8 +136,8 @@
             <app-icon [icon]="{ class: 'backoffice-download' }"></app-icon>
             <div class="text" i18n="@@exportAction">
                 Export { name, select, systems { system } modules { module } drivers { driver }
-                repositories { repository } zones { zone } triggers { trigger } users { user } domains {
-                domain } other { other } } as TSV template
+                repositories { repository } zones { zone } triggers { trigger } users { user }
+                domains { domain } other { other } } as TSV template
             </div>
         </div>
     </button>
@@ -145,8 +146,8 @@
             <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
             <div class="text" i18n="@@deleteAction">
                 Delete { name, select, systems { system } modules { module } drivers { driver }
-                repositories { repository } zones { zone } triggers { trigger } users { user } domains {
-                domain } other { other } } [⌦]
+                repositories { repository } zones { zone } triggers { trigger } users { user }
+                domains { domain } other { other } } [⌦]
             </div>
         </div>
     </button>

@@ -6,6 +6,7 @@ import { BaseClass } from 'src/app/common/base.class';
 import { HashMap } from 'src/app/common/types';
 
 import * as dayjs from 'dayjs';
+import { PlaceClusterUsageStamp } from './cluster-node.component';
 
 @Component({
     selector: 'engine-cluster-details',
@@ -66,7 +67,7 @@ export class PlaceClusterDetailsComponent extends BaseClass implements OnInit {
     /** List of available clusters on this instance of engine */
     public cluster_list: PlaceCluster[] = [];
     /** Map of clusters to CPU usage history */
-    public cpu_history: HashMap<{ id: number; value: number }[]> = {};
+    public cpu_history: HashMap<HashMap<PlaceClusterUsageStamp[]>> = {};
     /** Active cluster to show details for */
     public active_cluster: PlaceCluster;
     /** Whether cluster details are being loaded */
@@ -92,14 +93,20 @@ export class PlaceClusterDetailsComponent extends BaseClass implements OnInit {
                 const date = dayjs().valueOf();
                 this.cluster_list.forEach((cluster) => {
                     if (!this.cpu_history[cluster.id]) {
-                        this.cpu_history[cluster.id] = [];
+                        this.cpu_history[cluster.id] = {};
                     }
-                    this.cpu_history[cluster.id].push({
-                        id: date,
-                        value: cluster.core_cpu,
-                    });
-                    if (this.cpu_history[cluster.id].length > 120) {
-                        this.cpu_history[cluster.id].shift();
+                    const nodes = [cluster, ...cluster.edge_nodes] as any;
+                    for (const node of nodes) {
+                        if (!this.cpu_history[cluster.id][node.hostname]) {
+                            this.cpu_history[cluster.id][node.hostname] = [];
+                        }
+                        this.cpu_history[cluster.id][node.hostname].push({
+                            id: date,
+                            value: node.core_cpu,
+                        });
+                        if (this.cpu_history[cluster.id][node.hostname].length > 120) {
+                            this.cpu_history[cluster.id][node.hostname].shift();
+                        }
                     }
                 });
                 this.loading = false;
