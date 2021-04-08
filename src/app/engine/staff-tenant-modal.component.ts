@@ -7,13 +7,14 @@ import { DialogEvent, HashMap } from '../common/types';
 import { PlaceTenant } from './staff-api.component';
 
 const FIELD_NAME_MAPPING: HashMap<string> = {
-    issuer: 'Client Email',
+    issuer: 'Service Account Email',
     signing_key: 'Private Key',
     sub: 'Service User',
     client_id: 'Client ID',
     client_secret: 'Client Secret',
     domain: 'Domain',
     scopes: 'Scopes',
+    user_agent: 'User Agent',
 };
 
 export interface StaffTenantModalData {
@@ -131,6 +132,9 @@ export class StaffTenantModalComponent implements OnInit {
                 [Validators.required]
             ),
             sub: new FormControl(this.tenant?.credentials?.sub || '', [Validators.required]),
+            user_agent: new FormControl(this.tenant?.credentials?.user_agent || 'PlaceOS', [
+                Validators.required,
+            ]),
         });
     }
 
