@@ -9,8 +9,8 @@ import {
     startModule,
     stopModule,
 } from '@placeos/ts-client';
-import { BehaviorSubject, of } from 'rxjs';
-import { catchError, debounceTime, map, shareReplay, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, debounceTime, filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal/view-response-modal.component';
@@ -23,7 +23,9 @@ export class ModuleStateService {
 
     public readonly loading = this._loading.asObservable();
     /** Active module */
-    public readonly item = this._state.item;
+    public readonly item: Observable<PlaceModule> = this._state.item.pipe(
+        filter((_) => _ instanceof PlaceModule)
+    ) as any;
     /** Observable for associated settings of the active item */
     public readonly associated_settings = this._state.all_item.pipe(
         debounceTime(300),
@@ -33,30 +35,26 @@ export class ModuleStateService {
         })
     );
     /** Driver associated with the active module */
-    public readonly driver = this._state.item.pipe(
-        switchMap((item: PlaceModule) => showDriver(item.driver_id)),
-        shareReplay()
+    public readonly driver = this.item.pipe(
+        switchMap((item) => showDriver(item.driver_id)),
+        shareReplay(1)
     );
     /** System assoicated with the active module */
-    public readonly system = this._state.item.pipe(
-        switchMap((item: PlaceModule) => (item.system_id ? showSystem(item.system_id) : of(null))),
-        shareReplay()
+    public readonly system = this.item.pipe(
+        switchMap((item) => (item.system_id ? showSystem(item.system_id) : of(null))),
+        shareReplay(1)
     );
     /** System assoicated with the active module */
-    public readonly system_list = this._state.item.pipe(
-        switchMap((item: PlaceModule) => {
+    public readonly system_list = this.item.pipe(
+        switchMap((item) => {
             this._loading.next(true);
+            console.log('Loading Systems...');
             return querySystems({ module_id: item.id });
         }),
-        map((details) => {
-            this._loading.next(false);
-            return details.data;
-        }),
-        catchError(() => {
-            this._loading.next(false);
-            return [];
-        }),
-        shareReplay()
+        map((details) => details.data),
+        catchError(() => []),
+        tap((_) => this._loading.next(false)),
+        shareReplay(1)
     );
 
     public get active_item(): PlaceModule {

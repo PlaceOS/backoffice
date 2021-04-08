@@ -22,7 +22,7 @@ import { ModuleStateService } from './module-state.service';
                 />
             </mat-form-field>
         </section>
-        <section>
+        <section *ngIf="!(loading | async); else load_state">
             <div
                 role="table"
                 class="overflow-x-auto"
@@ -56,13 +56,15 @@ import { ModuleStateService } from './module-state.service';
             </div>
         </ng-template>
     `,
-    styles: [`
-        :host {
-            padding: 1rem;
-            height: 100%;
-            width: 100%;
-        }
-    `],
+    styles: [
+        `
+            :host {
+                padding: 1rem;
+                height: 100%;
+                width: 100%;
+            }
+        `,
+    ],
 })
 export class ModuleSystemsComponent {
     /** Subject holding the value of the search */
