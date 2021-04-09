@@ -11,7 +11,7 @@ export function validateMatch(name: string) {
             return value !== control.value ? { match: true } : null;
         }
         return null;
-    }
+    };
 }
 
 export function generateUserFormFields(user: PlaceUser): FormGroup {
@@ -29,6 +29,7 @@ export function generateUserFormFields(user: PlaceUser): FormGroup {
         groups: new FormControl(user.groups || []),
         password: new FormControl('', !user.id ? [Validators.required] : undefined),
         confirm_password: new FormControl('', [validateMatch('password')]),
+        card_number: new FormControl(user.card_number || ''),
     };
     if (user.id) {
         fields.authority_id.disable();

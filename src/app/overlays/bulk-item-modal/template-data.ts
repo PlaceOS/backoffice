@@ -1,9 +1,8 @@
-
 import { PlaceDriverRole } from '@placeos/ts-client';
 
 export const SYSTEM_TEMPLATE: any = {
     name: 'A System',
-    display_name: "Your System",
+    display_name: 'Your System',
     description: 'A description',
     email: 'system@place.tech',
     capacity: 10,
@@ -41,16 +40,16 @@ export const DRIVER_TEMPLATE: any = {
     default_uri: 'Sometimes we default',
     default_port: 1234,
     ignore_connected: false,
-    settings: { settings_string: '{ today: false, future: \'Yeah!\' }' },
+    settings: { settings_string: "{ today: false, future: 'Yeah!' }" },
     class_name: '::ACA::SolveProblem',
     repository_id: 'my-repo',
     file_name: 'fancy-driver.cr',
-    commit: 'some-hash'
+    commit: 'some-hash',
 };
 
 export const USER_TEMPLATE: any = {
     name: 'A User',
-    authority_id: 'On who\'s authority',
+    authority_id: "On who's authority",
     email: 'jon@place.tech',
     phone: '+612000000000',
     country: 'Australia',
@@ -59,7 +58,8 @@ export const USER_TEMPLATE: any = {
     login_name: 'elitedarklord',
     staff_id: 'PERSON_12345',
     first_name: 'Bob',
-    last_name: 'Marley'
+    last_name: 'Marley',
+    card_number: '1234567890',
 };
 
 export const ZONE_TEMPLATE: any = {
@@ -74,5 +74,5 @@ export const ZONE_TEMPLATE: any = {
     count: 32,
     capacity: 2345,
     location: 'Somewhere close',
-    map_id: 'a/url/to/my/map.svg'
+    map_id: 'a/url/to/my/map.svg',
 };
