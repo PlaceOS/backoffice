@@ -1,13 +1,7 @@
 import { Component, Inject, Type } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import {
-    PlaceSystem,
-    PlaceModule,
-    PlaceDriver,
-    PlaceUser,
-    PlaceZone,
-} from '@placeos/ts-client';
+import { PlaceSystem, PlaceModule, PlaceDriver, PlaceUser, PlaceZone } from '@placeos/ts-client';
 import { HashMap, Identity } from 'src/app/common/types';
 import { unique } from 'src/app/common/general';
 import {
@@ -23,7 +17,7 @@ import { Observable } from 'rxjs';
 export interface BulkItemModalData<T = HashMap<any>> {
     constr: Type<T>;
     name: string;
-    save: (item: PlaceResource) => Observable<PlaceResource>
+    save: (item: PlaceResource) => Observable<PlaceResource>;
 }
 
 @Component({
@@ -71,18 +65,10 @@ export class BulkItemModalComponent<T = HashMap<any>> {
                 const Resource = this._data.constr;
                 this.item_list = data.map((item) => {
                     const new_item = {};
-                    Object.keys(item).forEach(key => {
-                        if (typeof item[key] === 'string') {
-                            try {
-                                new_item[key] = JSON.parse(item[key]);
-                            } catch (e) {
-                                new_item[key] = item[key];
-                            }
-                        } else {
-                            new_item[key] = item[key];
-                        }
+                    Object.keys(item).forEach((key) => {
+                        new_item[key] = item[key];
                     });
-                    return new Resource(new_item)
+                    return new Resource(new_item);
                 });
                 this.flow_step = 'list';
             } else {
@@ -105,7 +91,7 @@ export class BulkItemModalComponent<T = HashMap<any>> {
         return unique(
             list.map((i) => ({ id: i, name: i.split('_').join(' ') })),
             'id'
-        ).filter(field => field.id !== 'id' && field.id[0] !== '_');
+        ).filter((field) => field.id !== 'id' && field.id[0] !== '_');
     }
 
     private generateTemplate(): HashMap[] {

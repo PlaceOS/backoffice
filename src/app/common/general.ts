@@ -170,13 +170,11 @@ export function numberToPosition(num: number): string {
  * @param csv CSV data to parse
  */
 export function csvToJson(csv: string, seperator: string = ',') {
-    const lines = csv.split('\n');
+    const lines = csv.replace(/\r|\\r/g, '').split('\n');
     let fields = lines.splice(0, 1)[0].split(seperator);
-    fields = fields.map((v) => v.replace('\r', ''));
     const list: any[] = [];
     for (const line of lines) {
         let parts = line.split(seperator);
-        parts = parts.map((v) => v.replace('\r', ''));
         /* istanbul ignore else */
         if (parts.length >= fields.length) {
             const item: any = {};

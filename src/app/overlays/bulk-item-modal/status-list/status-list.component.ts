@@ -13,7 +13,7 @@ export class StatusListComponent implements OnChanges {
     /** List of bulk items to add */
     @Input() public list: HashMap<any>[] = [];
     /** Method to save changes to items in the list */
-    @Input() public save: (item: HashMap) => Observable<PlaceResource>
+    @Input() public save: (item: HashMap) => Observable<PlaceResource>;
     /** Emitter for completion status of the item upload */
     @Output() public done = new EventEmitter<HashMap<any>[]>();
     /** Status of each of the items to be created */
@@ -27,25 +27,30 @@ export class StatusListComponent implements OnChanges {
 
     public async saveItems() {
         try {
-        const list = [];
-        let index = 0;
-        for (const item of this.list) {
-            this.status[index] = 'loading';
-            const saved_item = await this.save({ ...item, id: '' }).toPromise().catch((err) => {
-                this.status[index] = `Error: ${err.message || err}`;
-                console.error(this.status[index])
-                // notifyError(this.status[index]);
-            });
-            list.push(saved_item);
-            if (this.status[index] === 'loading') {
-                this.status[index] = 'done';
+            const list = [];
+            let index = 0;
+            for (const item of this.list) {
+                this.status[index] = 'loading';
+                console.log('Item:', item);
+                const saved_item = await this.save({ ...item, id: '' })
+                    .toPromise()
+                    .catch((err) => {
+                        this.status[index] = `Error: ${err.message || err}`;
+                        console.error(this.status[index]);
+                        // notifyError(this.status[index]);
+                    });
+                list.push(saved_item);
+                if (this.status[index] === 'loading') {
+                    this.status[index] = 'done';
+                }
+                index++;
             }
-            index++;
+            const clean_list = list.filter((item) => !!item);
+            if (clean_list.length > 0) {
+                this.done.emit(clean_list);
+            }
+        } catch (e) {
+            console.error(e);
         }
-        const clean_list = list.filter((item) => !!item);
-        if (clean_list.length > 0) {
-            this.done.emit(clean_list);
-        }
-        } catch (e) { console.error(e); }
     }
 }
