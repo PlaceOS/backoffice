@@ -244,6 +244,16 @@ mat-expansion-panel {
     }
 }
 
+mat-checkbox {
+    label {
+        @apply max-w-full flex;
+
+        .mat-checkbox-label {
+            @apply flex-1 min-w-0;
+        }
+    }
+}
+
 .dark-mode {
     button[mat-button].mat-button {
         &[disabled] {
@@ -349,8 +359,10 @@ mat-panel-title {
     height: 3.25rem;
 
     > div {
-        @apply flex items-center;
+        @apply flex items-center overflow-hidden;
+        flex-shrink: 0;
         height: 3.25rem;
+        min-width: 2rem;
         user-select: text;
     }
 }

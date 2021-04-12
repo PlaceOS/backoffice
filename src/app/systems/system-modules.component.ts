@@ -113,23 +113,27 @@ import { SystemStateService } from './system-state.service';
                                     ></div>
                                 </div>
                                 <div class="flex-1 p-2 h-10 flex flex-col justify-center">
-                                    <div>
                                     <a
                                         [routerLink]="['/modules', device.id]"
                                         (contextmenu)="$event.stopPropagation()"
-                                        class="truncate underline"
+                                        class="truncate underline w-full"
+                                        [title]="device.driver?.name || '<Unnamed>'"
                                     >
-                                        {{ device.driver?.name || '&lt;Unnamed&gt;' }} </a
-                                    >
-</div>
-                                    <div class="text-xs truncate" *ngIf="device.notes">{{ device.notes }}</div>
+                                        {{ device.driver?.name || '&lt;Unnamed&gt;' }}
+                                    </a>
+                                    <div class="text-xs truncate w-full" *ngIf="device.notes">
+                                        {{ device.notes }}
+                                    </div>
                                 </div>
                                 <div class="w-48 p-2">
                                     <mat-checkbox
+                                        class="w-full"
                                         [checked]="(debugging | async)[device.id]"
                                         (change)="toggleDebug(device)"
                                     >
-                                        {{ (bindings | async)[i] }}
+                                        <span class="truncate" [title]="(bindings | async)[i]">{{
+                                            (bindings | async)[i]
+                                        }}</span>
                                     </mat-checkbox>
                                 </div>
                                 <div class="w-48 text-right flex items-center h-full p-2">
