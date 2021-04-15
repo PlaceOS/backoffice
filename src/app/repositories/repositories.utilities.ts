@@ -27,7 +27,7 @@ export function generateRepositoryFormFields(repository: PlaceRepository): FormG
     };
     if (repository.id) {
         if (repository.type === PlaceRepositoryType.Driver) {
-            delete fields.branch;
+            if (!localStorage.getItem('allow_driver_branch')) delete fields.branch;
             delete fields.uri;
         }
         delete fields.folder_name;
