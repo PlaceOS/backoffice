@@ -12,9 +12,9 @@ import { SettingsService } from '../common/settings.service';
             [class.fullscreen]="fullscreen"
         >
             <div
-                class="flex items-center w-full bg-primary text-white py-2 px-4"
+                class="flex items-center w-full bg-primary text-white py-2 px-4 border-b border-gray-400"
             >
-                <div class="text-2xl flex-1" i18n="@@metricsHeader">
+                <div class="text-2xl flex-1 font-medium" i18n="@@metricsHeader">
                     Metrics
                 </div>
                 <div class="flex items-center space-x-2">

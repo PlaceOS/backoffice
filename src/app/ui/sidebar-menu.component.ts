@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    Input,
+    Output,
+    EventEmitter,
+    SimpleChanges,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { authority } from '@placeos/ts-client';
 
@@ -37,11 +44,15 @@ import { HotkeysService } from 'src/app/common/hotkeys.service';
             >
                 <app-icon [icon]="item?.icon"></app-icon>
                 <div class="text-sm" *ngIf="!item?.hide_name" i18n>
-                    { item.name, select, Systems { Systems } Modules { Modules } Zones { Zones }
-                    Drivers { Drivers } Repos { Repos } Triggers { Triggers } Users { Users }
-                    Domains { Domains } Admin { Admin } other { Other } }
+                    { item.name, select, Systems { Systems } Modules { Modules }
+                    Zones { Zones } Drivers { Drivers } Repos { Repos } Triggers
+                    { Triggers } Users { Users } Domains { Domains } Admin {
+                    Admin } Metrics { Metrics } other { Other } }
                 </div>
-                <div bar class="opacity-0 absolute top-0 right-0 bottom-0 bg-primary"></div>
+                <div
+                    bar
+                    class="opacity-0 absolute top-0 right-0 bottom-0 bg-primary"
+                ></div>
             </a>
         </div>
     `,
@@ -125,11 +136,15 @@ export class SidebarMenuComponent extends BaseClass implements OnInit {
         );
         this.subscription(
             'up',
-            this._hotkey.listen(['Control', 'Shift', 'ArrowUp'], () => this.changeSelected(-1))
+            this._hotkey.listen(['Control', 'Shift', 'ArrowUp'], () =>
+                this.changeSelected(-1)
+            )
         );
         this.subscription(
             'down',
-            this._hotkey.listen(['Control', 'Shift', 'ArrowDown'], () => this.changeSelected(1))
+            this._hotkey.listen(['Control', 'Shift', 'ArrowDown'], () =>
+                this.changeSelected(1)
+            )
         );
     }
 
