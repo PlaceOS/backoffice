@@ -51,8 +51,7 @@ interface ModuleFunction extends PlaceModuleFunction {
         },
     ],
 })
-export class SystemExecFieldComponent extends BaseClass
-    implements OnChanges, ControlValueAccessor {
+export class SystemExecFieldComponent extends BaseClass implements OnChanges, ControlValueAccessor {
     /** ID of the system to execute command on */
     @Input() public system: PlaceSystem;
     /** Whether the selected function is executable from this field */
@@ -145,40 +144,43 @@ export class SystemExecFieldComponent extends BaseClass
                     offset,
                     limit: 500,
                     complete: true,
-                } as any).pipe(map(resp => resp.data)).subscribe(
-                    (list) => {
-                        this.devices = (list || [])
-                            .filter((device) => device.running)
-                            .map((device) => {
+                } as any)
+                    .pipe(map((resp) => resp.data))
+                    .subscribe(
+                        (list) => {
+                            this.devices = (list || []).map((device) => {
                                 const module_name = device.custom_name || device.name;
                                 return {
                                     id: device.id,
                                     name: device.name,
+                                    running: device.running,
                                     module: module_name,
                                     index: 1,
                                 };
                             });
-                        this.devices.sort(
-                            (a, b) =>
-                                this.system.modules.indexOf(a.id) -
-                                this.system.modules.indexOf(b.id)
-                        );
-                        this.devices.forEach(
-                            (device) =>
-                                (device.index =
-                                    this.devices
-                                        .filter((d) => d.module === device.module)
-                                        .findIndex((mod) => mod.id === device.id) + 1)
-                        );
-                        if (
-                            this.active_module &&
-                            !(this.devices || []).find((mod) => mod.id === this.active_module.id)
-                        ) {
-                            this.devices.unshift(this.active_module);
-                        }
-                    },
-                    () => null
-                );
+                            this.devices.sort(
+                                (a, b) =>
+                                    this.system.modules.indexOf(a.id) -
+                                    this.system.modules.indexOf(b.id)
+                            );
+                            this.devices.forEach(
+                                (device) =>
+                                    (device.index =
+                                        this.devices
+                                            .filter((d) => d.module === device.module)
+                                            .findIndex((mod) => mod.id === device.id) + 1)
+                            );
+                            if (
+                                this.active_module &&
+                                !(this.devices || []).find(
+                                    (mod) => mod.id === this.active_module.id
+                                )
+                            ) {
+                                this.devices.unshift(this.active_module);
+                            }
+                        },
+                        () => null
+                    );
             });
         }
     }
@@ -332,10 +334,8 @@ export class SystemExecFieldComponent extends BaseClass
                 details.args
             ).subscribe(
                 (result) => {
-                    notifySuccess(
-                        'Command successful executed.\nView Response?',
-                        'View',
-                        () => this.viewDetails(result)
+                    notifySuccess('Command successful executed.\nView Response?', 'View', () =>
+                        this.viewDetails(result)
                     );
                 },
                 (err) => {

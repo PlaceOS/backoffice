@@ -11,7 +11,11 @@
                 placeholder="Select a module"
                 i18n-placeholder="@@selectModule"
             >
-                <mat-option *ngFor="let option of devices || []" [value]="option">
+                <mat-option
+                    *ngFor="let option of devices || []"
+                    [disabled]="!option.running"
+                    [value]="option"
+                >
                     {{ option.module || option.name || "&lt;Unnamed&gt;" }} {{ option.index ?
                     option.index : '' }}
                 </mat-option>
@@ -89,6 +93,8 @@
 </ng-template>
 <ng-template #empty_function_state>
     <div class="info-block">
-        <div class="text" i18n="@@execNoFunctions">No executable methods on the selected module</div>
+        <div class="text" i18n="@@execNoFunctions">
+            No executable methods on the selected module
+        </div>
     </div>
 </ng-template>

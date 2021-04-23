@@ -128,6 +128,7 @@ import { SystemStateService } from './system-state.service';
                                 <div class="w-48 p-2">
                                     <mat-checkbox
                                         class="w-full"
+                                        [disabled]="!device.running"
                                         [checked]="(debugging | async)[device.id]"
                                         (change)="toggleDebug(device)"
                                     >
