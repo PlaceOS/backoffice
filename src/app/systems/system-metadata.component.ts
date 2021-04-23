@@ -291,6 +291,8 @@ export class SystemMetadataComponent extends BaseClass {
         delete this.form_map;
         this.form_map = {};
         this.metadata.forEach((group) => {
+            const details =
+                typeof group.details === 'string' ? JSON.parse(group.details) : group.details;
             this.form_map[group.name] = new FormGroup({
                 name: new FormControl(group.name, [
                     Validators.required,
@@ -300,7 +302,7 @@ export class SystemMetadataComponent extends BaseClass {
                 ]),
                 description: new FormControl(group.description),
                 editors: new FormControl(group.editors),
-                details: new FormControl(JSON.stringify(group.details || {}, undefined, 4), [
+                details: new FormControl(JSON.stringify(details || {}, undefined, 4), [
                     Validators.required,
                     validateJSONString,
                 ]),
