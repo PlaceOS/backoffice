@@ -111,7 +111,7 @@ export class SidebarMenuComponent extends BaseClass implements OnInit {
         this.menu_items = this._settings.get('app.general.menu');
         const user = this._users.current();
         /** Only allow metrics if a URL has be set */
-        if (!authority().metrics) {
+        if (!authority().metrics && !authority().config.metrics) {
             this.menu_items = this.menu_items.filter(
                 (item) => item.route && item.route.indexOf('metrics') < 0
             );

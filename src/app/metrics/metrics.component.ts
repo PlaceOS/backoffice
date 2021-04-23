@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { authority } from '@placeos/ts-client';
 
@@ -10,7 +9,7 @@ import * as dayjs from 'dayjs';
 @Component({
     selector: 'app-metrics',
     templateUrl: './metrics.template.html',
-    styleUrls: ['./metrics.styles.scss']
+    styleUrls: ['./metrics.styles.scss'],
 })
 export class MetricsComponent extends BaseClass implements OnInit {
     /** Whether to only render the metrics view */
@@ -29,7 +28,7 @@ export class MetricsComponent extends BaseClass implements OnInit {
     /** URL for the metrics interface */
     public get metrics_url(): string {
         const api_authority = authority();
-        return api_authority ? api_authority.metrics : '';
+        return api_authority ? api_authority.metrics || api_authority.config.metrics : '';
     }
 
     constructor(private _settings: SettingsService) {
@@ -46,8 +45,8 @@ export class MetricsComponent extends BaseClass implements OnInit {
         const now = dayjs();
         this.time = now.format('hh:mm A');
         this.date = now.format('ddd, MMM D');
-        this.hour_angle = (now.hour() % 12 + now.minute() / 60) / 12 * 360;
-        this.minute_angle = (now.minute() + now.second() / 60) / 60 * 360;
-        this.second_angle = now.second() / 60 * 360;
+        this.hour_angle = (((now.hour() % 12) + now.minute() / 60) / 12) * 360;
+        this.minute_angle = ((now.minute() + now.second() / 60) / 60) * 360;
+        this.second_angle = (now.second() / 60) * 360;
     }
 }
