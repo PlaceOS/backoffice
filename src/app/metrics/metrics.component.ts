@@ -4,31 +4,60 @@ import { authority } from '@placeos/ts-client';
 import { BaseClass } from 'src/app/common/base.class';
 import { SettingsService } from '../common/settings.service';
 
-import * as dayjs from 'dayjs';
-
 @Component({
     selector: 'app-metrics',
-    templateUrl: './metrics.template.html',
-    styleUrls: ['./metrics.styles.scss'],
+    template: `
+        <div
+            class="h-full w-full flex flex-col bg-gray-700"
+            [class.fullscreen]="fullscreen"
+        >
+            <div
+                class="flex items-center w-full bg-primary text-white py-2 px-4"
+            >
+                <div class="text-2xl flex-1" i18n="@@metricsHeader">
+                    Metrics
+                </div>
+                <div class="flex items-center space-x-2">
+                    <clock></clock>
+                    <div class="display">
+                        <div class="time">{{ time | date: 'shortTime' }}</div>
+                        <div class="day">{{ time | date: 'mediumDate' }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 w-full h-1/2 relative">
+                <iframe
+                    class="absolute inset-0 w-full h-full"
+                    [src]="metrics_url | safe: 'resource'"
+                ></iframe>
+            </div>
+        </div>
+    `,
+    styles: [
+        `
+            .fullscreen {
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 9999;
+            }
+        `,
+    ],
 })
 export class MetricsComponent extends BaseClass implements OnInit {
     /** Whether to only render the metrics view */
     public fullscreen: boolean;
-    /** Current time of the day */
-    public time: string;
-    /** Display string for the current day */
-    public date: string;
-    /** Angle to display the hour hand of the clock at */
-    public hour_angle: number;
-    /** Angle to display the minute hand of the clock at */
-    public minute_angle: number;
-    /** Angle to display the seconds hand of the clock at */
-    public second_angle: number;
+
+    public time: Date;
 
     /** URL for the metrics interface */
     public get metrics_url(): string {
         const api_authority = authority();
-        return api_authority ? api_authority.metrics || api_authority.config.metrics : '';
+        return api_authority
+            ? api_authority.metrics || api_authority.config.metrics
+            : '';
     }
 
     constructor(private _settings: SettingsService) {
@@ -42,11 +71,6 @@ export class MetricsComponent extends BaseClass implements OnInit {
     }
 
     public updateTime() {
-        const now = dayjs();
-        this.time = now.format('hh:mm A');
-        this.date = now.format('ddd, MMM D');
-        this.hour_angle = (((now.hour() % 12) + now.minute() / 60) / 12) * 360;
-        this.minute_angle = ((now.minute() + now.second() / 60) / 60) * 360;
-        this.second_angle = (now.second() / 60) * 360;
+        this.time = new Date();
     }
 }
