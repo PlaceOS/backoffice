@@ -329,7 +329,6 @@ export class ActiveItemService extends BaseClass {
                 }
                 const resp = await next().toPromise();
                 if (type === this._type) {
-                    console.log('Resp:', resp);
                     this._next_query.next(
                         resp.next || (() => of({ data: [], total: resp.total, next: null }))
                     );

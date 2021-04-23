@@ -21,6 +21,7 @@ import { SettingsService } from 'src/app/common/settings.service';
 import { ActiveItemService } from 'src/app/common/item.service';
 
 import * as dayjs from 'dayjs';
+import { take } from 'rxjs/operators';
 
 @Component({
     selector: 'sidebar',
@@ -193,8 +194,9 @@ export class SidebarComponent extends BaseClass implements OnInit {
     /**
      * Check if user has scrolled to the bottom of the sidebar and emit an event to get next page of items
      */
-    public atBottom() {
-        if (this.loading || !this.is_stale) {
+    public async atBottom() {
+        const loading = await this.loading.pipe(take(1)).toPromise();
+        if (loading || !this.is_stale) {
             return;
         }
         if (!this.viewport) {
@@ -203,7 +205,6 @@ export class SidebarComponent extends BaseClass implements OnInit {
         const end = this.viewport.getRenderedRange().end;
         const total = this.viewport.getDataLength();
         if (end >= total - 1) {
-            console.log('At bottom');
             this.last_total = total;
             this.last_check = dayjs().valueOf();
             if (this.last_total !== this._service.total) {
