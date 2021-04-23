@@ -122,9 +122,13 @@ export class SidebarComponent extends BaseClass implements OnInit {
                     item.custom_name || item.name || '<Unnamed>'
                 }</div><div class="small truncate">${detail}<div>`;
             } else if (item instanceof PlaceRepository) {
-                map[item.id] = `<div class="flex-1">${ item.name || '<Unnamed>'}</div> <div class="small truncate">${item.repo_type}<div>`;
+                map[item.id] = `<div class="flex-1">${
+                    item.name || '<Unnamed>'
+                }</div> <div class="small truncate">${item.repo_type}<div>`;
             } else {
-                map[item.id] = `<div class="flex-1">${item.custom_name || item.name || '<Unnamed>'}</div>`;
+                map[item.id] = `<div class="flex-1">${
+                    item.custom_name || item.name || '<Unnamed>'
+                }</div>`;
             }
         }
         return map;
@@ -198,7 +202,8 @@ export class SidebarComponent extends BaseClass implements OnInit {
         }
         const end = this.viewport.getRenderedRange().end;
         const total = this.viewport.getDataLength();
-        if (end === total) {
+        if (end >= total - 1) {
+            console.log('At bottom');
             this.last_total = total;
             this.last_check = dayjs().valueOf();
             if (this.last_total !== this._service.total) {

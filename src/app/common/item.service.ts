@@ -74,13 +74,11 @@ export class ActiveItemService extends BaseClass {
     /** Observable for list of items */
     public readonly list = this._list.asObservable();
     /** Observable for active item */
-    public readonly all_item = this._active_item.asObservable()
+    public readonly all_item = this._active_item.asObservable();
     /** Observable for active item */
     public readonly item = this._active_item
         .asObservable()
-        .pipe(
-            distinctUntilChanged((a, b) => a?.id === b?.id && a?.version === b?.version)
-        );
+        .pipe(distinctUntilChanged((a, b) => a?.id === b?.id && a?.version === b?.version));
     /** Observable for list of items */
     public readonly list_items = () => this._list.getValue();
     /** Observable for whether the item list should show on mobile */
@@ -164,9 +162,7 @@ export class ActiveItemService extends BaseClass {
         if (!this._user.current().sys_admin) return;
         item = item || this._active_item.getValue();
         const actions =
-            Object.values(ACTIONS).find(
-                (v) => item instanceof v.itemConstructor
-            ) || this.actions;
+            Object.values(ACTIONS).find((v) => item instanceof v.itemConstructor) || this.actions;
         return this.edit(
             copy
                 ? new actions.itemConstructor({ ...item, id: '', name: `${item.name} (1)` })
@@ -180,9 +176,8 @@ export class ActiveItemService extends BaseClass {
         if (item) {
             return new Promise<T>(async (resolve) => {
                 const actions =
-                    Object.values(ACTIONS).find(
-                        (v) => item instanceof v.itemConstructor
-                    ) || this.actions;
+                    Object.values(ACTIONS).find((v) => item instanceof v.itemConstructor) ||
+                    this.actions;
                 if (item.id) {
                     item = await actions.show(item.id).toPromise();
                 }
@@ -195,7 +190,7 @@ export class ActiveItemService extends BaseClass {
                         item: new actions.itemConstructor({ ...item }),
                         name: actions.singular,
                         save: actions.save,
-                        ...options
+                        ...options,
                     },
                 });
                 ref.componentInstance.event
@@ -204,7 +199,11 @@ export class ActiveItemService extends BaseClass {
                         resolve(event.metadata.item);
                         this.replaceItem(event.metadata.item);
                         if (event.metadata.item instanceof this.actions.itemConstructor) {
-                            this._router.navigate([`/${this._type}`, event.metadata.item.id, 'about']);
+                            this._router.navigate([
+                                `/${this._type}`,
+                                event.metadata.item.id,
+                                'about',
+                            ]);
                         }
                     });
             });
@@ -232,7 +231,9 @@ export class ActiveItemService extends BaseClass {
                     ref.componentInstance.loading = `Deleting ${this.actions.singular}...`;
                     this.actions.remove(item).subscribe(
                         () => {
-                            notifySuccess(`Successfully deleted ${this.actions.singular} "${item.name}".`);
+                            notifySuccess(
+                                `Successfully deleted ${this.actions.singular} "${item.name}".`
+                            );
                             this._active_item.next(null);
                             this.removeItem(item);
                             this._router.navigate([`/${this._type}`, '-', 'about']);
@@ -269,7 +270,10 @@ export class ActiveItemService extends BaseClass {
     }
 
     public replaceItem(item: Identity) {
-        if (item?.id && (!this.active_item || (this.active_item as Object).constructor === item.constructor)) {
+        if (
+            item?.id &&
+            (!this.active_item || (this.active_item as Object).constructor === item.constructor)
+        ) {
             this._active_item.next(item as any);
             const list = this._list.getValue().filter((i) => i.id !== item.id);
             list.push(item);
@@ -312,30 +316,35 @@ export class ActiveItemService extends BaseClass {
 
     private updateList() {
         const type = this._type;
-        const search = this._search.getValue()
-        this.timeout('update', async () => {
-            if (!this.actions) return;
-            this._loading_list.next(true);
-            let next = this._next_query.getValue();
-            if (!next) {
-                next = () => this.actions.query(this._search.getValue());
-                this._list.next([]);
-            }
-            const resp = await next().toPromise();
-            if (type === this._type) {
-                this._next_query.next(
-                    resp.next || (() => of({ data: [], total: resp.total, next: null }))
-                );
-                this._count.next(resp.total)
-                const list = this._list
-                    .getValue()
-                    .filter((i) => !resp.data.find((item) => item.id === i.id));
-                const new_list = list.concat(resp.data);
-                new_list.sort((a, b) => a.name?.localeCompare(b.name));
-                this._list.next(new_list);
-                this._loading_list.next(false);
-            }
-        }, search ? 300 : 10);
+        const search = this._search.getValue();
+        this.timeout(
+            'update',
+            async () => {
+                if (!this.actions) return;
+                this._loading_list.next(true);
+                let next = this._next_query.getValue();
+                if (!next) {
+                    next = () => this.actions.query(this._search.getValue());
+                    this._list.next([]);
+                }
+                const resp = await next().toPromise();
+                if (type === this._type) {
+                    console.log('Resp:', resp);
+                    this._next_query.next(
+                        resp.next || (() => of({ data: [], total: resp.total, next: null }))
+                    );
+                    this._count.next(resp.total);
+                    const list = this._list
+                        .getValue()
+                        .filter((i) => !resp.data.find((item) => item.id === i.id));
+                    const new_list = list.concat(resp.data);
+                    new_list.sort((a, b) => a.name?.localeCompare(b.name));
+                    this._list.next(new_list);
+                    this._loading_list.next(false);
+                }
+            },
+            search ? 300 : 10
+        );
     }
 
     private async updateSettings() {
