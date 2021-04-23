@@ -3,14 +3,13 @@ import { Router } from '@angular/router';
 import { PlaceDriver, PlaceDriverRole } from '@placeos/ts-client';
 
 import { BaseClass } from 'src/app/common/base.class';
-import { Identity } from 'src/app/common/types';
+import { HashMap, Identity } from 'src/app/common/types';
 import { ApplicationIcon } from 'src/app/common/types';
 import { downloadFile, jsonToCsv } from 'src/app/common/general';
 import { BackofficeUsersService } from 'src/app/users/users.service';
 import { ActiveItemService } from 'src/app/common/item.service';
 import { HotkeysService } from 'src/app/common/hotkeys.service';
 import { notifyInfo } from 'src/app/common/notifications';
-import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 
 export interface ApplicationTab {
     id: string;

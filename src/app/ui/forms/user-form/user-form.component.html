@@ -1,15 +1,11 @@
 <form class="user form" *ngIf="form" [formGroup]="form">
     <!--  fake fields are a workaround for chrome/opera autofill getting the wrong fields -->
-    <input id="email" style="display: none;" type="text" name="fakeusernameremembered" />
-    <input id="password" style="display: none;" type="password" name="fakepasswordremembered" />
+    <input id="email" style="display: none" type="text" name="fakeusernameremembered" />
+    <input id="password" style="display: none" type="password" name="fakepasswordremembered" />
     <div class="field mb-4">
         <label for="domain">Domain</label>
         <mat-form-field appearance="outline" class="h-12">
-            <mat-select
-                name="type"
-                formControlName="authority_id"
-                placeholder="Select Domain..."
-            >
+            <mat-select name="type" formControlName="authority_id" placeholder="Select Domain...">
                 <mat-option *ngFor="let domain of domain_list" [value]="domain.id">
                     {{ domain.name }}
                 </mat-option>
@@ -38,9 +34,7 @@
             </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.last_name">
-            <label for="system-name" i18n="@@lastNameLabel">
-                Last Name<span>*</span>:
-            </label>
+            <label for="system-name" i18n="@@lastNameLabel"> Last Name<span>*</span>: </label>
             <mat-form-field appearance="outline">
                 <input
                     matInput
@@ -75,22 +69,27 @@
         </mat-form-field>
     </div>
     <div class="field" *ngIf="form.controls.staff_id">
-        <label
-            for="staff-id"
-            [class.error]="form.controls.staff_id.invalid && form.controls.staff_id.touched"
-            i18n="@@cardNumberLabel"
-        >
-            Card Number:
-        </label>
+        <label for="staff-id" i18n="@@staffIdLabel"> Staff ID: </label>
         <mat-form-field appearance="outline">
             <input
                 matInput
                 name="staff-id"
-                placeholder="Card Number"
-                i18n-placeholder="@@cardNumberPlaceholder"
+                placeholder="Staff ID"
+                i18n-placeholder="@@staffIdPlaceholder"
                 formControlName="staff_id"
             />
-            <mat-error i18n="@@cardNumberError">A valid Card Number is required</mat-error>
+        </mat-form-field>
+    </div>
+    <div class="field" *ngIf="form.controls.card_number">
+        <label for="card-number" i18n="@@cardNumberLabel"> Card Number: </label>
+        <mat-form-field appearance="outline">
+            <input
+                matInput
+                name="card-number"
+                placeholder="Card Number"
+                i18n-placeholder="@@cardNumberPlaceholder"
+                formControlName="card_number"
+            />
         </mat-form-field>
     </div>
     <div class="field" *ngIf="form.controls.support">
@@ -159,13 +158,7 @@
         </mat-form-field>
     </div>
     <div class="field" *ngIf="form.controls.groups">
-        <label
-            for="user-groups"
-            i18n="@@groupssLabel"
-            >
-            User Groups:
-            </label
-        >
+        <label for="user-groups" i18n="@@groupssLabel"> User Groups: </label>
         <mat-form-field appearance="outline">
             <mat-chip-list #chipList aria-label="Zone Tags">
                 <mat-chip
