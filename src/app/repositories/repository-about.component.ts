@@ -20,7 +20,10 @@ import { RepositoriesStateService } from './repositories-state.service';
                         [disabled]="pulling"
                         (click)="pullLatestCommit()"
                     >
-                        <ng-container *ngIf="!pulling; else spinner" i18n="@@repoPullAction">
+                        <ng-container
+                            *ngIf="!pulling; else spinner"
+                            i18n="@@repoPullAction"
+                        >
                             Pull
                         </ng-container>
                     </button>
@@ -31,24 +34,34 @@ import { RepositoriesStateService } from './repositories-state.service';
             <div class="flex items-center space-x-2">
                 <label i18n="@@repoTypeLabel">Type:</label>
                 <div class="value" i18n="@@driverListEmpty">
-                    { item.type, select, Interface { Interface Repository } Driver { Driver
-                    Repository } }
+                    { item.type, select, interface { Interface Repository }
+                    driver { Driver Repository }, other { =Unknown=} }
                 </div>
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@repoFolderNameLabel">Folder name:</label>
-                <div class="value" [class.underline]="item.type === 'Interface'">
-                    <a [href]="local_url">{{ item.folder_name || 'No folder set' }}</a>
+                <div
+                    class="value"
+                    [class.underline]="item.type === 'Interface'"
+                >
+                    <a [href]="local_url">{{
+                        item.folder_name || 'No folder set'
+                    }}</a>
                 </div>
             </div>
-            <div class="flex items-center space-x-2" *ngIf="item.type === 'Interface'">
+            <div
+                class="flex items-center space-x-2"
+                *ngIf="item.type === 'Interface'"
+            >
                 <label i18n="@@repoBranchLabel">Branch:</label>
                 <div class="value">{{ item.branch || 'master' }}</div>
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@repoUriLabel">Repository URI:</label>
                 <div class="value underline">
-                    <a [href]="item.uri | safe: 'url'">{{ repo_uri || 'No URI set' }}</a>
+                    <a [href]="item.uri | safe: 'url'">{{
+                        repo_uri || 'No URI set'
+                    }}</a>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
@@ -62,7 +75,9 @@ import { RepositoriesStateService } from './repositories-state.service';
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@descriptionLabel">Description:</label>
-                <div class="value">{{ item.description || 'No description' }}</div>
+                <div class="value">
+                    {{ item.description || 'No description' }}
+                </div>
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@repoCreatedAtLabel">Created:</label>
@@ -112,8 +127,11 @@ export class RepositoryAboutComponent extends BaseClass {
     }
 
     public ngOnInit(): void {
-        this.commit = ''
-        this.subscription('commit', this._service.commit.subscribe(_ => this.commit = _));
+        this.commit = '';
+        this.subscription(
+            'commit',
+            this._service.commit.subscribe((_) => (this.commit = _))
+        );
     }
 
     /**
