@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceSystem,
     PlaceTrigger,
-    querySystems,
+    listTriggerInstances,
     removeSystemTrigger,
     TriggerComparison,
     TriggerFunction,
@@ -12,8 +12,8 @@ import {
     TriggerTimeCondition,
     updateTrigger,
 } from '@placeos/ts-client';
-import { Observable } from 'rxjs';
-import { first, map, shareReplay, switchMap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { first, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal } from '../common/general';
 
 import { ActiveItemService } from '../common/item.service';
@@ -34,20 +34,22 @@ import {
 export class TriggerStateService {
     public readonly item: Observable<PlaceTrigger> = this._service.item as any;
 
-    public readonly systems = this.item.pipe(
-        switchMap(async (item) => {
-            if (!(item instanceof PlaceTrigger)) return { data: [] };
-            return querySystems({ trigger_id: item.id, limit: 1000 } as any).toPromise();
+    public readonly instances: Observable<PlaceTrigger[]> = this.item.pipe(
+        switchMap((item) => {
+            if (!(item instanceof PlaceTrigger)) return of([]);
+            return listTriggerInstances(item.id);
         }),
-        map((_) => _.data),
-        shareReplay()
+        shareReplay(1)
     );
 
     public get active_item(): PlaceTrigger {
         return this._service.active_item as any;
     }
 
-    constructor(private _service: ActiveItemService, private _dialog: MatDialog) {}
+    constructor(
+        private _service: ActiveItemService,
+        private _dialog: MatDialog
+    ) {}
 
     /**
      * Add new condition to trigger
@@ -57,20 +59,24 @@ export class TriggerStateService {
         template: PlaceSystem
     ) {
         if (!template) return;
-        const ref = this._dialog.open<TriggerConditionModalComponent, TriggerConditionData>(
+        const ref = this._dialog.open<
             TriggerConditionModalComponent,
-            {
-                width: 'auto',
-                height: 'auto',
-                data: {
-                    trigger: this.active_item,
-                    condition: condition ? JSON.parse(JSON.stringify(condition)) : undefined,
-                    system: template,
-                },
-            }
-        );
+            TriggerConditionData
+        >(TriggerConditionModalComponent, {
+            width: 'auto',
+            height: 'auto',
+            data: {
+                trigger: this.active_item,
+                condition: condition
+                    ? JSON.parse(JSON.stringify(condition))
+                    : undefined,
+                system: template,
+            },
+        });
         const result: DialogEvent | null = (await Promise.race([
-            ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).toPromise(),
+            ref.componentInstance.event
+                .pipe(first((_) => _.reason === 'done'))
+                .toPromise(),
             ref.afterClosed().toPromise(),
         ])) as any;
         if (!result?.reason) return;
@@ -81,20 +87,25 @@ export class TriggerStateService {
      * Edit existing action on active trigger
      * @param action Action to edit
      */
-    public async editAction(action: TriggerFunction | TriggerMailer = null, template: PlaceSystem) {
+    public async editAction(
+        action: TriggerFunction | TriggerMailer = null,
+        template: PlaceSystem
+    ) {
         if (!template) return;
-        const ref = this._dialog.open<TriggerActionModalComponent, TriggerActionModalData>(
+        const ref = this._dialog.open<
             TriggerActionModalComponent,
-            {
-                data: {
-                    trigger: this.active_item,
-                    action,
-                    system: template,
-                },
-            }
-        );
+            TriggerActionModalData
+        >(TriggerActionModalComponent, {
+            data: {
+                trigger: this.active_item,
+                action,
+                system: template,
+            },
+        });
         const result: DialogEvent | null = (await Promise.race([
-            ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).toPromise(),
+            ref.componentInstance.event
+                .pipe(first((_) => _.reason === 'done'))
+                .toPromise(),
             ref.afterClosed().toPromise(),
         ])) as any;
         if (!result?.reason) return;
@@ -127,8 +138,10 @@ export class TriggerStateService {
         ];
         moveItemInArray(list, fst, snd);
         const actions = {
-            functions: type === 'function' ? list : this.active_item.actions.functions,
-            mailers: type === 'function' ? this.active_item.actions.mailers : list,
+            functions:
+                type === 'function' ? list : this.active_item.actions.functions,
+            mailers:
+                type === 'function' ? this.active_item.actions.mailers : list,
         };
         details.loading('Re-ordering triggger actions...');
         const resp = await updateTrigger(this.active_item.id, {
@@ -147,7 +160,9 @@ export class TriggerStateService {
         notifySuccess(`Successfully re-ordered trigger ${type} action.`);
     }
 
-    public async removeCondition(condition: TriggerComparison | TriggerTimeCondition) {
+    public async removeCondition(
+        condition: TriggerComparison | TriggerTimeCondition
+    ) {
         const details = await openConfirmModal(
             {
                 title: `Remove trigger condition`,
@@ -172,7 +187,10 @@ export class TriggerStateService {
             ? conditions.time_dependents
             : conditions.comparisons
         ).splice(index, 1);
-        const resp = await updateTrigger(item.id, { ...item.toJSON(), conditions })
+        const resp = await updateTrigger(item.id, {
+            ...item.toJSON(),
+            conditions,
+        })
             .toPromise()
             .catch((err) => err);
         details.close();
@@ -207,7 +225,10 @@ export class TriggerStateService {
             ? item.actions.mailers
             : item.actions.functions
         ).findIndex((i) => JSON.stringify(i) === JSON.stringify(action));
-        ((action as TriggerMailer).emails ? actions.mailers : actions.functions).splice(index, 1);
+        ((action as TriggerMailer).emails
+            ? actions.mailers
+            : actions.functions
+        ).splice(index, 1);
         const resp = await updateTrigger(item.id, { ...item.toJSON(), actions })
             .toPromise()
             .catch((err) => err);

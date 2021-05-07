@@ -1,4 +1,3 @@
-
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,22 +8,21 @@ import { ROUTES } from './triggers.routes';
 
 import { TriggersComponent } from './triggers.component';
 import { TriggerAboutComponent } from './trigger-about.component';
-import { TriggerSystemsComponent } from './trigger-systems.component';
+import { TriggerInstancesComponent } from './trigger-instances.component';
 import { SharedContentModule } from 'src/app/ui/ui.module';
-
 
 @NgModule({
     declarations: [
         TriggersComponent,
         TriggerAboutComponent,
-        TriggerSystemsComponent
+        TriggerInstancesComponent,
     ],
     imports: [
         CommonModule,
         FormsModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule,
-        DragDropModule
-    ]
+        DragDropModule,
+    ],
 })
-export class AppTriggersModule { }
+export class AppTriggersModule {}

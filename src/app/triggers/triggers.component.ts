@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { querySystems, PlaceTrigger } from '@placeos/ts-client';
+import { listTriggerInstances, PlaceTrigger } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 
 import { BaseClass } from '../common/base.class';
@@ -9,9 +9,7 @@ import { ActiveItemService } from '../common/item.service';
 @Component({
     selector: 'app-triggers',
     template: `
-        <div
-            class="flex-1 flex-col sm:flex-row flex h-full w-full relative"
-        >
+        <div class="flex-1 flex-col sm:flex-row flex h-full w-full relative">
             <sidebar
                 heading="Triggers"
                 name="triggers"
@@ -40,7 +38,7 @@ import { ActiveItemService } from '../common/item.service';
 })
 export class TriggersComponent extends BaseClass {
     /** Number of system triggers */
-    public system_count: number;
+    public instance_count: number;
 
     public readonly name = 'triggers';
 
@@ -54,17 +52,24 @@ export class TriggersComponent extends BaseClass {
 
     public updateTabList() {
         this.tab_list = [
-            { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
             {
-                id: 'systems',
-                name: 'Systems',
-                count: this.system_count,
+                id: 'about',
+                name: 'About',
+                icon: { class: 'backoffice-info-with-circle' },
+            },
+            {
+                id: 'instances',
+                name: 'Instances',
+                count: this.instance_count,
                 icon: { class: 'backoffice-documents' },
             },
         ].concat(this.extensions);
     }
 
-    constructor(protected _service: ActiveItemService, private _dialog: MatDialog) {
+    constructor(
+        protected _service: ActiveItemService,
+        private _dialog: MatDialog
+    ) {
         super();
     }
 
@@ -80,9 +85,10 @@ export class TriggersComponent extends BaseClass {
 
     protected async loadValues(item: PlaceTrigger) {
         if (!item) return;
-        const query: any = { offset: 0, limit: 1, trigger_id: item.id };
         // Get trigger count
-        this.system_count = (await querySystems(query).toPromise()).total;
+        this.instance_count = (
+            await listTriggerInstances(item.id).toPromise()
+        ).length;
         this.updateTabList();
     }
 }
