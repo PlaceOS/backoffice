@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { PlaceSystem } from '@placeos/ts-client';
-
 import { SystemStateService } from './system-state.service';
+
 
 @Component({
     selector: 'system-about',
@@ -41,7 +41,7 @@ import { SystemStateService } from './system-state.service';
                 <label i18n="@@emailLabel">Email:&nbsp;</label>
                 <a
                     *ngIf="item?.email"
-                    class="underline"
+                    class="underline select-all"
                     [href]="'mailto:' + item?.email"
                     target="_blank"
                     >{{ item?.email }}</a

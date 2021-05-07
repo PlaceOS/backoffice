@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
+import { PlaceRepositoryType } from '@placeos/ts-client';
 import { BaseClass } from '../common/base.class';
-
 import { RepositoriesStateService } from './repositories-state.service';
+
 
 @Component({
     selector: 'repository-about',
@@ -41,10 +41,11 @@ import { RepositoriesStateService } from './repositories-state.service';
             <div class="flex items-center space-x-2">
                 <label i18n="@@repoFolderNameLabel">Folder name:</label>
                 <div
-                    class="value"
-                    [class.underline]="item.type === 'Interface'"
+                    class="value select-all"
+                    [class.underline]="item.type === 'interface'"
+                    [class.pointer-events-none]="item.type !== 'interface'"
                 >
-                    <a [href]="local_url">{{
+                    <a [href]="local_url" target="_blank">{{
                         item.folder_name || 'No folder set'
                     }}</a>
                 </div>
@@ -54,28 +55,28 @@ import { RepositoriesStateService } from './repositories-state.service';
                 *ngIf="item.type === 'Interface'"
             >
                 <label i18n="@@repoBranchLabel">Branch:</label>
-                <div class="value">{{ item.branch || 'master' }}</div>
+                <div class="value select-all">{{ item.branch || 'master' }}</div>
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@repoUriLabel">Repository URI:</label>
-                <div class="value underline">
-                    <a [href]="item.uri | safe: 'url'">{{
+                <div class="value underline select-all">
+                    <a [href]="item.uri | safe: 'url'" target="_blank">{{
                         repo_uri || 'No URI set'
                     }}</a>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@repoCommitHashLabel">Commit hash:</label>
-                <div class="value">
+                <div class="value select-text">
                     {{ item.commit_hash || 'No Commit hash set' }}
-                    <span *ngIf="commit && commit !== item.commit_hash">
+                    <span class="select-text" *ngIf="commit && commit !== item.commit_hash">
                         ({{ commit }})
                     </span>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@descriptionLabel">Description:</label>
-                <div class="value">
+                <div class="value select-all">
                     {{ item.description || 'No description' }}
                 </div>
             </div>
@@ -108,7 +109,7 @@ export class RepositoryAboutComponent extends BaseClass {
 
     public commit = '';
 
-    public get item(): PlaceRepository {
+    public get item(): any {
         return this._service.active_item as any;
     }
 
