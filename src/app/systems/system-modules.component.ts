@@ -1,24 +1,23 @@
-import { Component } from '@angular/core';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
-    PlaceSystem,
-    PlaceModule,
-    PlaceDriverRole,
-    loadModule,
-    showModule,
-    queryModules,
-} from '@placeos/ts-client';
+    loadModule, PlaceDriverRole, PlaceModule, PlaceSystem,
 
+
+
+
+    queryModules, showModule
+} from '@placeos/ts-client';
+import { map } from 'rxjs/operators';
 import { BaseClass } from 'src/app/common/base.class';
+import { notifyError, notifySuccess } from 'src/app/common/notifications';
 import { AppLink, HashMap } from 'src/app/common/types';
 import {
-    ViewModuleStateModalComponent,
-    ModuleStateModalData,
+    ModuleStateModalData, ViewModuleStateModalComponent
 } from 'src/app/overlays/view-module-state/view-module-state.component';
-import { map } from 'rxjs/operators';
-import { notifySuccess, notifyError } from 'src/app/common/notifications';
 import { SystemStateService } from './system-state.service';
+
 
 @Component({
     selector: 'system-modules',
@@ -148,7 +147,8 @@ import { SystemStateService } from './system-state.service';
                                                 ? (device.tls ? 'https://' : 'http://') + device.ip
                                                 : device.uri
                                         "
-                                        class="truncate"
+                                        target="_blank"
+                                        class="truncate underline"
                                         >{{ device.ip || device.uri }}</a
                                     >
                                 </div>
