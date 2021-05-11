@@ -26,7 +26,11 @@ import { ViewResponseModalComponent } from 'src/app/overlays/view-response-modal
 import { HashMap } from 'src/app/common/types';
 import { validateJSONString } from 'src/app/common/validation';
 import { BaseClass } from 'src/app/common/base.class';
-import { notifyError, notifySuccess, notifyInfo } from 'src/app/common/notifications';
+import {
+    notifyError,
+    notifySuccess,
+    notifyInfo,
+} from 'src/app/common/notifications';
 
 interface PlaceModuleLike {
     id: string;
@@ -51,7 +55,10 @@ interface ModuleFunction extends PlaceModuleFunction {
         },
     ],
 })
-export class SystemExecFieldComponent extends BaseClass implements OnChanges, ControlValueAccessor {
+export class SystemExecFieldComponent
+    extends BaseClass
+    implements OnChanges, ControlValueAccessor
+{
     /** ID of the system to execute command on */
     @Input() public system: PlaceSystem;
     /** Whether the selected function is executable from this field */
@@ -116,7 +123,9 @@ export class SystemExecFieldComponent extends BaseClass implements OnChanges, Co
         const map = {};
         for (const arg of this.param_list) {
             map[arg[0]] =
-                arg[2] !== undefined ? '[' + arg[0] + (arg[2] ? '=' + arg[2] : '') + ']' : arg[0];
+                arg[2] !== undefined
+                    ? '[' + arg[0] + (arg[2] ? '=' + arg[2] : '') + ']'
+                    : arg[0];
         }
         return map;
     }
@@ -128,6 +137,9 @@ export class SystemExecFieldComponent extends BaseClass implements OnChanges, Co
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.system || changes.refresh) {
             this.devices = [];
+            this.active_module = null;
+            this.active_method = null;
+            this.fields = {};
             this.loadModules();
         }
     }
@@ -149,7 +161,8 @@ export class SystemExecFieldComponent extends BaseClass implements OnChanges, Co
                     .subscribe(
                         (list) => {
                             this.devices = (list || []).map((device) => {
-                                const module_name = device.custom_name || device.name;
+                                const module_name =
+                                    device.custom_name || device.name;
                                 return {
                                     id: device.id,
                                     name: device.name,
@@ -167,8 +180,13 @@ export class SystemExecFieldComponent extends BaseClass implements OnChanges, Co
                                 (device) =>
                                     (device.index =
                                         this.devices
-                                            .filter((d) => d.module === device.module)
-                                            .findIndex((mod) => mod.id === device.id) + 1)
+                                            .filter(
+                                                (d) =>
+                                                    d.module === device.module
+                                            )
+                                            .findIndex(
+                                                (mod) => mod.id === device.id
+                                            ) + 1)
                             );
                             if (
                                 this.active_module &&
@@ -196,7 +214,10 @@ export class SystemExecFieldComponent extends BaseClass implements OnChanges, Co
         functionList(this.system.id, item.module, item.index).subscribe(
             (list) => {
                 if (list) {
-                    this.methods = Object.keys(list).map((i) => ({ name: i, ...list[i] }));
+                    this.methods = Object.keys(list).map((i) => ({
+                        name: i,
+                        ...list[i],
+                    }));
                     this.setMethod(this.active_method?.name, this.fields);
                 }
             },
@@ -245,7 +266,10 @@ export class SystemExecFieldComponent extends BaseClass implements OnChanges, Co
             const current = args[this.active_field];
             if (current) {
                 this.field_pos = current.nativeElement.selectionEnd;
-                this.timeout('field', () => (this.field_value = current.nativeElement.value));
+                this.timeout(
+                    'field',
+                    () => (this.field_value = current.nativeElement.value)
+                );
             }
         }
         this.setValue(this.function_value);
@@ -293,8 +317,10 @@ export class SystemExecFieldComponent extends BaseClass implements OnChanges, Co
         if (this.arg_list) {
             const args = this.arg_list.toArray();
             const current = args[this.active_field];
-            const backspace = e.key.toLowerCase() === 'backspace' && this.last_location === 0;
-            const left_arrow = e.key.toLowerCase() === 'arrowleft' && this.last_location === 0;
+            const backspace =
+                e.key.toLowerCase() === 'backspace' && this.last_location === 0;
+            const left_arrow =
+                e.key.toLowerCase() === 'arrowleft' && this.last_location === 0;
             if (
                 (backspace || left_arrow) &&
                 current.nativeElement.selectionEnd === 0 &&
@@ -334,8 +360,10 @@ export class SystemExecFieldComponent extends BaseClass implements OnChanges, Co
                 details.args
             ).subscribe(
                 (result) => {
-                    notifySuccess('Command successful executed.\nView Response?', 'View', () =>
-                        this.viewDetails(result)
+                    notifySuccess(
+                        'Command successful executed.\nView Response?',
+                        'View',
+                        () => this.viewDetails(result)
                     );
                 },
                 (err) => {
@@ -366,7 +394,11 @@ export class SystemExecFieldComponent extends BaseClass implements OnChanges, Co
         }
         const len = arg_list.length;
         for (let i = len - 1; i >= 0; i--) {
-            if (arg_list[i] || this.active_method.params[this.active_method.order[i]].length < 2) {
+            if (
+                arg_list[i] ||
+                this.active_method.params[this.active_method.order[i]].length <
+                    2
+            ) {
                 break;
             }
             arg_list.pop();
@@ -413,7 +445,11 @@ export class SystemExecFieldComponent extends BaseClass implements OnChanges, Co
                     module: parts[0],
                     index: +parts[1],
                 };
-                if (!(this.devices || []).find((mod) => mod.id === this.active_module.id)) {
+                if (
+                    !(this.devices || []).find(
+                        (mod) => mod.id === this.active_module.id
+                    )
+                ) {
                     this.devices.unshift(this.active_module);
                 }
             }
@@ -426,7 +462,9 @@ export class SystemExecFieldComponent extends BaseClass implements OnChanges, Co
 
     private setMethod(name: string, args: HashMap = {}) {
         if (name) {
-            const method = (this.methods || []).find((a_method) => a_method.name === name);
+            const method = (this.methods || []).find(
+                (a_method) => a_method.name === name
+            );
             if (!method) {
                 this.active_method = {
                     name,
@@ -443,9 +481,17 @@ export class SystemExecFieldComponent extends BaseClass implements OnChanges, Co
 
     /** View Results of the execute */
     private async viewDetails(details: Response | HashMap) {
-        this._dialog.open<ViewResponseModalComponent>(ViewResponseModalComponent, {
-            data: { content: details instanceof Response ? await details.json() : details },
-        });
+        this._dialog.open<ViewResponseModalComponent>(
+            ViewResponseModalComponent,
+            {
+                data: {
+                    content:
+                        details instanceof Response
+                            ? await details.json()
+                            : details,
+                },
+            }
+        );
     }
 
     /**
