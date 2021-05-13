@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    OnInit,
+    Renderer2,
+    ViewChild,
+} from '@angular/core';
 import { ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR } from 'src/app/common/angular-animations';
 import { BaseClass } from 'src/app/common/base.class';
 import { PlaceDebugService } from 'src/app/common/debug.service';
@@ -9,9 +15,12 @@ import { Point } from 'src/app/common/types';
     selector: 'app-debug-output',
     template: `
         <ng-container *ngIf="is_enabled">
-            <div class="absolute bottom-2 right-2" [class.disabled]="!show_content">
+            <div
+                class="absolute bottom-2 right-2"
+                [class.disabled]="!show_content"
+            >
                 <div
-                    class="relative rounded-lg overflow-hidden border border-gray-200 bg-gray-800 text-white shadow"
+                    class="relative rounded-lg overflow-hidden border border-gray-200 bg-gray-800 text-white shadow z-10"
                     content
                     #content
                     [@show]="show_content ? 'show' : 'hide'"
@@ -19,7 +28,9 @@ import { Point } from 'src/app/common/types';
                     [style.width]="width + 'px'"
                 >
                     <div class="flex items-center">
-                        <p i18n="@@debugConsole" class="p-2 flex-1 w-1/2">Debug Console</p>
+                        <p i18n="@@debugConsole" class="p-2 flex-1 w-1/2">
+                            Debug Console
+                        </p>
                         <button
                             mat-button
                             class="clear underline text-sm h-10"
@@ -50,12 +61,16 @@ import { Point } from 'src/app/common/types';
                     ></div>
                 </div>
                 <button
-                    class="absolute bottom-2 right-2 bg-gray-800 text-white pointer-events-auto shadow"
+                    class="absolute bottom-2 right-2 bg-gray-800 text-white pointer-events-auto shadow z-50"
                     mat-icon-button
                     (click)="show_content = !show_content"
                 >
                     <app-icon
-                        [className]="show_content ? 'backoffice-cross' : 'backoffice-terminal'"
+                        [className]="
+                            show_content
+                                ? 'backoffice-cross'
+                                : 'backoffice-terminal'
+                        "
                     ></app-icon>
                 </button>
             </div>
@@ -70,10 +85,10 @@ import { Point } from 'src/app/common/types';
             }
 
             [content] {
-                min-width: 48em;
-                min-height: 15em;
-                max-height: calc(100vh - 1em);
-                max-width: calc(100vw - 1em);
+                min-width: 24rem;
+                min-height: 15rem;
+                max-height: calc(100vh - 1rem);
+                max-width: calc(100vw - 1rem);
             }
 
             .disabled {
@@ -109,13 +124,17 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
     /** Start point for resizing the console box */
     private _resize_start: Point;
 
-    @ViewChild('content', { static: false }) private _content_el: ElementRef<HTMLDivElement>;
+    @ViewChild('content', { static: false })
+    private _content_el: ElementRef<HTMLDivElement>;
 
     /** Whether user is listening for debug information */
     public get is_enabled(): boolean {
         return this._service.is_listening;
     }
-    constructor(private _service: PlaceDebugService, private _renderer: Renderer2) {
+    constructor(
+        private _service: PlaceDebugService,
+        private _renderer: Renderer2
+    ) {
         super();
     }
 
@@ -138,14 +157,17 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
         if (event instanceof MouseEvent) {
             this.subscription(
                 'resize_move',
-                this._renderer.listen('window', 'mousemove', (event) => this.resizeMove(event, dir))
+                this._renderer.listen('window', 'mousemove', (event) =>
+                    this.resizeMove(event, dir)
+                )
             );
             this.subscription(
                 'resize_end',
                 this._renderer.listen('window', 'mouseup', (_) => {
                     this.unsub('resize_move');
                     this.unsub('resize_end');
-                    const box = this._content_el.nativeElement.getBoundingClientRect();
+                    const box =
+                        this._content_el.nativeElement.getBoundingClientRect();
                     this.height = box.height;
                     this.width = box.width;
                 })
@@ -153,14 +175,17 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
         } else {
             this.subscription(
                 'resize_move',
-                this._renderer.listen('window', 'touchmove', (event) => this.resizeMove(event, dir))
+                this._renderer.listen('window', 'touchmove', (event) =>
+                    this.resizeMove(event, dir)
+                )
             );
             this.subscription(
                 'resize_end',
                 this._renderer.listen('window', 'touchend', (_) => {
                     this.unsub('resize_move');
                     this.unsub('resize_end');
-                    const box = this._content_el.nativeElement.getBoundingClientRect();
+                    const box =
+                        this._content_el.nativeElement.getBoundingClientRect();
                     this.height = box.height;
                     this.width = box.width;
                 })
@@ -170,7 +195,10 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
 
     private resizeMove(event: MouseEvent | TouchEvent, dir: 'x' | 'y' | 'xy') {
         const point = eventToPoint(event);
-        const diff = { x: point.x - this._resize_start.x, y: point.y - this._resize_start.y };
+        const diff = {
+            x: point.x - this._resize_start.x,
+            y: point.y - this._resize_start.y,
+        };
         if (dir.indexOf('x') >= 0) {
             this.width = this.width - diff.x;
         }
