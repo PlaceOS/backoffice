@@ -209,6 +209,7 @@ export class SystemExecFieldComponent
      */
     public loadFunctions(item: PlaceModuleLike) {
         this.methods = null;
+        this.active_method = null;
         this.fields = {};
         this.active_module = item;
         functionList(this.system.id, item.module, item.index).subscribe(
