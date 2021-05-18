@@ -1,6 +1,6 @@
 @import 'variables';
-@import "material-design-icons/iconfont/material-icons.css";
-@import "animate.css/animate.min.css";
+@import 'material-design-icons/iconfont/material-icons.css';
+@import 'animate.css/animate.min.css';
 @import 'firacode/distr/fira_code.css';
 @import '../../custom/style.css';
 @import '../../custom/place-fonts.css';
@@ -45,7 +45,6 @@ app-root {
 }
 
 * {
-    user-select: none;
     font-family: $font;
     box-sizing: border-box;
 }
@@ -96,7 +95,7 @@ span.highlight {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    margin: .5em;
+    margin: 0.5em;
 
     .icon {
         display: flex;
@@ -107,19 +106,19 @@ span.highlight {
         font-size: 2em;
 
         a-spinner {
-            font-size: .25em;
+            font-size: 0.25em;
         }
     }
 
     .text {
-        margin: .5em 0 0;
+        margin: 0.5em 0 0;
         text-align: center;
     }
 }
 
 item-display .content {
     .info-block {
-        margin: 5em .5em;
+        margin: 5em 0.5em;
     }
 }
 
@@ -178,4 +177,3 @@ item-display .content {
         display: inherit !important;
     }
 }
-
