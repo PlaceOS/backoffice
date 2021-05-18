@@ -1,7 +1,14 @@
-
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { PlaceUser, PlaceUserQueryOptions, logout, authorise, currentUser, queryUsers, onlineState } from '@placeos/ts-client';
+import {
+    PlaceUser,
+    PlaceUserQueryOptions,
+    logout,
+    authorise,
+    currentUser,
+    queryUsers,
+    onlineState,
+} from '@placeos/ts-client';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
 import { first, map } from 'rxjs/operators';
@@ -17,7 +24,7 @@ import * as Sentry from '@sentry/browser';
 type ServiceItem = PlaceUser;
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class BackofficeUsersService extends BaseClass {
     /** Name for a single user */
@@ -62,14 +69,16 @@ export class BackofficeUsersService extends BaseClass {
         }
     }
     /** Default method for filtering the available list */
-    private _filter_fn: FilterFn<ServiceItem> = _ => true;
+    private _filter_fn: FilterFn<ServiceItem> = (_) => true;
 
     constructor(
         private _settings: SettingsService,
         private http_unauth: HttpClient
     ) {
         super();
-        onlineState().pipe(first(_ => _)).subscribe(() => this.load());
+        onlineState()
+            .pipe(first((_) => _))
+            .subscribe(() => this.load());
     }
 
     /**
@@ -80,27 +89,40 @@ export class BackofficeUsersService extends BaseClass {
         return (this.listing.getValue() || []).filter(predicate);
     }
 
-    public query(query_params?: PlaceUserQueryOptions): Observable<PlaceUser[]> {
-        return queryUsers(query_params).pipe(map(resp => resp.data));
+    public query(
+        query_params?: PlaceUserQueryOptions
+    ): Observable<PlaceUser[]> {
+        return queryUsers(query_params).pipe(map((resp) => resp.data));
     }
 
     public load(): Promise<void> {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             this.state.next('loading');
             currentUser().subscribe(
-                user => {
+                (user) => {
                     if (user) {
                         this._user.next(user);
-                        Sentry.configureScope(scope => scope.setUser({ email: user.email }));
+                        Sentry.configureScope((scope) =>
+                            scope.setUser({ email: user.email })
+                        );
                         this.state.next('success');
                         this._initialised.next(true);
                         resolve();
                         this.dark_mode = this.dark_mode;
                     } else {
-                        this.timeout('load', () => this.load().then(_ => resolve()), 600);
+                        this.timeout(
+                            'load',
+                            () => this.load().then((_) => resolve()),
+                            600
+                        );
                     }
                 },
-                () => this.timeout('load', () => this.load().then(_ => resolve()), 600)
+                () =>
+                    this.timeout(
+                        'load',
+                        () => this.load().then((_) => resolve()),
+                        600
+                    )
             );
         });
     }
@@ -112,12 +134,11 @@ export class BackofficeUsersService extends BaseClass {
      */
     public setToken(token: string, expiry: number) {
         if (!expiry) {
-            expiry = dayjs()
-                .add(7, 'd')
-                .valueOf();
+            expiry = dayjs().add(7, 'd').valueOf();
         }
-        const path = `${location.origin}${this._settings.get('composer.route') ||
-            ''}/oauth-resp.html`;
+        const path = `${location.origin}${
+            this._settings.get('composer.route') || ''
+        }/oauth-resp.html`;
         if (localStorage) {
             const client_id = Md5.hashStr(path);
             localStorage.setItem(`${client_id}_access_token`, token);
@@ -132,25 +153,32 @@ export class BackofficeUsersService extends BaseClass {
      * @param fields Key value pairs of post parameters
      */
     public login(fields: any = {}) {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             this.state.next('loading');
             const query = toQueryString(fields);
             let headers = new HttpHeaders();
-            headers = headers.append('Content-Type', 'application/x-www-form-urlencoded');
+            headers = headers.append(
+                'Content-Type',
+                'application/x-www-form-urlencoded'
+            );
             this.http_unauth.post('/auth/signin', query, { headers }).subscribe(
                 (res: any) => {
                     if (sessionStorage) {
-                        const clientId = Md5.hashStr(`${location.origin}/oauth-resp.html`);
+                        const clientId = Md5.hashStr(
+                            `${location.origin}/oauth-resp.html`
+                        );
                         sessionStorage.setItem(`${clientId}_login`, 'true');
                     }
-                    authorise().then(_ => resolve());
+                    authorise().then((_) => resolve());
                 },
-                err => {
+                (err) => {
                     if (err.status >= 400) {
                         this.state.next('error');
                     } else {
                         if (sessionStorage) {
-                            const clientId = Md5.hashStr(`${location.origin}/oauth-resp.html`);
+                            const clientId = Md5.hashStr(
+                                `${location.origin}/oauth-resp.html`
+                            );
                             sessionStorage.setItem(`${clientId}_login`, 'true');
                         }
                         authorise();

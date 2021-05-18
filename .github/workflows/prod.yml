@@ -48,7 +48,7 @@ jobs:
               run: npm run semantic-release && npm run postinstall
 
             - name: Builds the application
-              run: ng build --prod --aot
+              run: ng build --configuration=production --aot
 
             - name: Deploy the application
               uses: MrYuion/gha-publish-to-git@v1.1
