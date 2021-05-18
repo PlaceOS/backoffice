@@ -1,4 +1,5 @@
 
+@use '~@angular/material' as mat;
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
@@ -13,36 +14,36 @@
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat-core();
+@include mat.core();
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$ngx-backoffice-primary: mat-palette($mat-pink);
-$ngx-backoffice-accent: mat-palette($mat-blue, A200, A100, A400);
+$ngx-backoffice-primary: mat.define-palette(mat.$pink-palette);
+$ngx-backoffice-accent: mat.define-palette(mat.$blue-palette, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
-$ngx-backoffice-warn: mat-palette($mat-red);
+$ngx-backoffice-warn: mat.define-palette(mat.$red-palette);
 
 // Create the theme object (a Sass map containing all of the palettes).
-$ngx-backoffice-theme: mat-light-theme($ngx-backoffice-primary, $ngx-backoffice-accent, $ngx-backoffice-warn);
+$ngx-backoffice-theme: mat.define-light-theme($ngx-backoffice-primary, $ngx-backoffice-accent, $ngx-backoffice-warn);
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include angular-material-theme($ngx-backoffice-theme);
+@include mat.all-component-themes($ngx-backoffice-theme);
 
 /* You can add global styles to this file, and also import other style files */
 
 // Our dark theme
 .dark-mode {
     color: $light-primary-text;
-    $dark-primary: mat-palette($mat-pink);
-    $dark-accent: mat-palette($mat-blue, A400, A100, A700);
-    $dark-warn: mat-palette($mat-red);
-    $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
+    $dark-primary: mat.define-palette(mat.$pink-palette);
+    $dark-accent: mat.define-palette(mat.$blue-palette, A400, A100, A700);
+    $dark-warn: mat.define-palette(mat.$red-palette);
+    $dark-theme: mat.define-dark-theme($dark-primary, $dark-accent, $dark-warn);
 
-    @include angular-material-theme($dark-theme);
+    @include mat.all-component-themes($dark-theme);
 }
 
 html,
