@@ -1,4 +1,11 @@
-import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
+import {
+    Component,
+    Input,
+    SimpleChanges,
+    OnChanges,
+    EventEmitter,
+    Output,
+} from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
     PlaceRepositoryCommit,
@@ -15,7 +22,13 @@ import {
 import { BaseClass } from 'src/app/common/base.class';
 import { notifyError } from 'src/app/common/notifications';
 import { Identity } from 'src/app/common/types';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    switchMap,
+    catchError,
+    map,
+} from 'rxjs/operators';
 import { of, Subject, Observable } from 'rxjs';
 
 import * as dayjs from 'dayjs';
@@ -31,6 +44,8 @@ dayjs.extend(relativeTime);
 export class DriverFormComponent extends BaseClass implements OnChanges {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
+
+    @Output() public waiting = new EventEmitter<boolean>();
     /** List of driver roles */
     public role_types: Identity[] = [
         { id: PlaceDriverRole.SSH, name: 'SSH' },
@@ -65,9 +80,11 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
     /** Whether driver commits are being loaded */
     public loading_commits: boolean;
     /** Function to query repositories */
-    public readonly query_fn = (_: string) => queryRepositories({ q: _ }).pipe(map(resp => resp.data));
+    public readonly query_fn = (_: string) =>
+        queryRepositories({ q: _ }).pipe(map((resp) => resp.data));
     /** Function to check repo that are excluded from being listed */
-    public readonly exclude_fn = (repo: PlaceRepository) => repo.type === PlaceRepositoryType.Interface
+    public readonly exclude_fn = (repo: PlaceRepository) =>
+        repo.type === PlaceRepositoryType.Interface;
 
     public get editing(): boolean {
         return this.form.controls.id && this.form.controls.id.value;
@@ -84,7 +101,9 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
                 return listRepositoryDrivers(repo_id);
             }),
             catchError((_) => {
-                notifyError(`Error loading driver list. Error: ${_.message || _}`);
+                notifyError(
+                    `Error loading driver list. Error: ${_.message || _}`
+                );
                 return of([]);
             }),
             map((list: any[]) => {
@@ -111,7 +130,9 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
             }),
             catchError((_) => {
                 notifyError(
-                    `Error loading driver's commit list. Error: ${_.message || _}`
+                    `Error loading driver's commit list. Error: ${
+                        _.message || _
+                    }`
                 );
                 return of([]);
             }),
@@ -119,7 +140,8 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
                 this.loading_commits = false;
                 if (this.form.controls.commit) {
                     this.base_commit = this.commit_list.find(
-                        (commit) => commit.id === this.form.controls.commit.value
+                        (commit) =>
+                            commit.id === this.form.controls.commit.value
                     ) as any;
                 }
                 return (list || []).map((commit: PlaceRepositoryCommit) => {
@@ -165,7 +187,7 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
     public updateCommitList(driver: Identity) {
         this.form.controls.file_name.setValue(driver.id);
         this.base_driver = driver;
-        if (!this.form.controls.id.value){
+        if (!this.form.controls.id.value) {
             this.base_commit = null;
             this.form.controls.commit.setValue('');
         }
@@ -178,45 +200,51 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
      *
      * @param event Details of the driver selected
      */
-    public setDriverBase(event: Identity) {
+    public async setDriverBase(event: Identity) {
         this.form.controls.commit.setValue(event.id);
         this.base_commit = event as any;
         this.loading = true;
-        listRepositoryDriverDetails(this.base_repo.id, {
+        this.waiting.emit(true);
+        const driver = await listRepositoryDriverDetails(this.base_repo.id, {
             driver: `${this.base_driver.id}`,
             commit: `${event.id}`,
-        }).subscribe(
-            (driver) => {
+        })
+            .toPromise()
+            .catch((_) => {
                 this.loading = false;
-                console.log('ID:')
-                if (!this.form.controls.id.value) {
-                    this.form.controls.name.setValue(driver.descriptive_name || '');
-                    this.form.controls.module_name.setValue(driver.generic_name || '');
-                    this.form.controls.class_name.setValue(this.base_driver.id || '');
-                    this.form.controls.default_port.setValue(
-                        driver.tcp_port || driver.udp_port || null
-                    );
-                    this.form.controls.default_uri.setValue(driver.uri_base || '');
-                    this.form.controls.role.setValue(
-                        driver.tcp_port || driver.udp_port
-                            ? PlaceDriverRole.Device
-                            : driver.uri_base
-                            ? PlaceDriverRole.Service
-                            : PlaceDriverRole.Logic
-                    );
-                    this.form.controls.settings.setValue(driver.default_settings || '');
-                    this.form.controls.description.setValue(driver.description || '');
-                }
-            },
-            () => (this.loading = false)
-        );
+                this.waiting.emit(false);
+                throw _;
+            });
+        if (!this.form.controls.id.value) {
+            this.form.controls.name.setValue(driver.descriptive_name || '');
+            this.form.controls.module_name.setValue(driver.generic_name || '');
+            this.form.controls.class_name.setValue(this.base_driver.id || '');
+            this.form.controls.default_port.setValue(
+                driver.tcp_port || driver.udp_port || null
+            );
+            this.form.controls.default_uri.setValue(driver.uri_base || '');
+            this.form.controls.role.setValue(
+                driver.tcp_port || driver.udp_port
+                    ? PlaceDriverRole.Device
+                    : driver.uri_base
+                    ? PlaceDriverRole.Service
+                    : PlaceDriverRole.Logic
+            );
+            this.form.controls.settings.setValue(driver.default_settings || '');
+            this.form.controls.description.setValue(driver.description || '');
+        }
+        this.loading = false;
+        this.waiting.emit(false);
     }
 
     /**
      * Initialise the driver details if set
      */
     private async initDriver() {
-        if (this.form.controls.repository_id && this.form.controls.repository_id.value) {
+        if (
+            this.form.controls.repository_id &&
+            this.form.controls.repository_id.value
+        ) {
             const value = this.form.controls.repository_id.value;
             const repo = await showRepository(value).toPromise();
             this.base_repo = repo;

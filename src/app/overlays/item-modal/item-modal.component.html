@@ -1,7 +1,12 @@
 <header>
-    <h3 mat-dialog-title>{{ item && edit ? 'Edit' : 'New' }} {{ name === 'Repositorie' ? 'Repository' : name }}</h3>
+    <h3 mat-dialog-title>
+        {{ item && edit ? 'Edit' : 'New' }}
+        {{ name === 'Repositorie' ? 'Repository' : name }}
+    </h3>
     <button mat-icon-button mat-dialog-close *ngIf="!loading">
-        <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
+        <app-icon
+            [icon]="{ type: 'icon', class: 'backoffice-cross' }"
+        ></app-icon>
     </button>
 </header>
 <mat-dialog-content>
@@ -26,7 +31,10 @@
                 <user-form [form]="form"></user-form>
             </ng-container>
             <ng-container *ngSwitchCase="'driver'">
-                <driver-form [form]="form"></driver-form>
+                <driver-form
+                    [form]="form"
+                    (waiting)="can_submit = !$event"
+                ></driver-form>
             </ng-container>
             <ng-container *ngSwitchCase="'zone'">
                 <zone-form [form]="form"></zone-form>
@@ -45,7 +53,14 @@
 </mat-dialog-content>
 <mat-dialog-actions *ngIf="!loading">
     <button mat-button class="inverse" mat-dialog-close>Cancel</button>
-    <button mat-button type="submit" (click)="submit()">{{ item ? 'Save' : 'Add' }} [S]</button>
+    <button
+        mat-button
+        type="submit"
+        [disabled]="!can_submit"
+        (click)="submit()"
+    >
+        {{ item ? 'Save' : 'Add' }} [S]
+    </button>
 </mat-dialog-actions>
 <ng-template #load_state>
     <div class="body">

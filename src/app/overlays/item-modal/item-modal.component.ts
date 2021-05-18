@@ -57,7 +57,10 @@ export interface CreateEditModalData<T extends Identity = any> {
     templateUrl: './item-modal.component.html',
     styleUrls: ['./item-modal.component.scss'],
 })
-export class ItemCreateUpdateModalComponent extends BaseClass implements OnInit {
+export class ItemCreateUpdateModalComponent
+    extends BaseClass
+    implements OnInit
+{
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether the item is being editing */
@@ -70,6 +73,8 @@ export class ItemCreateUpdateModalComponent extends BaseClass implements OnInit 
     public form: FormGroup;
     /** Loading status for the item request is being processed */
     public loading: string;
+    /** Whether user is able to submit */
+    public can_submit = true;
 
     public get name(): string {
         return this._data.name;
@@ -94,7 +99,10 @@ export class ItemCreateUpdateModalComponent extends BaseClass implements OnInit 
             return 'domain';
         } else if (this.item instanceof PlaceApplication) {
             return 'application';
-        } else if (this.item instanceof PlaceTrigger && this._data.external_save) {
+        } else if (
+            this.item instanceof PlaceTrigger &&
+            this._data.external_save
+        ) {
             return 'system-trigger';
         } else if (this.item instanceof PlaceTrigger) {
             return 'trigger';
@@ -132,7 +140,10 @@ export class ItemCreateUpdateModalComponent extends BaseClass implements OnInit 
             details = generateDomainFormFields(this.item);
         } else if (this.item instanceof PlaceApplication) {
             details = generateApplicationFormFields(this.item);
-        } else if (this.item instanceof PlaceTrigger && this._data.external_save) {
+        } else if (
+            this.item instanceof PlaceTrigger &&
+            this._data.external_save
+        ) {
             details = generateTriggerSettingsFormFields(this.item);
         } else if (this.item instanceof PlaceTrigger) {
             details = generateTriggerFormFields(this.item);
@@ -160,12 +171,16 @@ export class ItemCreateUpdateModalComponent extends BaseClass implements OnInit 
     public submit() {
         this.form.markAllAsTouched();
         if (this.item && this.form.valid) {
-            this.loading = `${this.item.id ? 'Updating' : 'Creating'} ${this.name}...`;
+            this.loading = `${this.item.id ? 'Updating' : 'Creating'} ${
+                this.name
+            }...`;
             this._dialog_ref.disableClose = true;
             const item = this.item.id
                 ? cleanObject(
                       { ...this.item.toJSON(), ...this.form.value },
-                      this.item_type === 'user' ? [undefined, null, ''] : [undefined, null]
+                      this.item_type === 'user'
+                          ? [undefined, null, '']
+                          : [undefined, null]
                   )
                 : { ...this.item.toJSON(), ...this.form.value };
             if (this._data.external_save) {
@@ -178,12 +193,15 @@ export class ItemCreateUpdateModalComponent extends BaseClass implements OnInit 
                     this._dialog_ref.disableClose = false;
                     this.event.emit({ reason: 'done', metadata: { item } });
                     notifySuccess(
-                        `Successfully ${this.item.id ? 'updated' : 'added'} ${this.name}`
+                        `Successfully ${this.item.id ? 'updated' : 'added'} ${
+                            this.name
+                        }`
                     );
                     if (!this.form.value.id && this.form.controls.settings) {
-                        this.newSettings(item, this.form.controls.settings.value).then(() =>
-                            this._dialog_ref.close()
-                        );
+                        this.newSettings(
+                            item,
+                            this.form.controls.settings.value
+                        ).then(() => this._dialog_ref.close());
                     } else {
                         this._dialog_ref.close();
                     }
@@ -194,7 +212,9 @@ export class ItemCreateUpdateModalComponent extends BaseClass implements OnInit 
                     notifyError(
                         `Error ${this.item.id ? 'editing' : 'adding new'} ${
                             this.name
-                        }. Error: ${JSON.stringify((await err.text()) || err.message || err)}`
+                        }. Error: ${JSON.stringify(
+                            (await err.text()) || err.message || err
+                        )}`
                     );
                 }
             );
@@ -216,7 +236,9 @@ export class ItemCreateUpdateModalComponent extends BaseClass implements OnInit 
             .catch((err) => {
                 this.loading = null;
                 notifyError(
-                    `Error saving settings for ${item.name || item.id}. Error: ${JSON.stringify(
+                    `Error saving settings for ${
+                        item.name || item.id
+                    }. Error: ${JSON.stringify(
                         err.response || err.message || err
                     )}`
                 );
