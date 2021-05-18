@@ -15,11 +15,8 @@
             "prefix": "app",
             "architect": {
                 "build": {
-                    "builder": "@angular-builders/custom-webpack:browser",
+                    "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "customWebpackConfig": {
-                            "path": "webpack.config.js"
-                        },
                         "aot": true,
                         "baseHref": ".",
                         "outputPath": "dist",
@@ -114,7 +111,7 @@
                     }
                 },
                 "serve": {
-                    "builder": "@angular-builders/custom-webpack:dev-server",
+                    "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
                         "browserTarget": "ngx-backoffice:build",
                         "proxyConfig": "config/proxy.conf.js",
@@ -123,10 +120,6 @@
                     "configurations": {
                         "production": {
                             "browserTarget": "ngx-backoffice:build:production"
-                        },
-                        "hmr": {
-                            "hmr": true,
-                            "browserTarget": "mckinsey-staff-ui:build:hmr"
                         }
                     }
                 },
