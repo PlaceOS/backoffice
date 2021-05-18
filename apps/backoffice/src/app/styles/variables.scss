@@ -1,0 +1,169 @@
+/*=======================*\
+||  Application Colours  ||
+\*=======================*/
+
+var(--font-dark): #000;
+var(--font-light): #fff;
+
+var(--success): #4caf50;
+var(--success)-light: #66bb6a;
+var(--success)-dark: #00796b;
+
+var(--pending): #ff8f00;
+var(--pending)-light: #ffc046;
+var(--pending)-dark: #c56000;
+
+var(--error): #f44336;
+var(--error)-light: #ff6f60;
+var(--error)-dark: #ab000d;
+
+var(--primary): #c92366;
+var(--primary)-light: #cd568a;
+var(--primary)-dark: #b6005d;
+
+var(--secondary): #5c64ff;
+var(--secondary)-light: #7272e7;
+var(--secondary)-dark: #5557d1;
+
+var(--develop): #f0f0f0;
+var(--develop)-light: #fff;
+var(--develop)-dark: #e0e0e0;
+
+var(--bg): #263238;
+var(--bg)-light: #455a64;
+var(--bg)-dark: #202632;
+
+$header-color: #0a0d2e;
+
+/*===========*\
+||   Fonts   ||
+\*===========*/
+
+var(--font): 'Roboto', 'Verdana', 'Helvetica Neue', Arial, sans-serif;
+var(--heading-font): 'Young', var(--font);
+var(--mono-font): 'Fira Code', monospace;
+
+$base-size: 16px;
+$tablet-size: 16px;
+$mobile-size: 16px;
+
+/*============*\
+||   Sizing   ||
+\*============*/
+
+$header-height: 4em;
+
+/*============*\
+||   Mixins   ||
+\*============*/
+
+@mixin hide-text-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@mixin box-shadow($depth: 1, $spread: 1) {
+    box-shadow: 0 (1px * $spread) (3px * $spread) 0 rgba(#000, 0.2 * $depth),
+        0 (1px * $spread) (1px * $spread) 0 rgba(#000, 0.14 * $depth),
+        0 (2px * $spread) (1px * $spread) - (1px * $spread)
+            rgba(#000, 0.12 * $depth);
+}
+
+/*===================*\
+||   Media Queries   ||
+\*===================*/
+
+$break-mobile: 450px;
+$break-tablet: 800px;
+$break-laptop: 1024px;
+
+$break-landscape-mobile: 800px;
+$break-landscape-tablet: 1048px;
+$break-landscape-laptop: 1280px;
+
+@mixin respond-to($media) {
+    @if $media == mobile {
+        @media only screen and (orientation: portrait) and (max-width: $break-mobile) {
+            @content;
+        }
+        @media only screen and (orientation: landscape) and (max-width: $break-landscape-mobile) {
+            @content;
+        }
+    } @else if $media == mobile-landscape {
+        @media only screen and (orientation: landscape) and (max-width: $break-landscape-mobile) {
+            @content;
+        }
+    } @else if $media == mobile-portrait {
+        @media only screen and (orientation: portrait) and (max-width: $break-mobile) {
+            @content;
+        }
+    } @else if $media == not-mobile {
+        @media only screen and (orientation: portrait) and (min-width: $break-mobile + 1) {
+            @content;
+        }
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-mobile + 1) {
+            @content;
+        }
+    } @else if $media == laptop {
+        @media only screen and (orientation: portrait) and (min-width: $break-tablet + 1) and (max-width: $break-laptop) {
+            @content;
+        }
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-tablet + 1) and (max-width: $break-landscape-laptop) {
+            @content;
+        }
+    } @else if $media == laptop-landscape {
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-tablet + 1) and (max-width: $break-landscape-laptop) {
+            @content;
+        }
+    } @else if $media == laptop-portrait {
+        @media only screen and (orientation: portrait) and (min-width: $break-tablet + 1) and (max-width: $break-laptop) {
+            @content;
+        }
+    } @else if $media == lat {
+        @media only screen and (orientation: portrait) and (min-width: $break-mobile + 1) and (max-width: $break-tablet) {
+            @content;
+        }
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-mobile + 1) and (max-width: $break-landscape-tablet) {
+            @content;
+        }
+    } @else if $media == tablet-landscape {
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-mobile + 1) and (max-width: $break-landscape-tablet) {
+            @content;
+        }
+    } @else if $media == tablet-portrait {
+        @media only screen and (orientation: portrait) and (min-width: $break-mobile + 1) and (max-width: $break-tablet) {
+            @content;
+        }
+    } @else if ($media == tablet-mobile or $media == not-desktop) {
+        @media only screen and (orientation: portrait) and (max-width: $break-tablet) {
+            @content;
+        }
+        @media only screen and (orientation: landscape) and (max-width: $break-landscape-tablet) {
+            @content;
+        }
+    } @else if $media == desktop {
+        @media only screen and (orientation: portrait) and (min-width: $break-tablet) {
+            @content;
+        }
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-tablet) {
+            @content;
+        }
+    } @else if $media == desktop-landscape {
+        @media only screen and (orientation: landscape) and (min-width: $break-landscape-tablet) {
+            @content;
+        }
+    } @else if $media == desktop-portrait {
+        @media only screen and (orientation: portrait) and (min-width: $break-tablet) {
+            @content;
+        }
+    } @else if $media == landscape {
+        @media only screen and (orientation: landscape) {
+            @content;
+        }
+    } @else if $media == portrait {
+        @media only screen and (orientation: portrait) {
+            @content;
+        }
+    }
+}

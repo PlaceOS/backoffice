@@ -1,0 +1,82 @@
+form {
+    display: flex;
+    flex-direction: column;
+    width: 36em;
+    max-width: calc(100vw - 4em);
+}
+
+.fieldset {
+    display: flex;
+    flex-wrap: wrap;
+
+    .field {
+        width: auto;
+        flex: 1;
+        min-width: 30%;
+        margin: 0 0.25em;
+
+        @media screen and (max-width: 720px) {
+            min-width: 20em;
+            margin: 0;
+        }
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+.field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 50%;
+    width: 100%;
+
+    div.error {
+        position: absolute;
+        bottom: 0.5em;
+        left: 1em;
+        color: var(--error);
+        font-size: 0.7em;
+        font-weight: 500;
+    }
+}
+
+label {
+    font-size: 0.8em;
+    font-weight: 500;
+    margin: 0.5em 0;
+
+    &.error {
+        color: var(--error);
+    }
+
+    span {
+        color: var(--pending);
+    }
+}
+
+.value {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1em;
+
+    span {
+        font-size: 0.8em;
+        margin: 0 1rem;
+        opacity: 0.75;
+    }
+}
+
+settings-form-field {
+    margin-bottom: 1.5em;
+}
+
+mat-checkbox {
+    margin: 0.25em;
+}

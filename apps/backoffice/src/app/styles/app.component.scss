@@ -1,0 +1,175 @@
+@import 'material-design-icons/iconfont/material-icons.css';
+@import 'firacode/distr/fira_code.css';
+@import '../../custom/style.css';
+@import '../../custom/place-fonts.css';
+
+html,
+body {
+    font-size: 16px;
+    @media screen and (max-width: 1024px) {
+        font-size: 16px;
+    }
+    @media screen and (max-width: 720px) {
+        font-size: 16px;
+    }
+}
+
+app-root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+
+    > {
+        width: 100%;
+    }
+
+    > main {
+        display: flex;
+        flex: 1;
+        min-height: 50%;
+
+        > * {
+            height: 100%;
+        }
+
+        > .content {
+            flex: 1;
+            min-width: 50%;
+        }
+    }
+}
+
+* {
+    font-family: var(--font);
+    box-sizing: border-box;
+}
+
+.material-icons {
+    font-size: 1em;
+}
+
+span.highlight {
+    color: var(--primary);
+}
+
+.monaco-editor {
+    * {
+        font-family: 'Fira Code', monospace;
+    }
+}
+
+.mono {
+    font-family: 'Fira Code', monospace;
+}
+
+/*=======================*\
+||    Font size styles   ||
+\*=======================*/
+
+.fs {
+    &-small {
+        font-size: 0.8rem;
+    }
+    &-normal {
+        font-size: 1rem;
+    }
+    &-big {
+        font-size: 1.2rem;
+    }
+    &-large {
+        font-size: 1.5rem;
+    }
+}
+
+/*=======================*\
+||    Font size styles   ||
+\*=======================*/
+
+.info-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 0.5em;
+
+    .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 1.2em;
+        width: 1.2em;
+        font-size: 2em;
+
+        a-spinner {
+            font-size: 0.25em;
+        }
+    }
+
+    .text {
+        margin: 0.5em 0 0;
+        text-align: center;
+    }
+}
+
+item-display .content {
+    .info-block {
+        margin: 5em 0.5em;
+    }
+}
+
+/*=======================*\
+||      Media styles     ||
+\*=======================*/
+
+.not-mobile {
+    @media screen and (max-width: 720px) {
+        display: none !important;
+    }
+}
+
+.not-tablet {
+    @media screen and (max-width: 1024px) {
+        display: none !important;
+    }
+}
+
+.not-desktop {
+    @media screen and (min-width: 1025px) {
+        display: none !important;
+    }
+}
+
+.not-laptop {
+    @media screen and (max-width: 1280px) {
+        display: none !important;
+    }
+}
+
+.mobile-only {
+    display: none !important;
+    @media screen and (max-width: 720px) {
+        display: inherit !important;
+    }
+}
+
+.tablet-only {
+    display: none !important;
+    @media screen and (max-width: 1024px) {
+        display: inherit !important;
+    }
+}
+
+.desktop-only {
+    display: none !important;
+    @media screen and (min-width: 1025px) {
+        display: inherit !important;
+    }
+}
+
+.laptop-only {
+    display: none !important;
+    @media screen and (max-width: 1280px) {
+        display: inherit !important;
+    }
+}

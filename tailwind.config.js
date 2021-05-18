@@ -1,36 +1,22 @@
-const colors = require('tailwindcss/colors');
+const { guessProductionMode } = require("@ngneat/tailwind");
 
-module.exports = (is_build) => ({
+process.env.TAILWIND_MODE = guessProductionMode() ? 'build' : 'watch';
+
+module.exports = {
     prefix: '',
     mode: 'jit',
-    important: '#placeos',
-    future: {
-        removeDeprecatedGapUtilities: true,
-        purgeLayersByDefault: true,
-    },
     purge: {
-        enabled: is_build && false,
-        content: ['**/*.html', '**/*.ts'],
-        options: {
-            whitelistPatterns: [/^cdk-|mat-/],
-        },
+      content: [
+        './apps/**/*.{html,ts,css,scss,sass,less,styl}',
+        './libs/**/*.{html,ts,css,scss,sass,less,styl}',
+      ]
     },
+    darkMode: 'class', // or 'media' or 'class'
     theme: {
-        screens: {
-            sm: '640px',
-        },
+      extend: {},
     },
-    theme: {
-        extend: {
-            colors: {
-                primary: '#C92366',
-                secondary: '#0A0D2E',
-                ternary: '#0A0D2E',
-                quaternary: '#0A0D2E',
-                error: '#e53935',
-                pending: '#ffb300',
-                success: '#43a047',
-            },
-        },
+    variants: {
+      extend: {},
     },
-});
+    plugins: [],
+};
