@@ -9,7 +9,7 @@ let _activated: Subscription;
 let _timer: number;
 let _cache: SwUpdate;
 
-const NOTIFY_CHANGE = false;
+const NOTIFY_CHANGE = true;
 
 export type Notification = (message: string, callback: () => void) => void;
 
@@ -38,9 +38,11 @@ export function setupCache(
         _activated = cache.activated.subscribe(() => {
             log('CACHE', `Updates activated. Reloading...`);
             if (NOTIFY_CHANGE) {
-                notify('Newer version of the application is available', () => location.reload(true));
+                notify('Newer version of the application is available', () =>
+                    location.reload(true)
+                );
             } else {
-                location.reload(true)
+                location.reload(true);
             }
         });
         _timer = <any>setInterval(() => {
@@ -59,9 +61,13 @@ function activateUpdate() {
         log('CACHE', `Activating changes to the cache...`);
         _cache.activateUpdate().then(() => {
             if (NOTIFY_CHANGE) {
-                notifyInfo('Newer version of the application is available', 'Reload', () => location.reload(true));
+                notifyInfo(
+                    'Newer version of the application is available',
+                    'Reload',
+                    () => location.reload(true)
+                );
             } else {
-                location.reload(true)
+                location.reload(true);
             }
         });
     }
