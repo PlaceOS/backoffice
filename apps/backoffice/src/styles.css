@@ -13,8 +13,8 @@
     --success: #43a047;
     --pending: #ffb300;
     --error: #e53935;
-    --bg: #f0f0f0;
-    --bg-dark: #212121;
+    --bg-dark: #f0f0f0;
+    --bg: #212121;
     --font: 'Roboto', 'Verdana', 'Helvetica Neue', Arial, sans-serif;
     --heading-font: 'Young', var(--font);
     --mono-font: 'Fira Code', monospace;

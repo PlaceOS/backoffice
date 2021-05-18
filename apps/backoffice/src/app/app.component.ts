@@ -25,27 +25,33 @@ import { setUploadService } from './common/uploads';
 @Component({
     selector: 'placeos-root',
     template: `
-        <ng-container *ngIf="!(loading | async); else load_state">
-            <header [class.dark-mode]="dark_mode" [class.joke]="is_fools_day">
-                <topbar-header class="w-full" [(showMenu)]="show" [(filter)]="filter"></topbar-header>
-            </header>
-            <main class="flex flex-1 h-0" [class.filtered]="filter">
-                <sidebar-menu class="h-full" [(show)]="show"></sidebar-menu>
-                <div class="flex-1 w-0">
-                    <router-outlet></router-outlet>
-                </div>
-            </main>
-            <ng-container *ngIf="filter">
-                <global-search [(search)]="filter"></global-search>
+        <div class="h-full w-full flex flex-col">
+            <ng-container *ngIf="!(loading | async); else load_state">
+                <header [class.joke]="is_fools_day">
+                    <topbar-header
+                        class="w-full"
+                        [(showMenu)]="show"
+                        [(filter)]="filter"
+                    ></topbar-header>
+                </header>
+                <main class="flex flex-1 h-0" [class.filtered]="filter">
+                    <sidebar-menu class="h-full" [(show)]="show"></sidebar-menu>
+                    <div class="flex-1 w-0">
+                        <router-outlet></router-outlet>
+                    </div>
+                </main>
+                <ng-container *ngIf="filter">
+                    <global-search [(search)]="filter"></global-search>
+                </ng-container>
+                <app-debug-output></app-debug-output>
+                <app-upload-list></app-upload-list>
             </ng-container>
-            <app-debug-output></app-debug-output>
-            <app-upload-list></app-upload-list>
-        </ng-container>
-        <ng-template #load_state>
-            <div class="absolute inset-0 flex items-center justify-center">
-                <mat-spinner [diameter]="64"></mat-spinner>
-            </div>
-        </ng-template>
+            <ng-template #load_state>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <mat-spinner [diameter]="64"></mat-spinner>
+                </div>
+            </ng-template>
+        </div>
     `,
     styleUrls: [
         './styles/app.component.scss',
@@ -114,10 +120,21 @@ export class AppComponent extends BaseClass implements OnInit {
             UploadManager.addProvider(OpenStack);
             setUploadService(this._uploads);
         });
+        this.interval(
+            'dark-mode',
+            () => {
+                this.dark_mode
+                    ? document.body.classList.add('dark')
+                    : document.body.classList.remove('dark');
+            },
+            200
+        );
     }
 
     private onInitError() {
-        if (isMock()) { return; }
+        if (isMock()) {
+            return;
+        }
         log('Init', 'Failed to initialise user. Restarting application...');
         invalidateToken();
         location.reload();

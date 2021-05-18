@@ -252,7 +252,8 @@ mat-checkbox {
     }
 }
 
-.dark-mode {
+.dark-mode,
+.dark {
     button[mat-button].mat-button {
         &[disabled] {
             background-color: rgba(#fff, 0.35);
@@ -369,11 +370,14 @@ mat-panel-title {
     @apply flex flex-col items-center p-8 space-y-4;
 }
 
-#placeos .dark-mode [table-head] {
+#placeos .dark-mode [table-head],
+#placeos .dark [table-head],
+#placeos.dark [table-head] {
     @apply bg-gray-600 border-gray-300;
 }
 
-.dark-mode [table-row] {
+.dark-mode [table-row],
+.dark [table-row] {
     @apply hover:bg-opacity-10;
 }
 
@@ -387,4 +391,69 @@ mat-panel-title {
 
 .monaco-editor-hover {
     @apply pointer-events-none;
+}
+
+.dark {
+    .mat-menu-panel {
+        @apply bg-grey;
+    }
+
+    .mat-menu-item {
+        @apply text-white;
+    }
+
+    .mat-dialog-container,
+    .mat-autocomplete-panel,
+    .mat-select-panel {
+        @apply bg-grey text-white;
+    }
+
+    .mat-tab-label,
+    .mat-tab-link,
+    .mat-option-text,
+    .mat-tab-header-pagination {
+        @apply text-white;
+
+        &.mat-active {
+            @apply text-primary;
+        }
+    }
+
+    mat-option:hover {
+        @apply bg-white bg-opacity-5;
+    }
+
+    .mat-tab-header-pagination-disabled {
+        opacity: 0.3;
+    }
+
+    .mat-tab-header-pagination-chevron {
+        border-color: #fff;
+    }
+
+    .mat-card {
+        background-color: #313131;
+        @apply text-white;
+    }
+
+    .mat-select-placeholder {
+        @apply text-white text-opacity-40;
+    }
+
+    .mat-select-value-text {
+        @apply text-white;
+    }
+}
+
+.mat-menu-item[disabled] {
+    @apply text-opacity-30;
+}
+
+#placeos .mat-tooltip {
+    background-color: #424242;
+    @apply text-white;
+}
+
+#placeos .mat-ink-bar {
+    @apply bg-primary;
 }

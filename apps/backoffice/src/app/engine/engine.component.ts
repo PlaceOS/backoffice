@@ -10,15 +10,13 @@ import { BackofficeUsersService } from '../users/users.service';
     selector: 'app-engine',
     template: `
         <div
-            class="h-16 p-4 text-2xl bg-white border-b border-gray-300 shadow z-10"
-            [class.dark-mode]="dark_mode"
+            class="h-16 p-4 text-2xl bg-white border-b border-gray-400 border-opacity-30 shadow z-10 dark:text-white dark:bg-greyer"
         >
             PlaceOS Admin
         </div>
-        <div class="flex flex-1 z-0">
+        <div class="flex flex-1 z-0 dark:text-white">
             <div
-                class="relative w-64 h-full bg-white border-r border-gray-300 shadow z-10"
-                [class.dark-mode]="dark_mode"
+                class="relative w-64 h-full bg-white border-r border-gray-400 border-opacity-30 shadow z-10 dark:bg-greyer"
             >
                 <a
                     *ngFor="let item of tab_list"
@@ -27,12 +25,11 @@ import { BackofficeUsersService } from '../users/users.service';
                     routerLinkActive="active"
                 >
                     <app-icon [icon]="item.icon"></app-icon>
-                    <p>{{ item.name }}</p>
+                    <span>{{ item.name }}</span>
                 </a>
             </div>
             <div
-                class="relative flex-1 w-1/2 h-full z-0 bg-white px-4"
-                [class.dark-mode]="dark_mode"
+                class="relative flex-1 w-1/2 h-full z-0 bg-white px-4 dark:text-white dark:bg-grey"
             >
                 <router-outlet></router-outlet>
             </div>
@@ -53,10 +50,6 @@ import { BackofficeUsersService } from '../users/users.service';
                 background-color: #c2185b !important;
                 color: #fff;
                 margin-right: -1px;
-            }
-
-            .dark-mode {
-                background: #424242 !important;
             }
         `,
     ],

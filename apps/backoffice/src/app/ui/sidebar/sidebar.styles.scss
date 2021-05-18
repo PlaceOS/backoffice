@@ -1,5 +1,6 @@
 :host.show {
     height: 100% !important;
+    min-width: 20rem;
 }
 
 .container {
@@ -7,7 +8,6 @@
     background-color: var(--bg);
     height: 100%;
     width: 100%;
-    min-width: 20rem;
     display: flex;
     align-items: center;
     flex-direction: column;

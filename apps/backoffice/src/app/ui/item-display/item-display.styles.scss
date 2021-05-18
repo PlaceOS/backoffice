@@ -10,7 +10,8 @@
     width: 100%;
     flex-direction: column;
 
-    &.dark-mode {
+    &.dark-mode,
+    &.dark {
         background-color: #424242;
         color: var(--font-light);
     }

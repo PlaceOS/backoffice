@@ -7,9 +7,7 @@ import { HashMap } from '../common/types';
 @Component({
     selector: 'app-systems',
     template: `
-        <div
-            class="flex-1 flex-col sm:flex-row flex h-full w-full relative"
-        >
+        <div class="flex-1 flex-col sm:flex-row flex h-full w-full relative">
             <sidebar
                 heading="Systems"
                 name="systems"
@@ -19,7 +17,7 @@ import { HashMap } from '../common/types';
                 name="system"
                 route="systems"
                 [tabs]="tab_list"
-                class="flex-1 relative mt-12 sm:mt-0 w-full sm:w-1/2"
+                class="flex-1 relative mt-12 sm:mt-0 w-1/2"
             ></item-display>
         </div>
     `,
@@ -37,7 +35,6 @@ import { HashMap } from '../common/types';
     ],
 })
 export class SystemsComponent extends BaseClass implements OnInit {
-
     public readonly name = 'systems';
 
     public tab_list = [];
@@ -48,7 +45,11 @@ export class SystemsComponent extends BaseClass implements OnInit {
 
     public updateTabList(counts: HashMap<number>) {
         this.tab_list = [
-            { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
+            {
+                id: 'about',
+                name: 'About',
+                icon: { class: 'backoffice-info-with-circle' },
+            },
             {
                 id: 'modules',
                 name: 'Modules',
@@ -84,7 +85,9 @@ export class SystemsComponent extends BaseClass implements OnInit {
         this.updateTabList({});
         this.subscription(
             'counts',
-            this._service.counts.subscribe((counts) => this.updateTabList(counts))
+            this._service.counts.subscribe((counts) =>
+                this.updateTabList(counts)
+            )
         );
     }
 }

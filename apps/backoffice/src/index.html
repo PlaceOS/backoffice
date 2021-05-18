@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="placeos">
     <head>
         <meta charset="utf-8" />
         <title>Backoffice</title>
@@ -10,10 +10,15 @@
         <link rel="manifest" href="manifest.webmanifest" />
         <meta name="theme-color" content="#1976d2" />
     </head>
-    <body class="dark mat-typography">
+    <body class="mat-typography">
         <placeos-root></placeos-root>
         <noscript>
             Please enable JavaScript to continue using this application.
         </noscript>
+        <script src="assets/monaco/vs/loader.js"></script>
+        <script>
+            require.config({ paths: { vs: 'assets/monaco/vs' } });
+            require(['vs/editor/editor.main'], function () {});
+        </script>
     </body>
 </html>
