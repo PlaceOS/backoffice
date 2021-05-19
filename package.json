@@ -64,7 +64,7 @@
         "@nrwl/linter": "12.3.3",
         "@nrwl/tao": "12.3.3",
         "@nrwl/workspace": "12.3.3",
-        "@placeos/ts-client": "^3.7.9",
+        "@placeos/ts-client": "^3.7.10",
         "@sentry/browser": "^6.4.0",
         "@sentry/tracing": "^6.4.0",
         "@types/jest": "26.0.8",
@@ -91,6 +91,7 @@
         "prettier": "2.2.1",
         "tailwindcss": "2.1.2",
         "ts-jest": "26.5.5",
+        "ts-md5": "^1.2.7",
         "ts-node": "~9.1.1",
         "typescript": "~4.2.4",
         "xterm": "^4.12.0"
