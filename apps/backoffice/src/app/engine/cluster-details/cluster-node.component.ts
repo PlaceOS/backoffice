@@ -9,7 +9,8 @@ import {
 } from '@angular/core';
 import { humanReadableByteCount } from '@placeos/ts-client';
 
-import { format } from 'date-fns';
+import { differenceInSeconds } from 'date-fns';
+import { Point } from '../../common/types';
 
 interface PlaceClusterRunCounts {
     modules: number;
@@ -36,8 +37,8 @@ export interface PlaceClusterUsageStamp {
     selector: 'admin-cluster-node',
     template: `
         <h4>{{ node?.hostname }}</h4>
-        <div class="mb-2">
-            <canvas class="w-full rounded h-40 bg-gray-100" #chart></canvas>
+        <div class="mb-2 h-40 w-64">
+            <div basic-line-graph [points]="points"></div>
         </div>
         <div class="memory-utilisation">
             <div class="flex items-center space-x-2 p-2">
@@ -65,6 +66,8 @@ export class AdminClusterNodeComponent implements OnChanges, OnInit {
     @Input() public history: PlaceClusterUsageStamp[];
     /** Store for the chart data object */
     // private _chart: Chart;
+    /**  */
+    public points: Point[] = [];
 
     public get used_memory() {
         return humanReadableByteCount((this.node?.memory_usage || 0) * 1024);
@@ -95,57 +98,13 @@ export class AdminClusterNodeComponent implements OnChanges, OnInit {
     }
 
     public generateCharts(): void {
-        if (!this._chart_el?.nativeElement) return;
-        const context = this._chart_el.nativeElement.getContext('2d');
-        const options = {
-            legend: {
-                display: false,
-            },
-            elements: {
-                line: {
-                    tension: 0,
-                },
-            },
-            scales: {
-                y: {
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'CPU Usage(%)',
-                    },
-                    display: true,
-                    ticks: {
-                        suggestedMin: 0, // minimum will be 0, unless there is a lower value.
-                        suggestedMax: 100,
-                        beginAtZero: true, // minimum value will be 0.
-                    },
-                },
-            },
-        };
         const list = this.history || [];
         const data = list
-            .filter(
-                (_, index) =>
-                    index > list.length - 60 &&
-                    Math.floor(_.id / 1000) % 2 === 0
-            )
-            .map((event) => ({
-                x: format(event.id, 'HH:mm:ss'),
+            .slice(Math.max(0, list.length - 12))
+            .map((event, idx) => ({
+                x: 11 - idx,
                 y: event.value,
             }));
-        // this._chart = new Chart(context, {
-        //     type: 'line',
-        //     // showXLabels: 6,
-        //     data: {
-        //         labels: data.map((point) => point.x),
-        //         datasets: [
-        //             {
-        //                 data: data.map((point) => point.y),
-        //                 backgroundColor: ['#00695c'],
-        //                 borderColor: ['#00695c'],
-        //             },
-        //         ],
-        //     },
-        //     options,
-        // });
+        this.points = [...data];
     }
 }

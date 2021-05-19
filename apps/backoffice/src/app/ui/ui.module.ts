@@ -65,6 +65,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { TerminalComponent } from './terminal.component';
 import { UnauthorisedComponent } from './unauthorised.component';
 import { UploadListComponent } from './upload-list.component';
+import { BasicLineGraphComponent } from './basic-line-graph.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -98,6 +99,7 @@ const COMPONENTS: Type<any>[] = [
     UnauthorisedComponent,
     UploadListComponent,
     BindingDirective,
+    BasicLineGraphComponent,
 ];
 
 const PIPES: Type<any>[] = [
