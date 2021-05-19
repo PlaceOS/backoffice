@@ -25,7 +25,7 @@ import { setUploadService } from './common/uploads';
 @Component({
     selector: 'placeos-root',
     template: `
-        <div class="h-full w-full flex flex-col">
+        <div class="h-full w-full flex flex-col overflow-hidden">
             <ng-container *ngIf="!(loading | async); else load_state">
                 <header [class.joke]="is_fools_day">
                     <topbar-header
@@ -34,8 +34,14 @@ import { setUploadService } from './common/uploads';
                         [(filter)]="filter"
                     ></topbar-header>
                 </header>
-                <main class="flex flex-1 h-0" [class.filtered]="filter">
-                    <sidebar-menu class="h-full" [(show)]="show"></sidebar-menu>
+                <main
+                    class="relative flex flex-1 h-0"
+                    [class.filtered]="filter"
+                >
+                    <sidebar-menu
+                        class="w-0 sm:w-auto"
+                        [(show)]="show"
+                    ></sidebar-menu>
                     <div class="flex-1 w-0">
                         <router-outlet></router-outlet>
                     </div>

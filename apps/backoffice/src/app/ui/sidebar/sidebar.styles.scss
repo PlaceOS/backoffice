@@ -5,7 +5,6 @@
 
 .container {
     position: relative;
-    background-color: var(--bg);
     height: 100%;
     width: 100%;
     display: flex;
@@ -90,7 +89,6 @@ section.search {
     padding: 0.5em 1em;
     width: 100%;
     min-height: 3em;
-    background-color: var(--bg);
     z-index: 1;
     .input {
         flex: 1;
@@ -144,6 +142,7 @@ input {
     align-items: center;
     cursor: pointer;
     height: 48px;
+    width: 100%;
     transition: background-color 200ms;
     background-color: rgba(#fff, 0);
 

@@ -17,7 +17,7 @@ import { HashMap } from '../common/types';
                 name="system"
                 route="systems"
                 [tabs]="tab_list"
-                class="flex-1 relative mt-12 sm:mt-0 w-1/2"
+                class="flex-1 relative mt-12 sm:mt-0 w-full sm:w-1/2 "
             ></item-display>
         </div>
     `,

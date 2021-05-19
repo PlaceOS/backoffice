@@ -1,11 +1,4 @@
-import {
-    Component,
-    OnInit,
-    Input,
-    Output,
-    EventEmitter,
-    SimpleChanges,
-} from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { authority } from '@placeos/ts-client';
 
@@ -19,16 +12,14 @@ import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
     selector: 'sidebar-menu',
     template: `
         <div
-            [class]="
-                'absolute h-screen w-screen z-40 bottom-0 pointer-events-auto ' +
-                (show ? 'block' : 'hidden')
-            "
+            class="absolute sm:relative h-screen w-screen z-30 bottom-0 pointer-events-auto sm:hidden"
+            [class.hidden]="!show"
             (click)="show = false; showChange.emit(false)"
         ></div>
         <div
-            class="h-full bg-gray-800 shadow z-20 absolute sm:relative text-white"
+            class="absolute sm:relative h-full bg-gray-800 shadow z-40 text-white left-0 top-0 sm:block overflow-auto"
+            [class.hidden]="!show"
             *ngIf="menu_items"
-            [class.show]="show"
             (mouseleave)="tooltip = 'false'"
         >
             <a

@@ -123,13 +123,15 @@ export class SidebarComponent extends BaseClass implements OnInit {
                         : item.role === PlaceDriverRole.Logic
                         ? item.control_system_id
                         : item.ip;
-                map[item.id] = `<div class="flex-1">${
+                map[item.id] = `<div class="flex-1 w-1/2">${
                     item.custom_name || item.name || '<Unnamed>'
-                }</div><div class="small truncate">${detail}<div>`;
+                }</div><div class="text-xs truncate w-32 opacity-30 text-right">${detail}<div>`;
             } else if (item instanceof PlaceRepository) {
-                map[item.id] = `<div class="flex-1">${
+                map[item.id] = `<div class="flex-1 w-1/2">${
                     item.name || '<Unnamed>'
-                }</div> <div class="small truncate">${item.repo_type}<div>`;
+                }</div> <div class="text-xs truncate w-32 opacity-30 text-right">${
+                    item.repo_type
+                }<div>`;
             } else {
                 map[item.id] = `<div class="flex-1">${
                     item.custom_name || item.name || '<Unnamed>'

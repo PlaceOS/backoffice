@@ -79,10 +79,10 @@
         </div>
     </main>
     <div class="hidden sm:block center" *ngIf="!item && !(loading | async)">
-        <div class="absolute inset-0 flex flex-col items-center justify-center">
-            <div class="icon">
-                <i class="backoffice-arrow-left"></i>
-            </div>
+        <div
+            class="absolute inset-0 flex flex-col items-center justify-center space-y-2"
+        >
+            <i class="backoffice-arrow-left text-3xl"></i>
             <div class="text" i18n="@@selectItem">
                 Select a { name, select, systems { system } modules { module }
                 drivers { driver } repositories { repository } zones { zone }
@@ -92,10 +92,10 @@
         </div>
     </div>
     <div class="sm:hidden center" *ngIf="!item && !(loading | async)">
-        <div class="absolute inset-0 flex flex-col items-center justify-center">
-            <div class="icon">
-                <i class="backoffice-arrow-up"></i>
-            </div>
+        <div
+            class="absolute inset-0 flex flex-col items-center justify-center space-y-2"
+        >
+            <i class="backoffice-arrow-up text-3xl"></i>
             <div class="text" i18n="@@selectItemMobile">
                 Select a { name, select, systems { system } modules { module }
                 drivers { driver } repositories { repository } zones { zone }

@@ -87,35 +87,7 @@ span.highlight {
 \*=======================*/
 
 .info-block {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    margin: 0.5em;
-
-    .icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 1.2em;
-        width: 1.2em;
-        font-size: 2em;
-
-        a-spinner {
-            font-size: 0.25em;
-        }
-    }
-
-    .text {
-        margin: 0.5em 0 0;
-        text-align: center;
-    }
-}
-
-item-display .content {
-    .info-block {
-        margin: 5em 0.5em;
-    }
+    @apply flex flex-col items-center justify-center p-8 space-y-2;
 }
 
 /*=======================*\

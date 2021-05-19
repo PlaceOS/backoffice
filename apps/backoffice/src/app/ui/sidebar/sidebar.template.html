@@ -1,9 +1,10 @@
-<div class="container" [class.dark-mode]="dark_mode">
+<div class="container bg-grey" [class.dark-mode]="dark_mode">
     <header>
         <div class="heading">
-            { heading, select, Systems { Systems } Modules { Modules } Zones { Zones } Drivers {
-            Drivers } Repositories { Repositories } Triggers { Triggers } Users { Users } Domains {
-            Domains } Admin { Admin } other { Other } }
+            { heading, select, Systems { Systems } Modules { Modules } Zones {
+            Zones } Drivers { Drivers } Repositories { Repositories } Triggers {
+            Triggers } Users { Users } Domains { Domains } Admin { Admin } other
+            { Other } }
         </div>
         <div class="count">
             <div>
@@ -12,7 +13,8 @@
                     [matTooltip]="heading + ' count / License count'"
                     i18n-matTooltip
                 >
-                    {{ (total | async) || 0 }} of {{ (search ? grand_total : licenses) || '∞' }}
+                    {{ (total | async) || 0 }} of {{ (search ? grand_total :
+                    licenses) || '∞' }}
                 </div>
             </div>
         </div>
@@ -37,7 +39,9 @@
             <i class="backoffice-warning"></i>
         </div>
         <button mat-icon-button class="mobile-only" (click)="toggle()">
-            <app-icon [icon]="{ class: 'backoffice-' + (close ? 'cross' : 'list') }"></app-icon>
+            <app-icon
+                [icon]="{ class: 'backoffice-' + (close ? 'cross' : 'list') }"
+            ></app-icon>
         </button>
     </header>
     <section class="search">
@@ -60,14 +64,19 @@
                 (scroll)="is_scrolled"
                 (scrolledIndexChange)="atBottom()"
             >
-                <ng-container *cdkVirtualFor="let item of items | async; trackBy:trackByFn">
+                <ng-container
+                    *cdkVirtualFor="let item of items | async; trackBy:trackByFn"
+                >
                     <a
                         [routerLink]="subroute ? [route, item.id, subroute]: [route, item.id]"
                         routerLinkActive="active"
                         [routerLinkActiveOptions]="{ exact: false, __change_detection_hack__: item.id + subroute }"
                     >
                         <div #list_item class="item" [title]="">
-                            <div class="text" [innerHTML]="item_name[item.id] | sanitize"></div>
+                            <div
+                                class="text"
+                                [innerHTML]="item_name[item.id] | sanitize"
+                            ></div>
                             <app-icon
                                 [icon]="{ type: 'icon', class: 'backoffice-check' }"
                             ></app-icon>
@@ -76,13 +85,20 @@
                 </ng-container>
             </cdk-virtual-scroll-viewport>
         </ng-container>
-        <div class="info-block center" *ngIf="!(loading | async) && !(items | async).length">
+        <div
+            class="info-block center"
+            *ngIf="!(loading | async) && !(items | async).length"
+        >
             <div class="icon">
                 <i class="backoffice-cross"></i>
             </div>
-            <div class="text">{{ !search ? 'No ' + lowercase_heading : 'No matches found' }}</div>
+            <div class="text">
+                {{ !search ? 'No ' + lowercase_heading : 'No matches found' }}
+            </div>
             <div class="btn" *ngIf="new">
-                <button mat-button (click)="newItem()" i18n>Add new {{ lowercase_heading }}</button>
+                <button mat-button (click)="newItem()" i18n>
+                    Add new {{ lowercase_heading }}
+                </button>
             </div>
         </div>
     </section>

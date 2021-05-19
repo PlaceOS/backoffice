@@ -126,7 +126,7 @@ import { SystemStateService } from './system-state.service';
                                     ></app-icon>
                                 </div>
                                 <div
-                                    class="w-12 flex items-center justify-center p-2 h-10"
+                                    class="w-12 flex items-center justify-center p-2 h-full"
                                 >
                                     <div
                                         dot
@@ -147,7 +147,7 @@ import { SystemStateService } from './system-state.service';
                                     ></div>
                                 </div>
                                 <div
-                                    class="flex-1 p-2 h-10 flex flex-col justify-center"
+                                    class="flex-1 p-2 h-full flex flex-col justify-center"
                                 >
                                     <a
                                         [routerLink]="['/modules', device.id]"

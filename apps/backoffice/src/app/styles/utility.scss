@@ -5,3 +5,7 @@
 .font-code {
     font-family: var(--mono-font);
 }
+
+*:focus-within.\:focusin\:w-full {
+    width: 100%;
+}

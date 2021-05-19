@@ -15,10 +15,10 @@ import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
     template: `
         <div
             [class]="
-                'relative w-full flex items-center space-x-2 bg-white rounded px-2 ' +
+                'absolute top-2 sm:top-auto right-16 sm:right-auto sm:relative w-12 sm:!w-full flex items-center space-x-2 sm:bg-white rounded px-2 overflow-hidden ' +
                 (model.focus || filter || model.dictate
-                    ? 'bg-opacity-100 text-black'
-                    : 'text-white bg-opacity-20')
+                    ? 'bg-opacity-100 text-black w-4/5 bg-white'
+                    : 'text-white bg-opacity-20 sm:bg-opacity-20')
             "
             widget
             tabindex="0"
@@ -73,7 +73,7 @@ import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
             }
 
             [widget] {
-                transition: color 200ms, background-color 200ms;
+                transition: color 200ms, background-color 200ms, width 200ms;
             }
         `,
     ],
