@@ -66,7 +66,16 @@ function scale(domain, range) {
 
             [y-axis] span,
             [x-axis] span {
+                @apply flex h-0 w-0;
                 transform: rotate(30deg);
+            }
+
+            [y-axis] span {
+                @apply items-center justify-end;
+            }
+
+            [x-axis] span {
+                @apply items-start justify-start;
             }
         `,
     ],

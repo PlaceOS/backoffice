@@ -98,12 +98,15 @@ export class AdminClusterNodeComponent implements OnChanges, OnInit {
     }
 
     public generateCharts(): void {
-        const list = this.history || [];
+        const list = [...this.history] || [];
+        while (list.length < 12) {
+            list.unshift({} as any);
+        }
         const data = list
             .slice(Math.max(0, list.length - 12))
             .map((event, idx) => ({
-                x: 11 - idx,
-                y: event.value,
+                x: idx,
+                y: event.value || 0,
             }));
         this.points = [...data];
     }
