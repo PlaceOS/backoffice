@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core';
 import {
-    PlaceDebugEvent,
-    PlaceModule,
-    debug_events,
-    debug,
-    ignore,
-} from '@placeos/ts-client';
-import { BehaviorSubject, Observable } from 'rxjs';
+    debug, debug_events,
 
+    ignore, PlaceDebugEvent,
+    PlaceModule
+} from '@placeos/ts-client';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import * as dayjs from 'dayjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { BaseClass } from './base.class';
 
-import * as dayjs from 'dayjs';
+
 
 const TERMINAL_COLOURS = {
     debug: '\u001b[34m',
@@ -77,12 +76,9 @@ export class PlaceDebugService extends BaseClass {
                     (c, i) => c + (i.message || '').length,
                     0
                 );
-                while (event_list.length > 8000 || size > 32 * 1024 * 1024) {
-                    event_list.shift();
-                    size = event_list.reduce(
-                        (c, i) => c + (i.message || '').length,
-                        0
-                    );
+                while (event_list.length > 2000 || size > 32 * 1024 * 1024) {
+                    const first = event_list.splice(0, 1)[0];
+                    size = size - first.message?.length || 0
                 }
                 this._events.next(event_list);
             }
