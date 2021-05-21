@@ -70,15 +70,9 @@ export class PlaceDebugService extends BaseClass {
         super();
         debug_events.subscribe((event) => {
             if (this._bound_modules.find((mod) => mod.id === event.mod_id)) {
-                const event_list = [...this.event_list];
-                event_list.push(event);
-                let size = event_list.reduce(
-                    (c, i) => c + (i.message || '').length,
-                    0
-                );
-                while (event_list.length > 2000 || size > 32 * 1024 * 1024) {
-                    const first = event_list.splice(0, 1)[0];
-                    size = size - first.message?.length || 0
+                let event_list = [...this.event_list, event];
+                if (event_list.length > 2000) {
+                    event_list = event_list.splice(1, event_list.length - 1);
                 }
                 this._events.next(event_list);
             }
