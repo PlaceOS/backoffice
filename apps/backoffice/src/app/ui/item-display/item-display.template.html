@@ -120,12 +120,13 @@
         <button *ngIf="has_change" mat-menu-item (click)="edit()">
             <div class="group">
                 <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
-                <div class="text" i18n="@@editAction">
+                <div class="text flex-1" i18n="@@editAction">
                     Edit { name, select, systems { system } modules { module }
                     drivers { driver } repositories { repository } zones { zone
                     } triggers { trigger } users { user } domains { domain }
-                    other { other } } [E]
+                    other { other } }
                 </div>
+                <span class="keycap">E</span>
             </div>
         </button>
         <button mat-menu-item disabled="true" (click)="newFromItem()">
@@ -166,12 +167,13 @@
         <button *ngIf="has_change" mat-menu-item (click)="delete()">
             <div class="group">
                 <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
-                <div class="text" i18n="@@deleteAction">
+                <div class="text flex-1" i18n="@@deleteAction">
                     Delete { name, select, systems { system } modules { module }
                     drivers { driver } repositories { repository } zones { zone
                     } triggers { trigger } users { user } domains { domain }
-                    other { other } } [⌦]
+                    other { other } } 
                 </div>
+                <span class="keycap">⌦</span>
             </div>
         </button>
     </mat-menu>
