@@ -10,7 +10,14 @@ import {
     pullRepositoryChanges,
 } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
-import { catchError, filter, map, share, shareReplay, switchMap } from 'rxjs/operators';
+import {
+    catchError,
+    filter,
+    map,
+    share,
+    shareReplay,
+    switchMap,
+} from 'rxjs/operators';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError } from '../common/notifications';
@@ -48,8 +55,10 @@ export class RepositoriesStateService {
     /** Get latest commit for the active repository */
     public readonly commit = this._state.all_item.pipe(
         filter((i) => i instanceof PlaceRepository),
-        switchMap((item) => listRepositoryCommits(item.id, { count: 1 } as any)),
-        catchError(_ => []),
+        switchMap((item) =>
+            listRepositoryCommits(item.id, { count: 1 } as any)
+        ),
+        catchError((_) => []),
         map((details) => details[0]?.commit || 'HEAD')
     );
 
@@ -57,7 +66,10 @@ export class RepositoriesStateService {
         return this._state.active_item as any;
     }
 
-    constructor(private _state: ActiveItemService, private _dialog: MatDialog) {}
+    constructor(
+        private _state: ActiveItemService,
+        private _dialog: MatDialog
+    ) {}
 
     public async pullLatestCommit() {
         const commit: any = await pullRepositoryChanges(this.active_item.id)
@@ -71,7 +83,10 @@ export class RepositoriesStateService {
             });
         if (!commit) return;
         this._state.replaceItem(
-            new PlaceRepository({ ...this.active_item, commit_hash: commit.commit_hash })
+            new PlaceRepository({
+                ...this.active_item,
+                commit_hash: commit.commit_hash,
+            })
         );
     }
 
