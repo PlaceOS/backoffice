@@ -109,20 +109,20 @@ jobs:
               continue-on-error: true
               with:
                   url: ${{ secrets.STATUS_URL }}
-                  data: '{ "chat_url": "${{ secrets.CHAT_URL }}", "name": "${{ github.repository }}", "commit": "${{ github.sha }}", "pipeline_name": "${{ matrix.package }}", "branch": "${{ github.ref }}", "status": "processing", "url": "https://github.com/${{ github.repository }}/runs/${{ github.run_id }}" }'
+                  data: '{ "chat_url": "${{ secrets.CHAT_URL }}", "name": "${{ github.repository }}", "commit": "${{ github.sha }}", "pipeline_name": "backoffice", "branch": "${{ github.ref }}", "status": "processing", "url": "https://github.com/${{ github.repository }}/runs/${{ github.run_id }}" }'
 
             - name: Build affected applications
               run: |
-                  npx nx build ${{ matrix.package }} --verbose --configuration=${{ env.configuration }}
+                  npx nx build backoffice --verbose --configuration=${{ env.configuration }}
 
-            - name: Deploy the application(${{ matrix.package }})
+            - name: Deploy the application(backoffice)
               uses: MrYuion/gha-publish-to-git@v1.1
               continue-on-error: true
               with:
                   branch: build/${{ env.deploy_branch }}
-                  source_folder: dist/apps/${{ matrix.package }}
+                  source_folder: dist/apps/backoffice
                   commit_message: >
-                      build(${{ matrix.package }}): CI build from ${{ env.sha_short }}
+                      build(backoffice): CI build from ${{ env.sha_short }}
                   github_pat: ${{ secrets.API_GITHUB_TOKEN }}
 
             - name: Update Pipeline Chat Status
@@ -130,5 +130,5 @@ jobs:
               continue-on-error: true
               with:
                   url: ${{ secrets.STATUS_URL }}
-                  data: '{ "name": "${{ github.repository }}", "commit": "${{ github.sha }}", "pipeline_name": "${{ matrix.package }}", "branch": "${{ github.ref }}", "status": "${{ job.status }}", "url": "https://github.com/${{ github.repository }}/runs/${{ github.run_id }}" }'
+                  data: '{ "name": "${{ github.repository }}", "commit": "${{ github.sha }}", "pipeline_name": "backoffice", "branch": "${{ github.ref }}", "status": "${{ job.status }}", "url": "https://github.com/${{ github.repository }}/runs/${{ github.run_id }}" }'
               if: ${{ always() }}
