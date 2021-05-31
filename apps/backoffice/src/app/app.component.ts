@@ -141,6 +141,7 @@ export class AppComponent extends BaseClass implements OnInit {
         if (isMock()) {
             return;
         }
+
         log('Init', 'Failed to initialise user. Restarting application...');
         invalidateToken();
         location.reload();
