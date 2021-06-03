@@ -94,7 +94,7 @@
     "merge-json-schemas": "^1.0.0",
     "monaco-editor": "^0.23.0",
     "ng-mocks": "^10.5.4",
-    "postcss": "8.1.7",
+    "postcss": "8.2.10",
     "postcss-import": "13.0.0",
     "postcss-loader": "4.0.4",
     "postcss-scss": "3.0.4",
