@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { PlaceDriver } from '@placeos/ts-client';
-
 import { DriverStateService } from './driver-state.service';
+
 
 @Component({
     selector: 'driver-about',
@@ -12,14 +12,42 @@ import { DriverStateService } from './driver-state.service';
                 <div class="value">{{ item.default_uri }}</div>
             </div>
             <div class="flex items-center space-x-2" *ngIf="item.default_port">
-                <label i18n="@@driverDefaultPortLabel">Default Port Number:</label>
+                <label i18n="@@driverDefaultPortLabel"
+                    >Default Port Number:</label
+                >
                 <div class="value">{{ item.default_port }}</div>
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@driverDetailsCompiled">Compiled:</label>
-                <div class="value">{{ (compiled | async) ? 'true' : 'false' }}</div>
-                <mat-spinner diameter="24" *ngIf="!(compiled | async)"></mat-spinner>
-                <button mat-button *ngIf="compilation_error | async" (click)="viewErrors()">View Errors</button>
+                <div class="value">
+                    {{ (compiled | async) ? 'true' : 'false' }}
+                </div>
+                <mat-spinner
+                    diameter="24"
+                    *ngIf="!(compiled | async)"
+                ></mat-spinner>
+                <button
+                    mat-button
+                    *ngIf="compilation_error | async"
+                    (click)="viewErrors()"
+                >
+                    View Errors
+                </button>
+            </div>
+            <div class="flex items-center space-x-2">
+                <label i18n="@@driverDetailsCommit">Repository:</label>
+                <div class="value">
+                    <a
+                        [routerLink]="[
+                            '/repositories',
+                            item.repository_id,
+                            'about'
+                        ]"
+                        class="underline"
+                    >
+                        {{ item.repository_id }}</a
+                    >
+                </div>
             </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@driverDetailsCommit">Commit:</label>
@@ -43,12 +71,18 @@ import { DriverStateService } from './driver-state.service';
             </div>
         </section>
         <section>
-            <button mat-button (click)="recompileDriver()" i18n="@@driverReloadAction">
+            <button
+                mat-button
+                (click)="recompileDriver()"
+                i18n="@@driverReloadAction"
+            >
                 Recompile Driver
             </button>
         </section>
         <hr class="my-4" />
-        <header class="font-medium text-lg" i18n="@@settingsLabel">Settings</header>
+        <header class="font-medium text-lg" i18n="@@settingsLabel">
+            Settings
+        </header>
         <section *ngIf="item.settings; else load_state">
             <a-settings-form
                 [merge]="true"
@@ -74,7 +108,6 @@ import { DriverStateService } from './driver-state.service';
     ],
 })
 export class DriverAboutComponent {
-
     public readonly compiled = this._service.is_compiled;
     public readonly compilation_error = this._service.last_error;
 
