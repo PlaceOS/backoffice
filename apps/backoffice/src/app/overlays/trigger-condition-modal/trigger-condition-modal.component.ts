@@ -1,23 +1,24 @@
-import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
     PlaceSystem,
     PlaceTrigger,
     TriggerComparison,
     TriggerTimeCondition,
-    updateTrigger,
+    TriggerTimeConditionType,
+    updateTrigger
 } from '@placeos/ts-client';
-
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
-import { DialogEvent } from 'apps/backoffice/src/app/common/types';
-
-import { generateTriggerConditionForm } from 'apps/backoffice/src/app/triggers/triggers.utilities';
 import {
     notifyError,
-    notifySuccess,
+    notifySuccess
 } from 'apps/backoffice/src/app/common/notifications';
+import { DialogEvent } from 'apps/backoffice/src/app/common/types';
+import { generateTriggerConditionForm } from 'apps/backoffice/src/app/triggers/triggers.utilities';
+
+
+
 
 export interface TriggerConditionData {
     /** Item to add/update the trigger on */
@@ -153,8 +154,16 @@ export class TriggerConditionModalComponent
         const new_value = {
             type: this.form.controls.time_type.value,
             time: +(this.form.controls.time.value / 1000).toFixed(0),
-            cron: this.form.controls.cron.value,
+            cron: this.form.get('cron').value,
+            timezone: this.form.get('timezone')?.value
         };
+        if (new_value.cron) {
+            new_value.type = TriggerTimeConditionType.CRON;
+            delete new_value.time;
+        } else {
+            delete new_value.cron;
+            delete new_value.timezone;
+        }
         new_value.cron ? delete new_value.time : delete new_value.cron;
         if (this._data.condition) {
             const old_value = JSON.stringify(this._data.condition);

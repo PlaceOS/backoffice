@@ -1,8 +1,29 @@
 <div class="trigger-condition form time" *ngIf="form" [formGroup]="form">
     <div class="field">
-        <mat-checkbox [(ngModel)]="is_cron" (ngModelChange)="form.controls.cron.setValue(null)" [ngModelOptions]="{ standalone: true }" i18n="@@recurringLabel">
+        <mat-checkbox
+            [(ngModel)]="is_cron"
+            (ngModelChange)="form.controls.cron.setValue(null)"
+            [ngModelOptions]="{ standalone: true }"
+            i18n="@@recurringLabel"
+        >
             Recurring Schedule
         </mat-checkbox>
+    </div>
+    <div class="field" *ngIf="is_cron">
+        <label for="timezone">Timezone</label>
+        <mat-form-field appearance="outline">
+            <app-icon matPrefix class="text-2xl">search</app-icon>
+            <input
+                matInput
+                formControlName="timezone"
+                placeholder="System timezone"
+                [matAutocomplete]="auto"
+            />
+        </mat-form-field>
+        <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let tz of timezones" [value]="tz">{{ tz }}</mat-option>
+            <mat-option *ngIf="!timezones.length" [disabled]="true">No matching timezones</mat-option>
+        </mat-autocomplete>
     </div>
     <div class="fieldset" *ngIf="!is_cron; else cron_time_form">
         <div class="field" *ngIf="form.controls.time">
@@ -25,13 +46,19 @@
                 (ngModelChange)="updateCronString()"
                 [ngModelOptions]="{ standalone: true }"
             >
-                <mat-option *ngFor="let period of repeat_period" [value]="period.id">
+                <mat-option
+                    *ngFor="let period of repeat_period"
+                    [value]="period.id"
+                >
                     {{ period.name }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
     </div>
-    <div class="field" *ngIf="cron_period === 'month' || cron_period === 'year'">
+    <div
+        class="field"
+        *ngIf="cron_period === 'month' || cron_period === 'year'"
+    >
         <label for="day" i18n="@@dayLabel">Day of Month: </label>
         <mat-form-field appearance="outline">
             <mat-select
@@ -40,7 +67,10 @@
                 (ngModelChange)="updateCronString()"
                 [ngModelOptions]="{ standalone: true }"
             >
-                <mat-option *ngFor="let period of days_of_month" [value]="period.id">
+                <mat-option
+                    *ngFor="let period of days_of_month"
+                    [value]="period.id"
+                >
                     {{ period.name }}
                 </mat-option>
             </mat-select>
@@ -54,7 +84,10 @@
             (ngModelChange)="updateCronString()"
             [ngModelOptions]="{ standalone: true }"
         >
-            <mat-button-toggle *ngFor="let month of months_of_year" [value]="month">
+            <mat-button-toggle
+                *ngFor="let month of months_of_year"
+                [value]="month"
+            >
                 {{ month }}
             </mat-button-toggle>
         </mat-button-toggle-group>
@@ -67,13 +100,19 @@
             (ngModelChange)="updateCronString()"
             [ngModelOptions]="{ standalone: true }"
         >
-            <mat-button-toggle *ngFor="let weekday of days_of_week" [value]="weekday">
+            <mat-button-toggle
+                *ngFor="let weekday of days_of_week"
+                [value]="weekday"
+            >
                 {{ weekday }}
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
-    <div class="field" *ngIf="cron_period !== 'minute' && cron_period !== 'hour'">
-        <label for="hour"i18n="@@hourLabel">Hour in the day: </label>
+    <div
+        class="field"
+        *ngIf="cron_period !== 'minute' && cron_period !== 'hour'"
+    >
+        <label for="hour" i18n="@@hourLabel">Hour in the day: </label>
         <mat-button-toggle-group
             name="hour"
             [(ngModel)]="cron_hour"
@@ -96,14 +135,17 @@
         </mat-button-toggle-group>
     </div>
     <div class="field" *ngIf="cron_period !== 'minute'">
-        <label for="minute"i18n="@@minuteLabel">Minute past the hour: </label>
+        <label for="minute" i18n="@@minuteLabel">Minute past the hour: </label>
         <mat-button-toggle-group
             name="minute"
             [(ngModel)]="cron_minute"
             (ngModelChange)="updateCronString()"
             [ngModelOptions]="{ standalone: true }"
         >
-            <mat-button-toggle *ngFor="let minute of minutes_in_hour" [value]="minute">
+            <mat-button-toggle
+                *ngFor="let minute of minutes_in_hour"
+                [value]="minute"
+            >
                 {{ minute }}
             </mat-button-toggle>
         </mat-button-toggle-group>

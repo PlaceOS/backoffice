@@ -1,18 +1,20 @@
-import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-
-import { Identity } from 'apps/backoffice/src/app/common/types';
+import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 import { numberToPosition } from 'apps/backoffice/src/app/common/general';
-
-import * as dayjs from 'dayjs';
+import { TIMEZONES_IANA } from 'apps/backoffice/src/app/common/timezones';
+import { Identity } from 'apps/backoffice/src/app/common/types';
 import * as cron from 'cron-builder';
+import * as dayjs from 'dayjs';
 
 @Component({
     selector: 'trigger-condition-time-form',
     templateUrl: './time-form.component.html',
     styleUrls: ['./time-form.component.scss'],
 })
-export class TriggerConditionTimeFormComponent implements OnChanges {
+export class TriggerConditionTimeFormComponent
+    extends BaseClass
+    implements OnChanges {
     /** Group of form fields used for creating the system */
     @Input() public form: FormGroup;
     /** List of available periods for scheduled repetition */
@@ -57,13 +59,29 @@ export class TriggerConditionTimeFormComponent implements OnChanges {
     /** Hour of the day to recurr on */
     public cron_month = this.months_of_year[0];
 
+    public timezones: string[] = [];
+
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.form && this.form) {
             this.is_cron = this.form.controls.time_type.value === 'cron';
             if (this.is_cron) {
                 this.loadCronTab(this.form.controls.cron.value);
             }
+            this.subscription(
+                'timezone',
+                this.form
+                    .get('timezone')
+                    .valueChanges.subscribe((tz) => this.updateTimezoneList(tz))
+            );
+            this.updateTimezoneList(this.form.get('timezone').value);
         }
+    }
+
+    public updateTimezoneList(tz: string) {
+        const tz_lower = (tz || '').toLowerCase();
+        this.timezones = TIMEZONES_IANA.filter((_) =>
+            _.toLowerCase().includes(tz_lower)
+        );
     }
 
     /**

@@ -1,25 +1,29 @@
 import {
-    Validators,
-    FormControl,
-    FormGroup,
-    AbstractControl,
+    AbstractControl, FormControl,
+    FormGroup, Validators
 } from '@angular/forms';
 import {
     PlaceTrigger,
-    TriggerStatusVariable,
-    TriggerConditionOperator,
-    TriggerComparison,
-    TriggerTimeCondition,
-    TriggerAtTimeCondition,
+
+
+
+
+    TriggerAtTimeCondition, TriggerComparison, TriggerConditionOperator,
+
+
+
     TriggerCronTimeCondition,
     TriggerFunction,
-    TriggerMailer,
+    TriggerMailer, TriggerStatusVariable,
+
+
+    TriggerTimeCondition
 } from '@placeos/ts-client';
-
-import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
-
+import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
 import * as dayjs from 'dayjs';
+
+
 
 /**
  * Generate angular form controls
@@ -118,6 +122,9 @@ export function generateTriggerConditionForm(
         ),
         cron: new FormControl(
             (condition as TriggerCronTimeCondition).cron || undefined
+        ),
+        timezone: new FormControl(
+            (condition as TriggerCronTimeCondition).timezone || ''
         ),
     };
     const subscriptions = [];
