@@ -72,7 +72,8 @@ export class PlaceDebugService extends BaseClass {
             if (this._bound_modules.find((mod) => mod.id === event.mod_id)) {
                 let event_list = [...this.event_list, event];
                 if (event_list.length > 2000) {
-                    event_list = event_list.splice(1, event_list.length - 1);
+                    const [_, ...events] = event_list;
+                    event_list = events;
                 }
                 this._events.next(event_list);
             }
