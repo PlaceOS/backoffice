@@ -2,26 +2,72 @@ import {
     Component,
     forwardRef,
     Input,
-    ViewChild,
+    OnChanges,
     OnInit,
     SimpleChanges,
-    OnChanges,
-    LOCALE_ID,
-    Inject,
+    ViewChild
 } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
-
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
-import { Identity } from 'apps/backoffice/src/app/common/types';
-
-import * as dayjs from 'dayjs';
-import { DatePipe } from '@angular/common';
+import {
+    addMinutes,
+    endOfDay,
+    format,
+    isAfter,
+    isSameDay,
+    roundToNearestMinutes,
+    set,
+    startOfDay,
+    startOfMinute
+} from 'date-fns';
+import { BaseClass } from '../../../common/base.class';
+import { Identity } from '../../../common/types';
 
 @Component({
     selector: 'a-time-field',
-    templateUrl: './time-field.component.html',
-    styleUrls: ['./time-field.component.scss'],
+    template: `
+        <mat-form-field
+            appearance="outline"
+            [style.display]="show_select ? 'none' : ''"
+            (keydown.enter)="showSelect()"
+        >
+            <input
+                matInput
+                type="time"
+                [disabled]="disabled"
+                [ngModel]="time"
+                (ngModelChange)="setValue($event)"
+            />
+            <button mat-icon-button matSuffix class="relative top-1 -right-1" (click)="showSelect()">
+                <app-icon class="text-2xl text-black text-opacity-50">
+                    arrow_drop_down
+                </app-icon>
+            </button>
+            <mat-error><ng-content></ng-content></mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" *ngIf="show_select">
+            <mat-select
+                #select
+                [value]="time"
+                [disabled]="disabled"
+                (valueChange)="setValue($event)"
+            >
+                <mat-option
+                    *ngFor="let option of time_options"
+                    [value]="option.id"
+                >
+                    {{ option.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    `,
+    styles: [
+        `
+            mat-form-field {
+                width: 100%;
+            }
+        `,
+    ],
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
@@ -35,18 +81,18 @@ export class TimeFieldComponent
     implements OnInit, OnChanges, ControlValueAccessor {
     /** Time step between each allowed time option */
     @Input() public step = 15;
+    /** Whether form field is disabled */
+    @Input() public disabled: boolean;
     /** Whether past times are allowed */
     @Input() public no_past_times = true;
     /** String representing the currently set time */
-    public date: number = dayjs().valueOf();
+    public date: number = new Date().valueOf();
     /** String representing the currently set time */
-    public time: string = dayjs().format('HH:mm');
+    public time: string = format(new Date(), 'HH:mm');
     /** Available time blocks for the selected date */
     public _time_options: Identity[];
     /** Whether select field should be shown */
     public show_select: boolean;
-
-    private date_pipe: DatePipe;
     /** Form control on change handler */
     private _onChange: (_: number) => void;
     /** Form control on touch handler */
@@ -54,11 +100,6 @@ export class TimeFieldComponent
 
     /** Select field for selecting the time */
     @ViewChild('select') private select_field: MatSelect;
-
-    constructor(@Inject(LOCALE_ID) private _locale: string) {
-        super();
-        this.date_pipe = new DatePipe(this._locale);
-    }
 
     public ngOnInit(): void {
         this.show_select = true;
@@ -83,18 +124,16 @@ export class TimeFieldComponent
     /** Available time blocks for the selected date */
     public get time_options() {
         const time = (this.time || '00:00').split(':');
-        const date = dayjs(this.date)
-            .hour(+time[0])
-            .minute(+time[1]);
+        const date = set(this.date, { hours: +time[0], minutes: +time[1] });
         if (
-            date.minute() % 15 !== 0 &&
+            date.getMinutes() % 15 !== 0 &&
             !this._time_options.find(
-                (option) => option.id === date.format('HH:mm')
+                (time) => time.id === format(date, 'HH:mm')
             )
         ) {
             this._time_options.push({
-                name: `${this.date_pipe.transform(date.toDate(), 'h:mm a')}`,
-                id: date.format('HH:mm'),
+                name: `${format(date, 'h:mm a')}`,
+                id: format(date, 'HH:mm'),
             });
             this._time_options.sort((a, b) =>
                 `${a.id}`.localeCompare(`${b.id}`)
@@ -111,9 +150,9 @@ export class TimeFieldComponent
         this.time = new_value;
         if (this._onChange) {
             const time = (this.time || '00:00').split(':');
-            const date = dayjs(this.date)
-                .hour(+time[0])
-                .minute(+time[1]);
+            const date = startOfMinute(
+                set(this.date, { hours: +time[0], minutes: +time[1] })
+            );
             this._onChange(date.valueOf());
         }
     }
@@ -123,14 +162,19 @@ export class TimeFieldComponent
      * @param value The new value for the component
      */
     public writeValue(value: number) {
-        this.date = value;
-        const date = dayjs(this.date);
-        this.time = date.format('HH:mm');
+        this.date = value || this.date;
+        let date = startOfMinute(this.date);
+        date = roundToNearestMinutes(date, { nearestTo: 5 });
+        this.time = format(date, 'HH:mm');
         this._time_options = this.generateAvailableTimes(
             this.date,
             !this.no_past_times,
             this.step
         );
+    }
+
+    public setDisabledState(disabled: boolean) {
+        this.disabled = disabled;
     }
 
     /**
@@ -180,21 +224,23 @@ export class TimeFieldComponent
         show_past: boolean,
         step: number = 15
     ): Identity[] {
-        const now = dayjs();
-        let date = dayjs(datestamp);
-        const blocks: Identity[] = [];
-        if (show_past || date.isAfter(now, 'd')) {
-            date = date.startOf('d');
+        const now = new Date();
+        let date = new Date(datestamp);
+        const blocks = [];
+        if (show_past || (!isSameDay(date, now) && isAfter(date, now))) {
+            date = startOfDay(date);
+        } else if (isAfter(date, now)) {
+            date = now;
         }
-        date = date.minute(Math.ceil(date.minute() / step) * step);
-        const end = date.endOf('d');
+        date = roundToNearestMinutes(date, { nearestTo: step });
+        const end = endOfDay(date);
         // Add options for the rest of the day
-        while (date.isBefore(end, 'm')) {
+        while (isAfter(end, date)) {
             blocks.push({
-                name: `${this.date_pipe.transform(date.toDate(), 'h:mm a')}`,
-                id: date.format('HH:mm'),
+                name: `${format(date, 'h:mm a')}`,
+                id: format(date, 'HH:mm'),
             });
-            date = date.add(step, 'm');
+            date = addMinutes(date, step);
         }
         return blocks;
     }
