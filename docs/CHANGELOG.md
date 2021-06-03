@@ -1,3 +1,32 @@
+# [1.9.0](https://github.com/PlaceOS/backoffice/compare/v1.8.0...v1.9.0) (2021-06-03)
+
+
+### Bug Fixes
+
+* fix tab data post changes of domain items and staff tenants ([#52](https://github.com/PlaceOS/backoffice/issues/52)) ([5ae534a](https://github.com/PlaceOS/backoffice/commit/5ae534a1514c076cf9f5fc017bfd1e0df57896bc))
+* **admin:** fix dark mode background color ([c3073da](https://github.com/PlaceOS/backoffice/commit/c3073da2cf863e88dbb85aec1f421d99a358bae9))
+* **auth:** remove some of the available UI elements for support users ([0b3445e](https://github.com/PlaceOS/backoffice/commit/0b3445e8f434ab1da7ec813065ed5cee8077169b))
+* **auth-sources:** tweak required fields for saml auth source ([#168](https://github.com/PlaceOS/backoffice/issues/168)) ([cc1e25e](https://github.com/PlaceOS/backoffice/commit/cc1e25e7fd25bfb36f71b602063f1ea1d45b6f27))
+* **domains:** fix tab counts ([#101](https://github.com/PlaceOS/backoffice/issues/101)) ([e6bbcc6](https://github.com/PlaceOS/backoffice/commit/e6bbcc63067c4a2739e4f6497f0f204ee9578a48))
+* **forms:** fix password fields for user and repo forms ([#161](https://github.com/PlaceOS/backoffice/issues/161)) ([99a62b7](https://github.com/PlaceOS/backoffice/commit/99a62b75a919d2c2a4af37202abb1a1ac0fc8fb3))
+* **metadata:** clear up UX for editing metadata ([#166](https://github.com/PlaceOS/backoffice/issues/166)) ([933ef06](https://github.com/PlaceOS/backoffice/commit/933ef06c27c6efa7864cc3c40cab584c9092f9f4))
+* **metadata:** fix setting metadata description ([25b0e14](https://github.com/PlaceOS/backoffice/commit/25b0e14b61d881c0e8d8f438bc94ba075622be62))
+* fix first item being removed from item search listings ([1599b71](https://github.com/PlaceOS/backoffice/commit/1599b71a0330e7b40dd6d7b9665684502c6e730a))
+* **modules:** prevent spaces in custom name ([117e0b7](https://github.com/PlaceOS/backoffice/commit/117e0b7757cd548fb7182991baaa244944c36dd5))
+* **repos:** fix driver listings for repositories ([1db72a7](https://github.com/PlaceOS/backoffice/commit/1db72a7a9d4e3091234801e4095cf087ed90cb55))
+* **repos:** fix flickering of commit hashes ([7a0ba0b](https://github.com/PlaceOS/backoffice/commit/7a0ba0b7c8a2cf220b2498ac4eb5ab5510f000ec))
+* **systems:** refresh exec list on module state change ([16db412](https://github.com/PlaceOS/backoffice/commit/16db4128e781edf0a358df99b621fca5fa6246ad))
+* **users:** fix required field for last name ([6371759](https://github.com/PlaceOS/backoffice/commit/63717591f624e0e368bbbd4bb923a5494c924860))
+
+
+### Features
+
+* **admin:** add page for adding managing custom schemas ([#165](https://github.com/PlaceOS/backoffice/issues/165)) ([a288dde](https://github.com/PlaceOS/backoffice/commit/a288dded395ba6000e07b698db68ff33d2393363))
+* **metadata:** add logic to handle schemas for data input and validatn ([df3762b](https://github.com/PlaceOS/backoffice/commit/df3762ba218e83e963784be5176969f6aa545ccd))
+* **systems:** add form field for adding images to systems ([797fbd2](https://github.com/PlaceOS/backoffice/commit/797fbd267ece1871a841105bd5d2a082457ef691))
+* **user:** add ability to set user domains ([#158](https://github.com/PlaceOS/backoffice/issues/158)) ([a998ffb](https://github.com/PlaceOS/backoffice/commit/a998ffbae91ef194196787db6a8c4eec2218a00f))
+* **users:** add ability to set metadata for users ([676bb55](https://github.com/PlaceOS/backoffice/commit/676bb557c108b8593f8787160e0e99d251283a8e))
+
 # [1.8.0](https://github.com/PlaceOS/backoffice/compare/v1.7.0...v1.8.0) (2021-01-11)
 
 
