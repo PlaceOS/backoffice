@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, switchMap, tap, filter } from 'rxjs/operators';
 
 import { PlaceCluster, queryClusters } from '@placeos/ts-client';
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
@@ -7,6 +7,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
 
 import * as dayjs from 'dayjs';
 import { PlaceClusterUsageStamp } from './cluster-node.component';
+import { interval } from 'rxjs';
 
 @Component({
     selector: 'engine-cluster-details',
@@ -42,10 +43,13 @@ import { PlaceClusterUsageStamp } from './cluster-node.component';
             </ng-container>
         </ng-container>
         <ng-template #empty_state>
-            <div class="info-block center">
-                <div class="icon">
-                    <app-icon [icon]="{ class: 'backoffice-cross' }"></app-icon>
-                </div>
+            <div
+                class="absolute inset-0 flex flex-col items-center p-8 space-y-2"
+            >
+                <app-icon
+                    class="text-3xl"
+                    [icon]="{ class: 'backoffice-cross' }"
+                ></app-icon>
                 <div class="text" i18n="@@clusterListEmpty">
                     No Cluster details to show
                 </div>
@@ -77,46 +81,40 @@ export class PlaceClusterDetailsComponent extends BaseClass implements OnInit {
     /** Whether cluster details are being loaded */
     public loading: boolean;
 
-    public ngOnInit(): void {
-        this.loadClusters();
-        this.interval('load_cluster', () => this.loadClusters(), 2000);
-    }
-
-    private loadClusters(): void {
-        if (this.active_cluster) {
-            return;
-        }
-        this.loading = true;
-        queryClusters({ include_status: true } as any)
-            .pipe(
-                map((resp) => resp.data),
-                catchError((_) => [])
-            )
-            .subscribe((list) => {
-                this.cluster_list = list || [];
-                const date = dayjs().valueOf();
-                this.cluster_list.forEach((cluster) => {
-                    if (!this.cpu_history[cluster.id]) {
-                        this.cpu_history[cluster.id] = {};
+    public readonly clusters$ = interval(2000).pipe(
+        filter(() => !this.active_cluster),
+        tap(() => (this.loading = true)),
+        switchMap(() => queryClusters({ include_status: true } as any)),
+        map((resp) => resp.data),
+        catchError((_) => []),
+        map((list) => {
+            this.cluster_list = list || [];
+            const date = dayjs().valueOf();
+            this.cluster_list.forEach((cluster) => {
+                if (!this.cpu_history[cluster.id]) {
+                    this.cpu_history[cluster.id] = {};
+                }
+                const nodes = [cluster, ...cluster.edge_nodes] as any;
+                for (const node of nodes) {
+                    if (!this.cpu_history[cluster.id][node.hostname]) {
+                        this.cpu_history[cluster.id][node.hostname] = [];
                     }
-                    const nodes = [cluster, ...cluster.edge_nodes] as any;
-                    for (const node of nodes) {
-                        if (!this.cpu_history[cluster.id][node.hostname]) {
-                            this.cpu_history[cluster.id][node.hostname] = [];
-                        }
-                        this.cpu_history[cluster.id][node.hostname].push({
-                            id: date,
-                            value: node.core_cpu,
-                        });
-                        if (
-                            this.cpu_history[cluster.id][node.hostname].length >
-                            120
-                        ) {
-                            this.cpu_history[cluster.id][node.hostname].shift();
-                        }
+                    this.cpu_history[cluster.id][node.hostname].push({
+                        id: date,
+                        value: node.core_cpu,
+                    });
+                    if (
+                        this.cpu_history[cluster.id][node.hostname].length > 120
+                    ) {
+                        this.cpu_history[cluster.id][node.hostname].shift();
                     }
-                });
-                this.loading = false;
+                }
             });
+        }),
+        tap(() => (this.loading = false))
+    );
+
+    public ngOnInit(): void {
+        this.subscription('load_cluster', this.clusters$.subscribe());
     }
 }

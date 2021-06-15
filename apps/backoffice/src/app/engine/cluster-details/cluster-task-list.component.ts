@@ -27,7 +27,7 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
                 Cluster - {{ cluster?.hostname }}
             </h3>
         </div>
-        <div role="table">
+        <div role="table" class="h-1/2 flex-1">
             <div table-head>
                 <div class="flex-1 p-2">Name</div>
                 <div class="w-24 p-2">CPU %</div>
@@ -69,6 +69,8 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
     styles: [
         `
             :host {
+                display: flex;
+                flex-direction: column;
                 padding: 1rem;
                 height: 100%;
                 width: 100%;
