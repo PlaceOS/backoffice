@@ -21,7 +21,7 @@ import { openConfirmModal } from 'apps/backoffice/src/app/common/general';
 @Component({
     selector: 'app-brokers',
     template: `
-        <button mat-button (click)="newBroker()">
+        <button mat-button class="my-4" (click)="newBroker()">
             <div class="flex items-center">
                 <app-icon className="backoffice-plus"></app-icon>
                 <div class="text">Add Broker</div>

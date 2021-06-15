@@ -14,7 +14,7 @@ import { BackofficeUsersService } from '../users/users.service';
         >
             PlaceOS Admin
         </div>
-        <div class="flex flex-1 z-0 dark:text-white">
+        <div class="flex flex-1 z-0 h-1/2 dark:text-white">
             <div
                 class="relative w-64 h-full bg-white border-r border-gray-400 border-opacity-30 shadow z-10 dark:bg-greyer"
             >
