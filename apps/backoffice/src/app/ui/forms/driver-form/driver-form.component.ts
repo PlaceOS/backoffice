@@ -227,7 +227,9 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
                 driver.tcp_port || driver.udp_port
                     ? PlaceDriverRole.Device
                     : driver.uri_base
-                    ? PlaceDriverRole.Service
+                    ? driver.uri_base.startsWith('ws')
+                        ? PlaceDriverRole.Websocket
+                        : PlaceDriverRole.Service
                     : PlaceDriverRole.Logic
             );
             this.form.controls.settings.setValue(driver.default_settings || '');
