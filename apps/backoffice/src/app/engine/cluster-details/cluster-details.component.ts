@@ -67,6 +67,8 @@ import { interval } from 'rxjs';
             :host {
                 display: flex;
                 flex-wrap: wrap;
+                height: 100%;
+                width: 100%;
             }
         `,
     ],

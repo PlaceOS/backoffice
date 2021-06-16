@@ -121,7 +121,7 @@ export class PlaceClusterTaskListComponent extends BaseClass implements OnInit {
             },
         });
         this.subscription(
-            'confirm_kil',
+            'confirm_kill',
             ref.componentInstance.event.subscribe((event) => {
                 if (event.reason === 'done') {
                     this.killing = process.id;
