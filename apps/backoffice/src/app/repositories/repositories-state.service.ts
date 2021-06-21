@@ -77,7 +77,7 @@ export class RepositoriesStateService {
             .catch((err) => {
                 notifyError(
                     `Error pulling latest commit. Error: ${JSON.stringify(
-                        err.response || err.message || err
+                        err.response || err.message || 'Pull timed out'
                     )}`
                 );
             });
