@@ -187,13 +187,25 @@ export class SystemExecFieldComponent
                                                 (mod) => mod.id === device.id
                                             ) + 1)
                             );
+                            console.log('Active Module:', this.active_module);
                             if (
                                 this.active_module &&
                                 !(this.devices || []).find(
-                                    (mod) => mod.id === this.active_module.id
+                                    (mod) =>
+                                        mod.module ===
+                                            this.active_module.module &&
+                                        mod.index === this.active_module.index
                                 )
                             ) {
                                 this.devices.unshift(this.active_module);
+                            } else if (this.active_module) {
+                                this.active_module = (this.devices || []).find(
+                                    (mod) =>
+                                        mod.module ===
+                                            this.active_module.module &&
+                                        mod.index === this.active_module.index
+                                );
+                                this.loadFunctions(this.active_module, false);
                             }
                         },
                         () => null
@@ -206,10 +218,12 @@ export class SystemExecFieldComponent
      * Load the available functions for the given module
      * @param item Module to grab function list for
      */
-    public loadFunctions(item: PlaceModuleLike) {
-        this.methods = null;
-        this.active_method = null;
-        this.fields = {};
+    public loadFunctions(item: PlaceModuleLike, clear: boolean = true) {
+        if (clear) {
+            this.methods = null;
+            this.active_method = null;
+            this.fields = {};
+        }
         this.active_module = item;
         functionList(this.system.id, item.module, item.index).subscribe(
             (list) => {
@@ -480,6 +494,7 @@ export class SystemExecFieldComponent
             } else {
                 this.active_method = method;
             }
+            this.selectFunction(this.active_method);
         }
     }
 

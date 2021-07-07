@@ -14,10 +14,10 @@
                 <mat-option
                     *ngFor="let option of devices || []"
                     [disabled]="!option.running"
-                    [value]="option"
+                    [value]="option.running ? option : option + '(D)'"
                 >
-                    {{ option.module || option.name || "&lt;Unnamed&gt;" }} {{ option.index ?
-                    option.index : '' }}
+                    {{ option.module || option.name || "&lt;Unnamed&gt;" }} {{
+                    option.index ? option.index : '' }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
@@ -33,7 +33,10 @@
                     placeholder="Select a function"
                     i18n-placeholder="@@selectFunction"
                 >
-                    <mat-option *ngFor="let option of methods || []" [value]="option">
+                    <mat-option
+                        *ngFor="let option of methods || []"
+                        [value]="option"
+                    >
                         {{ option.name }}
                     </mat-option>
                 </mat-select>
@@ -54,7 +57,9 @@
         <div class="fn-input">
             <div class="bracket">{{active_method.name}}(</div>
             <div class="arg" *ngFor="let arg of param_list; let i = index">
-                <span class="seperator" [class.solid]="arg[2] !== undefined || fields[arg[0]]"
+                <span
+                    class="seperator"
+                    [class.solid]="arg[2] !== undefined || fields[arg[0]]"
                     >{{(i > 0 ? ',&nbsp;' : '')}}</span
                 >
                 <input
@@ -88,7 +93,9 @@
 </section>
 <ng-template #empty_state>
     <div class="info-block">
-        <div class="text" i18n="@@execNoModules">No running modules on the system</div>
+        <div class="text" i18n="@@execNoModules">
+            No running modules on the system
+        </div>
     </div>
 </ng-template>
 <ng-template #empty_function_state>
