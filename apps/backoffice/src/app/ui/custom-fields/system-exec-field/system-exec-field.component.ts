@@ -231,7 +231,11 @@ export class SystemExecFieldComponent
         this.active_method = fn;
         if (fn) {
             this.param_list = Object.keys(this.active_method.params).map(
-                (i) => [i, ...this.active_method.params[i]] as any
+                (i) => {
+                    const { type } = this.active_method.params[i];
+                    const default_value = this.active_method.params[i].default;
+                    return [i, type, default_value] as any;
+                }
             );
         }
         this.checkFields();
