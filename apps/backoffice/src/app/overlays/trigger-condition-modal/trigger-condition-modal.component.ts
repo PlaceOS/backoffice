@@ -7,18 +7,15 @@ import {
     TriggerComparison,
     TriggerTimeCondition,
     TriggerTimeConditionType,
-    updateTrigger
+    updateTrigger,
 } from '@placeos/ts-client';
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 import {
     notifyError,
-    notifySuccess
+    notifySuccess,
 } from 'apps/backoffice/src/app/common/notifications';
 import { DialogEvent } from 'apps/backoffice/src/app/common/types';
 import { generateTriggerConditionForm } from 'apps/backoffice/src/app/triggers/triggers.utilities';
-
-
-
 
 export interface TriggerConditionData {
     /** Item to add/update the trigger on */
@@ -155,10 +152,9 @@ export class TriggerConditionModalComponent
             type: this.form.controls.time_type.value,
             time: +(this.form.controls.time.value / 1000).toFixed(0),
             cron: this.form.get('cron').value,
-            timezone: this.form.get('timezone')?.value
+            timezone: this.form.get('timezone')?.value,
         };
-        if (new_value.cron) {
-            new_value.type = TriggerTimeConditionType.CRON;
+        if (new_value.type === TriggerTimeConditionType.CRON) {
             delete new_value.time;
         } else {
             delete new_value.cron;

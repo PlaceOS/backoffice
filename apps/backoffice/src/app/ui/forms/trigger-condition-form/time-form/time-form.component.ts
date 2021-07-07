@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { TriggerTimeConditionType } from '@placeos/ts-client';
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 import { numberToPosition } from 'apps/backoffice/src/app/common/general';
 import { TIMEZONES_IANA } from 'apps/backoffice/src/app/common/timezones';
@@ -82,6 +83,16 @@ export class TriggerConditionTimeFormComponent
         this.timezones = TIMEZONES_IANA.filter((_) =>
             _.toLowerCase().includes(tz_lower)
         );
+    }
+
+    public toggleCRON(is_cron: boolean) {
+        this.form.controls.cron.setValue(null);
+        this.form.controls.time_type.setValue(
+            is_cron
+                ? TriggerTimeConditionType.CRON
+                : TriggerTimeConditionType.AT
+        );
+        this.updateCronString();
     }
 
     /**
