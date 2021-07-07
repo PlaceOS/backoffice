@@ -187,7 +187,6 @@ export class SystemExecFieldComponent
                                                 (mod) => mod.id === device.id
                                             ) + 1)
                             );
-                            console.log('Active Module:', this.active_module);
                             if (
                                 this.active_module &&
                                 !(this.devices || []).find(
@@ -517,15 +516,11 @@ export class SystemExecFieldComponent
      * Registers a callback function that is called when the control's value changes in the UI.
      * @param fn The callback function to register
      */
-    public registerOnChange(fn: (_: TriggerFunction) => void): void {
-        this._onChange = fn;
-    }
+    public registerOnChange = (fn) => (this._onChange = fn);
 
     /**
      * Registers a callback function is called by the forms API on initialization to update the form model on blur.
      * @param fn The callback function to register
      */
-    public registerOnTouched(fn: (_: TriggerFunction) => void): void {
-        this._onTouch = fn;
-    }
+    public registerOnTouched = (fn) => (this._onTouch = fn);
 }

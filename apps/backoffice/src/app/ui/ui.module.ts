@@ -67,6 +67,11 @@ import { UnauthorisedComponent } from './unauthorised.component';
 import { UploadListComponent } from './upload-list.component';
 import { BasicLineGraphComponent } from './basic-line-graph.component';
 
+import { ExecuteMethodFieldComponent } from './custom-fields/system-exec/execute-method-field.component';
+import { SelectModuleComponent } from './custom-fields/system-exec/select-module.component';
+import { SelectMethodComponent } from './custom-fields/system-exec/select-method.component';
+import { FunctionArgumentComponent } from './custom-fields/system-exec/function-argument.component';
+
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
     ModuleFormComponent,
@@ -86,6 +91,11 @@ const FORM_COMPONENTS: Type<any>[] = [
     SettingsFormComponent,
     BrokerFormComponent,
     ExtensionOutletComponent,
+
+    ExecuteMethodFieldComponent,
+    SelectModuleComponent,
+    SelectMethodComponent,
+    FunctionArgumentComponent,
 ];
 
 const COMPONENTS: Type<any>[] = [

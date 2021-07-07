@@ -61,10 +61,7 @@ import { SystemStateService } from './system-state.service';
                 <h3 class="font-medium text-lg mb-2" i18n="@@execHeader">
                     Execute command
                 </h3>
-                <system-exec-field
-                    [system]="item"
-                    [refresh]="refresh_modules"
-                ></system-exec-field>
+                <execute-method-field [system]="item"></execute-method-field>
             </section>
             <section device-list>
                 <h3 class="font-medium text-lg mb-2" i18n="@@moduleListHeader">
