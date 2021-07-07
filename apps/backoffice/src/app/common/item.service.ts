@@ -94,7 +94,7 @@ export class ActiveItemService extends BaseClass {
         .asObservable()
         .pipe(
             distinctUntilChanged(
-                (a, b) => a?.id === b?.id && a?.version === b?.version
+                (a, b) => a?.id === b?.id && a?.updated_at === b?.updated_at
             )
         );
     /** Observable for list of items */
