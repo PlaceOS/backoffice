@@ -119,8 +119,8 @@ export class SelectModuleComponent
             this.modules.subscribe((list) => {
                 const active = list.find(
                     (_) =>
-                        _.module === this.module.module &&
-                        _.index === this.module.index
+                        _.module === this.module?.module &&
+                        _.index === this.module?.index
                 );
                 if (active) this.setValue(active);
             })
