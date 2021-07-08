@@ -8,36 +8,52 @@ import * as marked from 'marked';
 @Component({
     selector: 'zone-about',
     template: `
-        <header class="font-medium text-lg" *ngIf="(systems | async)?.length" i18n="@@execHeader">
+        <header
+            class="font-medium text-lg"
+            *ngIf="(systems | async)?.length"
+            i18n="@@execHeader"
+        >
             Execute Command
         </header>
         <section *ngIf="(systems | async)?.length" class="mb-4">
             <mat-form-field appearance="outline" class="h-12">
-                <mat-select [(ngModel)]="active_system" placeholder="Select system">
-                    <mat-option *ngFor="let system of systems | async" [value]="system">
+                <mat-select
+                    [(ngModel)]="active_system"
+                    placeholder="Select system"
+                >
+                    <mat-option
+                        *ngFor="let system of systems | async"
+                        [value]="system"
+                    >
                         {{ system.name }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <system-exec-field
+            <execute-method-field
                 *ngIf="active_system && active_system.id"
                 [system]="active_system"
-            ></system-exec-field>
+            ></execute-method-field>
         </section>
         <section class="space-y-2">
             <div class="flex items-center space-x-2" *ngIf="item?.parent_id">
                 <label i18n="@@zoneParentLabel">Parent ID:</label>
                 <div class="value underline">
-                    <a [routerLink]="['/zones', item?.parent_id, 'about']">{{ item?.parent_id }}</a>
+                    <a [routerLink]="['/zones', item?.parent_id, 'about']">{{
+                        item?.parent_id
+                    }}</a>
                 </div>
             </div>
             <div class="flex items-center space-x-2" *ngIf="item?.created_at">
                 <label i18n="@@zoneCreatedAtLabel">Created:</label>
-                <div class="value">{{ item?.created_at * 1000 | dateFrom }}</div>
+                <div class="value">
+                    {{ item?.created_at * 1000 | dateFrom }}
+                </div>
             </div>
             <div class="flex items-center space-x-2" *ngIf="item?.updated_at">
                 <label i18n="@@zoneUpdatedAtLabel">Updated:</label>
-                <div class="value">{{ item?.updated_at * 1000 | dateFrom }}</div>
+                <div class="value">
+                    {{ item?.updated_at * 1000 | dateFrom }}
+                </div>
             </div>
             <div class="flex items-center space-x-2" *ngIf="item?.location">
                 <label i18n="@@zoneLocationLabel">Location:</label>
@@ -61,10 +77,16 @@ import * as marked from 'marked';
             </div>
             <div class="flex items-center space-x-2" *ngIf="item?.map_id">
                 <label i18n="@@zoneMapLabel">Map:</label>
-                <a class="underline" [href]="item?.map_id">{{ item?.map_id }}</a>
+                <a class="underline" [href]="item?.map_id">{{
+                    item?.map_id
+                }}</a>
             </div>
         </section>
-        <header class="font-medium text-lg" *ngIf="item?.description" i18n="@@descriptionLabel">
+        <header
+            class="font-medium text-lg"
+            *ngIf="item?.description"
+            i18n="@@descriptionLabel"
+        >
             Description
         </header>
         <section
@@ -74,14 +96,19 @@ import * as marked from 'marked';
         ></section>
         <section class="flex space-x-2 mt-1" *ngIf="item && tag_list">
             <label class="my-1" for="tags" i18n="@@zoneTagsLabel">Tags:</label>
-            <div class="value" *ngIf="tag_list && tag_list.length; else empty_tag_state">
+            <div
+                class="value"
+                *ngIf="tag_list && tag_list.length; else empty_tag_state"
+            >
                 <mat-chip-list name="tags">
                     <mat-chip *ngFor="let tag of tag_list">{{ tag }}</mat-chip>
                 </mat-chip-list>
             </div>
         </section>
         <hr class="my-4" />
-        <header class="font-medium text-lg" i18n="@@settingsLabel">Settings</header>
+        <header class="font-medium text-lg" i18n="@@settingsLabel">
+            Settings
+        </header>
         <section *ngIf="item?.settings; else load_state">
             <a-settings-form
                 [merge]="true"
@@ -96,7 +123,9 @@ import * as marked from 'marked';
             </div>
         </ng-template>
         <ng-template #empty_tag_state>
-            <p class="text-center py-1" i18n="@@zoneTagsEmpty">&lt;No Tags&gt;</p>
+            <p class="text-center py-1" i18n="@@zoneTagsEmpty">
+                &lt;No Tags&gt;
+            </p>
         </ng-template>
     `,
     styles: [

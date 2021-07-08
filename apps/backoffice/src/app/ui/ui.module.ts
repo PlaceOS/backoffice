@@ -30,7 +30,6 @@ import { ImageListFieldComponent } from './custom-fields/image-list-field.compon
 import { ItemSearchFieldComponent } from './custom-fields/item-search-field/item-search-field.component';
 import { ObjectListFieldComponent } from './custom-fields/object-list-field/object-list-field.component';
 import { SettingsFieldComponent } from './custom-fields/settings-field/settings-field.component';
-import { SystemExecFieldComponent } from './custom-fields/system-exec-field/system-exec-field.component';
 import { TimeFieldComponent } from './custom-fields/time-field/time-field.component';
 import { DebugOutputComponent } from './debug-output.component';
 import { ExtensionOutletComponent } from './extension-outlet.component';
@@ -126,7 +125,6 @@ const ENTRY_COMPONENT: Type<any>[] = [
     DateFieldComponent,
     TimeFieldComponent,
     ContextMenuComponent,
-    SystemExecFieldComponent,
     ImageListFieldComponent,
     ObjectListFieldComponent,
 ];
