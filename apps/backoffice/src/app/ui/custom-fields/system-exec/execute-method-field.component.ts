@@ -121,6 +121,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     }
 
     public postArguments(arg_map: HashMap) {
+        if (!this.fn?.params) return;
         const args = {};
         for (const key in arg_map) {
             args[key] = arg_map[key];
@@ -133,6 +134,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
             method: (this.fn as any).name,
             args,
         });
+        this.arguments = arg_map;
     }
 
     /**
@@ -161,7 +163,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
             (this.fn as any).name,
             this.module.module,
             this.module.index,
-            this.fn.order.map((key) => this.arguments[key] || null)
+            this.fn.order.map((key) => JSON.parse(this.arguments[key] || null))
         )
             .toPromise()
             .catch((err) => {

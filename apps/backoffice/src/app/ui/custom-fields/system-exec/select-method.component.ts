@@ -113,7 +113,7 @@ export class SelectMethodComponent
             'methods',
             this.method_list.subscribe((list) => {
                 const active = list.find(
-                    (_) => _.name === (this.method as any).name
+                    (_) => _.name === (this.method as any)?.name
                 );
                 if (active) this.setValue(active);
             })
