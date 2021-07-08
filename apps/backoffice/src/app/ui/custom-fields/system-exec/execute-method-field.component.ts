@@ -28,6 +28,9 @@ import { ModuleLike } from './select-module.component';
                     [system]="system"
                     [module]="module"
                     [(ngModel)]="fn"
+                    (ngModelChange)="
+                        fn?.order?.length === 0 ? postArguments({}) : ''
+                    "
                 ></select-module-method>
                 <function-arguments
                     *ngIf="fn"
