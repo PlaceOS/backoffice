@@ -53,8 +53,10 @@ const validateType = (type) => (control: AbstractControl) => {
                     [class.h-5]="i === 0"
                     [class.h-12]="i !== 0"
                 ></div>
+                <!-- <label [for]="key">{{ key }}</label> -->
                 <mat-form-field class="w-1/2 flex-1 h-12" appearance="outline">
                     <input
+                        [name]="key"
                         matInput
                         [formControlName]="key"
                         [placeholder]="key"

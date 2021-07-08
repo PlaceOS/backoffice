@@ -155,6 +155,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
 
     public async execute() {
         this.loading = true;
+        this.arguments = this.arguments || {};
         const result = await executeOnSystem(
             this.system.id,
             (this.fn as any).name,
