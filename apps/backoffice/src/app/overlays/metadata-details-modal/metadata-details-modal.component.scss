@@ -1,0 +1,40 @@
+.heading {
+    flex: 1;
+    min-width: 50%;
+}
+
+main {
+    width: 32em;
+    max-width: 95vw;
+}
+
+.field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 50%;
+    width: 100%;
+
+    div.error {
+        position: absolute;
+        bottom: 0.5em;
+        left: 1em;
+        color: var(--error);
+        font-size: 0.7em;
+        font-weight: 500;
+    }
+}
+
+label {
+    font-size: 0.8em;
+    font-weight: 500;
+    margin: 0.5em 0;
+
+    &.error {
+        color: var(--error);
+    }
+
+    span {
+        color: var(--pending);
+    }
+}

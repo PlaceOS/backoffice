@@ -1,0 +1,84 @@
+form {
+    display: flex;
+    flex-direction: column;
+    min-width: 100%;
+}
+
+.fieldset {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+
+    .field {
+        width: auto;
+        flex: 1;
+        min-width: 30%;
+        margin: 0 0.25em;
+
+        @media screen and (max-width: 720px) {
+            min-width: 20em;
+            margin: 0;
+        }
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+.field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 50%;
+    width: 100%;
+
+    div.error {
+        position: absolute;
+        bottom: 0.5em;
+        left: 1em;
+        color: var(--error);
+        font-size: 0.7em;
+        font-weight: 500;
+    }
+}
+
+label {
+    font-size: 0.8em;
+    font-weight: 500;
+    margin: 0.5em 0;
+
+    &.error {
+        color: var(--error);
+    }
+
+    span {
+        color: var(--pending);
+    }
+}
+
+settings-form-field {
+    margin-bottom: 1.5em;
+}
+
+mat-checkbox {
+    margin: 0.25em;
+}
+
+input {
+    min-width: 0;
+}
+
+mat-button-toggle-group {
+    width: 100%;
+    overflow: auto hidden;
+    margin-bottom: 0.5em;
+}
+
+mat-button-toggle {
+    flex: 1;
+}

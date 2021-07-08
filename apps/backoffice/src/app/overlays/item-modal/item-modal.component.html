@@ -1,0 +1,74 @@
+<header>
+    <h3 mat-dialog-title>
+        {{ item && edit ? 'Edit' : 'New' }}
+        {{ name === 'Repositorie' ? 'Repository' : name }}
+    </h3>
+    <button mat-icon-button mat-dialog-close *ngIf="!loading">
+        <app-icon
+            [icon]="{ type: 'icon', class: 'backoffice-cross' }"
+        ></app-icon>
+    </button>
+</header>
+<mat-dialog-content>
+    <div class="body" *ngIf="!loading; else load_state">
+        <ng-container [ngSwitch]="item_type">
+            <ng-container *ngSwitchCase="'repository'">
+                <repository-form [form]="form"></repository-form>
+            </ng-container>
+            <ng-container *ngSwitchCase="'trigger'">
+                <trigger-form [form]="form"></trigger-form>
+            </ng-container>
+            <ng-container *ngSwitchCase="'system-trigger'">
+                <system-trigger-form [form]="form"></system-trigger-form>
+            </ng-container>
+            <ng-container *ngSwitchCase="'application'">
+                <application-form [form]="form"></application-form>
+            </ng-container>
+            <ng-container *ngSwitchCase="'domain'">
+                <domain-form [form]="form"></domain-form>
+            </ng-container>
+            <ng-container *ngSwitchCase="'user'">
+                <user-form [form]="form"></user-form>
+            </ng-container>
+            <ng-container *ngSwitchCase="'driver'">
+                <driver-form
+                    [form]="form"
+                    (waiting)="can_submit = !$event"
+                ></driver-form>
+            </ng-container>
+            <ng-container *ngSwitchCase="'zone'">
+                <zone-form [form]="form"></zone-form>
+            </ng-container>
+            <ng-container *ngSwitchCase="'module'">
+                <module-form [form]="form" [readonly]="readonly"></module-form>
+            </ng-container>
+            <ng-container *ngSwitchCase="'broker'">
+                <broker-form [form]="form"></broker-form>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+                <system-form [form]="form"></system-form>
+            </ng-container>
+        </ng-container>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions *ngIf="!loading">
+    <button mat-button class="inverse" mat-dialog-close>Cancel</button>
+    <button
+        mat-button
+        type="submit"
+        [disabled]="!can_submit"
+        (click)="submit()"
+    >
+        {{ item ? 'Save' : 'Add' }} <span class="keycap ml-2">S</span>
+    </button>
+</mat-dialog-actions>
+<ng-template #load_state>
+    <div class="body">
+        <div class="info-block">
+            <div class="icon">
+                <mat-spinner diameter="32"></mat-spinner>
+            </div>
+            <div class="text">Processing request...</div>
+        </div>
+    </div>
+</ng-template>

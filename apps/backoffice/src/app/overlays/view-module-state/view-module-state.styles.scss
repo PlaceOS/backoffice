@@ -1,0 +1,38 @@
+.body {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 2em;
+    width: 100%;
+}
+.content {
+    width: 16rem;
+    text-align: center;
+    font-size: 0.8em;
+}
+
+.field {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.5em;
+    transition: background-color 200ms;
+    border-radius: 4px;
+
+    &:hover {
+        background-color: rgba(#000, 0.05);
+    }
+}
+
+label {
+    width: 5.5em;
+}
+
+.settings {
+    width: 40em;
+    max-width: calc(100vw - 1em);
+}
+
+button.mat-button {
+    margin: 0.25em;
+}

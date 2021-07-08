@@ -1,0 +1,26 @@
+.item {
+    display: flex;
+    align-items: center;
+    min-width: 20em;
+    max-width: 24em;
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    &:nth-child(2) {
+        background-color: rgba(#000, 0.1);
+    }
+
+    .name {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.status {
+    color: var(--error);
+}
+
+.done {
+    color: var(--success);
+}
