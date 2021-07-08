@@ -90,3 +90,9 @@ kbd.light,
         inset 0 0 0.4em rgb(200, 200, 200), 0 0.1em 0 rgb(130, 130, 130),
         0 0.11em 0 rgba(0, 0, 0, 0.4), 0 0.1em 0.11em rgba(0, 0, 0, 0.9);
 }
+
+.xterm-helpers {
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+}
