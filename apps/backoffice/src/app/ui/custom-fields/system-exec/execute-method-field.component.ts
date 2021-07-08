@@ -163,7 +163,13 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
             (this.fn as any).name,
             this.module.module,
             this.module.index,
-            this.fn.order.map((key) => JSON.parse(this.arguments[key] || null))
+            this.fn.order.map((key) => {
+                try {
+                    return JSON.parse(this.arguments[key]);
+                } catch {
+                    return this.arguments[key] || null;
+                }
+            })
         )
             .toPromise()
             .catch((err) => {
