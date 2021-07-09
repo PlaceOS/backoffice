@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { addMetadata, onlineState, showMetadata, updateMetadata } from '@placeos/ts-client';
+import { onlineState, showMetadata, updateMetadata } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
 import { BaseClass } from '../common/base.class';
 import { ActiveItemService } from '../common/item.service';
@@ -12,6 +12,7 @@ export interface FrameMessage {
     type: 'backoffice';
     action: 'update' | 'load' | 'metadata';
     name?: string;
+    parent?: boolean;
     content: HashMap;
 }
 
@@ -38,13 +39,17 @@ export class ExtensionOutletComponent extends BaseClass {
     constructor(
         private _route: ActivatedRoute,
         private _location: Location,
-        private _service: ActiveItemService,
+        private _service: ActiveItemService
     ) {
         super();
     }
 
     public ngOnInit(): void {
-        onlineState().pipe(first(_ => _)).subscribe(() => this.timeout('init', () => this.app_loaded = true));
+        onlineState()
+            .pipe(first((_) => _))
+            .subscribe(() =>
+                this.timeout('init', () => (this.app_loaded = true))
+            );
         this._route.queryParamMap.subscribe((params) => {
             if (params.has('embed')) {
                 this.url = decodeURIComponent(params.get('embed'));
@@ -53,7 +58,9 @@ export class ExtensionOutletComponent extends BaseClass {
             }
         });
         window.addEventListener('message', this.onMessage);
-        this.subscription('message', () => window.removeEventListener('message', this.onMessage));
+        this.subscription('message', () =>
+            window.removeEventListener('message', this.onMessage)
+        );
     }
 
     private async handleMessage(message: FrameMessage) {
@@ -68,10 +75,10 @@ export class ExtensionOutletComponent extends BaseClass {
                     this.updateItem(item, message);
                 } else if (message.action === 'metadata' && message.name) {
                     // Handle updating metadata
-                    this.updateMetadata(item, message)
+                    this.updateMetadata(item, message);
                 } else if (message.action === 'load' && message.name) {
                     // Handle updating metadata
-                    this.loadMetadata(item, message)
+                    this.loadMetadata(item, message, message.parent);
                 }
             }
         });
@@ -82,13 +89,19 @@ export class ExtensionOutletComponent extends BaseClass {
             .save({ ...item, ...message.content })
             .toPromise()
             .catch((e) =>
-                notifyError(`Error updating ${this._service.actions.singular || 'item'}.`)
+                notifyError(
+                    `Error updating ${
+                        this._service.actions.singular || 'item'
+                    }.`
+                )
             );
 
         if (this._frame_el?.nativeElement) {
             if (updated_item) {
                 notifySuccess(
-                    `Successfully updated ${this._service.actions.singular || 'item'}`
+                    `Successfully updated ${
+                        this._service.actions.singular || 'item'
+                    }`
                 );
             }
             this._frame_el.nativeElement.contentWindow.postMessage(
@@ -102,7 +115,9 @@ export class ExtensionOutletComponent extends BaseClass {
     }
 
     private async updateMetadata(item: any, message: FrameMessage) {
-        const exists = await showMetadata(item.id, { name: message.name }).toPromise();
+        const exists = await showMetadata(item.id, {
+            name: message.name,
+        }).toPromise();
         await updateMetadata(item.id, {
             id: item.id,
             name: message.name,
@@ -110,7 +125,9 @@ export class ExtensionOutletComponent extends BaseClass {
             details: message.content,
         }).toPromise();
         notifySuccess(
-            `Successfully updated ${this._service.actions.singular || 'item'} metadata`
+            `Successfully updated ${
+                this._service.actions.singular || 'item'
+            } metadata`
         );
         this._frame_el.nativeElement.contentWindow.postMessage(
             JSON.stringify({
@@ -121,13 +138,19 @@ export class ExtensionOutletComponent extends BaseClass {
         );
     }
 
-    private async loadMetadata(item: any, message: FrameMessage) {
-        const metadata = await showMetadata(item.id, { name: message.name }).toPromise();
+    private async loadMetadata(
+        item: any,
+        message: FrameMessage,
+        parent: boolean = false
+    ) {
+        const metadata = await showMetadata(parent ? item.parent_id : item.id, {
+            name: message.name,
+        }).toPromise();
         if (metadata) {
             this._frame_el.nativeElement.contentWindow.postMessage(
                 JSON.stringify({
                     type: 'backoffice',
-                    content: (metadata as any).details
+                    content: (metadata as any).details,
                 }),
                 '*'
             );
