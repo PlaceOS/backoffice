@@ -3,7 +3,6 @@ import { PlaceRepositoryType } from '@placeos/ts-client';
 import { BaseClass } from '../common/base.class';
 import { RepositoriesStateService } from './repositories-state.service';
 
-
 @Component({
     selector: 'repository-about',
     template: `
@@ -50,13 +49,6 @@ import { RepositoriesStateService } from './repositories-state.service';
                     }}</a>
                 </div>
             </div>
-            <div
-                class="flex items-center space-x-2"
-                *ngIf="item.type === 'Interface'"
-            >
-                <label i18n="@@repoBranchLabel">Branch:</label>
-                <div class="value select-all">{{ item.branch || 'master' }}</div>
-            </div>
             <div class="flex items-center space-x-2">
                 <label i18n="@@repoUriLabel">Repository URI:</label>
                 <div class="value underline select-all">
@@ -66,10 +58,23 @@ import { RepositoriesStateService } from './repositories-state.service';
                 </div>
             </div>
             <div class="flex items-center space-x-2">
+                <label i18n="@@repoBranchLabel">Branch:</label>
+                <div
+                    class="value select-all bg-gray-200 px-2 pb-1 pt-2 text-xs rounded mono"
+                >
+                    {{ item.branch || 'master' }}
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
                 <label i18n="@@repoCommitHashLabel">Commit hash:</label>
-                <div class="value select-text">
+                <div
+                    class="value select-text bg-gray-200 px-2 pb-1 pt-2 text-xs rounded mono"
+                >
                     {{ item.commit_hash || 'No Commit hash set' }}
-                    <span class="select-text" *ngIf="commit && commit !== item.commit_hash">
+                    <span
+                        class="select-text mono"
+                        *ngIf="commit && commit !== item.commit_hash"
+                    >
                         ({{ commit }})
                     </span>
                 </div>
@@ -99,6 +104,10 @@ import { RepositoriesStateService } from './repositories-state.service';
                 padding: 1rem;
                 height: 100%;
                 width: 100%;
+            }
+
+            .mono {
+                font-family: var(--mono-font);
             }
         `,
     ],
