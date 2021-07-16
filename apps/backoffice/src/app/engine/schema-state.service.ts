@@ -1,15 +1,18 @@
-import { Injectable } from "@angular/core";
-import { HashMap } from "@placeos/ts-client/dist/esm/utilities/types";
-import { BehaviorSubject } from "rxjs";
+import { Injectable } from '@angular/core';
+import { create, query, update } from '@placeos/ts-client';
+import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
+import { BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface JsonSchema {
-    id: string;
+    id?: string;
     name: string;
+    description?: string;
     schema: string;
 }
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class SchemaStateService {
     private _schemas = new BehaviorSubject<JsonSchema[]>([]);
@@ -22,22 +25,45 @@ export class SchemaStateService {
 
     public getSchema(id: string): HashMap {
         const schema_list = this._schemas.getValue();
-        const schema = schema_list.find(_ => _.id === id);
+        const schema = schema_list.find((_) => _.id === id);
         if (!schema) return null;
         return JSON.parse(schema.schema || '{}');
     }
 
-    public loadSchemas(): void {
-        const schema_list = JSON.parse(localStorage.getItem('BACKOFFICE.schemas') || '[]');
+    public async loadSchemas() {
+        const schema_list = await query<JsonSchema>({
+            query_params: {},
+            fn: (_) => _ as any,
+            path: 'schema',
+        })
+            .pipe(map((_) => _.data))
+            .toPromise();
+        console.log('Schema List:', schema_list);
         schema_list.sort((a, b) => a.name?.localeCompare(b.name));
         this._schemas.next(schema_list);
     }
 
-    public saveSchema(schema: JsonSchema): void {
+    public async saveSchema(schema: JsonSchema) {
         let schema_list = this._schemas.getValue();
-        schema_list = [...schema_list.filter(_ => schema.id !== _.id), schema];
+        const details = {
+            query_params: {},
+            fn: (_) => _,
+            form_data: schema,
+            path: 'schema',
+        };
+        const new_schema = await (schema.id
+            ? update<JsonSchema>({
+                  ...details,
+                  id: schema.id,
+                  method: 'patch',
+              })
+            : create<JsonSchema>({ ...details })
+        ).toPromise();
+        schema_list = [
+            ...schema_list.filter((_) => schema.id !== _.id),
+            new_schema,
+        ];
         schema_list.sort((a, b) => a.name?.localeCompare(b.name));
-        localStorage.setItem('BACKOFFICE.schemas', JSON.stringify(schema_list));
         this._schemas.next(schema_list);
     }
 }
