@@ -6,7 +6,6 @@ import {
     PlaceModuleFunction,
     PlaceSystem,
     TriggerFunction,
-    value,
 } from '@placeos/ts-client';
 import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 import { notifyError, notifySuccess } from '../../../common/notifications';
@@ -167,10 +166,11 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
             this.module.module,
             this.module.index,
             this.fn.order.map((key) => {
+                const fn_details: any = this.fn.params[key];
                 try {
                     return JSON.parse(this.arguments[key]);
                 } catch {
-                    return this.arguments[key] || null;
+                    return this.arguments[key] || fn_details?.default || null;
                 }
             })
         )
