@@ -59,7 +59,9 @@ const validateType = (type) => (control: AbstractControl) => {
                         [name]="key"
                         matInput
                         [formControlName]="key"
-                        [placeholder]="key"
+                        [placeholder]="
+                            key + (defaults[key] ? ' = ' + defaults[key] : '')
+                        "
                     />
                 </mat-form-field>
                 <div
@@ -103,6 +105,7 @@ export class FunctionArgumentComponent
     public value: HashMap;
 
     public required: HashMap = {};
+    public defaults: HashMap = {};
 
     /** Form control on change handler */
     private _onChange: (_: HashMap) => void;
@@ -120,21 +123,24 @@ export class FunctionArgumentComponent
         const form_controls = {};
         for (const prop in this.method.params) {
             const prop_details = this.method.params[prop] as any;
-            const required =
-                this.method.arity >= 0
-                    ? this.method.order.indexOf(prop) <= this.method.arity
-                    : this.method.order.indexOf(prop) <
-                      Math.abs(this.method.arity);
-            this.required[prop] = required;
+            const optional = 'default' in prop_details;
+            this.required[prop] = !optional;
             form_controls[prop] = new FormControl(
                 (this.value ? this.value[prop] : '') || '',
-                required
+                !optional
                     ? [
                           validateType(prop_details.type) as any,
                           Validators.required,
                       ]
                     : [validateType(prop_details.type) as any]
             );
+            if (optional) {
+                try {
+                    this.defaults[prop] = JSON.stringify(prop_details.default);
+                } catch {
+                    this.defaults[prop] = prop_details.default;
+                }
+            }
         }
         this.form = new FormGroup(form_controls);
         this.subscription(

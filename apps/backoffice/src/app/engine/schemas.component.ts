@@ -88,7 +88,6 @@ export class AdminSchemasComponent {
 
     public async newSchema() {
         this.active_schema = {
-            id: `schema-${randomInt(999_999_999, 100_000_000)}`,
             name: 'New Schema',
             schema: '{}',
         };

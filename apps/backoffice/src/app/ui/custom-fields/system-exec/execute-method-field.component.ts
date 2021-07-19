@@ -6,7 +6,6 @@ import {
     PlaceModuleFunction,
     PlaceSystem,
     TriggerFunction,
-    value,
 } from '@placeos/ts-client';
 import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 import { notifyError, notifySuccess } from '../../../common/notifications';
@@ -28,6 +27,9 @@ import { ModuleLike } from './select-module.component';
                     [system]="system"
                     [module]="module"
                     [(ngModel)]="fn"
+                    (ngModelChange)="
+                        fn?.order?.length === 0 ? postArguments({}) : ''
+                    "
                 ></select-module-method>
                 <function-arguments
                     *ngIf="fn"
@@ -121,6 +123,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     }
 
     public postArguments(arg_map: HashMap) {
+        if (!this.fn?.params) return;
         const args = {};
         for (const key in arg_map) {
             args[key] = arg_map[key];
@@ -133,6 +136,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
             method: (this.fn as any).name,
             args,
         });
+        this.arguments = arg_map;
     }
 
     /**
@@ -161,7 +165,14 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
             (this.fn as any).name,
             this.module.module,
             this.module.index,
-            this.fn.order.map((key) => this.arguments[key] || null)
+            this.fn.order.map((key) => {
+                const fn_details: any = this.fn.params[key];
+                try {
+                    return JSON.parse(this.arguments[key]);
+                } catch {
+                    return this.arguments[key] || fn_details?.default || null;
+                }
+            })
         )
             .toPromise()
             .catch((err) => {

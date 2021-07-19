@@ -234,7 +234,7 @@ export class ItemCreateUpdateModalComponent
         const new_settings = new PlaceSettings({
             parent_id: item.id,
             settings_string,
-            encryption_level: EncryptionLevel.None,
+            encryption_level: EncryptionLevel.Support,
         });
         console.log('Settings:', new_settings, settings_string);
         const settings = await addSettings(new_settings)

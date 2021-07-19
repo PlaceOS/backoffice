@@ -47,8 +47,7 @@ export class RepositoryFormComponent {
         return !!(
             this.form &&
             this.form.controls.commit_hash &&
-            this.form.controls.repo_type &&
-            this.form.controls.repo_type.value === PlaceRepositoryType.Interface
+            this.form.controls.repo_type
         );
     }
 

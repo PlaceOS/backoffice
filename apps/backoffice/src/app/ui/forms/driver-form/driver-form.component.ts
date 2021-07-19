@@ -32,6 +32,7 @@ import {
 import { of, Subject, Observable } from 'rxjs';
 
 import * as dayjs from 'dayjs';
+import * as yaml from 'js-yaml';
 import * as relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
@@ -232,7 +233,13 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
                         : PlaceDriverRole.Service
                     : PlaceDriverRole.Logic
             );
-            this.form.controls.settings.setValue(driver.default_settings || '');
+            let settings = driver.default_settings || '';
+            try {
+                JSON.parse(driver.default_settings);
+                const doc = yaml.load(driver.default_settings);
+                settings = yaml.safeDump(doc);
+            } catch {}
+            this.form.controls.settings.setValue(settings || '');
             this.form.controls.description.setValue(driver.description || '');
         }
         this.loading = false;
