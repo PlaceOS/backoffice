@@ -109,7 +109,7 @@ export class TerminalComponent
         this.terminal.clearSelection();
         this.terminal.write('\x1b[H\x1b[2J');
         const lines: string[] = new_content.split('\n');
-        lines.forEach((line) => this.terminal.writeln(line));
-        this.timeout('scroll', () => this.terminal.scrollToBottom(), 50);
+        lines.reverse().forEach((line) => this.terminal.writeln(line));
+        // this.timeout('scroll', () => this.terminal.scrollToBottom(), 50);
     }
 }

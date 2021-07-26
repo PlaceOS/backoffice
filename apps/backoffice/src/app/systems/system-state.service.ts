@@ -27,7 +27,14 @@ import {
     updateTrigger,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { debounceTime, filter, first, map, shareReplay, switchMap } from 'rxjs/operators';
+import {
+    debounceTime,
+    filter,
+    first,
+    map,
+    shareReplay,
+    switchMap,
+} from 'rxjs/operators';
 import { calculateModuleIndex } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { openConfirmModal, unique } from '../common/general';
@@ -52,7 +59,7 @@ export class SystemStateService {
 
     private _loading = new BehaviorSubject<HashMap<boolean>>({});
     private _modules = new BehaviorSubject<PlaceModule[]>([]);
-    private _change = new BehaviorSubject<boolean>(false);
+    private _change = new BehaviorSubject<number>(0);
     /** Observable for associated settings of the active item */
     public readonly associated_settings = this._state.all_item.pipe(
         debounceTime(300),
@@ -62,7 +69,10 @@ export class SystemStateService {
         })
     );
     /** Observable of the counts of the active item */
-    public readonly counts = combineLatest([this._state.all_item, this._change]).pipe(
+    public readonly counts = combineLatest([
+        this._state.all_item,
+        this._change,
+    ]).pipe(
         debounceTime(300),
         switchMap(async (_) => {
             const [item] = _;
@@ -110,7 +120,10 @@ export class SystemStateService {
                 ...this._loading.getValue(),
                 modules: false,
             });
-            modules.sort((a, b) => item.modules.indexOf(a.id) - item.modules.indexOf(b.id));
+            modules.sort(
+                (a, b) =>
+                    item.modules.indexOf(a.id) - item.modules.indexOf(b.id)
+            );
             this._modules.next(modules);
             return modules;
         }),
@@ -130,10 +143,9 @@ export class SystemStateService {
         map((modules) =>
             modules.map(
                 (mod) =>
-                    `${mod.custom_name || mod.name || 'Blank'}_${calculateModuleIndex(
-                        modules,
-                        mod
-                    )}`
+                    `${
+                        mod.custom_name || mod.name || 'Blank'
+                    }_${calculateModuleIndex(modules, mod)}`
             )
         ),
         shareReplay()
@@ -149,7 +161,9 @@ export class SystemStateService {
             const zones = await listSystemZones(item.id)
                 .pipe(map((i) => i.data))
                 .toPromise();
-            zones.sort((a, b) => item.zones.indexOf(a.id) - item.zones.indexOf(b.id));
+            zones.sort(
+                (a, b) => item.zones.indexOf(a.id) - item.zones.indexOf(b.id)
+            );
             this._loading.next({
                 ...this._loading.getValue(),
                 zones: false,
@@ -234,7 +248,9 @@ export class SystemStateService {
             .toPromise()
             .catch((err) => {
                 notifyError(
-                    `Failed to stop system: ${JSON.stringify(err.response || err.message || err)}`
+                    `Failed to stop system: ${JSON.stringify(
+                        err.response || err.message || err
+                    )}`
                 );
                 return err;
             });
@@ -249,10 +265,9 @@ export class SystemStateService {
         } else {
             this._debug.bind(
                 device,
-                `${device.custom_name || device.name || 'Blank'}_${calculateModuleIndex(
-                    this._modules.getValue(),
-                    device
-                )}`
+                `${
+                    device.custom_name || device.name || 'Blank'
+                }_${calculateModuleIndex(this._modules.getValue(), device)}`
             );
         }
     }
@@ -272,36 +287,41 @@ export class SystemStateService {
 
     public async editModule(device: PlaceModule) {
         await this._state.edit(device).catch((_) => null);
-        this._change.next(!this._change.getValue());
+        this._change.next(Date.now());
     }
 
     public async selectTrigger() {
-        const ref = this._dialog.open<SelectItemModalComponent, SelectItemModalData>(
+        const ref = this._dialog.open<
             SelectItemModalComponent,
-            {
-                data: {
-                    service_name: 'Triggers',
-                    query_fn: (_) => queryTriggers({ q: _ }).pipe(map((resp) => resp.data)),
-                },
-            }
-        );
+            SelectItemModalData
+        >(SelectItemModalComponent, {
+            data: {
+                service_name: 'Triggers',
+                query_fn: (_) =>
+                    queryTriggers({ q: _ }).pipe(map((resp) => resp.data)),
+            },
+        });
         const details = await Promise.race([
-            ref.componentInstance.event.pipe(first((_) => _.reason === 'action')).toPromise(),
+            ref.componentInstance.event
+                .pipe(first((_) => _.reason === 'action'))
+                .toPromise(),
             ref.afterClosed().toPromise(),
         ]);
         if (!details || !details.reason) return ref.close();
         await this.addTrigger(ref.componentInstance.item);
         ref.close();
-        this._change.next(!this._change.getValue());
+        this._change.next(Date.now());
     }
 
     public async addTrigger(trigger: PlaceTrigger) {
-        return addSystemTrigger(this.active_item.id, {
+        const t = await addSystemTrigger(this.active_item.id, {
             control_system_id: this.active_item.id,
             enabled: true,
             important: false,
             trigger_id: trigger.id,
         } as any).toPromise();
+        this._change.next(Date.now());
+        return t;
     }
 
     public async editTrigger(trigger: PlaceTrigger) {
@@ -319,13 +339,17 @@ export class SystemStateService {
                 },
             });
             const details = await Promise.race([
-                ref.componentInstance.event.pipe(first((_) => _.reason === 'action')).toPromise(),
+                ref.componentInstance.event
+                    .pipe(first((_) => _.reason === 'action'))
+                    .toPromise(),
                 ref.afterClosed().toPromise(),
             ]);
             if (!details || !details.reason) return;
             ref.componentInstance.loading = 'Saving trigger settings...';
 
-            const url = `${apiEndpoint()}/systems/${this.active_item.id}/triggers/${trigger.id}`;
+            const url = `${apiEndpoint()}/systems/${
+                this.active_item.id
+            }/triggers/${trigger.id}`;
             const trig = await put(url, details.metadata)
                 .toPromise()
                 .catch((err) => {
@@ -340,7 +364,7 @@ export class SystemStateService {
             if (trig) return;
             notifySuccess(`Successfully updated trigger settings.`);
             ref.close();
-            this._change.next(!this._change.getValue());
+            this._change.next(Date.now());
         }
     }
 
@@ -364,7 +388,7 @@ export class SystemStateService {
             });
         details.close();
         notifySuccess(`Successfully removed trigger from system.`);
-        this._change.next(!this._change.getValue());
+        this._change.next(Date.now());
     }
 
     public async reorderModules(fst: number, snd: number) {
@@ -377,7 +401,10 @@ export class SystemStateService {
         details.loading('Updating module order...');
         const list: string[] = [...this.active_item.modules];
         moveItemInArray(list, fst, snd);
-        const resp = await updateSystem(this.active_item.id, { ...this.active_item, modules: list })
+        const resp = await updateSystem(this.active_item.id, {
+            ...this.active_item,
+            modules: list,
+        })
             .toPromise()
             .catch((err) => {
                 notifyError(
@@ -404,7 +431,10 @@ export class SystemStateService {
         details.loading('Updating zone order...');
         const list: string[] = [...this.active_item.zones];
         moveItemInArray(list, fst, snd);
-        const resp = await updateSystem(this.active_item.id, { ...this.active_item, zones: list })
+        const resp = await updateSystem(this.active_item.id, {
+            ...this.active_item,
+            zones: list,
+        })
             .toPromise()
             .catch((err) => {
                 notifyError(
@@ -438,6 +468,7 @@ export class SystemStateService {
         if (!system) return;
         this._state.replaceItem(system);
         notifySuccess(`Successfully added module to system.`);
+        this._change.next(Date.now());
     }
 
     /**
@@ -498,7 +529,10 @@ export class SystemStateService {
      */
     public async addZone(zone: PlaceZone) {
         const zones = unique([...this.active_item.zones, zone.id]);
-        const system = await updateSystem(this.active_item.id, { ...this.active_item, zones })
+        const system = await updateSystem(this.active_item.id, {
+            ...this.active_item,
+            zones,
+        })
             .toPromise()
             .catch((err) => {
                 notifyError(
@@ -524,7 +558,10 @@ export class SystemStateService {
         });
         if (!details || !details.reason) return;
         const zones = this.active_item.zones.filter((z) => z !== zone.id);
-        const system = await updateSystem(this.active_item.id, { ...this.active_item, zones })
+        const system = await updateSystem(this.active_item.id, {
+            ...this.active_item,
+            zones,
+        })
             .toPromise()
             .catch((err) => {
                 notifyError(
@@ -552,24 +589,29 @@ export class SystemStateService {
                     notifyError(err);
                 } else {
                     notifyError(
-                        `Failed to ${device.running ? 'stop' : 'start'} module '${
-                            device.id
-                        }'.\nView Error?`,
+                        `Failed to ${
+                            device.running ? 'stop' : 'start'
+                        } module '${device.id}'.\nView Error?`,
                         'View',
                         () => this.viewDetails(err)
                     );
                 }
                 throw err;
             });
-        notifySuccess(`Module successfully ${device.running ? 'stopped' : 'started'}`);
+        notifySuccess(
+            `Module successfully ${device.running ? 'stopped' : 'started'}`
+        );
         (device as any).running = !device.running;
     }
 
     /** View Results of the execute */
     private viewDetails(content: any) {
-        this._dialog.open<ViewResponseModalComponent>(ViewResponseModalComponent, {
-            data: { content },
-        });
+        this._dialog.open<ViewResponseModalComponent>(
+            ViewResponseModalComponent,
+            {
+                data: { content },
+            }
+        );
     }
 
     private async confirm(data: ConfirmModalData) {
