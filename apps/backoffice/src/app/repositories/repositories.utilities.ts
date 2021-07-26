@@ -33,8 +33,6 @@ export function generateRepositoryFormFields(
     };
     if (repository.id) {
         if (repository.type === PlaceRepositoryType.Driver) {
-            if (!localStorage.getItem('allow_driver_branch'))
-                delete fields.branch;
             delete fields.uri;
         }
         delete fields.folder_name;
