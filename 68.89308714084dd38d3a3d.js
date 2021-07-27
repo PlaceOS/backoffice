@@ -1,0 +1,2 @@
+(self.webpackChunkplaceos=self.webpackChunkplaceos||[]).push([[68],{336:(e,t)=>{"use strict";var n=function(){if("undefined"!=typeof self)return self;if("undefined"!=typeof window)return window;if(void 0!==n)return n;throw new Error("unable to locate global object")}();e.exports=t=n.fetch,n.fetch&&(t.default=n.fetch.bind(n)),t.Headers=n.Headers,t.Request=n.Request,t.Response=n.Response}}]);
+//# sourceMappingURL=68.89308714084dd38d3a3d.js.map
