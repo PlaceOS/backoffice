@@ -33,8 +33,10 @@ export const URL_PATTERN =
     '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
     '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
     '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-    '(\\#[-a-z/\\d_]*)?$';
+    '(\\?[;&a-z\\d%_.~+=-]*)?' +
+    '(\\#[-a-z/\\d_]*)?' +
+    '(\\?[;&a-z\\d%_.~+=-]*)?$'; // query string;
+
 export function generateSystemsFormFields(system: PlaceSystem): FormGroup {
     if (!system) {
         throw Error('No System passed to generate form fields');
