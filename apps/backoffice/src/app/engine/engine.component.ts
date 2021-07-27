@@ -100,6 +100,11 @@ export class PlaceComponent extends BaseClass {
                 icon: { class: 'backoffice-gist' },
             },
             {
+                id: 'api-keys',
+                name: 'API Keys',
+                icon: { class: 'backoffice-key' },
+            },
+            {
                 id: 'schemas',
                 name: 'Custom Schemas',
                 icon: { class: 'backoffice-list' },

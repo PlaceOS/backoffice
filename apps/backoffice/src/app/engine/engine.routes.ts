@@ -1,9 +1,10 @@
 import { Routes } from '@angular/router';
 
+import { AuthorisedAdminGuard } from 'apps/backoffice/src/app/ui/guards/authorised-admin.guard';
+
 import { PlaceComponent } from './engine.component';
 import { PlaceDatabaseDetailsComponent } from './database-details.component';
 import { PlaceDetailsComponent } from './details.component';
-import { AuthorisedAdminGuard } from 'apps/backoffice/src/app/ui/guards/authorised-admin.guard';
 import { PlaceClusterDetailsComponent } from './cluster-details/cluster-details.component';
 import { AdminInterfacesComponent } from './interfaces.component';
 import { AdminBrokersComponent } from './brokers.component';
@@ -12,6 +13,7 @@ import { PlaceExtensionsComponent } from './extensions.component';
 import { PlaceStaffAPIComponent } from './staff-api.component';
 import { PlaceEdgeComponent } from './edge.component';
 import { AdminSchemasComponent } from './schemas.component';
+import { AdminAPIKeysComponent } from './api-keys/api-keys.component';
 
 export const ROUTES: Routes = [
     {
@@ -28,6 +30,7 @@ export const ROUTES: Routes = [
             { path: 'extensions', component: PlaceExtensionsComponent },
             { path: 'staff-api', component: PlaceStaffAPIComponent },
             { path: 'schemas', component: AdminSchemasComponent },
+            { path: 'api-keys', component: AdminAPIKeysComponent },
             { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' },
         ],

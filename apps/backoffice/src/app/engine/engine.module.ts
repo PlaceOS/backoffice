@@ -22,6 +22,9 @@ import { PlaceEdgeComponent } from './edge.component';
 import { EdgeModalComponent } from './edge-modal.component';
 import { AdminClusterNodeComponent } from './cluster-details/cluster-node.component';
 import { AdminSchemasComponent } from './schemas.component';
+import { AdminAPIKeysComponent } from './api-keys/api-keys.component';
+import { APIKeyModalComponent } from './api-keys/api-key-modal.component';
+import { MatChipsModule } from '@angular/material/chips';
 
 @NgModule({
     declarations: [
@@ -41,6 +44,8 @@ import { AdminSchemasComponent } from './schemas.component';
         EdgeModalComponent,
         AdminClusterNodeComponent,
         AdminSchemasComponent,
+        AdminAPIKeysComponent,
+        APIKeyModalComponent,
     ],
     imports: [
         CommonModule,
