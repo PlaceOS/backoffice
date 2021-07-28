@@ -35,6 +35,7 @@ import { ModuleLike } from './select-module.component';
                     *ngIf="fn"
                     [method]="fn"
                     [ngModel]="arguments"
+                    (valid)="valid = $event"
                     (ngModelChange)="postArguments($event)"
                 ></function-arguments>
                 <div
@@ -46,7 +47,7 @@ import { ModuleLike } from './select-module.component';
                     </button>
                     <button
                         class="flex-1"
-                        [disabled]="!fn"
+                        [disabled]="!fn || !valid"
                         mat-button
                         (click)="execute()"
                     >
@@ -78,6 +79,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     /** Whether component is allowed to execute methods on the system */
     @Input() public can_execute = true;
 
+    public valid = true;
     public module: ModuleLike;
     public fn: PlaceModuleFunction;
     public arguments: HashMap;

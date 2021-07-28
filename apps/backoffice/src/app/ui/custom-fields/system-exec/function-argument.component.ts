@@ -3,7 +3,9 @@ import {
     forwardRef,
     Input,
     OnChanges,
+    Output,
     SimpleChanges,
+    EventEmitter,
 } from '@angular/core';
 import {
     AbstractControl,
@@ -24,6 +26,7 @@ const validateType = (type) => (control: AbstractControl) => {
     } catch (e) {
         value = control.value;
     }
+    if (value === undefined || value == '') return null;
     switch (type) {
         case 'boolean':
             return typeof value === 'boolean' ? null : { type: true };
@@ -99,6 +102,7 @@ export class FunctionArgumentComponent
     extends BaseClass
     implements OnChanges, ControlValueAccessor {
     @Input() public method: PlaceModuleFunction;
+    @Output() public valid = new EventEmitter<boolean>();
 
     public form: FormGroup;
 
@@ -143,6 +147,7 @@ export class FunctionArgumentComponent
             }
         }
         this.form = new FormGroup(form_controls);
+        this.valid.emit(this.form?.valid);
         this.subscription(
             'form',
             this.form.valueChanges.subscribe((v) => this.setValue(v))
@@ -155,6 +160,7 @@ export class FunctionArgumentComponent
      */
     public setValue(new_value: HashMap): void {
         this.value = new_value || {};
+        this.valid.emit(this.form?.valid);
         if (this._onChange) {
             this._onChange(new_value);
         }
