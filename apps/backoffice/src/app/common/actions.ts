@@ -1,4 +1,3 @@
-
 import { Type } from '@angular/core';
 import {
     PlaceSystem,
@@ -72,7 +71,7 @@ const domains: ItemActions<PlaceDomain> = {
     remove: (item) => removeDomain(item.id),
     itemConstructor: PlaceDomain,
     delete_message: `<p>Are you sure you want delete this domain?</p><p>The domain will be deleted <strong>immediately.</strong></p>`,
-    singular: 'domain'
+    singular: 'domain',
 };
 
 const drivers: ItemActions<PlaceDriver> = {
@@ -82,7 +81,7 @@ const drivers: ItemActions<PlaceDriver> = {
     remove: (item) => removeDriver(item.id),
     itemConstructor: PlaceDriver,
     delete_message: `<p>Are you sure you want delete this driver?</p><p>All modules that rely on this driver will be <strong>immediately</strong> removed.</p>`,
-    singular: 'driver'
+    singular: 'driver',
 };
 
 const modules: ItemActions<PlaceModule> = {
@@ -92,28 +91,45 @@ const modules: ItemActions<PlaceModule> = {
     remove: (item) => removeModule(item.id),
     itemConstructor: PlaceModule,
     delete_message: `<p>Are you sure you want delete this module?</p><p>Deleting this will module <strong>immediately</strong> remove it from any system associated with it</p>`,
-    singular: 'module'
+    singular: 'module',
 };
 
 const repositories: ItemActions<PlaceRepository> = {
     query: (_) => queryRepositories({ q: _ }),
     show: (_) => showRepository(_),
-    save: (item) => (item.id ? updateRepository(item.id, item) : addRepository(item)),
+    save: (item) =>
+        item.id ? updateRepository(item.id, item) : addRepository(item),
     remove: (item) => removeRepository(item.id),
     itemConstructor: PlaceRepository,
     delete_message: `<p>Deleting this repository will <strong>immediately</strong> remove assoicated drivers and modules</p>'`,
-    singular: 'repository'
+    singular: 'repository',
 };
 
 const systems: ItemActions<PlaceSystem> = {
     query: (_) => querySystems({ q: _ }),
     show: (_) => showSystem(_),
-    save: (item) => (item.id ? updateSystem(item.id, item) : addSystem(item)),
+    save: (item) =>
+        item.id
+            ? updateSystem(item.id, {
+                  ...item,
+                  support_url: processURL(item, item.support_url),
+              })
+            : addSystem({
+                  ...item,
+                  support_url: processURL(item, item.support_url),
+              }),
     remove: (item) => removeSystem(item.id),
     itemConstructor: PlaceSystem,
     delete_message: `<p>Are you sure you want delete this system?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>`,
-    singular: 'system'
+    singular: 'system',
 };
+
+function processURL(system: HashMap, url: string) {
+    for (const key in system) {
+        url = url.replace(new RegExp(`{{${key}}}`, 'g'), system[key]);
+    }
+    return url;
+}
 
 const triggers: ItemActions<PlaceTrigger> = {
     query: (_) => queryTriggers({ q: _ }),
@@ -122,7 +138,7 @@ const triggers: ItemActions<PlaceTrigger> = {
     remove: (item) => removeTrigger(item.id),
     itemConstructor: PlaceTrigger,
     delete_message: `<p>Are you sure you want delete this trigger?</p><p>Deleting this trigger will <strong>immediately</strong> remove it from all associated systems and zones</p>`,
-    singular: 'trigger'
+    singular: 'trigger',
 };
 
 const users: ItemActions<PlaceUser> = {
@@ -132,7 +148,7 @@ const users: ItemActions<PlaceUser> = {
     remove: (item) => removeUser(item.id),
     itemConstructor: PlaceUser,
     delete_message: `<p>Are you sure you want delete this user?</p><p>The user will be removed from the system within 24 hours</p>`,
-    singular: 'user'
+    singular: 'user',
 };
 
 const zones: ItemActions<PlaceZone> = {
@@ -142,7 +158,7 @@ const zones: ItemActions<PlaceZone> = {
     remove: (item) => removeZone(item.id),
     itemConstructor: PlaceZone,
     delete_message: `<p>Are you sure you want delete this zone?</p><p>Deleting this zone will <strong>immediately</strong> remove systems without another zone</p>`,
-    singular: 'zone'
+    singular: 'zone',
 };
 
 export const ACTIONS = {
