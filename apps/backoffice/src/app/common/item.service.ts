@@ -1,14 +1,8 @@
-import { Injectable, Type } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, of } from 'rxjs';
-import {
-    filter,
-    map,
-    debounce,
-    debounceTime,
-    distinctUntilChanged,
-} from 'rxjs/operators';
+import { filter, map, distinctUntilChanged } from 'rxjs/operators';
 import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
 
 import {

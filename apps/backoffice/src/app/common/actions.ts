@@ -128,6 +128,9 @@ function processURL(system: HashMap, url: string) {
     for (const key in system) {
         url = url.replace(new RegExp(`{{${key}}}`, 'g'), system[key]);
     }
+    url = url.replace(new RegExp(`{{origin}}`, 'g'), location.origin);
+    url = url.replace(new RegExp(`{{host}}`, 'g'), location.host);
+    url = url.replace(new RegExp(`{{pathname}}`, 'g'), location.pathname);
     return url;
 }
 
