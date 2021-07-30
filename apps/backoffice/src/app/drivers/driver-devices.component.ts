@@ -4,6 +4,8 @@ import { map } from 'rxjs/operators';
 
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 import { DriverStateService } from './driver-state.service';
+import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
+import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
 
 @Component({
     selector: 'driver-devices',
@@ -32,10 +34,7 @@ import { DriverStateService } from './driver-state.service';
                 <div table-head>
                     <div class="w-12 p-2">State</div>
                     <div flex class="flex-1 p-2" i18n="@@nameLabel">Name</div>
-                    <div class="w-48 p-2" i18n="@@triggerCountLabel">
-                        System
-                    </div>
-                    <div class="w-12 p-2"></div>
+                    <div class="w-24 p-2"></div>
                 </div>
                 <div table-body class="overflow-y-auto">
                     <div
@@ -70,15 +69,51 @@ import { DriverStateService } from './driver-state.service';
                                 {{ module.custom_name || module.name }}
                             </a>
                         </div>
-                        <div
-                            class="w-48 p-2 underline"
-                            i18n="@@triggerCountLabel"
-                        >
-                            <a [routerLink]="['/systems', module.system?.id]">
-                                {{ module.system?.name }}
-                            </a>
-                        </div>
-                        <div class="w-12 p-2">
+                        <div class="w-24 p-2">
+                            <button
+                                mat-icon-button
+                                matTooltip="View Systems"
+                                [matMenuTriggerFor]="menu"
+                                (click)="loadSystems(module)"
+                            >
+                                <app-icon className="backoffice-eye"></app-icon>
+                            </button>
+                            <mat-menu #menu="matMenu">
+                                <div
+                                    class="flex items-center justify-center px-2 pb-2 opacity-70 border-b border-gray-200 text-sm"
+                                >
+                                    {{ systems[module.id]?.length }} System(s)
+                                </div>
+                                <div
+                                    *ngIf="loading_systems"
+                                    class="flex items-center space-x-2 p-2 text-sm"
+                                >
+                                    <mat-spinner [diameter]="32"></mat-spinner>
+                                    <span>Loading systems...</span>
+                                </div>
+                                <a
+                                    mat-menu-item
+                                    *ngFor="
+                                        let system of systems[module.id] || []
+                                    "
+                                    class="leading-tight"
+                                    [routerLink]="['/systems', system.id]"
+                                >
+                                    <div
+                                        class="flex flex-col justify-center px-2 h-full"
+                                    >
+                                        <div class="text-base">
+                                            {{
+                                                system.display_name ||
+                                                    system.name
+                                            }}
+                                        </div>
+                                        <div class="text-xs opacity-60">
+                                            {{ system.id }}
+                                        </div>
+                                    </div>
+                                </a>
+                            </mat-menu>
                             <button
                                 mat-icon-button
                                 (click)="removeModule(module)"
@@ -120,12 +155,16 @@ import { DriverStateService } from './driver-state.service';
     ],
 })
 export class DriverModulesComponent extends BaseClass {
+    public loading_systems = false;
     /** Subject holding the value of the search */
     public readonly filter$ = new BehaviorSubject<string>('');
     /** Whether systems are being loaded */
     public readonly loading = this._service.loading;
     /** Currently active driver */
     public readonly item = this._service.item;
+    /** List of systems associated with modules */
+    public readonly systems: HashMap<PlaceSystem[]> = {};
+    /** Whether systems are being loaded */
     /** List of modules */
     public readonly modules = combineLatest([
         this.filter$,
@@ -148,5 +187,14 @@ export class DriverModulesComponent extends BaseClass {
 
     constructor(private _service: DriverStateService) {
         super();
+    }
+
+    public async loadSystems(mod: PlaceModule) {
+        this.loading_systems = true;
+        const systems = await querySystems({ module_id: mod.id })
+            .pipe(map(({ data }) => data))
+            .toPromise();
+        this.systems[mod.id] = systems || [];
+        this.loading_systems = false;
     }
 }
