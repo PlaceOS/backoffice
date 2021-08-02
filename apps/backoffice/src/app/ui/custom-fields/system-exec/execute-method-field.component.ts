@@ -172,7 +172,13 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
                 try {
                     return JSON.parse(this.arguments[key]);
                 } catch {
-                    return this.arguments[key] ?? fn_details?.default ?? null;
+                    return (
+                        (this.arguments[key] !== ''
+                            ? this.arguments[key]
+                            : null) ??
+                        fn_details?.default ??
+                        null
+                    );
                 }
             })
         )
