@@ -1,4 +1,4 @@
-/// <reference path="../../../../../../../node_modules/monaco-editor/monaco.d.ts" />
+/// <reference path="../../../../../../node_modules/monaco-editor/monaco.d.ts" />
 
 import {
     Component,
@@ -13,16 +13,30 @@ import {
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
-import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
-import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
+import { BaseClass } from '../../common/base.class';
+import { HashMap } from '../../common/types';
+import { BackofficeUsersService } from '../../users/users.service';
 
 let MODEL: HashMap<monaco.editor.ITextModel> = {};
 
 @Component({
-    selector: 'settings-form-field',
-    templateUrl: './settings-field.component.html',
-    styleUrls: ['./settings-field.component.scss'],
+    selector: 'settings-form-field,[settings-field]',
+    template: `
+        <div
+            class="relative w-full h-[32rem] border border-gray-300"
+            editor
+            (window:resize)="resizeEditor()"
+            #editor
+        ></div>
+    `,
+    styles: [
+        `
+            [editor],
+            [editor] * {
+                user-select: initial;
+            }
+        `,
+    ],
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
@@ -214,7 +228,6 @@ export class SettingsFieldComponent
                 enableSchemaRequest: true,
                 validate: true,
                 schemas: [
-                    // @ts-ignore
                     {
                         uri: 'http://backoffice/schema/base.json',
                         fileMatch: ['http://backoffice/schema'],

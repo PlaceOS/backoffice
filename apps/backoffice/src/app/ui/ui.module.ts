@@ -29,7 +29,7 @@ import { DateFieldComponent } from './custom-fields/date-field/date-field.compon
 import { ImageListFieldComponent } from './custom-fields/image-list-field.component';
 import { ItemSearchFieldComponent } from './custom-fields/item-search-field/item-search-field.component';
 import { ObjectListFieldComponent } from './custom-fields/object-list-field/object-list-field.component';
-import { SettingsFieldComponent } from './custom-fields/settings-field/settings-field.component';
+import { SettingsFieldComponent } from './custom-fields/settings-field.component';
 import { TimeFieldComponent } from './custom-fields/time-field/time-field.component';
 import { DebugOutputComponent } from './debug-output.component';
 import { ExtensionOutletComponent } from './extension-outlet.component';

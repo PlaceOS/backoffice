@@ -86,7 +86,7 @@
         "js-yaml": "^3.14.1",
         "marked": "^2.0.3",
         "material-design-icons": "^3.0.1",
-        "monaco-editor": "^0.24.0",
+        "monaco-editor": "^0.26.1",
         "ng-mocks": "^12.0.0",
         "prettier": "2.2.1",
         "tailwindcss": "2.1.2",
