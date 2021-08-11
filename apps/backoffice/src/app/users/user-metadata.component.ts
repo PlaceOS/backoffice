@@ -153,7 +153,6 @@ import { UsersStateService } from './users-state.service';
 
             .settings {
                 width: 100%;
-                height: 30.35em;
             }
 
             .contents {

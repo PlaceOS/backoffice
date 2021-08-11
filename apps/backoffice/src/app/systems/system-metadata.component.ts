@@ -159,7 +159,6 @@ import { SchemaStateService } from '../engine/schema-state.service';
 
             .settings {
                 width: 100%;
-                height: 30.35em;
             }
 
             .contents {
