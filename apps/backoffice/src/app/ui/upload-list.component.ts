@@ -81,7 +81,7 @@ import { UploadDetails, uploadFile } from '../common/uploads';
         <div
             class="absolute inset-0"
             *ngIf="enabled"
-            (document:dragenter)="show_overlay = true"
+            (document:dragenter)="onEnter()"
             (drop)="hideOverlay()"
         ></div>
         <div
@@ -175,12 +175,22 @@ export class UploadListComponent extends BaseClass implements OnInit {
         );
     }
 
+    public onEnter() {
+        this.show_overlay = true;
+        this.timeout(
+            'hide_overlay',
+            () => (this.show_overlay = false),
+            10 * 1000
+        );
+    }
+
     public hideOverlay() {
         this.timeout('hide_overlay', () => (this.show_overlay = false));
     }
 
     /** Upload the image to the cloud */
     public handleFileEvent(event: DragEvent) {
+        this.clearTimeout('hide_overlay');
         this.timeout('file_event', () => {
             this.show_overlay = false;
             const element: HTMLInputElement = event.target as any;
