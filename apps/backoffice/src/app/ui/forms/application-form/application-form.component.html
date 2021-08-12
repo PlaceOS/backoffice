@@ -4,7 +4,9 @@
             <div class="field" *ngIf="form.controls.name">
                 <label
                     for="application-name"
-                    [class.error]="form.controls.name.invalid && form.controls.name.touched"
+                    [class.error]="
+                        form.controls.name.invalid && form.controls.name.touched
+                    "
                     i18n="@@nameLabel"
                     >Name<span>*</span>:</label
                 >
@@ -17,7 +19,9 @@
                         formControlName="name"
                         required
                     />
-                    <mat-error *ngIf="form.controls.name.invalid" i18n="@@appNameError"
+                    <mat-error
+                        *ngIf="form.controls.name.invalid"
+                        i18n="@@appNameError"
                         >Application name is required</mat-error
                     >
                 </mat-form-field>
@@ -53,6 +57,7 @@
                     i18n-placeholder="@@redirectPlaceholder"
                     formControlName="redirect_uri"
                 />
+                <mat-error>A valid URL is required</mat-error>
             </mat-form-field>
         </div>
     </form>
