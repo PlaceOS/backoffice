@@ -524,11 +524,14 @@ export class SystemStateService {
     }
 
     /**
-     * Remove associated module from the active system
-     * @param id ID of the module to disassociate with the active system
+     * Add list of zones to the system
+     * @param zones List of zones to add
      */
-    public async addZone(zone: PlaceZone) {
-        const zones = unique([...this.active_item.zones, zone.id]);
+    public async addZones(zone_list: PlaceZone[]) {
+        const zones = unique([
+            ...this.active_item.zones,
+            ...zone_list.map((_) => _.id),
+        ]);
         const system = await updateSystem(this.active_item.id, {
             ...this.active_item,
             zones,
@@ -536,7 +539,9 @@ export class SystemStateService {
             .toPromise()
             .catch((err) => {
                 notifyError(
-                    `Error adding zone ${zone.id} to system. Error: ${
+                    `Error adding ${
+                        zone_list.length
+                    } zone(s) to system. Error: ${
                         err.statusText || err.message || err
                     }`
                 );
