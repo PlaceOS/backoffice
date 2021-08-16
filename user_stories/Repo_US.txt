@@ -1,0 +1,52 @@
+Section: Zones
+
+Scenario: User wants to add a new repository
+Given that I am on the Repository page
+When I click on the plus button in the Repositories sidebar
+* I enter the name of the repository into the text box
+* I enter the folder name of the repository into the text box
+* I enter the Repository URI into the text box
+* I enter any other repository data in appropriate text box
+* I click 'Save'
+Then I will get a green toast bar that says 'Successfully added repository' and the repository will be added
+
+Scenario: User wants to pull the latest commit for a repository
+Given that I am on the Repositories page in the About tab
+When I click 'Pull'
+* I click 'Ok' on the 'Recompile Driver' pop up
+Then the driver will recompile
+Then the latest commit for this repository will be pulled
+
+Scenario: User supplies search term
+Given that I am on the Repositories page
+When I enter the term into the search bar
+Then I will get filtered results of Repositories in the sidebar
+
+Scenario: User selects a repository from sidebar
+Given that I am on the Repositories page
+When I click on the intended Repository name in the sidebar
+Then I am taken to that particular Repository's information dashboard with the About tab selected
+
+Scenario: User wants to edit the repository
+Given that I am on the selected Repository page
+When I click the Kebab menu icon
+* I click 'Edit repository'
+* I enter the updated repository data
+* I click 'Save'
+Then I will get a green toast bar that says 'Successfully updated repository'
+* The repository will be updated with the new data
+
+Scenario: User wants to export the Repository
+Given that I am on the selected Repository page
+When I click the Kebab menu icon
+* I click 'Export repository as TSV template'
+* I click 'OK' in the system pop up
+Then the repository will be saved in the .tsv format on my computer
+
+Scenario: User wants to delete the Repository
+Given that I am on the selected Repository page
+When I click the Kebab menu icon
+* I click 'Delete repository'
+* I click 'Ok' in the 'Delete repository' pop up
+Then I will get a green toast bar that says 'Successfully deleted repository "repository_name"'
+* That repository will be deleted

@@ -1,0 +1,41 @@
+
+Section: Drivers
+
+
+Scenario: User selects a driver from sidebar
+Given that I am on the Drivers page
+When I click on the intended Driver name in the sidebar
+Then I am taken to that particular Driver's information dashboard with the About tab selected
+
+Scenario: User wants to see which Modules the selected Driver is used in
+Given that I am on the Driver page
+When I click on the modules tab
+Then I am taken to a list of Modules and their Systems
+
+Scenario: User supplies search term
+Given that I am on a Driver's information dashboard in the Modules tab
+When I enter the term into the 'Filter Modules...' text box
+Then I will get filtered results of Systems in a list under the 'Filter Modules...' text box
+
+Scenario: User wants to recompile a driver
+Given that I am on the Modules page in the About tab
+When I click 'Recompile Driver'
+* I click 'Ok' on the 'Recompile Driver' pop up
+Then the driver will recompile
+* I will get a green toast bar that says 'Successfully recompiled driver'
+
+Scenario: User supplies new setting data
+Given that I am on the Drivers page in the About tab
+When I click on one of the settings tabs and enter the data and click 'Save' or press the S key
+Then I will get a green toast bar that says 'Successfully saved __ settings' and the settings for that driver will be saved
+
+Scenario: User wants to create a new driver
+Given that I am on the Drivers page
+When I click on the plus button in the Drivers sidebar
+* enter the name of the repository into the text box
+* enter the drivers name into the 'Search for driver...' text box
+* select a driver from the results
+* select a driver commit
+* enter any other details fro the new driver
+* Click 'Save'
+Then I will get a green toast bar that says 'Successfully added driver' and the driver will be saved

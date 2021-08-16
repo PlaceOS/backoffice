@@ -1,0 +1,83 @@
+Scenario: User wants to add a new domain
+Given that I am on the Domains page
+When I click on the plus button in the Domains sidebar
+* I enter the appropriate domain details
+* I click 'Save'
+Then I will get a green toast bar that says 'Successfully added domain' and the domain will be added
+
+Scenario: User supplies search term
+Given that I am on the Domains page
+When I enter the term into the search bar
+Then I will get filtered results of Domains in the sidebar
+
+Scenario: User selects a domain from sidebar
+Given that I am on the Domains page
+When I click on the intended Domain name in the sidebar
+Then I am taken to that particular Domain's information dashboard with the About tab selected
+
+Scenario: User wants to edit the domain
+Given that I am on the selected Domain page
+When I click the Kebab menu icon
+* I click 'Edit domain'
+* I enter the updated repository data
+* I click 'Save'
+Then I will get a green toast bar that says 'Successfully updated domain'
+* The domain will be updated with the new data
+
+Scenario: User wants to export the Domain
+Given that I am on the selected Domain page
+When I click the Kebab menu icon
+* I click 'Export domain as TSV template'
+* I click 'OK' in the system pop up
+Then the domain will be saved in the .tsv format on my computer
+
+Scenario: User wants to delete the Domain
+Given that I am on the selected Domain page
+When I click the Kebab menu icon
+* I click 'Delete domain'
+* I click 'Ok' in the 'Delete domain' pop up
+Then I will get a green toast bar that says 'Successfully deleted domain "domain_name"'
+* That domain will be deleted
+
+Scenario: User supplies new raw domain settings
+Given that I am on the Domain page and in the About tab
+When I  enter the correctly formatted JSON metadata into the Config tab text box
+Then the config will be automatically saved
+
+Scenario: User wants to add a new application to the selected Domain
+Given that I am on the domain page and in the Applications tab
+When I click 'New Application'
+* I enter the correct data into the 'New Application' pop up
+* I click 'Save'
+Then I will get a green toast bar that says 'Successfully added Application'
+
+Scenario: User need the Secret for an Application
+Given that I am on the domain page and in the Applications tab
+When I click 'Show' in the Secret column of the Application's row
+* I double click the unhidden secret
+Then the secret will be copied to my clipboard
+
+Scenario: User wants to edit the details of an Application
+Given that I am on the domain page and in the Applications tab
+When I click the pencil icon in the row of the desired Application
+* I enter the new data
+* I click 'Save'
+Then I will get a green toast bar that says 'Successfully updated Application'
+* The Application will be updated with the new data
+
+Scenario: User wants to delete an Application from a domain
+Given that I am on the domain page and in the Applications tab
+When I click the rubbish bin icon in the row of the desired Application
+* I click 'Ok' in the 'Delete Application' pop up
+* I click 'Save'
+Then I will get a green toast bar that says 'Successfully removed domain application'
+* The application will be removed from the domain
+
+Scenario: User wants to add a new Authentication source to the selected Domain
+Given that I am on the domain page and in the Authentication tab
+When I click 'New Auth Source'
+* I select the Auth source type from the drop down
+* I enter the correct data into the 'New Auth Source' pop up
+* I click 'Save'
+Then I will get a green toast bar that says 'Successfully added auth source'
+* The new auth source will be added to the domain

@@ -1,0 +1,121 @@
+Section: Zones
+
+Scenario: User wants to create a new zone
+Given that I am on the Zone page
+When I click on the plus button in the Zones sidebar
+* enter the name of the zone into the text box
+* enter any other zone data in appropriate text box
+* Click 'Save'
+Then I will get a green toast bar that says 'Successfully added zone' and the zone will be saved
+
+Scenario: User wants to edit the zone
+Given that I am on the selected Zone page
+When I click the Kebab menu icon
+* I click 'Edit Zone'
+* I enter the updated zone data
+* I click 'Save'
+Then I will get a green toast bar that says 'Successfully updated zone'
+* The zone will be updated with the new data
+
+Scenario: User wants to export the Zone
+Given that I am on the selected Zone page
+When I click the Kebab menu icon
+* I click 'Export zone as TSV template'
+* I click 'OK' in the system pop up
+Then the zone will be saved in the .tsv format on my computer
+
+Scenario: User wants to delete the Zone
+Given that I am on the selected Zone page
+When I click the Kebab menu icon
+* I click 'Delete zone'
+* I click 'Ok' in the 'Delete zone' pop up
+Then I will get a green toast bar that says 'Successfully deleted zone "zone_name"'
+* That zone will be deleted
+
+Scenario: User selects a zone from sidebar
+Given that I am on the Zones page
+When I click on the intended Zone name in the sidebar
+Then I am taken to that particular Zone's information dashboard with the About tab selected
+
+Scenario: User wants to see which systems the selected zone is used in
+Given that I am on the Zone page
+When I click on the Systems tab
+Then I am taken to a list of Systems
+
+Scenario: User supplies search term
+Given that I am on a Zones's information dashboard in the Systems tab
+When I enter the term into the 'Filter systems...' text box
+Then I will get filtered results of Systems in a list under the 'Filter systems...' text box
+
+Scenario: User supplies new setting data
+Given that I am on the Zones page in the About tab
+When I click on one of the settings tabs and enter the data and click 'Save' or press the S key
+Then I will get a green toast bar that says 'Successfully saved __ settings' and the settings for that zone will be saved
+
+Scenario: User wants to associate a new trigger with a zone
+Given that I am on the Zones page in the trigger tab
+When I click 'Add Trigger'
+* Start to enter the name of the trigger I want to add
+* Select trigger from dropdown list
+* Click 'Add'
+Then the trigger will be added to the current zone
+
+Scenario: User supplies search term
+Given that I am on a Zones's information dashboard in the Triggers tab
+When I enter the term into the 'Filter triggers...' text box
+Then I will get filtered results of Triggers in a list under the 'Filter triggers...' text box
+
+Scenario: User wants to remove trigger from zone
+Given that I am on a Zones's information dashboard in the Triggers tab
+When I click the trash icon in the row of the trigger I want to remove
+* I click 'Ok' in the 'Remove trigger' pop up
+Then I will get a green toast bar that says 'Successfully removed trigger from zone' and the zone will be removed
+
+-------------- Metadata Tab -------------------
+
+Scenario: User intends to create new metadata for the current zone
+Given that I am on the Zones page and in the Metadata tab
+When I click 'Add new Metadata'
+Then a new metadata data field will be added to the page
+
+Scenario: User supplies new raw metadata
+Given that I am on the Zones page and in the Metadata tab
+When I click on a row it will dropdown
+* I will enter the correctly formatted JSON metadata in the drop down text box
+* I will click 'Save'
+Then a green toast bar that says 'Saved "field_name" metadata.' will appear
+* the provided raw data will be saved
+
+Scenario: User supplies new raw metadata the is not in the right format
+Given that I am on the Zones page and in the Metadata tab
+When I click on a row it will dropdown and I will enter the incorrectly formatted JSON metadata
+Then red squiggle underline will appear under the incorrectly formatted data
+* I hover over this incorrect formatted data to be be given a explanation on why it is incorrect
+
+Scenario: User supplies new raw metadata the is not in the right format
+Given that I am on the Zones page and in the Metadata tab
+When I click on a row it will dropdown
+* I will enter the incorrectly formatted JSON metadata in the drop down text box
+* I will click 'Save'
+Then a red toast bar that says JSON for property "property_name" is invalid will appear
+
+Scenario: User supplies new details for the metadata
+Given that I am on the Zones page and in the Metadata tab
+When I click on the edit icon in a Metadata row and enter the new details
+* I will click update
+Then that metadata field will be updated
+
+Scenario: User wants to see the children of the current zone (if any)
+Given that I am on the Zones page
+When I click on the Children tab
+Then I will get a list of any children of the current zone
+
+Scenario: User wants to see information for a child zone
+Given that I am on the Zones page and in the Children tab
+When I click on a Zone name in the list
+Then I will be taken to that Zone's information page
+
+Scenario: User supplies search term
+Given that I am on a Zones's information dashboard in the Children tab
+When I enter the term into the 'Filter Zones...' text box
+Then I will get filtered results of child zones in a list under the 'Filter Zones...' text box
