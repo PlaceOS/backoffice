@@ -29,7 +29,6 @@ import {
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
     debounceTime,
-    filter,
     first,
     map,
     shareReplay,

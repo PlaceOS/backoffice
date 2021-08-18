@@ -75,7 +75,7 @@ import { DialogEvent } from '../../common/types';
                         formControlName="permissions"
                         placeholder="None"
                     >
-                        <mat-option>None</mat-option>
+                        <mat-option [value]="null">None</mat-option>
                         <mat-option value="user">User</mat-option>
                         <mat-option value="support">Support</mat-option>
                         <mat-option value="admin">Admin</mat-option>
@@ -118,7 +118,7 @@ export class APIKeyModalComponent {
             name: new FormControl('', [Validators.required]),
             description: new FormControl(''),
             scopes: new FormControl([]),
-            permissions: new FormControl(''),
+            permissions: new FormControl(null),
         });
     }
 
