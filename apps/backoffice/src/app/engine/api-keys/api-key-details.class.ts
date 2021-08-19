@@ -10,7 +10,7 @@ export class PlaceAPIKeyDetails {
     public readonly permissions: null | 'user' | 'support' | 'admin';
     public readonly created_at: number;
     public readonly updated_at: number;
-    public readonly x_api_key?: string;
+    public readonly secret?: string;
 
     constructor(_data: Partial<PlaceAPIKeyDetails>) {
         this.id = _data.id || '';
@@ -21,6 +21,6 @@ export class PlaceAPIKeyDetails {
         this.permissions = _data.permissions || 'user';
         this.created_at = _data.created_at || getUnixTime(new Date());
         this.updated_at = _data.updated_at || getUnixTime(new Date());
-        this.x_api_key = _data.x_api_key;
+        this.secret = _data.secret;
     }
 }

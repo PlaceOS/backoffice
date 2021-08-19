@@ -43,7 +43,7 @@ import { APIKeyService } from './api-keys.service';
                         {{ (last_key | async)?.name || 'Unanamed API Key' }}
                     </div>
                     <div class="select-all text-xs opacity-60">
-                        {{ (last_key | async)?.x_api_key || 'No Key' }}
+                        {{ (last_key | async)?.secret || 'No Key' }}
                     </div>
                     <div></div>
                 </div>
