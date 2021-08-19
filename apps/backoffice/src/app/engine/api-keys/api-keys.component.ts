@@ -54,8 +54,9 @@ import { APIKeyService } from './api-keys.service';
                 <div class="w-32 p-2">Name</div>
                 <div class="flex-1 p-2">Description</div>
                 <div class="w-32 p-2 truncate">Scopes</div>
-                <div class="w-16 p-2">Permissions</div>
-                <div class="w-16 p-2">Created</div>
+                <div class="w-28 p-2">Permissions</div>
+                <div class="w-32 p-2">Created</div>
+                <div class="w-16 p-2"></div>
             </div>
             <div table-body>
                 <div table-row *ngFor="let item of key_list | async">
@@ -65,14 +66,15 @@ import { APIKeyService } from './api-keys.service';
                         <span
                             class="m-1 px-2 py-1 bg-gray-400"
                             *ngFor="let scope of item.scopes"
-                            >{{ scope }}</span
                         >
+                            {{ scope }}
+                        </span>
                     </div>
-                    <div class="w-16 p-2">{{ item.permissions || 'None' }}</div>
-                    <div class="w-16 p-2">
-                        {{ item.created_at | dateFrom }}
+                    <div class="w-28 p-2">{{ item.permissions || 'None' }}</div>
+                    <div class="w-32 p-2">
+                        {{ item.created_at * 1000 | dateFrom }}
                     </div>
-                    <div class="w-24 p-2 flex items-center">
+                    <div class="w-16 p-2 flex items-center">
                         <button mat-icon-button (click)="deleteBroker(item)">
                             <app-icon className="backoffice-trash"></app-icon>
                         </button>
