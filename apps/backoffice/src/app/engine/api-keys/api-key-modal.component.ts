@@ -1,8 +1,12 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { PlaceUser } from '@placeos/ts-client';
+import { combineLatest } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { addChipItem, removeChipItem } from '../../common/forms';
 import { DialogEvent } from '../../common/types';
+import { APIKeyService } from './api-keys.service';
 
 @Component({
     selector: 'api-key-modal',
@@ -68,6 +72,23 @@ import { DialogEvent } from '../../common/types';
                 </mat-form-field>
             </div>
             <div class="flex flex-col">
+                <label for="user">User<span>*</span></label>
+                <mat-form-field appearance="outline">
+                    <mat-select
+                        name="user"
+                        formControlName="user_id"
+                        placeholder="None"
+                    >
+                        <mat-option
+                            *ngFor="let user of users | async"
+                            [value]="user.id"
+                            >{{ user.name }}</mat-option
+                        >
+                    </mat-select>
+                    <mat-error>A user is required</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="flex flex-col">
                 <label for="permissions">Permissions</label>
                 <mat-form-field appearance="outline">
                     <mat-select
@@ -102,8 +123,28 @@ import { DialogEvent } from '../../common/types';
 })
 export class APIKeyModalComponent {
     @Output() public event = new EventEmitter<DialogEvent>();
-    public form: FormGroup;
+    public form: FormGroup = new FormGroup({
+        name: new FormControl('', [Validators.required]),
+        user_id: new FormControl('', [Validators.required]),
+        description: new FormControl(''),
+        scopes: new FormControl([]),
+        permissions: new FormControl(''),
+    });
     public loading: string;
+
+    public readonly users = combineLatest([
+        this._service.users,
+        this.form.valueChanges,
+    ]).pipe(
+        map(([users, { permissions }]) => {
+            console.log('Users:', users);
+            if (permissions === 'admin')
+                return users.filter((_) => _.sys_admin);
+            if (permissions === 'support')
+                return users.filter((_) => _.support || _.sys_admin);
+            return users;
+        })
+    );
 
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
@@ -113,13 +154,8 @@ export class APIKeyModalComponent {
     public readonly removeScope = (i) =>
         removeChipItem(this.form.controls.scopes as any, i);
 
-    constructor() {
-        this.form = new FormGroup({
-            name: new FormControl('', [Validators.required]),
-            description: new FormControl(''),
-            scopes: new FormControl([]),
-            permissions: new FormControl(null),
-        });
+    constructor(private _service: APIKeyService) {
+        setTimeout(() => this.form.patchValue({ permissions: null }), 100);
     }
 
     public get scope_list(): string[] {

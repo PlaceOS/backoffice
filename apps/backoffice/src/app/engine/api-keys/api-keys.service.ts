@@ -3,8 +3,10 @@ import { MatDialog } from '@angular/material/dialog';
 import {
     create,
     PlaceDomain,
+    PlaceUser,
     query,
     queryDomains,
+    queryUsers,
     remove,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, of } from 'rxjs';
@@ -40,9 +42,21 @@ export class APIKeyService {
                       query_params: { authority_id: domain.id },
                       fn: (d) => new PlaceAPIKeyDetails(d),
                       path: 'api_keys',
-                  })
-                : of([]);
-        })
+                  }).pipe(map((_) => _.data as PlaceAPIKeyDetails[]))
+                : of([] as PlaceAPIKeyDetails[]);
+        }),
+        shareReplay(1)
+    );
+
+    public readonly users = combineLatest([this._domain, this._change]).pipe(
+        switchMap(([domain]) => {
+            return domain
+                ? queryUsers({ authority_id: domain.id }).pipe(
+                      map((_) => _.data as PlaceUser[])
+                  )
+                : of([] as PlaceUser[]);
+        }),
+        shareReplay(1)
     );
 
     constructor(private _dialog: MatDialog) {
