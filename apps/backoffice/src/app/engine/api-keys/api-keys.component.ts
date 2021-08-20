@@ -64,7 +64,7 @@ import { APIKeyService } from './api-keys.service';
                     <div class="flex-1 p-2">{{ item.description }}</div>
                     <div class="w-32 p-2 truncate">
                         <span
-                            class="m-1 px-2 py-1 bg-gray-400"
+                            class="m-1 px-2 py-1 bg-gray-400 rounded text-xs text-white"
                             *ngFor="let scope of item.scopes"
                         >
                             {{ scope }}

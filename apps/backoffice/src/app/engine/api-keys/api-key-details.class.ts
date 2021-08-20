@@ -22,5 +22,6 @@ export class PlaceAPIKeyDetails {
         this.created_at = _data.created_at || getUnixTime(new Date());
         this.updated_at = _data.updated_at || getUnixTime(new Date());
         this.secret = _data.secret;
+        this.scopes = _data.scopes || [];
     }
 }
