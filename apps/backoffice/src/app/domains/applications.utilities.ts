@@ -22,7 +22,7 @@ export function generateApplicationFormFields(
     const fields: HashMap<FormControl> = {
         name: new FormControl(app.name || '', [Validators.required]),
         scopes: new FormControl(app.scopes || ''),
-        skip_authorization: new FormControl(app.skip_authorization || ''),
+        skip_authorization: new FormControl(!!app.skip_authorization),
         redirect_uri: new FormControl(
             app.redirect_uri || '',
             Validators.pattern(URL_PATTERN)
