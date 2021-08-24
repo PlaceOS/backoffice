@@ -7,6 +7,7 @@
 
 # dependencies
 /node_modules
+/cypress-tests/node_modules
 
 # IDEs and editors
 /.idea
