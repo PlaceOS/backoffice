@@ -2,34 +2,54 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-describe("Domain test", () => {
-  it("Can log in", () => {
-    cy.visit("/");
-    cy.wait(1000);
-    cy.get('input[name="email"]').type("support@place.tech");
-    cy.get('input[name="password"]').type("development");
+Cypress.Commands.add('login', (username, password) => {
+  //cy.session([username, password], () => {
+  cy.visit('/')
+  cy.get('input[name="email"]').type(username);
+  cy.get('input[name="password"]').type(password);
+  cy.get("form").submit();
+  //cy.url().should('contain', '/login-successful')
+  //})
+})
 
-    cy.get("form").submit();
-  });
+describe("Domain test", () => {
+
+  beforeEach(() => {
+    cy.login('support@place.tech', 'development')
+    cy.wait(1000);
+    cy.visit('https://localhost:8443/backoffice/#/domains/-/about');
+    cy.wait(500);
+  })
+  let domain_name = "domain7" + getRandomInt(100);
+  // it("Can log in", () => {
+  //   cy.visit("/");
+  //   cy.wait(1000);
+  //   cy.get('input[name="email"]').type("support@place.tech");
+  //   cy.get('input[name="password"]').type("development");
+  //
+  //   cy.get("form").submit();
+  // });
 
 
   it("Can create a domain", () => {
     cy.get('*[class^="backoffice-browser ng-star-inserted"]').click();
     cy.wait(1000);
-     cy.get('*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]').click();
-     cy.wait(1000);
-     let domain_name = "domain7"+getRandomInt(100);
-     cy.get('input[name="domain-name"]').type(domain_name);
-     cy.get('input[name="domain"]').type("localhost"+getRandomInt(100))
-     cy.contains('Save').click()
-     cy.get('*[class^="cdk-virtual-scroll-viewport cdk-virtual-scroll-orientation-vertical"]').contains(domain_name);
+    cy.get('*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]').click();
+    cy.wait(1000);
+    cy.get('input[name="domain-name"]').type(domain_name);
+    cy.get('input[name="domain"]').type("localhost" + getRandomInt(100))
+    cy.contains('Save').click();
+    cy.wait(50);
+    cy.get('*[class^="heading select-text"]').contains(domain_name);
   });
 
   it("Can supply new domain settings", () => {
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="view-lines monaco-mouse-cursor-text"]').click().type('{backspace}').type('"bool_setting" : true}', { parseSpecialCharSequences: false });
   });
 
   it("Can flag incorrect domain settings", () => {
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="view-lines monaco-mouse-cursor-text"]').click().type('{backspace}')
     cy.wait(1000);
     cy.get('*[class^="ng-untouched ng-star-inserted ng-dirty ng-invalid"]').should('exist')
@@ -45,17 +65,16 @@ describe("Domain test", () => {
   });
 
   it("Can edit a domain", () => {
-    // cy.wait(1000);
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click({waitForAnimations:true});
-    // cy.wait(1000);
     cy.contains('Edit domain').click({force: true, waitForAnimations:true});
-    // cy.wait(1000);
     cy.get('input[name="domain-name"]').clear().type("newDomain");
     cy.contains('Save').click()
     cy.get('*[class^="heading select-text"]').contains('newDomain');
   });
 
   it("Can delete a domain", () => {
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click({waitForAnimations:true});
     cy.wait(1000);
     cy.contains('Delete domain').click({waitForAnimations:true});
@@ -65,35 +84,37 @@ describe("Domain test", () => {
   });
 
   it("Can select a domain", () => {
-    cy.wait(1000);
-    cy.get('*[class^="item"]').first().click();
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
   });
 
   it("Can add a new application to a Domain", () => {
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="name"]').contains('Applications').click({force: true, waitForAnimations:true});
-
     cy.get('*[class^="mat-button-wrapper"]').contains('New Application').click({waitForAnimations:true});
-    let app_name = "app"+getRandomInt(10000);
+    let app_name = "app" + getRandomInt(10000);
     cy.get('input[name="application-name"]').click({waitForAnimations:true}).type(app_name);
     cy.get('*[class^="mat-checkbox-label"]').contains('Skip Authorization').click({waitForAnimations:true});
     cy.get('input[name="redirect-uri"]').type("http://localhost:"+getRandomInt(1000)+"/oauth-resp.html");
     cy.wait(1000);
     cy.get('*[class^="mat-button-wrapper"]').contains('Save').click({waitForAnimations:true});
-    // cy.reload();
   });
 
 
   it("prevents the wrong format of redirect url being saved", () => {
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="name"]').contains('Applications').click({force: true, waitForAnimations:true});
     cy.get('*[class^="mat-button-wrapper"]').contains('New Application').click({waitForAnimations:true});
+    let app_name = "app" + getRandomInt(10000);
+    cy.get('input[name="application-name"]').click({waitForAnimations:true}).type(app_name);
     cy.get('input[name="redirect-uri"]').type("invalid");
-    cy.get('input[name="application-name"]').click({waitForAnimations:true})
-    cy.wait(1000);
-    cy.get('*[class^="mat-form-field-subscript-wrapper ng-tns-c88-23"]').contains("A valid URL is required");
+    cy.get('*[class^="mat-button-wrapper"]').contains('Save').click({waitForAnimations:true});
+    cy.get('*[class^="mat-button-wrapper"]').contains('Save').should('exist');
     cy.get('*[class^="mat-button-wrapper"]').contains('Cancel').click({waitForAnimations:true});
   });
 
   it("Can get the secret for an Application", () => {
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
+    cy.get('*[class^="name"]').contains('Applications').click({force: true, waitForAnimations:true});
     cy.get('*[class^="w-48 p-2 truncate underline text-center text-xs"]').contains('Show').click({waitForAnimations:true});
     // cy.window().its('navigator.clipboard')
     // .invoke('readText')
@@ -102,8 +123,10 @@ describe("Domain test", () => {
   });
 
   it("Can edit the details of an Application", () => {
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
+    cy.get('*[class^="name"]').contains('Applications').click({force: true, waitForAnimations:true});
     cy.get('*[class^="backoffice-edit ng-star-inserted"]').first().click();
-    let app_name = "app"+getRandomInt(10000);
+    let app_name = "app" + getRandomInt(10000);
     cy.get('input[name="application-name"]').click({waitForAnimations:true}).clear().type(app_name);
     cy.wait(1000);
     cy.get('*[class^="mat-button-wrapper"]').contains('Save').click({waitForAnimations:true});
@@ -111,11 +134,14 @@ describe("Domain test", () => {
   });
 
   it("Can delete an application from a domain", () => {
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
+    cy.get('*[class^="name"]').contains('Applications').click({force: true, waitForAnimations:true});
     cy.get('*[class^="backoffice-trash ng-star-inserted"]').first().click();
     cy.get('*[class^="mat-button-wrapper"]').contains('Ok').click({waitForAnimations:true});
   });
 
   it("Can add a new Authentication source to the Domain", () => {
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="name"]').contains('Authentication ').click({force: true, waitForAnimations:true});
     cy.get('*[class^="mat-button-wrapper"]').contains('New Auth Source').click({waitForAnimations:true});
     cy.get('*[id^="mat-select-0"]').click({waitForAnimations:true});
@@ -128,9 +154,10 @@ describe("Domain test", () => {
 
 
   it("Can export a domain", () => {
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click({waitForAnimations:true});
     cy.wait(1000);
     cy.contains('Export domain').click({waitForAnimations:true});
-    //cy.readFile("domain6.domains.tsv")
+    //cy.readFile("domain774.domains.tsv")
   });
 });
