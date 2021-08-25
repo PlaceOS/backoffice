@@ -385,9 +385,9 @@ export class SettingsFormComponent
             }
             return obj;
         });
-        const merged_settings = merge.all(
-            remote_settings.concat(local_settings)
-        );
+        const merged_settings = remote_settings
+            .concat(local_settings)
+            .reduce((m, i) => ({ ...m, ...i }), {});
         const settings_string = Object.keys(merged_settings).length
             ? yaml.safeDump(merged_settings, { strict: true })
             : '';
