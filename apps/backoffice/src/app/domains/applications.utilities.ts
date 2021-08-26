@@ -4,7 +4,7 @@ import { PlaceApplication } from '@placeos/ts-client';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 
 export const URL_PATTERN =
-    '^((http|ftp|ws)s?:\\/\\/)?' + // protocol
+    '^([a-z]{2,6}:\\/\\/)?' + // protocol
     '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
     '(localhost)|' + // Localhost
     '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
