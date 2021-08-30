@@ -3,7 +3,15 @@ import { PlaceApplication } from '@placeos/ts-client';
 
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 
-export const URL_PATTERN = '^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?';
+export const URL_PATTERN =
+    '^([a-z]{2,6}:\\/\\/)?' + // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+    '(localhost)|' + // Localhost
+    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z{}\\d%_.~+]*)*' + // port and path
+    '(\\?[;&a-zA-Z{}\\d%_.~+=-]*)?' +
+    '(\\#[-a-zA-Z{}/\\d_]*)?' +
+    '(\\?[;&a-zA-Z{}\\d%_.~+=-]*)?$'; // query string;
 
 export function generateApplicationFormFields(
     app: PlaceApplication
