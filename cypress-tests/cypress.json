@@ -3,5 +3,6 @@
   "watchForFileChanges":false,
   "waitForAnimations":true,
   "retries": 2,
-  "experimentalSessionSupport": false,
+  "chromeWebSecurity": false,
+  "experimentalSessionSupport": true
 }
