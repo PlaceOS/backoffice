@@ -4,12 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "e2e": "cypress open"
+    "e2e": "cypress open"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "clipboardy": "^2.3.0",
     "cypress": "^8.3.0"
+  },
+  "dependencies": {
+    "unique-names-generator": "^4.6.0"
   }
 }
