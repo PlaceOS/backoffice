@@ -175,6 +175,7 @@ describe("Zones test", () => {
 			force: true
 		});
     cy.get('*[class^="view-lines monaco-mouse-cursor-text"]').click().type('"{bool_setting" : true}', { parseSpecialCharSequences: false });
+    cy.wait(1000);
     cy.contains('Save').click({
 			force: true
 		});
@@ -188,15 +189,11 @@ describe("Zones test", () => {
 		});
     cy.get('*[class^="mat-button-wrapper"]').contains('Add Trigger').click();
     cy.get('*[class^="item-search-field"]').click();
-    //
     cy.wait(1000);
     cy.get('*[class^="mat-option-text"]').first().click({force: true});
-
     cy.wait(1000);
     cy.get('*[class^="mat-button-wrapper"]').contains(/^Add$/).click({force: true});
-
     cy.get('*[class^="truncate"]').contains('Trigger');
-    //cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
 	});
 
   it.skip("Can search for triggers in a Zone", () => {

@@ -97,7 +97,7 @@ describe("Users test", () => {
 			cy.wait(1000);
 			cy.contains('Export user').click();
 			cy.readFile(path.join(downloadsFolder, user + ".users.tsv")).should("exist");
-		})
+		});
 	});
 
 	it("Can flag incorrect metadata format", () => {
