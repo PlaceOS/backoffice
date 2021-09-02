@@ -73,19 +73,6 @@ describe("Users test", () => {
 		cy.get('*[class^="heading select-text"]').contains(new_name);
 	});
 
-	it("Can delete a user", () => {
-		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().last().click({
-			force: true
-		});
-		cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click();
-		cy.wait(1000);
-		cy.contains('Delete user').click();
-		cy.wait(1000);
-		cy.contains('Ok').click();
-		// get name of user and filter to get 0 OR
-		cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
-	});
-
 	it("Can export a user", () => {
 		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
 			force: true
@@ -163,5 +150,18 @@ describe("Users test", () => {
 		});
 		cy.wait(1000);
 		cy.get('*[class^="ng-star-inserted"]')
+	});
+
+	it("Can delete a user", () => {
+		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
+			force: true
+		});
+		cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click();
+		cy.wait(1000);
+		cy.contains('Delete user').click();
+		cy.wait(1000);
+		cy.contains('Ok').click();
+		// get name of user and filter to get 0 OR
+		cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
 	});
 });

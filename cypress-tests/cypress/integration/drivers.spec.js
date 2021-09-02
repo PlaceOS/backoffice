@@ -87,4 +87,16 @@ describe("Drivers test", () => {
     cy.get('*[class^="name"]').contains('Modules').click({force: true });
     cy.get('*[class^="overflow-x-auto ng-star-inserted"]')
   });
+
+  it("Can delete a driver", () => {
+		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().last().click({
+			force: true
+		});
+		cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click();
+		cy.wait(1000);
+		cy.contains('Delete driver').click();
+		cy.wait(1000);
+		cy.contains('Ok').click();
+		cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+	});
 });

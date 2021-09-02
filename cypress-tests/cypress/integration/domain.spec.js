@@ -5,11 +5,11 @@ function getRandomInt(max) {
 const path = require("path");
 const downloadsFolder = Cypress.config("downloadsFolder");
 
-const clipboardy = require('clipboardy');
-
-function getClipboard () {
-  return clipboardy.read();
-}
+// const clipboardy = require('clipboardy');
+//
+// function getClipboard () {
+//   return clipboardy.read();
+// }
 
 Cypress.Commands.add('login', (username, password) => {
   cy.visit('/')
@@ -75,7 +75,7 @@ describe("Domain test", () => {
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click();
     cy.contains('Edit domain').click({force: true });
-    cy.get('input[name="domain-name"]').clear().type("newDomain");
+    cy.get('input[name="domain-name"]').focus().clear().type("newDomain");
     cy.contains('Save').click()
     cy.get('*[class^="heading select-text"]').contains('newDomain');
   });
