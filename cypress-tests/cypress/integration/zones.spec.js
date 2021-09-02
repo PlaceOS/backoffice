@@ -40,6 +40,33 @@ describe("Zones test", () => {
     cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
 	});
 
+  it("Can add a zone to a System", () => {
+    cy.visit('https://localhost:8443/backoffice/#/systems/-/about');
+    cy.wait(1000);
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
+			force: true
+		});
+    cy.wait(1000);
+    cy.get('*[class^="name"]').contains('Zones').click({force: true });
+    cy.get('*[id^="mat-input-0"]').click().type(zone_name);
+    cy.wait(1000);
+    cy.get('*[class^="mat-option-text"]').first().click({force: true});
+    cy.wait(1000);
+    cy.contains('Save Pending').click();
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+	});
+
+  it("Can search for systems in a Zone", () => {
+    cy.get('*[class^="search"]').type(zone_name);
+		cy.wait(1000);
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
+    cy.get('*[class^="name"]').contains('Systems').click({
+			force: true
+		});
+    cy.get('*[id^="mat-input-0"]').click().type("System");
+    //cy.get('*[class^="ng-star-inserted"]').children().should('have.length', 1)
+	});
+
   it("Can prevent the a zone being saved without a name", () => {
     cy.get('*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]').click();
 		cy.wait(1000);
@@ -196,18 +223,13 @@ describe("Zones test", () => {
     cy.get('*[class^="truncate"]').contains('Trigger');
 	});
 
-  it.skip("Can search for triggers in a Zone", () => {
+  it("Can search for triggers in a Zone", () => {
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="name"]').contains('Triggers').click({
 			force: true
 		});
-    //cy.get('*[id^="mat-input-1"]').type("Trigger");
-
-
-    cy.get('*[class^="mat-input-element mat-form-field-autofill-control rounded-none ng-tns-c88-7 ng-pristine ng-valid cdk-text-field-autofill-monitored ng-touched"]')
-    cy.wait(1000);
-    cy.get('*[class^="flex flex-col items-center p-8 mx-auto ng-star-inserted"]').children().should('have.length', 1)
-    //cy.get('*[class^="search"]').focus().clear();
+    cy.get('*[id^="mat-input-0"]').click().type("Trigger");
+    cy.get('*[class^="overflow-y-auto"]').children().should('have.length', 1)
 	});
 
   it("Can delete a trigger from a Zone", () => {
