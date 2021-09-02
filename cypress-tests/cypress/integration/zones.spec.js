@@ -28,14 +28,16 @@ describe("Zones test", () => {
 	});
 
 	let zone_name = uniqueNamesGenerator(config);
+  let new_name = uniqueNamesGenerator(config)
 
-	it.only("Can create a zone", () => {
+	it("Can create a zone", () => {
 		cy.get('*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]').click();
 		cy.wait(1000);
 		cy.get('input[name="zone-name"]').type(zone_name);
 		// cy.get('input[name="last-name"]').type(last_name);
 		// cy.get('input[name="useremail"]').type(first_name + "@email.au");
 		cy.contains('Save').click();
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
 	});
 
   it("Can prevent the a zone being saved without a name", () => {
@@ -44,6 +46,7 @@ describe("Zones test", () => {
     cy.get('*[class^="mat-button-wrapper"]').contains('Save').click();
     cy.get('*[class^="mat-button-wrapper"]').contains('Save').should('exist');
     cy.get('*[class^="mat-button-wrapper"]').contains('Cancel').click();
+    // red toast bar
   });
 
 	it("Can filter the zones", () => {
@@ -58,32 +61,6 @@ describe("Zones test", () => {
 			force: true
 		});
 		cy.get('*[class^="font-medium text-lg"]').contains("Settings");
-	});
-
-	it("Can edit a zone", () => {
-		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
-			force: true
-		});
-		cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click();
-		cy.contains('Edit zone').click({
-			force: true,
-		});
-		let new_name = uniqueNamesGenerator(config)
-		cy.get('input[name="zone-name"]').clear().type(new_name);
-		cy.contains('Save').click()
-		cy.get('*[class^="heading select-text"]').contains(new_name);
-	});
-
-	it("Can delete a zone", () => {
-		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
-			force: true
-		});
-		cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click();
-		cy.wait(1000);
-		cy.contains('Delete zone').click();
-		cy.wait(1000);
-		cy.contains('Ok').click();
-		cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
 	});
 
 	it("Can export a zone", () => {
@@ -101,6 +78,7 @@ describe("Zones test", () => {
 	});
 
 	it("Can create a new metadata field for a User", () => {
+    cy.get('*[class^="search"]').type(zone_name);
 		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
 			force: true
 		});
@@ -117,7 +95,51 @@ describe("Zones test", () => {
 		cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Saved");
 	});
 
+  it("Can edit metadata of a Zone", () => {
+    cy.get('*[class^="search"]').type(zone_name);
+		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
+			force: true
+		});
+		cy.get('*[class^="name"]').contains('Metadata').click({
+			force: true
+		});
+		cy.wait(1000);
+		cy.get('*[class^="backoffice-edit ng-star-inserted"]').click();
+		cy.get('input[name="property-name"]').focus().clear().type("Field2");
+		cy.get('*[class^="mat-focus-indicator mat-button mat-button-base"]').contains('Update').click();
+	});
+
+  it("Can delete metadata of a Zone", () => {
+    cy.get('*[class^="search"]').type(zone_name);
+		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
+			force: true
+		});
+		cy.get('*[class^="name"]').contains('Metadata').click({
+			force: true
+		});
+		cy.wait(1000);
+		cy.get('*[class^="backoffice-trash ng-star-inserted"]').click();
+    cy.contains('Ok').click();
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+	});
+
+  it("Can edit a zone", () => {
+		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
+			force: true
+		});
+		cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click();
+		cy.contains('Edit zone').click({
+			force: true,
+		});
+    cy.wait(1000);
+		cy.get('input[name="zone-name"]').focus().clear().type(new_name);
+    cy.wait(1000);
+		cy.contains('Save').click({force: true})
+		cy.get('*[class^="heading select-text"]').contains(new_name);
+	});
+
 	it("Can flag incorrect metadata format", () => {
+    cy.get('*[class^="search"]').type(new_name);
 		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().last().click({
 			force: true
 		});
@@ -135,19 +157,6 @@ describe("Zones test", () => {
 		cy.get('*[class^="view-lines monaco-mouse-cursor-text"]').click().type('}', {
 			parseSpecialCharSequences: false
 		});
-	});
-
-	it("Can edit metadata of a Zone", () => {
-		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
-			force: true
-		});
-		cy.get('*[class^="name"]').contains('Metadata').click({
-			force: true
-		});
-		cy.wait(1000);
-		cy.get('*[class^="backoffice-edit ng-star-inserted"]').click();
-		cy.get('input[name="property-name"]').clear().type("Field2");
-		cy.get('*[class^="mat-focus-indicator mat-button mat-button-base"]').contains('Update').click();
 	});
 
 	it("Can see which systems the selected zone is used in", () => {
@@ -201,7 +210,7 @@ describe("Zones test", () => {
     cy.get('*[class^="mat-input-element mat-form-field-autofill-control rounded-none ng-tns-c88-7 ng-pristine ng-valid cdk-text-field-autofill-monitored ng-touched"]')
     cy.wait(1000);
     cy.get('*[class^="flex flex-col items-center p-8 mx-auto ng-star-inserted"]').children().should('have.length', 1)
-    //cy.get('*[class^="search"]').clear();
+    //cy.get('*[class^="search"]').focus().clear();
 	});
 
   it("Can delete a trigger from a Zone", () => {
@@ -215,18 +224,16 @@ describe("Zones test", () => {
     cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
 	});
 
-  it.only("Can add a child Zone to a parent Zone", () => {
+  it("Can add a child Zone to a parent Zone", () => {
     let child_name = uniqueNamesGenerator(config);
     cy.get('*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]').click();
     cy.wait(1000);
     cy.get('input[name="zone-name"]').type(child_name);
-    cy.get('*[class^="item-search-field"]').click().type(zone_name);
-    cy.wait(2000);
+    cy.get('*[class^="item-search-field"]').click().type(new_name);
+    cy.wait(1000);
     cy.get('*[class^="mat-option-text"]').first().click({force: true});
     cy.contains('Save').click();
-
-    cy.get('*[class^="search"]').type(zone_name);
-
+    cy.get('*[class^="search"]').type(new_name);
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="name"]').contains('Children').click({
 			force: true
@@ -234,7 +241,15 @@ describe("Zones test", () => {
     cy.get('*[class^="ng-star-inserted"]').contains(child_name);
 	});
 
-
-
-
+  it("Can delete a zone", () => {
+		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
+			force: true
+		});
+		cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click();
+		cy.wait(1000);
+		cy.contains('Delete zone').click();
+		cy.wait(1000);
+		cy.contains('Ok').click();
+		cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+	});
 });

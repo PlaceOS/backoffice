@@ -13,6 +13,7 @@ function getClipboard () {
 
 Cypress.Commands.add('login', (username, password) => {
   cy.visit('/')
+  cy.visit('/')
   cy.get('input[name="email"]').type(username);
   cy.get('input[name="password"]').type(password);
   cy.get("form").submit();
@@ -53,11 +54,21 @@ describe("Domain test", () => {
   });
 
   it("Can filter the domains", () => {
-    cy.get('*[class^="search"]').type("domain");
+    cy.get('*[class^="search"]').type(domain_name);
     cy.wait(1000);
-    cy.get('*[class^="search"]').type("6");
-    //cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().should('have.length', 4)
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().should('have.length', 1)
     cy.get('*[class^="search"]').clear();
+  });
+
+  it("Can delete a domain", () => {
+    cy.get('*[class^="search"]').type(domain_name);
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
+    cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click();
+    cy.wait(1000);
+    cy.contains('Delete domain').click();
+    cy.wait(1000);
+    cy.contains('Ok').click()
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
   });
 
   it("Can edit a domain", () => {
@@ -67,16 +78,6 @@ describe("Domain test", () => {
     cy.get('input[name="domain-name"]').clear().type("newDomain");
     cy.contains('Save').click()
     cy.get('*[class^="heading select-text"]').contains('newDomain');
-  });
-
-  it("Can delete a domain", () => {
-    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
-    cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click();
-    cy.wait(1000);
-    cy.contains('Delete domain').click();
-    cy.wait(1000);
-    cy.contains('Ok').click()
-    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
   });
 
   it("Can select a domain", () => {

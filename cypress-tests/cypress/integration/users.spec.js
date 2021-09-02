@@ -12,6 +12,7 @@ const config = {
 
 Cypress.Commands.add('login', (username, password) => {
 	cy.visit('/')
+  cy.visit('/')
 	cy.get('input[name="email"]').type(username);
 	cy.get('input[name="password"]').type(password);
 	cy.get("form").submit();
@@ -64,13 +65,16 @@ describe("Users test", () => {
 			force: true,
 		});
 		let new_name = uniqueNamesGenerator(config)
-		cy.get('input[name="first-name"]').clear().type(new_name);
-		cy.contains('Save').click()
+		cy.get('input[name="first-name"]').focus().clear()
+		cy.get('input[name="first-name"]').type(new_name);
+		cy.contains('Save').click({
+			force: true
+		})
 		cy.get('*[class^="heading select-text"]').contains(new_name);
 	});
 
 	it("Can delete a user", () => {
-		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
+		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().last().click({
 			force: true
 		});
 		cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click();
@@ -96,25 +100,10 @@ describe("Users test", () => {
 		})
 	});
 
-	it("Can create a new metadata field for a User", () => {
-		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
-			force: true
-		});
-		cy.get('*[class^="name"]').contains('Metadata').click({
-			force: true
-		});
-		cy.wait(1000);
-		cy.get('*[class^="mat-button-wrapper"]').contains('Add new Metadata Field').click();
-		cy.get('*[class^="mt-4 ng-star-inserted"]').click();
-		cy.get('*[class^="view-lines monaco-mouse-cursor-text"]').click().type('{backspace}').type('"bool_setting" : true}', {
-			parseSpecialCharSequences: false
-		});
-		cy.contains('Save').click();
-		cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Saved");
-	});
-
 	it("Can flag incorrect metadata format", () => {
-		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().last().click({
+		cy.get('*[class^="search"]').type(first_name);
+		cy.wait(1000);
+		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
 			force: true
 		});
 		cy.get('*[class^="name"]').contains('Metadata').click({
@@ -131,6 +120,25 @@ describe("Users test", () => {
 		cy.get('*[class^="view-lines monaco-mouse-cursor-text"]').click().type('}', {
 			parseSpecialCharSequences: false
 		});
+	});
+
+	it("Can create a new metadata field for a User", () => {
+		cy.get('*[class^="search"]').type(first_name);
+		cy.wait(1000);
+		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
+			force: true
+		});
+		cy.get('*[class^="name"]').contains('Metadata').click({
+			force: true
+		});
+		cy.wait(1000);
+		cy.get('*[class^="mat-button-wrapper"]').contains('Add new Metadata Field').click();
+		cy.get('*[class^="mt-4 ng-star-inserted"]').click();
+		cy.get('*[class^="view-lines monaco-mouse-cursor-text"]').click().type('{backspace}').type('"bool_setting" : true}', {
+			parseSpecialCharSequences: false
+		});
+		cy.contains('Save').click();
+		cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Saved");
 	});
 
 	it("Can edit metadata of a User", () => {
