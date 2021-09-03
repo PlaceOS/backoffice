@@ -11,7 +11,7 @@ export class SettingsFormatPipe implements PipeTransform {
     public transform(value: PlaceSettings): string {
         return `${TYPES[value.encryption_level]} (${format(
             value.updated_at * 1000,
-            'dd-MMM-yyyy h:mma'
+            'dd-MMM-yyyy HH:mm:ss'
         )})`;
     }
 }
