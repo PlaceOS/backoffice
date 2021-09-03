@@ -7,6 +7,7 @@ import { ZoneTriggersComponent } from './zone-triggers.component';
 import { ZoneChildrenComponent } from './zone-children.component';
 import { ZoneMetadataComponent } from './zone-metadata.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
+import { SettingsHistoryViewComponent } from '../ui/settings-history-view.component';
 
 export const ROUTES: Routes = [
     {
@@ -19,6 +20,7 @@ export const ROUTES: Routes = [
             { path: 'children', component: ZoneChildrenComponent },
             { path: 'metadata', component: ZoneMetadataComponent },
             { path: 'extend/:id', component: ExtensionOutletComponent },
+            { path: 'history', component: SettingsHistoryViewComponent },
             { path: '**', redirectTo: 'about' },
         ],
     },

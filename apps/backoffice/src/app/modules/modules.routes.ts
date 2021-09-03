@@ -4,6 +4,7 @@ import { ModulesComponent } from './modules.component';
 import { ModuleAboutComponent } from './module-about.component';
 import { ModuleSystemsComponent } from './module-systems.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
+import { SettingsHistoryViewComponent } from '../ui/settings-history-view.component';
 
 export const ROUTES: Routes = [
     {
@@ -13,6 +14,7 @@ export const ROUTES: Routes = [
             { path: 'about', component: ModuleAboutComponent },
             { path: 'systems', component: ModuleSystemsComponent },
             { path: 'extend/:id', component: ExtensionOutletComponent },
+            { path: 'history', component: SettingsHistoryViewComponent },
             { path: '**', redirectTo: 'about' },
         ],
     },

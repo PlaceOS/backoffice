@@ -62,6 +62,7 @@ export class ModulesComponent extends BaseClass {
                 count: this.system_count,
                 icon: { class: 'backoffice-documents' },
             },
+            { id: 'history', name: 'Settings History', icon: { class: 'backoffice-clock' } },
         ].concat(this.extensions);
     }
 

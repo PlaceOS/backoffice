@@ -70,6 +70,9 @@ import { ExecuteMethodFieldComponent } from './custom-fields/system-exec/execute
 import { SelectModuleComponent } from './custom-fields/system-exec/select-module.component';
 import { SelectMethodComponent } from './custom-fields/system-exec/select-method.component';
 import { FunctionArgumentComponent } from './custom-fields/system-exec/function-argument.component';
+import { DiffViewerComponent } from './diff-viewer.component';
+import { SettingsHistoryViewComponent } from './settings-history-view.component';
+import { SettingsFormatPipe } from './settings-format.pipe';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -109,6 +112,8 @@ const COMPONENTS: Type<any>[] = [
     UploadListComponent,
     BindingDirective,
     BasicLineGraphComponent,
+    DiffViewerComponent,
+    SettingsHistoryViewComponent
 ];
 
 const PIPES: Type<any>[] = [
@@ -117,6 +122,7 @@ const PIPES: Type<any>[] = [
     FormatListPipe,
     SafePipe,
     SanitizePipe,
+    SettingsFormatPipe
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [

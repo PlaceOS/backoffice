@@ -54,7 +54,8 @@ export class DriversComponent extends BaseClass {
     public updateTabList() {
         this.tab_list = [
             { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
-            { id: 'modules', name: 'Modules', count: this.device_count, icon: { class: 'backoffice-tablet' } }
+            { id: 'modules', name: 'Modules', count: this.device_count, icon: { class: 'backoffice-tablet' } },
+            { id: 'history', name: 'Settings History', icon: { class: 'backoffice-clock' } },
 
         ].concat(this.extensions);
     }

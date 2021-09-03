@@ -74,6 +74,11 @@ export class SystemsComponent extends BaseClass implements OnInit {
                 count: counts.metadata,
                 icon: { class: 'backoffice-gist' },
             },
+            {
+                id: 'history',
+                name: 'Settings History',
+                icon: { class: 'backoffice-clock' },
+            },
         ].concat(this.extensions);
     }
 

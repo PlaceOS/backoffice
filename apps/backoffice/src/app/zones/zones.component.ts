@@ -73,6 +73,7 @@ export class ZonesComponent extends BaseClass implements OnInit {
                 count: details.children,
                 icon: { class: 'backoffice-flow-tree' },
             },
+            { id: 'history', name: 'Settings History', icon: { class: 'backoffice-clock' } },
         ].concat(this.extensions);
     }
 
