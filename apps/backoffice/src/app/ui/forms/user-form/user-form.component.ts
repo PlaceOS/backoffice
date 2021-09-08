@@ -8,6 +8,7 @@ import {
     addChipItem,
     removeChipItem,
 } from 'apps/backoffice/src/app/common/forms';
+
 @Component({
     selector: 'user-form',
     templateUrl: './user-form.component.html',

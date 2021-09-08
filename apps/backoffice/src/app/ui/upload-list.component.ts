@@ -81,7 +81,7 @@ import { UploadDetails, uploadFile } from '../common/uploads';
         <div
             class="absolute inset-0"
             *ngIf="enabled"
-            (document:dragenter)="onEnter()"
+            (document:dragenter)="onEnter($event)"
             (drop)="hideOverlay()"
         ></div>
         <div
@@ -175,13 +175,8 @@ export class UploadListComponent extends BaseClass implements OnInit {
         );
     }
 
-    public onEnter() {
-        this.show_overlay = true;
-        this.timeout(
-            'hide_overlay',
-            () => (this.show_overlay = false),
-            10 * 1000
-        );
+    public onEnter(e) {
+        this.show_overlay = e?.dataTransfer?.types.includes('Files');
     }
 
     public hideOverlay() {
