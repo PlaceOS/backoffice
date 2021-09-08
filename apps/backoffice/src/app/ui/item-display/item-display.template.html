@@ -45,37 +45,35 @@
         </div>
     </header>
     <main *ngIf="item && !(loading | async)">
-        <div class="tabs">
-            <nav mat-tab-nav-bar [class.scroll]="is_scrolled">
-                <a
-                    class="tab"
-                    mat-tab-link
-                    *ngFor="let link of tabs"
-                    [routerLink]="item.id ? ('/' + route + '/' + item.id + '/' + link.id) : ('/' + route  + '/' + link.id)"
-                    [queryParams]="link.query || {}"
-                    routerLinkActive
-                    #rla="routerLinkActive"
-                    [active]="rla.isActive"
-                >
-                    <app-icon [icon]="link.icon"></app-icon>&nbsp;
-                    <div class="name" i18n="@@tabNames">
-                        { link.name, select, About { About } Modules { Modules }
-                        Zones { Zones } Triggers { Triggers } Systems { Systems
-                        } Metadata { Metadata } Children { Children } Drivers {
-                        Drivers } History { History } Applications {
-                        Applications } Authentication { Authentication } Users {
-                        Users } Database { Database } Clusters { Clusters }
-                        Interfaces { Interfaces } MQTT Brokers { MQTT Brokers }
-                        other { {{ link.name }} }} &nbsp;
-                    </div>
-                    <div class="count" *ngIf="link.count || link.count === 0">
-                        ({{ link.count || '0' }})
-                    </div>
-                </a>
-            </nav>
-            <div class="content h-12" #content (scroll)="is_scrolled">
-                <router-outlet></router-outlet>
-            </div>
+        <nav mat-tab-nav-bar [class.scroll]="is_scrolled">
+            <a
+                class="tab"
+                mat-tab-link
+                *ngFor="let link of tabs"
+                [routerLink]="item.id ? ('/' + route + '/' + item.id + '/' + link.id) : ('/' + route  + '/' + link.id)"
+                [queryParams]="link.query || {}"
+                routerLinkActive
+                #rla="routerLinkActive"
+                [active]="rla.isActive"
+            >
+                <app-icon [icon]="link.icon"></app-icon>&nbsp;
+                <div class="name" i18n="@@tabNames">
+                    { link.name, select, About { About } Modules { Modules }
+                    Zones { Zones } Triggers { Triggers } Systems { Systems
+                    } Metadata { Metadata } Children { Children } Drivers {
+                    Drivers } History { History } Applications {
+                    Applications } Authentication { Authentication } Users {
+                    Users } Database { Database } Clusters { Clusters }
+                    Interfaces { Interfaces } MQTT Brokers { MQTT Brokers }
+                    other { {{ link.name }} }} &nbsp;
+                </div>
+                <div class="count" *ngIf="link.count || link.count === 0">
+                    ({{ link.count || '0' }})
+                </div>
+            </a>
+        </nav>
+        <div class="content h-12" #content (scroll)="is_scrolled">
+            <router-outlet></router-outlet>
         </div>
     </main>
     <div class="hidden sm:block center" *ngIf="!item && !(loading | async)">
