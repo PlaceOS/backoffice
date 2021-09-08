@@ -25,7 +25,7 @@ export class UserFormComponent {
     /** List of available domains */
     public domain_list: PlaceDomain[];
     /** List of separator characters for tags */
-    public readonly separators: number[] = [ENTER, COMMA, SPACE];
+    public readonly separators: number[] = [ENTER, COMMA];
 
     public readonly addGroup = (e) =>
         addChipItem(this.form.controls.groups as any, e);
