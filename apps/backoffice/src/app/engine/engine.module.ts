@@ -25,6 +25,7 @@ import { AdminSchemasComponent } from './schemas.component';
 import { AdminAPIKeysComponent } from './api-keys/api-keys.component';
 import { APIKeyModalComponent } from './api-keys/api-key-modal.component';
 import { MatChipsModule } from '@angular/material/chips';
+import { APIKeyService } from './api-keys/api-keys.service';
 
 @NgModule({
     declarations: [
@@ -54,5 +55,8 @@ import { MatChipsModule } from '@angular/material/chips';
         RouterModule.forChild(ROUTES),
         SharedContentModule,
     ],
+    providers: [
+        APIKeyService
+    ]
 })
 export class AppPlaceModule {}

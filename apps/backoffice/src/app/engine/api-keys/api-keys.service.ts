@@ -16,9 +16,7 @@ import { notifyError, notifySuccess } from '../../common/notifications';
 import { PlaceAPIKeyDetails } from './api-key-details.class';
 import { APIKeyModalComponent } from './api-key-modal.component';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable()
 export class APIKeyService {
     private _domain = new BehaviorSubject<PlaceDomain>(null);
     private _last_key = new BehaviorSubject(null);
@@ -60,13 +58,6 @@ export class APIKeyService {
     );
 
     constructor(private _dialog: MatDialog) {
-        if (sessionStorage.getItem('last_api_key')) {
-            this._last_key.next(
-                new PlaceAPIKeyDetails(
-                    JSON.parse(sessionStorage.getItem('last_api_key'))
-                )
-            );
-        }
     }
 
     public setDomain(domain: PlaceDomain) {
@@ -100,7 +91,6 @@ export class APIKeyService {
                 throw _;
             });
         this._last_key.next(key);
-        sessionStorage.setItem('last_api_key', JSON.stringify(key));
         this._change.next(Date.now());
         notifySuccess('Successfully created new API key.');
         ref.close();
