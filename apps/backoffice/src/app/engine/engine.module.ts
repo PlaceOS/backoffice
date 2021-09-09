@@ -24,7 +24,6 @@ import { AdminClusterNodeComponent } from './cluster-details/cluster-node.compon
 import { AdminSchemasComponent } from './schemas.component';
 import { AdminAPIKeysComponent } from './api-keys/api-keys.component';
 import { APIKeyModalComponent } from './api-keys/api-key-modal.component';
-import { MatChipsModule } from '@angular/material/chips';
 import { APIKeyService } from './api-keys/api-keys.service';
 
 @NgModule({

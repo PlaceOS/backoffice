@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { take } from 'rxjs/operators';
 import { APIKeyService } from './api-keys.service';
+import { notifyInfo } from '../../common/notifications';
 
 @Component({
     selector: 'admin-api-keys',
     template: `
-        <div class="flex items-center space-x-2 m-4">
+        <div class="flex items-start space-x-2 m-4">
             <div class="flex flex-col space-y-1">
                 <label for="type">Domain: </label>
                 <mat-form-field appearance="outline" class="h-12">
@@ -25,7 +28,7 @@ import { APIKeyService } from './api-keys.service';
             </div>
             <button
                 mat-button
-                class="mt-6"
+                class="mt-8 min-w-[8rem]"
                 [disabled]="!(domain | async)"
                 (click)="newKey()"
             >
@@ -36,16 +39,12 @@ import { APIKeyService } from './api-keys.service';
                 class="rounded shadow border border-gray-100 min-w-[24rem]"
             >
                 <div class="border-b px-2 pb-1 border-gray-200 !w-full">
-                    <label class="p-0 m-0"> Last API Key Details </label>
+                    <label class="p-0 m-0"> Last API Key Details ({{ (last_key | async)?.name || 'Unanamed API Key' }}) </label>
                 </div>
                 <div class="p-2">
-                    <div class="text-sm">
-                        {{ (last_key | async)?.name || 'Unanamed API Key' }}
-                    </div>
-                    <div class="select-all text-xs opacity-60">
+                    <div class="select-all text-xs opacity-60 mono break-words cursor-pointer" (click)="copyKey()">
                         {{ (last_key | async)?.secret || 'No Key' }}
                     </div>
-                    <div></div>
                 </div>
             </div>
         </div>
@@ -99,5 +98,12 @@ export class AdminAPIKeysComponent {
     public readonly setDomain = (d) => this._service.setDomain(d);
     public readonly newKey = () => this._service.newKey();
 
-    constructor(private _service: APIKeyService) {}
+    constructor(private _service: APIKeyService, private _clipboard: Clipboard) {}
+
+    public async copyKey() {
+        const key = await this.last_key.pipe(take(1)).toPromise();
+        if (!key) return;
+        this._clipboard.copy(key.secret);
+        notifyInfo('Copied API key to clipboard.');
+    }
 }

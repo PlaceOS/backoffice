@@ -19,7 +19,7 @@ import { APIKeyModalComponent } from './api-key-modal.component';
 @Injectable()
 export class APIKeyService {
     private _domain = new BehaviorSubject<PlaceDomain>(null);
-    private _last_key = new BehaviorSubject(null);
+    private _last_key = new BehaviorSubject<PlaceAPIKeyDetails>(null);
     private _change = new BehaviorSubject<number>(0);
 
     public readonly last_key = this._last_key.asObservable();
@@ -90,7 +90,7 @@ export class APIKeyService {
                 notifyError(_);
                 throw _;
             });
-        this._last_key.next(key);
+        this._last_key.next(key as any);
         this._change.next(Date.now());
         notifySuccess('Successfully created new API key.');
         ref.close();
