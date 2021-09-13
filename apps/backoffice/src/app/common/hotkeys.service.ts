@@ -33,9 +33,10 @@ export class HotkeysService {
     constructor() {
         window.addEventListener('keydown', (event: KeyboardEvent) => {
             if (
-                document.activeElement &&
+                document.getSelection().type === 'Range' ||
+                (document.activeElement &&
                 (document.activeElement.tagName.toLowerCase() === 'input' ||
-                    document.activeElement.tagName.toLowerCase() === 'textarea')
+                    document.activeElement.tagName.toLowerCase() === 'textarea'))
             ) {
                 return;
             }
