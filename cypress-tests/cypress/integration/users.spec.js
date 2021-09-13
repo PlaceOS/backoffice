@@ -40,6 +40,18 @@ describe("Users test", () => {
 		cy.get('input[name="confirm-password"]').type(last_name + "123!");
 		cy.contains('Save').click();
 		cy.wait(50);
+
+		let first_name2 = uniqueNamesGenerator(config);
+		let last_name2 = uniqueNamesGenerator(config);
+		cy.get('*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]').click();
+		cy.wait(1000);
+		cy.get('input[name="first-name"]').type(first_name2);
+		cy.get('input[name="last-name"]').type(last_name2);
+		cy.get('input[name="useremail"]').type(first_name2 + "@email.au");
+		cy.get('input[name="new-password"]').type(last_name2 + "123!");
+		cy.get('input[name="confirm-password"]').type(last_name2 + "123!");
+		cy.contains('Save').click();
+		cy.wait(50);
 	});
 
 	it("Can filter the users", () => {
