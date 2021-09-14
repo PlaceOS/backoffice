@@ -42,6 +42,12 @@ export interface StaffTenantModalData {
                     </mat-form-field>
                 </div>
                 <div class="flex flex-col flex-1">
+                    <label>Conference Type:</label>
+                    <mat-form-field appearance="outline">
+                        <input matInput formControlName="conference_type" placeholder="Conference Type" />
+                    </mat-form-field>
+                </div>
+                <div class="flex flex-col flex-1">
                     <label>Platform<span>*</span>:</label>
                     <mat-form-field appearance="outline">
                         <mat-select formControlName="platform">
@@ -152,6 +158,7 @@ export class StaffTenantModalComponent implements OnInit {
             domain: new FormControl(this.domain?.domain || this.tenant.domain || 'localhost'),
             name: new FormControl(this.tenant?.name || '', [Validators.required]),
             platform: new FormControl(this.tenant?.platform || 'google', [Validators.required]),
+            conference_type: new FormControl(this.tenant?.conference_type || ''),
             credentials:
                 this.tenant?.platform === 'office365' ? this.office_form : this.google_form,
         });

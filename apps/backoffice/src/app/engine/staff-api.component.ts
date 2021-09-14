@@ -13,6 +13,7 @@ export interface PlaceTenant {
     name: string;
     domain: string;
     platform: string;
+    conference_type?: string;
     credentials?: HashMap<string>
 }
 
