@@ -3,7 +3,7 @@ import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { invalidateToken, isMock, token } from '@placeos/ts-client';
+import { invalidateToken, isMock, isOnline, token } from '@placeos/ts-client';
 import {
     UploadManager,
     Md5Workers,
@@ -53,10 +53,18 @@ import { setUploadService } from './common/uploads';
                 <app-upload-list></app-upload-list>
             </ng-container>
             <ng-template #load_state>
-                <div class="absolute inset-0 flex items-center justify-center">
+                <div
+                    class="absolute inset-0 flex items-center justify-center z-50"
+                >
                     <mat-spinner [diameter]="64"></mat-spinner>
                 </div>
             </ng-template>
+        </div>
+        <div
+            *ngIf="online && !(loading | async)"
+            class="fixed bottom-2 left-1/2 -translate-x-1/2 shadow rounded-3xl px-4 py-2 bg-error text-white text-xs z-[9999]"
+        >
+            Unable to reach server... Some features may not work.
         </div>
     `,
     styleUrls: [
@@ -79,6 +87,10 @@ export class AppComponent extends BaseClass implements OnInit {
 
     public get dark_mode() {
         return this._users.dark_mode;
+    }
+
+    public get online() {
+        return isOnline();
     }
 
     public get is_fools_day(): boolean {
