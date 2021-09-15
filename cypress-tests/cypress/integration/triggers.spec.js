@@ -18,7 +18,7 @@ Cypress.Commands.add('login', (username, password) => {
 	cy.get("form").submit();
 });
 
-describe("Users test", () => {
+describe("Triggers test", () => {
 	beforeEach(() => {
 		//cy.login('support@place.tech', 'development')
 		cy.login('xtassja@gmail.com', 'password')
@@ -59,8 +59,7 @@ describe("Users test", () => {
 		cy.get('*[class^="font-medium text-lg"]').contains("Conditions");
 	});
 
-  it.only("Can add a new trigger condition", () => {
-
+  it("Can add a new trigger condition", () => {
     // create driver needed
     cy.visit('https://localhost:8443/backoffice/#/drivers/-/about');
     cy.wait(1000);
@@ -134,6 +133,86 @@ describe("Users test", () => {
     cy.get('*[class^="mat-button-wrapper"]').contains('Add').click();
     cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
 	});
+
+  it("Can add a new trigger action", () => {
+    // create driver needed
+    cy.visit('https://localhost:8443/backoffice/#/drivers/-/about');
+    cy.wait(1000);
+    cy.get('*[class^="backoffice-plus ng-star-inserted"]').click();
+    cy.wait(1000);
+    cy.get('*[class^="item-search-field"]').click();
+    cy.wait(1000);
+    cy.get('*[class^="mat-option-text"]').first().click({force: true});
+
+    cy.wait(1000);
+    cy.get('*[class^="item-search-field"]').last().click();
+    cy.get('*[class^="mat-option-text"]').contains("drivers > message_media > sms.cr").click({force: true});
+
+    cy.wait(1000);
+    cy.get('*[class^="item-search-field"]').last().click();
+    cy.get('*[class^="mat-option-text"]').first().click({force: true});
+    cy.wait(6000);
+    cy.get('input[name="driver-name"]').clear().type("trigger-driver");
+    cy.contains('Save').click();
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+
+    //create module needed
+    cy.visit('https://localhost:8443/backoffice/#/modules/-/about');
+    cy.wait(1000);
+    cy.get('*[class^="backoffice-plus ng-star-inserted"]').click();
+    cy.wait(1000);
+    cy.get('*[class^="item-search-field"]').click();
+    cy.wait(1000);
+    cy.get('*[class^="mat-option-text"]').contains("trigger-driver").click({force: true});
+    cy.contains('Save').click();
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+
+    // add to system
+    cy.visit('https://localhost:8443/backoffice/#/systems/-/about');
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
+			force: true
+		});
+    cy.wait(1000);
+    cy.get('*[class^="name"]').contains('Modules').click({force: true });
+    cy.get('*[class^="item-search-field"]').click();
+    cy.wait(1000);
+    cy.get('*[class^="mat-option-text"]').first().click({force: true});
+    cy.wait(1000);
+    cy.contains('Add existing').click({force: true});
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+
+    // now we get to the actual trigger
+    cy.visit('https://localhost:8443/backoffice/#/triggers/-/about');
+    cy.wait(1000);
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
+			force: true
+		});
+
+		cy.wait(1000);
+    cy.get('*[class^="item-search-field"]').click();
+    cy.wait(1000);
+    cy.get('*[class^="mat-option-text"]').first().click({force: true});
+    cy.wait(1000);
+    cy.get('*[class^="mat-focus-indicator mat-icon-button mat-button-base"]').last().click();
+
+    cy.get('*[class^="mat-select"]').first().click();
+    cy.get('*[class^="mat-option-text"]').last().click({force: true});
+    cy.get('[placeholder="New email..."]').click().type("place@os.com");
+    cy.get('[placeholder="Email body contents..."]').click().type("This is the email body...");
+    cy.get('*[class^="mat-button-wrapper"]').contains('Add').click();
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+	});
+
+	it.only("Can see which systems the selected trigger is used in", () => {
+		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
+			force: true
+		});
+		cy.get('*[class^="name"]').contains('Instances').click({
+			force: true
+		});
+		cy.get('*[class^="mat-tab-link mat-focus-indicator tab ng-star-inserted mat-tab-label-active"]').contains('Instances');
+	});
+
 
 	it("Can edit a trigger", () => {
 		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
