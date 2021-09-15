@@ -61,7 +61,7 @@ import { setUploadService } from './common/uploads';
             </ng-template>
         </div>
         <div
-            *ngIf="online && !(loading | async)"
+            *ngIf="!online && !(loading | async)"
             class="fixed bottom-2 left-1/2 -translate-x-1/2 shadow rounded-3xl px-4 py-2 bg-error text-white text-xs z-[9999]"
         >
             Unable to reach server... Some features may not work.
