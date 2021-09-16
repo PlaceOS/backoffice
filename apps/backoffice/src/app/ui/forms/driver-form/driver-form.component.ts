@@ -220,13 +220,14 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
             this.form.controls.name.setValue(driver.descriptive_name || '');
             this.form.controls.module_name.setValue(driver.generic_name || '');
             this.form.controls.class_name.setValue(this.base_driver.id || '');
-            this.form.controls.default_port.setValue(
-                driver.tcp_port || driver.udp_port || null
-            );
+            const port_number = driver.tcp_port || driver.udp_port || null;
+            this.form.controls.default_port.setValue(port_number);
             this.form.controls.default_uri.setValue(driver.uri_base || '');
             this.form.controls.role.setValue(
-                driver.tcp_port || driver.udp_port
-                    ? PlaceDriverRole.Device
+                port_number
+                    ? port_number === 22
+                        ? PlaceDriverRole.SSH
+                        : PlaceDriverRole.Device
                     : driver.uri_base
                     ? driver.uri_base.startsWith('ws')
                         ? PlaceDriverRole.Websocket

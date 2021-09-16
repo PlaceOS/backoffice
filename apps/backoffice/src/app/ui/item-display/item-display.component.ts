@@ -86,7 +86,7 @@ export class ItemDisplayComponent<T extends Identity = any>
 
     public get driver_type(): string {
         const item: any = this.item;
-        if (!item.role) {
+        if (!(item.role ?? 1)) {
             return '';
         }
         const driver: PlaceDriver = item || {};
