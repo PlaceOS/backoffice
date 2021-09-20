@@ -17,15 +17,17 @@ import {
 import * as dayjs from 'dayjs';
 import { copyToClipboard } from '../common/general';
 
-export interface PlaceAPIDetails {
-    /** Display name for the application */
-    readonly app: string;
-    /** Semantic version of the API */
-    readonly version: string;
-    /** Build time of the current version of the API */
-    readonly build_time: number;
-    /** Commit hash of the current version of the API */
-    readonly commit: string;
+export interface PlaceServiceDetails {
+    /** Name of the service */
+    service: string;
+    /** Commit hash of the service */
+    commit: string;
+    /** Current version number of the service */
+    version: string;
+    /** Build time of the active version of the service */
+    build_time: string;
+    /** Version of the backend service platform */
+    platform_version: string;
 }
 
 @Component({
@@ -65,41 +67,35 @@ export interface PlaceAPIDetails {
             </div>
         </section>
         <h3 class="text-lg font-medium" i18n="@@apiHeader">API</h3>
-        <section class="space-y-2">
-            <div class="flex flex-col">
-                <label for="version" i18n="@@apiName">Application Name:</label>
-                <div
-                    class="select-all"
-                    (click)="copy('app name', api_details?.app)"
-                >
-                    {{ api_details?.app }}
+        <section class="flex flex-wrap p-2">
+            <div
+                class="bg-white dark:bg-[#424242] rounded shadow m-2 min-w-[40%] flex-1 overflow-hidden"
+                *ngFor="let api of api_details"
+            >
+                <h3 class="w-full px-4 py-2 mb-1 border-b border-gray-200 dark:border-white/20">
+                    {{ api.service }}
+                </h3>
+                <div class="flex items-center px-4 py-1 hover:bg-gray-400/20">
+                    <label class="w-24">Commit Hash:</label>
+                    <div class="bg-gray-300/60 rounded p-1 text-xs mono">
+                        {{ api.commit }}
+                    </div>
                 </div>
-            </div>
-            <div class="flex flex-col">
-                <label for="version" i18n="@@version">Version:</label>
-                <div
-                    class="select-all"
-                    (click)="copy('app version', api_details?.version)"
-                >
-                    {{ api_details?.version }}
+                <div class="flex items-center px-4 py-1 hover:bg-gray-400/20">
+                    <label class="w-24">Version:</label>
+                    <div class="bg-gray-300/60 rounded p-1 text-xs mono">
+                        {{ api.version }}
+                    </div>
                 </div>
-            </div>
-            <div class="flex flex-col">
-                <label for="version" i18n="@@buildTime">Build:</label>
-                <div
-                    class="select-all"
-                    (click)="copy('app build time', api_build)"
-                >
-                    {{ api_build }}
+                <div class="flex items-center px-4 py-1 hover:bg-gray-400/20">
+                    <label class="w-24">Build time:</label>
+                    <div>{{ api.build_time }}</div>
                 </div>
-            </div>
-            <div class="flex flex-col">
-                <label for="version" i18n="@@commitHash">Commit Hash:</label>
-                <div
-                    class="select-all"
-                    (click)="copy('app commit', api_details?.commit || 'HEAD')"
-                >
-                    {{ api_details?.commit || 'HEAD' }}
+                <div class="flex items-center px-4 py-1 hover:bg-gray-400/20 mb-1">
+                    <label class="w-24">Platform:</label>
+                    <div class="bg-gray-300/60 rounded p-1 text-xs mono">
+                        {{ api.platform_version }}
+                    </div>
                 </div>
             </div>
         </section>
@@ -116,16 +112,7 @@ export interface PlaceAPIDetails {
 })
 export class PlaceDetailsComponent extends BaseClass implements OnInit {
     /** Current details about the API */
-    public api_details: PlaceAPIDetails;
-
-    public get api_build(): string {
-        if (!this.api_details || !this.api_details.build_time) {
-            return 'Unknown';
-        }
-        return dayjs(this.api_details.build_time).format(
-            'DD MMM YYYY [at] h:mma'
-        );
-    }
+    public api_details: PlaceServiceDetails[];
 
     public get user() {
         return this._users.user;
@@ -170,7 +157,7 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
     }
 
     public loadApiDetails(): void {
-        get(`${apiEndpoint()}/version`)
+        get(`${apiEndpoint()}/cluster/versions`)
             .toPromise()
             .then(
                 (details) => (this.api_details = details as any),
