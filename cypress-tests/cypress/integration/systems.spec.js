@@ -31,6 +31,7 @@ describe("Systems test", () => {
   let system_name = uniqueNamesGenerator(config);
   let module_name = uniqueNamesGenerator(config);
   let module_name2 = uniqueNamesGenerator(config);
+	let module_name3 = uniqueNamesGenerator(config);
   let zone_name = uniqueNamesGenerator(config);
   let trigger_name = uniqueNamesGenerator(config);
 
@@ -178,6 +179,7 @@ describe("Systems test", () => {
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="name"]').contains('Modules').click({force: true });
 		cy.get('*[class^="backoffice-edit ng-star-inserted"]').first().click();
+		cy.wait(1000);
     let new_module_name = uniqueNamesGenerator(config);
     cy.get('[placeholder="Custom Name"]').clear().type(new_module_name);
     cy.contains('Save').click();
@@ -188,6 +190,12 @@ describe("Systems test", () => {
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="name"]').contains('Modules').click({force: true });
     cy.get('*[class^="w-24 flex px-2 justify-center"]').first().within(() => {
+        cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').first().click();
+  });
+    cy.contains('Toggle Power').click();
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("successfully");
+
+		cy.get('*[class^="w-24 flex px-2 justify-center"]').first().within(() => {
         cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').first().click();
   });
     cy.contains('Toggle Power').click();
@@ -209,6 +217,12 @@ describe("Systems test", () => {
     cy.get('*[class^="name"]').contains('Modules').click({force: true });
 		cy.get('*[class^="h-4 w-4 rounded-full bg-black"]').first().click();
     cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("successfully");
+
+		cy.get('*[class^="w-24 flex px-2 justify-center"]').first().within(() => {
+        cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').first().click();
+  });
+    cy.contains('Toggle Power').click();
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("successfully");
   });
 
   it("Can remove a module in this System", () => {
@@ -222,7 +236,8 @@ describe("Systems test", () => {
     cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
   });
 
-  it("Can execute a command on a modules in this System", () => {
+  it("Can execute a command on a module in this System", () => {
+		let var23;
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="name"]').contains('Modules').click({force: true });
 
@@ -235,7 +250,7 @@ describe("Systems test", () => {
     cy.get('[placeholder="Custom Name"]').click().type(module_name2);
     cy.contains('Save').click();
 		cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
-    cy.wait(3000);
+
 
     cy.visit('https://localhost:8443/backoffice/#/systems/-/about');
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({ force: true});
@@ -246,10 +261,14 @@ describe("Systems test", () => {
         cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').first().click();
       });
     cy.contains('Toggle Power').click();
-    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("successfully");
-    cy.wait(1000);
+    //cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("successfully");
+		cy.reload();
+		cy.visit('https://localhost:8443/backoffice/#/systems/-/about');
+		cy.wait(1000);
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({ force: true});
+    cy.get('*[class^="name"]').contains('Modules').click({ force: true });
     cy.get('[placeholder="Select module"]').click();
-    cy.get('*[class^="mat-option-text"]').first().click({force: true});
+		cy.get('*[class^="mat-option-text"]').contains(module_name2 + " 1").click({force: true});
     cy.get('[placeholder="Select method"]').click();
     cy.get('*[class^="mat-option-text"]').first().click({force: true});
     cy.get('[placeholder="phone_numbers"]').type("040000");
@@ -257,7 +276,7 @@ describe("Systems test", () => {
     cy.get('*[class^="mat-focus-indicator flex-1 mat-button mat-button-base"]').contains('Execute').click();
   });
 
-  it.only("Can view the response of the executed function", () => {
+  it("Can view the response of the executed function", () => {
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="name"]').contains('Modules').click({force: true });
 
@@ -267,29 +286,33 @@ describe("Systems test", () => {
     cy.wait(1000);
     cy.get('*[class^="mat-option-text"]').first().click({force: true});
     cy.wait(1000);
-    cy.get('[placeholder="Custom Name"]').click().type(module_name2);
+    cy.get('[placeholder="Custom Name"]').click().type(module_name3);
     cy.contains('Save').click();
 		cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
-    cy.wait(3000);
 
     cy.visit('https://localhost:8443/backoffice/#/systems/-/about');
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({ force: true});
     cy.get('*[class^="name"]').contains('Modules').click({ force: true });
 
     // start module
-    cy.get('*[class^="w-24 flex px-2 justify-center"]').first().within(() => {
+		cy.get('*[class^="w-24 flex px-2 justify-center"]').first().within(() => {
         cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').first().click();
       });
     cy.contains('Toggle Power').click();
-    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("successfully");
-    cy.wait(1000);
+    //cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("successfully");
+		cy.reload();
+		cy.visit('https://localhost:8443/backoffice/#/systems/-/about');
+		cy.wait(1000);
+    cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({ force: true});
+    cy.get('*[class^="name"]').contains('Modules').click({ force: true });
     cy.get('[placeholder="Select module"]').click();
-    cy.get('*[class^="mat-option-text"]').first().click({force: true});
+		cy.get('*[class^="mat-option-text"]').contains(module_name3 + " 1").click({force: true});
     cy.get('[placeholder="Select method"]').click();
     cy.get('*[class^="mat-option-text"]').first().click({force: true});
     cy.get('[placeholder="phone_numbers"]').type("040000");
     cy.get('[placeholder="message"]').type("custom message");
     cy.get('*[class^="mat-focus-indicator flex-1 mat-button mat-button-base"]').contains('Execute').click();
+
     cy.contains(/^View/).click({force: true});
     //cy.contains('Exec Request Results');
   });

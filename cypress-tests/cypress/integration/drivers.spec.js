@@ -33,33 +33,29 @@ describe("Drivers test", () => {
 
     cy.wait(1000);
     cy.get('*[class^="item-search-field"]').last().click();
-    cy.get('*[class^="mat-option-text"]').first().click({force: true});
-    cy.wait(6000);
-    //cy.get('input[name="driver-name"]').clear().type("driver1");
+    cy.get('*[class^="mat-option-text"]').contains("feat: migrate to standalone drivers").click({force: true});
+
+    cy.contains('Loading driver details for commit...', { timeout: 80000 }).should('not.exist');
     cy.contains('Save').click();
     cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
   });
 
   it("Can select a driver", () => {
+    cy.get('*[class^="item"]', { timeout: 80000 }).should('exist');
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
-    cy.get('*[class^="heading select-text"]').then(($hd) => {
-			let driver = $hd.text().trim();
-			expect(driver).to.eq("spec_helper");
-		});
+    cy.contains('Created:')
   });
 
   it("Can recompile a driver", () => {
+    cy.get('*[class^="item"]', { timeout: 80000 }).should('exist');
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.contains('Recompile Driver').click();
     cy.contains('Ok').click();
-    cy.wait(8000);
-    // cy.waitUntil(function() {
-    //     return cy.get('*[class^="ng-star-inserted"]').should('not.exist');
-    //   });
-    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]', { timeout: 50000 }).should('be.visible');
   });
 
   it("Can supply new Unencrypted Driver settings", () => {
+    cy.get('*[class^="item"]', { timeout: 80000 }).should('exist');
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().last().click({force: true});
     cy.contains('Unencrypted').click({
 			force: true
@@ -73,22 +69,23 @@ describe("Drivers test", () => {
 	});
 
   it("Can filter Modules in a driver", () => {
+    cy.get('*[class^="item"]', { timeout: 80000 }).should('exist');
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="name"]').contains('Modules').click({
 			force: true
 		});
-    cy.get('*[id^="mat-input-0"]').click().type("Module");
-    cy.wait(1000);
-    cy.get('*[class^="overflow-y-auto"]').children().should('have.length', 1)
+    cy.get('[placeholder="Filter triggers..."]');
   });
 
   it("Can see which Modules the selected Driver is used in", () => {
+    cy.get('*[class^="item"]', { timeout: 80000 }).should('exist');
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="name"]').contains('Modules').click({force: true });
-    cy.get('*[class^="overflow-x-auto ng-star-inserted"]')
+    cy.get('[placeholder="Filter triggers..."]');
   });
 
   it("Can delete a driver", () => {
+    cy.get('*[class^="item"]', { timeout: 80000 }).should('exist');
 		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().last().click({
 			force: true
 		});

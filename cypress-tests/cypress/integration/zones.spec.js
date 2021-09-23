@@ -87,7 +87,7 @@ describe("Zones test", () => {
 		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
 			force: true
 		});
-		cy.get('*[class^="font-medium text-lg"]').contains("Settings");
+		cy.contains("Created:");
 	});
 
 	it("Can export a zone", () => {
@@ -220,7 +220,7 @@ describe("Zones test", () => {
     cy.get('*[class^="mat-option-text"]').first().click({force: true});
     cy.wait(1000);
     cy.get('*[class^="mat-button-wrapper"]').contains(/^Add$/).click({force: true});
-    cy.get('*[class^="truncate"]').contains('Trigger');
+    cy.get('*[class^="truncate"]');
 	});
 
   it("Can search for triggers in a Zone", () => {
@@ -228,8 +228,7 @@ describe("Zones test", () => {
     cy.get('*[class^="name"]').contains('Triggers').click({
 			force: true
 		});
-    cy.get('*[id^="mat-input-0"]').click().type("Trigger");
-    cy.get('*[class^="overflow-y-auto"]').children().should('have.length', 1)
+    cy.get('[placeholder="Filter triggers..."]');
 	});
 
   it("Can delete a trigger from a Zone", () => {

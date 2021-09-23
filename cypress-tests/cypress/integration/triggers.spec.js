@@ -1,13 +1,18 @@
 import {
 	uniqueNamesGenerator,
 	Config,
-	animals
+	animals,
+	colors
 } from 'unique-names-generator';
 const path = require("path");
 const downloadsFolder = Cypress.config("downloadsFolder");
 
 const config = {
 	dictionaries: [animals]
+}
+
+const config2 = {
+	dictionaries: [colors]
 }
 
 Cypress.Commands.add('login', (username, password) => {
@@ -46,8 +51,16 @@ describe("Triggers test", () => {
 	});
 
 	it("Can filter the triggers", () => {
-		cy.get('*[class^="search"]').type(trigger_name);
+		let trigger_name3 = uniqueNamesGenerator(config2);
+
+		cy.get('*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]').click();
 		cy.wait(1000);
+		cy.get('input[name="trigger-name"]').type(trigger_name3);
+		cy.contains('Save').click();
+		cy.wait(50);
+
+		cy.get('*[class^="search"]').type(trigger_name3);
+		cy.wait(2000);
 		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().should('have.length', 1)
 		cy.get('*[class^="search"]').clear();
 	});
@@ -76,7 +89,7 @@ describe("Triggers test", () => {
     cy.wait(1000);
     cy.get('*[class^="item-search-field"]').last().click();
     cy.get('*[class^="mat-option-text"]').first().click({force: true});
-    cy.wait(6000);
+    cy.contains('Loading driver details for commit...', { timeout: 80000 }).should('not.exist');
     cy.get('input[name="driver-name"]').clear().type("trigger-driver");
     cy.contains('Save').click();
     cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
@@ -141,17 +154,20 @@ describe("Triggers test", () => {
     cy.get('*[class^="backoffice-plus ng-star-inserted"]').click();
     cy.wait(1000);
     cy.get('*[class^="item-search-field"]').click();
-    cy.wait(1000);
+    cy.wait(3000);
     cy.get('*[class^="mat-option-text"]').first().click({force: true});
 
     cy.wait(1000);
     cy.get('*[class^="item-search-field"]').last().click();
+		cy.wait(1000);
     cy.get('*[class^="mat-option-text"]').contains("drivers > message_media > sms.cr").click({force: true});
 
     cy.wait(1000);
     cy.get('*[class^="item-search-field"]').last().click();
-    cy.get('*[class^="mat-option-text"]').first().click({force: true});
-    cy.wait(6000);
+		cy.wait(1000);
+    cy.get('*[class^="mat-option-text"]').contains("feat: migrate to standalone drivers").click({force: true});
+
+    cy.contains('Loading driver details for commit...', { timeout: 80000 }).should('not.exist');
     cy.get('input[name="driver-name"]').clear().type("trigger-driver");
     cy.contains('Save').click();
     cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
@@ -169,6 +185,7 @@ describe("Triggers test", () => {
 
     // add to system
     cy.visit('https://localhost:8443/backoffice/#/systems/-/about');
+		cy.wait(3000);
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
 			force: true
 		});
@@ -203,7 +220,7 @@ describe("Triggers test", () => {
     cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
 	});
 
-	it.only("Can see which systems the selected trigger is used in", () => {
+	it("Can see which systems the selected trigger is used in", () => {
 		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
 			force: true
 		});

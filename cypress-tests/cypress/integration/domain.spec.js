@@ -72,11 +72,23 @@ describe("Domain test", () => {
   });
 
   it("Can edit a domain", () => {
+    let domain_name2 = "domain9" + getRandomInt(100);
+    cy.get('*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]').click();
+    cy.wait(1000);
+    cy.get('input[name="domain-name"]').type(domain_name2);
+    cy.get('input[name="domain"]').type("localhost" + getRandomInt(100))
+    cy.contains('Save').click();
+    cy.wait(50);
+    cy.get('*[class^="heading select-text"]').contains(domain_name2);
+
+    cy.get('*[class^="search"]').type(domain_name2);
+    cy.wait(1000);
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({force: true});
     cy.get('*[class^="backoffice-dots-three-vertical ng-star-inserted"]').click();
     cy.contains('Edit domain').click({force: true });
     cy.get('input[name="domain-name"]').focus().clear().type("newDomain");
-    cy.contains('Save').click()
+    cy.wait(1000);
+    cy.contains('Save').click({force: true })
     cy.get('*[class^="heading select-text"]').contains('newDomain');
   });
 
