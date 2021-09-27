@@ -39,11 +39,20 @@ import { notifyInfo } from '../../common/notifications';
                 class="rounded shadow border border-gray-100 min-w-[24rem]"
             >
                 <div class="border-b px-2 pb-1 border-gray-200 !w-full">
-                    <label class="p-0 m-0"> Last API Key Details ({{ (last_key | async)?.name || 'Unanamed API Key' }}) </label>
+                    <label class="p-0 m-0">
+                        Last API Key Details ({{
+                            (last_key | async)?.name || 'Unanamed API Key'
+                        }})
+                    </label>
                 </div>
                 <div class="p-2">
-                    <div class="select-all text-xs opacity-60 mono break-words cursor-pointer" (click)="copyKey()">
-                        {{ (last_key | async)?.secret || 'No Key' }}
+                    <div
+                        class="select-all text-xs opacity-60 mono break-words cursor-pointer"
+                        (click)="copyKey()"
+                    >
+                        {{ (last_key | async)?.id || 'no' }}.{{
+                            (last_key | async)?.secret || 'Key'
+                        }}
                     </div>
                 </div>
             </div>
@@ -98,12 +107,15 @@ export class AdminAPIKeysComponent {
     public readonly setDomain = (d) => this._service.setDomain(d);
     public readonly newKey = () => this._service.newKey();
 
-    constructor(private _service: APIKeyService, private _clipboard: Clipboard) {}
+    constructor(
+        private _service: APIKeyService,
+        private _clipboard: Clipboard
+    ) {}
 
     public async copyKey() {
         const key = await this.last_key.pipe(take(1)).toPromise();
         if (!key) return;
-        this._clipboard.copy(key.secret);
+        this._clipboard.copy(`${key.id}.${key.secret}`);
         notifyInfo('Copied API key to clipboard.');
     }
 }
