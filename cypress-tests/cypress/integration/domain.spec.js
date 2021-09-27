@@ -5,25 +5,10 @@ function getRandomInt(max) {
 const path = require("path");
 const downloadsFolder = Cypress.config("downloadsFolder");
 
-// const clipboardy = require('clipboardy');
-//
-// function getClipboard () {
-//   return clipboardy.read();
-// }
-
-Cypress.Commands.add('login', (username, password) => {
-  cy.visit('/')
-  cy.visit('/')
-  cy.get('input[name="email"]').type(username);
-  cy.get('input[name="password"]').type(password);
-  cy.get("form").submit();
-})
-
 describe("Domain test", () => {
 
   beforeEach(() => {
-    //cy.login('support@place.tech', 'development')
-    cy.login('xtassja@gmail.com', 'password')
+    cy.login();
     cy.wait(1000);
     cy.visit('https://localhost:8443/backoffice/#/domains/-/about');
     cy.wait(500);

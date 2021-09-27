@@ -10,18 +10,10 @@ const config = {
 	dictionaries: [names]
 }
 
-Cypress.Commands.add('login', (username, password) => {
-	cy.visit('/')
-  cy.visit('/')
-	cy.get('input[name="email"]').type(username);
-	cy.get('input[name="password"]').type(password);
-	cy.get("form").submit();
-});
-
 describe("Users test", () => {
+	
 	beforeEach(() => {
-		//cy.login('support@place.tech', 'development')
-		cy.login('xtassja@gmail.com', 'password')
+		cy.login();
 		cy.wait(1000);
 		cy.visit('https://localhost:8443/backoffice/#/users/-/about');
 		cy.wait(500);
@@ -86,6 +78,8 @@ describe("Users test", () => {
 	});
 
 	it("Can export a user", () => {
+		cy.get('*[class^="search"]').type(first_name2 + " " + last_name2);
+		cy.wait(1000);
 		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
 			force: true
 		});

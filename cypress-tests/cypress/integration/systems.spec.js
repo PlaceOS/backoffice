@@ -10,19 +10,10 @@ const config = {
 	dictionaries: [animals]
 }
 
-Cypress.Commands.add('login', (username, password) => {
-  cy.visit('/')
-  cy.visit('/')
-  cy.get('input[name="email"]').type(username);
-  cy.get('input[name="password"]').type(password);
-  cy.get("form").submit();
-})
-
 describe("Systems test", () => {
 
   beforeEach(() => {
-    //cy.login('support@place.tech', 'development')
-    cy.login('xtassja@gmail.com', 'password')
+		cy.login();
     cy.wait(1000);
     cy.visit('https://localhost:8443/backoffice/#/systems/-/about');
     cy.wait(500);

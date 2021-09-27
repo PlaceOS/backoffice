@@ -7,6 +7,10 @@ import {
 const path = require("path");
 const downloadsFolder = Cypress.config("downloadsFolder");
 
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
 const config = {
 	dictionaries: [animals]
 }
@@ -15,18 +19,9 @@ const config2 = {
 	dictionaries: [colors]
 }
 
-Cypress.Commands.add('login', (username, password) => {
-	cy.visit('/')
-  cy.visit('/')
-	cy.get('input[name="email"]').type(username);
-	cy.get('input[name="password"]').type(password);
-	cy.get("form").submit();
-});
-
 describe("Triggers test", () => {
 	beforeEach(() => {
-		//cy.login('support@place.tech', 'development')
-		cy.login('xtassja@gmail.com', 'password')
+		cy.login();
 		cy.wait(1000);
 		cy.visit('https://localhost:8443/backoffice/#/triggers/-/about');
 		cy.wait(500);
@@ -35,32 +30,15 @@ describe("Triggers test", () => {
 	let trigger_name = uniqueNamesGenerator(config);
 
 	it("Can create a trigger", () => {
-		cy.get('*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]').click();
-		cy.wait(1000);
-		cy.get('input[name="trigger-name"]').type(trigger_name);
-		cy.contains('Save').click();
-		cy.wait(50);
-
-		let trigger_name2 = uniqueNamesGenerator(config);
-
-		cy.get('*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]').click();
-		cy.wait(1000);
-		cy.get('input[name="trigger-name"]').type(trigger_name2);
-		cy.contains('Save').click();
-		cy.wait(50);
+		cy.addTrigger(trigger_name);
 	});
 
 	it("Can filter the triggers", () => {
 		let trigger_name3 = uniqueNamesGenerator(config2);
-
-		cy.get('*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]').click();
-		cy.wait(1000);
-		cy.get('input[name="trigger-name"]').type(trigger_name3);
-		cy.contains('Save').click();
-		cy.wait(50);
+		cy.addTrigger(trigger_name3);
 
 		cy.get('*[class^="search"]').type(trigger_name3);
-		cy.wait(2000);
+		cy.wait(1000);
 		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().should('have.length', 1)
 		cy.get('*[class^="search"]').clear();
 	});
@@ -73,40 +51,23 @@ describe("Triggers test", () => {
 	});
 
   it("Can add a new trigger condition", () => {
+		let trigger_name4 = uniqueNamesGenerator(config2);
+		cy.addTrigger(trigger_name4);
+
     // create driver needed
-    cy.visit('https://localhost:8443/backoffice/#/drivers/-/about');
-    cy.wait(1000);
-    cy.get('*[class^="backoffice-plus ng-star-inserted"]').click();
-    cy.wait(1000);
-    cy.get('*[class^="item-search-field"]').click();
-    cy.wait(1000);
-    cy.get('*[class^="mat-option-text"]').first().click({force: true});
-
-    cy.wait(1000);
-    cy.get('*[class^="item-search-field"]').last().click();
-    cy.get('*[class^="mat-option-text"]').contains("drivers > message_media > sms.cr").click({force: true});
-
-    cy.wait(1000);
-    cy.get('*[class^="item-search-field"]').last().click();
-    cy.get('*[class^="mat-option-text"]').first().click({force: true});
-    cy.contains('Loading driver details for commit...', { timeout: 80000 }).should('not.exist');
-    cy.get('input[name="driver-name"]').clear().type("trigger-driver");
-    cy.contains('Save').click();
-    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+		let driver_name = "trigger-driver" + getRandomInt(1000)
+		cy.addDriver(driver_name);
 
     //create module needed
-    cy.visit('https://localhost:8443/backoffice/#/modules/-/about');
-    cy.wait(1000);
-    cy.get('*[class^="backoffice-plus ng-star-inserted"]').click();
-    cy.wait(1000);
-    cy.get('*[class^="item-search-field"]').click();
-    cy.wait(1000);
-    cy.get('*[class^="mat-option-text"]').contains("trigger-driver").click({force: true});
-    cy.contains('Save').click();
-    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+    cy.addModule(driver_name);
 
     // add to system
-    cy.visit('https://localhost:8443/backoffice/#/systems/-/about');
+		let system_name = uniqueNamesGenerator(config) + getRandomInt(100);
+		cy.addSystem(system_name);
+		cy.wait(1000);
+		cy.get('*[class^="search"]').type(system_name);
+		cy.wait(1000);
+
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
 			force: true
 		});
@@ -114,29 +75,29 @@ describe("Triggers test", () => {
     cy.get('*[class^="name"]').contains('Modules').click({force: true });
     cy.get('*[class^="item-search-field"]').click();
     cy.wait(1000);
-    cy.get('*[class^="mat-option-text"]').first().click({force: true});
+    cy.get('*[class^="email"]').contains(driver_name).click({force: true});
     cy.wait(1000);
     cy.contains('Add existing').click({force: true});
-    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully added module to system.");
 
     // now we get to the actual trigger
+		cy.reload();
     cy.visit('https://localhost:8443/backoffice/#/triggers/-/about');
     cy.wait(1000);
+		cy.get('*[class^="search"]').type(trigger_name4);
+		cy.wait(2000);
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
 			force: true
 		});
 		cy.wait(1000);
-		cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
-			force: true
-		});
 
-    cy.get('*[class^="item-search-field"]').click();
+		cy.get('[placeholder="Search for system..."]').click();
     cy.wait(1000);
-    cy.get('*[class^="mat-option-text"]').first().click({force: true});
+    cy.get('*[class^="mat-option-text"]').contains(system_name).click({force: true});
     cy.wait(1000);
     cy.get('*[class^="mat-focus-indicator mat-icon-button mat-button-base"]').first().click();
 
-    cy.get('*[class^="mat-select"]').contains("Select module").click();
+		cy.get('[placeholder="Select module"]').click();
     cy.get('*[class^="mat-option-text"]').last().click({force: true});
 
     cy.get('*[class^="mat-select"]').contains("Select status variable").click();
@@ -148,44 +109,23 @@ describe("Triggers test", () => {
 	});
 
   it("Can add a new trigger action", () => {
+		let trigger_name4 = uniqueNamesGenerator(config2);
+		cy.addTrigger(trigger_name4);
+
     // create driver needed
-    cy.visit('https://localhost:8443/backoffice/#/drivers/-/about');
-    cy.wait(1000);
-    cy.get('*[class^="backoffice-plus ng-star-inserted"]').click();
-    cy.wait(1000);
-    cy.get('*[class^="item-search-field"]').click();
-    cy.wait(3000);
-    cy.get('*[class^="mat-option-text"]').first().click({force: true});
-
-    cy.wait(1000);
-    cy.get('*[class^="item-search-field"]').last().click();
-		cy.wait(1000);
-    cy.get('*[class^="mat-option-text"]').contains("drivers > message_media > sms.cr").click({force: true});
-
-    cy.wait(1000);
-    cy.get('*[class^="item-search-field"]').last().click();
-		cy.wait(1000);
-    cy.get('*[class^="mat-option-text"]').contains("feat: migrate to standalone drivers").click({force: true});
-
-    cy.contains('Loading driver details for commit...', { timeout: 80000 }).should('not.exist');
-    cy.get('input[name="driver-name"]').clear().type("trigger-driver");
-    cy.contains('Save').click();
-    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+		let driver_name = "trigger-driver" + getRandomInt(1000)
+		cy.addDriver(driver_name);
 
     //create module needed
-    cy.visit('https://localhost:8443/backoffice/#/modules/-/about');
-    cy.wait(1000);
-    cy.get('*[class^="backoffice-plus ng-star-inserted"]').click();
-    cy.wait(1000);
-    cy.get('*[class^="item-search-field"]').click();
-    cy.wait(1000);
-    cy.get('*[class^="mat-option-text"]').contains("trigger-driver").click({force: true});
-    cy.contains('Save').click();
-    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+    cy.addModule(driver_name);
 
     // add to system
-    cy.visit('https://localhost:8443/backoffice/#/systems/-/about');
-		cy.wait(3000);
+		let system_name = uniqueNamesGenerator(config) + getRandomInt(100);
+		cy.addSystem(system_name);
+		cy.wait(1000);
+		cy.get('*[class^="search"]').type(system_name);
+		cy.wait(1000);
+
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
 			force: true
 		});
@@ -193,22 +133,25 @@ describe("Triggers test", () => {
     cy.get('*[class^="name"]').contains('Modules').click({force: true });
     cy.get('*[class^="item-search-field"]').click();
     cy.wait(1000);
-    cy.get('*[class^="mat-option-text"]').first().click({force: true});
+    cy.get('*[class^="email"]').contains(driver_name).click({force: true});
     cy.wait(1000);
     cy.contains('Add existing').click({force: true});
-    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully added module to system.");
 
     // now we get to the actual trigger
+		cy.reload();
     cy.visit('https://localhost:8443/backoffice/#/triggers/-/about');
     cy.wait(1000);
+		cy.get('*[class^="search"]').type(trigger_name4);
+		cy.wait(2000);
     cy.get('*[class^="cdk-virtual-scroll-content-wrapper"]').children().first().click({
 			force: true
 		});
-
 		cy.wait(1000);
-    cy.get('*[class^="item-search-field"]').click();
+
+		cy.get('[placeholder="Search for system..."]').click();
     cy.wait(1000);
-    cy.get('*[class^="mat-option-text"]').first().click({force: true});
+    cy.get('*[class^="mat-option-text"]').contains(system_name).click({force: true});
     cy.wait(1000);
     cy.get('*[class^="mat-focus-indicator mat-icon-button mat-button-base"]').last().click();
 

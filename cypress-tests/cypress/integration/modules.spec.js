@@ -6,22 +6,17 @@ import {
 const path = require("path");
 const downloadsFolder = Cypress.config("downloadsFolder");
 
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
 const config = {
 	dictionaries: [animals]
 }
 
-Cypress.Commands.add('login', (username, password) => {
-	cy.visit('/')
-  cy.visit('/')
-	cy.get('input[name="email"]').type(username);
-	cy.get('input[name="password"]').type(password);
-	cy.get("form").submit();
-});
-
 describe("Modules test", () => {
 	beforeEach(() => {
-		//cy.login('support@place.tech', 'development')
-		cy.login('xtassja@gmail.com', 'password')
+		cy.login();
 		cy.wait(1000);
 		cy.visit('https://localhost:8443/backoffice/#/modules/-/about');
 		cy.wait(500);
@@ -60,8 +55,11 @@ describe("Modules test", () => {
     cy.get('*[class^="item-search-field"]').click();
     cy.wait(1000);
     cy.get('*[class^="mat-option-text"]').contains(module_name).click({force: true});
+
+		cy.get('[placeholder="IP Address"]').focus().type("192.00.")
+
     cy.contains('Save').click();
-    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully added module");
 	});
 
 	it("Can select a module", () => {
@@ -80,7 +78,7 @@ describe("Modules test", () => {
 			force: true,
 		});
 
-		cy.get('[placeholder="Custom Name"]').click().type(new_name);
+		cy.get('[placeholder="Custom Name"]').focus().clear().type(new_name);
 		cy.contains('Save').click({
 			force: true
 		})

@@ -12,6 +12,7 @@
   "devDependencies": {
     "clipboardy": "^2.3.0",
     "cypress": "^8.3.0",
+    "cypress-terminal-report": "^3.3.2",
     "cypress-wait-until": "^1.7.1"
   },
   "dependencies": {

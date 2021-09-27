@@ -2,42 +2,17 @@ const path = require("path");
 const downloadsFolder = Cypress.config("downloadsFolder");
 import 'cypress-wait-until';
 
-Cypress.Commands.add('login', (username, password) => {
-  cy.visit('/')
-  cy.visit('/')
-  cy.get('input[name="email"]').type(username);
-  cy.get('input[name="password"]').type(password);
-  cy.get("form").submit();
-})
-
 describe("Drivers test", () => {
 
   beforeEach(() => {
-    //cy.login('support@place.tech', 'development')
-    cy.login('xtassja@gmail.com', 'password')
+    cy.login();
     cy.wait(1000);
     cy.visit('https://localhost:8443/backoffice/#/drivers/-/about');
     cy.wait(500);
   })
 
   it("Can create a driver", () => {
-    cy.get('*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]').click();
-    cy.wait(1000);
-    cy.get('*[class^="item-search-field"]').click();
-    cy.wait(1000);
-    cy.get('*[class^="mat-option-text"]').first().click({force: true});
-
-    cy.wait(1000);
-    cy.get('*[class^="item-search-field"]').last().click();
-    cy.get('*[class^="mat-option-text"]').contains("drivers > whispir > messages.cr").click({force: true});
-
-    cy.wait(1000);
-    cy.get('*[class^="item-search-field"]').last().click();
-    cy.get('*[class^="mat-option-text"]').contains("feat: migrate to standalone drivers").click({force: true});
-
-    cy.contains('Loading driver details for commit...', { timeout: 80000 }).should('not.exist');
-    cy.contains('Save').click();
-    cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
+    cy.addDriver();
   });
 
   it("Can select a driver", () => {

@@ -10,18 +10,11 @@ const config = {
 	dictionaries: [animals]
 }
 
-Cypress.Commands.add('login', (username, password) => {
-	cy.visit('/')
-  cy.visit('/')
-	cy.get('input[name="email"]').type(username);
-	cy.get('input[name="password"]').type(password);
-	cy.get("form").submit();
-});
-
 describe("Zones test", () => {
 	beforeEach(() => {
 		//cy.login('support@place.tech', 'development')
-		cy.login('xtassja@gmail.com', 'password')
+		//cy.login('xtassja@gmail.com', 'password')
+		cy.login();
 		cy.wait(1000);
 		cy.visit('https://localhost:8443/backoffice/#/zones/-/about');
 		cy.wait(500);
@@ -34,8 +27,6 @@ describe("Zones test", () => {
 		cy.get('*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]').click();
 		cy.wait(1000);
 		cy.get('input[name="zone-name"]').type(zone_name);
-		// cy.get('input[name="last-name"]').type(last_name);
-		// cy.get('input[name="useremail"]').type(first_name + "@email.au");
 		cy.contains('Save').click();
     cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains("Successfully");
 	});
@@ -193,7 +184,6 @@ describe("Zones test", () => {
 		cy.get('*[class^="name"]').contains('Systems').click({
 			force: true
 		});
-		// to do, add systems?
 	});
 
   it("Can supply new Unencrypted Zone settings", () => {
