@@ -35,6 +35,7 @@ import {
     switchMap,
 } from 'rxjs/operators';
 import { calculateModuleIndex } from '../common/api';
+import { BaseClass } from '../common/base.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { openConfirmModal, unique } from '../common/general';
 
@@ -52,7 +53,7 @@ import { ViewResponseModalComponent } from '../overlays/view-response-modal/view
 @Injectable({
     providedIn: 'root',
 })
-export class SystemStateService {
+export class SystemStateService extends BaseClass {
     /** Observable of the active item */
     public readonly item = this._state.item;
 
@@ -204,7 +205,9 @@ export class SystemStateService {
         private _state: ActiveItemService,
         private _debug: PlaceDebugService,
         private _dialog: MatDialog
-    ) {}
+    ) {
+        super();
+    }
 
     /**
      * Open confirmation modal for stopping the active system
@@ -319,7 +322,7 @@ export class SystemStateService {
             important: false,
             trigger_id: trigger.id,
         } as any).toPromise();
-        this._change.next(Date.now());
+        this.timeout('change', () => this._change.next(Date.now()));
         return t;
     }
 
@@ -363,7 +366,7 @@ export class SystemStateService {
             if (trig) return;
             notifySuccess(`Successfully updated trigger settings.`);
             ref.close();
-            this._change.next(Date.now());
+            this.timeout('change', () => this._change.next(Date.now()));
         }
     }
 
