@@ -1,8 +1,8 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PlaceUser } from '@placeos/ts-client';
-import { combineLatest } from 'rxjs';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { addChipItem, removeChipItem } from '../../common/forms';
 import { DialogEvent } from '../../common/types';
@@ -73,20 +73,46 @@ import { APIKeyService } from './api-keys.service';
             </div>
             <div class="flex flex-col">
                 <label for="user">User<span>*</span></label>
-                <mat-form-field appearance="outline">
-                    <mat-select
-                        name="user"
-                        formControlName="user_id"
-                        placeholder="None"
+                <an-action-field
+                    [matMenuTriggerFor]="menu"
+                    yPosition="below"
+                    class="mb-8"
+                    (click)="focusInput()"
+                >
+                    <div [class.opacity-30]="!(active_user | async)">
+                        {{ (active_user | async)?.name || 'Select user' }}
+                    </div>
+                </an-action-field>
+                <mat-menu #menu="matMenu">
+                    <mat-form-field
+                        appearance="outline"
+                        class="px-2 h-12"
+                        (click)="
+                            $event.preventDefault(); $event.stopPropagation()
+                        "
                     >
-                        <mat-option
-                            *ngFor="let user of users | async"
-                            [value]="user.id"
-                            >{{ user.name }}</mat-option
-                        >
-                    </mat-select>
-                    <mat-error>A user is required</mat-error>
-                </mat-form-field>
+                        <input
+                            matInput
+                            #input
+                            [ngModel]="search_str | async"
+                            (ngModelChange)="search_str.next($event)"
+                            [ngModelOptions]="{ standalone: true }"
+                            placeholder="Search users..."
+                        />
+                    </mat-form-field>
+                    <button
+                        mat-menu-item
+                        *ngFor="
+                            let item of filtered_users | async | slice: 0:10
+                        "
+                        (click)="form.patchValue({ user_id: item.id })"
+                        [class.text-primary]="
+                            (active_user | async)?.id === item.id
+                        "
+                    >
+                        {{ item.name }}
+                    </button>
+                </mat-menu>
             </div>
             <div class="flex flex-col">
                 <label for="permissions">Permissions</label>
@@ -131,23 +157,45 @@ export class APIKeyModalComponent {
         permissions: new FormControl(''),
     });
     public loading: string;
+    public readonly search_str = new BehaviorSubject('');
+
+    @ViewChild('input') public _input_el: ElementRef<HTMLInputElement>
 
     public readonly users = combineLatest([
         this._service.users,
         this.form.valueChanges,
     ]).pipe(
         map(([users, { permissions }]) => {
-            console.log('Users:', users);
             if (permissions === 'admin')
                 return users.filter((_) => _.sys_admin);
             if (permissions === 'support')
                 return users.filter((_) => _.support || _.sys_admin);
-            return users;
+            return users.sort((a, b) => a.name?.localeCompare(b.name));
         })
     );
 
+    public readonly filtered_users = combineLatest([
+        this.users,
+        this.search_str,
+    ]).pipe(
+        map(([users, search]) => {
+            return users.filter(
+                (_) =>
+                    _.name.toLowerCase().includes(search.toLowerCase()) ||
+                    _.email.toLowerCase().includes(search.toLowerCase())
+            );
+        })
+    );
+
+    public readonly active_user = combineLatest([
+        this.form.valueChanges,
+        this.users,
+    ]).pipe(map(([{ user_id }, users]) => users.find((_) => _.id === user_id)));
+
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
+
+    public readonly focusInput = () => setTimeout(() => this._input_el?.nativeElement?.focus(), 100);
 
     public readonly addScope = (e) =>
         addChipItem(this.form.controls.scopes as any, e);

@@ -70,6 +70,7 @@ import { ExecuteMethodFieldComponent } from './custom-fields/system-exec/execute
 import { SelectModuleComponent } from './custom-fields/system-exec/select-module.component';
 import { SelectMethodComponent } from './custom-fields/system-exec/select-method.component';
 import { FunctionArgumentComponent } from './custom-fields/system-exec/function-argument.component';
+import { ActionFieldComponent } from './custom-fields/action-field.component';
 import { DiffViewerComponent } from './diff-viewer.component';
 import { SettingsHistoryViewComponent } from './settings-history-view.component';
 import { SettingsFormatPipe } from './settings-format.pipe';
@@ -93,6 +94,7 @@ const FORM_COMPONENTS: Type<any>[] = [
     SettingsFormComponent,
     BrokerFormComponent,
     ExtensionOutletComponent,
+    ActionFieldComponent,
 
     ExecuteMethodFieldComponent,
     SelectModuleComponent,
