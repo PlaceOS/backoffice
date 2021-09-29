@@ -384,6 +384,19 @@ mat-panel-title {
     @apply hover:bg-opacity-10;
 }
 
+.dark-mode .mat-expansion-panel,
+.dark-mode .mat-expansion-panel:focus {
+    background-color: #505050;
+}
+
+.dark-mode .mat-expansion-panel-header:hover {
+    background-color: #fff1 !important;
+}
+
+.dark-mode .mat-expansion-panel-header-title {
+    color: #fff;
+}
+
 .cdk-drag-preview {
     @apply bg-white rounded border-none shadow;
 }
