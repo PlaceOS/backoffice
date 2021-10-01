@@ -1,8 +1,14 @@
 <div class="w-full flex items-center bg-secondary text-white shadow z-30 py-2">
     <button mat-icon-button class="sm:hidden ml-4" (click)="toggleMenu()">
-        <app-icon [className]="'backoffice-' + (show_menu ? 'cross' : 'menu')"></app-icon>
+        <app-icon class="text-3xl">
+            {{ show_menu ? 'expand_less' : 'expand_more' }}
+        </app-icon>
     </button>
-    <a [routerLink]="['/']" *ngIf="logo"  class="text-3xl leading-none font-heading mx-4 mt-2 relative">
+    <a
+        [routerLink]="['/']"
+        *ngIf="logo"
+        class="text-3xl leading-none font-heading mx-4 mt-2 relative"
+    >
         <ng-container *ngIf="!is_fools_day; else fools_day">
             Place<span class="text-primary font-heading">OS</span>
         </ng-container>
@@ -20,31 +26,50 @@
         [(filter)]="filter"
         (filterChange)="postFilter()"
     ></searchbar>
-    <button mat-icon-button class="hidden sm:flex ml-2" *ngIf="is_admin" [matMenuTriggerFor]="more_actions">
-        <app-icon>more_vert</app-icon>
-    </button>
     <!-- TODO Add user details display -->
-    <button
-        [title]="user?.name"
-        [matMenuTriggerFor]="menu"
-        matRipple
-        class="border-2 border-white rounded-full h-10 w-10 bg-contain bg-center mx-2 outline-none"
-        [style.background-image]="('url(' + (user?.image || 'https://www.gravatar.com/avatar/' + user?.gravatar_hash) + ')') | safe:'style'"
-    ></button>
+    <button [matMenuTriggerFor]="menu" mat-icon-button class="mx-2">
+        <app-icon class="text-2xl">menu</app-icon>
+    </button>
 </div>
 <mat-menu #menu="matMenu">
-    <a mat-menu-item [routerLink]="['/profile']" routerLinkActive="active">
-        <div
-            class="img"
-            class="border-2 border-white rounded-full h-10 w-10 bg-contain bg-center mx-2 outline-none"
-            [style.background-image]="('url(' + (user?.image || 'https://www.gravatar.com/avatar/' + user?.gravatar_hash) + ')') | safe:'style'"
-        ></div>
-        <div class="text">{{user?.name || 'Guest'}}</div>
+    <a
+        mat-menu-item
+        user
+        [routerLink]="['/profile']"
+        routerLinkActive="active"
+        class="!dark:border-gray-500"
+    >
+        <app-icon></app-icon>
+        <div class="text text-base font-medium">{{user?.name || 'Guest'}}</div>
     </a>
-    <a mat-menu-item [routerLink]="['/users', user.id]" routerLinkActive="active">
+    <a
+        mat-menu-item
+        [routerLink]="['/users', user.id]"
+        routerLinkActive="active"
+    >
         <app-icon className="backoffice-user"></app-icon>
         <div class="text" i18n="@@profileAction">Profile</div>
     </a>
+    <ng-container *ngIf="is_admin">
+        <button
+            mat-menu-item
+            [matMenuTriggerFor]="type_menu"
+            (mouseenter)="bulk = false"
+            (click)="bulk = false"
+        >
+            <app-icon className="backoffice-plus"></app-icon>
+            <div class="text" i18n="@@newAction">New</div>
+        </button>
+        <button
+            mat-menu-item
+            [matMenuTriggerFor]="type_menu"
+            (mouseenter)="bulk = true"
+            (click)="bulk = true"
+        >
+            <app-icon className="backoffice-plus"></app-icon>
+            <div class="text" i18n="@@bulkNewAction">Bulk New</div>
+        </button>
+    </ng-container>
     <button mat-menu-item (click)="logout()">
         <app-icon className="backoffice-log-out"></app-icon>
         <div class="text" i18n="@@logoutAction">Logout</div>
@@ -60,7 +85,11 @@
             <mat-slide-toggle [(ngModel)]="dark_mode"></mat-slide-toggle>
         </div>
     </div>
-    <button mat-menu-item [matMenuTriggerFor]="language_menu" *ngIf="languages.length > 1">
+    <button
+        mat-menu-item
+        [matMenuTriggerFor]="language_menu"
+        *ngIf="languages.length > 1"
+    >
         <app-icon className="backoffice-globe"></app-icon>
         <div class="text" i18n="@@languageAction">Language</div>
     </button>
@@ -68,26 +97,6 @@
         <app-icon className="backoffice-github"></app-icon>
         <div class="text" i18n="@@reportAction">Report an Issue</div>
     </a>
-</mat-menu>
-<mat-menu #more_actions="matMenu">
-    <button
-        mat-menu-item
-        [matMenuTriggerFor]="type_menu"
-        (mouseenter)="bulk = false"
-        (click)="bulk = false"
-    >
-        <app-icon className="backoffice-plus"></app-icon>
-        <div class="text" i18n="@@newAction">New</div>
-    </button>
-    <button
-        mat-menu-item
-        [matMenuTriggerFor]="type_menu"
-        (mouseenter)="bulk = true"
-        (click)="bulk = true"
-    >
-        <app-icon className="backoffice-plus"></app-icon>
-        <div class="text" i18n="@@bulkNewAction">Bulk New</div>
-    </button>
 </mat-menu>
 <mat-menu #type_menu="matMenu">
     <button mat-menu-item (click)="newSystem()">
@@ -122,7 +131,9 @@
     </button>
 </mat-menu>
 <ng-template #fools_day>
-    <a href="http://www.nyan.cat/" (click)="notAFool()">April <span>Fools</span></a>
+    <a href="http://www.nyan.cat/" (click)="notAFool()"
+        >April <span>Fools</span></a
+    >
 </ng-template>
 <mat-menu #language_menu="matMenu">
     <a
