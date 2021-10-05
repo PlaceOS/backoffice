@@ -37,7 +37,7 @@ import { SystemStateService } from './system-state.service';
                 <label i18n="@@systemBookableLabel">Bookable Room:</label>
                 <div class="value">{{ item?.bookable ? 'Yes' : 'No' }}</div>
             </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.bookable && item?.email">
+            <div class="flex items-center space-x-2" *ngIf="item?.email">
                 <label i18n="@@emailLabel">Email:&nbsp;</label>
                 <a
                     *ngIf="item?.email"
@@ -50,6 +50,10 @@ import { SystemStateService } from './system-state.service';
             <div class="flex items-center space-x-2" *ngIf="item?.capacity">
                 <label i18n="@@capacityLabel">Capacity:</label>
                 <div class="value">{{ item?.capacity }}</div>
+            </div>
+            <div class="flex items-center space-x-2" *ngIf="item?.map_id">
+                <label i18n="@@mapIdLabel">Map ID:</label>
+                <div class="value">{{ item?.map_id }}</div>
             </div>
             <div class="flex items-center space-x-2" *ngIf="item?.installed_ui_devices">
                 <label i18n="@@systemPanelCountLabel">Installed Touch Panels:</label>
