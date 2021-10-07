@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { PlaceMetadata, PlaceUser, PlaceZone, showMetadata } from '@placeos/ts-client';
+import { PlaceMetadata, PlaceUser, PlaceZone, listMetadata } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { catchError, debounceTime, map, shareReplay, switchMap } from 'rxjs/operators';
 import { ActiveItemService } from '../common/item.service';
@@ -23,7 +23,7 @@ export class UsersStateService {
             if (!(item instanceof PlaceZone)) return {};
             this._loading.next(true);
             const details = await Promise.all([
-                showMetadata(item.id)
+                listMetadata(item.id)
                     .pipe(map((d) => d.length))
                     .toPromise()
                     .catch((_) => 0),
@@ -39,7 +39,7 @@ export class UsersStateService {
     public readonly metadata: Observable<PlaceMetadata[]> = this.item.pipe(
         switchMap((item) => {
             if (!(item instanceof PlaceUser)) return of([]);
-            return showMetadata(item.id);
+            return listMetadata(item.id);
         }),
         catchError((_) => []),
         shareReplay(1)

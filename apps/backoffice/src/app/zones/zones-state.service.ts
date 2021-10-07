@@ -8,7 +8,7 @@ import {
     querySystems,
     queryTriggers,
     queryZones,
-    showMetadata,
+    listMetadata,
     updateZone,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
@@ -47,7 +47,7 @@ export class ZonesStateService {
                     .pipe(map((d) => d.total))
                     .toPromise()
                     .catch((_) => 0),
-                showMetadata(item.id)
+                listMetadata(item.id)
                     .pipe(map((d) => d.length))
                     .toPromise()
                     .catch((_) => 0),
@@ -90,7 +90,7 @@ export class ZonesStateService {
     public readonly metadata: Observable<PlaceMetadata[]> = this.item.pipe(
         switchMap((item) => {
             if (!(item instanceof PlaceZone)) return of([]);
-            return showMetadata(item.id);
+            return listMetadata(item.id);
         }),
         catchError((_) => []),
         shareReplay(1)

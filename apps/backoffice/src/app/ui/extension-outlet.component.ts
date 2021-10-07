@@ -115,9 +115,7 @@ export class ExtensionOutletComponent extends BaseClass {
     }
 
     private async updateMetadata(item: any, message: FrameMessage) {
-        const exists = await showMetadata(item.id, {
-            name: message.name,
-        }).toPromise();
+        const exists = await showMetadata(item.id,  message.name).toPromise();
         await updateMetadata(item.id, {
             id: item.id,
             name: message.name,
@@ -143,9 +141,7 @@ export class ExtensionOutletComponent extends BaseClass {
         message: FrameMessage,
         parent: boolean = false
     ) {
-        const metadata = await showMetadata(parent ? item.parent_id : item.id, {
-            name: message.name,
-        }).toPromise();
+        const metadata = await showMetadata(parent ? item.parent_id : item.id,  message.name).toPromise();
         if (metadata) {
             this._frame_el.nativeElement.contentWindow.postMessage(
                 JSON.stringify({

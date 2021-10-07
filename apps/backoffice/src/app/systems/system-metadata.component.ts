@@ -4,7 +4,7 @@ import {
     PlaceMetadata,
     removeMetadata,
     updateMetadata,
-    showMetadata,
+    listMetadata,
 } from '@placeos/ts-client';
 
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
@@ -382,7 +382,7 @@ export class SystemMetadataComponent extends BaseClass {
     }
 
     private loadMetadata() {
-        showMetadata(this.item.id).subscribe((map) => {
+        listMetadata(this.item.id).subscribe((map) => {
             this.metadata = Object.keys(map).map((key) => map[key]);
             this.generateForms();
         });

@@ -25,6 +25,7 @@ import {
     systemSettings,
     updateSystem,
     updateTrigger,
+    listMetadata
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
@@ -85,7 +86,7 @@ export class SystemStateService extends BaseClass {
                 listSystemTriggers(item.id)
                     .pipe(map((d) => d.total))
                     .toPromise(),
-                showMetadata(item.id).toPromise(),
+                listMetadata(item.id).toPromise(),
             ]);
             const [triggers, metadata] = details;
             this._loading.next({
