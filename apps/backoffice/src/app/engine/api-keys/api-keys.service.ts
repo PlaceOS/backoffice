@@ -10,7 +10,7 @@ import {
     remove,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, of } from 'rxjs';
-import { first, map, shareReplay, switchMap } from 'rxjs/operators';
+import { debounce, debounceTime, first, map, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal } from '../../common/general';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { PlaceAPIKeyDetails } from './api-key-details.class';
@@ -18,6 +18,7 @@ import { APIKeyModalComponent } from './api-key-modal.component';
 
 @Injectable()
 export class APIKeyService {
+    private _search = new BehaviorSubject<string>('');
     private _domain = new BehaviorSubject<PlaceDomain>(null);
     private _last_key = new BehaviorSubject<PlaceAPIKeyDetails>(null);
     private _change = new BehaviorSubject<number>(0);
@@ -46,10 +47,16 @@ export class APIKeyService {
         shareReplay(1)
     );
 
-    public readonly users = combineLatest([this._domain, this._change]).pipe(
-        switchMap(([domain]) => {
+    public readonly users = combineLatest([
+        this._domain,
+        this._search,
+        this._change,
+    ]).pipe(
+        debounceTime(300),
+        switchMap(([domain, q]) => {
+            console.log('Query User:', q);
             return domain
-                ? queryUsers({ authority_id: domain.id }).pipe(
+                ? queryUsers({ authority_id: domain.id, q }).pipe(
                       map((_) => _.data as PlaceUser[])
                   )
                 : of([] as PlaceUser[]);
@@ -57,11 +64,14 @@ export class APIKeyService {
         shareReplay(1)
     );
 
-    constructor(private _dialog: MatDialog) {
-    }
+    constructor(private _dialog: MatDialog) {}
 
     public setDomain(domain: PlaceDomain) {
         this._domain.next(domain);
+    }
+
+    public setSearch(s: string) {
+        this._search.next(s);
     }
 
     public async newKey() {

@@ -94,8 +94,8 @@ import { APIKeyService } from './api-keys.service';
                         <input
                             matInput
                             #input
-                            [ngModel]="search_str | async"
-                            (ngModelChange)="search_str.next($event)"
+                            ngModel
+                            (ngModelChange)="setSearch($event)"
                             [ngModelOptions]="{ standalone: true }"
                             placeholder="Search users..."
                         />
@@ -103,9 +103,9 @@ import { APIKeyService } from './api-keys.service';
                     <button
                         mat-menu-item
                         *ngFor="
-                            let item of filtered_users | async | slice: 0:10
+                            let item of users | async | slice: 0:10
                         "
-                        (click)="form.patchValue({ user_id: item.id })"
+                        (click)="form.patchValue({ user_id: item.id }); setSearch('')"
                         [class.text-primary]="
                             (active_user | async)?.id === item.id
                         "
@@ -174,19 +174,6 @@ export class APIKeyModalComponent {
         })
     );
 
-    public readonly filtered_users = combineLatest([
-        this.users,
-        this.search_str,
-    ]).pipe(
-        map(([users, search]) => {
-            return users.filter(
-                (_) =>
-                    _.name.toLowerCase().includes(search.toLowerCase()) ||
-                    _.email.toLowerCase().includes(search.toLowerCase())
-            );
-        })
-    );
-
     public readonly active_user = combineLatest([
         this.form.valueChanges,
         this.users,
@@ -196,6 +183,7 @@ export class APIKeyModalComponent {
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
     public readonly focusInput = () => setTimeout(() => this._input_el?.nativeElement?.focus(), 100);
+    public readonly setSearch = (s) => this._service.setSearch(s);
 
     public readonly addScope = (e) =>
         addChipItem(this.form.controls.scopes as any, e);
