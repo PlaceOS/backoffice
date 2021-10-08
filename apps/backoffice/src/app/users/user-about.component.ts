@@ -25,6 +25,12 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                     {{ item?.updated_at * 1000 | dateFrom }}
                 </div>
             </div>
+            <div class="flex items-center space-x-2" *ngIf="item?.authority_id">
+                <label i18n="@userUpdatedAtLabel">Authority ID:</label>
+                <div class="value mono">
+                    {{ item?.authority_id }}
+                </div>
+            </div>
             <div class="flex items-center space-x-2" *ngIf="item?.groups">
                 <label class="my-1" for="groups" i18n="@@userGroupsLabel"
                     >User Groups:</label
