@@ -50,9 +50,7 @@ import { notifyInfo } from '../../common/notifications';
                         class="select-all text-xs opacity-60 mono break-words cursor-pointer"
                         (click)="copyKey()"
                     >
-                        {{ (last_key | async)?.id || 'no' }}.{{
-                            (last_key | async)?.secret || 'Key'
-                        }}
+                        {{ (last_key | async)?.x_api_key}}
                     </div>
                 </div>
             </div>

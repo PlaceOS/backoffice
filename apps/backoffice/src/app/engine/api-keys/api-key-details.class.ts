@@ -11,6 +11,7 @@ export class PlaceAPIKeyDetails {
     public readonly created_at: number;
     public readonly updated_at: number;
     public readonly secret?: string;
+    public readonly x_api_key?: string;
 
     constructor(_data: Partial<PlaceAPIKeyDetails>) {
         this.id = _data.id || '';
@@ -22,6 +23,7 @@ export class PlaceAPIKeyDetails {
         this.created_at = _data.created_at || getUnixTime(new Date());
         this.updated_at = _data.updated_at || getUnixTime(new Date());
         this.secret = _data.secret;
+        this.x_api_key = _data.x_api_key || '';
         this.scopes = _data.scopes || [];
     }
 }
