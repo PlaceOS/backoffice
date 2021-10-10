@@ -81,7 +81,7 @@ import { notifyInfo } from '../../common/notifications';
                         {{ item.created_at * 1000 | dateFrom }}
                     </div>
                     <div class="w-16 p-2 flex items-center">
-                        <button mat-icon-button (click)="deleteBroker(item)">
+                        <button mat-icon-button (click)="deleteKey(item)">
                             <app-icon className="backoffice-trash"></app-icon>
                         </button>
                     </div>
@@ -104,6 +104,7 @@ export class AdminAPIKeysComponent {
 
     public readonly setDomain = (d) => this._service.setDomain(d);
     public readonly newKey = () => this._service.newKey();
+    public readonly deleteKey = (k) => this._service.removeKey(k);
 
     constructor(
         private _service: APIKeyService,
@@ -112,8 +113,8 @@ export class AdminAPIKeysComponent {
 
     public async copyKey() {
         const key = await this.last_key.pipe(take(1)).toPromise();
-        if (!key) return;
-        this._clipboard.copy(`${key.id}.${key.secret}`);
+        if (!key?.x_api_key) return;
+        this._clipboard.copy(key.x_api_key);
         notifyInfo('Copied API key to clipboard.');
     }
 }
