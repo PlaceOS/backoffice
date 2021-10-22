@@ -311,9 +311,10 @@ export class SystemStateService extends BaseClass {
             ref.afterClosed().toPromise(),
         ]);
         if (!details || !details.reason) return ref.close();
-        await this.addTrigger(ref.componentInstance.item);
+        const t = await this.addTrigger(ref.componentInstance.item);
         ref.close();
         this._change.next(Date.now());
+        return t;
     }
 
     public async addTrigger(trigger: PlaceTrigger) {
@@ -364,10 +365,10 @@ export class SystemStateService extends BaseClass {
                     throw err;
                 });
             ref.close();
-            if (trig) return;
+            if (!trig) return trigger;
             notifySuccess(`Successfully updated trigger settings.`);
-            ref.close();
             this.timeout('change', () => this._change.next(Date.now()));
+            return trig;
         }
     }
 
