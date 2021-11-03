@@ -132,7 +132,6 @@ export class ActiveItemService extends BaseClass {
         });
         this._hotkey.listen(['KeyN'], () => this.create());
         this._hotkey.listen(['KeyE'], () => this.edit());
-        this._hotkey.listen(['Delete'], () => this.delete());
         this._search.subscribe((str) => {
             this._loading_list.next(true);
             if (str || this._next_query.getValue()) {
