@@ -50,6 +50,7 @@ export function extensionsForItem(item: PlaceResource, type: string) {
             const [key, type, value] = condition;
             switch (type) {
                 case 'includes':
+                    console.log('Includes:', value, item[key], item[key].includes(value))
                     matches += item[key] && item[key].includes(value) ? 1 : 0;
                     break;
                 case 'equals':
@@ -66,7 +67,6 @@ export function extensionsForItem(item: PlaceResource, type: string) {
                 default:
                     matches += 1;
             }
-            matches += item[key] && item[key] === value ? 1 : 0;
         }
         if (matches >= extension_list[name].conditions.length) {
             let url = extension_list[name].url;
