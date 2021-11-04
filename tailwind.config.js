@@ -26,6 +26,7 @@ module.exports = {
                 error: '#e53935',
                 pending: '#ffb300',
                 success: '#43a047',
+                info: '#3B82F6',
                 grey: '#313131',
                 greyer: '#212121',
             },

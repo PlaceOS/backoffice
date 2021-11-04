@@ -58,6 +58,9 @@ export interface BackofficeExtension {
                     Add Extension
                 </button>
             </div>
+            <div class="bg-info my-4 p-4 flex items-center rounded shadow space-x-4 text-sm text-white">
+                <p><strong>Note:</strong> Backoffice requires a full page refresh for extension changes and additions to apply</p>
+            </div>
             <div role="table">
                 <div table-head>
                     <div class="w-24 p-2">Type</div>
