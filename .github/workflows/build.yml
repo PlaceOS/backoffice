@@ -130,22 +130,12 @@ jobs:
                 GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
               run: npx semantic-release
               if: ${{ env.configuration == 'production' }}
-
-            - name: Add development tag
-              run: git tag develop
-              if: ${{ env.configuration != 'production' }}
-
+              
             - name: Deploy the application(draft)
-              uses: fnkr/github-action-ghr@ghr-options
-              env:
-                GHR_PATH: dist/apps/backoffice
-                GHR_DRAFT: yes
-                GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
-              if: ${{ env.configuration != 'production' }}
-
-            - name: Remove develop tag
-              run: git tag -d develop
-              if: ${{ env.configuration != 'production' }}
+              run: |
+                gh release create -p develop
+                tar -czvf backoffice.tar.gz dist/apps/backoffice/*
+                gh release upload develop backoffice.tar.gz --clobber
 
             - name: Update Pipeline Chat Status
               uses: fjogeleit/http-request-action@master
