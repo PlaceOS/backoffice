@@ -130,9 +130,10 @@ jobs:
                 GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
               run: npx semantic-release
               if: ${{ env.configuration == 'production' }}
-              
+
             - name: Deploy the application(draft)
               run: |
+                gh auth login --with-token ${{ secrets.API_GITHUB_TOKEN }}
                 gh release create -p develop
                 tar -czvf backoffice.tar.gz dist/apps/backoffice/*
                 gh release upload develop backoffice.tar.gz --clobber
