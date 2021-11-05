@@ -134,7 +134,7 @@ jobs:
             - name: Deploy the application(draft)
               run: |
                 gh auth login --with-token ${{ secrets.API_GITHUB_TOKEN }}
-                gh release create -p develop
+                gh release create develop -p 
                 tar -czvf backoffice.tar.gz dist/apps/backoffice/*
                 gh release upload develop backoffice.tar.gz --clobber
 
