@@ -129,7 +129,7 @@ jobs:
               env:
                 GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
               run: npx semantic-release
-              if: ${{ configuration == 'production' }}
+              if: ${{ env.configuration == "production" }}
 
             - name: Deploy the application(draft)
               uses: fnkr/github-action-ghr@ghr-options
@@ -137,7 +137,7 @@ jobs:
                 GHR_PATH: dist/apps/backoffice
                 GHR_DRAFT: yes
                 GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
-              if: ${{ configuration != 'production' }}
+              if: ${{ env.configuration != "production" }}
 
             - name: Update Pipeline Chat Status
               uses: fjogeleit/http-request-action@master
