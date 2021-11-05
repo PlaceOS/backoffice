@@ -115,38 +115,38 @@ jobs:
               run: |
                   npx nx build backoffice --verbose --configuration=${{ env.configuration }}
 
-            # - name: Deploy the application(backoffice)
-            #   uses: MrYuion/gha-publish-to-git@v1.1
-            #   continue-on-error: true
-            #   with:
-            #       branch: build/${{ env.deploy_branch }}
-            #       source_folder: dist/apps/backoffice
-            #       commit_message: >
-            #           build(backoffice): CI build from ${{ env.sha_short }}
-            #       github_pat: ${{ secrets.API_GITHUB_TOKEN }}
-
-            - name: Deploy the application(production)
-              env:
-                GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
-              run: npx semantic-release
-              if: ${{ env.configuration == 'production' }}
-
-            - name: Auth Github CLI
-              run: echo ${{ secrets.API_GITHUB_TOKEN }} | gh auth login --with-token 
-              if: ${{ env.configuration != 'production' }}
-
-            - name: Compress build Artifacts
-              run: tar -czvf backoffice.tar.gz dist/apps/backoffice/*
-              if: ${{ env.configuration != 'production' }}
-
-            - name: Create pre-release
-              run: gh release create develop -p 
+            - name: Deploy the application(backoffice)
+              uses: MrYuion/gha-publish-to-git@v1.1
               continue-on-error: true
-              if: ${{ env.configuration != 'production' }}
+              with:
+                  branch: build/${{ env.deploy_branch }}
+                  source_folder: dist/apps/backoffice
+                  commit_message: >
+                      build(backoffice): CI build from ${{ env.sha_short }}
+                  github_pat: ${{ secrets.API_GITHUB_TOKEN }}
 
-            - name: Deploy the application(draft)
-              run: gh release upload develop backoffice.tar.gz --clobber
-              if: ${{ env.configuration != 'production' }}
+            # - name: Deploy the application(production)
+            #   env:
+            #     GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
+            #   run: npx semantic-release
+            #   if: ${{ env.configuration == 'production' }}
+
+            # - name: Auth Github CLI
+            #   run: echo ${{ secrets.API_GITHUB_TOKEN }} | gh auth login --with-token 
+            #   if: ${{ env.configuration != 'production' }}
+
+            # - name: Compress build Artifacts
+            #   run: tar -czvf backoffice.tar.gz dist/apps/backoffice/*
+            #   if: ${{ env.configuration != 'production' }}
+
+            # - name: Create pre-release
+            #   run: gh release create develop -p 
+            #   continue-on-error: true
+            #   if: ${{ env.configuration != 'production' }}
+
+            # - name: Deploy the application(draft)
+            #   run: gh release upload develop backoffice.tar.gz --clobber
+            #   if: ${{ env.configuration != 'production' }}
 
             - name: Update Pipeline Chat Status
               uses: fjogeleit/http-request-action@master

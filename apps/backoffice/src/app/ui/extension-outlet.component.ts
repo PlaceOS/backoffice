@@ -52,7 +52,7 @@ export class ExtensionOutletComponent extends BaseClass {
             );
         this._route.queryParamMap.subscribe((params) => {
             if (params.has('embed')) {
-                this.url = decodeURIComponent(params.get('embed'));
+                this.url = params.get('embed');
             } else {
                 this._location.back();
             }
