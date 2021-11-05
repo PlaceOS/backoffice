@@ -131,12 +131,22 @@ jobs:
               run: npx semantic-release
               if: ${{ env.configuration == 'production' }}
 
+            - name: Auth Github CLI
+              run: gh auth login --with-token ${{ secrets.API_GITHUB_TOKEN }}
+              if: ${{ env.configuration != 'production' }}
+
+            - name: Compress build Artifacts
+              run: tar -czvf backoffice.tar.gz dist/apps/backoffice/*
+              if: ${{ env.configuration != 'production' }}
+
+            - name: Create pre-release
+              run: gh release create develop -p 
+              continue-on-error: true
+              if: ${{ env.configuration != 'production' }}
+
             - name: Deploy the application(draft)
-              run: |
-                gh auth login --with-token ${{ secrets.API_GITHUB_TOKEN }}
-                gh release create develop -p 
-                tar -czvf backoffice.tar.gz dist/apps/backoffice/*
-                gh release upload develop backoffice.tar.gz --clobber
+              run: gh release upload develop backoffice.tar.gz --clobber
+              if: ${{ env.configuration != 'production' }}
 
             - name: Update Pipeline Chat Status
               uses: fjogeleit/http-request-action@master
