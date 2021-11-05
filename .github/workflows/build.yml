@@ -132,7 +132,7 @@ jobs:
               if: ${{ env.configuration == 'production' }}
 
             - name: Auth Github CLI
-              run: gh auth login --with-token ${{ secrets.API_GITHUB_TOKEN }}
+              run: gh auth login --with-token < echo ${{ secrets.API_GITHUB_TOKEN }}
               if: ${{ env.configuration != 'production' }}
 
             - name: Compress build Artifacts
