@@ -55,7 +55,7 @@ export function uploadFile(file: File): Observable<UploadDetails> {
                         upload_details.link = upload.access_url;
                     upload_details.progress = state.progress;
                     observer.next(upload_details);
-                    if (state.status === 'error') observer.error(state.error);
+                    if (state.status === 'error') observer.error({ ...upload_details, error: state.error });
                     if (state.status === 'complete') observer.complete();
                 });
             observer.next(upload_details);
