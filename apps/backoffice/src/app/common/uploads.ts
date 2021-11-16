@@ -1,12 +1,12 @@
-import { UploadManager, Upload } from '@acaprojects/ngx-uploads';
+import { uploadFiles, Upload, humanReadableByteCount } from '@placeos/cloud-uploads';
 import { Observable } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
 
 import * as blobUtil from 'blob-util';
 import { HashMap } from './types';
 import { randomInt } from './general';
 
-let _upload_manager: UploadManager = null;
-let _timers: HashMap = {}
+let _timers: HashMap = {};
 
 export interface UploadDetails {
     /** Unique ID for the upload */
@@ -27,37 +27,17 @@ export interface UploadDetails {
     upload: Upload;
 }
 
-export function setUploadService(service: UploadManager) {
-    _upload_manager = service;
-}
-
-export function humanReadableByteCount(bytes: number, si: boolean = false) {
-    const unit = si ? 1000.0 : 1024.0;
-
-    if (bytes < unit) {
-        return bytes + (si ? ' iB' : ' B');
-    }
-
-    const exp = Math.floor(Math.log(bytes) / Math.log(unit));
-    const pre = (si ? 'kMGTPE' : 'KMGTPE').charAt(exp - 1) + (si ? 'iB' : 'B');
-
-    return (bytes / Math.pow(unit, exp)).toFixed(1) + ' ' + pre;
-}
-
 /**
  * Upload the given file to the cloud
  * @param file File to upload
  */
 export function uploadFile(file: File): Observable<UploadDetails> {
-    if (!(_upload_manager instanceof UploadManager)) {
-        throw Error('No service setup for uploads');
-    }
     return new Observable((observer) => {
         const fileReader = new FileReader();
         fileReader.addEventListener('loadend', (e: any) => {
             const arrayBuffer = e.target.result;
             const blob = blobUtil.arrayBufferToBlob(arrayBuffer, file.type);
-            const upload_list = _upload_manager.upload([blob], { file_name: file.name });
+            const upload_list = uploadFiles([blob], { file_name: file.name });
             const upload = upload_list[0];
             const upload_details: UploadDetails = {
                 id: randomInt(9999_9999_9999),
@@ -68,30 +48,16 @@ export function uploadFile(file: File): Observable<UploadDetails> {
                 size: file.size,
                 upload,
             };
-            upload.promise.then(
-                (state) => {
-                    if (state.access_url) {
+            upload.status
+                .pipe(takeWhile((_) => _.status !== 'complete', true))
+                .subscribe((state) => {
+                    if (upload.access_url)
                         upload_details.link = upload.access_url;
-                        upload_details.progress = 100;
-                    }
-                    clearInterval(_timers[`upload-${file.name}`]);
+                    upload_details.progress = state.progress;
                     observer.next(upload_details);
-                    observer.complete();
-                },
-                (err) => {
-                    upload_details.error = err.message || err;
-                    clearInterval(_timers[`upload-${file.name}`]);
-                    observer.error(upload_details);
-                }
-            );
-            _timers[`upload-${file.name}`] = setInterval(() => {
-                if (!upload.uploading && upload.error) {
-                    upload_details.error = upload.error;
-                    clearInterval(_timers[`upload-${file.name}`]);
-                }
-                upload_details.progress = upload.progress;
-                observer.next(upload_details);
-            }, 150);
+                    if (state.status === 'error') observer.error(state.error);
+                    if (state.status === 'complete') observer.complete();
+                });
             observer.next(upload_details);
         });
         fileReader.readAsArrayBuffer(file);

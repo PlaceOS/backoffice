@@ -1,4 +1,3 @@
-import { Upload } from '@acaprojects/ngx-uploads';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
@@ -236,13 +235,6 @@ export class UploadListComponent extends BaseClass implements OnInit {
         if (details.error) {
             details.error = null;
             details.upload.resume();
-            this.interval(`upload-${details.name}`, () => {
-                if (!details.upload.uploading && details.upload.error) {
-                    details.error = details.upload.error;
-                    this.clearInterval(`upload-${details.name}`);
-                }
-                details.progress = details.upload.progress;
-            });
         }
     }
 

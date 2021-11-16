@@ -244,13 +244,6 @@ export class ImageListFieldComponent extends BaseClass {
         if (details.error) {
             details.error = null;
             details.upload.resume();
-            this.interval(`upload-${details.name}`, () => {
-                if (!details.upload.uploading && details.upload.error) {
-                    details.error = details.upload.error;
-                    this.clearInterval(`upload-${details.name}`);
-                }
-                details.progress = details.upload.progress;
-            });
         }
     }
 

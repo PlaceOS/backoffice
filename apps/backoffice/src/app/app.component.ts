@@ -5,13 +5,12 @@ import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { invalidateToken, isMock, isOnline, token } from '@placeos/ts-client';
 import {
-    UploadManager,
-    Md5Workers,
     Amazon,
     Azure,
     Google,
     OpenStack,
-} from '@acaprojects/ngx-uploads';
+    initialiseUploadService
+} from '@placeos/cloud-uploads';
 
 import { SettingsService } from './common/settings.service';
 import { setupPlace } from './common/placeos';
@@ -20,7 +19,6 @@ import { setNotifyOutlet } from './common/notifications';
 import { BaseClass } from './common/base.class';
 import { log, detectIE } from './common/general';
 import { BackofficeUsersService } from './users/users.service';
-import { setUploadService } from './common/uploads';
 
 @Component({
     selector: 'placeos-root',
@@ -102,8 +100,6 @@ export class AppComponent extends BaseClass implements OnInit {
         private _users: BackofficeUsersService,
         private _cache: SwUpdate,
         private _snackbar: MatSnackBar,
-        private _uploads: UploadManager,
-        private _md5_workers: Md5Workers
     ) {
         super();
     }
@@ -128,15 +124,13 @@ export class AppComponent extends BaseClass implements OnInit {
         this.clearTimeout('wait_for_user');
         this._loading.next(false);
         this.timeout('init_uploads', () => {
-            this._md5_workers.setup('assets/md5_worker.js');
-            this._uploads.token = token();
-            this._uploads.autoStart = true;
-            this._uploads.endpoint = '/api/files/v1/uploads';
-            UploadManager.addProvider(Amazon);
-            UploadManager.addProvider(Azure);
-            UploadManager.addProvider(Google);
-            UploadManager.addProvider(OpenStack);
-            setUploadService(this._uploads);
+            initialiseUploadService({
+                auto_start: true,
+                token: token(),
+                endpoint: '/api/files/v1/uploads',
+                worker_url: 'assets/md5_worker.js',
+                providers: [Amazon, Azure, Google, OpenStack] as any
+            });
         });
         this.interval(
             'dark-mode',
@@ -150,10 +144,7 @@ export class AppComponent extends BaseClass implements OnInit {
     }
 
     private onInitError() {
-        if (isMock()) {
-            return;
-        }
-
+        if (isMock()) return;
         log('Init', 'Failed to initialise user. Restarting application...');
         invalidateToken();
         location.reload();
