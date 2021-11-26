@@ -39,11 +39,9 @@ export function setupCache(
             log('CACHE', `Updates activated. Reloading...`);
             if (NOTIFY_CHANGE) {
                 notify('Newer version of the application is available', () =>
-                    location.reload(true)
+                    location.reload()
                 );
-            } else {
-                location.reload(true);
-            }
+            } else location.reload();
         });
         _timer = <any>setInterval(() => {
             log('CACHE', `Checking for updates...`);
@@ -64,11 +62,9 @@ function activateUpdate() {
                 notifyInfo(
                     'Newer version of the application is available',
                     'Reload',
-                    () => location.reload(true)
+                    () => location.reload()
                 );
-            } else {
-                location.reload(true);
-            }
+            } else location.reload();
         });
     }
 }
