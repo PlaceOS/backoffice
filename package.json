@@ -26,7 +26,7 @@
     "workspace-generator": "nx workspace-generator",
     "dep-graph": "nx dep-graph",
     "help": "nx help",
-    "semantic-release": "semantic-release"
+    "version": "node ./tools/release.js"
   },
   "private": true,
   "dependencies": {
@@ -47,6 +47,7 @@
     "zone.js": "0.11.4"
   },
   "devDependencies": {
+    "@abstracter/atomic-release": "^1.2.0",
     "@angular-devkit/build-angular": "13.0.3",
     "@angular-eslint/eslint-plugin": "12.6.1",
     "@angular-eslint/eslint-plugin-template": "12.6.1",
@@ -90,7 +91,6 @@
     "monaco-editor": "^0.26.1",
     "ng-mocks": "^12.0.0",
     "prettier": "2.5.0",
-    "semantic-release": "^18.0.0",
     "tailwindcss": "^2.2.15",
     "ts-jest": "27.0.5",
     "ts-md5": "^1.2.10",
@@ -101,8 +101,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/PlaceOS/backoffice.git"
-  },
-  "release": {
-    "branches": ["release/**"]
   }
 }

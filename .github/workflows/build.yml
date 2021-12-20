@@ -125,8 +125,8 @@ jobs:
             - name: Deploy the application(production)
               env:
                 GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
-              run: npx semantic-release
-              if: ${{ env.configuration == 'production' }}
+              run: npm run version
+              # if: ${{ env.configuration == 'production' }}
 
             - name: Compress build Artifacts
               run: tar -czvf backoffice.tar.gz dist/apps/backoffice/*
