@@ -112,25 +112,20 @@ jobs:
               run: |
                   npx nx build backoffice --verbose --configuration=${{ env.configuration }}
 
-            # - name: Deploy the application(backoffice)
-            #   uses: MrYuion/gha-publish-to-git@v1.1
-            #   continue-on-error: true
-            #   with:
-            #       branch: build/${{ env.deploy_branch }}
-            #       source_folder: dist/apps/backoffice
-            #       commit_message: >
-            #           build(backoffice): CI build from ${{ env.sha_short }}
-            #       github_pat: ${{ secrets.API_GITHUB_TOKEN }}
+            - name: Compress build Artifacts
+              run: tar -czvf backoffice.tar.gz dist/apps/backoffice/*
+              if: ${{ env.configuration != 'production' }}
 
             - name: Deploy the application(production)
               env:
                 GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
-              run: npm run version
-              # if: ${{ env.configuration == 'production' }}
-
-            - name: Compress build Artifacts
-              run: tar -czvf backoffice.tar.gz dist/apps/backoffice/*
-              if: ${{ env.configuration != 'production' }}
+              run: | 
+                VERSION=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1)
+                npm run version
+                VERSION=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1)
+                gh release create $VERSION
+                gh release upload $VERSION backoffice.tar.gz --clobber
+              if: ${{ env.configuration == 'production' }}
 
             - name: Create pre-release
               run: gh release create develop -p 
