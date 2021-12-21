@@ -120,9 +120,9 @@ jobs:
               env:
                 GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
               run: | 
-                VERSION=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1)
+                export VERSION=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1)
                 npm run version
-                VERSION=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1)
+                export VERSION=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1)
                 gh release create $VERSION
                 gh release upload $VERSION backoffice.tar.gz --clobber
               if: ${{ env.configuration == 'production' }}
