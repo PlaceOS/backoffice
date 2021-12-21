@@ -113,18 +113,26 @@ jobs:
                   npx nx build backoffice --verbose --configuration=${{ env.configuration }}
 
             - name: Compress build Artifacts
-              run: tar -czvf backoffice.tar.gz dist/apps/backoffice/*
+              run: |
+                tar -czvf backoffice.tar.gz dist/apps/backoffice/*
+                echo $GITHUB_SHA > commit.txt
               if: ${{ env.configuration != 'production' }}
 
             - name: Deploy the application(production)
               env:
                 GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
               run: | 
+                git config user.email $(git show -s --format='%ae' HEAD)
+                git config user.name CI_USER
                 export VERSION=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1)
                 npm run version
                 export VERSION=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1)
                 gh release create $VERSION
                 gh release upload $VERSION backoffice.tar.gz --clobber
+                gh release upload $VERSION backoffice.txt --clobber
+                gh release upload $VERSION CHANGELOG.md --clobber
+                git reset --hard
+                git tag -a $VERSION && git push origin $VERSION
               if: ${{ env.configuration == 'production' }}
 
             - name: Create pre-release
@@ -133,7 +141,9 @@ jobs:
               if: ${{ env.configuration != 'production' }}
 
             - name: Deploy the application(draft)
-              run: gh release upload develop backoffice.tar.gz --clobber
+              run: |
+                gh release upload develop backoffice.tar.gz --clobber
+                gh release upload develop backoffice.txt --clobber
               if: ${{ env.configuration != 'production' }}
 
             - name: Update Pipeline Chat Status
