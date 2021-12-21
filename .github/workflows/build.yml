@@ -115,7 +115,7 @@ jobs:
             - name: Compress build Artifacts
               run: |
                 tar -czvf backoffice.tar.gz dist/apps/backoffice/*
-                echo $GITHUB_SHA > commit.txt
+                echo $GITHUB_SHA > backoffice.txt
               if: ${{ env.configuration != 'production' }}
 
             - name: Deploy the application(production)
