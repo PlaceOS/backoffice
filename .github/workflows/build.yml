@@ -116,7 +116,6 @@ jobs:
               run: |
                 tar -czvf backoffice.tar.gz dist/apps/backoffice/*
                 echo $GITHUB_SHA > backoffice.txt
-              if: ${{ env.configuration != 'production' }}
 
             - name: Deploy the application(production)
               env:
