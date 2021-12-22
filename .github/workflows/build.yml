@@ -6,7 +6,7 @@ name: BUILD
 # events but only for the master branch
 on:
     push:
-        branches: [develop]
+        branches: [develop, release/**]
         tags: [release/**]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -124,9 +124,9 @@ jobs:
               run: | 
                 git config user.email $(git show -s --format='%ae' HEAD)
                 git config user.name CI_USER
-                export VERSION=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1)
+                export VERSION=$(git tag --sort=committerdate | grep -E 'v[0-9]' | tail -1)
                 npm run version
-                export VERSION=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1)
+                export VERSION=$(git tag --sort=committerdate | grep -E 'v[0-9]' | tail -1)
                 gh release create $VERSION
                 gh release upload $VERSION backoffice.tar.gz --clobber
                 gh release upload $VERSION backoffice.txt --clobber
