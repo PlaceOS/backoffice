@@ -8,6 +8,12 @@ import { UnauthorisedComponent } from './ui/unauthorised.component';
 const routes: Routes = [
     { path: 'unauthorised', component: UnauthorisedComponent },
     {
+        path: 'mqtt-dashboard',
+        canLoad: [AuthorisedUserGuard],
+        canActivate: [AuthorisedUserGuard],
+        loadChildren: () => import('./alert-dashboard/dashboard.module').then((m) => m.MqttDashboardModule),
+    },
+    {
         path: 'modules',
         canLoad: [AuthorisedUserGuard],
         canActivate: [AuthorisedUserGuard],

@@ -19,13 +19,14 @@ import { setNotifyOutlet } from './common/notifications';
 import { BaseClass } from './common/base.class';
 import { log, detectIE } from './common/general';
 import { BackofficeUsersService } from './users/users.service';
+import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
     selector: 'placeos-root',
     template: `
         <div class="h-full w-full flex flex-col overflow-hidden">
             <ng-container *ngIf="!(loading | async); else load_state">
-                <header [class.joke]="is_fools_day">
+                <header *ngIf="!simple" [class.joke]="is_fools_day">
                     <topbar-header
                         class="w-full"
                         [(showMenu)]="show"
@@ -38,6 +39,7 @@ import { BackofficeUsersService } from './users/users.service';
                 >
                     <sidebar-menu
                         class="w-0 sm:w-auto"
+                        *ngIf="!simple"
                         [(show)]="show"
                     ></sidebar-menu>
                     <div class="flex-1 w-0">
@@ -48,7 +50,7 @@ import { BackofficeUsersService } from './users/users.service';
                     <global-search [(search)]="filter"></global-search>
                 </ng-container>
                 <app-debug-output></app-debug-output>
-                <app-upload-list></app-upload-list>
+                <app-upload-list *ngIf="!simple"></app-upload-list>
             </ng-container>
             <ng-template #load_state>
                 <div
@@ -82,6 +84,7 @@ export class AppComponent extends BaseClass implements OnInit {
     public filter: string;
     /**  */
     public show: boolean;
+    public simple: boolean;
 
     public get dark_mode() {
         return this._users.dark_mode;
@@ -100,6 +103,7 @@ export class AppComponent extends BaseClass implements OnInit {
         private _users: BackofficeUsersService,
         private _cache: SwUpdate,
         private _snackbar: MatSnackBar,
+        private _router: Router
     ) {
         super();
     }
@@ -141,6 +145,11 @@ export class AppComponent extends BaseClass implements OnInit {
             },
             200
         );
+        this._router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                this.simple = this._router.url.includes('mqtt');
+            }
+        })
     }
 
     private onInitError() {

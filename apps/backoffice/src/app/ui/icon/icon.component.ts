@@ -4,7 +4,7 @@ import { ApplicationIcon } from 'apps/backoffice/src/app/common/types';
 @Component({
     selector: 'app-icon',
     template: `
-        <div class="flex items-center justify-center">
+        <div class="flex items-center justify-center mx-auto">
             <i
                 *ngIf="!icon || icon.type !== 'img'"
                 [class]="icon?.class || className"

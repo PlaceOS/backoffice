@@ -19,7 +19,7 @@ const PROXY_CONFIG = [
         changeOrigin: true,
     },
     {
-        context: ['/api/engine/v2/systems/control'],
+        context: ['/api/engine/v2/systems/control', '/api/mqtt'],
         target: `ws${secure ? 's' : ''}://${domain}`,
         secure: valid_ssl,
         changeOrigin: true,
