@@ -62,6 +62,7 @@ jobs:
 
         outputs:
             configuration: ${{ steps.build_ext.outputs.configuration }}
+            branch: ${{ steps.branch_name.outputs.branch }}
             deploy_branch: ${{ steps.build_ext.outputs.deploy_branch }}
             short_sha: ${{ steps.vars.outputs.short_sha }}
 
@@ -72,6 +73,7 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             configuration: ${{ needs.install_deps.outputs.configuration }}
+            branch: ${{ needs.install_deps.outputs.branch }}
             deploy_branch: ${{ needs.install_deps.outputs.deploy_branch }}
             short_sha: ${{ needs.install_deps.outputs.short_sha }}
         # Steps represent a sequence of tasks that will be executed as part of the job
@@ -126,17 +128,17 @@ jobs:
               run: | 
                 git config user.email $(git show -s --format='%ae' HEAD)
                 git config user.name CI_USER
-                export VERSION=$(git tag --sort=committerdate | grep -E 'v[0-9]' | tail -1)
+                export VERSION=$(git tag --sort=v:refname | grep -E 'v[0-9]' | tail -1)
                 echo $VERSION
                 npm run version
-                export VERSION=$(git tag --sort=committerdate | grep -E 'v[0-9]' | tail -1)
+                export VERSION=$(git tag --sort=v:refname | grep -E 'v[0-9]' | tail -1)
                 echo $VERSION
-                git reset --hard origin/${GITHUB_REF#refs/heads/}
-                git tag -a $VERSION && git push origin $VERSION
                 gh release create $VERSION
                 gh release upload $VERSION backoffice.tar.gz --clobber
                 gh release upload $VERSION backoffice.txt --clobber
                 gh release upload $VERSION CHANGELOG.md --clobber
+                git reset --hard origin/${{ env.branch }}
+                git tag -a $VERSION && git push origin $VERSION
               if: ${{ env.configuration == 'production' }}
 
             - name: Create pre-release
