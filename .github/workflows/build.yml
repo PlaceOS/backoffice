@@ -137,6 +137,7 @@ jobs:
                 gh release upload $VERSION backoffice.tar.gz --clobber
                 gh release upload $VERSION backoffice.txt --clobber
                 gh release upload $VERSION CHANGELOG.md --clobber
+                git tag -d $VERSION
                 git reset --hard origin/${{ env.branch }}
                 git tag -a $VERSION && git push origin $VERSION
               if: ${{ env.configuration == 'production' }}
