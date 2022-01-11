@@ -44,7 +44,7 @@ export class DomainStateService {
 
     public readonly users: Observable<PlaceUser[]> = combineLatest([this._changed, this.item]).pipe(
         filter(([_, item]) => item instanceof PlaceDomain),
-        switchMap(([_, item]) => queryUsers({ authority: item.id } as any)),
+        switchMap(([_, item]) => queryUsers({ authority_id: item.id } as any)),
         map((_) => _.data),
         catchError((_) => []),
         shareReplay(1)
@@ -56,7 +56,7 @@ export class DomainStateService {
     ]).pipe(
         filter(([_, item]) => item instanceof PlaceDomain),
         switchMap(([_, item]) => {
-            const q = { authority: item.id };
+            const q = { authority_id: item.id };
             return combineLatest([
                 querySAMLSources(q as any).pipe(map((_) => _.data)),
                 queryOAuthSources(q as any).pipe(map((_) => _.data)),
@@ -77,7 +77,7 @@ export class DomainStateService {
         this.item,
     ]).pipe(
         filter(([_, item]) => item instanceof PlaceDomain),
-        switchMap(([_, item]) => queryApplications({ authority: item.id } as any)),
+        switchMap(([_, item]) => queryApplications({ authority_id: item.id } as any)),
         map((_) => _.data),
         catchError((_) => []),
         shareReplay(1)
@@ -89,7 +89,7 @@ export class DomainStateService {
     ]).pipe(
         filter(([_, item]) => item instanceof PlaceDomain),
         switchMap(async ([_, item]) => {
-            const q = { authority: item?.id };
+            const q = { authority_id: item?.id };
             const details = await Promise.all([
                 queryApplications(q as any)
                     .pipe(map((_) => _.total))
