@@ -34,32 +34,32 @@ export interface PlaceServiceDetails {
     selector: 'app-engine-details',
     template: `
         <h3 class="text-lg font-medium" i18n="@@backoffice">Backoffice</h3>
-        <section class="space-y-2 mb-4">
-            <div class="flex flex-col">
-                <label for="version" i18n="@@version">Version:</label>
+        <section class="space-y-2 mb-4 flex flex-col px-2">
+            <div class="flex items-center">
+                <label for="version" class="w-24" i18n="@@version">Version:</label>
                 <div
                     name="version"
-                    class="select-all"
+                    class="bg-gray-300/60 rounded p-1 text-xs mono flex items-center"
                     (click)="copy('version', backoffice_version)"
                 >
                     {{ backoffice_version }}
                 </div>
             </div>
-            <div class="flex flex-col">
-                <label for="hash" i18n="@@commitHash">Commit Hash:</label>
+            <div class="flex items-center">
+                <label for="hash" class="w-24" i18n="@@commitHash">Commit Hash:</label>
                 <div
                     name="hash"
-                    class="select-all"
+                    class="bg-gray-300/60 rounded p-1 text-xs mono flex items-center"
                     (click)="copy('hash', backoffice_hash)"
                 >
                     {{ backoffice_hash }}
                 </div>
             </div>
-            <div class="flex flex-col">
-                <label for="build-time" i18n="@@buildTime">Build:</label>
+            <div class="flex items-center">
+                <label for="build-time" class="w-24" i18n="@@buildTime">Build:</label>
                 <div
-                    name="build-time"
-                    class="select-all"
+                    name="build-time" 
+                    class="text-sm"
                     (click)="copy('build time', backoffice_build)"
                 >
                     {{ backoffice_build }}
@@ -67,7 +67,7 @@ export interface PlaceServiceDetails {
             </div>
         </section>
         <h3 class="text-lg font-medium" i18n="@@apiHeader">API</h3>
-        <section class="flex flex-wrap p-2">
+        <section class="flex flex-wrap py-2">
             <div
                 class="bg-white dark:bg-[#424242] rounded shadow m-2 min-w-[40%] flex-1 overflow-hidden"
                 *ngFor="let api of api_details"
@@ -89,7 +89,7 @@ export interface PlaceServiceDetails {
                 </div>
                 <div class="flex items-center px-4 py-1 hover:bg-gray-400/20">
                     <label class="w-24">Build time:</label>
-                    <div>{{ api.build_time }}</div>
+                    <div class="text-sm">{{ api.build_time }}</div>
                 </div>
                 <div class="flex items-center px-4 py-1 hover:bg-gray-400/20 mb-1">
                     <label class="w-24">Platform:</label>
@@ -103,9 +103,13 @@ export interface PlaceServiceDetails {
     styles: [
         `
             :host {
+                position: absolute;
+                top: 0;
+                left: 0;
                 padding: 1rem;
                 width: 100%;
                 height: 100%;
+                overflow: auto;
             }
         `,
     ],
