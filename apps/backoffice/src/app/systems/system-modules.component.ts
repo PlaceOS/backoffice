@@ -173,6 +173,8 @@ import { SystemStateService } from './system-state.service';
                                         [checked]="
                                             (debugging | async)[device.id]
                                         "
+                                        [matTooltip]="((debugging | async)[device.id] ? 'Disable' : 'Enable') + ' Debugging'"
+                                        matTooltipPosition="left"
                                         (change)="toggleDebug(device)"
                                     >
                                         <span
@@ -294,6 +296,10 @@ import { SystemStateService } from './system-state.service';
 
             [dot] {
                 transition: height 200ms, width 200ms;
+            }
+
+            mat-checkbox.mat-checkbox-disabled {
+                pointer-events: none;
             }
         `,
     ],
