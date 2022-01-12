@@ -20,7 +20,7 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                     [ngModel]="''"
                     (ngModelChange)="filter$.next($event)"
                     matInput
-                    placeholder="Filter triggers..."
+                    placeholder="Filter Devices..."
                     class="rounded-none"
                 />
             </mat-form-field>
