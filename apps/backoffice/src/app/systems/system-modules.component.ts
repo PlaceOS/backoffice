@@ -76,7 +76,7 @@ import { SystemStateService } from './system-state.service';
                         *ngIf="(modules | async)?.length; else empty_state"
                     >
                         <div table-head>
-                            <div class="w-12 p-2"></div>
+                            <div class="w-10 p-2"></div>
                             <div class="w-12 p-2" i18n="@@moduleStateLabel">
                                 State
                             </div>
@@ -88,6 +88,9 @@ import { SystemStateService } from './system-state.service';
                             </div>
                             <div class="w-48 p-2" i18n="@@moduleIpLabel">
                                 IP/URI
+                            </div>
+                            <div class="w-[3.5rem] p-2" i18n="@@moduleStateLabel">
+                                Debug
                             </div>
                             <div class="w-24 p-2 h-9"></div>
                         </div>
@@ -114,7 +117,7 @@ import { SystemStateService } from './system-state.service';
                                     *cdkDragPlaceholder
                                 ></div>
                                 <div
-                                    class="w-12 flex justify-center h-full p-2"
+                                    class="w-10 flex justify-center h-full"
                                     style="cursor: grab"
                                 >
                                     <app-icon
@@ -167,22 +170,11 @@ import { SystemStateService } from './system-state.service';
                                     </div>
                                 </div>
                                 <div class="w-48 p-2">
-                                    <mat-checkbox
-                                        class="w-full"
-                                        [disabled]="!device.running"
-                                        [checked]="
-                                            (debugging | async)[device.id]
-                                        "
-                                        [matTooltip]="((debugging | async)[device.id] ? 'Disable' : 'Enable') + ' Debugging'"
-                                        matTooltipPosition="left"
-                                        (change)="toggleDebug(device)"
+                                    <span
+                                        class="truncate"
+                                        [title]="(bindings | async)[i]"
+                                        >{{ (bindings | async)[i] }}</span
                                     >
-                                        <span
-                                            class="truncate"
-                                            [title]="(bindings | async)[i]"
-                                            >{{ (bindings | async)[i] }}</span
-                                        >
-                                    </mat-checkbox>
                                 </div>
                                 <div
                                     class="w-48 text-right flex items-center h-full p-2"
@@ -204,6 +196,24 @@ import { SystemStateService } from './system-state.service';
                                         >{{ device.ip || device.uri }}</a
                                     >
                                 </div>
+                                <div
+                                    class="w-[3.5rem] flex items-center justify-center p-2 h-full"
+                                >
+                                    <mat-checkbox
+                                        [disabled]="!device.running"
+                                        [checked]="
+                                            (debugging | async)[device.id]
+                                        "
+                                        [matTooltip]="
+                                            ((debugging | async)[device.id]
+                                                ? 'Disable'
+                                                : 'Enable') + ' Debugging'
+                                        "
+                                        matTooltipPosition="left"
+                                        (change)="toggleDebug(device)"
+                                    >
+                                    </mat-checkbox>
+                                </div>
                                 <div class="w-24 flex px-2 justify-center">
                                     <button
                                         mat-icon-button
@@ -221,8 +231,7 @@ import { SystemStateService } from './system-state.service';
                                     >
                                         <app-icon
                                             [icon]="{
-                                                class:
-                                                    'backoffice-dots-three-vertical'
+                                                class: 'backoffice-dots-three-vertical'
                                             }"
                                         ></app-icon>
                                     </button>
