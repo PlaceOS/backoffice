@@ -27,42 +27,51 @@ import { openConfirmModal } from 'apps/backoffice/src/app/common/general';
                 <div class="text">Add Broker</div>
             </div>
         </button>
-        <div role="table" *ngIf="brokers && brokers.length; else load_state">
-            <div table-head>
-                <div class="w-32 p-2">Name</div>
-                <div class="w-24 p-2">Auth Type</div>
-                <div class="flex-1 p-2">Description</div>
-                <div class="w-32 p-2 truncate">Host</div>
-                <div class="w-16 p-2">Port</div>
-                <div class="w-16 p-2">TLS</div>
-                <div class="w-32 p-2">Filters</div>
-                <div class="w-24 p-2"></div>
-            </div>
-            <div table-body>
-                <div table-row *ngFor="let item of brokers">
-                    <div class="w-32 p-2">{{ item.name }}</div>
-                    <div class="w-24 p-2">
-                        { item.auth_type, select, 0 { Certificate }, 2 { User
-                        Password }, other { No Auth }}
-                    </div>
-                    <div class="flex-1 p-2">{{ item.description }}</div>
-                    <div class="w-32 p-2 truncate">{{ item.host }}</div>
-                    <div class="w-16 p-2">{{ item.port }}</div>
-                    <div class="w-16 p-2">
-                        { item.tls, select, true { Yes }, false { No } }
-                    </div>
-                    <div class="w-32 p-2">{{ item.filters | json }}</div>
-                    <div class="w-24 p-2 flex items-center">
-                        <button mat-icon-button (click)="editBroker(item)">
-                            <app-icon
-                                [icon]="{ class: 'backoffice-edit' }"
-                            ></app-icon>
-                        </button>
-                        <button mat-icon-button (click)="deleteBroker(item)">
-                            <app-icon
-                                [icon]="{ class: 'backoffice-trash' }"
-                            ></app-icon>
-                        </button>
+        <div class="overflow-auto">
+            <div
+                role="table"
+                *ngIf="brokers && brokers.length; else load_state"
+                class="min-w-[52rem]"
+            >
+                <div table-head>
+                    <div class="w-32 p-2">Name</div>
+                    <div class="w-24 p-2">Auth Type</div>
+                    <div class="flex-1 p-2">Description</div>
+                    <div class="w-32 p-2 truncate">Host</div>
+                    <div class="w-16 p-2">Port</div>
+                    <div class="w-16 p-2">TLS</div>
+                    <div class="w-32 p-2">Filters</div>
+                    <div class="w-24 p-2"></div>
+                </div>
+                <div table-body>
+                    <div table-row *ngFor="let item of brokers">
+                        <div class="w-32 p-2">{{ item.name }}</div>
+                        <div class="w-24 p-2">
+                            { item.auth_type, select, 0 { Certificate }, 2 {
+                            User Password }, other { No Auth }}
+                        </div>
+                        <div class="flex-1 p-2">{{ item.description }}</div>
+                        <div class="w-32 p-2 truncate">{{ item.host }}</div>
+                        <div class="w-16 p-2">{{ item.port }}</div>
+                        <div class="w-16 p-2">
+                            { item.tls, select, true { Yes }, false { No } }
+                        </div>
+                        <div class="w-32 p-2">{{ item.filters | json }}</div>
+                        <div class="w-24 p-2 flex items-center">
+                            <button mat-icon-button (click)="editBroker(item)">
+                                <app-icon
+                                    [icon]="{ class: 'backoffice-edit' }"
+                                ></app-icon>
+                            </button>
+                            <button
+                                mat-icon-button
+                                (click)="deleteBroker(item)"
+                            >
+                                <app-icon
+                                    [icon]="{ class: 'backoffice-trash' }"
+                                ></app-icon>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
