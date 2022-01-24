@@ -149,6 +149,10 @@ jobs:
 
             - name: Deploy the application(draft)
               run: |
+                if gh release delete develop
+                then echo Removed old development version
+                fi
+                gh release create develop
                 gh release upload develop backoffice.tar.gz --clobber
                 gh release upload develop backoffice.txt --clobber
               if: ${{ env.configuration != 'production' }}
