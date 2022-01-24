@@ -3,7 +3,7 @@ import { PlaceZone, PlaceSystem } from '@placeos/ts-client';
 
 import { ZonesStateService } from './zones-state.service';
 
-import * as marked from 'marked';
+import { marked } from 'marked';
 
 @Component({
     selector: 'zone-about',
