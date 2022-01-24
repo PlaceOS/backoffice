@@ -1,7 +1,12 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    Output,
+    ViewChild,
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { PlaceUser } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { addChipItem, removeChipItem } from '../../common/forms';
@@ -79,8 +84,8 @@ import { APIKeyService } from './api-keys.service';
                     class="mb-8"
                     (click)="focusInput()"
                 >
-                    <div [class.opacity-30]="!(active_user | async)">
-                        {{ (active_user | async)?.name || 'Select user' }}
+                    <div [class.opacity-30]="!form.value.user?.id">
+                        {{ form.value.user?.id || 'Select user' }}
                     </div>
                 </an-action-field>
                 <mat-menu #menu="matMenu">
@@ -102,13 +107,12 @@ import { APIKeyService } from './api-keys.service';
                     </mat-form-field>
                     <button
                         mat-menu-item
-                        *ngFor="
-                            let item of users | async | slice: 0:10
+                        *ngFor="let item of users | async | slice: 0:10"
+                        (click)="
+                            form.patchValue({ user: item, user_id: item.id });
+                            setSearch('')
                         "
-                        (click)="form.patchValue({ user_id: item.id }); setSearch('')"
-                        [class.text-primary]="
-                            (active_user | async)?.id === item.id
-                        "
+                        [class.text-primary]="form.value.user?.id === item.id"
                     >
                         {{ item.name }}
                     </button>
@@ -151,6 +155,7 @@ export class APIKeyModalComponent {
     @Output() public event = new EventEmitter<DialogEvent>();
     public form: FormGroup = new FormGroup({
         name: new FormControl('', [Validators.required]),
+        user: new FormControl(null),
         user_id: new FormControl('', [Validators.required]),
         description: new FormControl(''),
         scopes: new FormControl([]),
@@ -159,7 +164,7 @@ export class APIKeyModalComponent {
     public loading: string;
     public readonly search_str = new BehaviorSubject('');
 
-    @ViewChild('input') public _input_el: ElementRef<HTMLInputElement>
+    @ViewChild('input') public _input_el: ElementRef<HTMLInputElement>;
 
     public readonly users = combineLatest([
         this._service.users,
@@ -174,15 +179,11 @@ export class APIKeyModalComponent {
         })
     );
 
-    public readonly active_user = combineLatest([
-        this.form.valueChanges,
-        this.users,
-    ]).pipe(map(([{ user_id }, users]) => users.find((_) => _.id === user_id)));
-
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
-    public readonly focusInput = () => setTimeout(() => this._input_el?.nativeElement?.focus(), 100);
+    public readonly focusInput = () =>
+        setTimeout(() => this._input_el?.nativeElement?.focus(), 100);
     public readonly setSearch = (s) => this._service.setSearch(s);
 
     public readonly addScope = (e) =>
@@ -201,6 +202,8 @@ export class APIKeyModalComponent {
     public save() {
         this.form.markAllAsTouched();
         if (!this.form.valid) return;
+        const data = { ...this.form.value };
+        delete data.user;
         this.event.emit({ reason: 'done', metadata: this.form.value });
     }
 }
