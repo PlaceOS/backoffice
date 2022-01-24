@@ -152,21 +152,10 @@
                         i18n-placeholder="@@certificatePlaceholder"
                         formControlName="certificate"
                     ></textarea>
+                    <mat-error i18n="@@certError">A valid certificate is required</mat-error>
                 </mat-form-field>
             </div>
         </ng-container>
-        <div class="field" *ngIf="form.controls.secret">
-            <label for="secret" i18n="@@secretLabel">Secret:</label>
-            <mat-form-field appearance="outline">
-                <input
-                    matInput
-                    name="secret"
-                    placeholder="Secret"
-                    i18n-placeholder="@@secretPlaceholder"
-                    formControlName="secret"
-                />
-            </mat-form-field>
-        </div>
         <div class="field" *ngIf="form.controls.filters">
             <label for="filters" i18n="@@filtersLabel">
                 Filters:

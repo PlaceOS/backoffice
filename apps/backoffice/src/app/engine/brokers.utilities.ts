@@ -7,32 +7,32 @@ export function generateBrokerFormFields(broker: PlaceMQTTBroker): FormGroup {
     if (!broker) {
         throw Error('No MQTT Broker passed to generate form fields');
     }
+    const auth_type = broker.auth_type ?? AuthType.NoAuth;
     const fields: HashMap<FormControl> = {
         name: new FormControl(broker.name || '', [Validators.required]),
         description: new FormControl(broker.description),
-        auth_type: new FormControl(broker.auth_type),
+        auth_type: new FormControl(auth_type),
         host: new FormControl(broker.host, [Validators.required]),
         port: new FormControl(broker.port, [Validators.required]),
-        tls: new FormControl(broker.tls),
+        tls: new FormControl(!!broker.tls),
         username: new FormControl(
             broker.username,
-            broker.auth_type === AuthType.UserPassword
+            auth_type === AuthType.UserPassword
                 ? [Validators.required]
                 : []
         ),
         password: new FormControl(
             broker.password,
-            broker.auth_type === AuthType.UserPassword
+            auth_type === AuthType.UserPassword
                 ? [Validators.required]
                 : []
         ),
         certificate: new FormControl(
             broker.certificate,
-            broker.auth_type === AuthType.Certificate
+            auth_type === AuthType.Certificate
                 ? [Validators.required]
                 : []
         ),
-        secret: new FormControl(broker.secret),
         filters: new FormControl(broker.filters),
     };
     fields.auth_type.valueChanges.subscribe((type) => {
@@ -50,6 +50,9 @@ export function generateBrokerFormFields(broker: PlaceMQTTBroker): FormGroup {
                 fields.password.setValidators([]);
                 fields.certificate.setValidators([]);
         }
+        fields.username.updateValueAndValidity();
+        fields.password.updateValueAndValidity();
+        fields.certificate.updateValueAndValidity();
     });
     return new FormGroup(fields);
 }
