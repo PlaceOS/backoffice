@@ -85,7 +85,7 @@ import { APIKeyService } from './api-keys.service';
                     (click)="focusInput()"
                 >
                     <div [class.opacity-30]="!form.value.user?.id">
-                        {{ form.value.user?.id || 'Select user' }}
+                        {{ form.value.user?.name || 'Select user' }}
                     </div>
                 </an-action-field>
                 <mat-menu #menu="matMenu">
