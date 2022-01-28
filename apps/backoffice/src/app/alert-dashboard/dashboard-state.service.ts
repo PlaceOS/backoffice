@@ -26,7 +26,7 @@ export class MqttDashboardStateService {
 
     private async _init() {
         this._client = mqtt.connect(
-            `${location.origin}/api/mqtt`,
+            `mqtt://${location.host}/api/mqtt`,
             {
                 username: token(),
                 password: token(),
