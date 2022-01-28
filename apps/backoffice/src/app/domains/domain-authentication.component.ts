@@ -17,16 +17,21 @@ import { DomainStateService } from './domain-state.service';
         </button>
         <div
             role="table"
+            class="min-w-[36rem]"
             *ngIf="(auth_sources | async)?.length; else empty_state"
         >
             <div table-head>
+                <div class="w-48 p-2" i18n="@@authTableID">ID</div>
                 <div class="flex-1 p-2" i18n="@@authTableName">Name</div>
                 <div class="w-32 p-2" i18n="@@authTableType">Type</div>
                 <div class="w-24 p-2"></div>
             </div>
             <div table-body>
                 <div table-row *ngFor="let item of auth_sources | async">
-                    <div class="flex-1 p-2" [matTooltip]="item.id">
+                    <div class="w-48 p-2 mono text-xs">
+                        {{ item.id }}
+                    </div>
+                    <div class="flex-1 p-2">
                         {{ item.name }}
                     </div>
                     <div class="w-32 p-2 uppercase">{{ item.type }}</div>
