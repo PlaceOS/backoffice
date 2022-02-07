@@ -66,7 +66,10 @@ export interface PlaceServiceDetails {
                 </div>
             </div>
         </section>
-        <h3 class="text-lg font-medium" i18n="@@apiHeader">API</h3>
+        <h3 class="text-lg font-medium flex items-center" i18n="@@apiHeader">
+            API
+            <button *ngIf="changelog_data" class="p-2 text-xs underline" (click)="changelog(changelog_data)">View Changelog</button>
+        </h3>
         <section class="flex flex-wrap py-2">
             <div
                 class="bg-white dark:bg-[#424242] rounded shadow m-2 min-w-[40%] flex-1 overflow-hidden"
@@ -117,6 +120,7 @@ export interface PlaceServiceDetails {
 export class PlaceDetailsComponent extends BaseClass implements OnInit {
     /** Current details about the API */
     public api_details: PlaceServiceDetails[];
+    public changelog_data: string = '';
 
     public get user() {
         return this._users.user;
@@ -144,6 +148,7 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
 
     public ngOnInit(): void {
         this.loadApiDetails();
+        this.loadPlatformDetails();
     }
 
     public changelog(log: string) {
@@ -165,6 +170,20 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
             .toPromise()
             .then(
                 (details) => (this.api_details = details as any),
+                (err) =>
+                    notifyError(
+                        `Error loading API details. Error: ${JSON.stringify(
+                            err.response || err.message || err
+                        )}`
+                    )
+            );
+    }
+
+    public loadPlatformDetails(): void {
+        get(`${apiEndpoint()}/platform`)
+            .toPromise()
+            .then(
+                (details) => this.changelog_data = details.changelog,
                 (err) =>
                     notifyError(
                         `Error loading API details. Error: ${JSON.stringify(

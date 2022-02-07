@@ -502,3 +502,38 @@ mat-panel-title {
         @apply bg-primary;
     }
 }
+
+#placeos .markdown {
+    display: block;
+
+    h1 {
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin: .5rem 0;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+        font-weight: 500;
+        margin: .5rem 0;
+    }
+
+    h3 {
+        font-size: 1rem;
+        font-weight: 500;
+        margin: .5rem 0;
+        text-decoration: underline;
+    }
+
+    p {
+        padding: 0 1rem;
+    }
+
+    ul {
+        list-style-type: disc;
+
+        li {
+            margin-left: 1rem;
+        }
+    }
+}

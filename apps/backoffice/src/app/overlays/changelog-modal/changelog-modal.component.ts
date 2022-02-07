@@ -3,6 +3,8 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 
+import { marked } from 'marked';
+
 export interface ChangelogModalData {
     changelog: string;
 }
@@ -24,6 +26,6 @@ export class ChangelogModalComponent extends BaseClass {
 
     /** HTML string for rendering the change log */
     public get changelog(): string {
-        return this._data.changelog || '';
+        return marked(this._data.changelog || '')
     }
 }
