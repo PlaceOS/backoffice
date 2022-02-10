@@ -66,7 +66,7 @@ export class MqttDashboardComponent {
 
     constructor(private _state: MqttDashboardStateService) {
         this._state.connected.pipe(first(_ => _)).subscribe(() => {
-            this._state.query('placeos/zone-Fhx_ZGLqk2K/state/+/+/+/+/+/+/+/connected', 'false').subscribe((d) => {
+            this._state.query('placeos/+/state/+/+/+/+/+/+/+/connected', 'false').subscribe((d) => {
                 console.log('Data:', d);
             })
         });

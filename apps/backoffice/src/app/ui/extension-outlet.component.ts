@@ -120,7 +120,7 @@ export class ExtensionOutletComponent extends BaseClass {
             id: item.id,
             name: message.name,
             description: `Metadata from ${this.url}`,
-            details: message.content,
+            details: message.content || {},
         }).toPromise();
         notifySuccess(
             `Successfully updated ${

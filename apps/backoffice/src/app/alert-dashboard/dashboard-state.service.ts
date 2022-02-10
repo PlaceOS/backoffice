@@ -27,7 +27,7 @@ export class MqttDashboardStateService {
     private async _init() {
         const secure = location.protocol.includes('https');
         this._client = mqtt.connect(
-            `ws${secure ? 's' : ''}://${location.host}/api/mqtt`,
+            `ws${secure ? 's' : ''}://${location.host}/api/mqtt/`,
             {
                 username: token(),
                 password: token(),
