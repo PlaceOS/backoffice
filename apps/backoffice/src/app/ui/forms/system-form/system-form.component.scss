@@ -15,7 +15,7 @@ form {
         min-width: 30%;
         margin: 0 0.25em;
 
-        @media screen and (max-width: 720px) {
+        @media screen and (max-width: 640px) {
             min-width: 20em;
             margin: 0;
         }
@@ -69,7 +69,7 @@ mat-checkbox {
     margin-top: 2.5em;
     margin-bottom: 1.5em;
 
-    @media screen and (max-width: 720px) {
+    @media screen and (max-width: 640px) {
         margin-top: 0;
     }
 }

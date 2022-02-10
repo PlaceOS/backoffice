@@ -3,18 +3,18 @@
     align-items: center;
     height: 100%;
     width: 100%;
-    @media screen and (max-width: 720px) {
+    @media screen and (max-width: 640px) {
         flex-direction: column;
     }
 
     &.show {
         .sidebar {
-            @media screen and (max-width: 720px) {
+            @media screen and (max-width: 640px) {
                 height: 100%;
             }
         }
         main {
-            @media screen and (max-width: 720px) {
+            @media screen and (max-width: 640px) {
                 height: 0%;
             }
         }
@@ -24,7 +24,7 @@
 .sidebar {
     height: 100%;
     width: 20em;
-    @media screen and (max-width: 720px) {
+    @media screen and (max-width: 640px) {
         height: 3em;
         min-height: 3em;
         width: 100%;
@@ -38,7 +38,7 @@ main {
     overflow: hidden;
     flex: 1;
     background-color: #f0f0f0;
-    @media screen and (max-width: 720px) {
+    @media screen and (max-width: 640px) {
         transition: height 300ms;
         width: 100%;
     }

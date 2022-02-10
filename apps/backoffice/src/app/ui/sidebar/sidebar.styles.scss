@@ -24,7 +24,7 @@ header {
     padding: 0.5em 1em;
     min-height: 3em;
 
-    @media screen and (max-width: 720px) {
+    @media screen and (max-width: 640px) {
         padding: 0.5em 0.5em 0.5em 1em;
     }
 
@@ -48,7 +48,7 @@ header {
         margin-left: 0.25em;
         align-items: center;
         justify-content: center;
-        @media screen and (max-width: 720px) {
+        @media screen and (max-width: 640px) {
             display: flex;
         }
     }
