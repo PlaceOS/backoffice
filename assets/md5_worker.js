@@ -35,7 +35,7 @@ THE SOFTWARE.
 
 
 
-            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+            PUBLIC LICENSE
                     Version 2, December 2004
 
  Copyright (C) 2015 André Cruz <amdfcruz@gmail.com>
@@ -44,10 +44,10 @@ THE SOFTWARE.
  copies of this license document, and changing it is allowed as long
  as the name is changed.
 
-            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+            PUBLIC LICENSE
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-  0. You just DO WHAT THE FUCK YOU WANT TO.
+  0. You just DO WHAT YOU WANT TO.
 
 
 */
@@ -59,7 +59,6 @@ var Md5 = /** @class */ (function () {
         this._buffer32 = new Uint32Array(this._buffer, 0, 17);
         this.start();
     }
-    // One time hashing functions
     Md5.hashStr = function (str, raw) {
         if (raw === void 0) { raw = false; }
         return this.onePassHasher
@@ -397,7 +396,8 @@ var Md5 = /** @class */ (function () {
 if (Md5.hashStr('hello') !== '5d41402abc4b2a76b9719d911017c592') {
     console.error('Md5 self test failed.');
 }
-
+//# sourceMappingURL=md5.js.map"use strict";
+// var md5_1 = require("./md5");
 // Hashes any blob
 var Md5FileHasher = /** @class */ (function () {
     function Md5FileHasher(_callback, // Callback to return the result
