@@ -536,4 +536,16 @@ mat-panel-title {
             margin-left: 1rem;
         }
     }
+
+    a {
+        text-decoration: underline;
+        color: var(--primary);
+    }
+
+    code {
+        padding: .25rem;
+        background: rgba(0,0,0, 0.2);
+        border-radius: 4px;
+        font-size: .75rem;
+    }
 }
