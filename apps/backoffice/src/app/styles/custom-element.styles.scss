@@ -541,11 +541,21 @@ mat-panel-title {
         text-decoration: underline;
         color: var(--primary);
     }
+}
 
+#placeos {
     code {
         padding: .25rem;
         background: rgba(0,0,0, 0.2);
         border-radius: 4px;
         font-size: .75rem;
+        font-family: 'Fira Code', monospace;
+    }
+}
+
+
+#placeos .dark {
+    code {
+        background: rgba(255,255,255, 0.2);
     }
 }

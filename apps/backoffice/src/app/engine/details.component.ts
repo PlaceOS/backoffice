@@ -183,7 +183,7 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
         get(`${apiEndpoint()}/platform`)
             .toPromise()
             .then(
-                (details) => this.changelog_data = details.changelog,
+                (details) => this.changelog_data = details.changelog.replace("# Changelog\n\n", ""),
                 (err) =>
                     notifyError(
                         `Error loading API details. Error: ${JSON.stringify(

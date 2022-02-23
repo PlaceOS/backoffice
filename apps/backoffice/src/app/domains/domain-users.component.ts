@@ -27,9 +27,9 @@ import { DomainStateService } from './domain-state.service';
                         <a [href]="'mailto:' + item.email">{{ item.email }}</a>
                     </div>
                     <div class="w-24 p-2">
-                        <span class="text-black" [class.text-opacity-20]="!item.sys_admin && !item.support">
+                        <code [class.text-opacity-20]="!item.sys_admin && !item.support">
                             {{ item.sys_admin ? 'Admin' : item.support ? 'Support' : 'None' }}
-                        </span>
+                        </code>
                     </div>
                 </div>
             </div>
