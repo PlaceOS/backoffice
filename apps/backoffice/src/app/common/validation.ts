@@ -14,12 +14,12 @@ export const validateURI = (ctrl) => {
     if (!ctrl.value) {
         return null;
     } else {
-        return /\w+:(\/?\/?)[^\s]+?/gm.test(ctrl.value) ? null : { pattern: true };
+        return /\w+:(\/?\/?)[^\s]+?/gmi.test(ctrl.value) ? null : { pattern: true };
     }
 };
 
 export const validateURL = Validators.pattern(
-    /^(?:(http(s)?):\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/g
+    /^(?:(http(s)?):\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gi
 );
 
 export function validateJSONString(control: AbstractControl) {
