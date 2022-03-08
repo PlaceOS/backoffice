@@ -22,7 +22,7 @@
                 Follow latest commit
             </mat-checkbox>
         </div>
-        <div class="field" *ngIf="form.controls.branch && is_edit">
+        <div class="field" *ngIf="form.controls.branch">
             <label
                 for="repository-name"
                 [class.error]="form.controls.branch.invalid && form.controls.branch.touched"
