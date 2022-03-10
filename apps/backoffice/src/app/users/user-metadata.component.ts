@@ -55,6 +55,7 @@ import { UsersStateService } from './users-state.service';
                                                 .value
                                         }}
                                     </div>
+                                    <code class="text-xs" [matTooltip]="(item.modified_id | user | async)?.name">{{ item.modified_at | dateFrom }}</code>
                                     <ng-container *ngIf="edited[item.name]">
                                         <button
                                             mat-button

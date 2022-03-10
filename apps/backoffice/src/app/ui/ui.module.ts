@@ -74,6 +74,7 @@ import { ActionFieldComponent } from './custom-fields/action-field.component';
 import { DiffViewerComponent } from './diff-viewer.component';
 import { SettingsHistoryViewComponent } from './settings-history-view.component';
 import { SettingsFormatPipe } from './settings-format.pipe';
+import { UserPipe } from './pipes/user.pipe';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -124,7 +125,8 @@ const PIPES: Type<any>[] = [
     FormatListPipe,
     SafePipe,
     SanitizePipe,
-    SettingsFormatPipe
+    SettingsFormatPipe,
+    UserPipe
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [
