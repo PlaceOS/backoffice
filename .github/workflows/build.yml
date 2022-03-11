@@ -137,8 +137,10 @@ jobs:
                 gh release upload $VERSION backoffice.tar.gz --clobber
                 gh release upload $VERSION backoffice.txt --clobber
                 gh release upload $VERSION CHANGELOG.md --clobber
+                git tag -d latest
                 git tag -d $VERSION
                 git reset --hard origin/${{ env.branch }}
+                git tag -a latest && git push origin latest
                 git tag -a $VERSION && git push origin $VERSION
               if: ${{ env.configuration == 'production' }}
 
@@ -152,9 +154,11 @@ jobs:
                 if gh release delete develop
                 then echo Removed old development version
                 fi
+                git tag -d develop
                 gh release create develop
                 gh release upload develop backoffice.tar.gz --clobber
                 gh release upload develop backoffice.txt --clobber
+                git tag -a develop && git push origin develop
               if: ${{ env.configuration != 'production' }}
 
             - name: Update Pipeline Chat Status
