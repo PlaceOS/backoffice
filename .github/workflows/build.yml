@@ -151,6 +151,8 @@ jobs:
 
             - name: Deploy the application(draft)
               run: |
+                git config user.email $(git show -s --format='%ae' HEAD)
+                git config user.name CI_USER
                 if gh release delete develop
                 then echo Removed old development version
                 fi
