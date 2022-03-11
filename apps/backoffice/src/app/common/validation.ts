@@ -19,7 +19,7 @@ export const validateURI = (ctrl) => {
 };
 
 export const validateURL = Validators.pattern(
-    /^(?:(http(s)?):\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gi
+    /^(?:(http(s)?):\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.]+$/gi
 );
 
 export function validateJSONString(control: AbstractControl) {

@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 
 import * as yaml from 'js-yaml';
+import { validateURL } from '../common/validation';
 
 export interface FormDetails {
     form: FormGroup;
@@ -28,16 +29,6 @@ export function validateYAML(control: AbstractControl) {
     return message ? { yaml: message } : null;
 }
 
-export const URL_PATTERN =
-    '^((http|ftp|ws)s?:\\/\\/)?' + // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-    '(localhost)|' + // Localhost
-    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z{}\\d%_.~+]*)*' + // port and path
-    '(\\?[;&a-zA-Z{}\\d%_.~+=-]*)?' +
-    '(\\#[-a-zA-Z{}/\\d%_.~+=-]*)?' +
-    '(\\?[;&a-zA-Z{}\\d%_.~+=-]*)?$'; // query string;
-
 export function generateSystemsFormFields(system: PlaceSystem): FormGroup {
     if (!system) {
         throw Error('No System passed to generate form fields');
@@ -45,14 +36,8 @@ export function generateSystemsFormFields(system: PlaceSystem): FormGroup {
     const fields: HashMap<FormControl> = {
         name: new FormControl(system.name || '', [Validators.required]),
         display_name: new FormControl(system.display_name || ''),
-        email: new FormControl(system.email || '', [
-            Validators.pattern(
-                '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-z]{2,10}$'
-            ),
-        ]),
-        support_url: new FormControl(system.support_url || '', [
-            Validators.pattern(URL_PATTERN),
-        ]),
+        email: new FormControl(system.email || '', [Validators.email]),
+        support_url: new FormControl(system.support_url || '', [validateURL]),
         installed_ui_devices: new FormControl(
             system.installed_ui_devices || 0,
             [Validators.pattern('[0-9]*')]
