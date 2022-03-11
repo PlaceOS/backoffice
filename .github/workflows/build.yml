@@ -137,11 +137,24 @@ jobs:
                 gh release upload $VERSION backoffice.tar.gz --clobber
                 gh release upload $VERSION backoffice.txt --clobber
                 gh release upload $VERSION CHANGELOG.md --clobber
-                git tag -d latest
                 git tag -d $VERSION
                 git reset --hard origin/${{ env.branch }}
-                git tag -a latest && git push origin latest
                 git tag -a $VERSION && git push origin $VERSION
+              if: ${{ env.configuration == 'production' }}
+
+            - name: Deploy the application(latest)
+              env:
+                GIT_MERGE_AUTOEDIT: 'no'
+              run: |
+                if gh release delete latest
+                then echo Removed old latest version
+                fi
+                git tag -d latest
+                gh release create latest
+                gh release upload latest backoffice.tar.gz --clobber
+                gh release upload latest backoffice.txt --clobber
+                gh release upload latest CHANGELOG.md --clobber
+                git tag -a latest && git push origin latest
               if: ${{ env.configuration == 'production' }}
 
             - name: Create pre-release
@@ -150,6 +163,8 @@ jobs:
               if: ${{ env.configuration != 'production' }}
 
             - name: Deploy the application(draft)
+              env:
+                GIT_MERGE_AUTOEDIT: 'no'
               run: |
                 git config user.email $(git show -s --format='%ae' HEAD)
                 git config user.name CI_USER
