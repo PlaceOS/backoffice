@@ -149,7 +149,7 @@ jobs:
                 if gh release delete latest
                 then echo Removed old latest version
                 fi
-                git tag -d latest && git push origin :refs/tag/latest
+                git tag -d latest && git push origin :refs/tags/latest
                 gh release create latest
                 gh release upload latest backoffice.tar.gz --clobber
                 gh release upload latest backoffice.txt --clobber
@@ -170,7 +170,7 @@ jobs:
                 if gh release delete develop
                 then echo Removed old development version
                 fi
-                git tag -d develop && git push origin :refs/tag/develop
+                git tag -d develop && git push origin :refs/tags/develop
                 gh release create develop
                 gh release upload develop backoffice.tar.gz --clobber
                 gh release upload develop backoffice.txt --clobber
