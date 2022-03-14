@@ -139,7 +139,7 @@ jobs:
                 gh release upload $VERSION CHANGELOG.md --clobber
                 git tag -d $VERSION
                 git reset --hard origin/${{ env.branch }}
-                git tag -a $VERSION && git push origin $VERSION
+                git tag -a $VERSION -m "Build for $VERSION" && git push origin $VERSION
               if: ${{ env.configuration == 'production' }}
 
             - name: Deploy the application(latest)
@@ -155,7 +155,7 @@ jobs:
                 gh release upload latest backoffice.txt --clobber
                 gh release upload latest CHANGELOG.md --clobber
                 echo Updated latest release
-                git tag -a latest && git push origin latest
+                git tag -a latest -m "Latest Production Build" && git push origin latest
               if: ${{ env.configuration == 'production' }}
 
             - name: Create pre-release
@@ -175,7 +175,7 @@ jobs:
                 gh release upload develop backoffice.tar.gz --clobber
                 gh release upload develop backoffice.txt --clobber
                 echo Updated development release
-                git tag -a develop && git push origin develop
+                git tag -a develop -m "Latest Development Build" && git push origin develop
               if: ${{ env.configuration != 'production' }}
 
             - name: Update Pipeline Chat Status
