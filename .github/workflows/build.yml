@@ -154,6 +154,7 @@ jobs:
                 gh release upload latest backoffice.tar.gz --clobber
                 gh release upload latest backoffice.txt --clobber
                 gh release upload latest CHANGELOG.md --clobber
+                echo Updated latest release
                 git tag -a latest && git push origin latest
               if: ${{ env.configuration == 'production' }}
 
@@ -163,8 +164,6 @@ jobs:
               if: ${{ env.configuration != 'production' }}
 
             - name: Deploy the application(draft)
-              env:
-                GIT_MERGE_AUTOEDIT: 'no'
               run: |
                 git config user.email $(git show -s --format='%ae' HEAD)
                 git config user.name CI_USER
@@ -175,6 +174,7 @@ jobs:
                 gh release create develop
                 gh release upload develop backoffice.tar.gz --clobber
                 gh release upload develop backoffice.txt --clobber
+                echo Updated development release
                 git tag -a develop && git push origin develop
               if: ${{ env.configuration != 'production' }}
 
