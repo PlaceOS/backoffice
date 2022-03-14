@@ -142,6 +142,11 @@ jobs:
                 git tag -a $VERSION -m "Build for $VERSION" && git push origin $VERSION
               if: ${{ env.configuration == 'production' }}
 
+            - name: Create latest
+              run: gh release create latest
+              continue-on-error: true
+              if: ${{ env.configuration == 'production' }}
+
             - name: Deploy the application(latest)
               env:
                 GIT_MERGE_AUTOEDIT: 'no'
@@ -149,13 +154,13 @@ jobs:
                 if gh release delete latest
                 then echo Removed old latest version
                 fi
-                git tag -d latest && git push origin :refs/tags/latest
                 gh release create latest
                 gh release upload latest backoffice.tar.gz --clobber
                 gh release upload latest backoffice.txt --clobber
                 gh release upload latest CHANGELOG.md --clobber
                 echo Updated latest release
-                git tag -a latest -m "Latest Production Build" && git push --tags
+                git tag -a latest ${{ github.sha }} -f
+                git push origin --tags -f
               if: ${{ env.configuration == 'production' }}
 
             - name: Create pre-release
@@ -170,12 +175,12 @@ jobs:
                 if gh release delete develop
                 then echo Removed old development version
                 fi
-                git tag -d develop && git push origin :refs/tags/develop
                 gh release create develop
                 gh release upload develop backoffice.tar.gz --clobber
                 gh release upload develop backoffice.txt --clobber
                 echo Updated development release
-                git tag -a develop -m "Latest Development Build" && git push --tags
+                git tag -a develop ${{ github.sha }} -f
+                git push origin --tags -f
               if: ${{ env.configuration != 'production' }}
 
             - name: Update Pipeline Chat Status
