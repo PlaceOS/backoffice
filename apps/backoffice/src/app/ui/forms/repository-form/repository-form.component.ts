@@ -6,6 +6,7 @@ import {
     listRepositoryBranches,
     listRepositoryCommits,
 } from '@placeos/ts-client';
+import { listRepositoryReleases } from '@placeos/ts-client/dist/esm/repositories/functions';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 
 import * as dayjs from 'dayjs';
@@ -42,12 +43,17 @@ export class RepositoryFormComponent {
         );
     }
 
+    public get is_interface() {
+        return this.form?.value?.repo_type === PlaceRepositoryType.Interface;
+    }
+
     /** Whether commit of the repo is allowed to be changed */
     public get can_change_commit(): boolean {
+        const value = this.form.value;
         return !!(
-            this.form &&
-            this.form.controls.commit_hash &&
-            this.form.controls.repo_type
+            'commit_hash' in value &&
+            'repo_type' in value &&
+            value.repo_types !== PlaceRepositoryType.Interface
         );
     }
 
@@ -104,7 +110,11 @@ export class RepositoryFormComponent {
 
     public async loadBranches() {
         if (!this.is_edit || !this.form.controls.branch) return;
-        const id = this.form.controls.id.value;
-        this.branch_list = (await listRepositoryBranches(id).toPromise()) || [];
+        const { id, repo_type } = this.form.value;
+        const list_fn =
+            repo_type === PlaceRepositoryType.Interface
+                ? listRepositoryReleases
+                : listRepositoryBranches;
+        this.branch_list = (await list_fn(id).toPromise()) || [];
     }
 }

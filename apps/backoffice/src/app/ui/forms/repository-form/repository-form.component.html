@@ -28,14 +28,14 @@
                 [class.error]="form.controls.branch.invalid && form.controls.branch.touched"
                 i18n="@@branchLabel"
             >
-                Branch<span>*</span>:
+                {{ is_interface ? 'Release' : 'Branch' }}<span>*</span>:
             </label>
             <mat-form-field appearance="outline">
                 <input
                     *ngIf="!branch_list || !branch_list.length; else options"
                     matInput
                     name="branch-name"
-                    placeholder="Branch Name"
+                    [placeholder]="(is_interface ? 'Release' : 'Branch') + ' name'"
                     i18n-placeholder="@@repositoryBranchPlaceholder"
                     formControlName="branch"
                     required
