@@ -14,7 +14,8 @@ export interface PlaceTenant {
     domain: string;
     platform: string;
     conference_type?: string;
-    credentials?: HashMap<string>
+    booking_limits: Record<string, number>;
+    credentials?: HashMap<string>;
 }
 
 @Component({
