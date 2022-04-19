@@ -2,7 +2,6 @@ const { gitDescribeSync } = require('git-describe');
 const { version, core_version } = require('../package.json');
 const { resolve, relative } = require('path');
 const { writeFileSync } = require('fs-extra');
-const dayjs = require('dayjs');
 
 let gitInfo = {};
 
@@ -17,7 +16,7 @@ try {
 
 gitInfo.version = version;
 gitInfo.core_version = core_version;
-gitInfo.time = dayjs().valueOf();
+gitInfo.time = Date.now();
 
 const file = resolve(
     __dirname,
