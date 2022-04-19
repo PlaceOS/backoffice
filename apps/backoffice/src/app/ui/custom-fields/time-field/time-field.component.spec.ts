@@ -6,8 +6,8 @@ import { Component, SimpleChange } from '@angular/core';
 import { TimeFieldComponent } from './time-field.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
-import * as dayjs from 'dayjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { addMinutes, format, setMinutes, startOfDay } from 'date-fns';
 
 @Component({
     selector: 'app-icon',
@@ -72,13 +72,13 @@ describe('TimeFieldComponent', () => {
         component.step = step;
         component.ngOnChanges({ no_past_times: new SimpleChange(5, step, false) });
         fixture.detectChanges();
-        expect(component._time_options[1].value).toBe(dayjs().startOf('d').add(step, 'm').format('HH:mm'));
+        expect(component._time_options[1].value).toBe(format(addMinutes(startOfDay(Date.now()), step), 'HH:mm'));
     });
 
     it('should allow the current time as an option', () => {
-        let date = dayjs();
-        date = date.minute(Math.ceil(date.minute() / 5) * 5);
-        const date_str = date.format('HH:mm');
+        let date = new Date();
+        date = setMinutes(date, Math.ceil(date.getMinutes() / 5) * 5);
+        const date_str = format(date, 'HH:mm');
         const option = component.time_options.find(block => block.value === date_str);
         expect(option).toBeTruthy();
     });
@@ -87,8 +87,8 @@ describe('TimeFieldComponent', () => {
         component.no_past_times = true;
         component.ngOnChanges({ no_past_times: new SimpleChange(false, true, false) });
         fixture.detectChanges();
-        const date = dayjs();
-        const date_str = date.format('HH:mm');
+        const date = Date.now();
+        const date_str = format(date, 'HH:mm');
         expect(date_str.localeCompare(component.time_options[0].value)).toBeLessThanOrEqual(0);
     });
 });

@@ -21,7 +21,6 @@ import {
 } from '@placeos/ts-client';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
-import * as dayjs from 'dayjs';
 
 
 
@@ -118,7 +117,7 @@ export function generateTriggerConditionForm(
         ),
         time: new FormControl(
             (+(condition as TriggerAtTimeCondition).time || 0) * 1000 ||
-                dayjs().valueOf()
+                Date.now()
         ),
         cron: new FormControl(
             (condition as TriggerCronTimeCondition).cron || undefined

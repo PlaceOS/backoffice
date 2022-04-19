@@ -1,15 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
-
-import * as dayjs from 'dayjs';
+import { differenceInMinutes } from 'date-fns';
 
 @Pipe({
     name: 'dateFrom'
 })
 export class DateFromPipe implements PipeTransform {
-    public transform(value: number): string {
-        const now = dayjs();
-        const date = dayjs(value);
-        let diff = now.diff(date, 'm');
+    public transform(date: number): string {
+        const now = Date.now();
+        let diff = differenceInMinutes(now, date);
         const direction = diff < 0;
         diff = Math.abs(diff);
         if (diff < 1) { // Less than a minute

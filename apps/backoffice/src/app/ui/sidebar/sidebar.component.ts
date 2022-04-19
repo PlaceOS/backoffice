@@ -24,8 +24,8 @@ import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
 import { SettingsService } from 'apps/backoffice/src/app/common/settings.service';
 import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
 
-import * as dayjs from 'dayjs';
 import { take } from 'rxjs/operators';
+import { isBefore } from 'date-fns';
 
 @Component({
     selector: 'sidebar',
@@ -193,11 +193,11 @@ export class SidebarComponent extends BaseClass implements OnInit {
 
     /** Whether to update the list of items */
     public get is_stale() {
-        const now = dayjs();
-        const last_check = dayjs(this.last_check);
+        const now = Date.now();
+        const last_check = this.last_check;
         return (
             this.last_total !== this._service.list_items().length ||
-            last_check.add(1, 'm').isBefore(now, 's')
+            isBefore(now, last_check + 60 * 1000)
         );
     }
 
@@ -216,7 +216,7 @@ export class SidebarComponent extends BaseClass implements OnInit {
         const total = this.viewport.getDataLength();
         if (end >= total - 1) {
             this.last_total = total;
-            this.last_check = dayjs().valueOf();
+            this.last_check = Date.now();
             if (this.last_total !== this._service.total) {
                 this._service.moreItems();
             }

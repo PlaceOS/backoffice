@@ -22,7 +22,6 @@ import {
     PlaceZone,
 } from '@placeos/ts-client';
 import { format } from 'date-fns';
-import * as dayjs from 'dayjs';
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 import { issueDescription } from 'apps/backoffice/src/app/common/general';
 import { SettingsService } from 'apps/backoffice/src/app/common/settings.service';
@@ -86,7 +85,7 @@ export class TopbarHeaderComponent extends BaseClass implements OnInit {
 
     public get is_fools_day(): boolean {
         return (
-            dayjs().format('D MMM') === '1 Apr' &&
+            format(Date.now(), 'D MMM') === '1 Apr' &&
             !localStorage.getItem("I'M NO FOOL!!!")
         );
     }

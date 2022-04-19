@@ -4,11 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
-import { ADatePickerModule } from '@acaprojects/ngx-date-picker';
-
 import { DateFieldComponent } from './date-field.component';
-
-import * as dayjs from 'dayjs';
+import { addDays, format } from 'date-fns';
 
 @Component({
     selector: 'app-icon',
@@ -25,7 +22,7 @@ describe('DateFieldComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [DateFieldComponent, MockAppIconComponent],
-            imports: [FormsModule, ADatePickerModule, MatMenuModule, NoopAnimationsModule]
+            imports: [FormsModule, MatMenuModule, NoopAnimationsModule]
         }).compileComponents();
     }));
 
@@ -49,14 +46,14 @@ describe('DateFieldComponent', () => {
     });
 
     it('should handler external changes to the date selected', () => {
-        const formatted_date = dayjs().format('DD MMM YYYY');
+        const formatted_date = format(Date.now(), 'DD MMM YYYY');
         const el: HTMLElement = fixture.debugElement.nativeElement;
         const field_element = el.querySelector('.display');
         expect(field_element).toBeTruthy();
         expect(field_element.textContent).toBe(formatted_date);
-        const new_date = dayjs().add(Math.floor(Math.random() * 10 + 2), 'd');
+        const new_date = addDays(Date.now(), Math.floor(Math.random() * 10 + 2));
         component.writeValue(new_date.valueOf());
         fixture.detectChanges();
-        expect(field_element.textContent).toBe(new_date.format('DD MMM YYYY'));
+        expect(field_element.textContent).toBe(format(new_date, 'DD MMM YYYY'));
     });
 });

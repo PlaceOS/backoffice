@@ -6,7 +6,7 @@ import { numberToPosition } from 'apps/backoffice/src/app/common/general';
 import { TIMEZONES_IANA } from 'apps/backoffice/src/app/common/timezones';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 import * as cron from 'cron-builder';
-import * as dayjs from 'dayjs';
+import { format, setDay, setMonth } from 'date-fns';
 
 @Component({
     selector: 'trigger-condition-time-form',
@@ -37,7 +37,7 @@ export class TriggerConditionTimeFormComponent
     public hours_in_day = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
     public days_of_week = Array(7)
         .fill(0)
-        .map((_, index) => dayjs().day(index).format('ddd'));
+        .map((_, index) => format(setDay(Date.now(), index), 'ddd'));
     public days_of_month: Identity[] = Array(31)
         .fill(0)
         .map((_, index) => ({
@@ -46,7 +46,7 @@ export class TriggerConditionTimeFormComponent
         }));
     public months_of_year = Array(12)
         .fill(0)
-        .map((_, index) => dayjs().month(index).format('MMM'));
+        .map((_, index) => format(setMonth(Date.now(), index), 'MMM'));
     /** Minute of the hour to recurr on */
     public cron_minute = 0;
     /** Hour of the day to recurr on */

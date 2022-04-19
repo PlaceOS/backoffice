@@ -7,7 +7,7 @@
  * @Last modified time: 03/02/2017 2:26 PM
  */
 
-import * as dayjs from 'dayjs';
+import { addMinutes, startOfMinute } from "date-fns";
 
 const win = self as any;
 
@@ -65,9 +65,7 @@ function initMessages() {
             "That's exactly what I'm looking for, thanks",
             'Alright, you now have a booking for Activity Space 31.04 at 9:30am tomorrow.',
         ];
-        const time = dayjs()
-            .add(-messages.length * 30, 'm')
-            .startOf('s');
+        let time = startOfMinute(addMinutes(Date.now(), -messages.length * 30));
         let index = 0;
         for (const msg of messages) {
             win.control.systems['sys-B0'].Slack[0].threads.local.push({
@@ -76,7 +74,7 @@ function initMessages() {
                 ts: time.valueOf(),
             });
             index++;
-            time.add(30, 'm');
+            time = addMinutes(time, 30);
         }
     } else {
         setTimeout(() => initMessages(), 500);

@@ -8,8 +8,8 @@ import {
 } from '@placeos/ts-client';
 import { listRepositoryReleases } from '@placeos/ts-client/dist/esm/repositories/functions';
 import { Identity } from 'apps/backoffice/src/app/common/types';
-
-import * as dayjs from 'dayjs';
+import { format, isAfter, subMinutes } from 'date-fns';
+import { DateFromPipe } from '../../pipes/date-from.pipe';
 
 @Component({
     selector: 'repository-form',
@@ -35,6 +35,7 @@ export class RepositoryFormComponent {
         { id: PlaceRepositoryType.Interface, name: 'Interface' },
     ];
     public show_password: boolean = false;
+    public date_pipe = new DateFromPipe();
 
     /** Whether item is being edited */
     public get is_edit(): boolean {
@@ -71,13 +72,13 @@ export class RepositoryFormComponent {
         const id = this.form.controls.id.value;
         const commits: any[] = await listRepositoryCommits(id).toPromise();
         const commit_list = (commits || []).map((commit) => {
-            const date = dayjs(commit.date);
+            const date = commit.date;
             return {
                 id: commit.commit,
                 name: commit.subject,
-                extra: date.isAfter(dayjs().subtract(1, 'm'))
-                    ? date.fromNow()
-                    : date.format('DD MMM YYYY'),
+                extra: isAfter(date, subMinutes(date, 1))
+                    ? this.date_pipe.transform(date)
+                    : format(date, 'DD MMM YYYY'),
             };
         });
         this.commit_list = [

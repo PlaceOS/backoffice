@@ -8,8 +8,7 @@ import { DISCOVERY as DISCOVERY_DATA } from '../data/discovery';
 
 import { generateBasicHandlers, API, generateID } from '../common.mock';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
-
-import * as dayjs from 'dayjs';
+import { subMinutes } from 'date-fns';
 
 const FILTER_FN = (item: any, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
@@ -42,33 +41,37 @@ const DRIVER_LIST = (DISCOVERY_DATA as any).map((driver) => driver.id);
 const COMMIT_LIST = [
     {
         commit: generateID(6, '1234567890abcdef'.split('')),
-        date: dayjs()
-            .subtract(Math.floor(Math.random() * 30 * 24 * 60), 'm')
-            .valueOf(),
+        date: subMinutes(
+            Date.now(),
+            Math.floor(Math.random() * 30 * 24 * 60)
+        ).valueOf(),
         author: 'alex@place.tech',
         subject: 'feat(drivers): cleanup drivers',
     },
     {
         commit: generateID(6, '1234567890abcdef'.split('')),
-        date: dayjs()
-            .subtract(Math.floor(Math.random() * 30 * 24 * 60), 'm')
-            .valueOf(),
+        date: subMinutes(
+            Date.now(),
+            Math.floor(Math.random() * 30 * 24 * 60)
+        ).valueOf(),
         author: 'alex@place.tech',
         subject: 'chore(readme): update readme',
     },
     {
         commit: generateID(6, '1234567890abcdef'.split('')),
-        date: dayjs()
-            .subtract(Math.floor(Math.random() * 30 * 24 * 60), 'm')
-            .valueOf(),
+        date: subMinutes(
+            Date.now(),
+            Math.floor(Math.random() * 30 * 24 * 60)
+        ).valueOf(),
         author: 'alex@place.tech',
         subject: 'refactor(drivers): cleanup lighting driver',
     },
     {
         commit: generateID(6, '1234567890abcdef'.split('')),
-        date: dayjs()
-            .subtract(Math.floor(Math.random() * 30 * 24 * 60), 'm')
-            .valueOf(),
+        date: subMinutes(
+            Date.now(),
+            Math.floor(Math.random() * 30 * 24 * 60)
+        ).valueOf(),
         author: 'alex@place.tech',
         subject: 'test(drivers): update test coverage',
     },

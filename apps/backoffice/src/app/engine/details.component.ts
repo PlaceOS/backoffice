@@ -14,8 +14,8 @@ import {
     notifyInfo,
 } from 'apps/backoffice/src/app/common/notifications';
 
-import * as dayjs from 'dayjs';
 import { copyToClipboard } from '../common/general';
+import { format } from 'date-fns';
 
 export interface PlaceServiceDetails {
     /** Name of the service */
@@ -135,8 +135,7 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
     }
 
     public get backoffice_build() {
-        const build = dayjs(VERSION.time);
-        return build.format('DD MMM YYYY [at] h:mma');
+        return format(VERSION.time, 'DD MMM YYYY [at] h:mma');
     }
 
     constructor(

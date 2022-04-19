@@ -6,7 +6,7 @@ import {
     PlaceModule
 } from '@placeos/ts-client';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
-import * as dayjs from 'dayjs';
+import { format } from 'date-fns';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BaseClass } from './base.class';
 
@@ -52,7 +52,7 @@ export class PlaceDebugService extends BaseClass {
             (event) =>
                 `${
                     TERMINAL_COLOURS[event.level] || TERMINAL_COLOURS.debug
-                }${dayjs().format('h:mm A')}, ${
+                }${format(Date.now(), 'h:mm A')}, ${
                     this._module_names[event.mod_id] ||
                     event.mod_id ||
                     '<UNKNOWN>'

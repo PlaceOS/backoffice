@@ -5,7 +5,6 @@ import { PlaceCluster, queryClusters } from '@placeos/ts-client';
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 
-import * as dayjs from 'dayjs';
 import { PlaceClusterUsageStamp } from './cluster-node.component';
 import { interval } from 'rxjs';
 
@@ -91,7 +90,7 @@ export class PlaceClusterDetailsComponent extends BaseClass implements OnInit {
         catchError((_) => []),
         map((list) => {
             this.cluster_list = list || [];
-            const date = dayjs().valueOf();
+            const date = Date.now();
             this.cluster_list.forEach((cluster) => {
                 if (!this.cpu_history[cluster.id]) {
                     this.cpu_history[cluster.id] = {};

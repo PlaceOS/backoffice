@@ -18,8 +18,8 @@ import { toQueryString } from 'apps/backoffice/src/app/common/api';
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 import { SettingsService } from '../common/settings.service';
 
-import * as dayjs from 'dayjs';
 import * as Sentry from '@sentry/browser';
+import { addDays } from 'date-fns';
 
 type ServiceItem = PlaceUser;
 
@@ -134,7 +134,7 @@ export class BackofficeUsersService extends BaseClass {
      */
     public setToken(token: string, expiry: number) {
         if (!expiry) {
-            expiry = dayjs().add(7, 'd').valueOf();
+            expiry = addDays(Date.now(), 7).valueOf();
         }
         const path = `${location.origin}${
             this._settings.get('composer.route') || ''

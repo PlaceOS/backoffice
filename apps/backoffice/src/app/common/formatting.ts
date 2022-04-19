@@ -1,9 +1,7 @@
 
 import { PlaceUser } from '@placeos/ts-client';
 
-import { formatDuration as fDuration } from 'date-fns';
-
-import * as dayjs from 'dayjs';
+import { addMinutes, format, formatDuration as formatAsDuration, set } from 'date-fns';
 
 // attendees: FormFormatters.attendees(user),
 // date: FormFormatters.date,
@@ -51,7 +49,7 @@ export function formatAttendees(list: PlaceUser[], host?: PlaceUser) {
  * @param date Date to format
  */
 export function formatDate(date: number) {
-    return dayjs(date).format('DD MMMM YYYY');
+    return format(date, 'DD MMMM YYYY');
 }
 
 /**
@@ -59,7 +57,7 @@ export function formatDate(date: number) {
  * @param date Date to format
  */
 export function formatTime(date: number) {
-    return dayjs(date).format('h:mm A');
+    return format(date, 'h:mm A');
 }
 
 /**
@@ -77,8 +75,8 @@ export function formatPeriodWithDuration(duration: number) {
  */
 export function formatPeriod(timestamp: string, duration: number = 60) {
     const parts = timestamp.split(':');
-    const date = dayjs().hour(+parts[0]).minute(+parts[1]);
-    return `${date.format('h:mm A')} - ${date.add(duration, 'm').format('h:mm A')} (${fDuration({ minutes: duration })})`;
+    const date = set(Date.now(), { hours: +parts[0], minutes: +parts[1] });
+    return `${format(date, 'h:mm A')} - ${format(addMinutes(date, duration), 'h:mm A')} (${formatAsDuration({ minutes: duration })})`;
 }
 
 /**
@@ -86,7 +84,7 @@ export function formatPeriod(timestamp: string, duration: number = 60) {
  * @param duration Duration in minutes
  */
 export function formatDuration(duration: number) {
-    return fDuration({ minutes: duration });
+    return formatAsDuration({ minutes: duration });
 }
 
 /** Human readable names of applicable recurrence periods */
@@ -101,6 +99,6 @@ export function formatRecurrence(value: { period: string | number, end: number }
         return 'No recurrence';
     }
     const period = typeof value.period === 'string' ? value.period : RECURRENCE_PERIODS[value.period];
-    const end = value.end ? `until ${dayjs(value.end).format('DD MMM YYYY')}` : 'forever';
+    const end = value.end ? `until ${format(value.end, 'DD MMM YYYY')}` : 'forever';
     return `${period} ${end}`;
 }

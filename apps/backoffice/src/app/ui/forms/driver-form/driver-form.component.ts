@@ -31,11 +31,9 @@ import {
 } from 'rxjs/operators';
 import { of, Subject, Observable } from 'rxjs';
 
-import * as dayjs from 'dayjs';
 import * as yaml from 'js-yaml';
-import * as relativeTime from 'dayjs/plugin/relativeTime';
-
-dayjs.extend(relativeTime);
+import { DateFromPipe } from '../../pipes/date-from.pipe';
+import { format, isAfter, subMinutes } from 'date-fns';
 
 @Component({
     selector: 'driver-form',
@@ -86,6 +84,7 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
     /** Function to check repo that are excluded from being listed */
     public readonly exclude_fn = (repo: PlaceRepository) =>
         repo.type === PlaceRepositoryType.Interface;
+    public date_pipe = new DateFromPipe();
 
     public get editing(): boolean {
         return this.form.controls.id && this.form.controls.id.value;
@@ -146,13 +145,13 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
                     ) as any;
                 }
                 return (list || []).map((commit: PlaceRepositoryCommit) => {
-                    const date = dayjs(commit.date);
+                    const date = commit.date;
                     return {
                         id: commit.commit,
                         name: `${commit.subject}`,
-                        extra: date.isAfter(dayjs().subtract(1, 'm'))
-                            ? date.fromNow()
-                            : date.format('DD MMM YYYY'),
+                        extra: isAfter(date, subMinutes(date, 1))
+                            ? this.date_pipe.transform(date)
+                            : format(date, 'DD MMM YYYY'),
                     };
                 });
             })
