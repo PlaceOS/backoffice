@@ -35,6 +35,7 @@ export class RepositoryFormComponent {
         { id: PlaceRepositoryType.Interface, name: 'Interface' },
     ];
     public show_password: boolean = false;
+    public unable_to_load_releases = false;
     public date_pipe = new DateFromPipe();
 
     /** Whether item is being edited */
@@ -45,7 +46,10 @@ export class RepositoryFormComponent {
     }
 
     public get is_interface() {
-        return this.form?.value?.repo_type === PlaceRepositoryType.Interface;
+        return (
+            !this.unable_to_load_releases &&
+            this.form?.value?.repo_type === PlaceRepositoryType.Interface
+        );
     }
 
     /** Whether commit of the repo is allowed to be changed */
@@ -54,14 +58,20 @@ export class RepositoryFormComponent {
         return !!(
             'commit_hash' in value &&
             'repo_type' in value &&
-            value.repo_types !== PlaceRepositoryType.Interface
+            (value.repo_types !== PlaceRepositoryType.Interface ||
+                this.unable_to_load_releases)
         );
     }
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.form && this.form) {
             this.loadCommits();
-            this.loadBranches();
+            this.loadBranches().catch(_ => {
+                this.unable_to_load_releases = true;
+                if (this.form.value.repo_types === PlaceRepositoryType.Interface) {
+                    this.loadBranches(true);
+                }
+            });
         }
     }
 
@@ -109,11 +119,11 @@ export class RepositoryFormComponent {
         }
     }
 
-    public async loadBranches() {
+    public async loadBranches(force_branches = false) {
         if (!this.is_edit || !this.form.controls.branch) return;
         const { id, repo_type } = this.form.value;
         const list_fn =
-            repo_type === PlaceRepositoryType.Interface
+            repo_type === PlaceRepositoryType.Interface && !force_branches
                 ? listRepositoryReleases
                 : listRepositoryBranches;
         this.branch_list = (await list_fn(id).toPromise()) || [];
