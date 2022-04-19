@@ -78,9 +78,10 @@ import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
 
             .active {
                 background-color: rgba(255, 255, 255, 0.1);
-                [bar] {
-                    opacity: 1 !important;
-                }
+            }
+
+            .active [bar] {
+                opacity: 1 !important;
             }
 
             [bar] {
