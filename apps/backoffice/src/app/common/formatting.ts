@@ -49,7 +49,7 @@ export function formatAttendees(list: PlaceUser[], host?: PlaceUser) {
  * @param date Date to format
  */
 export function formatDate(date: number) {
-    return format(date, 'DD MMMM YYYY');
+    return format(date, 'dd MMMM YYYY');
 }
 
 /**
@@ -99,6 +99,6 @@ export function formatRecurrence(value: { period: string | number, end: number }
         return 'No recurrence';
     }
     const period = typeof value.period === 'string' ? value.period : RECURRENCE_PERIODS[value.period];
-    const end = value.end ? `until ${format(value.end, 'DD MMM YYYY')}` : 'forever';
+    const end = value.end ? `until ${format(value.end, 'dd MMM YYYY')}` : 'forever';
     return `${period} ${end}`;
 }

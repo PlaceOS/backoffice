@@ -85,7 +85,7 @@ export class TopbarHeaderComponent extends BaseClass implements OnInit {
 
     public get is_fools_day(): boolean {
         return (
-            format(Date.now(), 'D MMM') === '1 Apr' &&
+            format(Date.now(), 'd MMM') === '1 Apr' &&
             !localStorage.getItem("I'M NO FOOL!!!")
         );
     }

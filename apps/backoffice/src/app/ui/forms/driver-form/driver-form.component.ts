@@ -151,7 +151,7 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
                         name: `${commit.subject}`,
                         extra: isAfter(date, subMinutes(date, 1))
                             ? this.date_pipe.transform(date)
-                            : format(date, 'DD MMM YYYY'),
+                            : format(date, 'dd MMM YYYY'),
                     };
                 });
             })

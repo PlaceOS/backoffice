@@ -114,7 +114,7 @@ export class DateFieldComponent
     }
     /** Display value for the current date */
     public get date_string(): string {
-        return format(new Date(this.date), 'DD MMM YYYY');
+        return format(new Date(this.date), 'dd MMM YYYY');
     }
 
     public ngOnInit() {

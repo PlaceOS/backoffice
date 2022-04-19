@@ -46,7 +46,7 @@ describe('DateFieldComponent', () => {
     });
 
     it('should handler external changes to the date selected', () => {
-        const formatted_date = format(Date.now(), 'DD MMM YYYY');
+        const formatted_date = format(Date.now(), 'dd MMM YYYY');
         const el: HTMLElement = fixture.debugElement.nativeElement;
         const field_element = el.querySelector('.display');
         expect(field_element).toBeTruthy();
@@ -54,6 +54,6 @@ describe('DateFieldComponent', () => {
         const new_date = addDays(Date.now(), Math.floor(Math.random() * 10 + 2));
         component.writeValue(new_date.valueOf());
         fixture.detectChanges();
-        expect(field_element.textContent).toBe(format(new_date, 'DD MMM YYYY'));
+        expect(field_element.textContent).toBe(format(new_date, 'dd MMM YYYY'));
     });
 });

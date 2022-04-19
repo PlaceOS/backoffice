@@ -78,7 +78,7 @@ export class RepositoryFormComponent {
                 name: commit.subject,
                 extra: isAfter(date, subMinutes(date, 1))
                     ? this.date_pipe.transform(date)
-                    : format(date, 'DD MMM YYYY'),
+                    : format(date, 'dd MMM YYYY'),
             };
         });
         this.commit_list = [
