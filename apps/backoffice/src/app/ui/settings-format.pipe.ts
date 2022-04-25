@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { PlaceSettings } from '@placeos/ts-client';
 import { format } from 'date-fns';
 
-const TYPES = ['OPEN', 'SUPPORT', 'ADMIN', 'ENCRYPTED'];
+const TYPES = ['UNENCRYPTED', 'SUPPORT', 'ADMIN', 'ENCRYPTED'];
 
 @Pipe({
     name: 'formatSettings',
