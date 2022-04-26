@@ -240,7 +240,6 @@ export class ImageListFieldComponent extends BaseClass {
      * @param details Details of the failed upload
      */
     public retryUpload(details: UploadDetails) {
-        console.log('Retry:', details);
         if (details.error) {
             details.error = null;
             details.upload.resume();

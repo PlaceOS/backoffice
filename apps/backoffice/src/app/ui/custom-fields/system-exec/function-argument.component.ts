@@ -171,7 +171,6 @@ export class FunctionArgumentComponent
      * @param value The new value for the component
      */
     public writeValue(value: HashMap) {
-        console.log('Write Args:', value);
         this.value = value || {};
         if (!value || !this.form) return;
         this.form.patchValue(value);

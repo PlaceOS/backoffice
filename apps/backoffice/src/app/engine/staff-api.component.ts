@@ -98,7 +98,6 @@ export class PlaceStaffAPIComponent implements OnInit {
         }),
         catchError((_) => []),
         map((tenants) => {
-            console.log('No Error');
             this.loading = '';
             return tenants.filter((t) => t.domain === this.domain.getValue().domain);
         }),

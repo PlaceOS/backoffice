@@ -54,7 +54,6 @@ export class APIKeyService {
     ]).pipe(
         debounceTime(300),
         switchMap(([domain, q]) => {
-            console.log('Query User:', q);
             return domain
                 ? queryUsers({ authority_id: domain.id, q }).pipe(
                       map((_) => _.data as PlaceUser[])

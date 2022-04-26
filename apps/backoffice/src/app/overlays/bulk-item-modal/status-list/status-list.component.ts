@@ -38,7 +38,6 @@ export class StatusListComponent implements OnChanges {
             let index = 0;
             for (const item of this.list) {
                 this.status[index] = 'loading';
-                console.log('Item:', item);
                 const saved_item = await this.save({ ...item, id: '' })
                     .toPromise()
                     .catch((err) => {

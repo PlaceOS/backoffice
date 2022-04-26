@@ -38,7 +38,6 @@ export class SchemaStateService {
         })
             .pipe(map((_) => _.data))
             .toPromise();
-        console.log('Schema List:', schema_list);
         schema_list.sort((a, b) => a.name?.localeCompare(b.name));
         this._schemas.next(schema_list);
     }

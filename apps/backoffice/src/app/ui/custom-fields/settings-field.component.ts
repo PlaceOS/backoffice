@@ -196,7 +196,6 @@ export class SettingsFieldComponent
             });
             this.editor.onDidChangeModelContent((e) => {
                 this.setValue(this.editor.getValue());
-                console.log('Event:', e);
                 if (e.changes[0]?.text === '""') {
                     this.editor.trigger(
                         'Show Autocomplete',
@@ -219,10 +218,8 @@ export class SettingsFieldComponent
     }
 
     private setSchema(schema: string | HashMap) {
-        console.log('Set Schema:', schema, this.editor);
         if (!this.editor) return;
         if (typeof schema !== 'string') {
-            console.log('Schema 1');
             // load from source
             monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
                 enableSchemaRequest: true,
@@ -236,7 +233,6 @@ export class SettingsFieldComponent
                 ],
             });
         } else {
-            console.log('Schema 2');
             // load from server e.g. http://localhost:8000/schema.json
             monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
                 enableSchemaRequest: true,

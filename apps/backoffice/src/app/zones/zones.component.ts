@@ -46,7 +46,6 @@ export class ZonesComponent extends BaseClass implements OnInit {
     }
 
     public updateTabList(details: HashMap<number>) {
-        console.log('Details:', details);
         this.tab_list = [
             { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
             {

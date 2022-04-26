@@ -227,7 +227,6 @@ export class StaffTenantModalComponent implements OnInit {
 
     public async save() {
         this.form.markAllAsTouched();
-        console.log('Form:', this.form.value);
         if (!this.form.valid) return;
         this._dialog_ref.disableClose = true;
         this.loading = true;

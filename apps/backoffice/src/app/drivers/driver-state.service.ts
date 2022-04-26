@@ -44,7 +44,6 @@ export class DriverStateService {
         catchError(async (_: Response) => {
             const err = await _?.json();
             this._last_error.next(err?.compilation_output || _);
-            console.log('Driver Error:', err);
             if (!err?.compilation_output) throw _;
         }),
         retryWhen(delay(1000)),

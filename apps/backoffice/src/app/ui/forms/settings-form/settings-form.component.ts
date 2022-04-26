@@ -348,7 +348,7 @@ export class SettingsFormComponent
                 ? yaml.safeDump(obj)
                 : '';
             return new PlaceSettings({
-                ...setting.toJSON(),
+                ...setting,
                 parent_id: this.id,
                 settings_string,
             });

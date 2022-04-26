@@ -69,7 +69,6 @@ export class TriggerActionModalComponent extends BaseClass implements OnInit {
 
     public save() {
         this.form.markAllAsTouched();
-        console.log('Form:', this.form, this._data);
         if (
             (this.form.controls.action_type.value === 'emails' &&
                 !this.form.valid) ||
@@ -131,7 +130,6 @@ export class TriggerActionModalComponent extends BaseClass implements OnInit {
             mailers.push(new_mailer);
         }
         this.actions = { ...this.trigger.actions, mailers };
-        console.log('Actions:', this.actions, mailers);
     }
 
     private updateFunctions() {

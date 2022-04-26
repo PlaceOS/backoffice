@@ -50,7 +50,6 @@ export function extensionsForItem(item: PlaceResource, type: string) {
             const [key, type, value] = condition;
             switch (type) {
                 case 'includes':
-                    console.log('Includes:', value, item[key], item[key].includes(value))
                     matches += item[key] && item[key].includes(value) ? 1 : 0;
                     break;
                 case 'equals':

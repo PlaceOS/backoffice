@@ -1,7 +1,11 @@
 <form *ngIf="form && used_settings && used_settings.length" [formGroup]="form">
     <div class="actions">
         <button mat-button *ngIf="edited_count > 0" (click)="clearChanges()">
-            <div class="text" *ngIf="!saving[shown_option.id]; else spinner" i18n="@@clearLabel">
+            <div
+                class="text"
+                *ngIf="!saving[shown_option.id]; else spinner"
+                i18n="@@clearLabel"
+            >
                 Clear Changes [C]
             </div>
         </button>
@@ -11,7 +15,11 @@
             [disabled]="has_errors && !saving[shown_option.id]"
             (click)="save(shown_option.id)"
         >
-            <div class="text" *ngIf="!saving[shown_option.id]; else spinner" i18n="@@saveLabel">
+            <div
+                class="text"
+                *ngIf="!saving[shown_option.id]; else spinner"
+                i18n="@@saveLabel"
+            >
                 Save [S]
             </div>
         </button>
@@ -21,7 +29,11 @@
             [disabled]="has_errors && !saving[shown_option.id]"
             (click)="saveAll()"
         >
-            <div class="text" *ngIf="!saving[shown_option.id]; else spinner" i18n="@@saveAllLabel">
+            <div
+                class="text"
+                *ngIf="!saving[shown_option.id]; else spinner"
+                i18n="@@saveAllLabel"
+            >
                 Save All [A]
             </div>
         </button>
@@ -34,28 +46,53 @@
             *ngFor="let option of available_levels"
             [label]="
                 option.name +
-                (option.id !== 4 && form.controls['settings' + option.id].dirty ? ' *' : '')
+                (option.id !== 4 && form.controls['settings' + option.id].dirty
+                    ? ' *'
+                    : '')
             "
         >
         </mat-tab>
     </mat-tab-group>
     <ng-container *ngFor="let option of available_levels; let i = index">
         <ng-container
-            *ngIf="form && encryption_level === option.id && form.controls['settings' + option.id]"
+            *ngIf="
+                form &&
+                encryption_level === option.id &&
+                form.controls['settings' + option.id]
+            "
         >
-            <div [class.error-border]="form.controls['settings' + option.id]?.errors">
+            <div
+                [class.error-border]="
+                    form.controls['settings' + option.id]?.errors
+                "
+            >
                 <settings-form-field
                     [decorations]="option.id === 4 ? merge_decorations : []"
                     [formControlName]="'settings' + option.id"
                     [readonly]="!option.active || this.saving[option.id]"
                 ></settings-form-field>
             </div>
-            <div class="error-display" *ngIf="form.controls['settings' + option.id]?.errors">
+            <div
+                class="error-display"
+                *ngIf="form.controls['settings' + option.id]?.errors"
+            >
                 {{ form.controls['settings' + option.id].errors.yaml }}
             </div>
-            <div class="flex items-center justify-between p-1 space-x-2 border-b border-l border-r border-gray-300 mb-4 rounded-b" *ngIf="option.name !== 'Merged'">
-                <div class="text-xs pl-2">{{ (settings[i]?.modified_by | user | async)?.name }}</div>
-                <code class="text-xs" [matTooltip]="(settings[i]?.modified_at || 0) | date:'fullDate'">Last edited: {{ settings[i]?.modified_at | dateFrom }}</code>
+            <div
+                class="flex items-center justify-between p-1 space-x-2 border-b border-l border-r border-gray-300 mb-4 rounded-b"
+                *ngIf="option.name !== 'Merged'"
+            >
+                <div class="text-xs pl-2">
+                    {{ (settings[i - 1]?.modified_by_id | user | async)?.name }}
+                </div>
+                <code
+                    class="text-xs"
+                    [matTooltip]="
+                        settings[i - 1]?.updated_at * 1000 || 0 | date: 'medium'
+                    "
+                >
+                    Last edited: {{ settings[i - 1]?.updated_at * 1000 | dateFrom }}
+                </code>
             </div>
         </ng-container>
     </ng-container>

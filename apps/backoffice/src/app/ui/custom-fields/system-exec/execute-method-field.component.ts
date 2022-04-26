@@ -184,7 +184,6 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
         )
             .toPromise()
             .catch((err) => {
-                console.log('Error:', err);
                 if (typeof err === 'string' && err.length < 128) {
                     notifyError(err);
                 } else {

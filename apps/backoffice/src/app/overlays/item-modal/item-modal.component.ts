@@ -236,7 +236,6 @@ export class ItemCreateUpdateModalComponent
             settings_string,
             encryption_level: EncryptionLevel.Support,
         });
-        console.log('Settings:', new_settings, settings_string);
         const settings = await addSettings(new_settings)
             .toPromise()
             .catch((err) => {

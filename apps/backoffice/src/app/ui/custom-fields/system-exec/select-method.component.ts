@@ -85,10 +85,7 @@ export class SelectMethodComponent
 
     public method_list = combineLatest([this._system, this._module]).pipe(
         distinctUntilChanged(),
-        tap(([id, { module, index }]) => {
-            console.log(id, module, index, !!id && !!module);
-            this.loading = true;
-        }),
+        tap(() => this.loading = true),
         switchMap(([id, { module, index }]) =>
             !!id && !!module ? functionList(id, module, index) : of({})
         ),

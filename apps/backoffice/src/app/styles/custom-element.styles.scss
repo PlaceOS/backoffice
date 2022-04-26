@@ -489,6 +489,11 @@ mat-panel-title {
     @apply text-white;
 }
 
+#placeos .dark .mat-tooltip {
+    background-color: #535353;
+    @apply text-white shadow;
+}
+
 #placeos .mat-ink-bar {
     @apply bg-primary;
 }

@@ -53,9 +53,9 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
                                     class="text-xs mr-2"
                                     [matTooltip]="
                                         (item.modified_by_id | user | async)?.name + '\n' +
-                                        (item.modified_at || 0) | date:'fullDate'
+                                        ((item.updated_at || 0) | date:'medium')
                                     "
-                                    >{{ item.modified_at | dateFrom }}</code
+                                    >{{ item.updated_at | dateFrom }}</code
                                 >
                                 <ng-container *ngIf="edited[item.name]">
                                     <button
