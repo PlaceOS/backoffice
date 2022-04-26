@@ -39,7 +39,7 @@
         >
         </mat-tab>
     </mat-tab-group>
-    <ng-container *ngFor="let option of available_levels">
+    <ng-container *ngFor="let option of available_levels; let i = index">
         <ng-container
             *ngIf="form && encryption_level === option.id && form.controls['settings' + option.id]"
         >
@@ -52,6 +52,10 @@
             </div>
             <div class="error-display" *ngIf="form.controls['settings' + option.id]?.errors">
                 {{ form.controls['settings' + option.id].errors.yaml }}
+            </div>
+            <div class="flex items-center justify-between p-1 space-x-2 border-b border-l border-r border-gray-300 mb-4 rounded-b" *ngIf="option.name !== 'Merged'">
+                <div class="text-xs pl-2">{{ (settings[i]?.modified_by | user | async)?.name }}</div>
+                <code class="text-xs" [matTooltip]="(settings[i]?.modified_at || 0) | date:'fullDate'">Last edited: {{ settings[i]?.modified_at | dateFrom }}</code>
             </div>
         </ng-container>
     </ng-container>

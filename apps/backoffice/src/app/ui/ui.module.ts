@@ -75,6 +75,7 @@ import { DiffViewerComponent } from './diff-viewer.component';
 import { SettingsHistoryViewComponent } from './settings-history-view.component';
 import { SettingsFormatPipe } from './settings-format.pipe';
 import { UserPipe } from './pipes/user.pipe';
+import { MetadataDisplayComponent } from './metadata-display.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -116,7 +117,8 @@ const COMPONENTS: Type<any>[] = [
     BindingDirective,
     BasicLineGraphComponent,
     DiffViewerComponent,
-    SettingsHistoryViewComponent
+    SettingsHistoryViewComponent,
+    MetadataDisplayComponent
 ];
 
 const PIPES: Type<any>[] = [
