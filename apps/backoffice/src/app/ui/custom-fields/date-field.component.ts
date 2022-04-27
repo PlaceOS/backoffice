@@ -1,11 +1,11 @@
 import {
     Component,
-    OnInit,
     forwardRef,
-    Input,
     Injectable,
+    Input,
+    OnInit,
 } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
     DateAdapter,
     MatDateFormats,
@@ -14,14 +14,15 @@ import {
 } from '@angular/material/core';
 import {
     addYears,
-    startOfDay,
     endOfDay,
     format,
     formatISO,
     set,
+    startOfDay,
 } from 'date-fns';
-import { BaseClass } from '../../../common/base.class';
-import { HashMap } from '../../../common/types';
+
+import { BaseClass } from '../../common/base.class';
+import { HashMap } from '../../common/types';
 
 @Injectable()
 class FieldDateAdapter extends NativeDateAdapter {
@@ -62,6 +63,7 @@ const FIELD_DATE_FORMATS: MatDateFormats = {
                 [for]="picker"
             ></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
+            <mat-error><ng-content></ng-content></mat-error>
         </mat-form-field>
     `,
     styles: [
@@ -83,7 +85,8 @@ const FIELD_DATE_FORMATS: MatDateFormats = {
 })
 export class DateFieldComponent
     extends BaseClass
-    implements OnInit, ControlValueAccessor {
+    implements OnInit, ControlValueAccessor
+{
     /** Earliest date available the user is allowed to pick */
     @Input('from') public _from: number = new Date().valueOf();
     /** Latest date available the user is allowed to pick */

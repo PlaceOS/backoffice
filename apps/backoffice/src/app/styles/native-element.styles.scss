@@ -53,36 +53,39 @@ table {
     }
 }
 
-thead {
-    opacity: 0.85;
-    background-color: rgba(#000, 0.15);
-}
+table:not([role="grid"]) {
 
-tr {
-    width: 100%;
-    &:nth-child(2n) {
-        background-color: rgba(#000, 0.05);
+    thead {
+        opacity: 0.85;
+        background-color: rgba(#000, 0.15);
     }
 
-    &:hover {
-        background-color: rgba(#000, 0.1);
+    tr {
+        width: 100%;
+        &:nth-child(2n) {
+            background-color: rgba(#000, 0.05);
+        }
+
+        &:hover {
+            background-color: rgba(#000, 0.1);
+        }
+
+        &.cdk-drag-preview {
+            background-color: #fff;
+            border-radius: 4px;
+            @apply shadow;
+        }
     }
 
-    &.cdk-drag-preview {
-        background-color: #fff;
-        border-radius: 4px;
-        @apply shadow;
-    }
-}
+    td {
+        border-color: #ccc;
+        padding: 0.25em 0.5em;
 
-td {
-    border-color: #ccc;
-    padding: 0.25em 0.5em;
-
-    &.small {
-        width: 2em;
-        text-align: center;
-        vertical-align: middle;
+        &.small {
+            width: 2em;
+            text-align: center;
+            vertical-align: middle;
+        }
     }
 }
 

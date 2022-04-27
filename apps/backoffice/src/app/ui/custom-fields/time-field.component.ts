@@ -5,7 +5,7 @@ import {
     OnChanges,
     OnInit,
     SimpleChanges,
-    ViewChild
+    ViewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
@@ -18,10 +18,10 @@ import {
     roundToNearestMinutes,
     set,
     startOfDay,
-    startOfMinute
+    startOfMinute,
 } from 'date-fns';
-import { BaseClass } from '../../../common/base.class';
-import { Identity } from '../../../common/types';
+import { BaseClass } from '../../common/base.class';
+import { Identity } from '../../common/types';
 
 @Component({
     selector: 'a-time-field',
@@ -38,7 +38,12 @@ import { Identity } from '../../../common/types';
                 [ngModel]="time"
                 (ngModelChange)="setValue($event)"
             />
-            <button mat-icon-button matSuffix class="relative top-1 -right-1" (click)="showSelect()">
+            <button
+                mat-icon-button
+                matSuffix
+                class="relative top-1 -right-1"
+                (click)="showSelect()"
+            >
                 <app-icon class="text-2xl text-black text-opacity-50">
                     arrow_drop_down
                 </app-icon>
@@ -78,7 +83,8 @@ import { Identity } from '../../../common/types';
 })
 export class TimeFieldComponent
     extends BaseClass
-    implements OnInit, OnChanges, ControlValueAccessor {
+    implements OnInit, OnChanges, ControlValueAccessor
+{
     /** Time step between each allowed time option */
     @Input() public step = 15;
     /** Whether form field is disabled */

@@ -563,4 +563,17 @@ mat-panel-title {
     code {
         background: rgba(255,255,255, 0.2);
     }
+
+    .mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover) {
+        background-color: #535353;
+    }
+
+    mat-form-field [mat-icon-button],
+    mat-form-field app-icon {
+        color: rgba(255,255,255, 0.65);
+    }
+
+    mat-form-field .mat-select-arrow {
+        border-top-color: rgba(255,255,255, 0.65);
+    }
 }

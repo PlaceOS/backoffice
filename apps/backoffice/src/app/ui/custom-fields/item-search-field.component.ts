@@ -23,8 +23,78 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
 
 @Component({
     selector: 'item-search-field',
-    templateUrl: './item-search-field.component.html',
-    styleUrls: ['./item-search-field.component.scss'],
+    template: `
+        <div class="item-search-field" form-field [class.disabled]="disabled">
+            <mat-form-field appearance="outline">
+                <input
+                    matInput
+                    name="item-search"
+                    [(ngModel)]="search_str"
+                    [disabled]="disabled"
+                    (ngModelChange)="search$.next($event)"
+                    [placeholder]="
+                        'Search' + (name ? ' for ' + name : '') + '...'
+                    "
+                    i18n-placeholder
+                    [matAutocomplete]="auto"
+                    (focus)="search_str = ''; search$.next(' ')"
+                    (blur)="resetSearchString()"
+                />
+                <div class="prefix" matPrefix>
+                    <app-icon class="text-2xl relative top-0.5 -left-0.5"
+                        >search</app-icon
+                    >
+                </div>
+                <div class="suffix" matSuffix *ngIf="loading">
+                    <mat-spinner diameter="16"></mat-spinner>
+                </div>
+            </mat-form-field>
+            <mat-autocomplete
+                #auto="matAutocomplete"
+                (optionSelected)="setValue($event.option.value)"
+            >
+                <mat-option
+                    *ngFor="let option of item_list"
+                    [value]="option"
+                    class="leading-tight"
+                >
+                    <div
+                        class="flex items-center h-5"
+                        [innerHTML]="item_name[option.id] | sanitize"
+                    ></div>
+                    <div class="text-xs opacity-60">
+                        {{ option.id }}
+                        {{ option.extra ? ' - ' + option.extra : '' }}
+                    </div>
+                </mat-option>
+            </mat-autocomplete>
+        </div>
+    `,
+    styles: [
+        `
+            :host,
+            mat-form-field {
+                width: 100%;
+            }
+
+            .disabled {
+                color: rgba(0, 0, 0, 0.35);
+            }
+
+            .name {
+                display: flex;
+                align-items: center;
+                height: 1.1em;
+                line-height: 1em;
+            }
+
+            .email {
+                font-size: 0.6em;
+                opacity: 0.65;
+                line-height: 1.2em;
+            }
+        `,
+    ],
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
@@ -35,7 +105,8 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
 })
 export class ItemSearchFieldComponent<T extends Identity = any>
     extends BaseClass
-    implements OnInit, OnChanges, ControlValueAccessor {
+    implements OnInit, OnChanges, ControlValueAccessor
+{
     /** Name of the items being query'd */
     @Input() public name: string;
     /** Limit available options to these */
