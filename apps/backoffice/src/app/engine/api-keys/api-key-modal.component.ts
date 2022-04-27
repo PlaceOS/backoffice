@@ -136,7 +136,7 @@ import { APIKeyService } from './api-keys.service';
         </main>
         <footer
             *ngIf="!loading"
-            class="p-2 flex items-center justify-center border-t border-gray-100"
+            class="p-2 flex items-center justify-center border-t border-gray-100 dark:border-gray-100/20"
         >
             <button mat-button class="w-32" (click)="save()">Save</button>
         </footer>
