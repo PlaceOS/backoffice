@@ -576,4 +576,72 @@ mat-panel-title {
     mat-form-field .mat-select-arrow {
         border-top-color: rgba(255,255,255, 0.65);
     }
+
+    mat-form-field.mat-form-field-invalid {
+        .mat-form-field-outline > * {
+            color: var(--error);
+        }
+    }
+
+    mat-form-field.mat-focused {
+        .mat-form-field-outline > * {
+            color: var(--primary);
+        }
+    }
+}
+
+
+form {
+    label[for] {
+        font-size: 0.8em;
+        font-weight: 500;
+        margin: 0.5em 0;
+
+        &.error {
+            color: var(--error);
+        }
+
+        span {
+            color: var(--pending);
+        }
+    }
+
+    .fieldset {
+        display: flex;
+        flex-wrap: wrap;
+
+        > * + * {
+            margin-left: 0.5rem;
+        }
+    }
+
+    .field {
+        position: relative;
+        display: flex;
+        flex: 1 1 0%;
+        flex-direction: column;
+        width: 100%;
+        min-width: 32%;
+    
+        > * + * {
+            margin-bottom: 0.25rem;
+        }
+    }
+
+    .field div.error {
+        position: absolute;
+        bottom: 0.5rem;
+        left: 1rem;
+        color: var(--error);
+        font-size: .75rem;
+        font-weight: 400;
+    }
+
+    settings-form-field {
+        margin-bottom: 1.5em;
+    }
+
+    mat-checkbox {
+        margin: 0.25em;
+    }
 }

@@ -135,7 +135,7 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
     }
 
     public get backoffice_build() {
-        return format(VERSION.time, 'dd MMM YYYY [at] h:mma');
+        return `${format(VERSION.time, 'dd MMM yyyy')} at ${format(VERSION.time, ' h:mma')}`;
     }
 
     constructor(

@@ -1,6 +1,9 @@
 <div class="driver form" *ngIf="form">
     <div class="fieldset">
-        <div class="field discovery" *ngIf="form.controls.repository_id && !editing">
+        <div
+            class="field discovery"
+            *ngIf="form.controls.repository_id && !editing"
+        >
             <label for="repo" i18n="@@repoLabel">Repository: </label>
             <item-search-field
                 name="repository"
@@ -12,7 +15,12 @@
         </div>
         <div
             class="field discovery"
-            *ngIf="form.controls.file_name && driver_list && driver_list.length && !editing"
+            *ngIf="
+                form.controls.file_name &&
+                driver_list &&
+                driver_list.length &&
+                !editing
+            "
         >
             <label for="driver" i18n="@@driverLabel">Driver Base: </label>
             <item-search-field
@@ -27,7 +35,9 @@
             class="field discovery"
             *ngIf="form.controls.commit && commit_list && commit_list.length"
         >
-            <label for="commit" i18n="@@driverCommitLabel">Driver Commit: </label>
+            <label for="commit" i18n="@@driverCommitLabel"
+                >Driver Commit:
+            </label>
             <item-search-field
                 name="commit"
                 [options]="commit_list"
@@ -38,14 +48,23 @@
         </div>
     </div>
     <ng-container *ngIf="!loading; else load_state">
-        <form [formGroup]="form">
+        <form
+            [formGroup]="form"
+            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
+        >
             <ng-container
-                *ngIf="(form.controls.commit && form.controls.commit.value) || base_commit"
+                *ngIf="
+                    (form.controls.commit && form.controls.commit.value) ||
+                    base_commit
+                "
             >
                 <div class="field" *ngIf="form.controls.name">
                     <label
                         for="driver-name"
-                        [class.error]="form.controls.name.invalid && form.controls.name.touched"
+                        [class.error]="
+                            form.controls.name.invalid &&
+                            form.controls.name.touched
+                        "
                         i18n="@@nameLabel"
                     >
                         Name<span>*</span>:
@@ -59,7 +78,10 @@
                             formControlName="name"
                             required
                         />
-                        <mat-error *ngIf="form.controls.name.invalid" i18n="@@driverNameError">
+                        <mat-error
+                            *ngIf="form.controls.name.invalid"
+                            i18n="@@driverNameError"
+                        >
                             Driver name is required
                         </mat-error>
                     </mat-form-field>
@@ -68,14 +90,19 @@
                     <label for="role" i18n="@@roleLabel">Role: </label>
                     <mat-form-field appearance="outline">
                         <mat-select name="role" formControlName="role">
-                            <mat-option *ngFor="let type of role_types" [value]="type.id">
+                            <mat-option
+                                *ngFor="let type of role_types"
+                                [value]="type.id"
+                            >
                                 {{ type.name }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.description">
-                    <label for="description" i18n="@@descriptionLabel">Description:</label>
+                    <label for="description" i18n="@@descriptionLabel"
+                        >Description:</label
+                    >
                     <mat-form-field appearance="outline">
                         <textarea
                             matInput
@@ -90,7 +117,8 @@
                     <label
                         for="module-name"
                         [class.error]="
-                            form.controls.module_name.invalid && form.controls.module_name.touched
+                            form.controls.module_name.invalid &&
+                            form.controls.module_name.touched
                         "
                         i18n="@@moduleNameLabel"
                     >
@@ -114,7 +142,9 @@
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.default_uri">
-                    <label for="default-uri" i18n="@@defaultUriLabel">Default URI:</label>
+                    <label for="default-uri" i18n="@@defaultUriLabel"
+                        >Default URI:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -150,7 +180,8 @@
                                 *ngIf="form.controls.default_port.invalid"
                                 i18n="@@portError"
                             >
-                                A valid port number between 1 - 65535 is required
+                                A valid port number between 1 - 65535 is
+                                required
                             </mat-error>
                         </mat-form-field>
                     </div>
@@ -173,6 +204,8 @@
         <div class="icon">
             <mat-spinner diameter="32"></mat-spinner>
         </div>
-        <div class="text" i18n="@@driverCommitLoading">Loading driver details for commit...</div>
+        <div class="text" i18n="@@driverCommitLoading">
+            Loading driver details for commit...
+        </div>
     </div>
 </ng-template>

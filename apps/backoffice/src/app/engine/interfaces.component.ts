@@ -12,12 +12,16 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
         >
             <div table-head>
                 <div class="flex-1 p-2">Repository</div>
-                <div class="w-32 p-2">Commit Hash</div>
+                <div class="w-[20rem] p-2">Commit Hash</div>
             </div>
             <div table-body>
                 <div table-row *ngFor="let item of interfaces">
                     <div class="flex-1 p-2">{{ item.id }}</div>
-                    <div class="w-32 p-2">{{ item.name }}</div>
+                    <div class="w-[20rem] p-2">
+                        <code>
+                            {{ item.name || "~No Commit Hash~" }}
+                        </code>
+                    </div>
                 </div>
             </div>
         </div>

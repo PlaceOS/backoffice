@@ -38,7 +38,18 @@ import { format, isAfter, subMinutes } from 'date-fns';
 @Component({
     selector: 'driver-form',
     templateUrl: './driver-form.component.html',
-    styleUrls: ['./driver-form.component.scss'],
+    styles: [
+        `
+            mat-checkbox {
+                margin-top: 2.5em;
+                margin-bottom: 1.5em;
+
+                @media screen and (max-width: 640px) {
+                    margin-top: 0;
+                }
+            }
+        `,
+    ],
 })
 export class DriverFormComponent extends BaseClass implements OnChanges {
     /** Group of form fields used for creating the system */
@@ -145,13 +156,13 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
                     ) as any;
                 }
                 return (list || []).map((commit: PlaceRepositoryCommit) => {
-                    const date = commit.date;
+                    const date = new Date(commit.date);
                     return {
                         id: commit.commit,
                         name: `${commit.subject}`,
                         extra: isAfter(date, subMinutes(date, 1))
-                            ? this.date_pipe.transform(date)
-                            : format(date, 'dd MMM YYYY'),
+                            ? this.date_pipe.transform(date.valueOf())
+                            : format(date, 'dd MMM yyyy'),
                     };
                 });
             })
