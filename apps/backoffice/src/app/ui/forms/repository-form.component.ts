@@ -354,5 +354,9 @@ export class RepositoryFormComponent {
                 ? listRepositoryReleases
                 : listRepositoryBranches;
         this.branch_list = (await list_fn(id).toPromise()) || [];
+        if (!force_branches && this.branch_list.length <= 0) {
+            this.unable_to_load_releases = true;
+            return this.loadBranches(true);
+        }
     }
 }
