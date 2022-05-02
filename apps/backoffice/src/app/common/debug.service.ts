@@ -25,6 +25,7 @@ const TERMINAL_COLOURS = {
     providedIn: 'root',
 })
 export class PlaceDebugService extends BaseClass {
+    private _changed = new BehaviorSubject(0);
     /** List of the current state of events */
     private _events = new BehaviorSubject<PlaceDebugEvent[]>([]);
     /** Observable for changes to the event listing */
@@ -35,6 +36,8 @@ export class PlaceDebugService extends BaseClass {
     private _module_names: HashMap<string> = {};
     /** Whether debug console is enabled */
     private _enabled: boolean;
+
+    public readonly changed = this._changed.asObservable();
 
     /** Current list of debug events */
     public get event_list(): PlaceDebugEvent[] {
@@ -62,8 +65,13 @@ export class PlaceDebugService extends BaseClass {
     }
 
     /** Whether there are modules listening for debug messages */
+    public get is_enabled(): boolean {
+        return this._enabled
+    }
+
+    /** Whether there are modules listening for debug messages */
     public get is_listening(): boolean {
-        return this._enabled;
+        return this._enabled && this._bound_modules.length > 0;
     }
 
     constructor() {
@@ -112,6 +120,7 @@ export class PlaceDebugService extends BaseClass {
                 this.subscription(`debug_${module.id}`, () => ignore(options));
                 this._bound_modules.push(module);
                 this._module_names[module.id] = module_name;
+                this._changed.next(Date.now());
             });
         }
     }
@@ -126,6 +135,7 @@ export class PlaceDebugService extends BaseClass {
             this._bound_modules = this._bound_modules.filter(
                 (mod) => mod.id !== module.id
             );
+            this._changed.next(Date.now());
         }
     }
 }

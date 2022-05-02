@@ -129,8 +129,9 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
 
     /** Whether user is listening for debug information */
     public get is_enabled(): boolean {
-        return this._service.is_listening;
+        return this._service.is_enabled;
     }
+
     constructor(
         private _service: PlaceDebugService,
         private _renderer: Renderer2
@@ -145,6 +146,11 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
                 this.logs = this._service.terminal_string;
             })
         );
+        this.subscription('binding_change', this._service.changed.subscribe(() => {
+            if (!this._service.is_listening) {
+                this.show_content = false;
+            }
+        }))
     }
 
     /** Clear all the debug logs */
