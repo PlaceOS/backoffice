@@ -56,7 +56,7 @@ import { ModuleLike } from './select-module.component';
                 </div>
             </div>
             <div
-                class="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-80"
+                class="absolute -inset-2 flex flex-col items-center justify-center bg-white/80 dark:bg-black/40 rounded"
                 *ngIf="loading"
             >
                 <mat-spinner diameter="32"></mat-spinner>
