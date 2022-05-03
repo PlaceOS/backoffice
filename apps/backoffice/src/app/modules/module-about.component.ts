@@ -50,7 +50,7 @@ import { ModuleStateService } from './module-state.service';
         </section>
         <hr class="my-4" />
         <section>
-            <button mat-button [disabled]="stopping" (click)="toggleModuleState()">
+            <button mat-button class="w-32" [disabled]="stopping" (click)="toggleModuleState()">
                 <div class="text" *ngIf="!stopping" i18n="@@moduleStateToggle">
                     { item.running, select, true { Stop Module } false { Start Module } }
                 </div>
@@ -102,7 +102,7 @@ export class ModuleAboutComponent {
 
     public async toggleModuleState() {
         this.stopping = true;
-        await this._service;
+        await this._service.toggleModuleState();
         this.stopping = false;
     }
 }

@@ -10,7 +10,15 @@ import {
     stopModule,
 } from '@placeos/ts-client';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, debounceTime, filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import {
+    catchError,
+    debounceTime,
+    filter,
+    map,
+    shareReplay,
+    switchMap,
+    tap,
+} from 'rxjs/operators';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal/view-response-modal.component';
@@ -41,7 +49,9 @@ export class ModuleStateService {
     );
     /** System assoicated with the active module */
     public readonly system = this.item.pipe(
-        switchMap((item) => (item.system_id ? showSystem(item.system_id) : of(null))),
+        switchMap((item) =>
+            item.system_id ? showSystem(item.system_id) : of(null)
+        ),
         shareReplay(1)
     );
     /** System assoicated with the active module */
@@ -61,35 +71,47 @@ export class ModuleStateService {
         return this._state.active_item as any;
     }
 
-    constructor(private _state: ActiveItemService, private _dialog: MatDialog) {}
+    constructor(
+        private _state: ActiveItemService,
+        private _dialog: MatDialog
+    ) {}
 
     public async toggleModuleState() {
         const method = this.active_item.running ? stopModule : startModule;
         const error = await method(this.active_item.id)
+            .pipe(map((_) => null))
             .toPromise()
             .catch((err) => err);
         if (error) {
+            console.log('Error:', error);
             if (typeof error === 'string' && error.length < 64) {
                 notifyError(error);
             } else {
                 notifyError(
-                    `Failed to ${this.active_item.running ? 'stop' : 'start'} device '${
-                        this.active_item.id
-                    }'.\nView Error?`,
+                    `Failed to ${
+                        this.active_item.running ? 'stop' : 'start'
+                    } device '${this.active_item.id}'.\nView Error?`,
                     'View',
                     () => this.viewDetails(error)
                 );
             }
             return;
         }
-        notifySuccess(`Module successfully ${this.active_item.running ? 'stopped' : 'started'}`);
+        notifySuccess(
+            `Module successfully ${
+                this.active_item.running ? 'stopped' : 'started'
+            }`
+        );
         (this.active_item as any).running = !this.active_item.running;
     }
 
     /** View Results of the execute */
     private viewDetails(content: any) {
-        this._dialog.open<ViewResponseModalComponent>(ViewResponseModalComponent, {
-            data: { content },
-        });
+        this._dialog.open<ViewResponseModalComponent>(
+            ViewResponseModalComponent,
+            {
+                data: { content },
+            }
+        );
     }
 }
