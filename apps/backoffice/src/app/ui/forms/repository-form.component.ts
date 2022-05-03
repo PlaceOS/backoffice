@@ -20,32 +20,6 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
             class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
             [formGroup]="form"
         >
-            <div class="field commit" *ngIf="is_edit && can_change_commit">
-                <label for="commit" i18n="@@repoCommitLabel">
-                    Repository Commit:
-                </label>
-                <item-search-field
-                    name="commit"
-                    [options]="commit_list | slice: 1"
-                    [disabled]="follow_latest"
-                    [loading]="loading_commits"
-                    [ngModel]="base_commit"
-                    [ngModelOptions]="{ standalone: true }"
-                    (ngModelChange)="
-                        form.controls.commit_hash.setValue($event.id)
-                    "
-                ></item-search-field>
-            </div>
-            <div class="field">
-                <mat-checkbox
-                    class="mb-4"
-                    [ngModel]="follow_latest"
-                    [ngModelOptions]="{ standalone: true }"
-                    (ngModelChange)="setFollow($event)"
-                >
-                    Follow latest commit
-                </mat-checkbox>
-            </div>
             <div class="field" *ngIf="form.controls.branch">
                 <label
                     for="repository-name"
@@ -76,7 +50,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         <mat-select
                             name="type"
                             formControlName="branch"
-                            placeholder="Select Branch"
+                            [placeholder]="'Select ' + (is_interface ? 'Release' : 'Branch')"
                         >
                             <mat-option
                                 *ngFor="let branch of branch_list"
@@ -87,9 +61,35 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         </mat-select>
                     </ng-template>
                     <mat-error i18n="@@repoBranchError">
-                        Working branch name is required
+                        Working {{ is_interface ? 'Release' : 'Branch' }} name is required
                     </mat-error>
                 </mat-form-field>
+            </div>
+            <div class="field commit" *ngIf="is_edit && can_change_commit">
+                <label for="commit" i18n="@@repoCommitLabel">
+                    Repository Commit:
+                </label>
+                <item-search-field
+                    name="commit"
+                    [options]="commit_list | slice: 1"
+                    [disabled]="follow_latest"
+                    [loading]="loading_commits"
+                    [ngModel]="base_commit"
+                    [ngModelOptions]="{ standalone: true }"
+                    (ngModelChange)="
+                        form.controls.commit_hash.setValue($event.id)
+                    "
+                ></item-search-field>
+            </div>
+            <div class="field" *ngIf="can_change_commit">
+                <mat-checkbox
+                    class="-mt-4"
+                    [ngModel]="follow_latest"
+                    [ngModelOptions]="{ standalone: true }"
+                    (ngModelChange)="setFollow($event)"
+                >
+                    Follow latest commit
+                </mat-checkbox>
             </div>
             <div class="field" *ngIf="form.controls.name">
                 <label
@@ -266,7 +266,7 @@ export class RepositoryFormComponent {
     /** Whether item is being edited */
     public get is_edit(): boolean {
         return (
-            this.form && this.form.controls.id && this.form.controls.id.value
+            this.form && this.form.value.id
         );
     }
 
@@ -290,7 +290,6 @@ export class RepositoryFormComponent {
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.form && this.form) {
-            this.loadCommits();
             this.loadBranches().catch((_) => {
                 this.unable_to_load_releases = true;
                 if (
@@ -303,13 +302,12 @@ export class RepositoryFormComponent {
     }
 
     public async loadCommits() {
-        if (!this.is_edit || !this.can_change_commit) {
-            return;
-        }
+        console.log('Load Commits')
+        if (!this.is_edit || !this.can_change_commit) return;
         const id = this.form.controls.id.value;
         const commits: any[] = await listRepositoryCommits(id).toPromise();
         const commit_list = (commits || []).map((commit) => {
-            const date = commit.date;
+            const date = new Date(commit.date || Date.now()).valueOf();
             return {
                 id: commit.commit,
                 name: commit.subject,
@@ -358,5 +356,6 @@ export class RepositoryFormComponent {
             this.unable_to_load_releases = true;
             return this.loadBranches(true);
         }
+        this.loadCommits();
     }
 }

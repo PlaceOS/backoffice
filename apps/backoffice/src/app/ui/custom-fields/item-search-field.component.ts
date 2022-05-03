@@ -31,7 +31,6 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                     name="item-search"
                     [(ngModel)]="search_str"
                     [disabled]="disabled"
-                    (ngModelChange)="search$.next($event)"
                     [placeholder]="
                         'Search' + (name ? ' for ' + name : '') + '...'
                     "
@@ -55,7 +54,8 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
             >
                 <mat-option
                     *ngFor="let option of item_list"
-                    [value]="option"
+                    [value]="option.name || option.id"
+                    (click)="search$.next(option)"
                     class="leading-tight"
                 >
                     <div
@@ -178,7 +178,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
                 const search = (this.search_str || '').toLowerCase();
                 return list.filter((item: any) => {
                     const match =
-                        item.name.toLowerCase().indexOf(search) >= 0 ||
+                        item.name?.toLowerCase().indexOf(search) >= 0 ||
                         (item.email || '').toLowerCase().indexOf(search) >= 0;
                     return match && (this.exclude ? !this.exclude(item) : true);
                 });

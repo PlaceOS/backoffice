@@ -243,10 +243,10 @@ mat-expansion-panel {
 
 mat-checkbox {
     label {
-        @apply max-w-full flex;
+        @apply max-w-full flex-auto;
 
         .mat-checkbox-label {
-            @apply flex-1 min-w-0;
+            @apply flex-1 min-w-0 text-inherit;
         }
     }
 }
@@ -601,7 +601,7 @@ form {
             color: var(--error);
         }
 
-        span {
+        > span:not(.mat-checkbox-label) {
             color: var(--pending);
         }
     }
