@@ -50,12 +50,11 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
             </mat-form-field>
             <mat-autocomplete
                 #auto="matAutocomplete"
-                (optionSelected)="setValue($event.option.value)"
             >
                 <mat-option
                     *ngFor="let option of item_list"
                     [value]="option.name || option.id"
-                    (click)="search$.next(option)"
+                    (click)="search$.next(option); setValue(option);"
                     class="leading-tight"
                 >
                     <div
