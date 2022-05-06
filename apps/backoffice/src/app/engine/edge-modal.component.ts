@@ -87,6 +87,6 @@ export class EdgeModalComponent {
         this._dialog_ref.disableClose = false;
         if (!new_edge) return notifyError('Error adding new edge.');
         notifySuccess('Successfully added new edge.');
-        this._dialog_ref.close();
+        this._dialog_ref.close(new_edge);
     }
 }
