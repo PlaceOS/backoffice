@@ -79,23 +79,23 @@ export interface PlaceServiceDetails {
                     {{ api.service }}
                 </h3>
                 <div class="flex items-center px-4 py-1 hover:bg-gray-400/20">
-                    <label class="w-24">Commit Hash:</label>
+                    <label class="w-24">Commit Hash</label>
                     <div class="bg-gray-300/60 rounded p-1 text-xs mono">
-                        {{ api.commit }}
+                        {{ api.commit| slice:0:8 }}
                     </div>
                 </div>
                 <div class="flex items-center px-4 py-1 hover:bg-gray-400/20">
-                    <label class="w-24">Version:</label>
+                    <label class="w-24">Version</label>
                     <div class="bg-gray-300/60 rounded p-1 text-xs mono">
                         {{ api.version }}
                     </div>
                 </div>
                 <div class="flex items-center px-4 py-1 hover:bg-gray-400/20">
-                    <label class="w-24">Build time:</label>
-                    <div class="text-sm">{{ api.build_time }}</div>
+                    <label class="w-24">Build time</label>
+                    <div class="text-sm">{{ api.build_time | date:'MMM d, y, h:mm a' }}</div>
                 </div>
                 <div class="flex items-center px-4 py-1 hover:bg-gray-400/20 mb-1">
-                    <label class="w-24">Platform:</label>
+                    <label class="w-24">Platform</label>
                     <div class="bg-gray-300/60 rounded p-1 text-xs mono">
                         {{ api.platform_version }}
                     </div>
