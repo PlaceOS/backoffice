@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
 import { token, onlineState } from '@placeos/ts-client';
 
 import * as mqtt from 'mqtt/dist/mqtt';
 import { BehaviorSubject } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 
 const PORT_MAP = {
     'http:': '80',
@@ -19,9 +20,26 @@ export class MqttDashboardStateService {
     private _topics: Record<string, BehaviorSubject<any>> = {};
 
     public readonly connected = this._connected.asObservable();
+    public readonly filters = new FormGroup({
+        org: new FormControl(''),
+        bld: new FormControl(''),
+        lvl: new FormControl(''),
+        area: new FormControl(''),
+        sys: new FormControl(''),
+        drv: new FormControl(''),
+        mod: new FormControl(''),
+        idx: new FormControl(''),
+        state: new FormControl('connected'),
+    });
+
+    public readonly topic = this.filters.valueChanges.pipe(map(() => {
+        const { org, bld, lvl, area, sys, drv, mod, idx, state } = this.filters.value;
+        return `placeos/${org || '+'}/state/${bld || '+'}/${lvl || '+'}/${area || '+'}/${sys || '+'}/${drv || '+'}/${mod || '+'}/${idx || '+'}/${state || '+'}`
+    }));
 
     constructor() {
         onlineState().pipe(first((_) => _)).subscribe(() => this._init());
+        this.filters.enable();
     }
 
     private async _init() {
