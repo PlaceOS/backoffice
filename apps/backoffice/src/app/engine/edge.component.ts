@@ -7,7 +7,7 @@ import {
     retrieveEdgeToken,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { catchError, debounce, debounceTime, map, shareReplay, switchMap } from 'rxjs/operators';
 import { copyToClipboard, openConfirmModal } from '../common/general';
 import {
     notifyError,
@@ -102,6 +102,7 @@ export class PlaceEdgeComponent {
     private _edge_list: Observable<PlaceEdge[]> = this._change.pipe(
         switchMap((_) => {
             this.loading = 'Loading Edges...';
+            this._last_change.next(null);
             return queryEdges();
         }),
         catchError((_) => of({})),
@@ -118,6 +119,7 @@ export class PlaceEdgeComponent {
         this._last_change,
         this._edge_list,
     ]).pipe(
+        debounceTime(500),
         map(([edge, list]) => {
             if (!edge) return list;
             const edges = list.filter((_) => _.id !== edge.id);
