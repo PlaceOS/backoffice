@@ -10,6 +10,7 @@ import { UserAboutComponent } from './user-about.component';
 import { UserHistoryComponent } from './user-history.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
 import { UserMetadataComponent } from './user-metadata.component';
+import { NewUsersComponent } from './new-users.component';
 
 @NgModule({
     declarations: [
@@ -17,6 +18,7 @@ import { UserMetadataComponent } from './user-metadata.component';
         UserAboutComponent,
         UserHistoryComponent,
         UserMetadataComponent,
+        NewUsersComponent
     ],
     imports: [
         CommonModule,

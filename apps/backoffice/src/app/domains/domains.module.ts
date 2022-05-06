@@ -12,6 +12,7 @@ import { DomainUsersComponent } from './domain-users.component';
 import { DomainAboutComponent } from './domain-about.component';
 
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
+import { NewDomainsComponent } from './new-domains.component';
 
 @NgModule({
     declarations: [
@@ -20,6 +21,7 @@ import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
         DomainAuthenticationComponent,
         DomainUsersComponent,
         DomainAboutComponent,
+        NewDomainsComponent
     ],
     imports: [
         CommonModule,

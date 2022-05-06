@@ -23,10 +23,7 @@ import { EdgeModalComponent } from './edge-modal.component';
             Add New Edge
         </button>
         <ng-container *ngIf="!loading; else load_state">
-            <div
-                class="w-full"
-                *ngIf="(edges | async)?.length; else empty_state"
-            >
+            <div table class="w-full min-w-[48rem]" *ngIf="(edges | async)?.length; else empty_state">
                 <div table-head>
                     <div class="w-32 p-2">ID</div>
                     <div class="w-32 p-2">Name</div>

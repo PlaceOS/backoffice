@@ -8,11 +8,12 @@ import { ZoneChildrenComponent } from './zone-children.component';
 import { ZoneMetadataComponent } from './zone-metadata.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 import { SettingsHistoryViewComponent } from '../ui/settings-history-view.component';
+import { NewZonesComponent } from './new-zones.component';
 
 export const ROUTES: Routes = [
     {
         path: ':id',
-        component: ZonesComponent,
+        component: NewZonesComponent,
         children: [
             { path: 'about', component: ZoneAboutComponent },
             { path: 'systems', component: ZoneSystemsComponent },

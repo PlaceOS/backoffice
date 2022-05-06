@@ -19,7 +19,8 @@ module.exports = {
         },
         extend: {
             colors: {
-                primary: '#C92366',
+                pink: '#C52B67',
+                primary: '#292F5B',
                 secondary: '#0A0D2E',
                 ternary: '#0A0D2E',
                 quaternary: '#0A0D2E',

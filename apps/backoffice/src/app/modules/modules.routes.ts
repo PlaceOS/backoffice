@@ -5,11 +5,12 @@ import { ModuleAboutComponent } from './module-about.component';
 import { ModuleSystemsComponent } from './module-systems.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 import { SettingsHistoryViewComponent } from '../ui/settings-history-view.component';
+import { NewModulesComponent } from './new-modules.component';
 
 export const ROUTES: Routes = [
     {
         path: ':id',
-        component: ModulesComponent,
+        component: NewModulesComponent,
         children: [
             { path: 'about', component: ModuleAboutComponent },
             { path: 'systems', component: ModuleSystemsComponent },

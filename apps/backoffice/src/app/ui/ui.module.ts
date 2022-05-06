@@ -76,6 +76,12 @@ import { SettingsHistoryViewComponent } from './settings-history-view.component'
 import { SettingsFormatPipe } from './pipes/settings-format.pipe';
 import { UserPipe } from './pipes/user.pipe';
 import { MetadataDisplayComponent } from './metadata-display.component';
+import { NewSidebarMenuComponent } from './new-sidebar-menu.component';
+import { ItemSelectionComponent } from './item-selection.component';
+import { MatRippleModule } from '@angular/material/core';
+import { CustomTooltipComponent } from './custom-tooltip.component';
+import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
+import { PortalModule } from '@angular/cdk/portal';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -118,7 +124,12 @@ const COMPONENTS: Type<any>[] = [
     BasicLineGraphComponent,
     DiffViewerComponent,
     SettingsHistoryViewComponent,
-    MetadataDisplayComponent
+    MetadataDisplayComponent,
+
+    NewSidebarMenuComponent,
+    ItemSelectionComponent,
+    CustomTooltipComponent,
+    UserMenuTooltipComponent
 ];
 
 const PIPES: Type<any>[] = [
@@ -162,6 +173,8 @@ const MATERIAL_MODULES: any[] = [
     MatExpansionModule,
     CdkTableModule,
     MatDatepickerModule,
+    MatRippleModule,
+    PortalModule
 ];
 
 @NgModule({

@@ -12,6 +12,7 @@ import { ZoneSystemsComponent } from './zone-systems.component';
 import { ZoneTriggersComponent } from './zone-triggers.component';
 import { ZoneChildrenComponent } from './zone-children.component';
 import { ZoneMetadataComponent } from './zone-metadata.component';
+import { NewZonesComponent } from './new-zones.component';
 
 @NgModule({
     declarations: [
@@ -21,6 +22,7 @@ import { ZoneMetadataComponent } from './zone-metadata.component';
         ZoneTriggersComponent,
         ZoneChildrenComponent,
         ZoneMetadataComponent,
+        NewZonesComponent
     ],
     imports: [
         CommonModule,

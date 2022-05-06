@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { NewSystemsComponent } from './systems/new-systems.component';
 
 import { AuthorisedAdminGuard } from './ui/guards/authorised-admin.guard';
 import { AuthorisedUserGuard } from './ui/guards/authorised-user.guard';

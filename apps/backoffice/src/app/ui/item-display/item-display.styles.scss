@@ -9,7 +9,7 @@
 
 
 [item-display] {
-    background-color: #fff;
+    // background-color: #fff;
     display: flex;
     height: 100%;
     width: 100%;
@@ -17,7 +17,7 @@
 
     &.dark-mode,
     &.dark {
-        background-color: #424242;
+        // background-color: #424242;
         color: var(--font-light);
     }
 }

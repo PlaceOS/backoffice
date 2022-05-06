@@ -10,32 +10,34 @@ import { BackofficeUsersService } from '../users/users.service';
     selector: 'app-engine',
     template: `
         <div
-            class="h-16 p-4 text-2xl bg-white border-b border-gray-400 border-opacity-30 shadow z-10 dark:text-white dark:bg-greyer"
+            class="absolute inset-0 flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
-            PlaceOS Admin
-        </div>
-        <div class="flex flex-1 z-0 h-1/2 dark:text-white">
-            <div
-                class="relative w-64 h-full bg-white border-r border-gray-400 border-opacity-30 shadow z-10 dark:bg-greyer"
-            >
-                <a
-                    *ngFor="let item of tab_list"
-                    class="flex items-center space-x-2 my-2 rounded-l-2xl h-8 px-3 ml-3 hover:bg-primary hover:bg-opacity-25"
-                    [routerLink]="['/admin', item.id]"
-                    routerLinkActive="active"
-                >
-                    <app-icon [icon]="item.icon"></app-icon>
-                    <span>{{ item.name }}</span>
-                </a>
+            <new-sidebar-menu
+                class="sm:h-full bg-gray-200 dark:bg-neutral-800"
+            ></new-sidebar-menu>
+            <div class="flex-1 w-1/2 h-full relative flex flex-col">
+                <div class="flex flex-1 z-0 h-1/2 dark:text-white dark:bg-neutral-700">
+                    <div
+                        class="relative w-56 px-2 my-4 border-r border-gray-400 border-opacity-30 z-10"
+                    >
+                        <a
+                            *ngFor="let item of tab_list"
+                            class="flex items-center space-x-2 m-2 rounded h-8 px-3 hover:bg-primary hover:bg-opacity-25"
+                            [routerLink]="['/admin', item.id]"
+                            routerLinkActive="active"
+                        >
+                            <app-icon [icon]="item.icon"></app-icon>
+                            <span>{{ item.name }}</span>
+                        </a>
+                    </div>
+                    <div
+                        class="relative flex-1 w-1/2 h-full z-0 px-4 dark:text-white overflow-auto"
+                    >
+                        <router-outlet></router-outlet>
+                    </div>
+                </div>
             </div>
-            <div
-                class="relative flex-1 w-1/2 h-full z-0 bg-white px-4 dark:text-white dark:bg-grey"
-            >
-                <router-outlet></router-outlet>
-            </div>
         </div>
-        <!-- <item-display class="w-full h-full" name="Admin" route="admin" [has_change]="false" [tabs]="tab_list">
-        </item-display> -->
     `,
     styles: [
         `
@@ -47,7 +49,7 @@ import { BackofficeUsersService } from '../users/users.service';
             }
 
             .active {
-                background-color: #c2185b !important;
+                background-color: var(--primary) !important;
                 color: #fff;
                 margin-right: -1px;
             }

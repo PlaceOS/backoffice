@@ -55,7 +55,7 @@ import { notifyInfo } from '../../common/notifications';
                 </div>
             </div>
         </div>
-        <div role="table" *ngIf="(key_list | async)?.length; else load_state">
+        <div role="table" class="min-w-[60rem]" *ngIf="(key_list | async)?.length; else load_state">
             <div table-head>
                 <div class="w-32 p-2">Name</div>
                 <div class="flex-1 p-2">Description</div>

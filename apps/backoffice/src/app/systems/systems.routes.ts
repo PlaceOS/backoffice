@@ -7,11 +7,12 @@ import { SystemZonesComponent } from './system-zones.component';
 import { SystemMetadataComponent } from './system-metadata.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 import { SettingsHistoryViewComponent } from '../ui/settings-history-view.component';
+import { NewSystemsComponent } from './new-systems.component';
 
 export const ROUTES: Routes = [
     {
         path: ':id',
-        component: SystemsComponent,
+        component: NewSystemsComponent,
         children: [
             { path: 'about', component: SystemAboutComponent },
             { path: 'modules', component: SystemModulesComponent },

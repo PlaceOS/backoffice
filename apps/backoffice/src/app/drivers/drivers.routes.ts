@@ -5,11 +5,12 @@ import { DriverAboutComponent } from './driver-about.component';
 import { DriverModulesComponent } from './driver-devices.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 import { SettingsHistoryViewComponent } from '../ui/settings-history-view.component';
+import { NewDriversComponent } from './new-drivers.component';
 
 export const ROUTES: Routes = [
     {
         path: ':id',
-        component: DriversComponent,
+        component: NewDriversComponent,
         children: [
             { path: 'about', component: DriverAboutComponent },
             { path: 'modules', component: DriverModulesComponent },

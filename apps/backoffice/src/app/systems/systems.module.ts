@@ -13,6 +13,7 @@ import { SystemTriggersComponent } from './system-triggers.component';
 import { SystemZonesComponent } from './system-zones.component';
 import { SystemMetadataComponent } from './system-metadata.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
+import { NewSystemsComponent } from './new-systems.component';
 
 @NgModule({
     declarations: [
@@ -22,6 +23,7 @@ import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
         SystemTriggersComponent,
         SystemZonesComponent,
         SystemMetadataComponent,
+        NewSystemsComponent,
     ],
     imports: [
         CommonModule,

@@ -5,11 +5,12 @@ import { DomainAuthenticationComponent } from './domain-authentication.component
 import { DomainUsersComponent } from './domain-users.component';
 import { DomainAboutComponent } from './domain-about.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
+import { NewDomainsComponent } from './new-domains.component';
 
 export const ROUTES: Routes = [
     {
         path: ':id',
-        component: DomainsComponent,
+        component: NewDomainsComponent,
         children: [
             { path: 'about', component: DomainAboutComponent },
             { path: 'applications', component: DomainApplicationsComponent },

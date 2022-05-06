@@ -9,12 +9,14 @@ import { RepositoriesComponent } from './repositories.component';
 import { RepositoryAboutComponent } from './repository-about.component';
 import { RepositoryDriversComponent } from './repository-drivers.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
+import { NewRepositoriesComponent } from './new-repositories.component';
 
 @NgModule({
     declarations: [
         RepositoriesComponent,
         RepositoryAboutComponent,
         RepositoryDriversComponent,
+        NewRepositoriesComponent,
     ],
     imports: [
         CommonModule,

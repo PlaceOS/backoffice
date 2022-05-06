@@ -87,7 +87,7 @@ const general = {
             },
         },
         {
-            name: 'Repos',
+            name: 'Repositories',
             route: '/repositories',
             needs_role: 'sys_admin',
             icon: {
@@ -135,7 +135,7 @@ const general = {
             },
         },
         {
-            name: 'Admin',
+            name: 'Manage Instance',
             route: '/admin',
             needs_role: 'sys_admin',
             icon: {
