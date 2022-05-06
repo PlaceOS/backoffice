@@ -8,6 +8,7 @@ import {
     PlaceRepository,
     PlaceRepositoryType,
     pullRepositoryChanges,
+    showRepository,
 } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
 import {
@@ -82,12 +83,8 @@ export class RepositoriesStateService {
                 );
             });
         if (!commit) return;
-        this._state.replaceItem(
-            new PlaceRepository({
-                ...this.active_item,
-                commit_hash: commit.commit_hash,
-            })
-        );
+        const repo = await showRepository(this.active_item.id).toPromise();
+        this._state.replaceItem(repo);
     }
 
     public async newDriver(driver: string) {
