@@ -17,12 +17,24 @@ import { ActiveItemService } from '../common/item.service';
             ></new-sidebar-menu>
             <div class="flex-1 w-1/2 h-full relative flex flex-col-reverse">
                 <item-display
-                    name="system"
+                    name="trigger"
                     [route]="name"
                     [tabs]="tab_list"
                     class="h-1/2 w-full z-10"
                 ></item-display>
                 <item-selection class="z-20" title="Triggers" [route]="name"></item-selection>
+                <button
+                    class="absolute bottom-16 -left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
+                    matTooltip="New trigger"
+                    matTooltipPosition="right"
+                    matRipple
+                    (click)="newItem()"
+                >
+                    <app-icon
+                        [className]="'backoffice-plus'"
+                        class="text-3xl"
+                    ></app-icon>
+                </button>
             </div>
         </div>
     `,
@@ -33,6 +45,8 @@ export class NewTriggersComponent extends BaseClass {
 
     public instance_count = 0;
     public tab_list = [];
+
+    public readonly newItem = () => this._service.create();
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);

@@ -1,14 +1,26 @@
+.dark {
+    button[mat-button].mat-button,
+    a[button] {
+        background-color: var(--placeos-pink);
+        border: 1px solid var(--placeos-pink);
+
+        &.inverse {
+            color: #fff;
+        }
+    }
+}
+
 button[mat-button].mat-button,
 a[button] {
     background-color: var(--primary);
     border: 1px solid var(--primary);
     color: var(--font-light);
-    font-weight: 300;
+    font-weight: 400;
     border-radius: 4px;
 
     &.inverse {
-        background-color: #fff;
-        color: var(--primary);
+        background: none;
+        color: #000;
     }
 
     &.clear {
@@ -113,6 +125,12 @@ mat-select {
 
 .overlay-backdrop {
     background-color: rgba(#000, 0.6);
+}
+
+.dark .mat-dialog-container {
+    header {
+        background-color: var(--placeos-pink);
+    }
 }
 
 mat-dialog-container.mat-dialog-container {
@@ -497,10 +515,21 @@ mat-panel-title {
 #placeos .mat-ink-bar {
     @apply bg-primary;
 }
+
+#placeos .dark .mat-ink-bar {
+    @apply bg-pink;
+}
 #placeos {
     .mat-progress-spinner circle,
     .mat-spinner circle {
         stroke: var(--primary);
+    }
+
+    .dark {
+        .mat-progress-spinner circle,
+        .mat-spinner circle {
+            stroke: var(--placeos-pink);
+        }
     }
 
     .mat-checkbox-checked .mat-checkbox-background {

@@ -7,9 +7,15 @@ import {
     ViewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import {
+    PlaceDriverRole,
+    PlaceModule,
+    PlaceRepository,
+} from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
 import { take } from 'rxjs/operators';
 import { BaseClass } from '../common/base.class';
+import { HotkeysService } from '../common/hotkeys.service';
 import { ActiveItemService } from '../common/item.service';
 import { SettingsService } from '../common/settings.service';
 import { BackofficeUsersService } from '../users/users.service';
@@ -21,27 +27,39 @@ import { BackofficeUsersService } from '../users/users.service';
             class="w-full p-2 flex items-center justify-center border-b border-gray-200 dark:border-neutral-500"
         >
             <button
-                (click)="show = true; this.focusInput()"
+                (click)="open()"
                 class="border border-gray-200 dark:border-neutral-500 rounded-lg flex items-center w-[512px] max-w-[calc(100vw-1rem)]"
             >
-                <app-icon class="text-2xl ml-2 dark:text-white">search</app-icon>
-                <p class="p-2 text-lg opacity-30 dark:text-white">View {{ title }}</p>
+                <app-icon class="text-2xl ml-2 dark:text-white"
+                    >search</app-icon
+                >
+                <p
+                    class="p-2 text-lg opacity-30 dark:text-white flex-1 w-1/2 text-left"
+                >
+                    View {{ title }}
+                </p>
+                <span class="keycap mr-2 text-xs">K</span>
             </button>
         </div>
         <ng-container *ngIf="show_view">
             <div
                 class="absolute inset-0 bg-white/80 dark:bg-black/30"
                 (click)="show = false"
+                (window:keydown.esc)="show = false"
             ></div>
             <div
                 class=" absolute left-1/2 top-2 -translate-x-1/2 flex flex-col w-[512px] max-w-[calc(100vw-1rem)] space-y-2 bg-white dark:bg-neutral-700 shadow rounded overflow-hidden"
                 (click)="$event.stopPropagation()"
             >
-                <div class="flex items-center border-b border-gray-200 dark:border-neutral-600">
-                    <app-icon class="text-2xl ml-2 dark:text-white">search</app-icon>
+                <div
+                    class="flex items-center border-b border-gray-200 dark:border-neutral-600"
+                >
+                    <app-icon class="text-2xl ml-2 dark:text-white"
+                        >search</app-icon
+                    >
                     <input
                         #search_input
-                        class="border-none flex-1 py-3 px-2 text-lg bg-transparent"
+                        class="border-none flex-1 py-3 px-2 text-lg bg-transparent dark:text-white"
                         [(ngModel)]="search"
                         (ngModelChange)="updateSearch($event)"
                         [placeholder]="'Search for ' + title"
@@ -52,6 +70,9 @@ import { BackofficeUsersService } from '../users/users.service';
                         class="mr-2"
                     ></mat-spinner>
                 </div>
+                <p class="text-sm dark:text-white opacity-60 w-full px-4">
+                    {{ total | async }} item(s)
+                </p>
                 <div class="flex flex-col flex-1 h-1/2">
                     <cdk-virtual-scroll-viewport
                         itemSize="48"
@@ -75,15 +96,15 @@ import { BackofficeUsersService } from '../users/users.service';
                                 exact: false,
                                 __change_detection_hack__: item.id + subroute
                             }"
-                            class="flex items-center px-4 py-2 m-2 rounded"
-                            (click)="show = false;"
+                            class="flex items-center px-4 py-2 m-2 rounded space-x-2"
+                            (click)="show = false"
                         >
-                            <p class="truncate">
+                            <p class="truncate flex-1">
                                 {{ item.display_name || item.name }}
                             </p>
-                            <p class="text-xs text-opacity-30">
+                            <code class="text-xs opacity-60">
                                 {{ item.extra }}
-                            </p>
+                            </code>
                         </a>
                     </cdk-virtual-scroll-viewport>
                 </div>
@@ -91,7 +112,7 @@ import { BackofficeUsersService } from '../users/users.service';
         </ng-container>
         <ng-template #empty_state>
             <div
-                class="p-8 flex flex-col items-center justify-center opacity-30"
+                class="p-8 flex flex-col items-center justify-center opacity-30 dark:text-white"
             >
                 <p>
                     {{
@@ -130,6 +151,8 @@ export class ItemSelectionComponent extends BaseClass {
     public readonly items = this._service.list;
     /** Whether list of items for the active route are loading */
     public readonly loading = this._service.loading_list;
+    /** Total number of items in the last request */
+    public total = this._service.count;
 
     /** Virtual scrolling viewport */
     @ViewChild(CdkVirtualScrollViewport)
@@ -149,13 +172,27 @@ export class ItemSelectionComponent extends BaseClass {
         private _users: BackofficeUsersService,
         private _router: Router,
         private _settings: SettingsService,
+        private _hotkeys: HotkeysService,
         private _service: ActiveItemService
     ) {
         super();
     }
 
     public ngOnInit() {
-        this.subscription('loading', this._service.loading.subscribe(() => this.show = !this._service.active_item));
+        this.subscription(
+            'loading',
+            this._service.loading.subscribe(
+                () => (this.show = !this._service.active_item)
+            )
+        );
+        this.subscription(
+            'list',
+            this._service.list.subscribe((l) => this._processItems(l))
+        );
+        this.subscription(
+            'hotkey',
+            this._hotkeys.listen(['KeyK'], () => this.open())
+        );
     }
 
     public ngOnChanges(changes: SimpleChanges) {
@@ -167,6 +204,11 @@ export class ItemSelectionComponent extends BaseClass {
     public ngAfterViewInit() {
         this.focusInput();
         this.atBottom();
+    }
+
+    public open() {
+        this.show = true;
+        this.timeout('focus', () => this.focusInput());
     }
 
     public focusInput() {
@@ -207,6 +249,32 @@ export class ItemSelectionComponent extends BaseClass {
             this.last_check = Date.now();
             if (this.last_total !== this._service.total) {
                 this._service.moreItems();
+            }
+        }
+    }
+
+    private _processItems(list: any[]) {
+        for (let item of list) {
+            if (item instanceof PlaceModule) {
+                const detail =
+                    item.role === PlaceDriverRole.Service
+                        ? item.uri
+                        : item.role === PlaceDriverRole.Logic
+                        ? item.control_system_id
+                        : item.ip;
+                (item as any).display_name =
+                    item.custom_name || item.name || '<Unnamed>';
+                (item as any).extra = detail;
+            } else if (item instanceof PlaceRepository) {
+                (item as any).display_name = item.name || '<Unnamed>';
+                (item as any).extra = item.repo_type;
+            } else {
+                (item as any).display_name =
+                    item.display_name ||
+                    item.custom_name ||
+                    item.name ||
+                    '<Unnamed>';
+                (item as any).extra = item.id;
             }
         }
     }

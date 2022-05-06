@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { extensionsForItem } from '../common/api';
 import { BaseClass } from '../common/base.class';
+import { ActiveItemService } from '../common/item.service';
 import { DomainStateService } from './domain-state.service';
 
 @Component({
@@ -14,12 +15,28 @@ import { DomainStateService } from './domain-state.service';
             ></new-sidebar-menu>
             <div class="flex-1 w-1/2 h-full relative flex flex-col-reverse">
                 <item-display
-                    name="system"
+                    name="domain"
                     [route]="name"
                     [tabs]="tab_list"
                     class="h-1/2 w-full z-10"
                 ></item-display>
-                <item-selection class="z-20" title="Domains" [route]="name"></item-selection>
+                <item-selection
+                    class="z-20"
+                    title="Domains"
+                    [route]="name"
+                ></item-selection>
+                <button
+                    class="absolute bottom-16 -left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
+                    matTooltip="New domain"
+                    matTooltipPosition="right"
+                    matRipple
+                    (click)="newItem()"
+                >
+                    <app-icon
+                        [className]="'backoffice-plus'"
+                        class="text-3xl"
+                    ></app-icon>
+                </button>
             </div>
         </div>
     `,
@@ -30,11 +47,16 @@ export class NewDomainsComponent extends BaseClass {
 
     public tab_list = [];
 
+    public readonly newItem = () => this._item.create();
+
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
     }
 
-    constructor(private _service: DomainStateService) {
+    constructor(
+        private _service: DomainStateService,
+        protected _item: ActiveItemService
+    ) {
         super();
     }
 

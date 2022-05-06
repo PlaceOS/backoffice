@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { extensionsForItem } from '../common/api';
 import { BaseClass } from '../common/base.class';
+import { ActiveItemService } from '../common/item.service';
 import { SystemStateService } from './system-state.service';
 
 @Component({
@@ -21,13 +22,25 @@ import { SystemStateService } from './system-state.service';
                 ></item-display>
                 <item-selection class="z-20"></item-selection>
                 <button
-                    class="absolute bottom-16 -left-9 w-12 h-12 flex items-center justify-center bg-primary rounded-lg shadow z-30 text-white"
+                    class="absolute bottom-16 -left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
                     matTooltip="New system"
+                    matTooltipPosition="right"
+                    matRipple
+                    (click)="newItem()"
                 >
                     <app-icon
                         [className]="'backoffice-plus'"
                         class="text-3xl"
                     ></app-icon>
+                </button>
+                <button
+                    class="absolute bottom-[7.5rem] -left-8 w-10 h-10 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
+                    matTooltip="Bulk add zones"
+                    matTooltipPosition="right"
+                    matRipple
+                    (click)="bulkAdd()"
+                >
+                    <app-icon class="text-2xl">playlist_add</app-icon>
                 </button>
             </div>
         </div>
@@ -38,6 +51,9 @@ export class NewSystemsComponent extends BaseClass {
     public readonly name = 'systems';
 
     public tab_list = [];
+
+    public readonly newItem = () => this._item.create();
+    public readonly bulkAdd = () => this._item.bulkAdd();
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
@@ -82,7 +98,10 @@ export class NewSystemsComponent extends BaseClass {
         ].concat(this.extensions);
     }
 
-    constructor(protected _service: SystemStateService) {
+    constructor(
+        protected _service: SystemStateService,
+        private _item: ActiveItemService
+    ) {
         super();
     }
 

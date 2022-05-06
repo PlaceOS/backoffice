@@ -1,4 +1,4 @@
-import { Component, Inject, Optional } from '@angular/core';
+import { Component, Optional } from '@angular/core';
 import { Router } from '@angular/router';
 import { authority } from '@placeos/ts-client';
 import { BaseClass } from '../common/base.class';

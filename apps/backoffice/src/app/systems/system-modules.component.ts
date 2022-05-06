@@ -152,7 +152,7 @@ import { SystemStateService } from './system-state.service';
                                     <a
                                         [routerLink]="['/modules', device.id]"
                                         (contextmenu)="$event.stopPropagation()"
-                                        class="truncate underline w-full"
+                                        class="truncate underline underline-offset-4 w-full"
                                         [title]="
                                             device.driver?.name || '<Unnamed>'
                                         "
