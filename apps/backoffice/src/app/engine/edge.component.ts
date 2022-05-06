@@ -15,20 +15,21 @@ import { EdgeModalComponent } from './edge-modal.component';
         <ng-container *ngIf="!loading; else load_state">
             <div class="w-full" *ngIf="(edges | async)?.length; else empty_state">
                 <div table-head>
-                    <div class="w-32 p-2">id</div>
+                    <div class="w-32 p-2">ID</div>
                     <div class="w-32 p-2">Name</div>
-                    <div class="flex-1 p-2">description</div>
-                    <div class="w-32 p-2 h-10"></div>
+                    <div class="flex-1 p-2">Description</div>
+                    <div class="w-32 p-2">API Key</div>
+                    <div class="w-24 p-2 h-10"></div>
                 </div>
                 <div table-body>
                     <div table-row *ngFor="let item of edges | async">
-                        <div class="w-32 p-2 truncate">{{ item.id }}</div>
+                        <div class="w-32 p-2 truncate text-xs font-mono">{{ item.id }}</div>
                         <div class="w-32 p-2 truncate">{{ item.name }}</div>
                         <div class="flex-1 p-2 truncate">{{ item.description }}</div>
-                        <div class="w-32 px-2 flex items-center justify-end ">
-                            <button mat-icon-button class="h-10 w-10" (click)="token(item)">
-                                <app-icon className="backoffice-key"></app-icon>
-                            </button>
+                        <div class="w-32 p-2">
+                            <code>{{ item.x_api_key || '********' }}</code>
+                        </div>
+                        <div class="w-24 px-2 flex items-center justify-end ">
                             <button mat-icon-button class="h-10 w-10" (click)="edit(item)">
                                 <app-icon className="backoffice-edit"></app-icon>
                             </button>
