@@ -41,6 +41,18 @@ a[button] {
     }
 }
 
+a.underline {
+    &:hover {
+        @apply text-blue-700;
+        font-weight: 500;
+    }
+}
+.dark a.underline {
+    &:hover {
+        @apply text-blue-500;
+    }
+}
+
 button.mat-icon-button {
     display: flex;
     align-items: center;
