@@ -22,9 +22,13 @@ export const validateURI = (ctrl) => {
     }
 };
 
-export const validateURL = Validators.pattern(
-    /^(ftp|http|https):\/\/[^ "]+$/gi
-);
+export const isValidUrl = (url) => {
+    try { new URL(url); } 
+    catch (e) { return false; }
+    return true;
+};
+
+export const validateURL = (ctrl: AbstractControl) => isValidUrl(ctrl?.value) ? null : { url: 'invalid' } ;
 
 export function validateJSONString(control: AbstractControl) {
     if (!control || !control.value) {
