@@ -6,92 +6,95 @@ import { RepositoriesStateService } from './repositories-state.service';
 @Component({
     selector: 'repository-about',
     template: `
-        <section class="mb-4 text-center">
-            <mat-card class="w-52">
-                <mat-card-content i18n="@@repoPullActionDetails">
-                    Pull the latest commit for<br />
-                    this repository
-                </mat-card-content>
-                <mat-card-actions>
-                    <button
-                        mat-button
-                        class="w-40"
-                        [disabled]="pulling"
-                        (click)="pullLatestCommit()"
+        <section class="mb-4 text-center flex space-x-2">
+            <div
+                class="shadow rounded p-2 border border-black/10 space-y-2 min-w-[45%] flex-1 flex flex-col"
+            >
+                <div class="flex items-center space-x-2">
+                    <label i18n="@@descriptionLabel">Description:</label>
+                    <div class="value select-all">
+                        {{ item.description || 'No description' }}
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <label i18n="@@repoTypeLabel">Type:</label>
+                    <div class="value" i18n="@@driverListEmpty">
+                        { item.type, select, interface { Interface Repository }
+                        driver { Driver Repository }, other { =Unknown=} }
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <label i18n="@@repoFolderNameLabel">Folder name:</label>
+                    <div
+                        class="value select-all"
+                        [class.underline]="item.type === 'interface'"
+                        [class.pointer-events-none]="item.type !== 'interface'"
                     >
-                        <ng-container
-                            *ngIf="!pulling; else spinner"
-                            i18n="@@repoPullAction"
+                        <a [href]="local_url" target="_blank">{{
+                            item.folder_name || 'No folder set'
+                        }}</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <label i18n="@@repoCreatedAtLabel">Created:</label>
+                    <div class="value">
+                        {{ item.created_at * 1000 | dateFrom }}
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <label i18n="@@repoUpdatedAtLabel">Updated:</label>
+                    <div class="value">
+                        {{ item.updated_at * 1000 | dateFrom }}
+                    </div>
+                </div>
+            </div>
+            <div
+                class="shadow rounded p-2 border border-black/10 space-y-2 min-w-[45%] flex-1 flex flex-col"
+            >
+                <div class="flex items-center space-x-2">
+                    <label i18n="@@repoUriLabel">Repository URI:</label>
+                    <div class="value underline select-all">
+                        <a [href]="item.uri | safe: 'url'" target="_blank">{{
+                            repo_uri || 'No URI set'
+                        }}</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <label i18n="@@repoBranchLabel">Branch:</label>
+                    <div
+                        class="value select-all bg-gray-200 px-2 pb-1 pt-2 text-xs rounded mono dark:text-black"
+                    >
+                        {{ item.branch || 'master' }}
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <label i18n="@@repoCommitHashLabel">Commit hash:</label>
+                    <div
+                        class="value select-text bg-gray-200 px-2 pb-1 pt-2 text-xs rounded mono dark:text-black"
+                    >
+                        {{ item.commit_hash || 'No Commit hash set' }}
+                        <span
+                            class="select-text mono"
+                            *ngIf="commit && commit !== item.commit_hash"
                         >
-                            Pull
-                        </ng-container>
-                    </button>
-                </mat-card-actions>
-            </mat-card>
-        </section>
-        <section class="space-y-2">
-            <div class="flex items-center space-x-2">
-                <label i18n="@@repoTypeLabel">Type:</label>
-                <div class="value" i18n="@@driverListEmpty">
-                    { item.type, select, interface { Interface Repository }
-                    driver { Driver Repository }, other { =Unknown=} }
+                            ({{ commit }})
+                        </span>
+                    </div>
                 </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <label i18n="@@repoFolderNameLabel">Folder name:</label>
-                <div
-                    class="value select-all"
-                    [class.underline]="item.type === 'interface'"
-                    [class.pointer-events-none]="item.type !== 'interface'"
+                <div class="flex-1"></div>
+                <button
+                    mat-button
+                    class="w-full"
+                    [disabled]="pulling"
+                    (click)="pullLatestCommit()"
                 >
-                    <a [href]="local_url" target="_blank">{{
-                        item.folder_name || 'No folder set'
-                    }}</a>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <label i18n="@@repoUriLabel">Repository URI:</label>
-                <div class="value underline select-all">
-                    <a [href]="item.uri | safe: 'url'" target="_blank">{{
-                        repo_uri || 'No URI set'
-                    }}</a>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <label i18n="@@repoBranchLabel">Branch:</label>
-                <div
-                    class="value select-all bg-gray-200 px-2 pb-1 pt-2 text-xs rounded mono dark:text-black"
-                >
-                    {{ item.branch || 'master' }}
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <label i18n="@@repoCommitHashLabel">Commit hash:</label>
-                <div
-                    class="value select-text bg-gray-200 px-2 pb-1 pt-2 text-xs rounded mono dark:text-black"
-                >
-                    {{ item.commit_hash || 'No Commit hash set' }}
-                    <span
-                        class="select-text mono"
-                        *ngIf="commit && commit !== item.commit_hash"
+                    <ng-container
+                        *ngIf="!pulling; else spinner"
+                        i18n="@@repoPullAction"
                     >
-                        ({{ commit }})
-                    </span>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <label i18n="@@descriptionLabel">Description:</label>
-                <div class="value select-all">
-                    {{ item.description || 'No description' }}
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <label i18n="@@repoCreatedAtLabel">Created:</label>
-                <div class="value">{{ item.created_at * 1000 | dateFrom }}</div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <label i18n="@@repoUpdatedAtLabel">Updated:</label>
-                <div class="value">{{ item.updated_at * 1000 | dateFrom }}</div>
+                        Pull latest commit
+                    </ng-container>
+                </button>
             </div>
         </section>
         <ng-template #spinner>
@@ -108,6 +111,11 @@ import { RepositoriesStateService } from './repositories-state.service';
 
             .mono {
                 font-family: var(--mono-font);
+            }
+
+            label {
+                width: 6rem;
+                text-align: left;
             }
         `,
     ],

@@ -58,7 +58,7 @@ import { DriverStateService } from './driver-state.service';
                 </div>
             </div>
             <div
-                class="shadow rounded p-2 border border-black/10 space-y-2 min-w-[45%] flex-1"
+                class="shadow rounded p-2 border border-black/10 space-y-2 min-w-[45%] flex-1 flex flex-col"
         >
                 <div class="flex items-center space-x-2">
                     <label i18n="@@driverDetailsCompiled">Compiled</label>
@@ -85,6 +85,7 @@ import { DriverStateService } from './driver-state.service';
                     <label i18n="@@driverDetailsFileName">File Name</label>
                     <div class="font-mono text-sm truncate" [title]="item.file_name">{{ item.file_name }}</div>
                 </div>
+                <div class="flex-1"></div>
                 <button
                     mat-button
                     (click)="recompileDriver()"
