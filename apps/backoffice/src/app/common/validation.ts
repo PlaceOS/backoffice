@@ -23,6 +23,7 @@ export const validateURI = (ctrl) => {
 };
 
 export const isValidUrl = (url) => {
+    if (!url) return true;
     try { new URL(url); } 
     catch (e) { return false; }
     return true;
