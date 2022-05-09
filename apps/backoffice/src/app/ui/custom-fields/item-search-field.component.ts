@@ -30,6 +30,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                     matInput
                     name="item-search"
                     [(ngModel)]="search_str"
+                    (ngModelChange)="search$.next($event)"
                     [disabled]="disabled"
                     [placeholder]="
                         'Search' + (name ? ' for ' + name : '') + '...'
