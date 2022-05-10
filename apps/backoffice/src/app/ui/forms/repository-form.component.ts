@@ -71,7 +71,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                 </label>
                 <item-search-field
                     name="commit"
-                    [options]="commit_list | slice: 1"
+                    [options]="commit_list"
                     [disabled]="follow_latest"
                     [loading]="loading_commits"
                     [ngModel]="base_commit"
@@ -310,7 +310,7 @@ export class RepositoryFormComponent {
             const date = new Date(commit.date || Date.now()).valueOf();
             return {
                 id: commit.commit,
-                name: commit.subject,
+                name: commit.subject || commit.name,
                 extra: isAfter(date, subMinutes(date, 1))
                     ? this.date_pipe.transform(date)
                     : format(date, 'dd MMM YYYY'),

@@ -53,7 +53,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                 #auto="matAutocomplete"
             >
                 <mat-option
-                    *ngFor="let option of item_list"
+                    *ngFor="let option of items"
                     [value]="option.name || option.id"
                     (click)="search$.next(option); setValue(option);"
                     class="leading-tight"
@@ -136,28 +136,12 @@ export class ItemSearchFieldComponent<T extends Identity = any>
     /** Form control on touch handler */
     private _onTouch: (_: T) => void;
 
-    /** Map of item names to their IDs */
-    public get item_name(): HashMap<string> {
-        const map = {};
-        const list = this.item_list || [];
-        for (let item of list) {
-            if (item instanceof PlaceModule) {
-                const detail =
-                    item.role === PlaceDriverRole.Service
-                        ? item.uri
-                        : item.role === PlaceDriverRole.Logic
-                        ? item.control_system_id
-                        : item.ip;
-                map[item.id] = `${
-                    item.name || '<Unnamed>'
-                } <span class="small">${detail}<span>`;
-            } else {
-                map[item.id] =
-                    (item as any).custom_name || item.name || '<Unnamed>';
-            }
-        }
-        return map;
+    public get items() {
+        return this.options?.length ? this.options : this.item_list;
     }
+
+    /** Map of item names to their IDs */
+    public item_name: HashMap<string> = {};
 
     public ngOnInit(): void {
         // Listen for input changes
@@ -176,6 +160,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
             map((list: T[]) => {
                 this.loading = false;
                 const search = (this.search_str || '').toLowerCase();
+                console.log('Results', list);
                 return list.filter((item: any) => {
                     const match =
                         item.name?.toLowerCase().indexOf(search) >= 0 ||
@@ -187,7 +172,10 @@ export class ItemSearchFieldComponent<T extends Identity = any>
         // Process API results
         this.subscription(
             'search_results',
-            this.search_results$.subscribe((list) => (this.item_list = list))
+            this.search_results$.subscribe((list) => {
+                this.item_list = list;
+                this._updateNameMap();
+            })
         );
         this.timeout('init', () => {
             this.search$.next('');
@@ -195,9 +183,8 @@ export class ItemSearchFieldComponent<T extends Identity = any>
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
-        if (changes.service) {
-            this.search$.next('');
-        }
+        if (changes.service) this.search$.next('');
+        if (changes.options) this._updateNameMap();
     }
 
     /**
@@ -252,5 +239,28 @@ export class ItemSearchFieldComponent<T extends Identity = any>
      */
     public registerOnTouched(fn: (_: T) => void): void {
         this._onTouch = fn;
+    }
+
+    private _updateNameMap() {
+        const map = {};
+        const list = this.items || [];
+        for (let item of list) {
+            if (item instanceof PlaceModule) {
+                const detail =
+                    item.role === PlaceDriverRole.Service
+                        ? item.uri
+                        : item.role === PlaceDriverRole.Logic
+                        ? item.control_system_id
+                        : item.ip;
+                map[item.id] = `${
+                    item.name || '<Unnamed>'
+                } <span class="small">${detail}<span>`;
+            } else {
+                map[item.id] =
+                    (item as any).custom_name || item.name || '<Unnamed>';
+            }
+        }
+        this.item_name = map;
+        console.log('Name Map:', list, this.item_name);
     }
 }
