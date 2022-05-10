@@ -169,34 +169,37 @@ export function numberToPosition(num: number): string {
  * Parse raw CSV data into a JSON object
  * @param csv CSV data to parse
  */
-export function csvToJson(csv: string, seperator: string = ',') {
-    const lines = csv.replace(/\r|\\r/g, '').split('\n');
-    let fields = lines.splice(0, 1)[0].split(seperator);
-    const list: any[] = [];
-    for (const line of lines) {
-        let parts = line.split(seperator);
-        /* istanbul ignore else */
-        if (parts.length >= fields.length) {
-            const item: any = {};
-            for (let i = 0; i <= parts.length; i++) {
-                let part = null;
-                part = parts[i];
-                /* istanbul ignore else */
-                if (part !== undefined) {
-                    let value = '';
-                    try {
-                        value = JSON.parse(part);
-                    } catch (e) {
-                        value = part;
-                    }
-                    item[(fields[i] || '').split(' ').join('_').toLowerCase()] = value;
-                }
-            }
-            list.push(item);
-        }
+export function csvToJson(csv: string, delimiter: string = ','): HashMap[] {
+    const objPattern = new RegExp(
+        '(\\,|\\r?\\n|\\r|^)(?:"([^"]*(?:""[^"]*)*)"|([^\\,\\r\\n]*))',
+        'gi'
+    );
+    let arrMatches = null;
+    const arrData = [[]];
+    while ((arrMatches = objPattern.exec(csv))) {
+        if (arrMatches[1].length && arrMatches[1] !== ',') arrData.push([]);
+        arrData[arrData.length - 1].push(
+            arrMatches[2]
+                ? arrMatches[2].replace(new RegExp('""', 'g'), '"')
+                : arrMatches[3]
+        );
     }
-
-    return list;
+    const headers: string[] = arrData.splice(0, 1)[0];
+    const elements = arrData.map((row) => {
+        const element = {};
+        for (let i = 0; i < row.length; i++) {
+            const key = headers[i].split(' ').join('_').toLowerCase();
+            try {
+                element[key] = JSON.parse(row[i]);
+            } catch (e) {
+                element[key] = row[i] || '';
+            }
+            if (element[key] === 'TRUE' || element[key] === 'FALSE') 
+                element[key] = element[key] === 'TRUE';
+        }
+        return element;
+    });
+    return elements;
 }
 
 /**
