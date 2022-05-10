@@ -188,7 +188,7 @@ export function csvToJson(csv: string, delimiter: string = ','): HashMap[] {
     const elements = arrData.map((row) => {
         const element = {};
         for (let i = 0; i < row.length; i++) {
-            const key = headers[i].split(' ').join('_').toLowerCase();
+            const key = (headers[i] || '').split(' ').join('_').toLowerCase();
             try {
                 element[key] = JSON.parse(row[i]);
             } catch (e) {

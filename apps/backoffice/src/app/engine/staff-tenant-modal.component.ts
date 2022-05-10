@@ -230,7 +230,8 @@ export class StaffTenantModalComponent implements OnInit {
         if (!this.form.valid) return;
         this._dialog_ref.disableClose = true;
         this.loading = true;
-        const booking_limits = this.form.value.booking_limits.reduct(
+        const limits: { type: string, amount: string }[] = this.form.value.booking_limits || [];
+        const booking_limits = limits.reduce(
             (m, { type, amount }) => (m[type] = +amount),
             {}
         );
