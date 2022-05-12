@@ -1,4 +1,4 @@
-const domain = 'localhost:8443';
+const domain = 'placeos-dev.aca.im';
 const secure = true;
 const valid_ssl = false;
 
