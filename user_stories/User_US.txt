@@ -1,0 +1,72 @@
+Scenario: User wants to add a new user
+Given that I am on the Users page
+When I click on the plus button in the Users sidebar
+* enter the appropriate user details
+* Click 'Save'
+Then I will get a green toast bar that says 'Successfully added user' and the user will be added
+
+Scenario: User supplies search term
+Given that I am on the Users page
+When I enter the term into the search bar
+Then I will get filtered results of Users in the sidebar
+
+Scenario: User selects a user from sidebar
+Given that I am on the Users page
+When I click on the intended User name in the sidebar
+Then I am taken to that particular User's information dashboard with the About tab selected
+
+Scenario: User wants to edit the user
+Given that I am on the selected User page
+When I click the Kebab menu icon
+* I click 'Edit user'
+* I enter the updated repository data
+* I click 'Save'
+Then I will get a green toast bar that says 'Successfully updated user'
+* The user will be updated with the new data
+
+Scenario: User wants to export the User
+Given that I am on the selected User page
+When I click the Kebab menu icon
+* I click 'Export user as TSV template'
+* I click 'OK' in the system pop up
+Then the user will be saved in the .tsv format on my computer
+
+Scenario: User wants to delete the User
+Given that I am on the selected User page
+When I click the Kebab menu icon
+* I click 'Delete user'
+* I click 'Ok' in the 'Delete user' pop up
+Then I will get a green toast bar that says 'Successfully deleted user "user_name"'
+* That user will be deleted
+
+-------------- Metadata Tab -------------------
+
+Scenario: User intends to create new metadata fro the current user
+Given that I am on the Users page and in the Metadata tab
+When I click 'Add new Metadata'
+Then a new metadata data field will be added to the page
+
+Scenario: User supplies new raw metadata
+Given that I am on the Users page and in the Metadata tab
+When I click on a row it will dropdown and I will enter the correctly formatted JSON metadata in the drop down text box and click 'Save'
+Then a green toast bar that says 'Saved "field_name" metadata.' will appear and the provided raw data will be saved
+
+Scenario: User supplies new raw metadata the is not in the right format
+Given that I am on the Users page and in the Metadata tab
+When I click on a row it will dropdown and I will enter the incorrectly formatted JSON metadata
+Then red squiggle underline will appear under the incorrectly formatted data and if I hover over this incorrect formatted data I will be given a explanation on why it is incorrect
+
+Scenario: User supplies new raw metadata the is not in the right format
+Given that I am on the Users page and in the Metadata tab
+When I click on a row it will dropdown and I will enter the incorrectly formatted JSON metadata in the drop down text box and click 'Save'
+Then a red toast bar that says JSON for property "property_name" is invalid will appear
+
+Scenario: User supplies new details for the metadata
+Given that I am on the Users page and in the Metadata tab
+When I click on the edit icon in a Metadata row and enter the new details and click update
+Then that metadata field will be updated
+
+Scenario: User wants to see the history of another user's actions
+Given that I am on the Users page
+When I click on the History tab
+Then I will get a log of the selected user's history within the application

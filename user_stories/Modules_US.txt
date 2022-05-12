@@ -1,0 +1,37 @@
+
+Section: Modules
+
+
+Scenario: User selects a module from sidebar
+Given that I am on the Modules page
+When I click on the intended Module name in the sidebar
+Then I am taken to that particular Module's information dashboard with the About tab selected
+
+Scenario: User wants to see which systems the selected module is used in
+Given that I am on the Modules page
+When I click on the Systems tab
+Then I am taken to a list of Systems
+
+Scenario: User supplies search term
+Given that I am on a Modules's information dashboard in the Systems tab
+When I enter the term into the 'Filter systems...' text box
+Then I will get filtered results of Systems in a list under the 'Filter systems...' text box
+
+Scenario: User wants to start a module
+Given that I am on the Modules page in the About tab
+When I click 'Start Module'
+Then the module will start # no feedback?
+
+Scenario: User supplies new setting data
+Given that I am on the Modules page in the About tab
+When I click on one of the settings tabs and enter the data and click 'Save' or press the S key
+Then I will get a green toast bar that says 'Successfully saved __ settings' and the settings for that module will be saved
+
+Scenario: User wants to create a new module
+Given that I am on the Modules page
+When I click on the plus button in the Modules sidebar
+* I enter the name of the driver into the text box
+* I enter the system name into the 'Search for system...' text box
+* I enter any other module data in appropriate text box
+* I Click 'Save'
+Then Then I will get a green toast bar that says 'Successfully added module' and the module will be saved

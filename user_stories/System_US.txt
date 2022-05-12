@@ -1,0 +1,284 @@
+
+
+Section: Systems
+
+-------------- About Tab -------------------
+
+Scenario: User selects a system from sidebar
+Given that I am on the Systems page
+When I click on the intended System name in the sidebar
+Then I am taken to that particular System's information dashboard with the About tab selected
+
+Scenario: User supplies search term
+Given that I am on the Systems page
+When I enter the term into the search bar
+Then I will get filtered results of Systems in the sidebar
+
+Scenario: User supplies correct data for a new System
+Given that I am on the New system pop up
+When I enter the correct data and click 'Save' or press the S key
+Then a new system will be saved
+* a toast bar will display 'Successfully added system'
+* the Systems dashboard will display the new system information
+
+Scenario: User supplies data for a new System containing an invalid email address
+Given that I am on the New system pop up
+When I enter the invalid email address
+Then the error text under the text field will say 'A valid email is required'
+
+Scenario: User supplies data for a new System containing an invalid Support URL
+Given that I am on the New system pop up
+When I enter the invalid email address
+Then the error text under the text field will say 'A valid URL is required'
+
+Scenario: User starts a system
+Given that I am on the Systems page
+When I click 'Start System'
+Then the Start system? pop up will appear
+
+Scenario: User stop a system
+Given that I am on the Systems page
+When I click 'Stop System'
+Then the Stop system? pop up will appear
+
+Scenario: User confirms stopping a system
+Given that I am on the Stop system? pop up
+When I click 'Ok'
+Then the system will stop by immediately stopping all modules
+
+Scenario: User cancels stopping a system
+Given that I am on the Stop system? pop up
+When I click 'Cancel'
+Then the system will not stop
+
+Scenario: User confirms starting a system
+Given that I am on the Start system? pop up
+When I click 'Ok'
+Then the system will start by booting up all stopped modules
+
+Scenario: User cancels starting a system
+Given that I am on the Start system? pop up
+When I click 'Cancel'
+Then the system will not start
+
+Scenario: User supplies which tab they want to switch to
+Given that I am on a System's information dashboard
+When I click on the particular tab
+Then the dashboard will switch to the selected tab
+(About, Modules, Zones, Triggers, Metadata)
+
+Scenario: User supplies System settings
+Given that I am on a System's information dashboard in the About tab and within that the Unencrypted tab
+When I enter the settings as text in the Unencrypted text box
+* I click Save or the S key
+Then the settings for that system will be saved
+
+Scenario: User clears supplied System settings changes
+Given that I am on a System's information dashboard in the About tab and within that the Unencrypted tab
+When I have entered some text in the Unencrypted tab
+* I click Clear Changes or the C key
+Then the settings for that system will remain as they were before any new text was entered
+
+-------------- Modules Tab -------------------
+
+Scenario: User supplies search term
+Given that I am on the Systems page and in the Module tab
+When I enter the term into the search bar
+Then I will get filtered results of Modules in the Module List based on the search term
+
+Scenario: User intends to create a new Module within current system
+Given that I am on the Systems page and in the Module tab
+When I click 'Add new'
+Then I will get a New module pop up
+
+Scenario: User supplies data for new module
+Given that I am on the New module pop up
+When I enter the module data correctly
+* I click 'Save' or press the S key
+Then I will get a green toast bar that says 'Successfully added module to system'
+* the module will be saved
+
+Scenario: User chooses a module to inspect
+Given that I am on the Systems page and in the Module tab
+When I click on the name of a module
+Then I will be taken to that module's dashboard
+
+Scenario: User chooses a module to edit
+Given that I am on the Systems page and in the Module tab
+When I click on the edit icon next to the name of a module
+Then I will be taken to the Edit module pop up
+
+Scenario: User chooses a module to edit
+Given that I am on the three circles dropdown
+When I click on 'Edit Module'
+Then I will be taken to the Edit module pop up
+
+Scenario: User provides updated data for a module
+Given that I am on the 'Edit module' pop up
+When I enter the correct updated data
+* I click 'Save' or press the S key
+Then I will get a green toast bar that says 'Successfully updated module'
+* the module will be updated
+
+Scenario: User toggles the power of a module
+Given that I am on the three circles dropdown
+When I click on 'Toggle Power'
+Then the module will stop if it is currently on or start if it is currently off
+
+Scenario: User toggles the state of the module
+Given that I am on the Systems page and in the Module tab
+When I click on black circle to the left of the module name
+Then I will get a green toast bar that says 'Module successfully started'
+* the module will be started
+
+Scenario: User toggles the state of the module
+Given that I am on the Systems page and in the Module tab
+When I click on green circle to the left of the module name
+Then I will get a green toast bar that says 'Module successfully stopped'
+* the module will be stopped
+
+Scenario: User intends to remove the module
+Given that I am on the three circles dropdown
+When I click on 'Remove Module'
+Then the 'Remove module' pop up will appear
+
+Scenario: User confirms removal of module
+Given that I am on the 'Remove module' pop up
+When I click on 'Ok'
+Then I will get a green toast bar that says 'Successfully removed module from System'
+* the selected module will be removed
+
+Scenario: User loads the module
+Given that I am on the three circles dropdown
+When I click on 'Load Module'
+Then I will get a green toast bar that says 'Successfully loaded module "module_name"'
+* the selected module will be loaded
+
+Scenario: User execute a command on a modules
+Given that I have started a module and it is currently running
+When I select a running module from the 'Select a module' dropdown
+* I select a function from the 'Select a function' dropdown
+* I click 'Execute'
+Then a green toast bar that says 'Command Successfully executed. View Response?' will appear
+
+Scenario: User wants to view the response of the executed function
+Given that I have successfully executed a function
+When I click 'View' on the green toast bar
+Then a 'Exec Request Results' pop up will appear
+
+-------------- Zones Tab -------------------
+
+Scenario: User supplies zone search term
+Given that I am on the Systems page and in the Zone tab
+When I enter the term into the 'Search for zone...' text box
+Then I will get filtered results of Zones
+* I click on a result
+* I click 'Join zone'
+Then a green toast bar that says 'Successfully added zone to system' will appear
+* the zone will be added to the system
+* the Zone count in the tab will be updated by +1
+
+Scenario: User intends to remove zone from System
+Given that I am on the Systems page and in the Zone tab
+When I click on the trash can next in a zone row
+Then a 'Remove zone?' pop up will appear
+
+Scenario: User confirms removal of zone from system
+Given that I am on the 'Remove zone?' pop up
+When I click 'Ok'
+Then a green toast bar that says 'Successfully removed zone from system' will appear
+* the zone will be removed to the system
+* the Zone count in the tab will be updated by -1
+
+Scenario: User wants to view the Zone information
+Given that I am on the Systems page and in the Zone tab
+When I click on the zone name in a row
+Then I will be taken to the information dashboard for that particular zone
+
+-------------- Triggers Tab -------------------
+
+Scenario: User intends to add a trigger to the system
+Given that I am on the Systems page and in the Triggers tab
+When I click 'Add trigger'
+Then I will be presented the 'Add Triggers' pop up
+
+Scenario: User selects a trigger to add to the system
+Given that I am on the 'Add Triggers' pop up
+When I select a listed Trigger and click 'Add'
+Then the selected trigger will be added to the system
+* the selected trigger will appear in the list of triggers
+* the Trigger count in the tab will be updated by +1
+
+
+Scenario: User needs the webhook line for a trigger
+Given that I am on the Systems page and in the Triggers tab
+When I click the link icon in a Trigger's row
+Then a blue toast bar that says 'Webhook link copied to clipboard' will appear
+* the link will copy to my clipboard
+
+Scenario: User needs to edit the state of the trigger
+Given that I am on the Systems page and in the Triggers tab
+When I click the edit icon in a Trigger's row
+Then a 'Edit Trigger' pop up will appear
+
+Scenario: User provides the new state of a trigger
+Given that I am on the Edit Trigger' pop up
+When I click the desired state checkbox and click 'Save' or the S key
+Then the request will be processed
+
+Scenario: User decides not to change the state of the trigger
+Given that I am on the 'Edit Trigger' pop up
+When I click 'Cancel'
+Then no changes will occur to the Trigger's state
+
+Scenario: User intends to remove the trigger
+Given that I am on the Systems page and in the Triggers tab
+When I click the trash icon in a Trigger's row
+Then a 'Remove trigger' pop up will appear
+
+Scenario: User wants to remove the trigger
+Given that I am on the 'Remove trigger' pop up
+When I click 'Ok'
+Then a green toast bar that says 'Successfully removed trigger from system' will appear
+* the trigger will be removed
+* the Trigger count in the tab will be updated by -1
+
+Scenario: User decides to not remove the trigger
+Given that I am on the 'Remove trigger' pop up
+When I click 'Cancel'
+Then there will be no change to triggers on the current system
+
+-------------- Metadata Tab -------------------
+
+Scenario: User intends to create new metadata fro the current system
+Given that I am on the Systems page and in the Metadata tab
+When I click 'Add new Metadata'
+Then a new metadata data field will be added to the page
+
+Scenario: User supplies new raw metadata
+Given that I am on the Systems page and in the Metadata tab
+When I click on a row it will dropdown
+* I will enter the correctly formatted JSON metadata in the drop down text box
+* I click 'Save'
+Then a green toast bar that says 'Saved "field_name" metadata.' will appear
+* the provided raw data will be saved
+
+Scenario: User supplies new raw metadata the is not in the right format
+Given that I am on the Systems page and in the Metadata tab
+When I click on a row it will dropdown and I will enter the incorrectly formatted JSON metadata
+Then red squiggle underline will appear under the incorrectly formatted data
+* I hover over this incorrect formatted data I will be given a explanation on why it is incorrect
+
+Scenario: User supplies new raw metadata the is not in the right format
+Given that I am on the Systems page and in the Metadata tab
+When I click on a row it will dropdown
+* I will enter the incorrectly formatted JSON metadata in the drop down text box
+* click 'Save'
+Then a red toast bar that says JSON for property "property_name" is invalid will appear
+
+
+Scenario: User supplies new details for the metadata
+Given that I am on the Systems page and in the Metadata tab
+When I click on the edit icon in a Metadata row
+* I enter the new details and click update
+Then that metadata field will be updated
