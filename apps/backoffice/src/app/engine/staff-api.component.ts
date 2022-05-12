@@ -141,9 +141,10 @@ export class PlaceStaffAPIComponent implements OnInit {
                         err.statusText || err.message || err
                     }`
                 );
+                return true;
             });
         details.close();
-        if (!system) return;
+        if (system) return;
         notifySuccess(`Successfully removed tenant from domain.`);
         this.domain.next(this.domain.getValue());
     }
