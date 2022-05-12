@@ -1,4 +1,9 @@
 {
+  "baseUrl": "https://localhost:8443/backoffice/",
+  "watchForFileChanges":false,
+  "waitForAnimations":true,
+  "retries": 1,
+  "experimentalSessionSupport": true,
   "fileServerFolder": ".",
   "fixturesFolder": "./src/fixtures",
   "integrationFolder": "./src/integration",

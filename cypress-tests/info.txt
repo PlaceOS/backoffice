@@ -1,2 +1,0 @@
-50 tests
-~ 5min testing time
