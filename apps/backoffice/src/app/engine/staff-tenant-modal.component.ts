@@ -8,6 +8,7 @@ import { PlaceTenant } from './staff-api.component';
 
 const FIELD_NAME_MAPPING: HashMap<string> = {
     issuer: 'Service Account Email',
+    conference_type: 'Conference Type',
     signing_key: 'Private Key',
     sub: 'Service User',
     client_id: 'Client ID',
@@ -50,16 +51,6 @@ export interface StaffTenantModalData {
                     </mat-form-field>
                 </div>
                 <div class="flex flex-col flex-1">
-                    <label>Conference Type:</label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            formControlName="conference_type"
-                            placeholder="Conference Type"
-                        />
-                    </mat-form-field>
-                </div>
-                <div class="flex flex-col flex-1">
                     <label>Platform<span>*</span>:</label>
                     <mat-form-field appearance="outline">
                         <mat-select formControlName="platform">
@@ -69,10 +60,14 @@ export interface StaffTenantModalData {
                     </mat-form-field>
                 </div>
             </div>
+            <div class="flex items-center mb-4">
+                <mat-checkbox formControlName="delegated">Delegated</mat-checkbox>
+            </div>
             <form *ngIf="credentials" [formGroup]="credentials">
                 <div
                     class="flex flex-col"
                     *ngFor="let item of credentials.controls | keyvalue"
+                    [class.hidden]="item.value?.disabled"
                 >
                     <label class="capitalize"
                         >{{ name_map[item.key] || item.key
@@ -153,6 +148,9 @@ export class StaffTenantModalComponent implements OnInit {
                 this.tenant?.credentials?.client_secret || '',
                 [Validators.required]
             ),
+            conference_type: new FormControl(
+                this.tenant?.credentials?.conference_type || ''
+            ),
         });
     }
 
@@ -181,6 +179,9 @@ export class StaffTenantModalComponent implements OnInit {
                 this.tenant?.credentials?.user_agent || 'PlaceOS',
                 [Validators.required]
             ),
+            conference_type: new FormControl(
+                this.tenant?.credentials?.conference_type || ''
+            ),
         });
     }
 
@@ -202,12 +203,10 @@ export class StaffTenantModalComponent implements OnInit {
             name: new FormControl(this.tenant?.name || '', [
                 Validators.required,
             ]),
+            delegated: new FormControl(this.tenant?.delegated ?? false),
             platform: new FormControl(this.tenant?.platform || 'google', [
                 Validators.required,
             ]),
-            conference_type: new FormControl(
-                this.tenant?.conference_type || ''
-            ),
             booking_limits: new FormControl(
                 Object.keys(limits).map((k) => ({ type: k, amount: limits[k] }))
             ),
@@ -216,13 +215,36 @@ export class StaffTenantModalComponent implements OnInit {
                     ? this.office_form
                     : this.google_form,
         });
+        const handleDelegation = (delegated) => {
+            if (delegated) {
+                this.form.get('credentials')?.get('tenant')?.disable();
+                this.form.get('credentials')?.get('client_id')?.disable();
+                this.form.get('credentials')?.get('client_secret')?.disable();
+
+                this.form.get('credentials')?.get('issuer')?.disable();
+                this.form.get('credentials')?.get('signing_key')?.disable();
+                this.form.get('credentials')?.get('scopes')?.disable();
+                this.form.get('credentials')?.get('sub')?.disable();
+            } else {
+                this.form.get('credentials')?.get('tenant')?.enable();
+                this.form.get('credentials')?.get('client_id')?.enable();
+                this.form.get('credentials')?.get('client_secret')?.enable();
+
+                this.form.get('credentials')?.get('issuer')?.enable();
+                this.form.get('credentials')?.get('signing_key')?.enable();
+                this.form.get('credentials')?.get('scopes')?.enable();
+                this.form.get('credentials')?.get('sub')?.enable();
+            }
+        }
         this.form.controls.platform.valueChanges.subscribe((platform) => {
             this.form.removeControl('credentials');
             this.form.addControl(
                 'credentials',
                 platform === 'office365' ? this.office_form : this.google_form
             );
+            handleDelegation(this.form.value.delegated);
         });
+        this.form.controls.delegated.valueChanges.subscribe(handleDelegation);
     }
 
     public async save() {
