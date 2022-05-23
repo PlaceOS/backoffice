@@ -215,25 +215,18 @@ export class StaffTenantModalComponent implements OnInit {
                     ? this.office_form
                     : this.google_form,
         });
+        const fields = ['tenant', 'client_id', 'client_secrect', 'issuer', 'signing_key', 'scopes', 'sub']
         const handleDelegation = (delegated) => {
             if (delegated) {
-                this.form.get('credentials')?.get('tenant')?.disable();
-                this.form.get('credentials')?.get('client_id')?.disable();
-                this.form.get('credentials')?.get('client_secret')?.disable();
-
-                this.form.get('credentials')?.get('issuer')?.disable();
-                this.form.get('credentials')?.get('signing_key')?.disable();
-                this.form.get('credentials')?.get('scopes')?.disable();
-                this.form.get('credentials')?.get('sub')?.disable();
+                for (const field of fields) {
+                    this.form.get('credentials')?.get(field)?.disable();
+                    this.form.get('credentials')?.get(field)?.setValidators([]);
+                }
             } else {
-                this.form.get('credentials')?.get('tenant')?.enable();
-                this.form.get('credentials')?.get('client_id')?.enable();
-                this.form.get('credentials')?.get('client_secret')?.enable();
-
-                this.form.get('credentials')?.get('issuer')?.enable();
-                this.form.get('credentials')?.get('signing_key')?.enable();
-                this.form.get('credentials')?.get('scopes')?.enable();
-                this.form.get('credentials')?.get('sub')?.enable();
+                for (const field of fields) {
+                    this.form.get('credentials')?.get(field)?.enable();
+                    this.form.get('credentials')?.get(field)?.setValidators([Validators.required]);
+                }
             }
         }
         this.form.controls.platform.valueChanges.subscribe((platform) => {
