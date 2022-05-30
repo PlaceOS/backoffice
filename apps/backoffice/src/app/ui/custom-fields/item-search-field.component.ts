@@ -53,7 +53,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                 #auto="matAutocomplete"
             >
                 <mat-option
-                    *ngFor="let option of items"
+                    *ngFor="let option of item_list"
                     [value]="option.name || option.id"
                     (click)="search$.next(option); setValue(option);"
                     class="leading-tight"
