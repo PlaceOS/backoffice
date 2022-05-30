@@ -6,6 +6,7 @@ import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
+import { BookingLimitsModalComponent } from './booking-limits-modal.component';
 import { StaffTenantModalComponent } from './staff-tenant-modal.component';
 
 export interface PlaceTenant {
@@ -43,11 +44,17 @@ export interface PlaceTenant {
                     <div class="w-1/2 p-2">Name</div>
                     <div class="flex-1 p-2">Platform</div>
                     <div class="w-24 p-2 h-10"></div>
+                    <div class="w-24 p-2 h-10"></div>
                 </div>
                 <div table-body>
                     <div table-row *ngFor="let item of tenants | async">
                         <div class="w-1/2 p-2 truncate">{{ item.name }}</div>
                         <div class="flex-1 p-2 truncate">{{ item.platform }}</div>
+                        <div class="w-24 p-2 truncate">
+                            <button mat-button class="clear underline" (click)="editLimits(item)">
+                                Edit Limits
+                            </button>
+                        </div>
                         <div class="w-24 px-2 flex items-center justify-end ">
                             <button mat-icon-button class="h-10 w-10" (click)="editTenant(item)">
                                 <app-icon className="backoffice-edit"></app-icon>
@@ -117,6 +124,13 @@ export class PlaceStaffAPIComponent implements OnInit {
 
     public editTenant(tenant?: PlaceTenant) {
         const ref = this._dialog.open(StaffTenantModalComponent, {
+            data: { tenant, domain: this.domain.getValue() },
+        });
+        ref.afterClosed().subscribe(_ => this.domain.next(this.domain.getValue()));
+    }
+
+    public editLimits(tenant: PlaceTenant) {
+        const ref = this._dialog.open(BookingLimitsModalComponent, {
             data: { tenant, domain: this.domain.getValue() },
         });
         ref.afterClosed().subscribe(_ => this.domain.next(this.domain.getValue()));

@@ -92,7 +92,7 @@ export interface StaffTenantModalData {
                     </mat-form-field>
                 </div>
             </form>
-            <div class="flex flex-col">
+            <div class="flex flex-col space-y-2">
                 <label>Booking Limits</label>
                 <object-list-field
                     formControlName="booking_limits"
@@ -104,7 +104,7 @@ export interface StaffTenantModalData {
             *ngIf="!loading"
             class="p-2 border-t border-gray-200 flex justify-center"
         >
-            <button mat-button (click)="save()">Save</button>
+            <button mat-button class="w-32" (click)="save()">Save</button>
         </footer>
         <ng-template #load_state>
             <main class="flex flex-col p-8 items-center justify-center">

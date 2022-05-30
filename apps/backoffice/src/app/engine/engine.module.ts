@@ -25,6 +25,7 @@ import { AdminSchemasComponent } from './schemas.component';
 import { AdminAPIKeysComponent } from './api-keys/api-keys.component';
 import { APIKeyModalComponent } from './api-keys/api-key-modal.component';
 import { APIKeyService } from './api-keys/api-keys.service';
+import { BookingLimitsModalComponent } from './booking-limits-modal.component';
 
 @NgModule({
     declarations: [
@@ -46,6 +47,7 @@ import { APIKeyService } from './api-keys/api-keys.service';
         AdminSchemasComponent,
         AdminAPIKeysComponent,
         APIKeyModalComponent,
+        BookingLimitsModalComponent
     ],
     imports: [
         CommonModule,

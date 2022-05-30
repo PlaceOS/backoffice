@@ -40,7 +40,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                 </button>
             </div>
             <div class="row h-10 text-center">
-                <button mat-button type="button" (click)="addRow()">
+                <button mat-button type="button" class="w-full" (click)="addRow()">
                     <div class="contents">
                         <app-icon
                             [icon]="{ class: 'backoffice-plus' }"
