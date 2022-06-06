@@ -91,3 +91,14 @@ table:not([role="grid"]) {
 a {
     color: inherit;
 }
+
+a[target],
+a.underline {
+    color: #3344dd;
+    &:hover {
+        color: #bb1122;
+    }
+    &:active {
+        color: #884488
+    }
+}
