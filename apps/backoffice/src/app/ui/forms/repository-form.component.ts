@@ -9,6 +9,7 @@ import {
 import { listRepositoryReleases } from '@placeos/ts-client/dist/esm/repositories/functions';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 import { format, isAfter, subMinutes } from 'date-fns';
+import { catchError } from 'rxjs/operators';
 import { DateFromPipe } from '../pipes/date-from.pipe';
 
 @Component({
@@ -351,7 +352,7 @@ export class RepositoryFormComponent {
             repo_type === PlaceRepositoryType.Interface && !force_branches
                 ? listRepositoryReleases
                 : listRepositoryBranches;
-        this.branch_list = (await list_fn(id).toPromise()) || [];
+        this.branch_list = (await list_fn(id).pipe(catchError(_ => [])).toPromise());
         if (!force_branches && this.branch_list.length <= 0) {
             this.unable_to_load_releases = true;
             return this.loadBranches(true);
