@@ -1,3 +1,4 @@
+import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { first } from 'rxjs/operators';
 import {
@@ -367,3 +368,13 @@ If applicable, add screenshots to help explain your problem.
 **Hash:** ${hash}
 **Built:** ${date}
 `;
+
+export function getInvalidFields(form: FormGroup) {
+    const invalid = [];
+    for (const key in form.controls) {
+        if (!form.controls[key].valid) {
+            invalid.push(key);
+        }
+    }
+    return invalid;
+}
