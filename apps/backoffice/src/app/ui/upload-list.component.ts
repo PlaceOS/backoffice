@@ -22,7 +22,7 @@ import { UploadDetails, uploadFile } from '../common/uploads';
                     <app-icon [icon]="{ class: 'backoffice-cross' }"></app-icon>
                 </button>
             </div>
-            <div list class="overflow-auto">
+            <div list class="overflow-auto max-h-[65vh]">
                 <ul *ngIf="uploads && uploads.length; else no_uploads">
                     <li
                         *ngFor="let item of uploads"
