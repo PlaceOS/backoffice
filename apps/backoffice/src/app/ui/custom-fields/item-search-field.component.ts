@@ -5,6 +5,8 @@ import {
     Input,
     SimpleChanges,
     OnChanges,
+    ViewChild,
+    ElementRef,
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { Subject, Observable, of } from 'rxjs';
@@ -29,6 +31,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                 <input
                     matInput
                     name="item-search"
+                    #input
                     [(ngModel)]="search_str"
                     (ngModelChange)="search$.next($event)"
                     [disabled]="disabled"
@@ -113,6 +116,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
     @Input() public options: T[];
     /** Whether the form field should be disabled */
     @Input() public disabled: boolean;
+    @Input() public clear_on_select: boolean = false;
     /** Function for filtering out options */
     @Input() public exclude: (_: T) => boolean;
     /** Minimum number of characters needed to start a server query */
@@ -135,6 +139,8 @@ export class ItemSearchFieldComponent<T extends Identity = any>
     private _onChange: (_: T) => void;
     /** Form control on touch handler */
     private _onTouch: (_: T) => void;
+    
+    @ViewChild('input') private _input_el: ElementRef<HTMLInputElement>;
 
     public get items() {
         return this.options?.length ? this.options : this.item_list;
@@ -194,11 +200,15 @@ export class ItemSearchFieldComponent<T extends Identity = any>
         this.timeout(
             'value',
             () => {
-                if (this.active_item) {
+                if (this.clear_on_select) {
+                    this.active_item = null;
+                    this.search_str = '';
+                } else if (this.active_item) {
                     this.search_str = this.active_item.name || this.search_str;
                 }
+                if (this._input_el?.nativeElement) this._input_el.nativeElement.value = this.search_str;
             },
-            10
+            50
         );
     }
 

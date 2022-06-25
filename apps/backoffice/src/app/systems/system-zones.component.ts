@@ -14,6 +14,7 @@ import { SystemStateService } from './system-state.service';
                 class="flex-1 h-12"
                 [query_fn]="query_fn"
                 [exclude]="exclude_fn"
+                [clear_on_select]="true"
                 [ngModel]="null"
                 (ngModelChange)="addPendingZone($event)"
             ></item-search-field>
