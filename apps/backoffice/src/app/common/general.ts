@@ -28,23 +28,39 @@ export function log(
     app_name: string = 'BACKOFFICE'
 ) {
     if (window.debug || force) {
-        const colors: string[] = ['color: #E91E63', 'color: #ffb300', 'color: default'];
+        const colors: string[] = [
+            'color: #E91E63',
+            'color: #ffb300',
+            'color: default',
+        ];
         if (args) {
-            console[stream](`%c[${app_name}]%c[${type}] %c${msg}`, ...colors, args);
+            console[stream](
+                `%c[${app_name}]%c[${type}] %c${msg}`,
+                ...colors,
+                args
+            );
         } else {
             console[stream](`%c[${app_name}]%c[${type}] %c${msg}`, ...colors);
         }
     }
 }
 
-export async function openConfirmModal(data: ConfirmModalData, dialog: MatDialog) {
-    const ref = dialog.open<ConfirmModalComponent, ConfirmModalData>(ConfirmModalComponent, {
-        ...CONFIRM_METADATA,
-        data,
-    });
+export async function openConfirmModal(
+    data: ConfirmModalData,
+    dialog: MatDialog
+) {
+    const ref = dialog.open<ConfirmModalComponent, ConfirmModalData>(
+        ConfirmModalComponent,
+        {
+            ...CONFIRM_METADATA,
+            data,
+        }
+    );
     return {
         ...(await Promise.race([
-            ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).toPromise(),
+            ref.componentInstance.event
+                .pipe(first((_) => _.reason === 'done'))
+                .toPromise(),
             ref.afterClosed().toPromise(),
         ])),
         loading: (s) => (ref.componentInstance.loading = s),
@@ -104,8 +120,11 @@ export function getItemWithKeys(keys: string[], map: HashMap) {
 export function unique(array: any[], key: string = '') {
     return array.filter(
         (el, pos, arr) =>
-            arr.indexOf(key ? arr.find((i) => i[key] === el[key]) : arr.find((i) => i === el)) ===
-            pos
+            arr.indexOf(
+                key
+                    ? arr.find((i) => i[key] === el[key])
+                    : arr.find((i) => i === el)
+            ) === pos
     );
 }
 
@@ -195,7 +214,7 @@ export function csvToJson(csv: string, delimiter: string = ','): HashMap[] {
             } catch (e) {
                 element[key] = row[i] || '';
             }
-            if (element[key] === 'TRUE' || element[key] === 'FALSE') 
+            if (element[key] === 'TRUE' || element[key] === 'FALSE')
                 element[key] = element[key] === 'TRUE';
         }
         return element;
@@ -209,18 +228,26 @@ export function csvToJson(csv: string, delimiter: string = ','): HashMap[] {
  * @param use_keys Fields in the objects to use in the CSV output
  * @param seperator Seperator between field values in the CSV data
  */
-export function jsonToCsv(json: HashMap[], use_keys?: string[], seperator = ',') {
+export function jsonToCsv(
+    json: HashMap[],
+    use_keys?: string[],
+    seperator = ','
+) {
     /* istanbul ignore else */
     if (json instanceof Array && json.length > 0) {
         const keys = Object.keys(json[0]);
         const valid_keys = keys.filter(
-            (key) => (!use_keys || use_keys.includes(key)) && json[0].hasOwnProperty(key)
+            (key) =>
+                (!use_keys || use_keys.includes(key)) &&
+                json[0].hasOwnProperty(key)
         );
         return `\uFEFF${valid_keys.join(seperator)}\n${json
             .map((item) =>
                 valid_keys
                     .map((key) =>
-                        item[key] instanceof Object ? JSON.stringify(item[key]) : item[key]
+                        item[key] instanceof Object
+                            ? JSON.stringify(item[key])
+                            : item[key]
                     )
                     .join(seperator)
             )
@@ -253,7 +280,10 @@ export function eventToPoint(event: MouseEvent | TouchEvent): Point {
  */
 export function downloadFile(filename: string, contents: string) {
     const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(contents));
+    element.setAttribute(
+        'href',
+        'data:text/plain;charset=utf-8,' + encodeURIComponent(contents)
+    );
     element.setAttribute('download', filename);
 
     element.style.display = 'none';
@@ -310,7 +340,8 @@ export function predictableRandomInt(ceil: number = 100, floor: number = 0) {
 // https://stackoverflow.com/questions/521295/seeding-the-random-number-generator-in-javascript
 function xmur3(str) {
     for (var i = 0, h = 1779033703 ^ str.length; i < str.length; i++)
-        (h = Math.imul(h ^ str.charCodeAt(i), 3432918353)), (h = (h << 13) | (h >>> 19));
+        (h = Math.imul(h ^ str.charCodeAt(i), 3432918353)),
+            (h = (h << 13) | (h >>> 19));
     return function () {
         h = Math.imul(h ^ (h >>> 16), 2246822507);
         h = Math.imul(h ^ (h >>> 13), 3266489909);
@@ -369,11 +400,16 @@ If applicable, add screenshots to help explain your problem.
 **Built:** ${date}
 `;
 
-export function getInvalidFields(form: FormGroup) {
-    const invalid = [];
+export function getInvalidFields(form: FormGroup, prefix: string = '') {
+    let invalid = [];
     for (const key in form.controls) {
-        if (!form.controls[key].valid) {
-            invalid.push(key);
+        if (form.controls[key] instanceof FormGroup) {
+            invalid = [
+                ...invalid,
+                ...getInvalidFields(form.controls[key] as FormGroup, `${key}.`),
+            ];
+        } else if (!form.controls[key].valid) {
+            invalid.push(`${prefix}${key}`);
         }
     }
     return invalid;

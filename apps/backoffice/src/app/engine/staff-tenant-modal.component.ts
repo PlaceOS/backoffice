@@ -2,6 +2,7 @@ import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PlaceDomain, post, put } from '@placeos/ts-client';
+import { getInvalidFields } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent, HashMap } from '../common/types';
 import { PlaceTenant } from './staff-api.component';
@@ -60,8 +61,13 @@ export interface StaffTenantModalData {
                     </mat-form-field>
                 </div>
             </div>
-            <div class="flex items-center mb-4" *ngIf="form.value.platform !== 'google'">
-                <mat-checkbox formControlName="delegated">Delegated</mat-checkbox>
+            <div
+                class="flex items-center mb-4"
+                *ngIf="form.value.platform !== 'google'"
+            >
+                <mat-checkbox formControlName="delegated"
+                    >Delegated</mat-checkbox
+                >
             </div>
             <form *ngIf="credentials" [formGroup]="credentials">
                 <div
@@ -71,7 +77,8 @@ export interface StaffTenantModalData {
                 >
                     <label class="capitalize"
                         >{{ name_map[item.key] || item.key
-                        }}<span *ngIf="item.key !== 'conference_type'">*</span>:</label
+                        }}<span *ngIf="item.key !== 'conference_type'">*</span
+                        >:</label
                     >
                     <mat-form-field appearance="outline">
                         <ng-container [ngSwitch]="item.key">
@@ -215,7 +222,15 @@ export class StaffTenantModalComponent implements OnInit {
                     ? this.office_form
                     : this.google_form,
         });
-        const fields = ['tenant', 'client_id', 'client_secrect', 'issuer', 'signing_key', 'scopes', 'sub']
+        const fields = [
+            'tenant',
+            'client_id',
+            'client_secrect',
+            'issuer',
+            'signing_key',
+            'scopes',
+            'sub',
+        ];
         const handleDelegation = (delegated) => {
             if (delegated) {
                 for (const field of fields) {
@@ -225,10 +240,13 @@ export class StaffTenantModalComponent implements OnInit {
             } else {
                 for (const field of fields) {
                     this.form.get('credentials')?.get(field)?.enable();
-                    this.form.get('credentials')?.get(field)?.setValidators([Validators.required]);
+                    this.form
+                        .get('credentials')
+                        ?.get(field)
+                        ?.setValidators([Validators.required]);
                 }
             }
-        }
+        };
         this.form.controls.platform.valueChanges.subscribe((platform) => {
             this.form.removeControl('credentials');
             this.form.addControl(
@@ -242,10 +260,15 @@ export class StaffTenantModalComponent implements OnInit {
 
     public async save() {
         this.form.markAllAsTouched();
-        if (!this.form.valid) return;
+        if (!this.form.valid) {
+            return notifyError(
+                `Some fields are invalid. [${getInvalidFields(this.form)}]`
+            );
+        }
         this._dialog_ref.disableClose = true;
         this.loading = true;
-        const limits: { type: string, amount: string }[] = this.form.value.booking_limits || [];
+        const limits: { type: string; amount: string }[] =
+            this.form.value.booking_limits || [];
         const booking_limits = limits.reduce(
             (m, { type, amount }) => (m[type] = +amount),
             {}
