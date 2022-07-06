@@ -60,7 +60,7 @@ export interface StaffTenantModalData {
                     </mat-form-field>
                 </div>
             </div>
-            <div class="flex items-center mb-4">
+            <div class="flex items-center mb-4" *ngIf="form.value.platform !== 'google'">
                 <mat-checkbox formControlName="delegated">Delegated</mat-checkbox>
             </div>
             <form *ngIf="credentials" [formGroup]="credentials">
