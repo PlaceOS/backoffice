@@ -71,7 +71,7 @@ export interface StaffTenantModalData {
                 >
                     <label class="capitalize"
                         >{{ name_map[item.key] || item.key
-                        }}<span>*</span>:</label
+                        }}<span *ngIf="item.key !== 'conference_type'">*</span>:</label
                     >
                     <mat-form-field appearance="outline">
                         <ng-container [ngSwitch]="item.key">
