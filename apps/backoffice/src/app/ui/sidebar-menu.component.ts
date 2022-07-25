@@ -1,4 +1,10 @@
-import { Component, Optional } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    Optional,
+    Output,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { authority } from '@placeos/ts-client';
 import { BaseClass } from '../common/base.class';
@@ -12,11 +18,16 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
 @Component({
     selector: 'sidebar-menu',
     template: `
-        <div class="flex flex-col w-52 justify-between h-full overflow-hidden" (click)="close()">
+        <div
+            class="absolute pointer-events-none sm:pointer-events-auto inset-0 sm:relative sm:inset-auto hidden sm:flex flex-col sm:w-52 justify-between h-full overflow-hidden bg-gray-200 dark:bg-neutral-800 z-40 sm:z-20"
+            [class.!flex]="open"
+            [class.!pointer-events-auto]="open"
+            (click)="close()"
+        >
             <div class="flex flex-col items-center space-y-2">
                 <a
                     [routerLink]="['/']"
-                    class="font-heading text-4xl mt-4 w-[calc(100%-2rem)] dark:text-white"
+                    class="font-heading text-4xl mt-4 w-[calc(100%-2rem)] dark:text-white ml-16 sm:ml-0"
                 >
                     Place<span class="text-pink font-heading">OS</span>
                 </a>
@@ -31,6 +42,13 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     <app-icon [icon]="item.icon"></app-icon>
                     <p>{{ item.name }}</p>
                 </a>
+                <button
+                    class="absolute top-1 left-1 sm:hidden"
+                    mat-icon-button
+                    (click)="open = false; openChange.emit(false)"
+                >
+                    <app-icon className="backoffice-cross"></app-icon>
+                </button>
             </div>
             <button
                 matRipple
@@ -62,6 +80,8 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
     styles: [``],
 })
 export class SidebarMenuComponent extends BaseClass {
+    @Input() public open = true;
+    @Output() public openChange = new EventEmitter();
     public items: any[] = [];
     public readonly user_controls = UserMenuTooltipComponent;
     /** Application logo */

@@ -22,7 +22,7 @@ export interface PlaceTenant {
 @Component({
     selector: 'staff-api',
     template: `
-        <div class="flex items-center space-x-2 mb-4 mt-4">
+        <div class="flex items-center space-x-2 my-4">
             <label for="type">Domain: </label>
             <mat-form-field class="h-12" appearance="outline">
                 <mat-select

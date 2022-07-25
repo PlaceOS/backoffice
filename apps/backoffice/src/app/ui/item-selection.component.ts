@@ -26,9 +26,10 @@ import { BackofficeUsersService } from '../users/users.service';
         <div
             class="w-full p-2 flex items-center justify-center border-b border-gray-200 dark:border-neutral-500"
         >
+            <ng-content></ng-content>
             <button
                 (click)="open()"
-                class="border border-gray-200 dark:border-neutral-500 rounded-lg flex items-center w-[512px] max-w-[calc(100vw-1rem)]"
+                class="border border-gray-200 dark:border-neutral-500 rounded-lg flex items-center flex-1 sm:flex-auto sm:max-w-[512px] max-w-[calc(100vw-1rem)]"
             >
                 <app-icon class="text-2xl ml-2 dark:text-white"
                     >search</app-icon

@@ -1,4 +1,3 @@
-
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { extensionsForItem } from '../common/api';
@@ -9,13 +8,19 @@ import { ActiveItemService } from '../common/item.service';
     selector: 'new-users-view',
     template: `
         <div
-            class="absolute inset-0 flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
+            class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
-            <sidebar-menu
-                class="sm:h-full bg-gray-200 dark:bg-neutral-800"
-            ></sidebar-menu>
-            <div class="flex-1 w-1/2 h-full relative flex flex-col">
-                <item-selection [route]="name" title="Triggers" class="z-20"></item-selection>
+            <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
+            <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
+                <item-selection class="z-20" [route]="name" title="Users">
+                    <button
+                        mat-icon-button
+                        class="sm:hidden mr-2"
+                        (click)="open_menu = true"
+                    >
+                        <app-icon className="backoffice-menu"></app-icon>
+                    </button>
+                </item-selection>
                 <div class="flex flex-col flex-1 h-1/2">
                     <ng-container *ngIf="item?.id">
                         <item-details
@@ -38,7 +43,7 @@ import { ActiveItemService } from '../common/item.service';
                     </ng-container>
                 </div>
                 <button
-                    class="absolute bottom-16 -left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
+                    class="absolute bottom-2 sm:bottom-16 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
                     matTooltip="New user"
                     matTooltipPosition="right"
                     matRipple
@@ -50,8 +55,8 @@ import { ActiveItemService } from '../common/item.service';
                     ></app-icon>
                 </button>
                 <button
-                    class="absolute bottom-[7.5rem] -left-8 w-10 h-10 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
-                    matTooltip="Bulk add zones"
+                    class="absolute bottom-16 sm:bottom-[7.5rem] left-2 sm:-left-8 w-10 h-10 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
+                    matTooltip="Bulk add users"
                     matTooltipPosition="right"
                     matRipple
                     (click)="bulkAdd()"
@@ -65,7 +70,7 @@ import { ActiveItemService } from '../common/item.service';
 })
 export class UsersComponent extends BaseClass {
     public readonly name = 'users';
-
+    public open_menu = false;
     public tab_list = [];
 
     public readonly newItem = () => this._service.create();
@@ -81,14 +86,22 @@ export class UsersComponent extends BaseClass {
 
     public updateTabList(details?: Record<string, number>) {
         this.tab_list = [
-            { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
+            {
+                id: 'about',
+                name: 'About',
+                icon: { class: 'backoffice-info-with-circle' },
+            },
             {
                 id: 'metadata',
                 name: 'Metadata',
                 count: details?.metadata,
                 icon: { class: 'backoffice-gist' },
             },
-            { id: 'history', name: 'History', icon: { class: 'backoffice-list' } }
+            {
+                id: 'history',
+                name: 'History',
+                icon: { class: 'backoffice-list' },
+            },
         ].concat(this.extensions);
     }
 
@@ -97,7 +110,10 @@ export class UsersComponent extends BaseClass {
     }
 
     public ngOnInit() {
-        this.subscription('item', this._service.item.subscribe(() => this.updateTabList()));
+        this.subscription(
+            'item',
+            this._service.item.subscribe(() => this.updateTabList())
+        );
         this.updateTabList();
     }
 }

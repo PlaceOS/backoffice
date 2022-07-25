@@ -10,15 +10,15 @@ import { BackofficeUsersService } from '../users/users.service';
     selector: 'app-engine',
     template: `
         <div
-            class="absolute inset-0 flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
+            class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
-            <sidebar-menu
-                class="sm:h-full bg-gray-200 dark:bg-neutral-800"
-            ></sidebar-menu>
+            <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
             <div class="flex-1 w-1/2 h-full relative flex flex-col">
-                <div class="flex flex-1 z-0 h-1/2 dark:text-white dark:bg-neutral-700">
+                <div
+                    class="flex flex-1 z-0 h-1/2 dark:text-white dark:bg-neutral-700"
+                >
                     <div
-                        class="relative w-56 px-2 my-4 border-r border-gray-400 border-opacity-30 z-10"
+                        class="relative sm:w-56 px-2 my-4 border-r border-gray-400 border-opacity-30 z-10 pt-10 sm:pt-0"
                     >
                         <a
                             *ngFor="let item of tab_list"
@@ -27,7 +27,7 @@ import { BackofficeUsersService } from '../users/users.service';
                             routerLinkActive="active"
                         >
                             <app-icon [icon]="item.icon"></app-icon>
-                            <span>{{ item.name }}</span>
+                            <span class="hidden sm:block">{{ item.name }}</span>
                         </a>
                     </div>
                     <div
@@ -35,6 +35,14 @@ import { BackofficeUsersService } from '../users/users.service';
                     >
                         <router-outlet></router-outlet>
                     </div>
+                    
+                    <button
+                        mat-icon-button
+                        class="sm:hidden mr-2 absolute top-2 left-4 z-40"
+                        (click)="open_menu = true"
+                    >
+                        <app-icon className="backoffice-menu"></app-icon>
+                    </button>
                 </div>
             </div>
         </div>
@@ -58,6 +66,7 @@ import { BackofficeUsersService } from '../users/users.service';
 })
 export class PlaceComponent extends BaseClass {
     public tab_list = [];
+    public open_menu = false;
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, 'admin');

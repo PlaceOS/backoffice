@@ -8,13 +8,19 @@ import { DomainStateService } from './domain-state.service';
     selector: 'new-domains-view',
     template: `
         <div
-            class="absolute inset-0 flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
+            class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
-            <sidebar-menu
-                class="sm:h-full bg-gray-200 dark:bg-neutral-800"
-            ></sidebar-menu>
-            <div class="flex-1 w-1/2 h-full relative flex flex-col">
-                <item-selection [route]="name" title="Triggers" class="z-20"></item-selection>
+            <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
+            <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
+                <item-selection class="z-20" [route]="name" title="Domains">
+                    <button
+                        mat-icon-button
+                        class="sm:hidden mr-2"
+                        (click)="open_menu = true"
+                    >
+                        <app-icon className="backoffice-menu"></app-icon>
+                    </button>
+                </item-selection>
                 <div class="flex flex-col flex-1 h-1/2">
                     <ng-container *ngIf="item?.id">
                         <item-details
@@ -37,8 +43,8 @@ import { DomainStateService } from './domain-state.service';
                     </ng-container>
                 </div>
                 <button
-                    class="absolute bottom-16 -left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
-                    matTooltip="New domain"
+                    class="absolute bottom-2 sm:bottom-16 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
+                    matTooltip="New system"
                     matTooltipPosition="right"
                     matRipple
                     (click)="newItem()"
@@ -56,6 +62,7 @@ import { DomainStateService } from './domain-state.service';
 export class DomainsComponent extends BaseClass {
     public readonly name = 'domains';
 
+    public open_menu = false;
     public tab_list = [];
 
     public readonly newItem = () => this._item.create();
