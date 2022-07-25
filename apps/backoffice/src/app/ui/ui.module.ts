@@ -82,6 +82,8 @@ import { MatRippleModule } from '@angular/material/core';
 import { CustomTooltipComponent } from './custom-tooltip.component';
 import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
 import { PortalModule } from '@angular/cdk/portal';
+import { ItemDetailsComponent } from './item-details.component';
+import { ItemTablistComponent } from './item-tablist.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -129,7 +131,9 @@ const COMPONENTS: Type<any>[] = [
     NewSidebarMenuComponent,
     ItemSelectionComponent,
     CustomTooltipComponent,
-    UserMenuTooltipComponent
+    UserMenuTooltipComponent,
+    ItemDetailsComponent,
+    ItemTablistComponent
 ];
 
 const PIPES: Type<any>[] = [
