@@ -102,3 +102,15 @@ a.underline {
         color: #884488
     }
 }
+.dark {
+    a[target],
+    a.underline {
+        color: #7fc9ff;
+        &:hover {
+            color: #bb1122;
+        }
+        &:active {
+            color: #884488
+        }
+    }
+}

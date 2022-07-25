@@ -13,7 +13,6 @@ export const ROUTES: Routes = [
         path: ':id',
         component: SystemsComponent,
         children: [
-            { path: '', redirectTo: 'about' },
             { path: 'about', component: SystemAboutComponent },
             { path: 'modules', component: SystemModulesComponent },
             { path: 'triggers', component: SystemTriggersComponent },

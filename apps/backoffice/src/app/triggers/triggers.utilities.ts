@@ -23,12 +23,12 @@ import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
  */
 export function generateTriggerFormFields(trigger?: PlaceTrigger) {
     const fields = {
-        name: new FormControl(trigger.name || '', [Validators.required]),
-        description: new FormControl(trigger.description || ''),
-        enable_webhook: new FormControl(trigger.enable_webhook || false),
-        supported_methods: new FormControl(trigger.supported_methods || []),
+        name: new FormControl(trigger?.name || '', [Validators.required]),
+        description: new FormControl(trigger?.description || ''),
+        enable_webhook: new FormControl(trigger?.enable_webhook || false),
+        supported_methods: new FormControl(trigger?.supported_methods || []),
         debounce_period: new FormControl(
-            Math.max(0, trigger.debounce_period || 0)
+            Math.max(0, trigger?.debounce_period || 0)
         ),
     };
     return new FormGroup(fields);
@@ -41,11 +41,11 @@ export function generateTriggerSettingsFormFields(
     trigger?: PlaceTrigger
 ): FormGroup {
     const fields = {
-        name: new FormControl(trigger.name || ''),
-        triggered: new FormControl(+trigger.activated_count > 0),
-        exec_enabled: new FormControl(!!trigger.exec_enabled),
-        enabled: new FormControl(!!trigger.enabled),
-        important: new FormControl(!!trigger.important),
+        name: new FormControl(trigger?.name || ''),
+        triggered: new FormControl(+trigger?.activated_count > 0),
+        exec_enabled: new FormControl(!!trigger?.exec_enabled),
+        enabled: new FormControl(!!trigger?.enabled),
+        important: new FormControl(!!trigger?.important),
     };
     return new FormGroup(fields);
 }
