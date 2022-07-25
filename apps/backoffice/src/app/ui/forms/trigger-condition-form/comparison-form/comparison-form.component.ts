@@ -1,5 +1,5 @@
 import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import {
     PlaceModule,
     PlaceSystem,
@@ -21,7 +21,7 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 })
 export class TriggerConditionComparisonFormComponent implements OnChanges {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
     /** Systems used for templating the status variables */
     @Input() public system: PlaceSystem;
     /** List of modules associated with the template system */

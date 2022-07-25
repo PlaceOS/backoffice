@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { SPACE, ENTER, COMMA } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { EncryptionLevel, queryZones } from '@placeos/ts-client';
@@ -292,7 +292,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
 })
 export class SystemFormComponent extends BaseClass {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
     /** Levels of encyption available for the system's settings */
     public encryption_levels: Identity[] = [
         { id: EncryptionLevel.None, name: 'None' },

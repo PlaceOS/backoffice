@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 
 @Component({
     selector: 'domain-form',
@@ -151,5 +151,5 @@ import { FormGroup } from '@angular/forms';
 })
 export class DomainFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
 }

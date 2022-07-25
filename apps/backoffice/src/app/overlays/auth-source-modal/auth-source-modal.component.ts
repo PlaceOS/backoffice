@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import {
     PlaceDomain,
     PlaceOAuthSource,
@@ -47,7 +47,7 @@ export class AuthSourceModalComponent extends BaseClass implements OnInit {
     /** Whether actions are loading */
     public loading: boolean;
     /** Form fields for trigger condition */
-    public form: FormGroup;
+    public form: UntypedFormGroup;
     /** Item */
     public item: PlaceOAuthSource | PlaceLDAPSource | PlaceSAMLSource;
     /** List of available authentication sources */

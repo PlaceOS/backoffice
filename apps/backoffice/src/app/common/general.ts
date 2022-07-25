@@ -1,4 +1,4 @@
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { first } from 'rxjs/operators';
 import {
@@ -400,13 +400,13 @@ If applicable, add screenshots to help explain your problem.
 **Built:** ${date}
 `;
 
-export function getInvalidFields(form: FormGroup, prefix: string = '') {
+export function getInvalidFields(form: UntypedFormGroup, prefix: string = '') {
     let invalid = [];
     for (const key in form.controls) {
-        if (form.controls[key] instanceof FormGroup) {
+        if (form.controls[key] instanceof UntypedFormGroup) {
             invalid = [
                 ...invalid,
-                ...getInvalidFields(form.controls[key] as FormGroup, `${key}.`),
+                ...getInvalidFields(form.controls[key] as UntypedFormGroup, `${key}.`),
             ];
         } else if (!form.controls[key].valid) {
             invalid.push(`${prefix}${key}`);

@@ -7,8 +7,6 @@ import {
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { HashMap } from 'apps/backoffice/src/app/common/types';
-
 import * as yaml from 'js-yaml';
 import { validateURL } from '../common/validation';
 
@@ -29,11 +27,8 @@ export function validateYAML(control: AbstractControl) {
     return message ? { yaml: message } : null;
 }
 
-export function generateSystemsFormFields(system: PlaceSystem): FormGroup {
-    if (!system) {
-        throw Error('No System passed to generate form fields');
-    }
-    const fields: HashMap<FormControl> = {
+export function generateSystemsFormFields(system?: PlaceSystem) {
+    const fields = {
         name: new FormControl(system.name || '', [Validators.required]),
         display_name: new FormControl(system.display_name || ''),
         email: new FormControl(system.email || '', [Validators.email]),
@@ -54,7 +49,7 @@ export function generateSystemsFormFields(system: PlaceSystem): FormGroup {
         description: new FormControl(system.description || ''),
         images: new FormControl(system.images || []),
         map_id: new FormControl(system.map_id || ''),
-        zone: new FormControl('', [Validators.required]),
+        zone: new FormControl<PlaceZone | null>(null, [Validators.required]),
         zones: new FormControl(system.zones, [Validators.required]),
     };
     if (!system.id) {

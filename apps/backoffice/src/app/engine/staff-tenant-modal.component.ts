@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormRecord, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PlaceDomain, post, put } from '@placeos/ts-client';
 import { getInvalidFields } from '../common/general';
@@ -136,7 +136,21 @@ export class StaffTenantModalComponent implements OnInit {
     public readonly tenant = this._data.tenant;
     public readonly domain = this._data.domain;
 
-    public form: FormGroup;
+    public form = new FormGroup({
+        domain: new FormControl(
+            this.domain?.domain || this.tenant.domain || 'localhost'
+        ),
+        name: new FormControl(this.tenant?.name || '', [Validators.required]),
+        delegated: new FormControl(this.tenant?.delegated ?? false),
+        platform: new FormControl(this.tenant?.platform || 'google', [
+            Validators.required,
+        ]),
+        booking_limits: new FormControl([]),
+        credentials:
+            this.tenant?.platform === 'office365'
+                ? this.office_form
+                : this.google_form,
+    });
 
     public loading = false;
 
@@ -144,51 +158,22 @@ export class StaffTenantModalComponent implements OnInit {
 
     public get office_form() {
         return new FormGroup({
-            tenant: new FormControl(this.tenant?.credentials?.tenant || '', [
-                Validators.required,
-            ]),
-            client_id: new FormControl(
-                this.tenant?.credentials?.client_id || '',
-                [Validators.required]
-            ),
-            client_secret: new FormControl(
-                this.tenant?.credentials?.client_secret || '',
-                [Validators.required]
-            ),
-            conference_type: new FormControl(
-                this.tenant?.credentials?.conference_type || ''
-            ),
+            tenant: new FormControl('', [Validators.required]),
+            client_id: new FormControl('', [Validators.required]),
+            client_secret: new FormControl('', [Validators.required]),
+            conference_type: new FormControl(''),
         });
     }
 
     public get google_form() {
         return new FormGroup({
-            issuer: new FormControl(this.tenant?.credentials?.issue || '', [
-                Validators.required,
-            ]),
-            signing_key: new FormControl(
-                this.tenant?.credentials?.signing_key || '',
-                [Validators.required]
-            ),
-            scopes: new FormControl(this.tenant?.credentials?.scopes || '', [
-                Validators.required,
-            ]),
-            domain: new FormControl(
-                this.tenant?.credentials?.domain ||
-                    this._data.domain?.domain ||
-                    '',
-                [Validators.required]
-            ),
-            sub: new FormControl(this.tenant?.credentials?.sub || '', [
-                Validators.required,
-            ]),
-            user_agent: new FormControl(
-                this.tenant?.credentials?.user_agent || 'PlaceOS',
-                [Validators.required]
-            ),
-            conference_type: new FormControl(
-                this.tenant?.credentials?.conference_type || ''
-            ),
+            issuer: new FormControl('', [Validators.required]),
+            signing_key: new FormControl('', [Validators.required]),
+            scopes: new FormControl('', [Validators.required]),
+            domain: new FormControl('', [Validators.required]),
+            sub: new FormControl('', [Validators.required]),
+            user_agent: new FormControl('PlaceOS', [Validators.required]),
+            conference_type: new FormControl(''),
         });
     }
 
@@ -203,25 +188,6 @@ export class StaffTenantModalComponent implements OnInit {
 
     public ngOnInit() {
         const limits = this.tenant?.booking_limits || {};
-        this.form = new FormGroup({
-            domain: new FormControl(
-                this.domain?.domain || this.tenant.domain || 'localhost'
-            ),
-            name: new FormControl(this.tenant?.name || '', [
-                Validators.required,
-            ]),
-            delegated: new FormControl(this.tenant?.delegated ?? false),
-            platform: new FormControl(this.tenant?.platform || 'google', [
-                Validators.required,
-            ]),
-            booking_limits: new FormControl(
-                Object.keys(limits).map((k) => ({ type: k, amount: limits[k] }))
-            ),
-            credentials:
-                this.tenant?.platform === 'office365'
-                    ? this.office_form
-                    : this.google_form,
-        });
         const fields = [
             'tenant',
             'client_id',
@@ -248,14 +214,24 @@ export class StaffTenantModalComponent implements OnInit {
             }
         };
         this.form.controls.platform.valueChanges.subscribe((platform) => {
+            const credentials = this.form.value.credentials;
             this.form.removeControl('credentials');
             this.form.addControl(
                 'credentials',
                 platform === 'office365' ? this.office_form : this.google_form
             );
             handleDelegation(this.form.value.delegated);
+            this.form.patchValue({ credentials });
         });
         this.form.controls.delegated.valueChanges.subscribe(handleDelegation);
+        this.form.patchValue({
+            ...(this.tenant || {}),
+            domain: this.tenant?.domain || this._data.domain?.domain,
+            booking_limits: Object.keys(limits).map((k) => ({
+                type: k,
+                amount: limits[k],
+            })),
+        });
     }
 
     public async save() {

@@ -1,5 +1,5 @@
 import { Component, Input, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ENTER, COMMA, SPACE } from '@angular/cdk/keycodes';
 import { MatChipList } from '@angular/material/chips';
 import { PlaceSystem } from '@placeos/ts-client';
@@ -118,7 +118,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
 })
 export class TriggerActionFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
     /** Systems used for templating the status variables */
     @Input() public system: PlaceSystem;
     /** List of seperators for storing emails */

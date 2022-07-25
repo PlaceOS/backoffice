@@ -30,7 +30,12 @@ export class ExtensionModalComponent extends BaseClass implements OnInit {
     public readonly condition_ops = ['includes', 'equals', 'truthy', 'falsy'];
     public readonly item = this._data.item;
     public loading = false;
-    public form: FormGroup;
+    public form = new FormGroup({
+        type: new FormControl('systems', [Validators.required]),
+        name: new FormControl('', [Validators.required]),
+        url: new FormControl('', [Validators.required]),
+        conditions: new FormControl([]),
+    });
 
     constructor(
         @Inject(MAT_DIALOG_DATA) private _data: { item: BackofficeExtension },
@@ -44,14 +49,7 @@ export class ExtensionModalComponent extends BaseClass implements OnInit {
             'save',
             this._hotkey.listen(['KeyS'], () => this.submit())
         );
-        this.form = new FormGroup({
-            type: new FormControl(this.item?.type || 'systems', [
-                Validators.required,
-            ]),
-            name: new FormControl(this.item?.name || '', [Validators.required]),
-            url: new FormControl(this.item?.url || '', [Validators.required]),
-            conditions: new FormControl(this.item?.conditions || []),
-        });
+        this.form.patchValue(this.item);
     }
 
     public addCondition() {

@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import {
     PlaceDriverRole,
     queryDrivers,
@@ -290,7 +290,7 @@ import { map } from 'rxjs/operators';
 })
 export class ModuleFormComponent extends BaseClass implements OnDestroy {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
     /** Whether system is readonly */
     @Input() public readonly: boolean;
 

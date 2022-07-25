@@ -1,38 +1,28 @@
 import {
-    AbstractControl, FormControl,
-    FormGroup, Validators
+    AbstractControl,
+    FormControl,
+    FormGroup,
+    Validators,
 } from '@angular/forms';
 import {
     PlaceTrigger,
-
-
-
-
-    TriggerAtTimeCondition, TriggerComparison, TriggerConditionOperator,
-
-
-
+    TriggerAtTimeCondition,
+    TriggerComparison,
+    TriggerConditionOperator,
     TriggerCronTimeCondition,
     TriggerFunction,
-    TriggerMailer, TriggerStatusVariable,
-
-
-    TriggerTimeCondition
+    TriggerMailer,
+    TriggerStatusVariable,
+    TriggerTimeCondition,
 } from '@placeos/ts-client';
-import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
-
-
 
 /**
  * Generate angular form controls
  * @param trigger Trigger to generate the form controls for
  */
-export function generateTriggerFormFields(trigger: PlaceTrigger): FormGroup {
-    if (!trigger) {
-        throw Error('No Zone passed to generate form fields');
-    }
-    const fields: HashMap<FormControl> = {
+export function generateTriggerFormFields(trigger?: PlaceTrigger) {
+    const fields = {
         name: new FormControl(trigger.name || '', [Validators.required]),
         description: new FormControl(trigger.description || ''),
         enable_webhook: new FormControl(trigger.enable_webhook || false),
@@ -48,12 +38,9 @@ export function generateTriggerFormFields(trigger: PlaceTrigger): FormGroup {
  * @param trigger Trigger to generate the form controls for
  */
 export function generateTriggerSettingsFormFields(
-    trigger: PlaceTrigger
+    trigger?: PlaceTrigger
 ): FormGroup {
-    if (!trigger) {
-        throw Error('No Zone passed to generate form fields');
-    }
-    const fields: HashMap<FormControl> = {
+    const fields = {
         name: new FormControl(trigger.name || ''),
         triggered: new FormControl(+trigger.activated_count > 0),
         exec_enabled: new FormControl(!!trigger.exec_enabled),
@@ -104,7 +91,7 @@ export function generateTriggerConditionForm(
         typeof (condition as TriggerComparison).right === 'object'
             ? { ...((condition as TriggerComparison).right as any) }
             : (condition as TriggerComparison).right;
-    const fields: HashMap<FormControl> = {
+    const fields = {
         condition_type: new FormControl(type),
         left: new FormControl({ ...(left || {}) }, [validateCompare]),
         operator: new FormControl(
@@ -126,11 +113,7 @@ export function generateTriggerConditionForm(
             (condition as TriggerCronTimeCondition).timezone || ''
         ),
     };
-    const subscriptions = [];
-    return {
-        form: new FormGroup(fields),
-        subscriptions,
-    };
+    return new FormGroup(fields);
 }
 
 /**
@@ -159,7 +142,7 @@ export function generateTriggerActionForm(
 ) {
     const type =
         action && (action as TriggerMailer)?.emails ? 'emails' : 'function';
-    const fields: HashMap<FormControl> = {
+    const fields = {
         action_type: new FormControl(type),
         emails: new FormControl((action as TriggerMailer)?.emails || [], [
             Validators.min(1),
@@ -171,9 +154,5 @@ export function generateTriggerActionForm(
         ]),
         method_call: new FormControl((action as TriggerFunction) || null, []),
     };
-    const subscriptions = [];
-    return {
-        form: new FormGroup(fields),
-        subscriptions,
-    };
+    return new FormGroup(fields);
 }

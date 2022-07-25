@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { TriggerTimeConditionType } from '@placeos/ts-client';
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 import { numberToPosition } from 'apps/backoffice/src/app/common/general';
@@ -17,7 +17,7 @@ export class TriggerConditionTimeFormComponent
     extends BaseClass
     implements OnChanges {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
     /** List of available periods for scheduled repetition */
     public repeat_period: Identity[] = [
         { id: 'minute', name: 'Minute' },

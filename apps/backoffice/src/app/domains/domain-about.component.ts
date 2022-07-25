@@ -42,7 +42,10 @@ import { DomainStateService } from './domain-state.service';
 })
 export class DomainAboutComponent extends BaseClass implements OnInit {
     /** Form group for edit domain settings */
-    public form: FormGroup;
+    public form = new FormGroup({
+        config: new FormControl('', [validateJSONString]),
+        internals: new FormControl('', [validateJSONString]),
+    });
     /** Index of the active tab */
     public index: number;
 
@@ -63,15 +66,9 @@ export class DomainAboutComponent extends BaseClass implements OnInit {
 
     /** Load form fields for active item */
     private loadForm(): void {
-        this.form = new FormGroup({
-            config: new FormControl(
-                JSON.stringify(this.item.config, undefined, 4),
-                [validateJSONString]
-            ),
-            internals: new FormControl(
-                JSON.stringify(this.item.internals, undefined, 4),
-                [validateJSONString]
-            ),
+        this.form.patchValue({
+            internals: JSON.stringify(this.item.internals, undefined, 4),
+            config: JSON.stringify(this.item.config, undefined, 4),
         });
         this.subscription(
             'form',

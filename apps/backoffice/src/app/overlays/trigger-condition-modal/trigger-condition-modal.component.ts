@@ -1,5 +1,4 @@
-import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
     PlaceSystem,
@@ -31,15 +30,13 @@ export interface TriggerConditionData {
     templateUrl: './trigger-condition-modal.template.html',
     styleUrls: ['./trigger-condition-modal.styles.scss'],
 })
-export class TriggerConditionModalComponent
-    extends BaseClass
-    implements OnInit {
+export class TriggerConditionModalComponent extends BaseClass {
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether actions are loading */
     public loading: boolean;
     /** Form fields for trigger condition */
-    public form: FormGroup;
+    public form = generateTriggerConditionForm(this._data.condition);
     /** Store for updated conditions */
     public conditions: any;
 
@@ -63,10 +60,6 @@ export class TriggerConditionModalComponent
         @Inject(MAT_DIALOG_DATA) private _data: TriggerConditionData
     ) {
         super();
-    }
-
-    public ngOnInit() {
-        this.form = generateTriggerConditionForm(this._data.condition).form;
     }
 
     public save() {
@@ -167,10 +160,10 @@ export class TriggerConditionModalComponent
                 (time) => JSON.stringify(time) === old_value
             );
             if (index >= 0) {
-                old_values.splice(index, 1, new_value);
+                old_values.splice(index, 1, new_value as any);
             }
         } else {
-            old_values.push(new_value);
+            old_values.push(new_value as any);
         }
         const updated_conditions = {
             ...this.trigger.conditions,

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 
 @Component({
     selector: 'system-trigger-form',
@@ -56,5 +56,5 @@ import { FormGroup } from '@angular/forms';
 })
 export class SystemTriggerFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
 }

@@ -1,5 +1,5 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 
 import {
     PlaceRepositoryType,
@@ -244,7 +244,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
 })
 export class RepositoryFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
     /** List of commits available for repository */
     public commit_list: Identity[] = [];
     /** List of branches available for repository */

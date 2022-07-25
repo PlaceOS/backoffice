@@ -6,7 +6,7 @@ import {
     EventEmitter,
     Output,
 } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import {
     PlaceRepositoryCommit,
     PlaceRepository,
@@ -53,7 +53,7 @@ import { format, isAfter, subMinutes } from 'date-fns';
 })
 export class DriverFormComponent extends BaseClass implements OnChanges {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
 
     @Output() public waiting = new EventEmitter<boolean>();
     /** List of driver roles */

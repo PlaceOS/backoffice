@@ -1,14 +1,9 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PlaceMQTTBroker, AuthType } from '@placeos/ts-client';
 
-import { HashMap } from 'apps/backoffice/src/app/common/types';
-
-export function generateBrokerFormFields(broker: PlaceMQTTBroker): FormGroup {
-    if (!broker) {
-        throw Error('No MQTT Broker passed to generate form fields');
-    }
+export function generateBrokerFormFields(broker?: PlaceMQTTBroker) {
     const auth_type = broker.auth_type ?? AuthType.NoAuth;
-    const fields: HashMap<FormControl> = {
+    const fields = {
         name: new FormControl(broker.name || '', [Validators.required]),
         description: new FormControl(broker.description),
         auth_type: new FormControl(auth_type),
@@ -17,21 +12,15 @@ export function generateBrokerFormFields(broker: PlaceMQTTBroker): FormGroup {
         tls: new FormControl(!!broker.tls),
         username: new FormControl(
             broker.username,
-            auth_type === AuthType.UserPassword
-                ? [Validators.required]
-                : []
+            auth_type === AuthType.UserPassword ? [Validators.required] : []
         ),
         password: new FormControl(
             broker.password,
-            auth_type === AuthType.UserPassword
-                ? [Validators.required]
-                : []
+            auth_type === AuthType.UserPassword ? [Validators.required] : []
         ),
         certificate: new FormControl(
             broker.certificate,
-            auth_type === AuthType.Certificate
-                ? [Validators.required]
-                : []
+            auth_type === AuthType.Certificate ? [Validators.required] : []
         ),
         filters: new FormControl(broker.filters),
     };

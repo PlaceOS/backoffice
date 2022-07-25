@@ -16,7 +16,7 @@ import {
     addSettings,
     cleanObject,
 } from '@placeos/ts-client';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 import {
@@ -78,7 +78,7 @@ export class ItemCreateUpdateModalComponent
     /** Saved version of the item */
     public result: any;
     /** List of the form fields needed for the item */
-    public form: FormGroup;
+    public form: UntypedFormGroup;
     /** Loading status for the item request is being processed */
     public loading: string;
     /** Whether user is able to submit */
@@ -132,35 +132,34 @@ export class ItemCreateUpdateModalComponent
     /**
      * Generate the form fields for the item being handled
      */
-    public generateFormData(): FormGroup {
-        let details: FormGroup = null;
+    public generateFormData() {
         if (this.item instanceof PlaceSystem) {
-            details = generateSystemsFormFields(this.item);
+            return generateSystemsFormFields(this.item);
         } else if (this.item instanceof PlaceModule) {
-            details = generateModuleFormFields(this.item);
+            return generateModuleFormFields(this.item);
         } else if (this.item instanceof PlaceZone) {
-            details = generateZoneFormFields(this.item);
+            return generateZoneFormFields(this.item);
         } else if (this.item instanceof PlaceDriver) {
-            details = generateDriverFormFields(this.item);
+            return generateDriverFormFields(this.item);
         } else if (this.item instanceof PlaceUser) {
-            details = generateUserFormFields(this.item);
+            return generateUserFormFields(this.item);
         } else if (this.item instanceof PlaceDomain) {
-            details = generateDomainFormFields(this.item);
+            return generateDomainFormFields(this.item);
         } else if (this.item instanceof PlaceApplication) {
-            details = generateApplicationFormFields(this.item);
+            return generateApplicationFormFields(this.item);
         } else if (
             this.item instanceof PlaceTrigger &&
             this._data.external_save
         ) {
-            details = generateTriggerSettingsFormFields(this.item);
+            return generateTriggerSettingsFormFields(this.item);
         } else if (this.item instanceof PlaceTrigger) {
-            details = generateTriggerFormFields(this.item);
+            return generateTriggerFormFields(this.item);
         } else if (this.item instanceof PlaceRepository) {
-            details = generateRepositoryFormFields(this.item);
+            return generateRepositoryFormFields(this.item);
         } else if (this.item instanceof PlaceMQTTBroker) {
-            details = generateBrokerFormFields(this.item);
+            return generateBrokerFormFields(this.item);
         }
-        return details || new FormGroup({});
+        return new UntypedFormGroup({});
     }
 
     public ngOnInit(): void {

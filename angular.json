@@ -2,6 +2,7 @@
     "version": 1,
     "projects": {
         "backoffice": {
+            "$schema": "../../node_modules/nx/schemas/project-schema.json",
             "projectType": "application",
             "root": "apps/backoffice",
             "sourceRoot": "apps/backoffice/src",
@@ -134,6 +135,7 @@
             "tags": []
         },
         "backoffice-e2e": {
+            "$schema": "../../node_modules/nx/schemas/project-schema.json",
             "root": "apps/backoffice-e2e",
             "sourceRoot": "apps/backoffice-e2e/src",
             "projectType": "application",

@@ -1,5 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { Component, Output, EventEmitter, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
     PlaceTrigger,
@@ -31,13 +30,13 @@ export interface TriggerActionModalData {
     templateUrl: './trigger-action-modal.template.html',
     styleUrls: ['./trigger-action-modal.styles.scss'],
 })
-export class TriggerActionModalComponent extends BaseClass implements OnInit {
+export class TriggerActionModalComponent extends BaseClass {
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether actions are loading */
     public loading: boolean;
     /** Form fields for trigger action */
-    public form: FormGroup;
+    public form = generateTriggerActionForm(this._data.action);
     /** Store for changes to actions */
     public actions: any;
 
@@ -61,10 +60,6 @@ export class TriggerActionModalComponent extends BaseClass implements OnInit {
         @Inject(MAT_DIALOG_DATA) private _data: TriggerActionModalData
     ) {
         super();
-    }
-
-    public ngOnInit() {
-        this.form = generateTriggerActionForm(this._data.action).form;
     }
 
     public save() {

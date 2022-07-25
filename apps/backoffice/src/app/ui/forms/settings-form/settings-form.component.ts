@@ -5,7 +5,7 @@ import {
     OnChanges,
     OnInit,
 } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl } from '@angular/forms';
 import {
     PlaceSettings,
     PlaceUser,
@@ -50,7 +50,7 @@ export class SettingsFormComponent
     /** List of settings to merge into the main settings */
     @Input() merge_settings: PlaceSettings[];
     /** Form fields for settings */
-    public form: FormGroup;
+    public form: UntypedFormGroup;
     /** Whether a setting is being saved */
     public saving: [boolean, boolean, boolean, boolean] = [
         false,
@@ -300,20 +300,20 @@ export class SettingsFormComponent
     }
 
     private initForm() {
-        this.form = new FormGroup({
-            settings0: new FormControl(this.used_settings[0].settings_string, [
+        this.form = new UntypedFormGroup({
+            settings0: new UntypedFormControl(this.used_settings[0].settings_string, [
                 validateYAML,
             ]),
-            settings1: new FormControl(this.used_settings[1].settings_string, [
+            settings1: new UntypedFormControl(this.used_settings[1].settings_string, [
                 validateYAML,
             ]),
-            settings2: new FormControl(this.used_settings[2].settings_string, [
+            settings2: new UntypedFormControl(this.used_settings[2].settings_string, [
                 validateYAML,
             ]),
-            settings3: new FormControl(this.used_settings[3].settings_string, [
+            settings3: new UntypedFormControl(this.used_settings[3].settings_string, [
                 validateYAML,
             ]),
-            settings4: new FormControl(this.used_settings[4].settings_string, [
+            settings4: new UntypedFormControl(this.used_settings[4].settings_string, [
                 validateYAML,
             ]),
         });

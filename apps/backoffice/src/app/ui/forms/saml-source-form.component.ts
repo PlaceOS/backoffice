@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
@@ -334,7 +334,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
 })
 export class SamlSourceFormComponent extends BaseClass implements OnChanges {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
 
     /** List of attribute statement pairs */
     public attribute_statement_mappings: any[] = [];

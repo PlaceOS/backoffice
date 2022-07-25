@@ -1,11 +1,11 @@
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 
 /**
  * Add a tag to the list of tags for the item
  * @param event Input event
  */
-export function addChipItem(control: FormControl, event: MatChipInputEvent): void {
+export function addChipItem(control: UntypedFormControl, event: MatChipInputEvent): void {
     if (!control) { return; }
     const input = event.input;
     const value = event.value;
@@ -25,7 +25,7 @@ export function addChipItem(control: FormControl, event: MatChipInputEvent): voi
  * Remove tag from the list
  * @param existing_tag Tag to remove
  */
-export function removeChipItem(control: FormControl, item: string): void {
+export function removeChipItem(control: UntypedFormControl, item: string): void {
     if (!control) { return; }
     const item_list = control.value;
     const index = item_list.indexOf(item);

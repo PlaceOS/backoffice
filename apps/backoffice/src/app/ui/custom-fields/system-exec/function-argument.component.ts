@@ -10,8 +10,8 @@ import {
 import {
     AbstractControl,
     ControlValueAccessor,
-    FormControl,
-    FormGroup,
+    UntypedFormControl,
+    UntypedFormGroup,
     NG_VALUE_ACCESSOR,
     Validators,
 } from '@angular/forms';
@@ -104,7 +104,7 @@ export class FunctionArgumentComponent
     @Input() public method: PlaceModuleFunction;
     @Output() public valid = new EventEmitter<boolean>();
 
-    public form: FormGroup;
+    public form: UntypedFormGroup;
 
     public value: HashMap;
 
@@ -129,7 +129,7 @@ export class FunctionArgumentComponent
             const prop_details = this.method.params[prop] as any;
             const optional = 'default' in prop_details;
             this.required[prop] = !optional;
-            form_controls[prop] = new FormControl(
+            form_controls[prop] = new UntypedFormControl(
                 (this.value ? this.value[prop] : '') || '',
                 !optional
                     ? [
@@ -146,7 +146,7 @@ export class FunctionArgumentComponent
                 }
             }
         }
-        this.form = new FormGroup(form_controls);
+        this.form = new UntypedFormGroup(form_controls);
         this.valid.emit(this.form?.valid);
         this.subscription(
             'form',

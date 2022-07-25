@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { PlaceSystem } from '@placeos/ts-client';
 
 import { Identity } from 'apps/backoffice/src/app/common/types';
@@ -54,7 +54,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
 })
 export class TriggerConditionFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
     /** Systems used for templating the status variables */
     @Input() public system: PlaceSystem;
 

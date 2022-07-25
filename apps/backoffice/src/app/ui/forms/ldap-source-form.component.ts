@@ -1,5 +1,5 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 
 @Component({
@@ -201,7 +201,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
 })
 export class LdapSourceFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
     /** List of available authentication schemes */
     public auth_methods: Identity[] = [
         { id: 'plain', name: 'Plain' },

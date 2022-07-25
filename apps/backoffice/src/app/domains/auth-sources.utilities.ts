@@ -12,25 +12,22 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
  * @param auth_source Auth source to apply changes to
  */
 export function generateOAuthSourceForm(
-    auth_source: PlaceOAuthSource
-): FormGroup {
-    if (!auth_source) {
-        throw Error('No OAuth source passed to generate form fields');
-    }
-    const fields: HashMap<FormControl> = {
-        name: new FormControl(auth_source.name || '', [Validators.required]),
-        client_id: new FormControl(auth_source.client_id || ''),
-        client_secret: new FormControl(auth_source.client_secret || ''),
-        info_mappings: new FormControl(auth_source.info_mappings || {}),
-        authorize_params: new FormControl(auth_source.authorize_params || {}),
-        ensure_matching: new FormControl(auth_source.ensure_matching || {}),
-        site: new FormControl(auth_source.site || ''),
-        authorize_url: new FormControl(auth_source.authorize_url || ''),
-        token_method: new FormControl(auth_source.token_method || 'post'),
-        auth_scheme: new FormControl(auth_source.auth_scheme || 'request_body'),
-        token_url: new FormControl(auth_source.token_url || ''),
-        scope: new FormControl(auth_source.scope || ''),
-        raw_info_url: new FormControl(auth_source.raw_info_url || ''),
+    auth_source?: PlaceOAuthSource
+) {
+    const fields = {
+        name: new FormControl(auth_source?.name || '', [Validators.required]),
+        client_id: new FormControl(auth_source?.client_id || ''),
+        client_secret: new FormControl(auth_source?.client_secret || ''),
+        info_mappings: new FormControl(auth_source?.info_mappings || {}),
+        authorize_params: new FormControl(auth_source?.authorize_params || {}),
+        ensure_matching: new FormControl(auth_source?.ensure_matching || {}),
+        site: new FormControl(auth_source?.site || ''),
+        authorize_url: new FormControl(auth_source?.authorize_url || ''),
+        token_method: new FormControl(auth_source?.token_method || 'post'),
+        auth_scheme: new FormControl(auth_source?.auth_scheme || 'request_body'),
+        token_url: new FormControl(auth_source?.token_url || ''),
+        scope: new FormControl(auth_source?.scope || ''),
+        raw_info_url: new FormControl(auth_source?.raw_info_url || ''),
     };
     return new FormGroup(fields);
 }

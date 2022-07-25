@@ -59,7 +59,10 @@ export class EdgeModalComponent {
 
     public readonly edge = this._data.edge;
 
-    public form: FormGroup;
+    public form = new FormGroup({
+        name: new FormControl('', [Validators.required]),
+        description: new FormControl(''),
+    });
 
     public loading = false;
 
@@ -69,10 +72,7 @@ export class EdgeModalComponent {
     ) {}
 
     public ngOnInit() {
-        this.form = new FormGroup({
-            name: new FormControl(this.edge?.name || '', [Validators.required]),
-            description: new FormControl(this.edge?.description || ''),
-        });
+        this.form.patchValue(this.edge);
     }
 
     public async save() {

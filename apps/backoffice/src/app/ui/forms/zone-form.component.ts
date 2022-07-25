@@ -1,5 +1,5 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { PlaceZone, showZone, queryZones } from '@placeos/ts-client';
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 
@@ -209,7 +209,7 @@ import {
 })
 export class ZoneFormComponent extends BaseClass {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
     /** Query function for zones */

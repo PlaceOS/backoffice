@@ -17,7 +17,12 @@ export interface MetadataDetailsModalData {
     styleUrls: ['./metadata-details-modal.component.scss'],
 })
 export class MetadataDetailsModalComponent implements OnInit {
-    public form: FormGroup;
+    public form = new FormGroup({
+        name: new FormControl(''),
+        description: new FormControl(''),
+        editors: new FormControl(''),
+        schema: new FormControl(''),
+    });;
     /** List of separator characters for tags */
     public readonly separators: number[] = [ENTER, COMMA, SPACE];
 
@@ -36,20 +41,12 @@ export class MetadataDetailsModalComponent implements OnInit {
     ) {}
 
     public ngOnInit(): void {
-        this.form = new FormGroup({
-            name: new FormControl(
-                this._data.form.controls.name.value,
-                this._data.form.controls.name.validator
-            ),
-            description: new FormControl(
-                this._data.form.controls.description.value
-            ),
-            editors: new FormControl(this._data.form.controls.editors.value),
-            schema: new FormControl(this._data.form.controls.schema.value),
-        });
+        this.form.controls.name.setValidators(this._data.form.controls.name.validator);
+        this.form.patchValue(this._data.form.value);
     }
 
     public updateDetails() {
+        this._data.form.patchValue(this.form.value);
         this._data.form.controls.name.setValue(this.form.controls.name.value);
         this._data.form.controls.description.setValue(
             this.form.controls.description.value

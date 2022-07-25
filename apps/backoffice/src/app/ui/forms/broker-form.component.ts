@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 
@@ -256,7 +256,7 @@ import { AuthType } from '@placeos/ts-client';
 })
 export class BrokerFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
     /** List of available authentication types */
     public auth_types = [
         { id: AuthType.Certificate, name: 'Certificate' },

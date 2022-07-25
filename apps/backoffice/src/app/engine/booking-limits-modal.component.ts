@@ -1,4 +1,4 @@
-import { Component, Inject, Output } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { post } from '@placeos/ts-client';
@@ -44,8 +44,8 @@ export class BookingLimitsModalComponent {
     public readonly tenant = this._data.tenant;
     public readonly domain = this._data.domain;
 
-    public form: FormGroup = new FormGroup({
-        booking_limits: new FormControl([]),
+    public form = new FormGroup({
+        booking_limits: new FormControl<{ type: string, amount: string }[]>([]),
     });
 
     public loading = false;
@@ -58,7 +58,7 @@ export class BookingLimitsModalComponent {
         this.form.patchValue({
             booking_limits: Object.keys(limits).map((k) => ({
                 type: k,
-                amount: limits[k],
+                amount: `${limits[k]}`,
             })),
         });
     }

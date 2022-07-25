@@ -153,7 +153,7 @@ import { APIKeyService } from './api-keys.service';
 })
 export class APIKeyModalComponent {
     @Output() public event = new EventEmitter<DialogEvent>();
-    public form: FormGroup = new FormGroup({
+    public form = new FormGroup({
         name: new FormControl('', [Validators.required]),
         user: new FormControl(null),
         user_id: new FormControl('', [Validators.required]),

@@ -1,6 +1,6 @@
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { PlaceDomain, queryDomains } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 
@@ -264,7 +264,7 @@ import {
 })
 export class UserFormComponent {
     /** Group of form fields used for creating the system */
-    @Input() public form: FormGroup;
+    @Input() public form: UntypedFormGroup;
     /** Whether password should be visible in plaintext */
     public show_password: boolean;
     /** Whether password confirm should be visible in plaintext */
