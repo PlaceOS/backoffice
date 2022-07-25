@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { DomainsComponent } from './domains.component';
 import { DomainApplicationsComponent } from './domain-applications.component';
 import { DomainAuthenticationComponent } from './domain-authentication.component';
 import { DomainUsersComponent } from './domain-users.component';

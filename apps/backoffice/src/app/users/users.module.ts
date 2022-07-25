@@ -5,7 +5,6 @@ import { RouterModule } from '@angular/router';
 
 import { ROUTES } from './users.routes';
 
-import { UsersComponent } from './users.component';
 import { UserAboutComponent } from './user-about.component';
 import { UserHistoryComponent } from './user-history.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
@@ -14,7 +13,6 @@ import { NewUsersComponent } from './new-users.component';
 
 @NgModule({
     declarations: [
-        UsersComponent,
         UserAboutComponent,
         UserHistoryComponent,
         UserMetadataComponent,

@@ -6,7 +6,6 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { ROUTES } from './systems.routes';
 
-import { SystemsComponent } from './systems.component';
 import { SystemAboutComponent } from './system-about.component';
 import { SystemModulesComponent } from './system-modules.component';
 import { SystemTriggersComponent } from './system-triggers.component';
@@ -17,7 +16,6 @@ import { NewSystemsComponent } from './new-systems.component';
 
 @NgModule({
     declarations: [
-        SystemsComponent,
         SystemAboutComponent,
         SystemModulesComponent,
         SystemTriggersComponent,

@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 
-import { ModulesComponent } from './modules.component';
 import { ModuleAboutComponent } from './module-about.component';
 import { ModuleSystemsComponent } from './module-systems.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';

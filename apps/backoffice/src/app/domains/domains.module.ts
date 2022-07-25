@@ -5,7 +5,6 @@ import { RouterModule } from '@angular/router';
 
 import { ROUTES } from './domains.routes';
 
-import { DomainsComponent } from './domains.component';
 import { DomainApplicationsComponent } from './domain-applications.component';
 import { DomainAuthenticationComponent } from './domain-authentication.component';
 import { DomainUsersComponent } from './domain-users.component';
@@ -16,7 +15,6 @@ import { NewDomainsComponent } from './new-domains.component';
 
 @NgModule({
     declarations: [
-        DomainsComponent,
         DomainApplicationsComponent,
         DomainAuthenticationComponent,
         DomainUsersComponent,

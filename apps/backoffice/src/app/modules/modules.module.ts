@@ -5,7 +5,6 @@ import { RouterModule } from '@angular/router';
 
 import { ROUTES } from './modules.routes';
 
-import { ModulesComponent } from './modules.component';
 import { ModuleAboutComponent } from './module-about.component';
 import { ModuleSystemsComponent } from './module-systems.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
@@ -13,7 +12,6 @@ import { NewModulesComponent } from './new-modules.component';
 
 @NgModule({
     declarations: [
-        ModulesComponent,
         ModuleAboutComponent,
         ModuleSystemsComponent,
         NewModulesComponent

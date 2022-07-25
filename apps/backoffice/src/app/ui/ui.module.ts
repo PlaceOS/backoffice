@@ -53,7 +53,6 @@ import { TriggerFormComponent } from './forms/trigger-form.component';
 import { UserFormComponent } from './forms/user-form.component';
 import { ZoneFormComponent } from './forms/zone-form.component';
 import { IconComponent } from './icon/icon.component';
-import { ItemDisplayComponent } from './item-display/item-display.component';
 import { DateFromPipe } from './pipes/date-from.pipe';
 import { DriverFormatPipe } from './pipes/driver-format.pipe';
 import { FormatListPipe } from './pipes/format-list.pipe';
@@ -113,7 +112,6 @@ const FORM_COMPONENTS: Type<any>[] = [
 ];
 
 const COMPONENTS: Type<any>[] = [
-    ItemDisplayComponent,
     SearchbarComponent,
     SidebarComponent,
     IconComponent,

@@ -8,9 +8,6 @@ import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
-import { TopbarHeaderComponent } from './ui/topbar-header/topbar-header.component';
-import { GlobalSearchComponent } from './ui/global-search.component';
-import { SidebarMenuComponent } from './ui/sidebar-menu.component';
 
 import { SharedOverlaysModule } from './overlays/overlays.module';
 import { SharedContentModule } from './ui/ui.module';
@@ -22,7 +19,7 @@ import { AuthorisedAdminGuard } from './ui/guards/authorised-admin.guard';
 import './mocks';
 
 @NgModule({
-    declarations: [AppComponent, TopbarHeaderComponent, GlobalSearchComponent, SidebarMenuComponent],
+    declarations: [AppComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,

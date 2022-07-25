@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { SystemsComponent } from './systems.component';
 import { SystemAboutComponent } from './system-about.component';
 import { SystemModulesComponent } from './system-modules.component';
 import { SystemTriggersComponent } from './system-triggers.component';
