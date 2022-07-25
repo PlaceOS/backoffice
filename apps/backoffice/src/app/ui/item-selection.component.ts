@@ -102,10 +102,11 @@ import { BackofficeUsersService } from '../users/users.service';
                             <p class="truncate flex-1">
                                 {{ item.display_name || item.name }}
                             </p>
-                            <code class="text-xs opacity-60">
+                            <code class="text-xs opacity-60" *ngIf="item.extra">
                                 {{ item.extra }}
                             </code>
                         </a>
+                        <div class="p-2 text-center opacity-30 text-sm bg-gray-300 dark:bg-neutral-800">End of the list</div>
                     </cdk-virtual-scroll-viewport>
                 </div>
             </div>
