@@ -61,17 +61,13 @@ import { RepositoriesStateService } from './repositories-state.service';
                 </div>
                 <div class="flex items-center space-x-2">
                     <label i18n="@@repoBranchLabel">Branch:</label>
-                    <div
-                        class="value select-all bg-gray-200 px-2 pb-1 pt-2 text-xs rounded mono dark:text-black"
-                    >
+                    <code class="text-xs">
                         {{ item.branch || 'master' }}
-                    </div>
+                    </code>
                 </div>
                 <div class="flex items-center space-x-2">
                     <label i18n="@@repoCommitHashLabel">Commit hash:</label>
-                    <div
-                        class="value select-text bg-gray-200 px-2 pb-1 pt-2 text-xs rounded mono dark:text-black"
-                    >
+                    <code class="text-xs">
                         {{ item.commit_hash || 'No Commit hash set' }}
                         <span
                             class="select-text mono"
@@ -79,7 +75,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                         >
                             ({{ commit }})
                         </span>
-                    </div>
+                    </code>
                 </div>
                 <div class="flex-1"></div>
                 <button

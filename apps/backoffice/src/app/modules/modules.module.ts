@@ -8,13 +8,13 @@ import { ROUTES } from './modules.routes';
 import { ModuleAboutComponent } from './module-about.component';
 import { ModuleSystemsComponent } from './module-systems.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
-import { NewModulesComponent } from './new-modules.component';
+import { ModulesComponent } from './modules.component';
 
 @NgModule({
     declarations: [
         ModuleAboutComponent,
         ModuleSystemsComponent,
-        NewModulesComponent
+        ModulesComponent
     ],
     imports: [
         CommonModule,

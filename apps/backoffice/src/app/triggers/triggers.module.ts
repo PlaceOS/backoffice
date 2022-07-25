@@ -9,13 +9,13 @@ import { ROUTES } from './triggers.routes';
 import { TriggerAboutComponent } from './trigger-about.component';
 import { TriggerInstancesComponent } from './trigger-instances.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
-import { NewTriggersComponent } from './new-triggers.component';
+import { TriggersComponent } from './triggers.component';
 
 @NgModule({
     declarations: [
         TriggerAboutComponent,
         TriggerInstancesComponent,
-        NewTriggersComponent
+        TriggersComponent
     ],
     imports: [
         CommonModule,

@@ -1,21 +1,22 @@
 import { Component } from '@angular/core';
-import { PlaceModule, querySystems } from '@placeos/ts-client';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
+import { listTriggerInstances, PlaceTrigger } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
 import { BaseClass } from '../common/base.class';
 import { ActiveItemService } from '../common/item.service';
 
 @Component({
-    selector: 'new-modules-view',
+    selector: 'new-triggers-view',
     template: `
         <div
             class="absolute inset-0 flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
-            <new-sidebar-menu
+            <sidebar-menu
                 class="sm:h-full bg-gray-200 dark:bg-neutral-800"
-                
-            ></new-sidebar-menu>
+            ></sidebar-menu>
             <div class="flex-1 w-1/2 h-full relative flex flex-col">
-                <item-selection [route]="name" title="Modules" class="z-20"></item-selection>
+                <item-selection [route]="name" title="Triggers" class="z-20"></item-selection>
                 <div class="flex flex-col flex-1 h-1/2">
                     <ng-container *ngIf="item?.id">
                         <item-details
@@ -39,7 +40,7 @@ import { ActiveItemService } from '../common/item.service';
                 </div>
                 <button
                     class="absolute bottom-16 -left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
-                    matTooltip="New module"
+                    matTooltip="New trigger"
                     matTooltipPosition="right"
                     matRipple
                     (click)="newItem()"
@@ -54,11 +55,10 @@ import { ActiveItemService } from '../common/item.service';
     `,
     styles: [``],
 })
-export class NewModulesComponent extends BaseClass {
-    /** Number of systems for the active device */
-    public system_count: number;
-    public readonly name = 'modules';
+export class TriggersComponent extends BaseClass {
+    public readonly name = 'triggers';
 
+    public instance_count = 0;
     public tab_list = [];
 
     public readonly newItem = () => this._service.create();
@@ -73,18 +73,24 @@ export class NewModulesComponent extends BaseClass {
 
     public updateTabList() {
         this.tab_list = [
-            { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
             {
-                id: 'systems',
-                name: 'Systems',
-                count: this.system_count,
+                id: 'about',
+                name: 'About',
+                icon: { class: 'backoffice-info-with-circle' },
+            },
+            {
+                id: 'instances',
+                name: 'Instances',
+                count: this.instance_count,
                 icon: { class: 'backoffice-documents' },
             },
-            { id: 'history', name: 'Settings History', icon: { class: 'backoffice-clock' } },
         ].concat(this.extensions);
     }
 
-    constructor(private _service: ActiveItemService) {
+    constructor(
+        protected _service: ActiveItemService,
+        private _dialog: MatDialog
+    ) {
         super();
     }
 
@@ -93,16 +99,17 @@ export class NewModulesComponent extends BaseClass {
             'item',
             this._service.item.subscribe((item) => {
                 this.loadValues(item as any);
-                this.updateTabList();
             })
         );
         this.updateTabList();
     }
 
-    protected async loadValues(item: PlaceModule) {
+    protected async loadValues(item: PlaceTrigger) {
         if (!item) return;
-        const query: any = { offset: 0, limit: 1, module_id: item.id };
-        // Get system count
-        this.system_count = (await querySystems(query).toPromise()).total;
+        // Get trigger count
+        this.instance_count = (
+            await listTriggerInstances(item.id).toPromise()
+        ).length;
+        this.updateTabList();
     }
 }

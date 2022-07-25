@@ -2,19 +2,19 @@ import { Component } from '@angular/core';
 import { extensionsForItem } from '../common/api';
 import { BaseClass } from '../common/base.class';
 import { ActiveItemService } from '../common/item.service';
-import { RepositoriesStateService } from './repositories-state.service';
+import { DomainStateService } from './domain-state.service';
 
 @Component({
-    selector: 'new-repositories-view',
+    selector: 'new-domains-view',
     template: `
         <div
             class="absolute inset-0 flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
-            <new-sidebar-menu
+            <sidebar-menu
                 class="sm:h-full bg-gray-200 dark:bg-neutral-800"
-            ></new-sidebar-menu>
+            ></sidebar-menu>
             <div class="flex-1 w-1/2 h-full relative flex flex-col">
-                <item-selection [route]="name" title="Repositories" class="z-20"></item-selection>
+                <item-selection [route]="name" title="Triggers" class="z-20"></item-selection>
                 <div class="flex flex-col flex-1 h-1/2">
                     <ng-container *ngIf="item?.id">
                         <item-details
@@ -38,7 +38,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                 </div>
                 <button
                     class="absolute bottom-16 -left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
-                    matTooltip="New repository"
+                    matTooltip="New domain"
                     matTooltipPosition="right"
                     matRipple
                     (click)="newItem()"
@@ -53,10 +53,9 @@ import { RepositoriesStateService } from './repositories-state.service';
     `,
     styles: [``],
 })
-export class NewRepositoriesComponent extends BaseClass {
-    public readonly name = 'repositories';
+export class DomainsComponent extends BaseClass {
+    public readonly name = 'domains';
 
-    public driver_count = 0;
     public tab_list = [];
 
     public readonly newItem = () => this._item.create();
@@ -69,33 +68,46 @@ export class NewRepositoriesComponent extends BaseClass {
         return extensionsForItem(this._service.active_item, this.name);
     }
 
-    public updateTabList() {
-        this.tab_list = (this.driver_count < 0 || !this.driver_count
-            ? [{ id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } }]
-            : [
-                  { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
-                  {
-                      id: 'drivers',
-                      name: 'Drivers',
-                      count: this.driver_count,
-                      icon: { class: 'backoffice-documents' },
-                  },
-              ]
-        ).concat(this.extensions);
-    }
-
-    constructor(protected _service: RepositoriesStateService, protected _item: ActiveItemService) {
+    constructor(
+        private _service: DomainStateService,
+        protected _item: ActiveItemService
+    ) {
         super();
     }
 
-    public async ngOnInit() {
+    public updateTabList(count: Record<string, number>) {
+        this.tab_list = [
+            {
+                id: 'about',
+                name: 'About',
+                icon: { class: 'backoffice-info-with-circle' },
+            },
+            {
+                id: 'applications',
+                name: 'Applications',
+                count: count.applications || 0,
+                icon: { class: 'backoffice-publish' },
+            },
+            {
+                id: 'authentication',
+                name: 'Authentication',
+                count: count.auth_sources || 0,
+                icon: { class: 'backoffice-lock-open' },
+            },
+            {
+                id: 'users',
+                name: 'Users',
+                count: count.users || 0,
+                icon: { class: 'backoffice-users' },
+            },
+        ].concat(this.extensions);
+    }
+
+    public ngOnInit(): void {
+        this.updateTabList({});
         this.subscription(
             'item',
-            this._service.driver_list.subscribe((list) => {
-                this.driver_count = list ? list.length : -1;
-                this.updateTabList();
-            })
+            this._service.counts.subscribe((c) => this.updateTabList(c as any))
         );
-        this.updateTabList();
     }
 }

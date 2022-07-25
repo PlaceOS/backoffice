@@ -11,9 +11,9 @@ import { ActiveItemService } from '../common/item.service';
         <div
             class="absolute inset-0 flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
-            <new-sidebar-menu
+            <sidebar-menu
                 class="sm:h-full bg-gray-200 dark:bg-neutral-800"
-            ></new-sidebar-menu>
+            ></sidebar-menu>
             <div class="flex-1 w-1/2 h-full relative flex flex-col">
                 <item-selection [route]="name" title="Drivers" class="z-20"></item-selection>
                 <div class="flex flex-col flex-1 h-1/2">
@@ -54,7 +54,7 @@ import { ActiveItemService } from '../common/item.service';
     `,
     styles: [``],
 })
-export class NewDriversComponent extends BaseClass {
+export class DriversComponent extends BaseClass {
     public readonly name = 'drivers';
 
     public device_count = 0;

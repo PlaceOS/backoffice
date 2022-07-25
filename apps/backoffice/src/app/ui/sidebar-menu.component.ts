@@ -10,7 +10,7 @@ import { CustomTooltipData } from './custom-tooltip.component';
 import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
 
 @Component({
-    selector: 'new-sidebar-menu',
+    selector: 'sidebar-menu',
     template: `
         <div class="flex flex-col w-52 justify-between h-full overflow-hidden" (click)="close()">
             <div class="flex flex-col items-center space-y-2">
@@ -61,7 +61,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
     `,
     styles: [``],
 })
-export class NewSidebarMenuComponent extends BaseClass {
+export class SidebarMenuComponent extends BaseClass {
     public items: any[] = [];
     public readonly user_controls = UserMenuTooltipComponent;
     /** Application logo */

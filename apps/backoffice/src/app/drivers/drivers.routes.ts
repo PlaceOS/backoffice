@@ -4,12 +4,12 @@ import { DriverAboutComponent } from './driver-about.component';
 import { DriverModulesComponent } from './driver-devices.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 import { SettingsHistoryViewComponent } from '../ui/settings-history-view.component';
-import { NewDriversComponent } from './new-drivers.component';
+import { DriversComponent } from './drivers.component';
 
 export const ROUTES: Routes = [
     {
         path: ':id',
-        component: NewDriversComponent,
+        component: DriversComponent,
         children: [
             { path: 'about', component: DriverAboutComponent },
             { path: 'modules', component: DriverModulesComponent },

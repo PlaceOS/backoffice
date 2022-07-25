@@ -8,13 +8,13 @@ import { ROUTES } from './drivers.routes';
 import { DriverAboutComponent } from './driver-about.component';
 import { DriverModulesComponent } from './driver-devices.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
-import { NewDriversComponent } from './new-drivers.component';
+import { DriversComponent } from './drivers.component';
 
 @NgModule({
     declarations: [
         DriverAboutComponent,
         DriverModulesComponent,
-        NewDriversComponent
+        DriversComponent
     ],
     imports: [
         CommonModule,

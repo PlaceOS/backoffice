@@ -1,21 +1,21 @@
+
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { extensionsForItem } from '../common/api';
 import { BaseClass } from '../common/base.class';
 import { ActiveItemService } from '../common/item.service';
-import { ZonesStateService } from './zones-state.service';
 
 @Component({
-    selector: 'new-zones-view',
+    selector: 'new-users-view',
     template: `
         <div
             class="absolute inset-0 flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
-            <new-sidebar-menu
+            <sidebar-menu
                 class="sm:h-full bg-gray-200 dark:bg-neutral-800"
-            ></new-sidebar-menu>
+            ></sidebar-menu>
             <div class="flex-1 w-1/2 h-full relative flex flex-col">
-                <item-selection [route]="name" title="Zones" class="z-20"></item-selection>
+                <item-selection [route]="name" title="Triggers" class="z-20"></item-selection>
                 <div class="flex flex-col flex-1 h-1/2">
                     <ng-container *ngIf="item?.id">
                         <item-details
@@ -39,7 +39,7 @@ import { ZonesStateService } from './zones-state.service';
                 </div>
                 <button
                     class="absolute bottom-16 -left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
-                    matTooltip="New zone"
+                    matTooltip="New user"
                     matTooltipPosition="right"
                     matRipple
                     (click)="newItem()"
@@ -63,13 +63,13 @@ import { ZonesStateService } from './zones-state.service';
     `,
     styles: [``],
 })
-export class NewZonesComponent extends BaseClass {
-    public readonly name = 'zones';
+export class UsersComponent extends BaseClass {
+    public readonly name = 'users';
 
     public tab_list = [];
 
-    public readonly newItem = () => this._item.create();
-    public readonly bulkAdd = () => this._item.bulkAdd();
+    public readonly newItem = () => this._service.create();
+    public readonly bulkAdd = () => this._service.bulkAdd();
 
     public get item() {
         return this._service.active_item;
@@ -79,61 +79,25 @@ export class NewZonesComponent extends BaseClass {
         return extensionsForItem(this._service.active_item, this.name);
     }
 
-    public updateTabList(details: Record<string, number>) {
+    public updateTabList(details?: Record<string, number>) {
         this.tab_list = [
-            {
-                id: 'about',
-                name: 'About',
-                icon: { class: 'backoffice-info-with-circle' },
-            },
-            {
-                id: 'systems',
-                name: 'Systems',
-                count: details.systems,
-                icon: { class: 'backoffice-documents' },
-            },
-            {
-                id: 'triggers',
-                name: 'Triggers',
-                count: details.triggers,
-                icon: { class: 'backoffice-stopwatch' },
-            },
+            { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
             {
                 id: 'metadata',
                 name: 'Metadata',
-                count: details.metadata,
+                count: details?.metadata,
                 icon: { class: 'backoffice-gist' },
             },
-            {
-                id: 'children',
-                name: 'Children',
-                count: details.children,
-                icon: { class: 'backoffice-flow-tree' },
-            },
-            {
-                id: 'history',
-                name: 'Settings History',
-                icon: { class: 'backoffice-clock' },
-            },
+            { id: 'history', name: 'History', icon: { class: 'backoffice-list' } }
         ].concat(this.extensions);
     }
 
-    constructor(
-        protected _service: ZonesStateService,
-        protected _item: ActiveItemService,
-        protected _route: ActivatedRoute,
-        protected _router: Router
-    ) {
+    constructor(protected _service: ActiveItemService) {
         super();
     }
 
-    public ngOnInit(): void {
-        this.subscription(
-            'item',
-            this._service.counts.subscribe((details) =>
-                this.updateTabList(details)
-            )
-        );
-        this.updateTabList({});
+    public ngOnInit() {
+        this.subscription('item', this._service.item.subscribe(() => this.updateTabList()));
+        this.updateTabList();
     }
 }

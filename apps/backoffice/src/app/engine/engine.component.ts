@@ -12,9 +12,9 @@ import { BackofficeUsersService } from '../users/users.service';
         <div
             class="absolute inset-0 flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
-            <new-sidebar-menu
+            <sidebar-menu
                 class="sm:h-full bg-gray-200 dark:bg-neutral-800"
-            ></new-sidebar-menu>
+            ></sidebar-menu>
             <div class="flex-1 w-1/2 h-full relative flex flex-col">
                 <div class="flex flex-1 z-0 h-1/2 dark:text-white dark:bg-neutral-700">
                     <div

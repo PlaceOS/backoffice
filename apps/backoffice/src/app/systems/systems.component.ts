@@ -10,9 +10,9 @@ import { SystemStateService } from './system-state.service';
         <div
             class="absolute inset-0 flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
-            <new-sidebar-menu
+            <sidebar-menu
                 class="sm:h-full bg-gray-200 dark:bg-neutral-800"
-            ></new-sidebar-menu>
+            ></sidebar-menu>
             <div class="flex-1 w-1/2 h-full relative flex flex-col">
                 <item-selection class="z-20"></item-selection>
                 <div class="flex flex-col flex-1 h-1/2">
@@ -62,7 +62,7 @@ import { SystemStateService } from './system-state.service';
     `,
     styles: [``],
 })
-export class NewSystemsComponent extends BaseClass {
+export class SystemsComponent extends BaseClass {
     public readonly name = 'systems';
     public scroll = 0;
 

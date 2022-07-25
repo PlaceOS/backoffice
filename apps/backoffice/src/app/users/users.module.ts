@@ -9,14 +9,14 @@ import { UserAboutComponent } from './user-about.component';
 import { UserHistoryComponent } from './user-history.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
 import { UserMetadataComponent } from './user-metadata.component';
-import { NewUsersComponent } from './new-users.component';
+import { UsersComponent } from './users.component';
 
 @NgModule({
     declarations: [
         UserAboutComponent,
         UserHistoryComponent,
         UserMetadataComponent,
-        NewUsersComponent
+        UsersComponent
     ],
     imports: [
         CommonModule,
