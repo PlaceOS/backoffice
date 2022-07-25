@@ -54,7 +54,6 @@ import { ZonesStateService } from './zones-state.service';
     styles: [
         `
             :host {
-                padding: 1rem;
                 width: 100%;
                 height: 100%;
             }

@@ -7,7 +7,7 @@ import { notifyInfo } from '../../common/notifications';
 @Component({
     selector: 'admin-api-keys',
     template: `
-        <div class="flex items-start space-x-2 m-4">
+        <div class="flex items-start space-x-2 my-4">
             <div class="flex flex-col space-y-1">
                 <label for="type">Domain: </label>
                 <mat-form-field appearance="outline" class="h-12">

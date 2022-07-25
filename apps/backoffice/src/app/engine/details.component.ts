@@ -36,29 +36,30 @@ export interface PlaceServiceDetails {
         <h3 class="text-lg font-medium" i18n="@@backoffice">Backoffice</h3>
         <section class="space-y-2 mb-4 flex flex-col px-2">
             <div class="flex items-center">
-                <label for="version" class="w-24" i18n="@@version">Version:</label>
-                <div
+                <label for="version" class="w-24" i18n="@@version"
+                    >Version:</label
+                >
+                <code
                     name="version"
-                    class="bg-gray-300/60 rounded p-1 text-xs mono flex items-center"
                     (click)="copy('version', backoffice_version)"
                 >
                     {{ backoffice_version }}
-                </div>
+                </code>
             </div>
             <div class="flex items-center">
-                <label for="hash" class="w-24" i18n="@@commitHash">Commit Hash:</label>
-                <div
-                    name="hash"
-                    class="bg-gray-300/60 rounded p-1 text-xs mono flex items-center"
-                    (click)="copy('hash', backoffice_hash)"
+                <label for="hash" class="w-24" i18n="@@commitHash"
+                    >Commit Hash:</label
                 >
+                <code name="hash" (click)="copy('hash', backoffice_hash)">
                     {{ backoffice_hash }}
-                </div>
+                </code>
             </div>
             <div class="flex items-center">
-                <label for="build-time" class="w-24" i18n="@@buildTime">Build:</label>
+                <label for="build-time" class="w-24" i18n="@@buildTime"
+                    >Build:</label
+                >
                 <div
-                    name="build-time" 
+                    name="build-time"
                     class="text-sm"
                     (click)="copy('build time', backoffice_build)"
                 >
@@ -68,37 +69,49 @@ export interface PlaceServiceDetails {
         </section>
         <h3 class="text-lg font-medium flex items-center" i18n="@@apiHeader">
             API
-            <button *ngIf="changelog_data" class="p-2 text-xs underline" (click)="changelog(changelog_data)">View Changelog</button>
+            <button
+                *ngIf="changelog_data"
+                class="p-2 text-xs underline"
+                (click)="changelog(changelog_data)"
+            >
+                View Changelog
+            </button>
         </h3>
         <section class="flex flex-wrap py-2">
             <div
                 class="bg-white dark:bg-[#424242] rounded shadow m-2 min-w-[40%] flex-1 overflow-hidden"
                 *ngFor="let api of api_details"
             >
-                <h3 class="w-full px-4 py-2 mb-1 border-b border-gray-200 dark:border-white/20">
+                <h3
+                    class="w-full px-4 py-2 mb-1 border-b border-gray-200 dark:border-white/20"
+                >
                     {{ api.service }}
                 </h3>
                 <div class="flex items-center px-4 py-1 hover:bg-gray-400/20">
                     <label class="w-24">Commit Hash</label>
-                    <div class="bg-gray-300/60 rounded p-1 text-xs mono">
-                        {{ api.commit| slice:0:8 }}
-                    </div>
+                    <code>
+                        {{ api.commit | slice: 0:8 }}
+                    </code>
                 </div>
                 <div class="flex items-center px-4 py-1 hover:bg-gray-400/20">
                     <label class="w-24">Version</label>
-                    <div class="bg-gray-300/60 rounded p-1 text-xs mono">
+                    <code>
                         {{ api.version }}
-                    </div>
+                    </code>
                 </div>
                 <div class="flex items-center px-4 py-1 hover:bg-gray-400/20">
                     <label class="w-24">Build time</label>
-                    <div class="text-sm">{{ api.build_time | date:'MMM d, y, h:mm a' }}</div>
-                </div>
-                <div class="flex items-center px-4 py-1 hover:bg-gray-400/20 mb-1">
-                    <label class="w-24">Platform</label>
-                    <div class="bg-gray-300/60 rounded p-1 text-xs mono">
-                        {{ api.platform_version }}
+                    <div class="text-sm">
+                        {{ api.build_time | date: 'MMM d, y, h:mm a' }}
                     </div>
+                </div>
+                <div
+                    class="flex items-center px-4 py-1 hover:bg-gray-400/20 mb-1"
+                >
+                    <label class="w-24">Platform</label>
+                    <code>
+                        {{ api.platform_version }}
+                    </code>
                 </div>
             </div>
         </section>
@@ -135,7 +148,10 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
     }
 
     public get backoffice_build() {
-        return `${format(VERSION.time, 'dd MMM yyyy')} at ${format(VERSION.time, ' h:mma')}`;
+        return `${format(VERSION.time, 'dd MMM yyyy')} at ${format(
+            VERSION.time,
+            ' h:mma'
+        )}`;
     }
 
     constructor(
@@ -182,7 +198,11 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
         get(`${apiEndpoint()}/platform`)
             .toPromise()
             .then(
-                (details) => this.changelog_data = details.changelog.replace("# Changelog\n\n", ""),
+                (details) =>
+                    (this.changelog_data = details.changelog.replace(
+                        '# Changelog\n\n',
+                        ''
+                    )),
                 (err) =>
                     notifyError(
                         `Error loading API details. Error: ${JSON.stringify(

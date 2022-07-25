@@ -15,7 +15,7 @@ import { ActiveItemService } from '../common/item.service';
 @Component({
     selector: 'settings-history-view',
     template: `
-        <div class="flex items-center justify-between p-4">
+        <div class="flex items-center justify-between">
             <mat-form-field appearance="outline" class="flex-1 h-[3.25rem]">
                 <mat-select
                     ngModel

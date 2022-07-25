@@ -117,7 +117,6 @@ import { DriverStateService } from './driver-state.service';
     styles: [
         `
             :host {
-                padding: 1rem;
                 height: 100%;
                 width: 100%;
             }

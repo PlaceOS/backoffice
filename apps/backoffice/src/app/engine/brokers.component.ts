@@ -85,7 +85,6 @@ import { openConfirmModal } from 'apps/backoffice/src/app/common/general';
     styles: [
         `
             :host {
-                padding: 1rem;
             }
         `,
     ],

@@ -35,7 +35,7 @@ export interface BackofficeExtension {
 @Component({
     selector: '[app-extensions]',
     template: `
-        <h2 class="text-lg font-medium mb-4">Backoffice extensions</h2>
+        <h2 class="text-lg font-medium mb-4 mt-4">Backoffice extensions</h2>
         <div *ngIf="!loading; else load_state">
             <div class="flex items-center space-x-2 mb-4">
                 <label for="type">Domain: </label>
@@ -113,7 +113,6 @@ export interface BackofficeExtension {
     styles: [
         `
             :host {
-                padding: 1rem;
                 width: 100%;
                 height: 100%;
             }

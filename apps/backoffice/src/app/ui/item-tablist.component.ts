@@ -20,7 +20,7 @@ export interface ItemTab {
                         class="tab"
                         mat-tab-link
                         *ngFor="let link of tabs"
-                        [routerLink]="['/', base, item_id, link.id]"
+                        [routerLink]="'/' + base + '/' + item_id + '/' + link.id"
                         [queryParams]="link.query || {}"
                         routerLinkActive
                         #rla="routerLinkActive"

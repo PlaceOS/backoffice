@@ -45,7 +45,7 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
     styles: [
         `
             :host {
-                padding: 1em;
+                padding-top: 1em;
                 display: flex;
                 flex-wrap: wrap;
             }

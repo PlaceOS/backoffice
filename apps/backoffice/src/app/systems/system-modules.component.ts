@@ -276,9 +276,6 @@ import { SystemStateService } from './system-state.service';
     `,
     styles: [
         `
-            :host {
-                padding: 1rem;
-            }
 
             button[mat-button] {
                 min-width: 8rem;

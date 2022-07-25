@@ -7,7 +7,8 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
     selector: 'app-interfaces',
     template: `
         <div
-            role="table"
+            role="table" 
+            class="pt-4"
             *ngIf="interfaces && interfaces.length; else load_state"
         >
             <div table-head>
@@ -35,7 +36,6 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
     styles: [
         `
             :host {
-                padding: 1rem;
                 width: 100%;
                 height: 100%;
             }

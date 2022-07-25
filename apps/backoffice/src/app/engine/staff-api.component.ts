@@ -22,7 +22,7 @@ export interface PlaceTenant {
 @Component({
     selector: 'staff-api',
     template: `
-        <div class="flex items-center space-x-2 mb-4">
+        <div class="flex items-center space-x-2 mb-4 mt-4">
             <label for="type">Domain: </label>
             <mat-form-field class="h-12" appearance="outline">
                 <mat-select
@@ -85,7 +85,6 @@ export interface PlaceTenant {
                 position: relative;
                 height: 100%;
                 width: 100%;
-                padding: 1rem;
             }
         `,
     ],

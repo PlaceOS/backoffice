@@ -19,7 +19,7 @@ import { EdgeModalComponent } from './edge-modal.component';
 @Component({
     selector: '[admin-edge]',
     template: `
-        <button mat-button class="w-full sm:w-32 mb-4" (click)="edit()">
+        <button mat-button class="w-full sm:w-32 my-4" (click)="edit()">
             Add New Edge
         </button>
         <ng-container *ngIf="!loading; else load_state">
@@ -82,7 +82,6 @@ import { EdgeModalComponent } from './edge-modal.component';
     styles: [
         `
             :host {
-                padding: 1rem;
                 height: 100%;
                 width: 100%;
                 min-height: 10rem;

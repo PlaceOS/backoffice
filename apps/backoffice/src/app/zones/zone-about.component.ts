@@ -131,7 +131,6 @@ import { marked } from 'marked';
     styles: [
         `
             :host {
-                padding: 1rem;
                 height: 100%;
                 width: 100%;
             }

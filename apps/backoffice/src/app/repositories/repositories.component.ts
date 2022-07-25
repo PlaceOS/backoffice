@@ -29,7 +29,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                         ></item-tablist>
                         <div
                             #el
-                            class="flex-1 h-1/2 w-full overflow-auto p-4 z-0"
+                            class="flex-1 h-1/2 w-full overflow-auto p-4 z-0 relative"
                             (scroll)="scroll = el.scrollTop"
                         >
                             <router-outlet></router-outlet>

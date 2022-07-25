@@ -206,7 +206,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
                 } else if (this.active_item) {
                     this.search_str = this.active_item.name || this.search_str;
                 }
-                if (this._input_el?.nativeElement) this._input_el.nativeElement.value = this.search_str;
+                if (this._input_el?.nativeElement) this._input_el.nativeElement.value = this.search_str || '';
             },
             50
         );
