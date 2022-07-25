@@ -19,7 +19,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
     selector: 'sidebar-menu',
     template: `
         <div
-            class="absolute pointer-events-none sm:pointer-events-auto inset-0 sm:relative sm:inset-auto hidden sm:flex flex-col sm:w-52 justify-between h-full overflow-hidden bg-gray-200 dark:bg-neutral-800 z-40 sm:z-20"
+            class="absolute pointer-events-none sm:pointer-events-auto inset-0 sm:relative sm:inset-auto hidden sm:flex flex-col sm:w-52 justify-between h-full overflow-hidden bg-gray-200 dark:bg-neutral-800 z-40 sm:z-0"
             [class.!flex]="open"
             [class.!pointer-events-auto]="open"
             (click)="close()"
