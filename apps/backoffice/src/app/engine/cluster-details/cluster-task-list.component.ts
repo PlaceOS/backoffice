@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceCluster,
@@ -13,6 +13,16 @@ import {
     CONFIRM_METADATA,
 } from 'apps/backoffice/src/app/overlays/confirm-modal/confirm-modal.component';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
+import { BehaviorSubject, combineLatest, interval, Observable, of } from 'rxjs';
+import {
+    catchError,
+    filter,
+    map,
+    shareReplay,
+    startWith,
+    switchMap,
+    tap,
+} from 'rxjs/operators';
 
 @Component({
     selector: 'engine-cluster-task-list',
@@ -26,8 +36,25 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
             <h3 class="text-lg font-medium" i18n="@@clusterHeader">
                 Cluster - {{ cluster?.hostname }}
             </h3>
+            <div class="flex-1"></div>
+            <mat-form-field appearance="outline" class="h-12">
+                <app-icon
+                    matPrefix
+                    className="backoffice-magnifying-glass"
+                ></app-icon>
+                <input
+                    matInput
+                    [ngModel]="filter.getValue()"
+                    (ngModelChange)="filter.next($event)"
+                    placeholder="Filter processes..."
+                />
+            </mat-form-field>
         </div>
-        <div role="table" class="h-1/2 flex-1">
+        <div
+            role="table"
+            class="h-1/2 flex-1"
+            *ngIf="(filtered_list | async)?.length; else empty_state"
+        >
             <div table-head>
                 <div class="flex-1 p-2">Name</div>
                 <div class="w-24 p-2">CPU %</div>
@@ -36,35 +63,38 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
                 <div class="w-12 p-2"></div>
             </div>
             <div table-body>
-                <div table-row *ngFor="let element of process_list">
-                    <div
-                        class="flex-1 p-2"
-                        [innerHTML]="element.id | driverFormat"
-                    ></div>
-                    <div class="w-24 p-2">
+                <div table-row *ngFor="let element of filtered_list | async">
+                    <div class="flex-1 p-2" [title]="element.id">
+                        <code
+                            class="truncate"
+                            [innerHTML]="element.id | driverFormat"
+                        ></code>
+                    </div>
+                    <div class="w-24 p-2 text-right justify-end">
                         {{ element.cpu_usage.toFixed(2) }}%
                     </div>
-                    <div class="w-24 p-2">{{ element.used_memory }}</div>
-                    <div class="w-24 p-2">{{ element.module_instances }}</div>
+                    <div class="w-24 p-2 text-right justify-end">
+                        {{ element.used_memory }}
+                    </div>
+                    <div class="w-24 p-2 text-right justify-end">
+                        {{ element.module_instances }}
+                    </div>
                     <div class="w-12 flex items-center justify-center">
                         <button
                             mat-icon-button
                             (click)="confirmKillProcess(element)"
                         >
-                            <app-icon
-                                [icon]="{ class: 'backoffice-trash' }"
-                            ></app-icon>
+                            <app-icon className="backoffice-trash"></app-icon>
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-        <div
-            class="flex flex-col items-center p-8"
-            *ngIf="!process_list || !process_list.length"
-        >
-            <p i18n="@@processTableEmpty">No tasks running on cluster</p>
-        </div>
+        <ng-template #empty_state>
+            <div class="flex flex-col items-center p-8">
+                <p i18n="@@processTableEmpty">No tasks running on cluster</p>
+            </div>
+        </ng-template>
     `,
     styles: [
         `
@@ -78,13 +108,11 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
         `,
     ],
 })
-export class PlaceClusterTaskListComponent extends BaseClass implements OnInit {
+export class PlaceClusterTaskListComponent extends BaseClass {
     /** Cluster to display tasks details for */
     @Input() public cluster: PlaceCluster;
     /** Emitter for close events */
     @Output() public close = new EventEmitter<void>();
-    /** List of processes running in the cluster */
-    public process_list: PlaceProcess[] = [];
     /** Whether the task list is updating */
     public loading: boolean;
     /** ID of the process being killed */
@@ -98,13 +126,45 @@ export class PlaceClusterTaskListComponent extends BaseClass implements OnInit {
         'running',
     ];
 
+    public filter = new BehaviorSubject('');
+
+    public readonly process_list: Observable<PlaceProcess[]> = interval(
+        5000
+    ).pipe(
+        startWith(0),
+        filter(() => !this.loading),
+        switchMap(() => {
+            this.loading = true;
+            return queryProcesses(this.cluster.id, {
+                include_status: true,
+            } as any).pipe(
+                catchError((_) => {
+                    console.error(_);
+                    return of([]);
+                })
+            );
+        }),
+        map((l) =>
+            (l || []).sort((a, b) => b.module_instances - a.module_instances)
+        ),
+        tap(() => (this.loading = false)),
+        shareReplay(1)
+    );
+
+    public readonly filtered_list = combineLatest([
+        this.filter,
+        this.process_list,
+    ]).pipe(
+        map(([filter, processes]) => {
+            return processes.filter((_) =>
+                _.id.toLowerCase().includes(filter.toLowerCase())
+            );
+        }),
+        shareReplay(1)
+    );
+
     constructor(private _dialog: MatDialog) {
         super();
-    }
-
-    public ngOnInit(): void {
-        this.loadProcesses();
-        this.interval('load_tasks', () => this.loadProcesses(), 2000);
     }
 
     public confirmKillProcess(process: PlaceProcess): void {
@@ -149,15 +209,5 @@ export class PlaceClusterTaskListComponent extends BaseClass implements OnInit {
 
     public killProcess(process: PlaceProcess) {
         return terminateProcess(this.cluster.id, process.id).toPromise();
-    }
-
-    private loadProcesses(): void {
-        this.loading = true;
-        queryProcesses(this.cluster.id, {
-            include_status: true,
-        } as any).subscribe((list) => {
-            this.process_list = list || [];
-            this.loading = false;
-        });
     }
 }

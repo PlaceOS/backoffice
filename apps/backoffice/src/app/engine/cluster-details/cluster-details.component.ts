@@ -1,5 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { map, catchError, switchMap, tap, filter } from 'rxjs/operators';
+import {
+    map,
+    catchError,
+    switchMap,
+    tap,
+    filter,
+    startWith,
+} from 'rxjs/operators';
 
 import { PlaceCluster, queryClusters } from '@placeos/ts-client';
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
@@ -11,36 +18,42 @@ import { interval } from 'rxjs';
 @Component({
     selector: 'engine-cluster-details',
     template: `
-        <ng-container
-            *ngIf="cluster_list && cluster_list.length; else empty_state"
-        >
-            <ng-container *ngIf="!active_cluster; else process_state">
-                <ng-container *ngFor="let cluster of cluster_list">
-                    <mat-card class="m-2 text-center">
-                        <mat-card-header>
-                            <mat-card-title clas="capitalize"
-                                >{{ cluster.hostname || 'Undefined Cluster' }}
-                            </mat-card-title>
-                        </mat-card-header>
-                        <mat-card-content>
-                            <engine-cluster-item
-                                [cluster]="cluster"
-                                [cpu_history]="cpu_history[cluster.id] || []"
-                            ></engine-cluster-item>
-                        </mat-card-content>
-                        <mat-card-actions>
-                            <button
-                                mat-button
-                                (click)="active_cluster = cluster"
-                                i18n="@@viewClusterProcesses"
-                            >
-                                View Processes
-                            </button>
-                        </mat-card-actions>
-                    </mat-card>
+        <div class="flex flex-wrap overflow-auto max-h-full">
+            <ng-container
+                *ngIf="cluster_list && cluster_list.length; else empty_state"
+            >
+                <ng-container *ngIf="!active_cluster; else process_state">
+                    <ng-container *ngFor="let cluster of cluster_list">
+                        <mat-card class="m-2 text-center">
+                            <mat-card-header>
+                                <mat-card-title clas="capitalize"
+                                    >{{
+                                        cluster.hostname || 'Undefined Cluster'
+                                    }}
+                                </mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <engine-cluster-item
+                                    [cluster]="cluster"
+                                    [cpu_history]="
+                                        cpu_history[cluster.id] || []
+                                    "
+                                ></engine-cluster-item>
+                            </mat-card-content>
+                            <mat-card-actions>
+                                <button
+                                    mat-button
+                                    (click)="active_cluster = cluster"
+                                    i18n="@@viewClusterProcesses"
+                                >
+                                    View Processes
+                                </button>
+                            </mat-card-actions>
+                        </mat-card>
+                    </ng-container>
                 </ng-container>
             </ng-container>
-        </ng-container>
+        </div>
         <ng-template #empty_state>
             <div
                 class="absolute inset-0 flex flex-col items-center p-8 space-y-2"
@@ -61,16 +74,7 @@ import { interval } from 'rxjs';
             ></engine-cluster-task-list>
         </ng-template>
     `,
-    styles: [
-        `
-            :host {
-                display: flex;
-                flex-wrap: wrap;
-                height: 100%;
-                width: 100%;
-            }
-        `,
-    ],
+    styles: [``],
 })
 export class PlaceClusterDetailsComponent extends BaseClass implements OnInit {
     /** List of available clusters on this instance of engine */
@@ -83,11 +87,15 @@ export class PlaceClusterDetailsComponent extends BaseClass implements OnInit {
     public loading: boolean;
 
     public readonly clusters$ = interval(2000).pipe(
-        filter(() => !this.active_cluster),
-        tap(() => (this.loading = true)),
-        switchMap(() => queryClusters({ include_status: true } as any)),
-        map((resp) => resp.data),
-        catchError((_) => []),
+        startWith(0),
+        filter(() => !this.active_cluster && !this.loading),
+        switchMap(() => {
+            this.loading = true;
+            return queryClusters({ include_status: true } as any).pipe(
+                catchError((_) => ({ data: [] } as any))
+            );
+        }),
+        map((resp: { data: any[] }) => resp.data),
         map((list) => {
             this.cluster_list = list || [];
             const date = Date.now();
