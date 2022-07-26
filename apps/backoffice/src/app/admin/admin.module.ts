@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { ROUTES } from './engine.routes';
+import { ROUTES } from './admin.routes';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
 
-import { PlaceComponent } from './engine.component';
+import { PlaceComponent } from './admin.component';
 import { PlaceDatabaseDetailsComponent } from './database-details.component';
 import { PlaceDetailsComponent } from './details.component';
 import { PlaceClusterDetailsComponent } from './cluster-details/cluster-details.component';

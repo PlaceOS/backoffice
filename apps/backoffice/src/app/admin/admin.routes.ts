@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 import { AuthorisedAdminGuard } from 'apps/backoffice/src/app/ui/guards/authorised-admin.guard';
 
-import { PlaceComponent } from './engine.component';
+import { PlaceComponent } from './admin.component';
 import { PlaceDatabaseDetailsComponent } from './database-details.component';
 import { PlaceDetailsComponent } from './details.component';
 import { PlaceClusterDetailsComponent } from './cluster-details/cluster-details.component';
