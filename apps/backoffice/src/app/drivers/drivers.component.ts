@@ -12,8 +12,9 @@ import { ActiveItemService } from '../common/item.service';
             class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
             <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
+            <item-sidebar class="hidden sm:block" [route]="name" title="Drivers"></item-sidebar>
             <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
-                <item-selection class="z-20" [route]="name" title="Drivers">
+                <item-selection class="z-20 sm:hidden" [route]="name" title="Drivers">
                     <button
                         mat-icon-button
                         class="sm:hidden mr-2"
@@ -44,7 +45,7 @@ import { ActiveItemService } from '../common/item.service';
                     </ng-container>
                 </div>
                 <button
-                    class="absolute bottom-2 sm:bottom-16 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
+                    class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
                     matTooltip="New system"
                     matTooltipPosition="right"
                     matRipple
