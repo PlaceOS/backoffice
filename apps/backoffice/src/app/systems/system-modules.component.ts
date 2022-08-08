@@ -72,7 +72,7 @@ import { SystemStateService } from './system-state.service';
                 >
                     <div
                         role="table"
-                        class="overflow-x-auto"
+                        class="overflow-x-auto min-w-[60rem]"
                         *ngIf="(modules | async)?.length; else empty_state"
                     >
                         <div table-head>
@@ -83,13 +83,19 @@ import { SystemStateService } from './system-state.service';
                             <div class="flex-1 p-2" i18n="@@moduleNameLabel">
                                 Name
                             </div>
+                            <div class="w-24 p-2" i18n="@@moduleTypeLabel">
+                                Type
+                            </div>
                             <div class="w-48 p-2" i18n="@@moduleClassLabel">
                                 Class
                             </div>
                             <div class="w-48 p-2" i18n="@@moduleIpLabel">
                                 IP/URI
                             </div>
-                            <div class="w-[3.5rem] p-2" i18n="@@moduleStateLabel">
+                            <div
+                                class="w-[3.5rem] p-2"
+                                i18n="@@moduleStateLabel"
+                            >
                                 Debug
                             </div>
                             <div class="w-24 p-2 h-9"></div>
@@ -168,6 +174,12 @@ import { SystemStateService } from './system-state.service';
                                     >
                                         {{ device.notes }}
                                     </div>
+                                </div>
+                                <div class="w-24 p-2" i18n="@@driverType">
+                                    { driver_type(device.driver?.role), select, Device { Device }
+                                    Logic { Logic } SSH { SSH } Websocket {
+                                    Websocket } Service { Service } other {
+                                    Other } }
                                 </div>
                                 <div class="w-48 p-2">
                                     <span
@@ -276,7 +288,6 @@ import { SystemStateService } from './system-state.service';
     `,
     styles: [
         `
-
             button[mat-button] {
                 min-width: 8rem;
             }
@@ -402,6 +413,21 @@ export class SystemModulesComponent extends BaseClass {
         this._service.toggleModulePower(d);
         this.refresh_modules = !this.refresh_modules;
     };
+
+    public driver_type(role: PlaceDriverRole): string {
+        if (role == null) return '';
+        switch (role) {
+            case PlaceDriverRole.Device:
+                return 'Device';
+            case PlaceDriverRole.SSH:
+                return 'SSH';
+            case PlaceDriverRole.Service:
+                return 'Service';
+            case PlaceDriverRole.Websocket:
+                return 'Websocket';
+        }
+        return 'Logic';
+    }
 
     public get item(): PlaceSystem {
         return this._service.active_item as any;
