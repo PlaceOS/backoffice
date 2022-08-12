@@ -1,10 +1,10 @@
 import { Component, Input } from '@angular/core';
-import { ApplicationIcon } from 'apps/backoffice/src/app/common/types';
+import { ApplicationIcon } from '../common/types';
 
 @Component({
-    selector: 'app-icon',
+    selector: 'app-icon,icon',
     template: `
-        <div class="flex items-center justify-center mx-auto">
+        <div class="flex items-center justify-center h-[1.25em] w-[1.25em]">
             <i
                 *ngIf="!icon || icon.type !== 'img'"
                 [class]="icon?.class || className"
@@ -13,6 +13,7 @@ import { ApplicationIcon } from 'apps/backoffice/src/app/common/types';
                 <ng-content></ng-content>
             </i>
             <img
+                class="h-[1em] w-[1em]"
                 *ngIf="icon && icon.type === 'img'"
                 [src]="icon.src | safe: 'resource'"
             />
@@ -20,18 +21,8 @@ import { ApplicationIcon } from 'apps/backoffice/src/app/common/types';
     `,
     styles: [
         `
-            :host > div {
-                height: 1.25em;
-                width: 1.25em;
-            }
-
             i {
                 font-size: 1em;
-            }
-
-            img {
-                height: 1em;
-                width: 1em;
             }
         `,
     ],

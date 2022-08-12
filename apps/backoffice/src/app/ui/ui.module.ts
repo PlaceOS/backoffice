@@ -23,7 +23,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { BindingDirective } from './binding/binding.directive';
+import { BindingDirective } from './binding.directive';
 import { ContextMenuComponent } from './context-menu.component';
 import { DateFieldComponent } from './custom-fields/date-field.component';
 import { ImageListFieldComponent } from './custom-fields/image-list-field.component';
@@ -52,7 +52,7 @@ import { TriggerConditionFormComponent } from './forms/trigger-condition-form/tr
 import { TriggerFormComponent } from './forms/trigger-form.component';
 import { UserFormComponent } from './forms/user-form.component';
 import { ZoneFormComponent } from './forms/zone-form.component';
-import { IconComponent } from './icon/icon.component';
+import { IconComponent } from './icon.component';
 import { DateFromPipe } from './pipes/date-from.pipe';
 import { DriverFormatPipe } from './pipes/driver-format.pipe';
 import { FormatListPipe } from './pipes/format-list.pipe';

@@ -54,9 +54,7 @@ export class ContextMenuComponent
             top: event.clientY + this.offset_y,
             left: event.clientX + this.offset_x,
         };
-        if (this.trigger) {
-            this.trigger.openMenu();
-        }
+        if (this.trigger) this.trigger.openMenu();
         this.timeout('update_position', () => this.updatePosition(), 50);
     }
 
