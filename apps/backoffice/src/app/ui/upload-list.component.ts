@@ -5,6 +5,7 @@ import { copyToClipboard } from 'apps/backoffice/src/app/common/general';
 import { notifyInfo } from 'apps/backoffice/src/app/common/notifications';
 import { SettingsService } from 'apps/backoffice/src/app/common/settings.service';
 import { UploadDetails, uploadFile } from '../common/uploads';
+import { UploadsService } from '../common/uploads.service';
 
 @Component({
     selector: 'app-upload-list',
@@ -16,16 +17,16 @@ import { UploadDetails, uploadFile } from '../common/uploads';
         >
             <div class="flex items-center bg-gray-700 text-white">
                 <div class="flex-1 px-4">
-                    Uploads({{ uploads.length || '0' }})
+                    Uploads({{ (uploads | async)?.length || '0' }})
                 </div>
                 <button mat-icon-button (click)="show = false">
-                    <app-icon [icon]="{ class: 'backoffice-cross' }"></app-icon>
+                    <app-icon className="backoffice-cross"></app-icon>
                 </button>
             </div>
             <div list class="overflow-auto max-h-[65vh]">
-                <ul *ngIf="uploads && uploads.length; else no_uploads">
+                <ul *ngIf="(uploads | async)?.length; else no_uploads">
                     <li
-                        *ngFor="let item of uploads"
+                        *ngFor="let item of uploads | async"
                         class="my-1 h-12 hover:bg-gray-200"
                         [class.error]="item.error"
                     >
@@ -135,7 +136,7 @@ export class UploadListComponent extends BaseClass implements OnInit {
     /** Whether drop details overlay should be shown */
     public show_overlay: boolean = false;
     /** List of uploads */
-    public uploads: UploadDetails[] = [];
+    public readonly uploads = this._uploads.upload_list;
 
     public get enabled() {
         return !this._settings.value('disable_uploads');
@@ -143,17 +144,13 @@ export class UploadListComponent extends BaseClass implements OnInit {
 
     constructor(
         private _settings: SettingsService,
+        private _uploads: UploadsService,
         private _dialog: MatDialog
     ) {
         super();
     }
 
     public ngOnInit() {
-        if (localStorage) {
-            this.uploads = JSON.parse(
-                localStorage.getItem('BACKOFFICE.uploads') || '[]'
-            );
-        }
         this.subscription(
             'show',
             this._settings
@@ -195,23 +192,7 @@ export class UploadListComponent extends BaseClass implements OnInit {
                 if (files.length) {
                     this.show = true;
                     for (let i = 0; i < files.length; i++) {
-                        uploadFile(files[i]).subscribe(
-                            (details) =>
-                                (this.uploads = [
-                                    ...this.uploads.filter(
-                                        (_) => _.id !== details.id
-                                    ),
-                                    details,
-                                ]),
-                            (details) =>
-                                (this.uploads = [
-                                    ...this.uploads.filter(
-                                        (_) => _.id !== details.id
-                                    ),
-                                    details,
-                                ]),
-                            () => this.updateUploadHistory()
-                        );
+                        this._uploads.uploadFile(files[i]);
                     }
                 }
             }
@@ -235,20 +216,6 @@ export class UploadListComponent extends BaseClass implements OnInit {
         if (details.error) {
             details.error = null;
             details.upload.resume();
-        }
-    }
-
-    /**
-     * Store changes to the list of successful uploads
-     */
-    private updateUploadHistory() {
-        const done_list = this.uploads.filter((file) => file.progress >= 100);
-        done_list.forEach((i) => delete i.upload);
-        if (localStorage) {
-            localStorage.setItem(
-                'BACKOFFICE.uploads',
-                JSON.stringify(done_list)
-            );
         }
     }
 }
