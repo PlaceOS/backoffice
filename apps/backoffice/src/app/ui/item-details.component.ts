@@ -1,8 +1,8 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import {
     Component,
     EventEmitter,
     Input,
-    Optional,
     Output,
 } from '@angular/core';
 import { PlaceDriverRole } from '@placeos/ts-client';
@@ -28,17 +28,17 @@ export interface DisplayItem {
     template: `
         <div class="flex items-center justify-between px-4 py-2">
             <div class="flex flex-col space-y-2">
-                <div class="text-2xl">
+                <div name class="text-2xl">
                     {{
-                        item.display_name ||
-                            item.custom_name ||
-                            item.name ||
+                        item?.display_name ||
+                            item?.custom_name ||
+                            item?.name ||
                             '&lt;Unnamed&gt;'
                     }}
                 </div>
                 <div class="flex items-center space-x-2">
                     <a class="text-xs mono opacity-60" (click)="copyID()">
-                        {{ item.id }}
+                        {{ item?.id }}
                     </a>
                     <div
                         class="px-2 py-1 rounded-xl text-xs bg-blue-600 text-white"
@@ -52,12 +52,12 @@ export interface DisplayItem {
                     <div
                         class="px-2 py-1 rounded-xl text-xs bg-red-600 text-white"
                         *ngIf="
-                            item.running !== null && item.running !== undefined
+                            item?.running !== null && item?.running !== undefined
                         "
-                        [class.!bg-green-600]="item.running"
+                        [class.!bg-green-600]="item?.running"
                         i18n="@@onlineState"
                     >
-                        { item.running, select, true { Online } false { Offline
+                        { item?.running, select, true { Online } false { Offline
                         } other { Other } }
                     </div>
                     <div
@@ -69,7 +69,7 @@ export interface DisplayItem {
                     </div>
                     <div
                         class="px-2 py-1 rounded-xl text-xs bg-green-600 flex items-center space-x-2 text-white"
-                        *ngIf="item.tls"
+                        *ngIf="item?.tls"
                     >
                         <div class="icon"><i class="backoffice-lock"></i></div>
                         <div class="text" i18n="@@secure">Secure</div>
@@ -154,7 +154,7 @@ export class ItemDetailsComponent {
     @Output() public delete = new EventEmitter();
 
     public readonly copyID = () => {
-        this._clipboard?.writeText(this.item?.id || '');
+        this._clipboard.copy(this.item?.id || '');
         notifyInfo('ID copied to clipboard');
     };
 
@@ -174,12 +174,12 @@ export class ItemDetailsComponent {
     constructor(
         private _service: ActiveItemService,
         private _users: BackofficeUsersService,
-        @Optional() private _clipboard?: Clipboard
+        private _clipboard: Clipboard
     ) {}
 
     public get driver_type(): string {
         if (typeof this.item?.role !== 'number') return '';
-        switch (this.item.role) {
+        switch (this.item?.role) {
             case PlaceDriverRole.Device:
                 return 'Device';
             case PlaceDriverRole.SSH:
@@ -196,8 +196,8 @@ export class ItemDetailsComponent {
      * Export the active item as a CSV
      */
     public exportAsTSV() {
-        const item = this.item.toJSON();
-        const filename = `${item.name.toLowerCase().split(' ').join('_')}.${
+        const item = this.item?.toJSON();
+        const filename = `${item?.name.toLowerCase().split(' ').join('_')}.${
             this.type
         }.tsv`;
         const ignore_keys = ['module_list', 'settings', '_type', 'version'];

@@ -23,7 +23,11 @@ import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
             [matMenuTriggerFor]="menu"
         ></div>
     `,
-    styles: [``],
+    styles: [`
+        :host {
+            position: relative;
+        }
+    `],
 })
 export class ContextMenuComponent
     extends BaseClass
@@ -56,10 +60,6 @@ export class ContextMenuComponent
         };
         if (this.trigger) this.trigger.openMenu();
         this.timeout('update_position', () => this.updatePosition(), 50);
-    }
-
-    constructor(private _element: ElementRef<HTMLElement>) {
-        super();
     }
 
     public ngOnInit(): void {
