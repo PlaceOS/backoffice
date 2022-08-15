@@ -1,5 +1,6 @@
 import { createRoutingFactory, SpectatorRouting } from "@ngneat/spectator/jest";
 import { MockComponent } from "ng-mocks";
+import { BehaviorSubject } from "rxjs";
 
 import { ActiveItemService } from "../../app/common/item.service";
 import { SystemStateService } from "../../app/systems/system-state.service";
@@ -16,7 +17,7 @@ describe('SystemsComponent', () => {
     const createComponent = createRoutingFactory({
         component: SystemsComponent,
         providers: [
-            { provide: SystemStateService, useValue: {} },
+            { provide: SystemStateService, useValue: { counts: new BehaviorSubject(0) } },
             { provide: ActiveItemService, useValue: {} },
         ],
         declarations: [
