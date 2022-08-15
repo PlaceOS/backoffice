@@ -101,7 +101,7 @@ import { BackofficeUsersService } from '../users/users.service';
                             (click)="show = false"
                         >
                             <p class="truncate flex-1">
-                                {{ item.display_name || item.name }}
+                                {{ item.name }}
                             </p>
                             <code class="text-xs opacity-60" *ngIf="item.extra">
                                 {{ item.extra }}
