@@ -19,7 +19,7 @@ import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
             #container
             (window:resize)="resizeTerminal()"
         >
-            <div class="max-w-full min-h-full" #terminal></div>
+            <div terminal class="max-w-full min-h-full" #terminal></div>
         </div>
     `,
     styles: [
@@ -46,9 +46,7 @@ export class TerminalComponent
     public container_el: ElementRef<HTMLDivElement>;
 
     public ngOnInit(): void {
-        if (this.terminal) {
-            this.ngOnDestroy();
-        }
+        if (this.terminal) this.ngOnDestroy();
         this.terminal = new Terminal({
             theme: {
                 background: `#263238`,
@@ -84,11 +82,9 @@ export class TerminalComponent
      * Resize the terminal display to fill the container element
      */
     public resizeTerminal(): void {
-        if (!this.terminal || !this.container_el) {
-            return;
-        }
-        const font_size = this.terminal.getOption('fontSize');
-        const line_height = this.terminal.getOption('lineHeight');
+        if (!this.terminal || !this.container_el) return;
+        const font_size = this.terminal.options.fontSize;
+        const line_height = this.terminal.options.lineHeight;
         const box = this.container_el.nativeElement.getBoundingClientRect();
         const width = Math.floor(box.width / (font_size * 0.6));
         const height = Math.floor(
@@ -102,9 +98,7 @@ export class TerminalComponent
      * @param new_content New contents to render
      */
     private updateTerminalContents(new_content: string) {
-        if (!this.terminal) {
-            return;
-        }
+        if (!this.terminal) return;
         this.terminal.selectAll();
         this.terminal.clearSelection();
         this.terminal.write('\x1b[H\x1b[2J');

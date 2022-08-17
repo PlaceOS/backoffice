@@ -103,7 +103,7 @@ import { BackofficeUsersService } from '../users/users.service';
                             <p class="truncate flex-1">
                                 {{ item.name }}
                             </p>
-                            <code class="text-xs opacity-60" *ngIf="item.extra">
+                            <code class="text-xs opacity-60 truncate" *ngIf="item.extra">
                                 {{ item.extra }}
                             </code>
                         </a>

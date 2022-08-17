@@ -15,13 +15,14 @@ import { BackofficeUsersService } from '../users/users.service';
             <a
                 matRipple
                 type="button"
+                profile
                 [routerLink]="['/profile']"
                 class="space-x-2"
             >
                 <app-icon [className]="'backoffice-user'"></app-icon>
                 Profile
             </a>
-            <div class="flex items-center p-4 w-[16rem]">
+            <div dark-mode class="flex items-center p-4 w-[16rem]">
                 <app-icon [className]="'backoffice-moon'"></app-icon>
                 <p class="flex-1 w-1/2">Dark Mode</p>
                 <mat-slide-toggle [(ngModel)]="dark_mode"></mat-slide-toggle>
@@ -29,6 +30,7 @@ import { BackofficeUsersService } from '../users/users.service';
             <button
                 matRipple
                 type="button"
+                logout
                 class="space-x-2"
                 (click)="logout()"
             >
@@ -39,6 +41,7 @@ import { BackofficeUsersService } from '../users/users.service';
                 matRipple
                 type="button"
                 class="space-x-2"
+                uploads
                 (click)="showUploadHistory()"
             >
                 <app-icon [className]="'backoffice-clock'"></app-icon>
@@ -49,6 +52,7 @@ import { BackofficeUsersService } from '../users/users.service';
                 type="button"
                 target="_blank"
                 ref="noopener noreferer"
+                report
                 [href]="github_link | safe:'url'"
                 class="space-x-2"
             >
