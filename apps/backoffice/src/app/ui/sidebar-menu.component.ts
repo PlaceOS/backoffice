@@ -35,12 +35,12 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     menu
                     matRipple
                     class="flex items-center p-2 rounded space-x-2 w-[calc(100%-2rem)]"
-                    *ngFor="let item of items; trackBy"
+                    *ngFor="let item of items"
                     [routerLink]="[item.route]"
                     routerLinkActive="active"
                 >
                     <app-icon [icon]="item.icon"></app-icon>
-                    <p>{{ item.name }}</p>
+                    <p>{{ item?.name }}</p>
                 </a>
                 <button
                     class="absolute top-1 left-1 sm:hidden"
@@ -54,6 +54,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 matRipple
                 class="flex items-center space-x-2 p-2 border-t border-gray-300 dark:border-neutral-600 text-left dark:text-white"
                 customTooltip
+                user
                 [content]="user_controls"
                 yPosition="bottom"
                 xPosition="start"
@@ -63,12 +64,12 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     [style.background-image]="'url(' + user?.image + ')'"
                 ></div>
                 <div class="flex flex-col flex-1 w-1/2 leading-tight">
-                    <div class="truncate w-full">{{ user.name }}</div>
+                    <div class="truncate w-full">{{ user?.name }}</div>
                     <div class="truncate text-xs opacity-30 w-full">
                         {{
-                            user.sys_admin
+                            user?.sys_admin
                                 ? 'Admin'
-                                : user.support
+                                : user?.support
                                 ? 'Support'
                                 : 'Basic'
                         }}
@@ -126,12 +127,12 @@ export class SidebarMenuComponent extends BaseClass {
     }
 
     private _getMenuItems(): ApplicationLinkInternal[] {
-        let items = this._settings.get('app.general.menu');
+        let items = this._settings.get('app.general.menu') || [];
         const auth = authority();
         /** Only allow metrics if a URL has be set */
         if (!auth?.metrics && !auth?.config?.metrics) {
             items = items.filter((item) => item.route?.indexOf('metrics') < 0);
-            if (this._router.url.indexOf('metrics') >= 0)
+            if (this._router.url?.indexOf('metrics') >= 0)
                 this._router.navigate([]);
         }
         /** Filter out items with insufficient permissions */

@@ -26,6 +26,7 @@ import { UploadsService } from '../common/uploads.service';
             <div list class="overflow-auto max-h-[65vh]">
                 <ul *ngIf="(uploads | async)?.length; else no_uploads">
                     <li
+                        upload-file
                         *ngFor="let item of uploads | async"
                         class="my-1 h-12 hover:bg-gray-200"
                         [class.error]="item.error"
@@ -40,14 +41,14 @@ import { UploadsService } from '../common/uploads.service';
                             >
                                 Link
                             </a>
-                            <a
+                            <button
                                 mat-button
                                 *ngIf="item.error"
                                 (click)="retry(item)"
                                 i18n="@@uploadRetry"
                             >
                                 Retry
-                            </a>
+                            </button>
                             <div class="size mr-2">
                                 {{ item.formatted_size }}
                             </div>
@@ -86,6 +87,7 @@ import { UploadsService } from '../common/uploads.service';
         ></div>
         <div
             class="fixed inset-0 bg-black bg-opacity-60"
+            dropzone
             (dragend)="show_overlay = false"
             (dragleave)="show_overlay = false"
             (drop)="handleFileEvent($event)"
