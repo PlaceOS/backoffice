@@ -117,6 +117,7 @@ export class SystemStateService extends BaseClass {
             } as any)
                 .pipe(map((i) => i.data))
                 .toPromise();
+            modules.forEach(_ => (_ as any).connected = undefined);
             this._loading.next({
                 ...this._loading.getValue(),
                 modules: false,

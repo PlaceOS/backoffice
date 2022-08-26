@@ -132,7 +132,7 @@ import { SystemStateService } from './system-state.service';
                                     ></app-icon>
                                 </div>
                                 <div
-                                    class="w-12 flex items-center justify-center p-2 h-full"
+                                    class="w-12 flex items-center justify-center p-2 h-full relative"
                                 >
                                     <div
                                         dot
@@ -151,6 +151,11 @@ import { SystemStateService } from './system-state.service';
                                         "
                                         (click)="power(device)"
                                     ></div>
+                                    <mat-spinner
+                                        *ngIf="device.running && device.connected === undefined"
+                                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+                                        diameter="32"
+                                    ></mat-spinner>
                                 </div>
                                 <div
                                     class="flex-1 p-2 h-full flex flex-col justify-center"
@@ -176,10 +181,10 @@ import { SystemStateService } from './system-state.service';
                                     </div>
                                 </div>
                                 <div class="w-24 p-2" i18n="@@driverType">
-                                    { driver_type(device.driver?.role), select, Device { Device }
-                                    Logic { Logic } SSH { SSH } Websocket {
-                                    Websocket } Service { Service } other {
-                                    Other } }
+                                    { driver_type(device.driver?.role), select,
+                                    Device { Device } Logic { Logic } SSH { SSH
+                                    } Websocket { Websocket } Service { Service
+                                    } other { Other } }
                                 </div>
                                 <div class="w-48 p-2">
                                     <span
