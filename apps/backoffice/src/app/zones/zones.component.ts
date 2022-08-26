@@ -28,6 +28,7 @@ import { ZonesStateService } from './zones-state.service';
                         <item-details
                             [can_edit]="true"
                             [item]="item"
+                            type="Zone"
                         ></item-details>
                         <item-tablist
                             [base]="name"

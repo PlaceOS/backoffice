@@ -27,6 +27,7 @@ import { ActiveItemService } from '../common/item.service';
                         <item-details
                             [can_edit]="true"
                             [item]="item"
+                            type="Module"
                         ></item-details>
                         <item-tablist
                             [base]="name"

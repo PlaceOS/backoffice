@@ -27,6 +27,7 @@ import { SystemStateService } from './system-state.service';
                         <item-details
                             [can_edit]="true"
                             [item]="item"
+                            type="System"
                         ></item-details>
                         <item-tablist
                             [base]="name"

@@ -27,6 +27,7 @@ import { DomainStateService } from './domain-state.service';
                         <item-details
                             [can_edit]="true"
                             [item]="item"
+                            type="Domain"
                         ></item-details>
                         <item-tablist
                             [base]="name"

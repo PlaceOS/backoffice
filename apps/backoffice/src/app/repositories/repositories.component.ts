@@ -27,6 +27,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                         <item-details
                             [can_edit]="true"
                             [item]="item"
+                            type="Repository"
                         ></item-details>
                         <item-tablist
                             [base]="name"
