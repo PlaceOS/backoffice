@@ -78,7 +78,7 @@ export class ItemTablistComponent extends BaseClass implements OnInit {
             'change_tab',
             () => {
                 const index = this.tabs.findIndex(
-                    (tab) => this._router.url.indexOf(tab.id) >= 0
+                    (tab) => this._router.url?.indexOf(tab.id) >= 0
                 );
                 if (index < 0 || !this.tabs[index + direction]) return;
                 this._router.navigate([
@@ -92,7 +92,7 @@ export class ItemTablistComponent extends BaseClass implements OnInit {
     }
 
     private _updateID() {
-        const parts = this._router.url.replace(/^\//, '').split('/');
+        const parts = this._router.url?.replace(/^\//, '').split('/') || ['1', ''];
         this.item_id = parts[1];
     }
 }

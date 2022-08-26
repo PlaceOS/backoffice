@@ -1,5 +1,6 @@
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockComponent } from 'ng-mocks';
 import { BehaviorSubject, of } from 'rxjs';
@@ -41,7 +42,7 @@ describe('UploadListComponent', () => {
         declarations: [
             MockComponent(IconComponent)
         ],
-        imports: [MatProgressBarModule]
+        imports: [MatProgressBarModule, MatTooltipModule]
     });
 
     beforeEach(() => {
