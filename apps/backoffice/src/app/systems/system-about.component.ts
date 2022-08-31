@@ -9,6 +9,7 @@ import { SystemStateService } from './system-state.service';
         <section class="flex items-center space-x-2 mb-4">
             <button
                 mat-button
+                start
                 class="flex-1 sm:flex-none"
                 (click)="start()"
                 i18n="@@systemStartAction"
@@ -17,6 +18,7 @@ import { SystemStateService } from './system-state.service';
             </button>
             <button
                 mat-button
+                stop
                 class="flex-1 sm:flex-none"
                 (click)="stop()"
                 i18n="@@systemStopAction"
