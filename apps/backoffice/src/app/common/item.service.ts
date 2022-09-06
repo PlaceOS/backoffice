@@ -83,7 +83,7 @@ export class ActiveItemService extends BaseClass {
     /** Observable for list of items */
     public readonly list = this._list.asObservable();
     /** Observable for active item */
-    public readonly all_item = this._active_item.asObservable();
+    public readonly active_item$ = this._active_item.asObservable();
     /** Observable for active item */
     public readonly item = this._active_item
         .asObservable()

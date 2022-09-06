@@ -32,7 +32,7 @@ export class ZonesStateService {
 
     public readonly item = this._service.item;
 
-    public readonly counts = combineLatest([this._service.all_item, this._change]).pipe(
+    public readonly counts = combineLatest([this._service.active_item$, this._change]).pipe(
         debounceTime(300),
         switchMap(async (d) => {
             const [item] = d;

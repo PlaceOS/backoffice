@@ -35,7 +35,7 @@ export class ModuleStateService {
         filter((_) => _ instanceof PlaceModule)
     ) as any;
     /** Observable for associated settings of the active item */
-    public readonly associated_settings = this._state.all_item.pipe(
+    public readonly associated_settings = this._state.active_item$.pipe(
         debounceTime(300),
         switchMap((item: PlaceModule) => {
             if (!item || !(item instanceof PlaceModule)) return [];
