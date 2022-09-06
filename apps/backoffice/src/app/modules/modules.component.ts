@@ -46,7 +46,7 @@ import { ActiveItemService } from '../common/item.service';
                 </div>
                 <button
                     class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
-                    matTooltip="New system"
+                    matTooltip="New module"
                     matTooltipPosition="right"
                     matRipple
                     (click)="newItem()"
