@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { SystemsComponent } from './systems.component';
 import { SystemAboutComponent } from './system-about.component';
 import { SystemModulesComponent } from './system-modules.component';
 import { SystemTriggersComponent } from './system-triggers.component';
@@ -7,6 +6,7 @@ import { SystemZonesComponent } from './system-zones.component';
 import { SystemMetadataComponent } from './system-metadata.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 import { SettingsHistoryViewComponent } from '../ui/settings-history-view.component';
+import { SystemsComponent } from './systems.component';
 
 export const ROUTES: Routes = [
     {

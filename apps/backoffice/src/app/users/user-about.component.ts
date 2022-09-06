@@ -82,7 +82,6 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
     styles: [
         `
             :host {
-                padding: 1rem;
                 width: 100%;
                 height: 100%;
             }

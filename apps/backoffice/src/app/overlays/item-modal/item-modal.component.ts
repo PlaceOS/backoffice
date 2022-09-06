@@ -36,7 +36,7 @@ import {
     generateTriggerSettingsFormFields,
 } from 'apps/backoffice/src/app/triggers/triggers.utilities';
 import { generateRepositoryFormFields } from 'apps/backoffice/src/app/repositories/repositories.utilities';
-import { generateBrokerFormFields } from 'apps/backoffice/src/app/engine/brokers.utilities';
+import { generateBrokerFormFields } from 'apps/backoffice/src/app/admin/brokers.utilities';
 import { Observable } from 'rxjs';
 import {
     notifyError,

@@ -23,7 +23,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { BindingDirective } from './binding/binding.directive';
+import { BindingDirective } from './binding.directive';
 import { ContextMenuComponent } from './context-menu.component';
 import { DateFieldComponent } from './custom-fields/date-field.component';
 import { ImageListFieldComponent } from './custom-fields/image-list-field.component';
@@ -52,8 +52,7 @@ import { TriggerConditionFormComponent } from './forms/trigger-condition-form/tr
 import { TriggerFormComponent } from './forms/trigger-form.component';
 import { UserFormComponent } from './forms/user-form.component';
 import { ZoneFormComponent } from './forms/zone-form.component';
-import { IconComponent } from './icon/icon.component';
-import { ItemDisplayComponent } from './item-display/item-display.component';
+import { IconComponent } from './icon.component';
 import { DateFromPipe } from './pipes/date-from.pipe';
 import { DriverFormatPipe } from './pipes/driver-format.pipe';
 import { FormatListPipe } from './pipes/format-list.pipe';
@@ -76,6 +75,15 @@ import { SettingsHistoryViewComponent } from './settings-history-view.component'
 import { SettingsFormatPipe } from './pipes/settings-format.pipe';
 import { UserPipe } from './pipes/user.pipe';
 import { MetadataDisplayComponent } from './metadata-display.component';
+import { SidebarMenuComponent } from './sidebar-menu.component';
+import { ItemSelectionComponent } from './item-selection.component';
+import { MatRippleModule } from '@angular/material/core';
+import { CustomTooltipComponent } from './custom-tooltip.component';
+import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
+import { PortalModule } from '@angular/cdk/portal';
+import { ItemDetailsComponent } from './item-details.component';
+import { ItemTablistComponent } from './item-tablist.component';
+import { ItemSidebarComponent } from './item-sidebar.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -102,10 +110,10 @@ const FORM_COMPONENTS: Type<any>[] = [
     SelectModuleComponent,
     SelectMethodComponent,
     FunctionArgumentComponent,
+    ItemSidebarComponent
 ];
 
 const COMPONENTS: Type<any>[] = [
-    ItemDisplayComponent,
     SearchbarComponent,
     SidebarComponent,
     IconComponent,
@@ -118,7 +126,14 @@ const COMPONENTS: Type<any>[] = [
     BasicLineGraphComponent,
     DiffViewerComponent,
     SettingsHistoryViewComponent,
-    MetadataDisplayComponent
+    MetadataDisplayComponent,
+
+    SidebarMenuComponent,
+    ItemSelectionComponent,
+    CustomTooltipComponent,
+    UserMenuTooltipComponent,
+    ItemDetailsComponent,
+    ItemTablistComponent
 ];
 
 const PIPES: Type<any>[] = [
@@ -162,6 +177,8 @@ const MATERIAL_MODULES: any[] = [
     MatExpansionModule,
     CdkTableModule,
     MatDatepickerModule,
+    MatRippleModule,
+    PortalModule
 ];
 
 @NgModule({

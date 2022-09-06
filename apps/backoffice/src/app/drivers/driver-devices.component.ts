@@ -142,7 +142,6 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
     styles: [
         `
             :host {
-                padding: 1rem;
                 height: 100%;
                 width: 100%;
             }

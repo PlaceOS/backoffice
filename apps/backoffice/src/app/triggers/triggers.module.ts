@@ -6,16 +6,16 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { ROUTES } from './triggers.routes';
 
-import { TriggersComponent } from './triggers.component';
 import { TriggerAboutComponent } from './trigger-about.component';
 import { TriggerInstancesComponent } from './trigger-instances.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
+import { TriggersComponent } from './triggers.component';
 
 @NgModule({
     declarations: [
-        TriggersComponent,
         TriggerAboutComponent,
         TriggerInstancesComponent,
+        TriggersComponent
     ],
     imports: [
         CommonModule,

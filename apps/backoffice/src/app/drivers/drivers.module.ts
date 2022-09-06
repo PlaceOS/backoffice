@@ -5,16 +5,16 @@ import { RouterModule } from '@angular/router';
 
 import { ROUTES } from './drivers.routes';
 
-import { DriversComponent } from './drivers.component';
 import { DriverAboutComponent } from './driver-about.component';
 import { DriverModulesComponent } from './driver-devices.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
+import { DriversComponent } from './drivers.component';
 
 @NgModule({
     declarations: [
-        DriversComponent,
         DriverAboutComponent,
         DriverModulesComponent,
+        DriversComponent
     ],
     imports: [
         CommonModule,

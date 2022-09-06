@@ -1,14 +1,26 @@
+.dark {
+    button[mat-button].mat-button,
+    a[button] {
+        background-color: var(--placeos-pink);
+        border: 1px solid var(--placeos-pink);
+
+        &.inverse {
+            color: #fff;
+        }
+    }
+}
+
 button[mat-button].mat-button,
 a[button] {
     background-color: var(--primary);
     border: 1px solid var(--primary);
     color: var(--font-light);
-    font-weight: 300;
+    font-weight: 400;
     border-radius: 4px;
 
     &.inverse {
-        background-color: #fff;
-        color: var(--primary);
+        background: none;
+        color: #000;
     }
 
     &.clear {
@@ -26,6 +38,18 @@ a[button] {
         color: rgba(#000, 0.2);
         border-color: rgba(#000, 0.2);
         pointer-events: none;
+    }
+}
+
+a.underline {
+    &:hover {
+        @apply text-blue-700;
+        font-weight: 500;
+    }
+}
+.dark a.underline {
+    &:hover {
+        @apply text-blue-500;
     }
 }
 
@@ -113,6 +137,12 @@ mat-select {
 
 .overlay-backdrop {
     background-color: rgba(#000, 0.6);
+}
+
+.dark .mat-dialog-container {
+    header {
+        background-color: var(--placeos-pink);
+    }
 }
 
 mat-dialog-container.mat-dialog-container {
@@ -497,10 +527,21 @@ mat-panel-title {
 #placeos .mat-ink-bar {
     @apply bg-primary;
 }
+
+#placeos .dark .mat-ink-bar {
+    @apply bg-pink;
+}
 #placeos {
     .mat-progress-spinner circle,
     .mat-spinner circle {
         stroke: var(--primary);
+    }
+
+    .dark {
+        .mat-progress-spinner circle,
+        .mat-spinner circle {
+            stroke: var(--placeos-pink);
+        }
     }
 
     .mat-checkbox-checked .mat-checkbox-background {
@@ -561,7 +602,7 @@ mat-panel-title {
 
 #placeos .dark {
     code {
-        background: rgba(255,255,255, 0.2);
+        background: rgba(255,255,255, 0.1);
     }
 
     .mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover) {
@@ -586,6 +627,29 @@ mat-panel-title {
     mat-form-field.mat-focused {
         .mat-form-field-outline > * {
             color: var(--primary);
+        }
+    }
+}
+
+a[menu] {
+    color: rgba(0,0,0,0.65);
+    &:hover {
+        background-color: rgba(0,0,0, 0.1);
+    }
+    &.active {
+        color: rgba(0,0,0,0.85);
+        background-color: rgba(0,0,0, 0.2);
+    }
+}
+.dark {
+    a[menu] {
+        color: rgba(255,255,255,0.65);
+        &:hover {
+            background-color: rgba(255,255,255, 0.1);
+        }
+        &.active {
+            color: rgba(255,255,255,0.85);
+            background-color: rgba(255,255,255, 0.2);
         }
     }
 }

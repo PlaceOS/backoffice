@@ -6,22 +6,22 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { ROUTES } from './systems.routes';
 
-import { SystemsComponent } from './systems.component';
 import { SystemAboutComponent } from './system-about.component';
 import { SystemModulesComponent } from './system-modules.component';
 import { SystemTriggersComponent } from './system-triggers.component';
 import { SystemZonesComponent } from './system-zones.component';
 import { SystemMetadataComponent } from './system-metadata.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
+import { SystemsComponent } from './systems.component';
 
 @NgModule({
     declarations: [
-        SystemsComponent,
         SystemAboutComponent,
         SystemModulesComponent,
         SystemTriggersComponent,
         SystemZonesComponent,
         SystemMetadataComponent,
+        SystemsComponent,
     ],
     imports: [
         CommonModule,

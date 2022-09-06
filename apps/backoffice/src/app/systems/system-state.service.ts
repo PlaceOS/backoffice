@@ -62,7 +62,7 @@ export class SystemStateService extends BaseClass {
     private _modules = new BehaviorSubject<PlaceModule[]>([]);
     private _change = new BehaviorSubject<number>(0);
     /** Observable for associated settings of the active item */
-    public readonly associated_settings = this._state.all_item.pipe(
+    public readonly associated_settings = this._state.active_item$.pipe(
         debounceTime(300),
         switchMap((item: PlaceSystem) => {
             if (!item || !(item instanceof PlaceSystem)) return [];
@@ -71,7 +71,7 @@ export class SystemStateService extends BaseClass {
     );
     /** Observable of the counts of the active item */
     public readonly counts = combineLatest([
-        this._state.all_item,
+        this._state.active_item$,
         this._change,
     ]).pipe(
         debounceTime(300),
@@ -117,6 +117,7 @@ export class SystemStateService extends BaseClass {
             } as any)
                 .pipe(map((i) => i.data))
                 .toPromise();
+            modules.forEach(_ => (_ as any).connected = undefined);
             this._loading.next({
                 ...this._loading.getValue(),
                 modules: false,

@@ -12,6 +12,9 @@ import {
     UploadDetails,
     uploadFile,
 } from 'apps/backoffice/src/app/common/uploads';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+import { UploadsService } from '../../common/uploads.service';
 
 @Component({
     selector: 'image-list-field',
@@ -67,7 +70,7 @@ import {
             </div>
             <div
                 image
-                *ngFor="let item of upload_list; let i = index"
+                *ngFor="let item of uploads | async; let i = index"
                 class="bg-center bg-cover h-32 w-36 rounded border bg-secondary bg-opacity-30 border-gray-200 flex items-center justify-center flex-shrink-0"
                 [style.transform]="'translate(-' + offset + '00%)'"
                 [matTooltip]="item.error"
@@ -164,7 +167,7 @@ export class ImageListFieldComponent extends BaseClass {
     /** List of images */
     public list: string[] = [];
     /** List of images */
-    public upload_list: UploadDetails[] = [];
+    private _upload_list = new BehaviorSubject<number[]>([]);
 
     public offset: number = 0;
 
@@ -172,11 +175,20 @@ export class ImageListFieldComponent extends BaseClass {
 
     public readonly separators = [COMMA, ENTER];
 
+    public readonly uploads = combineLatest([
+        this._uploads.upload_list,
+        this._upload_list,
+    ]).pipe(map(([list, ids]) => list.filter((i) => ids.includes(i.id))));
+
     public get length() {
-        return this.list.length + this.upload_list.length + 1;
+        return this.list.length + this._upload_list.getValue().length + 1;
     }
 
     @ViewChild('image_list') private _list_el: ElementRef<HTMLDivElement>;
+
+    constructor(private _uploads: UploadsService) {
+        super();
+    }
 
     /** Form control on change handler */
     private _onChange: (_: string[]) => void;
@@ -186,6 +198,16 @@ export class ImageListFieldComponent extends BaseClass {
     public ngAfterViewInit() {
         const box = this._list_el.nativeElement.getBoundingClientRect();
         this.view_space = Math.floor(box.width / 152);
+        this.subscription('upload_changes', this._uploads.upload_list.subscribe((list) => {
+            const id_list = this._upload_list.getValue();
+            for (const id of id_list) {
+                const item = list.find(_ => _.id === id);
+                if (item && item.progress >= 100) {
+                    this.addImageUrl(item.link);
+                    this._upload_list.next(this._upload_list.getValue().filter(_ => _ !== id));
+                }
+            }
+        }));
     }
 
     public copyLink(url: string) {
@@ -202,10 +224,14 @@ export class ImageListFieldComponent extends BaseClass {
     public addImage(event: MatChipInputEvent) {
         if (!event.value) return;
         this.setValue(unique([...this.list, event.value]));
-        event.input.value = '';
+        event.chipInput.inputElement.value = '';
     }
 
-    public uploadImages(event) {
+    public addImageUrl(url: string) {
+        this.setValue(unique([...this.list, url]));
+    }
+
+    public async uploadImages(event) {
         const element: HTMLInputElement = event.target as any;
         /* istanbul ignore else */
         if (element?.files) {
@@ -213,48 +239,11 @@ export class ImageListFieldComponent extends BaseClass {
             /* istanbul ignore else */
             if (files.length) {
                 for (let i = 0; i < files.length; i++) {
-                    uploadFile(files[i]).subscribe(
-                        (details) =>
-                            (this.upload_list = [
-                                ...this.upload_list.filter(
-                                    (_) => _.id !== details.id
-                                ),
-                                details,
-                            ]),
-                        (details) =>
-                            (this.upload_list = [
-                                ...this.upload_list.filter(
-                                    (_) => _.id !== details.id
-                                ),
-                                details,
-                            ]),
-                        () => this.updateList()
-                    );
+                    const id = await this._uploads.uploadFile(files[i]);
+                    this._upload_list.next([...this._upload_list.getValue(), id]);
                 }
             }
         }
-    }
-
-    /**
-     * Retry a failed upload
-     * @param details Details of the failed upload
-     */
-    public retryUpload(details: UploadDetails) {
-        if (details.error) {
-            details.error = null;
-            details.upload.resume();
-        }
-    }
-
-    public updateList() {
-        const list = [...this.list];
-        for (const upload of this.upload_list) {
-            if (upload.progress >= 100) {
-                list.push(upload.link);
-            }
-        }
-        this.upload_list = this.upload_list.filter((_) => _.progress >= 100);
-        this.setValue(list);
     }
 
     public setValue(value: string[]) {
@@ -270,19 +259,8 @@ export class ImageListFieldComponent extends BaseClass {
         this.list = value;
     }
 
-    /**
-     * Registers a callback function that is called when the control's value changes in the UI.
-     * @param fn The callback function to register
-     */
-    public registerOnChange(fn: (_: string[]) => void): void {
-        this._onChange = fn;
-    }
-
-    /**
-     * Registers a callback function is called by the forms API on initialization to update the form model on blur.
-     * @param fn The callback function to register
-     */
-    public registerOnTouched(fn: (_: string[]) => void): void {
-        this._onTouch = fn;
-    }
+    public readonly registerOnChange = (fn: (_: string[]) => void) =>
+        (this._onChange = fn);
+    public readonly registerOnTouched = (fn: (_: string[]) => void) =>
+        (this._onTouch = fn);
 }

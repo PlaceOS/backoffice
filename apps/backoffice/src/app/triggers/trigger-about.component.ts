@@ -258,7 +258,6 @@ import { TriggerStateService } from './trigger-state.service';
     styles: [
         `
             :host {
-                padding: 1rem;
                 height: 100%;
                 width: 100%;
             }

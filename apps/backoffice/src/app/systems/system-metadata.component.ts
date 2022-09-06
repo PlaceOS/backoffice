@@ -5,9 +5,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
 @Component({
     selector: 'system-metadata',
     template: `
-        <div class="p-4" *ngIf="item">
-            <metadata-display [item]="item"></metadata-display>
-        </div>
+        <metadata-display *ngIf="item" [item]="item"></metadata-display>
     `,
     styles: [``],
 })

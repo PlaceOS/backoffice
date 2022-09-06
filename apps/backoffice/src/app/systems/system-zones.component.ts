@@ -107,7 +107,6 @@ import { SystemStateService } from './system-state.service';
             :host {
                 height: 100%;
                 width: 100%;
-                padding: 1rem;
             }
 
             [desc] {

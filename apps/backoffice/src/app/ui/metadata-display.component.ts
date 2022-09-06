@@ -16,7 +16,7 @@ import { BaseClass } from '../common/base.class';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { validateJSONString } from '../common/validation';
-import { SchemaStateService } from '../engine/schema-state.service';
+import { SchemaStateService } from '../admin/schema-state.service';
 import {
     ConfirmModalComponent,
     CONFIRM_METADATA,

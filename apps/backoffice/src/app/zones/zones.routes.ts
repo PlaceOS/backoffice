@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 
-import { ZonesComponent } from './zones.component';
 import { ZoneAboutComponent } from './zone-about.component';
 import { ZoneSystemsComponent } from './zone-systems.component';
 import { ZoneTriggersComponent } from './zone-triggers.component';
@@ -8,6 +7,7 @@ import { ZoneChildrenComponent } from './zone-children.component';
 import { ZoneMetadataComponent } from './zone-metadata.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 import { SettingsHistoryViewComponent } from '../ui/settings-history-view.component';
+import { ZonesComponent } from './zones.component';
 
 export const ROUTES: Routes = [
     {

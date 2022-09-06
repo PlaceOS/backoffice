@@ -14,6 +14,10 @@ body {
     }
 }
 
+body.dark {
+    color: #fff;
+}
+
 app-root {
     display: flex;
     flex-direction: column;

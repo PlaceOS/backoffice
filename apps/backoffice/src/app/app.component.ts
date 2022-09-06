@@ -26,7 +26,7 @@ import { NavigationEnd, Router } from '@angular/router';
     template: `
         <div class="h-full w-full flex flex-col overflow-hidden">
             <ng-container *ngIf="!(loading | async); else load_state">
-                <header *ngIf="!simple" [class.joke]="is_fools_day">
+                <!-- <header *ngIf="!simple" [class.joke]="is_fools_day">
                     <topbar-header
                         class="w-full"
                         [(showMenu)]="show"
@@ -42,10 +42,10 @@ import { NavigationEnd, Router } from '@angular/router';
                         *ngIf="!simple"
                         [(show)]="show"
                     ></sidebar-menu>
-                    <div class="flex-1 w-0">
+                    <div class="flex-1 w-0"> -->
                         <router-outlet></router-outlet>
-                    </div>
-                </main>
+                    <!-- </div>
+                </main> -->
                 <ng-container *ngIf="filter">
                     <global-search [(search)]="filter"></global-search>
                 </ng-container>

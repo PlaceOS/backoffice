@@ -12,13 +12,13 @@ import { TriggerStateService } from './trigger-state.service';
             <div table-head>
                 <td class="w-12 h-10"></td>
                 <td
-                    class="flex-1 h-10 flex items-center"
+                    class="flex-1 h-10 flex items-center px-2"
                     i18n="@@systemTableName"
                 >
                     Parent ID
                 </td>
                 <td
-                    class="w-32 h-10 flex items-center"
+                    class="w-32 h-10 flex items-center px-2"
                     i18n="@@systemTableAdded"
                 >
                     Added
@@ -75,7 +75,6 @@ import { TriggerStateService } from './trigger-state.service';
     styles: [
         `
             :host {
-                padding: 1rem;
                 height: 100%;
                 width: 100%;
             }

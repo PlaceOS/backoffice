@@ -33,6 +33,7 @@ import {
     querySettings,
 } from '@placeos/ts-client';
 import { BackofficeUsersService } from '../users/users.service';
+import { BulkItemModalComponent } from '../overlays/bulk-item-modal/bulk-item-modal.component';
 
 export type ResourceType =
     | 'domains'
@@ -82,7 +83,7 @@ export class ActiveItemService extends BaseClass {
     /** Observable for list of items */
     public readonly list = this._list.asObservable();
     /** Observable for active item */
-    public readonly all_item = this._active_item.asObservable();
+    public readonly active_item$ = this._active_item.asObservable();
     /** Observable for active item */
     public readonly item = this._active_item
         .asObservable()
@@ -188,6 +189,26 @@ export class ActiveItemService extends BaseClass {
                       name: `${item.name} (1)`,
                   })
                 : new actions.itemConstructor()
+        );
+    }
+
+    public bulkAdd() {
+        if (!this._user.current().sys_admin) return;
+        const actions = this.actions;
+        this._settings.post('disable_uploads', true);
+        const ref = this._dialog.open(BulkItemModalComponent, {
+            height: 'auto',
+            width: 'auto',
+            maxHeight: 'calc(100vh - 2em)',
+            maxWidth: 'calc(100vw - 2em)',
+            data: {
+                constr: actions.itemConstructor,
+                name: this.type,
+                save: actions.save,
+            },
+        });
+        ref.afterClosed().subscribe(() =>
+            this._settings.post('disable_uploads', false)
         );
     }
 

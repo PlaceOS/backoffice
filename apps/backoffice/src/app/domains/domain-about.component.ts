@@ -33,7 +33,6 @@ import { DomainStateService } from './domain-state.service';
     styles: [
         `
             :host {
-                padding: 1rem;
                 height: 100%;
                 width: 100%;
             }

@@ -37,7 +37,7 @@ export class RepositoriesStateService {
     /** Active module */
     public readonly item = this._state.item;
     /** List of available drivers for repository */
-    public readonly driver_list = this._state.all_item.pipe(
+    public readonly driver_list = this._state.active_item$.pipe(
         switchMap((item: PlaceRepository) => {
             if (
                 !(item instanceof PlaceRepository) ||
@@ -54,7 +54,7 @@ export class RepositoriesStateService {
         })
     );
     /** Get latest commit for the active repository */
-    public readonly commit = this._state.all_item.pipe(
+    public readonly commit = this._state.active_item$.pipe(
         filter((i) => i instanceof PlaceRepository),
         switchMap((item) =>
             listRepositoryCommits(item.id, { count: 1 } as any)

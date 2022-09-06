@@ -1,50 +1,80 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
 import { listTriggerInstances, PlaceTrigger } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
-
 import { BaseClass } from '../common/base.class';
 import { ActiveItemService } from '../common/item.service';
 
 @Component({
-    selector: 'app-triggers',
+    selector: 'new-triggers-view',
     template: `
-        <div class="flex-1 flex-col sm:flex-row flex h-full w-full relative">
-            <sidebar
-                heading="Triggers"
-                name="triggers"
-                class="absolute top-0 left-0 h-12 w-full sm:h-full sm:static"
-            ></sidebar>
-            <item-display
-                name="trigger"
-                route="triggers"
-                [tabs]="tab_list"
-                class="flex-1 relative mt-12 sm:mt-0 w-full sm:w-1/2"
-            ></item-display>
+        <div
+            class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
+        >
+            <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
+            <item-sidebar class="hidden sm:block" [route]="name" title="Triggers"></item-sidebar>
+            <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
+                <item-selection class="z-20 sm:hidden" [route]="name" title="Triggers">
+                    <button
+                        mat-icon-button
+                        class="sm:hidden mr-2"
+                        (click)="open_menu = true"
+                    >
+                        <app-icon className="backoffice-menu"></app-icon>
+                    </button>
+                </item-selection>
+                <div class="flex flex-col flex-1 h-1/2">
+                    <ng-container *ngIf="item?.id">
+                        <item-details
+                            [can_edit]="true"
+                            [item]="item"
+                            type="Trigger"
+                        ></item-details>
+                        <item-tablist
+                            [base]="name"
+                            [tabs]="tab_list"
+                            [scrolled]="scroll > 0"
+                            class="z-10"
+                        ></item-tablist>
+                        <div
+                            #el
+                            class="flex-1 h-1/2 w-full overflow-auto p-4 z-0 relative"
+                            (scroll)="scroll = el.scrollTop"
+                        >
+                            <router-outlet></router-outlet>
+                        </div>
+                    </ng-container>
+                </div>
+                <button
+                    class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
+                    matTooltip="New system"
+                    matTooltipPosition="right"
+                    matRipple
+                    (click)="newItem()"
+                >
+                    <app-icon
+                        [className]="'backoffice-plus'"
+                        class="text-3xl"
+                    ></app-icon>
+                </button>
+            </div>
         </div>
     `,
-    styles: [
-        `
-            sidebar {
-                transition: height 300ms;
-            }
-            @media screen and (min-width: 640px) {
-                sidebar {
-                    width: 20em !important;
-                }
-            }
-        `,
-    ],
+    styles: [``],
 })
 export class TriggersComponent extends BaseClass {
-    /** Number of system triggers */
-    public instance_count: number;
-
     public readonly name = 'triggers';
 
-    public readonly show_options = this._service.show_options;
-
+    public open_menu = false;
+    public instance_count = 0;
     public tab_list = [];
+
+    public readonly newItem = () => this._service.create();
+
+    public get item() {
+        return this._service.active_item;
+    }
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);

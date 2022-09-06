@@ -6,8 +6,9 @@
 /* You can add global styles to this file, and also import other style files */
 
 :root {
-    --primary: #c2185b;
-    --primary-dark: #ad1457;
+    --placeos-pink: #C52B67;    
+    --primary: #292F5B;
+    --primary-dark: #3A4174;
     --secondary: #263238;
     --secondary-dark: #212121;
     --font-light: #fff;
@@ -21,6 +22,7 @@
     --heading-font: 'Young', var(--font);
     --mono-font: 'Fira Code', monospace;
 }
+
 
 html,
 body {

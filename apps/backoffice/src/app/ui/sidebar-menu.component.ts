@@ -1,107 +1,107 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    Optional,
+    Output,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { authority } from '@placeos/ts-client';
-
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
-import { ApplicationLinkInternal } from 'apps/backoffice/src/app/common/types';
-import { SettingsService } from 'apps/backoffice/src/app/common/settings.service';
-import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
-import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
+import { BaseClass } from '../common/base.class';
+import { HotkeysService } from '../common/hotkeys.service';
+import { SettingsService } from '../common/settings.service';
+import { ApplicationIcon, ApplicationLinkInternal } from '../common/types';
+import { BackofficeUsersService } from '../users/users.service';
+import { CustomTooltipData } from './custom-tooltip.component';
+import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
 
 @Component({
     selector: 'sidebar-menu',
     template: `
         <div
-            class="absolute sm:relative h-screen w-screen z-30 bottom-0 pointer-events-auto sm:hidden"
-            [class.hidden]="!show"
-            (click)="show = false; showChange.emit(false)"
-        ></div>
-        <div
-            class="absolute sm:relative h-full bg-gray-800 shadow z-40 text-white left-0 top-0 sm:block overflow-auto"
-            [class.hidden]="!show"
-            *ngIf="menu_items"
-            (mouseleave)="tooltip = 'false'"
+            class="absolute pointer-events-none sm:pointer-events-auto inset-0 sm:relative sm:inset-auto hidden sm:flex flex-col sm:w-52 justify-between h-full overflow-hidden bg-gray-200 dark:bg-neutral-800 z-40 sm:z-0"
+            [class.!flex]="open"
+            [class.!pointer-events-auto]="open"
+            (click)="close()"
         >
-            <a
-                class="flex flex-col items-center justify-center relative border-b border-white border-opacity-30 hover:bg-white hover:bg-opacity-20"
-                *ngFor="let item of menu_items"
-                [routerLink]="[item.route]"
-                routerLinkActive="active"
-                [title]="item.name"
-                [matTooltip]="item.name"
-                i18n-matTooltip
-                matTooltipPosition="right"
-                (click)="show = false; showChange.emit(false)"
+            <div class="flex flex-col items-center space-y-2">
+                <a
+                    [routerLink]="['/']"
+                    class="font-heading text-4xl mt-4 w-[calc(100%-2rem)] dark:text-white ml-16 sm:ml-0"
+                >
+                    Place<span class="text-pink font-heading">OS</span>
+                </a>
+                <a
+                    menu
+                    matRipple
+                    class="flex items-center p-2 rounded space-x-2 w-[calc(100%-2rem)]"
+                    *ngFor="let item of items"
+                    [routerLink]="[item.route]"
+                    routerLinkActive="active"
+                >
+                    <app-icon [icon]="item.icon"></app-icon>
+                    <p>{{ item?.name }}</p>
+                </a>
+                <button
+                    class="absolute top-1 left-1 sm:hidden"
+                    mat-icon-button
+                    (click)="open = false; openChange.emit(false)"
+                >
+                    <app-icon className="backoffice-cross"></app-icon>
+                </button>
+            </div>
+            <button
+                matRipple
+                class="flex items-center space-x-2 p-2 border-t border-gray-300 dark:border-neutral-600 text-left dark:text-white"
+                customTooltip
+                user
+                [content]="user_controls"
+                yPosition="bottom"
+                xPosition="start"
             >
-                <app-icon [icon]="item?.icon"></app-icon>
-                <div class="text-sm" *ngIf="!item?.hide_name" i18n>
-                    { item.name, select, Systems { Systems } Modules { Modules }
-                    Zones { Zones } Drivers { Drivers } Repos { Repos } Triggers
-                    { Triggers } Users { Users } Domains { Domains } Admin {
-                    Admin } Metrics { Metrics } other { Other } }
-                </div>
                 <div
-                    bar
-                    class="opacity-0 absolute top-0 right-0 bottom-0 bg-primary"
+                    class="rounded-full h-10 w-10 bg-neutral-500"
+                    [style.background-image]="'url(' + user?.image + ')'"
                 ></div>
-            </a>
+                <div class="flex flex-col flex-1 w-1/2 leading-tight">
+                    <div class="truncate w-full">{{ user?.name }}</div>
+                    <div class="truncate text-xs opacity-30 w-full">
+                        {{
+                            user?.sys_admin
+                                ? 'Admin'
+                                : user?.support
+                                ? 'Support'
+                                : 'Basic'
+                        }}
+                    </div>
+                </div>
+            </button>
         </div>
     `,
-    styles: [
-        `
-            :host > div {
-                width: 4.5rem;
-                transition: opacity 200ms;
-
-                @include respond-to(mobile) {
-                    opacity: 0;
-                    pointer-events: none;
-                }
-            }
-
-            a {
-                width: 4.5rem;
-                height: 4.5rem;
-            }
-
-            .show {
-                @include respond-to(mobile) {
-                    opacity: 1 !important;
-                    pointer-events: auto !important;
-                    z-index: 999 !important;
-                }
-            }
-
-            app-icon {
-                font-size: 1.75em;
-            }
-
-            .active {
-                background-color: rgba(255, 255, 255, 0.1);
-            }
-
-            .active [bar] {
-                opacity: 1 !important;
-            }
-
-            [bar] {
-                width: 4px;
-                transition: opacity 200ms;
-            }
-        `,
-    ],
+    styles: [``],
 })
-export class SidebarMenuComponent extends BaseClass implements OnInit {
-    /** Whether the sidebar menu should be shown */
-    @Input() public show: boolean;
-    /** Emitter for changes to the sidebar show state */
-    @Output() public showChange = new EventEmitter<boolean>();
+export class SidebarMenuComponent extends BaseClass {
+    @Input() public open = true;
+    @Output() public openChange = new EventEmitter();
+    public items: any[] = [];
+    public readonly user_controls = UserMenuTooltipComponent;
+    /** Application logo */
+    public get logo(): ApplicationIcon {
+        return this._settings.get('app.logo_light');
+    }
     /** List of available menu items for the application */
-    public menu_items: ApplicationLinkInternal[];
-    /** Route of the shown tooltip */
-    public tooltip: string;
+    public get menu_items() {
+        return this._getMenuItems();
+    }
+    /** List of available menu items for the application */
+    public get user() {
+        return this._users.current();
+    }
+
+    public readonly close = () => this._tooltip?.close();
 
     constructor(
+        @Optional() private _tooltip: CustomTooltipData,
         private _settings: SettingsService,
         private _users: BackofficeUsersService,
         private _hotkey: HotkeysService,
@@ -111,21 +111,6 @@ export class SidebarMenuComponent extends BaseClass implements OnInit {
     }
 
     public ngOnInit() {
-        this.menu_items = this._settings.get('app.general.menu');
-        const user = this._users.current();
-        /** Only allow metrics if a URL has be set */
-        if (!authority().metrics && !authority().config.metrics) {
-            this.menu_items = this.menu_items.filter(
-                (item) => item.route && item.route.indexOf('metrics') < 0
-            );
-            if (this._router.url.indexOf('metrics') >= 0) {
-                this._router.navigate([]);
-            }
-        }
-        /** Filter out items with insufficient permissions */
-        this.menu_items = this.menu_items.filter(
-            (item) => !item.needs_role || !!(user as any)[item.needs_role]
-        );
         this.subscription(
             'up',
             this._hotkey.listen(['Control', 'Shift', 'ArrowUp'], () =>
@@ -138,6 +123,24 @@ export class SidebarMenuComponent extends BaseClass implements OnInit {
                 this.changeSelected(1)
             )
         );
+        this.items = this.menu_items;
+    }
+
+    private _getMenuItems(): ApplicationLinkInternal[] {
+        let items = this._settings.get('app.general.menu') || [];
+        const auth = authority();
+        /** Only allow metrics if a URL has be set */
+        if (!auth?.metrics && !auth?.config?.metrics) {
+            items = items.filter((item) => item.route?.indexOf('metrics') < 0);
+            if (this._router.url?.indexOf('metrics') >= 0)
+                this._router.navigate([]);
+        }
+        /** Filter out items with insufficient permissions */
+        const user = this._users.current();
+        items = items.filter(
+            ({ needs_role }) => !needs_role || !!(user as any)[needs_role]
+        );
+        return items;
     }
 
     private changeSelected(offset: number = 1) {

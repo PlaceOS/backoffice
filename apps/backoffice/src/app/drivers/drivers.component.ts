@@ -1,62 +1,101 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PlaceDriver, queryModules } from '@placeos/ts-client';
-
-import { ActiveItemService } from '../common/item.service';
-import { BaseClass } from '../common/base.class';
 import { extensionsForItem } from '../common/api';
+import { BaseClass } from '../common/base.class';
+import { ActiveItemService } from '../common/item.service';
 
 @Component({
-    selector: 'app-drivers',
+    selector: 'new-drivers-view',
     template: `
         <div
-            class="flex-1 flex-col sm:flex-row flex h-full w-full relative"
+            class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
-            <sidebar
-                heading="Drivers"
-                name="drivers"
-                class="absolute top-0 left-0 h-12 w-full sm:h-full sm:static"
-            ></sidebar>
-            <item-display
-                name="driver"
-                route="drivers"
-                [tabs]="tab_list"
-                class="flex-1 relative mt-12 sm:mt-0 w-full sm:w-1/2"
-            ></item-display>
+            <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
+            <item-sidebar class="hidden sm:block" [route]="name" title="Drivers"></item-sidebar>
+            <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
+                <item-selection class="z-20 sm:hidden" [route]="name" title="Drivers">
+                    <button
+                        mat-icon-button
+                        class="sm:hidden mr-2"
+                        (click)="open_menu = true"
+                    >
+                        <app-icon className="backoffice-menu"></app-icon>
+                    </button>
+                </item-selection>
+                <div class="flex flex-col flex-1 h-1/2">
+                    <ng-container *ngIf="item?.id">
+                        <item-details
+                            [can_edit]="true"
+                            [item]="item"
+                            type="Driver"
+                        ></item-details>
+                        <item-tablist
+                            [base]="name"
+                            [tabs]="tab_list"
+                            [scrolled]="scroll > 0"
+                            class="z-10"
+                        ></item-tablist>
+                        <div
+                            #el
+                            class="flex-1 h-1/2 w-full overflow-auto p-4 z-0 relative"
+                            (scroll)="scroll = el.scrollTop"
+                        >
+                            <router-outlet></router-outlet>
+                        </div>
+                    </ng-container>
+                </div>
+                <button
+                    class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
+                    matTooltip="New system"
+                    matTooltipPosition="right"
+                    matRipple
+                    (click)="newItem()"
+                >
+                    <app-icon
+                        [className]="'backoffice-plus'"
+                        class="text-3xl"
+                    ></app-icon>
+                </button>
+            </div>
         </div>
     `,
-    styles: [
-        `
-            sidebar {
-                transition: height 300ms;
-            }
-            @media screen and (min-width: 640px) {
-                sidebar {
-                    width: 20em !important;
-                }
-            }
-        `,
-    ],
+    styles: [``],
 })
 export class DriversComponent extends BaseClass {
-    /** Number of devices for the active system */
-    public device_count: number;
-
     public readonly name = 'drivers';
 
-    public readonly show_options = this._service.show_options;
-
+    public open_menu = false;
+    public device_count = 0;
     public tab_list = [];
+
+    public readonly newItem = () => this._service.create();
+
+    public get item() {
+        return this._service.active_item;
+    }
 
     public get extensions() {
         return extensionsForItem(this._service.active_item, this.name);
     }
-
     public updateTabList() {
         this.tab_list = [
-            { id: 'about', name: 'About', icon: { class: 'backoffice-info-with-circle' } },
-            { id: 'modules', name: 'Modules', count: this.device_count, icon: { class: 'backoffice-tablet' } },
-            { id: 'history', name: 'Settings History', icon: { class: 'backoffice-clock' } },
-
+            {
+                id: 'about',
+                name: 'About',
+                icon: { class: 'backoffice-info-with-circle' },
+            },
+            {
+                id: 'modules',
+                name: 'Modules',
+                count: this.device_count,
+                icon: { class: 'backoffice-tablet' },
+            },
+            {
+                id: 'history',
+                name: 'Settings History',
+                icon: { class: 'backoffice-clock' },
+            },
         ].concat(this.extensions);
     }
 
@@ -65,10 +104,13 @@ export class DriversComponent extends BaseClass {
     }
 
     public ngOnInit(): void {
-        this.subscription('item', this._service.item.subscribe((item) => {
-            this.loadValues(item as any);
-            this.updateTabList();
-        }));
+        this.subscription(
+            'item',
+            this._service.item.subscribe((item) => {
+                this.loadValues(item as any);
+                this.updateTabList();
+            })
+        );
         this.updateTabList();
     }
 
