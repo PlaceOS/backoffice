@@ -1,16 +1,16 @@
 import { createComponentFactory, Spectator } from "@ngneat/spectator/jest";
-import { PlaceZone } from "@placeos/ts-client";
+import { PlaceUser } from "@placeos/ts-client";
 import { MockComponent, MockProvider } from "ng-mocks";
 import { ActiveItemService } from "../../app/common/item.service";
-import { ZoneMetadataComponent } from "../../app/zones/zone-metadata.component";
 import { MetadataDisplayComponent } from "../../app/ui/metadata-display.component";
+import { UserMetadataComponent } from "../../app/users/user-metadata.component";
 
-describe('ZoneMetadataComponent', () => {
-    let spectator: Spectator<ZoneMetadataComponent>;
+describe('UserMetadataComponent', () => {
+    let spectator: Spectator<UserMetadataComponent>;
     const createComponent = createComponentFactory({
-        component: ZoneMetadataComponent,
+        component: UserMetadataComponent,
         providers: [
-            MockProvider(ActiveItemService, { active_item: new PlaceZone() })
+            MockProvider(ActiveItemService, { active_item: new PlaceUser() })
         ],
         declarations: [
             MockComponent(MetadataDisplayComponent)
