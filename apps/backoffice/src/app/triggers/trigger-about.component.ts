@@ -18,11 +18,11 @@ import { TriggerStateService } from './trigger-state.service';
     selector: 'trigger-about',
     template: `
         <section class="space-y-2">
-            <div class="flex items-center space-x-2" *ngIf="item.created_at">
+            <div class="flex items-center space-x-2" *ngIf="item?.created_at">
                 <label i18n="@@triggerCreatedAtLabel">Created:</label>
                 <div class="value">{{ item.created_at * 1000 | dateFrom }}</div>
             </div>
-            <div class="flex items-center space-x-2" *ngIf="item.updated_at">
+            <div class="flex items-center space-x-2" *ngIf="item?.updated_at">
                 <label i18n="@triggerUpdatedAtLabel">Updated:</label>
                 <div class="value">{{ item.updated_at * 1000 | dateFrom }}</div>
             </div>
