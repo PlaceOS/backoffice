@@ -400,7 +400,7 @@ export class SystemModulesComponent extends BaseClass {
     public readonly query_fn = (_: string) =>
         queryModules({ q: _ }).pipe(
             map((_) =>
-                _.data.map((mod) => ({ ...mod, extra: mod.driver?.name }))
+                _.data.map((mod) => ({ ...mod, extra: mod.driver?.name })).filter(_ => !_.control_system_id)
             )
         );
     /** Function for excluding modules already within this system */
