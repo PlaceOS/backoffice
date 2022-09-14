@@ -62,9 +62,11 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                     class="leading-tight"
                 >
                     <div
-                        class="flex items-center h-5"
-                        [innerHTML]="item_name[option.id] | sanitize"
-                    ></div>
+                        class="flex items-center justify-between h-5"
+                    >
+                        <div name [innerHTML]="item_name[option.id] | sanitize"></div>
+                        <code *ngIf="option.notes" class="!text-xs truncate">{{option.notes}}</code>
+                    </div>
                     <div class="text-xs opacity-60">
                         {{ option.id }}
                         {{ option.extra ? ' - ' + option.extra : '' }}

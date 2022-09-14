@@ -7,7 +7,7 @@ import {
     PlaceRepository,
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
-import { take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { BaseClass } from '../common/base.class';
 import { ActiveItemService } from '../common/item.service';
 
@@ -121,7 +121,7 @@ export class ItemSidebarComponent extends BaseClass {
     public last_check = 0;
     public search = '';
     /** List of items for the active route */
-    public readonly items = this._service.list;
+    public readonly items = this._service.list.pipe(map((l) => this._processItems(l)));
     /** Whether list of items for the active route are loading */
     public readonly loading = this._service.loading_list;
     /** Total number of items in the last request */
@@ -139,13 +139,6 @@ export class ItemSidebarComponent extends BaseClass {
 
     constructor(private _router: Router, private _service: ActiveItemService) {
         super();
-    }
-
-    public ngOnInit() {
-        this.subscription(
-            'list',
-            this._service.list.subscribe((l) => this._processItems(l))
-        );
     }
 
     public ngAfterViewInit() {
@@ -198,11 +191,12 @@ export class ItemSidebarComponent extends BaseClass {
     private _processItems(list: any[]) {
         for (let item of list) {
             if (item instanceof PlaceModule) {
+                const name = item.system?.display_name || item.system?.name;
                 const detail =
                     item.role === PlaceDriverRole.Service
                         ? item.uri
                         : item.role === PlaceDriverRole.Logic
-                        ? item.control_system_id
+                        ? name ? `${name} | ${item.control_system_id} ` : item.control_system_id
                         : item.ip;
                 (item as any).display_name =
                     item.custom_name || item.name || '<Unnamed>';
@@ -219,5 +213,6 @@ export class ItemSidebarComponent extends BaseClass {
                 (item as any).extra = item.id;
             }
         }
+        return list;
     }
 }
