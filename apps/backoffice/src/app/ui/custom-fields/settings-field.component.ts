@@ -142,6 +142,7 @@ export class SettingsFieldComponent
     public writeValue(value: string) {
         this.settings_string = `${value}`;
         if (this.editor) {
+            this.editor.getModel().detectIndentation(true, 4);
             if (this.readonly) {
                 this.editor.updateOptions({ readOnly: false });
                 this.editor.setValue(this.settings_string);
@@ -188,6 +189,7 @@ export class SettingsFieldComponent
                 language: this.lang || 'yaml',
                 model: MODEL[this.lang || 'yaml'],
                 fontFamily: `"Fira Code", monospace`,
+                fontSize: 16,
                 lineNumbers: 'on',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
