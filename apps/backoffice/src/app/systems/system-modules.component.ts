@@ -180,11 +180,8 @@ import { SystemStateService } from './system-state.service';
                                         {{ device.notes }}
                                     </div>
                                 </div>
-                                <div class="w-24 p-2" i18n="@@driverType">
-                                    { driver_type(device.driver?.role), select,
-                                    Device { Device } Logic { Logic } SSH { SSH
-                                    } Websocket { Websocket } Service { Service
-                                    } other { Other } }
+                                <div class="w-24 p-2">
+                                    {{ driver_type(device.role || device.driver?.role) }}
                                 </div>
                                 <div class="w-48 p-2">
                                     <span
