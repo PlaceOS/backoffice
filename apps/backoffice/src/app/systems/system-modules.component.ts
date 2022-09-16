@@ -181,7 +181,7 @@ import { SystemStateService } from './system-state.service';
                                     </div>
                                 </div>
                                 <div class="w-24 p-2" i18n="@@driverType">
-                                    { driver_type(device.driver?.role), select,
+                                    { driver_type(device.role), select,
                                     Device { Device } Logic { Logic } SSH { SSH
                                     } Websocket { Websocket } Service { Service
                                     } other { Other } }
