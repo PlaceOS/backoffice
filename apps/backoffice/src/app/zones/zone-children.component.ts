@@ -30,7 +30,7 @@ import { ZonesStateService } from './zones-state.service';
                 <div table-row *ngFor="let item of children | async">
                     <div class="flex-1 p-2 underline">
                         <a
-                            [routerLink]="['/zone', item.id]"
+                            [routerLink]="['/zones', item.id]"
                             routerLinkActive="router-link-active"
                             [matTooltip]="item.id"
                         >
