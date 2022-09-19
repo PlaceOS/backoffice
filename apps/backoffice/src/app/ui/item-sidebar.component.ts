@@ -67,7 +67,7 @@ import { ActiveItemService } from '../common/item.service';
                         (click)="show = false"
                     >
                         <p class="truncate w-full">
-                            {{ item.display_name || item.name }}
+                            {{ item.name }}
                         </p>
                         <div><code class="!text-xs opacity-60" *ngIf="item.extra">
                             {{ item.extra }}
