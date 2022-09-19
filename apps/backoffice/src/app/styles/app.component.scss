@@ -3,8 +3,14 @@
 @import '../../custom/style.css';
 @import '../../custom/place-fonts.css';
 
+* {
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
 html,
 body {
+    font-family: var(--font);
     font-size: 16px;
     @media screen and (max-width: 1024px) {
         font-size: 16px;
@@ -42,11 +48,6 @@ app-root {
             min-width: 50%;
         }
     }
-}
-
-* {
-    font-family: var(--font);
-    box-sizing: border-box;
 }
 
 .material-icons {

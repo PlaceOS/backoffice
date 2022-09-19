@@ -189,7 +189,6 @@ export class SettingsFieldComponent
                 language: this.lang || 'yaml',
                 model: MODEL[this.lang || 'yaml'],
                 fontFamily: `"Fira Code", monospace`,
-                fontSize: 16,
                 lineNumbers: 'on',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,

@@ -67,6 +67,7 @@ export class DiffViewerComponent
         });
         this.subscription('editor', () => this._editor.dispose());
         this._updateModel();
+        monaco.editor.remeasureFonts();
     }
 
     private _updateModel() {
