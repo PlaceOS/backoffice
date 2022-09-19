@@ -13,7 +13,7 @@ import { UploadsService } from '../common/uploads.service';
         <div
             *ngIf="show"
             upload-list
-            class="absolute bottom-2 left-2 rounded overflow-hidden bg-white border border-gray-200 text-sm text-black shadow"
+            class="absolute bottom-2 left-2 rounded overflow-hidden bg-white border border-gray-200 text-sm text-black shadow pointer-events-auto"
         >
             <div class="flex items-center bg-gray-700 text-white">
                 <div class="flex-1 px-4">
@@ -121,8 +121,13 @@ import { UploadsService } from '../common/uploads.service';
     styles: [
         `
             :host {
-                position: relative;
-                z-index: 999;
+                position: absolute;
+                pointer-events: none;
+                z-index: 9999;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
             }
 
             [upload-list] {
