@@ -55,7 +55,7 @@ export class PlaceDebugService extends BaseClass {
             (event) =>
                 `${
                     TERMINAL_COLOURS[event.level] || TERMINAL_COLOURS.debug
-                }${format(Date.now(), 'h:mm A')}, ${
+                }${format(Date.now(), 'h:mm a')}, ${
                     this._module_names[event.mod_id] ||
                     event.mod_id ||
                     '<UNKNOWN>'
