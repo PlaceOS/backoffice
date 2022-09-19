@@ -144,11 +144,12 @@ import { SystemStateService } from './system-state.service';
                                         class="h-4 w-4 rounded-full"
                                         [class.bg-black]="!device.running"
                                         [class.bg-error]="
-                                            device.running && !device.connected
+                                            device.running && device.connected === false
                                         "
                                         [class.bg-success]="
                                             device.running && !!device.connected
                                         "
+                                        [class.bg-pending]="device.running && device.connected === undefined"
                                         (click)="power(device)"
                                     ></div>
                                     <mat-spinner
