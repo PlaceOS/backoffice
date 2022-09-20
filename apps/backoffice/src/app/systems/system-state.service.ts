@@ -25,7 +25,7 @@ import {
     systemSettings,
     updateSystem,
     updateTrigger,
-    listMetadata
+    listMetadata,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
@@ -85,8 +85,12 @@ export class SystemStateService extends BaseClass {
             const details = await Promise.all([
                 listSystemTriggers(item.id)
                     .pipe(map((d) => d.total))
-                    .toPromise(),
-                listMetadata(item.id).toPromise(),
+                    .toPromise()
+                    .catch((_) => 0),
+                listMetadata(item.id)
+                    .pipe(map((d) => d.length))
+                    .toPromise()
+                    .catch((_) => 0),
             ]);
             const [triggers, metadata] = details;
             this._loading.next({
@@ -97,7 +101,7 @@ export class SystemStateService extends BaseClass {
                 devices: (item as any).modules.length,
                 zones: (item as any).zones.length,
                 triggers,
-                metadata: metadata.length,
+                metadata,
             };
         })
     );
@@ -117,7 +121,7 @@ export class SystemStateService extends BaseClass {
             } as any)
                 .pipe(map((i) => i.data))
                 .toPromise();
-            modules.forEach(_ => (_ as any).connected = undefined);
+            modules.forEach((_) => ((_ as any).connected = undefined));
             this._loading.next({
                 ...this._loading.getValue(),
                 modules: false,

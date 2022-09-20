@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlaceDriver, queryModules } from '@placeos/ts-client';
+import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
 import { BaseClass } from '../common/base.class';
 import { ActiveItemService } from '../common/item.service';
@@ -12,9 +13,17 @@ import { ActiveItemService } from '../common/item.service';
             class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
             <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
-            <item-sidebar class="hidden sm:block" [route]="name" title="Drivers"></item-sidebar>
+            <item-sidebar
+                class="hidden sm:block"
+                [route]="name"
+                title="Drivers"
+            ></item-sidebar>
             <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
-                <item-selection class="z-20 sm:hidden" [route]="name" title="Drivers">
+                <item-selection
+                    class="z-20 sm:hidden"
+                    [route]="name"
+                    title="Drivers"
+                >
                     <button
                         mat-icon-button
                         class="sm:hidden mr-2"
@@ -66,7 +75,7 @@ export class DriversComponent extends BaseClass {
     public readonly name = 'drivers';
 
     public open_menu = false;
-    public device_count = 0;
+    public device_count: number;
     public tab_list = [];
 
     public readonly newItem = () => this._service.create();
@@ -88,7 +97,7 @@ export class DriversComponent extends BaseClass {
             {
                 id: 'modules',
                 name: 'Modules',
-                count: this.device_count,
+                count: this.device_count ?? '?',
                 icon: { class: 'backoffice-tablet' },
             },
             {
@@ -104,19 +113,24 @@ export class DriversComponent extends BaseClass {
     }
 
     public ngOnInit(): void {
+        
         this.subscription(
             'item',
             this._service.item.subscribe((item) => {
-                this.loadValues(item as any);
+                this.device_count = null;
                 this.updateTabList();
+                this.loadValues(item as any);
             })
         );
-        this.updateTabList();
     }
 
     protected async loadValues(item: PlaceDriver) {
         if (!item) return;
         const query: any = { offset: 0, limit: 1, driver_id: item.id };
-        this.device_count = (await queryModules(query).toPromise()).total;
+        this.device_count = await queryModules(query)
+            .pipe(map(({ total }) => total))
+            .toPromise()
+            .catch((_) => 0);
+        this.updateTabList();
     }
 }

@@ -98,25 +98,25 @@ export class ZonesComponent extends BaseClass {
             {
                 id: 'systems',
                 name: 'Systems',
-                count: details.systems,
+                count: details.systems ?? '?',
                 icon: { class: 'backoffice-documents' },
             },
             {
                 id: 'triggers',
                 name: 'Triggers',
-                count: details.triggers,
+                count: details.triggers ?? '?',
                 icon: { class: 'backoffice-stopwatch' },
             },
             {
                 id: 'metadata',
                 name: 'Metadata',
-                count: details.metadata,
+                count: details.metadata ?? '?',
                 icon: { class: 'backoffice-gist' },
             },
             {
                 id: 'children',
                 name: 'Children',
-                count: details.children,
+                count: details.children ?? '?',
                 icon: { class: 'backoffice-flow-tree' },
             },
             {
@@ -137,12 +137,12 @@ export class ZonesComponent extends BaseClass {
     }
 
     public ngOnInit(): void {
+        this.subscription('item-change', this._item.active_item$.subscribe(() => this.updateTabList({})));
         this.subscription(
             'item',
             this._service.counts.subscribe((details) =>
                 this.updateTabList(details)
             )
         );
-        this.updateTabList({});
     }
 }

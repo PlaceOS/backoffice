@@ -88,7 +88,7 @@ export class SystemsComponent extends BaseClass {
         return extensionsForItem(this._service.active_item, this.name);
     }
 
-    public updateTabList(counts: Record<string, number>) {
+    public updateTabList(counts?: Record<string, number>) {
         this.tab_list = [
             {
                 id: 'about',
@@ -98,25 +98,25 @@ export class SystemsComponent extends BaseClass {
             {
                 id: 'modules',
                 name: 'Modules',
-                count: counts.devices,
+                count: counts?.devices ?? '?',
                 icon: { class: 'backoffice-tablet' },
             },
             {
                 id: 'zones',
                 name: 'Zones',
-                count: counts.zones,
+                count: counts?.zones ?? '?',
                 icon: { class: 'backoffice-layers' },
             },
             {
                 id: 'triggers',
                 name: 'Triggers',
-                count: counts.triggers,
+                count: counts?.triggers ?? '?',
                 icon: { class: 'backoffice-stopwatch' },
             },
             {
                 id: 'metadata',
                 name: 'Metadata',
-                count: counts.metadata,
+                count: counts?.metadata ?? '?',
                 icon: { class: 'backoffice-gist' },
             },
             {
@@ -135,7 +135,7 @@ export class SystemsComponent extends BaseClass {
     }
 
     public ngOnInit(): void {
-        this.updateTabList({});
+        this.subscription('item-change', this._item.active_item$.subscribe(() => this.updateTabList({})));
         this.subscription(
             'counts',
             this._service.counts.subscribe((counts) =>

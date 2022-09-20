@@ -52,6 +52,7 @@ export class DriverStateService {
 
     public readonly modules = this.item.pipe(
         switchMap(async (item) => {
+            if (!item) return { data: [] }
             this._loading.next(true);
             const details = await queryModules({ driver_id: item.id }).toPromise();
             this._loading.next(false);
