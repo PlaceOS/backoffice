@@ -52,6 +52,8 @@ import {
 } from '@placeos/ts-client';
 import { QueryResponse } from '@placeos/ts-client/dist/esm/resources/functions';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { ConfirmExtraType } from '../overlays/confirm-modal.component';
 import { HashMap } from './types';
 
 export interface ItemActions<T> {
@@ -61,6 +63,7 @@ export interface ItemActions<T> {
     remove: (_: T) => Observable<any>;
     itemConstructor: Type<T>;
     delete_message: string;
+    delete_extra?: (_: T) => Promise<[ConfirmExtraType, string]>;
     singular?: string;
 }
 
@@ -80,7 +83,20 @@ const drivers: ItemActions<PlaceDriver> = {
     save: (item) => (item.id ? updateDriver(item.id, item) : addDriver(item)),
     remove: (item) => removeDriver(item.id),
     itemConstructor: PlaceDriver,
-    delete_message: `<p>Are you sure you want delete this driver?</p><p>All modules that rely on this driver will be <strong>immediately</strong> removed.</p>`,
+    delete_message: `<p>Are you sure you want delete this driver?</p>`,
+    delete_extra: async (_) => {
+        const query: any = { offset: 0, limit: 1, driver_id: _.id };
+        const count = await queryModules(query)
+            .pipe(map(({ total }) => total))
+            .toPromise()
+            .catch((_) => 0);
+        return count
+            ? [
+                  'error',
+                  `${count} modules that rely on this driver will be <strong>immediately</strong> removed.`,
+              ]
+            : null;
+    },
     singular: 'driver',
 };
 

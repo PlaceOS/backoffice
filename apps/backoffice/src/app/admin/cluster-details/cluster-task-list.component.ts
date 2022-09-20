@@ -11,7 +11,7 @@ import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 import {
     ConfirmModalComponent,
     CONFIRM_METADATA,
-} from 'apps/backoffice/src/app/overlays/confirm-modal/confirm-modal.component';
+} from 'apps/backoffice/src/app/overlays/confirm-modal.component';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import { BehaviorSubject, combineLatest, interval, Observable, of } from 'rxjs';
 import {

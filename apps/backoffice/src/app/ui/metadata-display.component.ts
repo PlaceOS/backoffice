@@ -20,7 +20,7 @@ import { SchemaStateService } from '../admin/schema-state.service';
 import {
     ConfirmModalComponent,
     CONFIRM_METADATA,
-} from '../overlays/confirm-modal/confirm-modal.component';
+} from '../overlays/confirm-modal.component';
 import { MetadataDetailsModalComponent } from '../overlays/metadata-details-modal/metadata-details-modal.component';
 
 @Component({

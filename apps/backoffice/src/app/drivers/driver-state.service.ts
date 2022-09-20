@@ -101,7 +101,8 @@ export class DriverStateService {
         const details = await openConfirmModal(
             {
                 title: 'Remove module?',
-                content: `Remove ${device.driver_id}?<br>All associated data be deleted immediatedly.`,
+                content: `Remove ${device.driver_id}?<br>`,
+                extra: ['error', 'Note that all associated data be deleted immediatedly.'],
                 icon: { type: 'icon', class: 'backoffice-trash' },
             },
             this._dialog

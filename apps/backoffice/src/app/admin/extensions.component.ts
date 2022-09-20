@@ -7,7 +7,7 @@ import { ApplicationIcon } from 'apps/backoffice/src/app/common/types';
 import {
     ConfirmModalComponent,
     ConfirmModalData,
-} from 'apps/backoffice/src/app/overlays/confirm-modal/confirm-modal.component';
+} from 'apps/backoffice/src/app/overlays/confirm-modal.component';
 import { ExtensionModalComponent } from './extension-modal/extension-modal.component';
 
 export interface BackofficeExtension {

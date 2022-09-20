@@ -9,7 +9,7 @@ import {
     ConfirmModalComponent,
     ConfirmModalData,
     CONFIRM_METADATA,
-} from '../overlays/confirm-modal/confirm-modal.component';
+} from '../overlays/confirm-modal.component';
 import { ItemActions, ACTIONS } from './actions';
 import { SettingsService } from '../common/settings.service';
 import { HotkeysService } from '../common/hotkeys.service';
@@ -259,7 +259,7 @@ export class ActiveItemService extends BaseClass {
         }
     }
 
-    public delete() {
+    public async delete() {
         if (!this._user.current().sys_admin) return;
         const item = this._active_item.getValue();
         if (item) {
@@ -271,6 +271,7 @@ export class ActiveItemService extends BaseClass {
                 data: {
                     title: `Delete ${this.actions.singular}`,
                     content: this.actions.delete_message,
+                    extra: this.actions.delete_extra ? await this.actions.delete_extra(item) : null,
                     icon: { type: 'icon', class: 'backoffice-trash' },
                 },
             });

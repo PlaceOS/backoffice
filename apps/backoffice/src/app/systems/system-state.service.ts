@@ -43,7 +43,7 @@ import { openConfirmModal, unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
-import { ConfirmModalData } from '../overlays/confirm-modal/confirm-modal.component';
+import { ConfirmModalData } from '../overlays/confirm-modal.component';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
 import {
     SelectItemModalComponent,

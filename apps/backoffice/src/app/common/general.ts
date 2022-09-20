@@ -5,7 +5,7 @@ import {
     ConfirmModalComponent,
     ConfirmModalData,
     CONFIRM_METADATA,
-} from '../overlays/confirm-modal/confirm-modal.component';
+} from '../overlays/confirm-modal.component';
 import { HashMap, Point } from './types';
 
 /** Available console output streams. */
