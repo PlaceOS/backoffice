@@ -249,15 +249,17 @@ export class StaffTenantModalComponent implements OnInit {
             (m, { type, amount }) => (m[type] = +amount),
             {}
         );
+        const value = this.form.value;
+        if (!value.credentials.conference_type) delete value.credentials.conference_type;
         const call = this.tenant?.id
             ? put(`/api/staff/v1/tenants/${this.tenant.id}`, {
                   ...(this.tenant || {}),
-                  ...this.form.value,
+                  ...value,
                   booking_limits,
               })
             : post('/api/staff/v1/tenants', {
                   ...(this.tenant || {}),
-                  ...this.form.value,
+                  ...value,
                   booking_limits,
               });
         const tenant = await call.toPromise().catch((_) => null);
