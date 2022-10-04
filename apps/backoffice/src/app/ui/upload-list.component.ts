@@ -31,7 +31,7 @@ import { UploadsService } from '../common/uploads.service';
                         class="my-1 h-12 hover:bg-gray-200"
                         [class.error]="item.error"
                     >
-                        <div class="flex items-center p-2" [title]="item.name">
+                        <div class="flex items-center p-2 space-x-2" [title]="item.name">
                             <div class="flex-1 w-1/2">{{ item.name }}</div>
                             <a
                                 mat-button
@@ -105,7 +105,7 @@ import { UploadsService } from '../common/uploads.service';
                 </div>
             </div>
             <input
-                class="absolute inset-0 opacity-0 z-50 w-full"
+                class="absolute inset-0 opacity-0 z-[9999] w-full pointer-events-auto"
                 type="file"
                 multiple
                 (change)="handleFileEvent($event)"
