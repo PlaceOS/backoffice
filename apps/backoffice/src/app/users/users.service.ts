@@ -45,18 +45,9 @@ export class BackofficeUsersService extends BaseClass {
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
-        if (
-            !((this._user.getValue() || {}) as any).ui_theme &&
-            !localStorage.getItem('BACKOFFICE.theme') &&
-            window.matchMedia &&
-            window.matchMedia('(prefers-color-scheme: dark)').matches
-        ) {
-            return true;
-        }
-        return (
-            ((this._user.getValue() || {}) as any).ui_theme === 'dark' ||
-            localStorage.getItem('BACKOFFICE.theme') === 'dark'
-        );
+        const os_dark = window?.matchMedia ? window?.matchMedia('(prefers-color-scheme: dark)')?.matches : false;
+        const theme = localStorage.getItem('BACKOFFICE.theme') ?? ((this._user.getValue() || {}) as any).ui_theme;
+        return (theme && theme === 'dark') || (!theme && os_dark);
     }
     public set dark_mode(state: boolean) {
         if (state) {
@@ -107,8 +98,8 @@ export class BackofficeUsersService extends BaseClass {
                         );
                         this.state.next('success');
                         this._initialised.next(true);
-                        resolve();
                         this.dark_mode = this.dark_mode;
+                        resolve();
                     } else {
                         this.timeout(
                             'load',
