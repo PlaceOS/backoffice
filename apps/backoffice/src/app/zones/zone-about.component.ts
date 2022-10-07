@@ -8,78 +8,113 @@ import { marked } from 'marked';
 @Component({
     selector: 'zone-about',
     template: `
-        <header
-            class="font-medium text-lg"
-            *ngIf="(systems | async)?.length"
-            i18n="@@execHeader"
-        >
-            Execute Command
-        </header>
-        <section *ngIf="(systems | async)?.length" class="mb-4">
-            <mat-form-field appearance="outline" class="h-12">
-                <mat-select
-                    [(ngModel)]="active_system"
-                    placeholder="Select system"
+        <section *ngIf="(systems | async)?.length" class="mb-4 flex space-x-2">
+            <div
+                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
+            >
+                <header
+                    class="font-medium text-lg"
+                    *ngIf="(systems | async)?.length"
+                    i18n="@@execHeader"
                 >
-                    <mat-option
-                        *ngFor="let system of systems | async"
-                        [value]="system"
+                    Execute Command
+                </header>
+                <mat-form-field appearance="outline" class="h-12">
+                    <mat-select
+                        [(ngModel)]="active_system"
+                        placeholder="Select system"
                     >
-                        {{ system.name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <execute-method-field
-                *ngIf="active_system && active_system.id"
-                [system]="active_system"
-            ></execute-method-field>
-        </section>
-        <section class="space-y-2">
-            <div class="flex items-center space-x-2" *ngIf="item?.parent_id">
-                <label i18n="@@zoneParentLabel">Parent ID:</label>
-                <div class="value underline">
-                    <a [routerLink]="['/zones', item?.parent_id, 'about']">{{
-                        item?.parent_id
+                        <mat-option
+                            *ngFor="let system of systems | async"
+                            [value]="system"
+                        >
+                            {{ system.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <execute-method-field
+                    *ngIf="active_system && active_system.id"
+                    [system]="active_system"
+                ></execute-method-field>
+            </div>
+            <div
+                class="rounded p-4 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
+            >
+                <div
+                    class="flex items-center space-x-2"
+                    *ngIf="item?.parent_id"
+                >
+                    <label i18n="@@zoneParentLabel">Parent ID:</label>
+                    <div class="value underline mono">
+                        <a
+                            [routerLink]="['/zones', item?.parent_id, 'about']"
+                            >{{ item?.parent_id }}</a
+                        >
+                    </div>
+                </div>
+                <div
+                    class="flex items-center space-x-2"
+                    *ngIf="item?.created_at"
+                >
+                    <label i18n="@@zoneCreatedAtLabel">Created:</label>
+                    <div class="value">
+                        {{ item?.created_at * 1000 | dateFrom }}
+                    </div>
+                </div>
+                <div
+                    class="flex items-center space-x-2"
+                    *ngIf="item?.updated_at"
+                >
+                    <label i18n="@@zoneUpdatedAtLabel">Updated:</label>
+                    <div class="value">
+                        {{ item?.updated_at * 1000 | dateFrom }}
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.location">
+                    <label i18n="@@zoneLocationLabel">Location:</label>
+                    <div class="value">{{ item?.location }}</div>
+                </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.code">
+                    <label i18n="@@zoneCodeLabel">Code:</label>
+                    <div class="value">{{ item?.code }}</div>
+                </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.type">
+                    <label i18n="@@zoneTypeLabel">Type:&nbsp;</label>
+                    <div class="value">{{ item?.type }}</div>
+                </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.count">
+                    <label i18n="@@zoneCountLabel">Count:</label>
+                    <div class="value">{{ item?.count }}</div>
+                </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.capacity">
+                    <label i18n="@@zoneCapacityLabel">Capacity:</label>
+                    <div class="value">{{ item?.capacity }}</div>
+                </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.map_id">
+                    <label i18n="@@zoneMapLabel">Map:</label>
+                    <a class="underline" [href]="item?.map_id">{{
+                        item?.map_id
                     }}</a>
                 </div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.created_at">
-                <label i18n="@@zoneCreatedAtLabel">Created:</label>
-                <div class="value">
-                    {{ item?.created_at * 1000 | dateFrom }}
+                <div class="flex items-center space-x-2" *ngIf="item?.tags">
+                    <label class="my-1" for="tags" i18n="@@zoneTagsLabel"
+                        >Tags:</label
+                    >
+                    <div
+                        class="value flex flex-wrap"
+                        *ngIf="
+                            tag_list && tag_list.length;
+                            else empty_tag_state
+                        "
+                    >
+                        <div
+                            *ngFor="let tag of tag_list"
+                            class="mono text-xs px-3 py-2 m-2 bg-gray-200 dark:bg-neutral-500 rounded-2xl"
+                        >
+                            {{ tag }}
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.updated_at">
-                <label i18n="@@zoneUpdatedAtLabel">Updated:</label>
-                <div class="value">
-                    {{ item?.updated_at * 1000 | dateFrom }}
-                </div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.location">
-                <label i18n="@@zoneLocationLabel">Location:</label>
-                <div class="value">{{ item?.location }}</div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.code">
-                <label i18n="@@zoneCodeLabel">Code:</label>
-                <div class="value">{{ item?.code }}</div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.type">
-                <label i18n="@@zoneTypeLabel">Type:&nbsp;</label>
-                <div class="value">{{ item?.type }}</div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.count">
-                <label i18n="@@zoneCountLabel">Count:</label>
-                <div class="value">{{ item?.count }}</div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.capacity">
-                <label i18n="@@zoneCapacityLabel">Capacity:</label>
-                <div class="value">{{ item?.capacity }}</div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.map_id">
-                <label i18n="@@zoneMapLabel">Map:</label>
-                <a class="underline" [href]="item?.map_id">{{
-                    item?.map_id
-                }}</a>
             </div>
         </section>
         <header
@@ -94,17 +129,6 @@ import { marked } from 'marked';
             *ngIf="item?.description"
             [innerHTML]="parsed_description"
         ></section>
-        <section class="flex space-x-2 mt-1" *ngIf="item && tag_list">
-            <label class="my-1" for="tags" i18n="@@zoneTagsLabel">Tags:</label>
-            <div
-                class="value"
-                *ngIf="tag_list && tag_list.length; else empty_tag_state"
-            >
-                <mat-chip-list name="tags">
-                    <mat-chip *ngFor="let tag of tag_list">{{ tag }}</mat-chip>
-                </mat-chip-list>
-            </div>
-        </section>
         <hr class="my-4" />
         <header class="font-medium text-lg" i18n="@@settingsLabel">
             Settings

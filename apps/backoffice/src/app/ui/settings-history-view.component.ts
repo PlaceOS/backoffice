@@ -1,15 +1,12 @@
 import { Component } from '@angular/core';
 import {
     PlaceSettings,
-    PlaceSystem,
-    PlaceZone,
     querySettings,
     settingsHistory,
-    systemSettings,
 } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
 import { map, shareReplay, switchMap } from 'rxjs/operators';
-import { BaseClass } from '../common/base.class';
+
 import { ActiveItemService } from '../common/item.service';
 
 @Component({
@@ -77,12 +74,12 @@ import { ActiveItemService } from '../common/item.service';
     `,
     styles: [``],
 })
-export class SettingsHistoryViewComponent extends BaseClass {
+export class SettingsHistoryViewComponent {
     public readonly active_setting = new BehaviorSubject<PlaceSettings>(null);
     public readonly old_setting = new BehaviorSubject<PlaceSettings>(null);
 
     public readonly settings$ = this._service.item.pipe(
-        switchMap((i) => querySettings({ parent_id: i.id })),
+        switchMap((i) => !i ? of({ data:[] }) : querySettings({ parent_id: i.id })),
         map(_ => _.data),
         shareReplay(1)
     );
@@ -90,7 +87,5 @@ export class SettingsHistoryViewComponent extends BaseClass {
         switchMap((_) => (!_ ? of([]) : settingsHistory(_.id)))
     );
 
-    constructor(private _service: ActiveItemService) {
-        super();
-    }
+    constructor(private _service: ActiveItemService) {}
 }

@@ -6,8 +6,10 @@ import { ModuleStateService } from './module-state.service';
 @Component({
     selector: 'module-about',
     template: `
-        <section class="space-y-2 flex">
-            <div class="shadow rounded p-2 border border-black/10 space-y-2 min-w-[50%]">
+        <section class="space-x-2 flex">
+            <div
+                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1"
+            >
                 <div class="flex items-center space-x-2" *ngIf="item.notes">
                     <label i18n="@moduleNotesLabel">Notes:</label>
                     <div class="value">{{ item.notes }}</div>
@@ -25,8 +27,12 @@ import { ModuleStateService } from './module-state.service';
                     *ngIf="item.tls || item.udp"
                 >
                     <label i18n="@moduleTLSLabel">Protocol:</label>
-                    <code *ngIf="item.tls" class="bg-success text-white">TLS</code>
-                    <code *ngIf="item.udp" class="bg-success text-white">UDP</code>
+                    <code *ngIf="item.tls" class="bg-success text-white"
+                        >TLS</code
+                    >
+                    <code *ngIf="item.udp" class="bg-success text-white"
+                        >UDP</code
+                    >
                 </div>
                 <div
                     class="flex items-center space-x-2"
@@ -69,21 +75,41 @@ import { ModuleStateService } from './module-state.service';
                     </a>
                 </div>
             </div>
-        </section>
-        <hr class="my-4" />
-        <section>
-            <button
-                mat-button
-                class="w-32"
-                [disabled]="stopping"
-                (click)="toggleModuleState()"
+            <div
+                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
             >
-                <div class="text" *ngIf="!stopping" i18n="@@moduleStateToggle">
-                    { item.running, select, true { Stop Module } false { Start
-                    Module } }
-                </div>
-                <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
-            </button>
+                <h3 class="w-full text-center">Module Controls</h3>
+                <button
+                    mat-button
+                    class="w-full"
+                    [disabled]="item.running || stopping"
+                    (click)="toggleModuleState()"
+                >
+                    <div
+                        class="text"
+                        *ngIf="!stopping"
+                        i18n="@@moduleStartStateToggle"
+                    >
+                        Start Module
+                    </div>
+                    <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
+                </button>
+                <button
+                    mat-button
+                    class="w-full"
+                    [disabled]="!item.running || stopping"
+                    (click)="toggleModuleState()"
+                >
+                    <div
+                        class="text"
+                        *ngIf="!stopping"
+                        i18n="@@moduleStopStateToggle"
+                    >
+                        Stop Module
+                    </div>
+                    <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
+                </button>
+            </div>
         </section>
         <hr class="my-4" />
         <header class="font-medium text-lg" i18n="@@settingsLabel">

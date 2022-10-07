@@ -8,7 +8,7 @@ import { RepositoriesStateService } from './repositories-state.service';
     template: `
         <section class="mb-4 text-center flex space-x-2">
             <div
-                class="shadow rounded p-2 border border-black/10 space-y-2 min-w-[45%] flex-1 flex flex-col"
+                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
             >
                 <div class="flex items-center space-x-2">
                     <label i18n="@@descriptionLabel">Description:</label>
@@ -49,7 +49,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                 </div>
             </div>
             <div
-                class="shadow rounded p-2 border border-black/10 space-y-2 min-w-[45%] flex-1 flex flex-col"
+                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
             >
                 <div class="flex items-center space-x-2">
                     <label i18n="@@repoUriLabel">Repository URI:</label>
@@ -66,8 +66,8 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </code>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <label i18n="@@repoCommitHashLabel">Commit hash:</label>
-                    <code class="text-xs">
+                    <label i18n="@@repoCommitHashLabel" class="whitespace-nowrap">Commit hash:</label>
+                    <code class="text-xs truncate">
                         {{ item.commit_hash || 'No Commit hash set' }}
                         <span
                             class="select-text mono"

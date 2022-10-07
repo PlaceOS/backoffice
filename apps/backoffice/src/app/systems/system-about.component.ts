@@ -2,76 +2,105 @@ import { Component } from '@angular/core';
 import { PlaceSystem } from '@placeos/ts-client';
 import { SystemStateService } from './system-state.service';
 
-
 @Component({
     selector: 'system-about',
     template: `
         <section class="flex items-center space-x-2 mb-4">
-            <button
-                mat-button
-                start
-                class="flex-1 sm:flex-none"
-                (click)="start()"
-                i18n="@@systemStartAction"
+            <div
+                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
             >
-                Start System
-            </button>
-            <button
-                mat-button
-                stop
-                class="flex-1 sm:flex-none"
-                (click)="stop()"
-                i18n="@@systemStopAction"
-            >
-                Stop System
-            </button>
-        </section>
-        <section class="details">
-            <div class="flex items-center space-x-2" *ngIf="item?.support_url">
-                <label i18n="@@systemUrlLabel">Support URL:</label>
-                <div class="value">
-                    <a class="underline" [href]="item?.support_url" target="_blank">{{
-                        item?.support_url
-                    }}</a>
+                <div
+                    class="flex items-center space-x-2"
+                    *ngIf="item?.support_url"
+                >
+                    <label i18n="@@systemUrlLabel">Support URL:</label>
+                    <div class="value">
+                        <a
+                            class="underline"
+                            [href]="item?.support_url"
+                            target="_blank"
+                            >{{ item?.support_url }}</a
+                        >
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.bookable">
+                    <label i18n="@@systemBookableLabel">Bookable Room:</label>
+                    <div class="value">{{ item?.bookable ? 'Yes' : 'No' }}</div>
+                </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.email">
+                    <label i18n="@@emailLabel">Email:&nbsp;</label>
+                    <a
+                        *ngIf="item?.email"
+                        class="underline select-all"
+                        [href]="'mailto:' + item?.email"
+                        target="_blank"
+                        >{{ item?.email }}</a
+                    >
+                </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.capacity">
+                    <label i18n="@@capacityLabel">Capacity:</label>
+                    <div class="value">{{ item?.capacity }}</div>
+                </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.map_id">
+                    <label i18n="@@mapIdLabel">Map ID:</label>
+                    <div class="value mono">{{ item?.map_id }}</div>
+                </div>
+                <div
+                    class="flex items-center space-x-2"
+                    *ngIf="item?.installed_ui_devices"
+                >
+                    <label i18n="@@systemPanelCountLabel"
+                        >Installed Touch Panels:</label
+                    >
+                    <div class="value">{{ item?.installed_ui_devices }}</div>
+                </div>
+                <div
+                    class="flex items-center space-x-2"
+                    *ngIf="item?.created_at"
+                >
+                    <label i18n="@@systemCreatedAtLabel">Created:</label>
+                    <div class="value">
+                        {{ item?.created_at * 1000 | dateFrom }}
+                    </div>
+                </div>
+                <div
+                    class="flex items-center space-x-2"
+                    *ngIf="item?.updated_at"
+                >
+                    <label i18n="@systemUpdatedAtLabel">Updated:</label>
+                    <div class="value">
+                        {{ item?.updated_at * 1000 | dateFrom }}
+                    </div>
                 </div>
             </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.bookable">
-                <label i18n="@@systemBookableLabel">Bookable Room:</label>
-                <div class="value">{{ item?.bookable ? 'Yes' : 'No' }}</div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.email">
-                <label i18n="@@emailLabel">Email:&nbsp;</label>
-                <a
-                    *ngIf="item?.email"
-                    class="underline select-all"
-                    [href]="'mailto:' + item?.email"
-                    target="_blank"
-                    >{{ item?.email }}</a
+            <div
+                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
+            >
+                <h3 class="w-full text-center">System Controls</h3>
+                <button
+                    mat-button
+                    start
+                    class="w-full"
+                    (click)="start()"
+                    i18n="@@systemStartAction"
                 >
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.capacity">
-                <label i18n="@@capacityLabel">Capacity:</label>
-                <div class="value">{{ item?.capacity }}</div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.map_id">
-                <label i18n="@@mapIdLabel">Map ID:</label>
-                <div class="value">{{ item?.map_id }}</div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.installed_ui_devices">
-                <label i18n="@@systemPanelCountLabel">Installed Touch Panels:</label>
-                <div class="value">{{ item?.installed_ui_devices }}</div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.created_at">
-                <label i18n="@@systemCreatedAtLabel">Created:</label>
-                <div class="value">{{ item?.created_at * 1000 | dateFrom }}</div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.updated_at">
-                <label i18n="@systemUpdatedAtLabel">Updated:</label>
-                <div class="value">{{ item?.updated_at * 1000 | dateFrom }}</div>
+                    Start System
+                </button>
+                <button
+                    mat-button
+                    stop
+                    class="w-full"
+                    (click)="stop()"
+                    i18n="@@systemStopAction"
+                >
+                    Stop System
+                </button>
             </div>
         </section>
         <hr class="my-4" />
-        <header class="font-medium text-lg" i18n="@@settingsLabel">Settings</header>
+        <header class="font-medium text-lg" i18n="@@settingsLabel">
+            Settings
+        </header>
         <section *ngIf="item?.settings && other_settings; else load_state">
             <a-settings-form
                 [id]="item?.id"

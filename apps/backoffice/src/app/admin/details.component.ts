@@ -79,11 +79,11 @@ export interface PlaceServiceDetails {
         </h3>
         <section class="flex flex-wrap py-2">
             <div
-                class="bg-white dark:bg-[#424242] rounded shadow m-2 min-w-[40%] flex-1 overflow-hidden"
+                class="bg-white dark:bg-neutral-700 rounded border border-gray-200 dark:border-neutral-500 m-2 min-w-[40%] flex-1 overflow-hidden"
                 *ngFor="let api of api_details"
             >
                 <h3
-                    class="w-full px-4 py-2 mb-1 border-b border-gray-200 dark:border-white/20"
+                    class="w-full px-4 py-2 mb-1 border-b border-gray-200 dark:border-neutral-500 mono"
                 >
                     {{ api.service }}
                 </h3>
