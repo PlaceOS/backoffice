@@ -62,12 +62,30 @@ export interface StaffTenantModalData {
                 </div>
             </div>
             <div
+                class="flex items-center flex-wrap space-x-0 sm:space-x-2"
+                *ngIf="form.value.platform !== 'google'"
+            >
+                <div class="flex flex-col flex-1">
+                    <label>Service Account:</label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            formControlName="service_account"
+                            placeholder="Service Account"
+                        />
+                        <mat-error>
+                            Service account should be a valid email address
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div
                 class="flex items-center mb-4"
                 *ngIf="form.value.platform !== 'google'"
             >
-                <mat-checkbox formControlName="delegated"
-                    >Delegated</mat-checkbox
-                >
+                <mat-checkbox formControlName="delegated">
+                    Delegated
+                </mat-checkbox>
             </div>
             <form *ngIf="credentials" [formGroup]="credentials">
                 <div
@@ -75,11 +93,10 @@ export interface StaffTenantModalData {
                     *ngFor="let item of credentials.controls | keyvalue"
                     [class.hidden]="item.value?.disabled"
                 >
-                    <label class="capitalize"
-                        >{{ name_map[item.key] || item.key
-                        }}<span *ngIf="item.key !== 'conference_type'">*</span
-                        >:</label
-                    >
+                    <label class="capitalize">
+                        {{ name_map[item.key] || item.key }}
+                        <span *ngIf="item.key !== 'conference_type'">*</span>:
+                    </label>
                     <mat-form-field appearance="outline">
                         <ng-container [ngSwitch]="item.key">
                             <input
@@ -144,6 +161,9 @@ export class StaffTenantModalComponent implements OnInit {
         delegated: new FormControl(this.tenant?.delegated ?? false),
         platform: new FormControl(this.tenant?.platform || 'google', [
             Validators.required,
+        ]),
+        service_account: new FormControl(this.tenant?.service_account, [
+            Validators.email,
         ]),
         booking_limits: new FormControl([]),
         credentials:
@@ -250,7 +270,8 @@ export class StaffTenantModalComponent implements OnInit {
             {}
         );
         const value = this.form.value;
-        if (!value.credentials.conference_type) delete value.credentials.conference_type;
+        if (!value.credentials.conference_type)
+            delete value.credentials.conference_type;
         const call = this.tenant?.id
             ? put(`/api/staff/v1/tenants/${this.tenant.id}`, {
                   ...(this.tenant || {}),

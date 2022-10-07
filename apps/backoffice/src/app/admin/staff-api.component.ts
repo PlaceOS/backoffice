@@ -15,6 +15,7 @@ export interface PlaceTenant {
     domain: string;
     platform: string;
     delegated?: boolean;
+    service_account?: string;
     booking_limits: Record<string, number>;
     credentials?: HashMap<string>;
 }
