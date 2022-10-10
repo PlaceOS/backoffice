@@ -31,7 +31,7 @@ import { SystemStateService } from './system-state.service';
                     <label i18n="@@emailLabel">Email:&nbsp;</label>
                     <a
                         *ngIf="item?.email"
-                        class="underline select-all"
+                        class="underline select-all truncate"
                         [href]="'mailto:' + item?.email"
                         target="_blank"
                         >{{ item?.email }}</a
