@@ -57,11 +57,12 @@ import { APIKeyService } from './api-keys.service';
                             *ngFor="let scope of scope_list"
                             [selectable]="true"
                             [removable]="true"
-                            (removed)="removeScope(tag)"
+                            (removed)="removeScope(scope)"
                         >
                             {{ scope }}
                             <app-icon
                                 matChipRemove
+                                class="dark:text-black"
                                 className="backoffice-cross"
                             ></app-icon>
                         </mat-chip>
@@ -72,8 +73,18 @@ import { APIKeyService } from './api-keys.service';
                             [matChipInputSeparatorKeyCodes]="separators"
                             [matChipInputAddOnBlur]="true"
                             (matChipInputTokenEnd)="addScope($event)"
+                            [matAutocomplete]="auto"
                         />
                     </mat-chip-list>
+                    <mat-error>At least one scope is required</mat-error>
+                    <mat-autocomplete #auto="matAutocomplete">
+                        <mat-option
+                            *ngFor="let option of scopes | async"
+                            (click)="addScope({ input: {}, value: option})"
+                        >
+                            {{ option }}
+                        </mat-option>
+                    </mat-autocomplete>
                 </mat-form-field>
             </div>
             <div class="flex flex-col">
@@ -158,11 +169,12 @@ export class APIKeyModalComponent {
         user: new FormControl(null),
         user_id: new FormControl('', [Validators.required]),
         description: new FormControl(''),
-        scopes: new FormControl([]),
+        scopes: new FormControl([], [Validators.minLength(1)]),
         permissions: new FormControl(''),
     });
     public loading: string;
     public readonly search_str = new BehaviorSubject('');
+    public readonly scopes = this._service.available_scopes;
 
     @ViewChild('input') public _input_el: ElementRef<HTMLInputElement>;
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     create,
+    get,
     PlaceDomain,
     PlaceUser,
     query,
@@ -9,7 +10,7 @@ import {
     queryUsers,
     remove,
 } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { debounce, debounceTime, first, map, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal } from '../../common/general';
 import { notifyError, notifySuccess } from '../../common/notifications';
@@ -28,6 +29,11 @@ export class APIKeyService {
 
     public readonly available_domains = queryDomains({ limit: 500 }).pipe(
         map((_) => _.data),
+        shareReplay(1)
+    );
+
+    public readonly available_scopes: Observable<string[]> = get('/api/engine/v2/scopes').pipe(
+        map(_ => _ as any),
         shareReplay(1)
     );
 
