@@ -4,7 +4,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     selector: 'an-action-field',
     template: `
         <div
-            class="flex items-center rounded p-2 border border-gray-300 hover:border-black"
+            class="flex items-center rounded p-2 border border-gray-300 dark:border-neutral-500 hover:border-black dark:hover:border-white/20"
             role="button"
             [attr.disabled]="disabled"
             form-field
@@ -26,7 +26,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     styles: [
         `
             :host > div:hover {
-                box-shadow: inset 0 0 0 1px #000;
+                box-shadow: inset 0 0 0 1px currentColor;
             }
         `,
     ],

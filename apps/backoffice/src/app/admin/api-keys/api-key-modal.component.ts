@@ -10,6 +10,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { addChipItem, removeChipItem } from '../../common/forms';
+import { getInvalidFields } from '../../common/general';
+import { notifyError } from '../../common/notifications';
 import { DialogEvent } from '../../common/types';
 import { APIKeyService } from './api-keys.service';
 
@@ -28,7 +30,7 @@ import { APIKeyService } from './api-keys.service';
             [formGroup]="form"
         >
             <div class="flex flex-col">
-                <label for="name">Name</label>
+                <label for="name">Name<span>*</span></label>
                 <mat-form-field appearance="outline">
                     <input
                         name="name"
@@ -36,6 +38,7 @@ import { APIKeyService } from './api-keys.service';
                         placeholder="Name"
                         matInput
                     />
+                    <mat-error>Name is required</mat-error>
                 </mat-form-field>
             </div>
             <div class="flex flex-col">
@@ -50,7 +53,7 @@ import { APIKeyService } from './api-keys.service';
                 </mat-form-field>
             </div>
             <div class="flex flex-col">
-                <label for="scope">Scopes</label>
+                <label for="scope">Scopes<span>*</span></label>
                 <mat-form-field appearance="outline">
                     <mat-chip-list #chipList aria-label="Scopes">
                         <mat-chip
@@ -67,6 +70,7 @@ import { APIKeyService } from './api-keys.service';
                             ></app-icon>
                         </mat-chip>
                         <input
+                            matInput
                             placeholder="Scopes..."
                             i18n-placeholder="@@apiScopePlaceholder"
                             [matChipInputFor]="chipList"
@@ -80,7 +84,7 @@ import { APIKeyService } from './api-keys.service';
                     <mat-autocomplete #auto="matAutocomplete">
                         <mat-option
                             *ngFor="let option of scopes | async"
-                            (click)="addScope({ input: {}, value: option})"
+                            (click)="addScope({ input: {}, value: option })"
                         >
                             {{ option }}
                         </mat-option>
@@ -169,7 +173,7 @@ export class APIKeyModalComponent {
         user: new FormControl(null),
         user_id: new FormControl('', [Validators.required]),
         description: new FormControl(''),
-        scopes: new FormControl([], [Validators.minLength(1)]),
+        scopes: new FormControl([], [Validators.required, Validators.minLength(1)]),
         permissions: new FormControl(''),
     });
     public loading: string;
@@ -213,7 +217,13 @@ export class APIKeyModalComponent {
 
     public save() {
         this.form.markAllAsTouched();
-        if (!this.form.valid) return;
+        if (!this.form.valid) {
+            return notifyError(
+                `Some form fields are invalid. [${getInvalidFields(
+                    this.form
+                ).join(', ')}]`
+            );
+        }
         const data = { ...this.form.value };
         delete data.user;
         this.event.emit({ reason: 'done', metadata: this.form.value });
