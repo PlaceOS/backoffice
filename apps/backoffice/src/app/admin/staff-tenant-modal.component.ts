@@ -232,6 +232,7 @@ export class StaffTenantModalComponent implements OnInit {
                         ?.setValidators([Validators.required]);
                 }
             }
+            this.form.updateValueAndValidity();
         };
         this.form.controls.platform.valueChanges.subscribe((platform) => {
             const credentials = this.form.value.credentials;
@@ -243,6 +244,7 @@ export class StaffTenantModalComponent implements OnInit {
             handleDelegation(this.form.value.delegated);
             this.form.patchValue({ credentials });
         });
+        handleDelegation(this.form.value.delegated);
         this.form.controls.delegated.valueChanges.subscribe(handleDelegation);
         this.form.patchValue({
             ...(this.tenant || {}),
