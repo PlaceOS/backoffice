@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, FormRecord, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PlaceDomain, post, put } from '@placeos/ts-client';
 import { getInvalidFields } from '../common/general';
@@ -116,7 +116,21 @@ export interface StaffTenantModalData {
                     </mat-form-field>
                 </div>
             </form>
-            <form *ngIf="form.get('outlook_config')" formGroupName="outlook_config">
+            <div
+                class="flex items-center mb-4"
+                *ngIf="form.value.platform === 'office365'"
+            >
+                <mat-checkbox
+                    [(ngModel)]="show_outlook"
+                    [ngModelOptions]="{ standalone: true }"
+                >
+                    Configure Outlook Plugin
+                </mat-checkbox>
+            </div>
+            <form
+                *ngIf="show_outlook && form.get('outlook_config')"
+                formGroupName="outlook_config"
+            >
                 <div class="flex items-center flex-wrap space-x-0 sm:space-x-2">
                     <div class="flex flex-col flex-1">
                         <label>Outlook App ID:</label>
@@ -137,7 +151,9 @@ export interface StaffTenantModalData {
                                 formControlName="app_domain"
                                 placeholder="Application Domain"
                             />
-                            <mat-error>An application domain is required</mat-error>
+                            <mat-error>
+                                An application domain is required
+                            </mat-error>
                         </mat-form-field>
                     </div>
                 </div>
@@ -150,7 +166,9 @@ export interface StaffTenantModalData {
                                 formControlName="app_resource"
                                 placeholder="Application ID"
                             />
-                            <mat-error>An application resource is required</mat-error>
+                            <mat-error>
+                                An application resource is required
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <div class="flex flex-col flex-1">
@@ -174,7 +192,10 @@ export interface StaffTenantModalData {
                                 formControlName="base_path"
                                 placeholder="Base path to the application root folder"
                             />
-                            <mat-error>Base path to the application root folder is required</mat-error>
+                            <mat-error>
+                                Base path to the application root folder is
+                                required
+                            </mat-error>
                         </mat-form-field>
                     </div>
                 </div>
@@ -305,13 +326,16 @@ export class StaffTenantModalComponent implements OnInit {
                 platform === 'office365' ? this.office_form : this.google_form
             );
             if (platform === 'office365') {
-                (this.form as any).addControl('outlook_config', new FormGroup({
-                    app_id: new FormControl(''),
-                    app_domain: new FormControl(''),
-                    app_resource: new FormControl(''),
-                    source_location: new FormControl(''),
-                    base_path: new FormControl(''),
-                }));
+                (this.form as any).addControl(
+                    'outlook_config',
+                    new FormGroup({
+                        app_id: new FormControl(''),
+                        app_domain: new FormControl(''),
+                        app_resource: new FormControl(''),
+                        source_location: new FormControl(''),
+                        base_path: new FormControl(''),
+                    })
+                );
             } else {
                 (this.form as any).removeControl('outlook_config');
             }
