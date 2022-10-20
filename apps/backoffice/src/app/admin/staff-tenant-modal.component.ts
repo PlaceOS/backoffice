@@ -81,7 +81,6 @@ export interface StaffTenantModalData {
             </div>
             <div
                 class="flex items-center mb-4"
-                *ngIf="form.value.platform !== 'google'"
             >
                 <mat-checkbox formControlName="delegated">
                     Delegated
@@ -95,7 +94,7 @@ export interface StaffTenantModalData {
                 >
                     <label class="capitalize">
                         {{ name_map[item.key] || item.key }}
-                        <span *ngIf="item.key !== 'conference_type'">*</span>:
+                        <span *ngIf="item.key !== 'conference_type' && (!form.value.delegated || item.key !== 'client_secret')">*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <ng-container [ngSwitch]="item.key">
@@ -306,12 +305,12 @@ export class StaffTenantModalComponent implements OnInit {
         const handleDelegation = (delegated) => {
             if (delegated) {
                 for (const field of fields) {
-                    this.form.get('credentials')?.get(field)?.disable();
+                    // this.form.get('credentials')?.get(field)?.disable();
                     this.form.get('credentials')?.get(field)?.setValidators([]);
                 }
             } else {
                 for (const field of fields) {
-                    this.form.get('credentials')?.get(field)?.enable();
+                    // this.form.get('credentials')?.get(field)?.enable();
                     this.form
                         .get('credentials')
                         ?.get(field)
