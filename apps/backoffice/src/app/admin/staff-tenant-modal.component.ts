@@ -79,41 +79,47 @@ export interface StaffTenantModalData {
                     </mat-form-field>
                 </div>
             </div>
-            <div
-                class="flex items-center mb-4"
-            >
+            <div class="flex items-center mb-4">
                 <mat-checkbox formControlName="delegated">
                     Delegated
                 </mat-checkbox>
             </div>
             <form *ngIf="credentials" [formGroup]="credentials">
-                <div
-                    class="flex flex-col"
+                <ng-container
                     *ngFor="let item of credentials.controls | keyvalue"
-                    [class.hidden]="item.value?.disabled"
                 >
-                    <label class="capitalize">
-                        {{ name_map[item.key] || item.key }}
-                        <span *ngIf="item.key !== 'conference_type' && (!form.value.delegated || item.key !== 'client_secret')">*</span>:
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <ng-container [ngSwitch]="item.key">
-                            <input
-                                matInput
-                                *ngSwitchDefault
-                                [formControlName]="item.key"
-                                [placeholder]="name_map[item.key] || item.key"
-                            />
-                            <textarea
-                                matInput
-                                *ngSwitchCase="'signing_key'"
-                                [formControlName]="item.key"
-                                [placeholder]="name_map[item.key] || item.key"
-                            ></textarea>
-                        </ng-container>
-                        <mat-error>A {{ item.key }} is required</mat-error>
-                    </mat-form-field>
-                </div>
+                    <div
+                        class="flex flex-col"
+                        [class.hidden]="item.value?.disabled"
+                    >
+                        <label class="capitalize">
+                            {{ name_map[item.key] || item.key }}
+                            <span *ngIf="item.key !== 'conference_type'">*</span
+                            >:
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <ng-container [ngSwitch]="item.key">
+                                <input
+                                    matInput
+                                    *ngSwitchDefault
+                                    [formControlName]="item.key"
+                                    [placeholder]="
+                                        name_map[item.key] || item.key
+                                    "
+                                />
+                                <textarea
+                                    matInput
+                                    *ngSwitchCase="'signing_key'"
+                                    [formControlName]="item.key"
+                                    [placeholder]="
+                                        name_map[item.key] || item.key
+                                    "
+                                ></textarea>
+                            </ng-container>
+                            <mat-error>A {{ item.key }} is required</mat-error>
+                        </mat-form-field>
+                    </div>
+                </ng-container>
             </form>
             <div
                 class="flex items-center mb-4"
@@ -296,21 +302,23 @@ export class StaffTenantModalComponent implements OnInit {
         const fields = [
             'tenant',
             'client_id',
-            'client_secrect',
+            'client_secret',
             'issuer',
             'signing_key',
             'scopes',
             'sub',
+            'domain',
+            'user_agent'
         ];
         const handleDelegation = (delegated) => {
             if (delegated) {
                 for (const field of fields) {
-                    // this.form.get('credentials')?.get(field)?.disable();
+                    this.form.get('credentials')?.get(field)?.disable();
                     this.form.get('credentials')?.get(field)?.setValidators([]);
                 }
             } else {
                 for (const field of fields) {
-                    // this.form.get('credentials')?.get(field)?.enable();
+                    this.form.get('credentials')?.get(field)?.enable();
                     this.form
                         .get('credentials')
                         ?.get(field)
