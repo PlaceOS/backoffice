@@ -11,7 +11,7 @@ import {
     remove,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { debounce, debounceTime, first, map, shareReplay, switchMap } from 'rxjs/operators';
+import { debounceTime, first, map, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal } from '../../common/general';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { PlaceAPIKeyDetails } from './api-key-details.class';

@@ -133,7 +133,7 @@ export interface StaffTenantModalData {
             >
                 <div class="flex items-center flex-wrap space-x-0 sm:space-x-2">
                     <div class="flex flex-col flex-1">
-                        <label>Outlook App ID:</label>
+                        <label>Outlook App ID<span>*</span>:</label>
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
@@ -190,7 +190,7 @@ export interface StaffTenantModalData {
                             <input
                                 matInput
                                 formControlName="base_path"
-                                placeholder="Base path to the application root folder"
+                                placeholder="outlook"
                             />
                             <mat-error>
                                 Base path to the application root folder is
@@ -236,6 +236,8 @@ export class StaffTenantModalComponent implements OnInit {
 
     public readonly tenant = this._data.tenant;
     public readonly domain = this._data.domain;
+
+    public show_outlook = false;
 
     public form = new FormGroup({
         domain: new FormControl(
@@ -372,6 +374,15 @@ export class StaffTenantModalComponent implements OnInit {
         const value = this.form.value;
         if (!value.credentials.conference_type)
             delete value.credentials.conference_type;
+        if (!this.show_outlook) {
+            delete (value as any).outlook_config;
+        } else {
+            for (const key in (value as any).outlook_config) {
+                if (!(value as any).outlook_config[key]) {
+                    delete (value as any).outlook_config[key];
+                }
+            }
+        }
         const call = this.tenant?.id
             ? put(`/api/staff/v1/tenants/${this.tenant.id}`, {
                   ...(this.tenant || {}),
