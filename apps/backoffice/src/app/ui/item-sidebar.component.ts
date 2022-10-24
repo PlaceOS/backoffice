@@ -15,7 +15,7 @@ import { ActiveItemService } from '../common/item.service';
     selector: 'item-sidebar',
     template: `
         <div
-            class="flex flex-col w-[25vw] space-y-2 bg-white dark:bg-neutral-700 shadow rounded overflow-hidden h-full"
+            class="flex flex-col w-[24rem] max-w-[25vw] space-y-2 bg-white dark:bg-neutral-700 shadow rounded overflow-hidden h-full"
             (click)="$event.stopPropagation()"
         >
             <div
