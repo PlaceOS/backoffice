@@ -94,7 +94,7 @@ export interface StaffTenantModalData {
                     >
                         <label class="capitalize">
                             {{ name_map[item.key] || item.key }}
-                            <span *ngIf="item.key !== 'conference_type'">*</span
+                            <span *ngIf="item.key !== 'conference_type' && !form.value.id">*</span
                             >:
                         </label>
                         <mat-form-field appearance="outline">
@@ -245,6 +245,7 @@ export class StaffTenantModalComponent implements OnInit {
     public show_outlook = false;
 
     public form = new FormGroup({
+        id: new FormControl(this.tenant.id || ''),
         domain: new FormControl(
             this.domain?.domain || this.tenant.domain || 'localhost'
         ),
@@ -317,12 +318,13 @@ export class StaffTenantModalComponent implements OnInit {
                     this.form.get('credentials')?.get(field)?.setValidators([]);
                 }
             } else {
+                const id = this.form.value.id;
                 for (const field of fields) {
                     this.form.get('credentials')?.get(field)?.enable();
                     this.form
                         .get('credentials')
                         ?.get(field)
-                        ?.setValidators([Validators.required]);
+                        ?.setValidators(id ? [] : [Validators.required]);
                 }
             }
             this.form.updateValueAndValidity();
@@ -385,10 +387,18 @@ export class StaffTenantModalComponent implements OnInit {
             delete (value as any).outlook_config;
         } else {
             for (const key in (value as any).outlook_config) {
-                if (!(value as any).outlook_config[key]) {
+                if ((value as any).outlook_config[key] == null) {
                     delete (value as any).outlook_config[key];
                 }
             }
+        }
+        for (const key in (value as any).credentials) {
+            if ((value as any).credentials[key] == null) {
+                delete (value as any).credentials[key];
+            }
+        }
+        if (!Object.keys(value.credentials).length) {
+            delete value.credentials;
         }
         const call = this.tenant?.id
             ? put(`/api/staff/v1/tenants/${this.tenant.id}`, {
