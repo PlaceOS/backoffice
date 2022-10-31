@@ -123,13 +123,10 @@ jobs:
                 tar -czvf dist/publish/backoffice.tar.gz dist/apps/backoffice/*
                 echo $GITHUB_SHA > dist/publish/backoffice.txt
 
-            - uses: google-github-actions/release-please-action@v3
-              with:
-                release-type: node
-                package-name: placeos/backoffice
-                command: github-release
-                path: dist/publish
-                prerelease: ${{ env.deploy_branch == 'dev' }}
+            - name: Publish application
+              run: |
+                node ./config/release.js
+              if: ${{ env.deploy_branch != 'dev' }}
 
             - name: Deploy the application
               uses: s0/git-publish-subdir-action@develop
