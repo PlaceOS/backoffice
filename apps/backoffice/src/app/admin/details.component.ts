@@ -67,8 +67,9 @@ export interface PlaceServiceDetails {
                 </div>
             </div>
         </section>
-        <h3 class="text-lg font-medium flex items-center" i18n="@@apiHeader">
-            API
+        <div class="flex items-center space-x-2">
+            <div class="text-lg font-medium" i18n="@@apiHeader">Server API</div>
+            <code *ngIf="backend_version">{{ backend_version }}</code>
             <button
                 *ngIf="changelog_data"
                 class="p-2 text-xs underline"
@@ -76,8 +77,9 @@ export interface PlaceServiceDetails {
             >
                 View Changelog
             </button>
-        </h3>
+        </div>
         <section class="flex flex-wrap py-2">
+            <ng-container *ngIf="!api_details.length; else empty_state">
             <div
                 class="bg-white dark:bg-neutral-700 rounded border border-gray-200 dark:border-neutral-500 m-2 min-w-[40%] flex-1 overflow-hidden"
                 *ngFor="let api of api_details"
@@ -114,7 +116,13 @@ export interface PlaceServiceDetails {
                     </code>
                 </div>
             </div>
+            </ng-container>
         </section>
+        <ng-template #empty_state>
+            <div class="w-full p-24 flex flex-col items-center justify-center">
+                <div class="p-4 border rounded-lg border-gray-200 dark:border-neutral-500 opacity-60">No API service details available.</div>
+            </div>
+        </ng-template>
     `,
     styles: [
         `
@@ -134,6 +142,7 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
     /** Current details about the API */
     public api_details: PlaceServiceDetails[];
     public changelog_data: string = '';
+    public backend_version = '';
 
     public get user() {
         return this._users.user;
@@ -198,11 +207,13 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
         get(`${apiEndpoint()}/platform`)
             .toPromise()
             .then(
-                (details) =>
-                    (this.changelog_data = details.changelog.replace(
+                ({ changelog, version }) => {
+                    this.changelog_data = changelog.replace(
                         '# Changelog\n\n',
                         ''
-                    )),
+                    );
+                    this.backend_version = version;
+                },
                 (err) =>
                     notifyError(
                         `Error loading API details. Error: ${JSON.stringify(
