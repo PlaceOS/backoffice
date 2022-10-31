@@ -122,7 +122,7 @@ jobs:
                 tar -czvf backoffice.tar.gz dist/apps/backoffice/*
                 echo $GITHUB_SHA > backoffice.txt
 
-            - name: Deploy the application(production)
+            - name: Publish the application(production)
               env:
                 GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
               run: | 
@@ -147,7 +147,7 @@ jobs:
               continue-on-error: true
               if: ${{ env.configuration == 'production' }}
 
-            - name: Deploy the application(latest)
+            - name: Publish the application(latest)
               env:
                 GIT_MERGE_AUTOEDIT: 'no'
               run: |
@@ -168,7 +168,7 @@ jobs:
               continue-on-error: true
               if: ${{ env.configuration != 'production' }}
 
-            - name: Deploy the application(draft)
+            - name: Publish the application(draft)
               run: |
                 git config user.email $(git show -s --format='%ae' HEAD)
                 git config user.name CI_USER
@@ -182,6 +182,15 @@ jobs:
                 git tag -a develop ${{ github.sha }} -f -m "Latest development build"
                 git push origin --tags -f
               if: ${{ env.configuration != 'production' }}
+
+            - name: Deploy the application
+              uses: s0/git-publish-subdir-action@develop
+              env:
+                REPO: self
+                BRANCH: build/${{ env.deploy_branch }} # The branch name where you want to push the assets
+                FOLDER: dist/apps/backoffice # The directory where your assets are generated
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
+                MESSAGE: "build(backoffice): CI build from {sha}" # The commit message
 
             - name: Update Pipeline Chat Status
               uses: fjogeleit/http-request-action@master
