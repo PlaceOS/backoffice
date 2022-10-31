@@ -119,69 +119,17 @@ jobs:
 
             - name: Compress build Artifacts
               run: |
-                tar -czvf backoffice.tar.gz dist/apps/backoffice/*
-                echo $GITHUB_SHA > backoffice.txt
+                mkdir dist/publish
+                tar -czvf dist/publish/backoffice.tar.gz dist/apps/backoffice/*
+                echo $GITHUB_SHA > dist/publish/backoffice.txt
 
-            - name: Publish the application(production)
-              env:
-                GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
-              run: | 
-                git config user.email $(git show -s --format='%ae' HEAD)
-                git config user.name CI_USER
-                export VERSION=$(git tag --sort=v:refname | grep -E 'v[0-9]' | tail -1)
-                echo $VERSION
-                npm run version
-                export VERSION=$(git tag --sort=v:refname | grep -E 'v[0-9]' | tail -1)
-                echo $VERSION
-                gh release create $VERSION
-                gh release upload $VERSION backoffice.tar.gz --clobber
-                gh release upload $VERSION backoffice.txt --clobber
-                gh release upload $VERSION CHANGELOG.md --clobber
-                git tag -d $VERSION
-                git reset --hard origin/${{ env.branch }}
-                git tag -a $VERSION -m "Build for $VERSION" && git push origin $VERSION
-              if: ${{ env.configuration == 'production' }}
-
-            - name: Create latest
-              run: gh release create latest
-              continue-on-error: true
-              if: ${{ env.configuration == 'production' }}
-
-            - name: Publish the application(latest)
-              env:
-                GIT_MERGE_AUTOEDIT: 'no'
-              run: |
-                if gh release delete latest
-                then echo Removed old latest version
-                fi
-                gh release create latest
-                gh release upload latest backoffice.tar.gz --clobber
-                gh release upload latest backoffice.txt --clobber
-                gh release upload latest CHANGELOG.md --clobber
-                echo Updated latest release
-                git tag -a latest ${{ github.sha }} -f -m "Latest production build"
-                git push origin --tags -f
-              if: ${{ env.configuration == 'production' }}
-
-            - name: Create pre-release
-              run: gh release create develop -p 
-              continue-on-error: true
-              if: ${{ env.configuration != 'production' }}
-
-            - name: Publish the application(draft)
-              run: |
-                git config user.email $(git show -s --format='%ae' HEAD)
-                git config user.name CI_USER
-                if gh release delete develop
-                then echo Removed old development version
-                fi
-                gh release create develop
-                gh release upload develop backoffice.tar.gz --clobber
-                gh release upload develop backoffice.txt --clobber
-                echo Updated development release
-                git tag -a develop ${{ github.sha }} -f -m "Latest development build"
-                git push origin --tags -f
-              if: ${{ env.configuration != 'production' }}
+            - uses: google-github-actions/release-please-action@v3
+              with:
+                release-type: node
+                package-name: placeos/backoffice
+                command: github-release
+                path: dist/publish
+                prerelease: ${{ env.deploy_branch == 'dev' }}
 
             - name: Deploy the application
               uses: s0/git-publish-subdir-action@develop

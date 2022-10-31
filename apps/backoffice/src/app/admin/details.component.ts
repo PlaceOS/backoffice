@@ -33,7 +33,7 @@ export interface PlaceServiceDetails {
 @Component({
     selector: 'app-engine-details',
     template: `
-        <h3 class="text-lg font-medium" i18n="@@backoffice">Backoffice</h3>
+        <h3 class="text-lg font-medium" i18n="@@backoffice">Application Details (Backoffice)</h3>
         <section class="space-y-2 mb-4 flex flex-col px-2">
             <div class="flex items-center">
                 <label for="version" class="w-24" i18n="@@version"
@@ -68,7 +68,7 @@ export interface PlaceServiceDetails {
             </div>
         </section>
         <div class="flex items-center space-x-2">
-            <div class="text-lg font-medium" i18n="@@apiHeader">Server API</div>
+            <div class="text-lg font-medium" i18n="@@apiHeader">API Services</div>
             <code *ngIf="backend_version">{{ backend_version }}</code>
             <button
                 *ngIf="changelog_data"
