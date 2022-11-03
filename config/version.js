@@ -2,6 +2,9 @@ const { gitDescribeSync } = require('git-describe');
 const { version, core_version } = require('../package.json');
 const { resolve, relative } = require('path');
 const { writeFileSync } = require('fs-extra');
+const { format, differenceInMinutes, startOfMonth } = require('date-fns');
+
+const minutes = Math.floor(Math.abs(differenceInMinutes(Date.now(), startOfMonth(Date.now()))) / 60);
 
 let gitInfo = {};
 
@@ -14,6 +17,7 @@ try {
     gitInfo.hash = 'Unknown';
 }
 
+gitInfo.stamp = `${format(Date.now(), 'yyMM')}.${minutes}`;
 gitInfo.version = version;
 gitInfo.core_version = core_version;
 gitInfo.time = Date.now();

@@ -149,7 +149,7 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
     }
 
     public get backoffice_version() {
-        return VERSION?.tag || '';
+        return VERSION?.stamp || '';
     }
 
     public get backoffice_hash() {
