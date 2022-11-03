@@ -45,6 +45,13 @@ export interface PlaceServiceDetails {
                 >
                     {{ backoffice_version }}
                 </code>
+                <code
+                    name="tag"
+                    class="ml-2"
+                    (click)="copy('tag', backoffice_tag)"
+                >
+                    {{ backoffice_tag }}
+                </code>
             </div>
             <div class="flex items-center">
                 <label for="hash" class="w-24" i18n="@@commitHash"
@@ -150,6 +157,10 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
 
     public get backoffice_version() {
         return VERSION?.stamp || '';
+    }
+
+    public get backoffice_tag() {
+        return VERSION?.tag || '';
     }
 
     public get backoffice_hash() {

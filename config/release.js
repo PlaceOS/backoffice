@@ -1,6 +1,7 @@
 // Replaces semantic-release with zx script
 (async () => {
-    const { exec } = require('node:child_process');
+    const util = require('util');
+    const exec = util.promisify(require('child_process').exec);
     const verbose = !!process.env.VERBOSE;
 
     // Git configuration
