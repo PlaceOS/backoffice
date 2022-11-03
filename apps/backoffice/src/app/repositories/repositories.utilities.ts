@@ -11,7 +11,7 @@ export function generateRepositoryFormFields(
     const fields = {
         id: new FormControl(repository?.id || ''),
         commit_hash: new FormControl(repository?.commit_hash || 'HEAD'),
-        branch: new FormControl(repository?.branch || 'master', [
+        branch: new FormControl(repository?.branch || '', [
             Validators.required,
         ]),
         name: new FormControl(repository?.name || '', [Validators.required]),
@@ -35,11 +35,8 @@ export function generateRepositoryFormFields(
     }
     if (fields.branch) {
         fields.branch.valueChanges.subscribe((name) => {
-            if (name !== repository?.branch) {
-                fields.commit_hash.disable();
-            } else {
-                fields.commit_hash.enable();
-            }
+            if (!name) fields.commit_hash.disable();
+            else fields.commit_hash.enable();
         });
     }
     return new FormGroup(fields);

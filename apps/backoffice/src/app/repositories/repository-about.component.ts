@@ -62,7 +62,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                 <div class="flex items-center space-x-2">
                     <label i18n="@@repoBranchLabel">Branch:</label>
                     <code class="text-xs">
-                        {{ item.branch || 'master' }}
+                        {{ item.branch }}
                     </code>
                 </div>
                 <div class="flex items-center space-x-2">

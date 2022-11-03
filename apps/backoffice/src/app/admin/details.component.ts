@@ -79,7 +79,7 @@ export interface PlaceServiceDetails {
             </button>
         </div>
         <section class="flex flex-wrap py-2">
-            <ng-container *ngIf="!api_details.length; else empty_state">
+            <ng-container *ngIf="!api_details?.length; else empty_state">
             <div
                 class="bg-white dark:bg-neutral-700 rounded border border-gray-200 dark:border-neutral-500 m-2 min-w-[40%] flex-1 overflow-hidden"
                 *ngFor="let api of api_details"
