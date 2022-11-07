@@ -245,9 +245,9 @@ export class StaffTenantModalComponent implements OnInit {
     public show_outlook = false;
 
     public form = new FormGroup({
-        id: new FormControl(this.tenant.id || ''),
+        id: new FormControl(this.tenant?.id || ''),
         domain: new FormControl(
-            this.domain?.domain || this.tenant.domain || 'localhost'
+            this.domain?.domain || this.tenant?.domain || 'localhost'
         ),
         name: new FormControl(this.tenant?.name || '', [Validators.required]),
         delegated: new FormControl(this.tenant?.delegated ?? false),
