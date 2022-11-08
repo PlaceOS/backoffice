@@ -32,11 +32,11 @@ jobs:
             - name: Setup Node.js environment
               uses: actions/setup-node@v1.4.4
               with:
-                  node-version: '14'
+                  node-version: '16'
 
             - name: NPM install
               if: steps.cache.outputs.cache-hit != 'true'
-              run: npm install
+              run: npm ci --verbose
 
             - name: Get short hash
               id: vars
@@ -51,7 +51,7 @@ jobs:
               shell: bash
               id: build_ext
               run: |
-                  if [[ ${{ steps.branch_name.outputs.branch }} == *"release/"* ]]
+                  if [[ ${{ steps.branch_name.outputs.branch }} == *"release/"* ]] || [[ ${{ steps.branch_name.outputs.tag }} == *"release/"* ]]
                   then
                       echo "::set-output name=configuration::production"
                       echo "::set-output name=deploy_branch::prod"
@@ -123,9 +123,10 @@ jobs:
                 tar -czvf dist/publish/backoffice.tar.gz dist/apps/backoffice/*
                 echo $GITHUB_SHA > dist/publish/backoffice.txt
 
-            - name: Publish application
+            - name: Update Changelog
               run: |
-                node ./config/release.js
+                node ./config/generate-changelog.js
+                cp ./CHANGELOG.md ./dist/apps/backoffice/
               if: ${{ env.deploy_branch != 'dev' }}
 
             - name: Deploy the application

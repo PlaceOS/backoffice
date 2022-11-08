@@ -1,28 +1,25 @@
-// Replaces semantic-release with zx script
 (async () => {
     const util = require('util');
     const exec = util.promisify(require('child_process').exec);
-    const verbose = !!process.env.VERBOSE;
+    const argv = process.argv;
 
-    // Git configuration
     const {
+        DEBUG,
+        DRY_RUN,
         GIT_COMMITTER_NAME,
         GIT_COMMITTER_EMAIL,
         GITHUB_TOKEN,
-        PUSH_MAJOR_TAG,
-        DEBUG,
-        DRY_RUN,
     } = process.env;
-    if (!GITHUB_TOKEN) throw new Error('env.GITHUB_TOKEN must be set');
 
     const debug = DEBUG || argv['debug'];
     const dryRun = DRY_RUN || argv['dry-run'];
     const gitCommitterName = GIT_COMMITTER_NAME || 'PlaceOS Bot';
     const gitCommitterEmail = GIT_COMMITTER_EMAIL || 'bot@place.tech';
     const gitAuth = GITHUB_TOKEN;
-    const originUrl = (await exec(`git config --get remote.origin.url`))
-        .toString()
-        .trim();
+
+    const originUrl = (
+        await exec(`git config --get remote.origin.url`)
+    ).stdout.trim();
     const [, , repoHost, repoName] = originUrl
         .replace(':', '/')
         .replace(/\.git/, '')
@@ -47,20 +44,18 @@
         },
     ];
 
-    const tags = (await $`git tag -l --sort=-v:refname`)
-        .toString()
+    const tags = (await exec(`git tag -l --sort=-v:refname`)).stdout
         .split('\n')
         .map((tag) => tag.trim());
+
     const lastTag = tags.find((tag) => semanticTagPattern.test(tag));
     const commitsRange = lastTag
-        ? `${(await exec(`git rev-list -1 ${lastTag}`))
-              .toString()
-              .trim()}..HEAD`
+        ? `${(await exec(`git rev-list -1 ${lastTag}`)).stdout.trim()}..HEAD`
         : 'HEAD';
+
     const newCommits = (
-        await $.noquote`git log --format=+++%s__%b__%h__%H ${commitsRange}`
-    )
-        .toString()
+        await exec(`git log --format=+++%s__%b__%h__%H ${commitsRange}`)
+    ).stdout
         .split('+++')
         .filter(Boolean)
         .map((msg) => {
@@ -86,7 +81,7 @@
                         new RegExp(`(${keywords.join('|')}):\\s(.+)`);
                     const change =
                         subj.match(prefixMatcher)?.[0] ||
-                        body.match(keywordsMatcher)?.[2];
+                        (body || '').match(keywordsMatcher)?.[2];
 
                     if (change) {
                         acc.push({
@@ -105,8 +100,7 @@
         },
         []
     );
-    console.log('semanticChanges=', semanticChanges);
-    debug && console.log('tags', tags);
+    debug && console.log('tags', tags.join(', '));
 
     const nextReleaseType = releaseSeverityOrder.find((type) =>
         semanticChanges.find(({ releaseType }) => type === releaseType)
@@ -142,22 +136,19 @@
     )
         .map(
             ({ group, commits }) => `
-  ### ${group}
-  ${commits.join('\n')}`
+### ${group}
+${commits.join('\n')}`
         )
         .join('\n');
 
     const releaseNotes = releaseDiffRef + '\n' + releaseDetails + '\n';
 
+    if (dryRun) return console.log(releaseNotes);
     // Update changelog
     await exec(
         `echo ${releaseNotes}"\n$(cat ./CHANGELOG.md)" > ./CHANGELOG.md`
     );
-
-    // Update package.json version
     await exec(`npm --no-git-tag-version version ${nextVersion}`);
-
-    if (dryRun) return;
 
     await exec(`git config user.name ${gitCommitterName}`);
     await exec(`git config user.email ${gitCommitterEmail}`);
@@ -172,22 +163,4 @@
     await exec(`git commit -am ${releaseMessage}`);
     await exec(`git tag -a ${nextTag} HEAD -m ${releaseMessage}`);
     await exec(`git push --follow-tags origin HEAD:refs/heads/develop`);
-    if (PUSH_MAJOR_TAG) {
-        const majorTag = nextTag.split('.')[0];
-        await exec(`git tag -fa ${majorTag} HEAD -m ${releaseMessage}`);
-        await exec(`git push --follow-tags -f origin ${majorTag}`);
-    }
-
-    // Push GitHub release
-    const releaseData = JSON.stringify({
-        name: nextTag,
-        tag_name: nextTag,
-        body: releaseNotes,
-    });
-    console.log('github release');
-    await exec(
-        `curl -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${repoName}/releases -d ${releaseData}`
-    );
-
-    console.log('Great success!');
 })();
