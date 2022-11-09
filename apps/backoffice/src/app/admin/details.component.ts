@@ -33,7 +33,18 @@ export interface PlaceServiceDetails {
 @Component({
     selector: 'app-engine-details',
     template: `
-        <h3 class="text-lg font-medium" i18n="@@backoffice">Application Details (Backoffice)</h3>
+        <div class="flex items-center space-x-2">
+            <h3 class="text-lg font-medium" i18n="@@backoffice">
+                Application Details (Backoffice)
+            </h3>
+            <button
+                *ngIf="backoffice_logs"
+                class="p-2 text-xs underline"
+                (click)="changelog(backoffice_logs)"
+            >
+                View Changelog
+            </button>
+        </div>
         <section class="space-y-2 mb-4 flex flex-col px-2">
             <div class="flex items-center">
                 <label for="version" class="w-24" i18n="@@version"
@@ -75,7 +86,9 @@ export interface PlaceServiceDetails {
             </div>
         </section>
         <div class="flex items-center space-x-2">
-            <div class="text-lg font-medium" i18n="@@apiHeader">API Services</div>
+            <div class="text-lg font-medium" i18n="@@apiHeader">
+                API Services
+            </div>
             <code *ngIf="backend_version">{{ backend_version }}</code>
             <button
                 *ngIf="changelog_data"
@@ -87,47 +100,57 @@ export interface PlaceServiceDetails {
         </div>
         <section class="flex flex-wrap py-2">
             <ng-container *ngIf="!api_details?.length; else empty_state">
-            <div
-                class="bg-white dark:bg-neutral-700 rounded border border-gray-200 dark:border-neutral-500 m-2 min-w-[40%] flex-1 overflow-hidden"
-                *ngFor="let api of api_details"
-            >
-                <h3
-                    class="w-full px-4 py-2 mb-1 border-b border-gray-200 dark:border-neutral-500 mono"
+                <div
+                    class="bg-white dark:bg-neutral-700 rounded border border-gray-200 dark:border-neutral-500 m-2 min-w-[40%] flex-1 overflow-hidden"
+                    *ngFor="let api of api_details"
                 >
-                    {{ api.service }}
-                </h3>
-                <div class="flex items-center px-4 py-1 hover:bg-gray-400/20">
-                    <label class="w-24">Commit Hash</label>
-                    <code>
-                        {{ api.commit | slice: 0:8 }}
-                    </code>
-                </div>
-                <div class="flex items-center px-4 py-1 hover:bg-gray-400/20">
-                    <label class="w-24">Version</label>
-                    <code>
-                        {{ api.version }}
-                    </code>
-                </div>
-                <div class="flex items-center px-4 py-1 hover:bg-gray-400/20">
-                    <label class="w-24">Build time</label>
-                    <div class="text-sm">
-                        {{ api.build_time | date: 'MMM d, y, h:mm a' }}
+                    <h3
+                        class="w-full px-4 py-2 mb-1 border-b border-gray-200 dark:border-neutral-500 mono"
+                    >
+                        {{ api.service }}
+                    </h3>
+                    <div
+                        class="flex items-center px-4 py-1 hover:bg-gray-400/20"
+                    >
+                        <label class="w-24">Commit Hash</label>
+                        <code>
+                            {{ api.commit | slice: 0:8 }}
+                        </code>
+                    </div>
+                    <div
+                        class="flex items-center px-4 py-1 hover:bg-gray-400/20"
+                    >
+                        <label class="w-24">Version</label>
+                        <code>
+                            {{ api.version }}
+                        </code>
+                    </div>
+                    <div
+                        class="flex items-center px-4 py-1 hover:bg-gray-400/20"
+                    >
+                        <label class="w-24">Build time</label>
+                        <div class="text-sm">
+                            {{ api.build_time | date: 'MMM d, y, h:mm a' }}
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-center px-4 py-1 hover:bg-gray-400/20 mb-1"
+                    >
+                        <label class="w-24">Platform</label>
+                        <code>
+                            {{ api.platform_version }}
+                        </code>
                     </div>
                 </div>
-                <div
-                    class="flex items-center px-4 py-1 hover:bg-gray-400/20 mb-1"
-                >
-                    <label class="w-24">Platform</label>
-                    <code>
-                        {{ api.platform_version }}
-                    </code>
-                </div>
-            </div>
             </ng-container>
         </section>
         <ng-template #empty_state>
             <div class="w-full p-24 flex flex-col items-center justify-center">
-                <div class="p-4 border rounded-lg border-gray-200 dark:border-neutral-500 opacity-60">No API service details available.</div>
+                <div
+                    class="p-4 border rounded-lg border-gray-200 dark:border-neutral-500 opacity-60"
+                >
+                    No API service details available.
+                </div>
             </div>
         </ng-template>
     `,
@@ -150,6 +173,7 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
     public api_details: PlaceServiceDetails[];
     public changelog_data: string = '';
     public backend_version = '';
+    public backoffice_logs = '';
 
     public get user() {
         return this._users.user;
@@ -214,23 +238,19 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
             );
     }
 
-    public loadPlatformDetails(): void {
-        get(`${apiEndpoint()}/platform`)
+    public async loadPlatformDetails() {
+        const { changelog, version } = await get(`${apiEndpoint()}/platform`)
             .toPromise()
-            .then(
-                ({ changelog, version }) => {
-                    this.changelog_data = changelog.replace(
-                        '# Changelog\n\n',
-                        ''
-                    );
-                    this.backend_version = version;
-                },
-                (err) =>
-                    notifyError(
-                        `Error loading API details. Error: ${JSON.stringify(
-                            err.response || err.message || err
-                        )}`
-                    )
-            );
+            .catch((err) =>{
+                notifyError(
+                    `Error loading API details. Error: ${JSON.stringify(
+                        err.response || err.message || err
+                    )}`
+                )
+                throw err;
+            });
+        this.changelog_data = changelog.replace('# Changelog\n\n', '');
+        this.backend_version = version;
+        this.backoffice_logs = await (await fetch('https://raw.githubusercontent.com/PlaceOS/backoffice/develop/CHANGELOG.md')).text();
     }
 }
