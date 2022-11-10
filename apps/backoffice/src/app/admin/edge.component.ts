@@ -1,3 +1,4 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -7,7 +8,14 @@ import {
     retrieveEdgeToken,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { catchError, debounce, debounceTime, map, shareReplay, switchMap } from 'rxjs/operators';
+import {
+    catchError,
+    debounce,
+    debounceTime,
+    map,
+    shareReplay,
+    switchMap,
+} from 'rxjs/operators';
 import { copyToClipboard, openConfirmModal } from '../common/general';
 import {
     notifyError,
@@ -23,12 +31,16 @@ import { EdgeModalComponent } from './edge-modal.component';
             Add New Edge
         </button>
         <ng-container *ngIf="!loading; else load_state">
-            <div table class="w-full min-w-[48rem]" *ngIf="(edges | async)?.length; else empty_state">
+            <div
+                table
+                class="w-full min-w-[48rem]"
+                *ngIf="(edges | async)?.length; else empty_state"
+            >
                 <div table-head>
                     <div class="w-32 p-2">ID</div>
                     <div class="w-32 p-2">Name</div>
                     <div class="flex-1 p-2">Description</div>
-                    <div class="w-32 p-2">API Key</div>
+                    <div class="w-60 p-2">API Key</div>
                     <div class="w-24 p-2 h-10"></div>
                 </div>
                 <div table-body>
@@ -40,8 +52,18 @@ import { EdgeModalComponent } from './edge-modal.component';
                         <div class="flex-1 p-2 truncate">
                             {{ item.description }}
                         </div>
-                        <div class="w-32 p-2">
-                            <code>{{ item.x_api_key || '********' }}</code>
+                        <div class="w-60 p-2">
+                            <code
+                                [matTooltip]="item.x_api_key"
+                                class="break-words max-w-full"
+                                (click)="copyKey(item.x_api_key)"
+                                >
+                                {{
+                                    item.x_api_key ||
+                                        '***************'
+                                }}
+                                </code
+                            >
                         </div>
                         <div class="w-24 px-2 flex items-center justify-end ">
                             <button
@@ -132,7 +154,7 @@ export class PlaceEdgeComponent {
 
     public readonly edit = async (edge?: PlaceEdge) => {
         const ref = this._dialog.open(EdgeModalComponent, { data: { edge } });
-        ref.afterClosed().subscribe(_ => this._last_change.next(_));
+        ref.afterClosed().subscribe((_) => this._last_change.next(_));
     };
 
     public readonly remove = async (i: PlaceEdge) => {
@@ -160,5 +182,12 @@ export class PlaceEdgeComponent {
         this._change.next(Date.now());
     };
 
-    constructor(private _dialog: MatDialog) {}
+    constructor(private _dialog: MatDialog, private _clipboard: Clipboard) {}
+
+    public copyKey(key: string) {
+        if (!key) return;
+        if (this._clipboard.copy(key)) {
+            notifySuccess('Edge API Key copied to clipboard.');
+        }
+    }
 }
