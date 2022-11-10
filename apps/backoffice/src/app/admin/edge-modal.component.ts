@@ -19,22 +19,37 @@ export interface EdgeModalData {
                 <app-icon className="backoffice-cross"></app-icon>
             </button>
         </header>
-        <main [formGroup]="form" *ngIf="!loading && form; else load_state" class="overflow-auto">
+        <main
+            [formGroup]="form"
+            *ngIf="!loading && form; else load_state"
+            class="overflow-auto"
+        >
             <div class="flex flex-col flex-1">
                 <label>Name<span>*</span>:</label>
                 <mat-form-field appearance="outline">
-                    <input matInput formControlName="name" placeholder="Edge Name" />
+                    <input
+                        matInput
+                        formControlName="name"
+                        placeholder="Edge Name"
+                    />
                     <mat-error>A edge name is required</mat-error>
                 </mat-form-field>
             </div>
             <div class="flex flex-col flex-1">
                 <label>Description:</label>
                 <mat-form-field appearance="outline">
-                    <textarea matInput formControlName="description" placeholder="Edge description..."></textarea>
+                    <textarea
+                        matInput
+                        formControlName="description"
+                        placeholder="Edge description..."
+                    ></textarea>
                 </mat-form-field>
             </div>
         </main>
-        <footer *ngIf="!loading" class="p-2 border-t border-gray-200 flex justify-center">
+        <footer
+            *ngIf="!loading"
+            class="p-2 border-t border-gray-200 flex justify-center"
+        >
             <button mat-button (click)="save()">Save</button>
         </footer>
         <ng-template #load_state>
@@ -86,7 +101,11 @@ export class EdgeModalComponent {
         this.loading = false;
         this._dialog_ref.disableClose = false;
         if (!new_edge) return notifyError('Error adding new edge.');
-        notifySuccess('Successfully added new edge.');
+        edge.id
+            ? notifySuccess('Successfully updated edge.')
+            : notifySuccess(
+                  'Successfully added new edge. Please make sure to save the API key as you will not be able to view it again in the future.'
+              );
         this._dialog_ref.close(new_edge);
     }
 }

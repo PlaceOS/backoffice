@@ -33,14 +33,13 @@ import { EdgeModalComponent } from './edge-modal.component';
         <ng-container *ngIf="!loading; else load_state">
             <div
                 table
-                class="w-full min-w-[64rem]"
+                class="w-full min-w-[48rem]"
                 *ngIf="(edges | async)?.length; else empty_state"
             >
                 <div table-head>
                     <div class="w-32 p-2">ID</div>
                     <div class="w-32 p-2">Name</div>
                     <div class="flex-1 p-2">Description</div>
-                    <div class="w-[25rem] p-2">API Key</div>
                     <div class="w-24 p-2 h-10"></div>
                 </div>
                 <div table-body>
@@ -51,19 +50,6 @@ import { EdgeModalComponent } from './edge-modal.component';
                         <div class="w-32 p-2 truncate">{{ item.name }}</div>
                         <div class="flex-1 w-1/4 p-2 truncate">
                             {{ item.description }}
-                        </div>
-                        <div class="w-[25rem] p-2">
-                            <code
-                                [matTooltip]="item.x_api_key"
-                                class="truncate max-w-full text-[0.5rem]"
-                                (click)="copyKey(item.x_api_key)"
-                                >
-                                {{
-                                    item.x_api_key ||
-                                        '***************************************************************************'
-                                }}
-                                </code
-                            >
                         </div>
                         <div class="w-24 px-2 flex items-center justify-end ">
                             <button
@@ -89,6 +75,20 @@ import { EdgeModalComponent } from './edge-modal.component';
                 </div>
             </div>
         </ng-container>
+        <div
+            *ngIf="(last_change | async)?.x_api_key"
+            (click)="copyKey(item.x_api_key)"
+            matRipple
+            [matTooltip]="'Copy API Key for ' + item.name"
+            class="absolute flex rounded cursor-pointer items-center right-4 top-4 bg-white dark:bg-neutral-700 shadow border border-gray-200 dark:border-neutral-500 max-w-[calc(100%-11rem)] overflow-hidden"
+        >
+            <div class="p-2 flex-1 w-1/2 flex h-full items-center border-r border-gray-200 dark:border-neutral-500 ">
+                <code class="flex-1 truncate">{{ item.x_api_key }}</code>
+            </div>
+            <button mat-icon-button class="rounded-none">
+                <app-icon className="backoffice-copy"></app-icon>
+            </button>
+        </div>
         <ng-template #empty_state>
             <div class="flex flex-col items-center justify-center">
                 <p>No edges</p>
@@ -115,34 +115,38 @@ export class PlaceEdgeComponent {
     public loading: string = '';
 
     private _change = new BehaviorSubject<number>(0);
-    private _last_change = new BehaviorSubject<PlaceEdge>(null);
+    private _hide = new BehaviorSubject<string>('');
+    public last_change = new BehaviorSubject<PlaceEdge>(null);
+
+    public get item() {
+        return this.last_change.getValue();
+    }
 
     private _edge_list: Observable<PlaceEdge[]> = this._change.pipe(
+        debounceTime(300),
         switchMap((_) => {
             this.loading = 'Loading Edges...';
-            this._last_change.next(null);
             return queryEdges();
         }),
         catchError((_) => of({})),
         map((details?: { data: PlaceEdge[] }) => {
             this.loading = '';
             return (details?.data || []).sort((a, b) =>
-                a.id.localeCompare(b.id)
+                a.id?.localeCompare(b.id)
             );
         }),
         shareReplay()
     );
 
     public readonly edges = combineLatest([
-        this._last_change,
         this._edge_list,
+        this._hide
     ]).pipe(
         debounceTime(500),
-        map(([edge, list]) => {
-            if (!edge) return list;
-            const edges = list.filter((_) => _.id !== edge.id);
-            edges.push(edge);
-            return edges.sort((a, b) => a.id.localeCompare(b.id));
+        map(([list, hide]) => {
+            if (!hide) return list;
+            const edges = list.filter((_) => _.id !== hide);
+            return edges.sort((a, b) => a.id?.localeCompare(b.id));
         })
     );
 
@@ -154,7 +158,11 @@ export class PlaceEdgeComponent {
 
     public readonly edit = async (edge?: PlaceEdge) => {
         const ref = this._dialog.open(EdgeModalComponent, { data: { edge } });
-        ref.afterClosed().subscribe((_) => this._last_change.next(_));
+        ref.afterClosed().subscribe((_) => {
+            sessionStorage.setItem('BACKOFFICE.last_edge', JSON.stringify(_));
+            this.last_change.next(_);
+            this._change.next(Date.now());
+        });
     };
 
     public readonly remove = async (i: PlaceEdge) => {
@@ -178,11 +186,20 @@ export class PlaceEdgeComponent {
                     err.statusText || err.message || err
                 }`
             );
+        sessionStorage.removeItem('BACKOFFICE.last_edge');
+        this.last_change.next(null);
         notifySuccess('Successfully removed Edge.');
-        this._change.next(Date.now());
+        this._hide.next(i.id);
     };
 
     constructor(private _dialog: MatDialog, private _clipboard: Clipboard) {}
+
+    public ngOnInit() {
+        const edge_data = sessionStorage.getItem('BACKOFFICE.last_edge');
+        try {
+            this.last_change.next(JSON.parse(edge_data) || null);
+        } catch {}
+    }
 
     public copyKey(key: string) {
         if (key && this._clipboard.copy(key)) {
