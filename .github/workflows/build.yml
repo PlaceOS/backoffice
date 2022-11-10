@@ -51,7 +51,7 @@ jobs:
               shell: bash
               id: build_ext
               run: |
-                  if [[ ${{ steps.branch_name.outputs.branch }} == *"release/"* ]] || [[ ${{ steps.branch_name.outputs.tag }} == *"release/"* ]]
+                  if [[ ${{ steps.branch_name.outputs.branch }} == *"release/"* ]]
                   then
                       echo "::set-output name=configuration::production"
                       echo "::set-output name=deploy_branch::prod"
