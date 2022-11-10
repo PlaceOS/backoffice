@@ -51,7 +51,7 @@ export class ZonesStateService {
                     .pipe(map((d) => d.length))
                     .toPromise()
                     .catch((_) => 0),
-                queryZones({ parent: item.id, limit: 1 })
+                queryZones({ parent_id: item.id, limit: 1 })
                     .pipe(map((d) => d.total))
                     .toPromise()
                     .catch((_) => 0),
@@ -99,7 +99,7 @@ export class ZonesStateService {
     public readonly children = this.item.pipe(
         switchMap((item) => {
             if (!(item instanceof PlaceZone)) return [];
-            return queryZones({ parent: item.id });
+            return queryZones({ parent_id: item.id });
         }),
         map((list) => list.data),
         catchError((_) => []),
