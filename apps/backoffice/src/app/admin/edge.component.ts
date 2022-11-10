@@ -39,8 +39,8 @@ import { EdgeModalComponent } from './edge-modal.component';
                 <div table-head>
                     <div class="w-32 p-2">ID</div>
                     <div class="w-32 p-2">Name</div>
-                    <div class="flex-1 p-2">Description</div>
-                    <div class="w-60 p-2">API Key</div>
+                    <div class="flex-1 w-1/4 p-2">Description</div>
+                    <div class="w-1/4 min-w-[15rem] p-2">API Key</div>
                     <div class="w-24 p-2 h-10"></div>
                 </div>
                 <div table-body>
@@ -49,13 +49,13 @@ import { EdgeModalComponent } from './edge-modal.component';
                             {{ item.id }}
                         </div>
                         <div class="w-32 p-2 truncate">{{ item.name }}</div>
-                        <div class="flex-1 p-2 truncate">
+                        <div class="flex-1 w-1/4 p-2 truncate">
                             {{ item.description }}
                         </div>
-                        <div class="w-60 p-2">
+                        <div class="w-1/4 min-w-[15rem] p-2">
                             <code
                                 [matTooltip]="item.x_api_key"
-                                class="break-words max-w-full"
+                                class="truncate max-w-full"
                                 (click)="copyKey(item.x_api_key)"
                                 >
                                 {{
@@ -185,8 +185,7 @@ export class PlaceEdgeComponent {
     constructor(private _dialog: MatDialog, private _clipboard: Clipboard) {}
 
     public copyKey(key: string) {
-        if (!key) return;
-        if (this._clipboard.copy(key)) {
+        if (key && this._clipboard.copy(key)) {
             notifySuccess('Edge API Key copied to clipboard.');
         }
     }
