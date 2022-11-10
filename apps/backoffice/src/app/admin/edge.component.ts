@@ -33,14 +33,14 @@ import { EdgeModalComponent } from './edge-modal.component';
         <ng-container *ngIf="!loading; else load_state">
             <div
                 table
-                class="w-full min-w-[48rem]"
+                class="w-full min-w-[64rem]"
                 *ngIf="(edges | async)?.length; else empty_state"
             >
                 <div table-head>
                     <div class="w-32 p-2">ID</div>
                     <div class="w-32 p-2">Name</div>
-                    <div class="flex-1 w-1/4 p-2">Description</div>
-                    <div class="w-1/4 min-w-[15rem] p-2">API Key</div>
+                    <div class="flex-1 p-2">Description</div>
+                    <div class="w-[25rem] p-2">API Key</div>
                     <div class="w-24 p-2 h-10"></div>
                 </div>
                 <div table-body>
@@ -52,15 +52,15 @@ import { EdgeModalComponent } from './edge-modal.component';
                         <div class="flex-1 w-1/4 p-2 truncate">
                             {{ item.description }}
                         </div>
-                        <div class="w-1/4 min-w-[15rem] p-2">
+                        <div class="w-[25rem] p-2">
                             <code
                                 [matTooltip]="item.x_api_key"
-                                class="truncate max-w-full"
+                                class="truncate max-w-full text-[0.5rem]"
                                 (click)="copyKey(item.x_api_key)"
                                 >
                                 {{
                                     item.x_api_key ||
-                                        '***************'
+                                        '***************************************************************************'
                                 }}
                                 </code
                             >
