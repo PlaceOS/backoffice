@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { PlaceDomain, post, put } from '@placeos/ts-client';
+import { cleanObject, PlaceDomain, post, put } from '@placeos/ts-client';
 import { getInvalidFields } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent, HashMap } from '../common/types';
@@ -63,7 +63,7 @@ export interface StaffTenantModalData {
             </div>
             <div
                 class="flex items-center flex-wrap space-x-0 sm:space-x-2"
-                *ngIf="form.value.platform !== 'google'"
+                *ngIf="form.value.platform !== 'google' && !form.value.delegated"
             >
                 <div class="flex flex-col flex-1">
                     <label>Service Account:</label>
@@ -400,17 +400,14 @@ export class StaffTenantModalComponent implements OnInit {
         if (!Object.keys(value.credentials).length) {
             delete value.credentials;
         }
+        const data = cleanObject({
+            ...(this.tenant || {}),
+            ...value,
+            booking_limits,
+        }, ['', null, undefined]);
         const call = this.tenant?.id
-            ? put(`/api/staff/v1/tenants/${this.tenant.id}`, {
-                  ...(this.tenant || {}),
-                  ...value,
-                  booking_limits,
-              })
-            : post('/api/staff/v1/tenants', {
-                  ...(this.tenant || {}),
-                  ...value,
-                  booking_limits,
-              });
+            ? put(`/api/staff/v1/tenants/${this.tenant.id}`, data)
+            : post('/api/staff/v1/tenants', data);
         const tenant = await call.toPromise().catch((_) => null);
         this.loading = false;
         this._dialog_ref.disableClose = false;
