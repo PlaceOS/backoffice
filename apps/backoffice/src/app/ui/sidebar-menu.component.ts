@@ -60,7 +60,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 xPosition="start"
             >
                 <div
-                    class="rounded-full h-10 w-10 bg-neutral-500"
+                    class="rounded-full h-10 w-10 bg-neutral-500 bg-cover bg-center"
                     [style.background-image]="'url(' + user?.image + ')'"
                 ></div>
                 <div class="flex flex-col flex-1 w-1/2 leading-tight">
