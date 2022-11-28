@@ -74,6 +74,21 @@ import { ModuleStateService } from './module-state.service';
                         {{ (system | async).name }}
                     </a>
                 </div>
+                <div class="flex items-center space-x-2" *ngIf="edge | async">
+                    <label i18n="@moduleUpdatedAtLabel">Edge:</label>
+                    <a
+                        class="underline flex-1"
+                        [routerLink]="['/admin', 'edge', (edge | async).id]"
+                    >
+                        {{ (edge | async).name }}
+                    </a>
+                    <app-icon
+                        *ngIf="(edge | async).description"
+                        className="backoffice-info"
+                        class="border border-gray-200 dark:border-neutral-500 rounded-full"
+                        [matTooltip]="(edge | async).description"
+                    ></app-icon>
+                </div>
             </div>
             <div
                 class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
@@ -150,6 +165,8 @@ export class ModuleAboutComponent {
     public readonly driver = this._service.driver;
     /** Control System for the active item */
     public readonly system = this._service.system;
+    /** Edge node for the active item */
+    public readonly edge = this._service.edge;
     /** List of settings for associated modules, drivers and zones */
     public readonly other_settings = this._service.associated_settings;
     /** Whether module is being stopped */

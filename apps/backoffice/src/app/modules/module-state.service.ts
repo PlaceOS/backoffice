@@ -5,6 +5,7 @@ import {
     PlaceModule,
     querySystems,
     showDriver,
+    showEdge,
     showSystem,
     startModule,
     stopModule,
@@ -51,6 +52,13 @@ export class ModuleStateService {
     public readonly system = this.item.pipe(
         switchMap((item) =>
             item.system_id ? showSystem(item.system_id) : of(null)
+        ),
+        shareReplay(1)
+    );
+
+    public readonly edge = this.item.pipe(
+        switchMap((item) =>
+            item.edge_id ? showEdge(item.edge_id) : of(null)
         ),
         shareReplay(1)
     );

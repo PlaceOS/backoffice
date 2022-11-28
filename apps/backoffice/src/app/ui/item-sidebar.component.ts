@@ -63,15 +63,20 @@ import { ActiveItemService } from '../common/item.service';
                             exact: false,
                             __change_detection_hack__: item.id + subroute
                         }"
-                        class="flex flex-col px-2 py-2 max-w-full m-2 w-[calc(100%-1rem)] rounded"
+                        class="flex flex-col px-2 py-2 w-[23rem] m-2 max-w-[calc(25vw-1rem)] rounded"
                         (click)="show = false"
                     >
                         <p class="truncate w-full">
                             {{ item.name }}
                         </p>
-                        <div><code class="!text-xs opacity-60" *ngIf="item.extra">
-                            {{ item.extra }}
-                        </code></div>
+                        <div class="w-full inline-block overflow-hidden">
+                            <span
+                                class="text-xs mono opacity-60 truncate max-w-full px-2 py-1 bg-black/10 dark:bg-white/5 rounded mt-1"
+                                *ngIf="item.extra"
+                            >
+                                {{ item.extra }}
+                            </span>
+                        </div>
                     </a>
                     <div
                         class="p-2 text-center opacity-30 text-sm bg-gray-300 dark:bg-neutral-800"
@@ -121,7 +126,9 @@ export class ItemSidebarComponent extends BaseClass {
     public last_check = 0;
     public search = '';
     /** List of items for the active route */
-    public readonly items = this._service.list.pipe(map((l) => this._processItems(l)));
+    public readonly items = this._service.list.pipe(
+        map((l) => this._processItems(l))
+    );
     /** Whether list of items for the active route are loading */
     public readonly loading = this._service.loading_list;
     /** Total number of items in the last request */
@@ -196,7 +203,9 @@ export class ItemSidebarComponent extends BaseClass {
                     item.role === PlaceDriverRole.Service
                         ? item.uri
                         : item.role === PlaceDriverRole.Logic
-                        ? name ? `${name} | ${item.control_system_id} ` : item.control_system_id
+                        ? name
+                            ? `${name} | ${item.control_system_id} `
+                            : item.control_system_id
                         : item.ip;
                 (item as any).display_name =
                     item.custom_name || item.name || '<Unnamed>';
