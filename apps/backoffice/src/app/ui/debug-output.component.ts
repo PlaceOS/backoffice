@@ -20,7 +20,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                 [class.disabled]="!show_content"
             >
                 <div
-                    class="relative rounded-lg overflow-hidden border border-gray-200 bg-gray-800 text-white shadow z-10"
+                    class="relative rounded-lg overflow-hidden border border-gray-200 bg-neutral-800 text-white shadow z-10"
                     content
                     #content
                     [@show]="show_content ? 'show' : 'hide'"
@@ -28,17 +28,38 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                     [style.width]="width + 'px'"
                 >
                     <div class="flex items-center">
-                        <p i18n="@@debugConsole" class="p-2 flex-1 w-1/2">
-                            Debug Console
-                        </p>
+                        <div class="flex flex-col flex-1 w-1/2 p-2">
+                            <p i18n="@@debugConsole">Debug Console</p>
+                            <div class="text-xs opacity-60">
+                                {{ modules.length }} { modules.length, plural,
+                                =1 { module } other { modules } }
+                            </div>
+                        </div>
                         <button
-                            mat-button
-                            class="clear underline text-sm h-10"
-                            (click)="clearDebugMessages()"
-                            i18n="@@clear"
+                            mat-icon-button
+                            class="mr-2"
+                            [matMenuTriggerFor]="menu"
                         >
-                            Clear
+                            <app-icon
+                                className="backoffice-dots-three-vertical"
+                            ></app-icon>
                         </button>
+                        <mat-menu #menu="matMenu">
+                            <button
+                                mat-menu-item
+                                (click)="clearBindings()"
+                                i18n="@@clear"
+                            >
+                                Unbind Modules
+                            </button>
+                            <button
+                                mat-menu-item
+                                (click)="clearDebugMessages()"
+                                i18n="@@clear"
+                            >
+                                Clear Terminal
+                            </button>
+                        </mat-menu>
                     </div>
                     <a-terminal [content]="logs" [resize]="resize"></a-terminal>
                     <div
@@ -72,6 +93,12 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                                 : 'backoffice-terminal'
                         "
                     ></app-icon>
+                    <div
+                        class="text-xs h-6 w-6 absolute -top-2 -right-2 bg-blue-600 shadow flex items-center justify-center rounded-full"
+                        *ngIf="!show_content"
+                    >
+                        {{ modules.length }}
+                    </div>
                 </button>
             </div>
         </ng-container>
@@ -132,6 +159,10 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
         return this._service.is_enabled;
     }
 
+    public get modules() {
+        return this._service.modules;
+    }
+
     constructor(
         private _service: PlaceDebugService,
         private _renderer: Renderer2
@@ -146,16 +177,23 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
                 this.logs = this._service.terminal_string;
             })
         );
-        this.subscription('binding_change', this._service.changed.subscribe(() => {
-            if (!this._service.is_listening) {
-                this.show_content = false;
-            }
-        }))
+        this.subscription(
+            'binding_change',
+            this._service.changed.subscribe(() => {
+                if (!this._service.is_listening) {
+                    this.show_content = false;
+                }
+            })
+        );
     }
 
     /** Clear all the debug logs */
     public clearDebugMessages() {
         this._service.clearEvents();
+    }
+
+    public clearBindings() {
+        this._service.unbindAll();
     }
 
     public startResize(event: MouseEvent | TouchEvent, dir: 'x' | 'y' | 'xy') {
@@ -172,7 +210,8 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
                 this._renderer.listen('window', 'mouseup', (_) => {
                     this.unsub('resize_move');
                     this.unsub('resize_end');
-                    const box = this._content_el.nativeElement.getBoundingClientRect();
+                    const box =
+                        this._content_el.nativeElement.getBoundingClientRect();
                     this.height = box.height;
                     this.width = box.width;
                 })
@@ -189,7 +228,8 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
                 this._renderer.listen('window', 'touchend', (_) => {
                     this.unsub('resize_move');
                     this.unsub('resize_end');
-                    const box = this._content_el.nativeElement.getBoundingClientRect();
+                    const box =
+                        this._content_el.nativeElement.getBoundingClientRect();
                     this.height = box.height;
                     this.width = box.width;
                 })

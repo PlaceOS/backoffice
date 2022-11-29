@@ -48,6 +48,10 @@ export class PlaceDebugService extends BaseClass {
     public get events(): Observable<PlaceDebugEvent[]> {
         return this._event_obs;
     }
+    
+    public get modules() {
+        return this._bound_modules;
+    }
 
     /** Get terminal display string for all the events */
     public get terminal_string(): string {
@@ -136,6 +140,12 @@ export class PlaceDebugService extends BaseClass {
                 (mod) => mod.id !== module.id
             );
             this._changed.next(Date.now());
+        }
+    }
+
+    public unbindAll() {
+        for (const mod of this._bound_modules) {
+            this.unbind(mod);
         }
     }
 }
