@@ -30,7 +30,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                     <div class="flex items-center">
                         <div class="flex flex-col flex-1 w-1/2 p-2">
                             <p i18n="@@debugConsole">Debug Console</p>
-                            <div class="text-xs opacity-60">
+                            <div class="text-xs opacity-60 underline" [matTooltip]="module_list">
                                 {{ modules.length }} { modules.length, plural,
                                 =1 { module } other { modules } }
                             </div>
@@ -161,6 +161,11 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
 
     public get modules() {
         return this._service.modules;
+    }
+
+    public get module_list() {
+        const o = this._service.module_names;
+        return Object.keys(o).map((k) => `${o[k]} (${k})`).join('\n');
     }
 
     constructor(

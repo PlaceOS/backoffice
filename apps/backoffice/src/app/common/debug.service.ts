@@ -52,6 +52,10 @@ export class PlaceDebugService extends BaseClass {
     public get modules() {
         return this._bound_modules;
     }
+    
+    public get module_names() {
+        return this._module_names;
+    }
 
     /** Get terminal display string for all the events */
     public get terminal_string(): string {
