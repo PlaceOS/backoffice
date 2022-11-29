@@ -80,9 +80,6 @@ import { SystemStateService } from './system-state.service';
                             <div class="w-12 p-2" i18n="@@moduleStateLabel">
                                 State
                             </div>
-                            <div class="w-10 p-2" i18n="@@moduleEdgeLabel">
-                                Edge
-                            </div>
                             <div class="flex-1 p-2" i18n="@@moduleNameLabel">
                                 Name
                             </div>
@@ -168,39 +165,51 @@ import { SystemStateService } from './system-state.service';
                                         diameter="32"
                                     ></mat-spinner>
                                 </div>
-                                <div class="w-10 flex justify-center h-full">
+                                <div
+                                    class="flex items-center flex-1 h-full p-2"
+                                >
+                                    <div
+                                        class="flex-1 flex flex-col justify-center w-px"
+                                    >
+                                        <a
+                                            [routerLink]="[
+                                                '/modules',
+                                                device.id
+                                            ]"
+                                            (contextmenu)="
+                                                $event.stopPropagation()
+                                            "
+                                            class="truncate underline underline-offset-4 w-full"
+                                            [title]="
+                                                device.driver?.name ||
+                                                '<Unnamed>'
+                                            "
+                                        >
+                                            {{
+                                                device.driver?.name ||
+                                                    '&lt;Unnamed&gt;'
+                                            }}
+                                        </a>
+                                        <div
+                                            class="text-xs truncate w-full"
+                                            *ngIf="device.notes"
+                                        >
+                                            {{ device.notes }}
+                                        </div>
+                                    </div>
                                     <a
                                         *ngIf="device.edge_id"
                                         matRipple
                                         class="text-xs h-6 w-6 rounded-full bg-blue-600 flex items-center justify-center shadow text-white"
                                         [matTooltip]="device.edge_id"
-                                        [routerLink]="['/admin', 'edge', device.edge_id]"
+                                        [routerLink]="[
+                                            '/admin',
+                                            'edge',
+                                            device.edge_id
+                                        ]"
                                     >
                                         E
                                     </a>
-                                </div>
-                                <div
-                                    class="flex-1 p-2 h-full flex flex-col justify-center"
-                                >
-                                    <a
-                                        [routerLink]="['/modules', device.id]"
-                                        (contextmenu)="$event.stopPropagation()"
-                                        class="truncate underline underline-offset-4 w-full"
-                                        [title]="
-                                            device.driver?.name || '<Unnamed>'
-                                        "
-                                    >
-                                        {{
-                                            device.driver?.name ||
-                                                '&lt;Unnamed&gt;'
-                                        }}
-                                    </a>
-                                    <div
-                                        class="text-xs truncate w-full"
-                                        *ngIf="device.notes"
-                                    >
-                                        {{ device.notes }}
-                                    </div>
                                 </div>
                                 <div class="w-24 p-2">
                                     {{
