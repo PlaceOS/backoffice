@@ -146,7 +146,7 @@ ${commits.join('\n')}`
     if (dryRun) return console.log(releaseNotes);
     // Update changelog
     await exec(
-        `echo ${releaseNotes}"\n$(cat ./CHANGELOG.md)" > ./CHANGELOG.md`
+        `echo "${releaseNotes}"\n$(cat ./CHANGELOG.md) > ./CHANGELOG.md`
     );
     await exec(`npm --no-git-tag-version version ${nextVersion}`);
 
