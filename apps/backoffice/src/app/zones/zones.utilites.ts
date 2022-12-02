@@ -16,6 +16,8 @@ export function generateZoneFormFields(zone?: PlaceZone) {
         count: new FormControl(zone?.count),
         capacity: new FormControl(zone?.capacity),
         map_id: new FormControl(zone?.map_id),
+        timezone: new FormControl(zone?.timezone),
+        images: new FormControl(zone?.images),
     };
 
     fields.parent_zone.valueChanges.subscribe((parent_zone: PlaceZone) =>
