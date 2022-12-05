@@ -148,9 +148,11 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     />
                 </mat-form-field>
                 <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option *ngFor="let tz of timezones" [value]="tz">{{
-                        tz
-                    }}</mat-option>
+                    <mat-option
+                        *ngFor="let tz of filtered_timezones"
+                        [value]="tz"
+                        >{{ tz }}</mat-option
+                    >
                     <mat-option *ngIf="!timezones.length" [disabled]="true">
                         No matching timezones
                     </mat-option>
@@ -237,6 +239,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
 })
 export class ZoneFormComponent extends BaseClass {
     public timezones: string[] = [];
+    public filtered_timezones: string[] = [];
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
     /** List of separator characters for tags */
@@ -260,12 +263,25 @@ export class ZoneFormComponent extends BaseClass {
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.form) {
             this.updateTimezoneList();
+            this.subscription(
+                'tz-change',
+                this.form.valueChanges.subscribe(
+                    ({ timezone }) =>
+                        (this.filtered_timezones = this.timezones.filter((_) =>
+                            _.toLowerCase().includes(timezone.toLowerCase())
+                        ))
+                )
+            );
             this.updateZone();
         }
     }
 
     public updateTimezoneList() {
+        const timezone = this.form?.value?.timezone || '';
         this.timezones = TIMEZONES_IANA;
+        this.filtered_timezones = this.timezones.filter((_) =>
+            _.toLowerCase().includes(timezone.toLowerCase())
+        );
     }
 
     /** Update parent zone details if set */
