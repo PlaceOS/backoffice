@@ -67,7 +67,7 @@ export class PlaceDebugService extends BaseClass {
                     this._module_names[event.mod_id] ||
                     event.mod_id ||
                     '<UNKNOWN>'
-                }, [${event.level.toUpperCase()}]\u001b[0m ${event.message}`
+                }, [${event.level.toUpperCase()}]\u001b[0m ${event.message.split('\n').reverse().join('\n')}`
         );
         return list.join('\n');
     }
