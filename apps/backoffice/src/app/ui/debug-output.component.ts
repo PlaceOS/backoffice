@@ -61,6 +61,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                             </button>
                         </mat-menu>
                     </div>
+                    <!-- <new-terminal [lines]="logs" [resize]="resize"></new-terminal> -->
                     <a-terminal [content]="logs" [resize]="resize"></a-terminal>
                     <div
                         class="absolute h-4 -top-2 left-0 right-0"
@@ -141,7 +142,7 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
     /** Whether display output is shown */
     public show_content: boolean = true;
     /** Display string for debug logs */
-    public logs: string;
+    public logs: string //[] = [];
     /** Height of the debug console */
     public height: number = 384;
     /** Width of the debug console */
@@ -179,7 +180,8 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
         this.subscription(
             'changes',
             this._service.events.subscribe((_) => {
-                this.logs = this._service.terminal_string;
+                this.logs = this._service.terminal_string //.split('\n');
+                // console.log('Logs:', this.logs);
             })
         );
         this.subscription(
