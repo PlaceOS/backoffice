@@ -8,6 +8,7 @@ import {
 import { Router } from '@angular/router';
 import { authority } from '@placeos/ts-client';
 import { BaseClass } from '../common/base.class';
+import { PlaceDebugService } from '../common/debug.service';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';
 import { ApplicationIcon, ApplicationLinkInternal } from '../common/types';
@@ -49,6 +50,28 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 >
                     <app-icon className="backoffice-cross"></app-icon>
                 </button>
+            </div>
+            <div class="flex-1 h-px"></div>
+            <div class="m-2 p-2 rounded-xl border border-gray-200 dark:border-neutral-500 flex flex-col space-y-2" *ngIf="debug_enabled">
+                <div class="rounded-xl text-xs mono bg-blue-600 text-center p-1">Debugging Enabled</div>
+                <p class="text-xs p-1 text-center">
+                    Listening to {{ debug_module_count }} module(s)<br />
+                    {{ debug_message_count }} module messages
+                </p>
+                <div actions class="flex items-center justify-center space-x-2">
+                    <button mat-icon-button (click)="toggleDebugPosition()" class="bg-black/10 dark:bg-white/5">
+                        <app-icon matTooltip="Toggle Position">{{ debug_position === 'side' ? 'border_bottom' : 'border_right'}}</app-icon>
+                    </button>
+                    <button mat-icon-button (click)="clearDebugMessages()" class="bg-black/10 dark:bg-white/5">
+                        <app-icon className="material-icons" matTooltip="Clear Messages">clear_all</app-icon>
+                    </button>
+                    <button mat-icon-button (click)="clearBindings()" class="bg-black/10 dark:bg-white/5">
+                        <app-icon className="backoffice-uninstall" matTooltip="Unbind Modules"></app-icon>
+                    </button>
+                    <button mat-icon-button (click)="openDebug()" class="bg-black/10 dark:bg-white/5">
+                        <app-icon className="backoffice-notification" matTooltip="Open Console"></app-icon>
+                    </button>
+                </div>
             </div>
             <button
                 matRipple
@@ -98,10 +121,27 @@ export class SidebarMenuComponent extends BaseClass {
         return this._users.current();
     }
 
+    public get debug_position() {
+        return this._debug.position;
+    }
+
+    public get debug_enabled() {
+        return this._debug.is_enabled;
+    }
+
+    public get debug_module_count() {
+        return this._debug.modules.length;
+    }
+
+    public get debug_message_count() {
+        return this._debug.event_list.length;
+    }
+
     public readonly close = () => this._tooltip?.close();
 
     constructor(
         @Optional() private _tooltip: CustomTooltipData,
+        private _debug: PlaceDebugService,
         private _settings: SettingsService,
         private _users: BackofficeUsersService,
         private _hotkey: HotkeysService,
@@ -124,6 +164,25 @@ export class SidebarMenuComponent extends BaseClass {
             )
         );
         this.items = this.menu_items;
+    }
+
+    public toggleDebugPosition() {
+        const position = this.debug_position;
+        const new_pos = position === 'side' ? 'below' : 'side';
+        this._debug.position = new_pos;
+    }
+
+    public openDebug() {
+        this._debug.is_shown = true;
+    }
+
+    /** Clear all the debug logs */
+    public clearDebugMessages() {
+        this._debug.clearEvents();
+    }
+
+    public clearBindings() {
+        this._debug.unbindAll();
     }
 
     private _getMenuItems(): ApplicationLinkInternal[] {

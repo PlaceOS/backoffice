@@ -49,7 +49,6 @@ import { NavigationEnd, Router } from '@angular/router';
                 <ng-container *ngIf="filter">
                     <global-search [(search)]="filter"></global-search>
                 </ng-container>
-                <app-debug-output></app-debug-output>
                 <app-upload-list *ngIf="!simple"></app-upload-list>
             </ng-container>
             <ng-template #load_state>

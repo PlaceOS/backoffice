@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 import { extensionsForItem } from '../common/api';
+import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { SettingsService } from '../common/settings.service';
 import { BackofficeUsersService } from '../users/users.service';
@@ -13,12 +14,12 @@ import { BackofficeUsersService } from '../users/users.service';
             class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
             <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
-            <div class="flex-1 w-1/2 h-full relative flex flex-col">
+            <div class="flex flex-col h-full flex-1 overflow-hidden w-px">
                 <div
                     class="flex flex-1 z-0 h-1/2 dark:text-white dark:bg-neutral-700"
                 >
                     <div
-                        class="relative sm:w-56 px-2 my-4 border-r border-gray-400 border-opacity-30 z-10 pt-10 sm:pt-0"
+                        class="h-full relative sm:w-56 px-2 my-4 border-r border-gray-400 border-opacity-30 z-10 pt-10 sm:pt-0"
                     >
                         <a
                             *ngFor="let item of tab_list"
@@ -35,7 +36,6 @@ import { BackofficeUsersService } from '../users/users.service';
                     >
                         <router-outlet></router-outlet>
                     </div>
-                    
                     <button
                         mat-icon-button
                         class="sm:hidden mr-2 absolute top-2 left-4 z-40"
@@ -44,7 +44,16 @@ import { BackofficeUsersService } from '../users/users.service';
                         <app-icon className="backoffice-menu"></app-icon>
                     </button>
                 </div>
+                <app-debug-output
+                    below
+                    *ngIf="debug_position === 'below'"
+                ></app-debug-output>
             </div>
+            <app-debug-output
+                side
+                *ngIf="debug_position === 'side'"
+                class="h-full max-w-[30rem]"
+            ></app-debug-output>
         </div>
     `,
     styles: [
@@ -74,6 +83,10 @@ export class PlaceComponent extends BaseClass {
 
     public get dark_mode() {
         return this._users.dark_mode;
+    }
+
+    public get debug_position() {
+        return this._debug.position;
     }
 
     public updateTabList() {
@@ -126,7 +139,8 @@ export class PlaceComponent extends BaseClass {
     constructor(
         private _settings: SettingsService,
         private _service: ActiveItemService,
-        private _users: BackofficeUsersService
+        private _users: BackofficeUsersService,
+        private _debug: PlaceDebugService
     ) {
         super();
     }

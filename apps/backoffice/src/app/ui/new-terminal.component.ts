@@ -1,43 +1,82 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
-import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { Component, ElementRef, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { SafeHtml } from '@angular/platform-browser';
+import { BehaviorSubject, combineLatest, of } from 'rxjs';
+import { catchError, map, shareReplay } from 'rxjs/operators';
+import { BaseClass } from '../common/base.class';
+import { SanitizePipe } from './pipes/sanitise.pipe';
 
 @Component({
     selector: 'new-terminal',
     template: `
-        <div class="bg-neutral-700 w-full h-full text-xs">
-            <cdk-virtual-scroll-viewport itemSize="24" class="w-full h-full">
+        <div class="bg-gray-700 w-full h-full text-xs flex items-end relative" #container>
+            <cdk-virtual-scroll-viewport
+                itemSize="24"
+                class="w-full max-h-full"
+                [style.height]="24 * item_count + 'px'"
+            >
                 <div
                     *cdkVirtualFor="let item of output_lines | async"
-                    [innerHTML]="item | sanitize"
+                    [innerHTML]="item | safe"
                     class="mono p-1 hover:bg-black/10"
                 ></div>
             </cdk-virtual-scroll-viewport>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-base select-none" *ngIf="!(output_lines | async)?.length">
+                <p>No debug messages to display</p>
+            </div>
         </div>
     `,
-    styles: [``],
+    styles: [
+        `
+            :host {
+                display: block;
+                height: 1px;
+                flex-grow: 1;
+                width: 100%;
+            }
+        `,
+    ],
+    providers: [SanitizePipe]
 })
-export class NewTerminalComponent {
+export class NewTerminalComponent extends BaseClass {
     @Input() public lines: string[] = [];
     @Input() public search = '';
     @Input() public resize = 0;
 
+    public item_count = 0;
     public line_length = 80;
+
+    @ViewChild(CdkVirtualScrollViewport, { static: true }) private _scroll_viewport: CdkVirtualScrollViewport;
+    @ViewChild('container', { static: true }) private _container_el: ElementRef<HTMLDivElement>;
 
     public readonly line_list = new BehaviorSubject<string[]>([]);
     public readonly search_string = new BehaviorSubject('');
     public readonly output_lines = combineLatest([
         this.search_string,
         this.line_list,
-    ]).pipe(map(([search, lines]) => {
-        const s = search.toLowerCase();
-        const list = lines.filter(_ => _.toLowerCase().includes(s));
-        let out_lines = [];
-        for (const ln of list) {
-            out_lines = out_lines.concat(this._formatLineWithHTML(ln));
-        }
-        return out_lines;
-    }));
+    ]).pipe(
+        map(([search, lines]) => {
+            const s = search.toLowerCase();
+            const list = lines.filter((_) => _.toLowerCase().includes(s));
+            let out_lines = [];
+            for (const ln of list) {
+                if (!ln) continue;
+                out_lines = out_lines.concat(this._formatLineWithHTML(ln));
+            }
+            this.item_count = out_lines.length;
+            this.timeout('update_viewport', () => {
+                this._scroll_viewport?.checkViewportSize();
+                this._scroll_viewport.scrollToIndex(this.item_count);
+            }, 50);
+            return out_lines;
+        }),
+        catchError((e) =>{ console.log(e); return of([])}),
+        shareReplay(1)
+    );
+
+    constructor(private _sanitize_pipe: SanitizePipe) {
+        super();
+    }
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.lines && this.lines) {
@@ -52,22 +91,33 @@ export class NewTerminalComponent {
     }
 
     private _updateLineLength() {
-
+        this.line_length = Math.max(40, Math.floor(this._container_el.nativeElement.getBoundingClientRect().width / 8));
+        this.line_list.next(this.line_list.getValue());
     }
 
     private _formatLineWithHTML(line: string) {
-        if (line.length < this.line_length) return [line];
+        const sanitized_line = this._sanitize_pipe.transform(line).toString();
+        if (line.length < this.line_length) return [setTermColorsForLine(sanitized_line)];
         const lines = [];
         let count = 0;
-        while(count * this.line_length > line.length) {
+        while (count < 128 && count * this.line_length < sanitized_line.length) {
             lines.push(
-                line.substring(
-                    count * this.line_length, 
-                    (count + 1) * this.line_length
-                )
+                `${count > 0 ? '&nbsp;&nbsp;&nbsp;&nbsp;' : ''}${setTermColorsForLine(
+                    sanitized_line.substring(
+                        count * this.line_length,
+                        (count + 1) * this.line_length
+                    )
+                )}`
             );
             count += 1;
         }
         return lines;
     }
+}
+
+function setTermColorsForLine(line: string) {
+    return `<span>${line.replace(
+        /\u001b?\[([0-9]*)m/g,
+        '</span><span class="term-color-$1">'
+    )}</span>`.replace('<span></span>', '');
 }

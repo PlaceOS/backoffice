@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BaseClass } from './base.class';
 
-
+export type DebugConsolePosition = 'below' | 'side' | 'floating';
 
 const TERMINAL_COLOURS = {
     debug: '\u001b[34m',
@@ -36,6 +36,10 @@ export class PlaceDebugService extends BaseClass {
     private _module_names: HashMap<string> = {};
     /** Whether debug console is enabled */
     private _enabled: boolean;
+    /** Whether debug console is showing */
+    public is_shown: boolean = true;
+
+    public position: DebugConsolePosition = 'below';
 
     public readonly changed = this._changed.asObservable();
 

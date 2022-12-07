@@ -94,3 +94,37 @@ kbd.light,
         inset 0 0 0.4em rgb(200, 200, 200), 0 0.1em 0 rgb(130, 130, 130),
         0 0.11em 0 rgba(0, 0, 0, 0.4), 0 0.1em 0.11em rgba(0, 0, 0, 0.9);
 }
+
+.term-color-30 {
+    color: black;
+}
+
+.term-color-31 {
+    color: #d32f2f;
+}
+
+.term-color-32 {
+    color: #388e3c;
+}
+
+.term-color-33 {
+    
+    color: #fbc02d;
+}
+
+.term-color-34 {
+    
+    color: #1976d2;
+}
+
+.term-color-35 {
+    color: #c2185b;
+}
+
+.term-color-36 {
+    color: #0097a7;
+}
+
+.term-color-37 {
+    color: white;
+}

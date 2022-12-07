@@ -15,11 +15,11 @@ import { ActiveItemService } from '../common/item.service';
     selector: 'item-sidebar',
     template: `
         <div
-            class="flex flex-col w-[24rem] max-w-[25vw] space-y-2 bg-white dark:bg-neutral-700 shadow rounded overflow-hidden h-full"
+            class="flex flex-col w-[24rem] max-w-[25vw] space-y-2 bg-white dark:bg-neutral-700 shadow rounded overflow-hidden h-full sm:border-r border-gray-200 dark:border-neutral-500"
             (click)="$event.stopPropagation()"
         >
             <div
-                class="flex items-center border-b border-gray-200 dark:border-neutral-600"
+                class="flex items-center border-b border-gray-200 dark:border-neutral-500"
             >
                 <app-icon class="text-2xl ml-2 dark:text-white"
                     >search</app-icon
