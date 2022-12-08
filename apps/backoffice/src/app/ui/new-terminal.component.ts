@@ -147,7 +147,7 @@ export class NewTerminalComponent extends BaseClass {
 
     private _formatLineWithHTML(line: string) {
         const sanitized_line = this._sanitize_pipe.transform(line).toString();
-        if (line.length < this.line_length)
+        if (sanitized_line.length < this.line_length)
             return [setTermColorsForLine(sanitized_line)];
         const lines = [];
         let count = 0;
@@ -174,6 +174,6 @@ export class NewTerminalComponent extends BaseClass {
 function setTermColorsForLine(line: string) {
     return `<span>${line.replace(
         /\u001b?\[([0-9]*)m/g,
-        '</span><span class="term-color-$1">'
+        '</span><span class="tc-$1">'
     )}</span>`.replace('<span></span>', '');
 }

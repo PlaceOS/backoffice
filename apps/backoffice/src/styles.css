@@ -95,36 +95,36 @@ kbd.light,
         0 0.11em 0 rgba(0, 0, 0, 0.4), 0 0.1em 0.11em rgba(0, 0, 0, 0.9);
 }
 
-.term-color-30 {
+.tc-30 {
     color: black;
 }
 
-.term-color-31 {
+.tc-31 {
     color: #d32f2f;
 }
 
-.term-color-32 {
+.tc-32 {
     color: #388e3c;
 }
 
-.term-color-33 {
+.tc-33 {
     
     color: #fbc02d;
 }
 
-.term-color-34 {
+.tc-34 {
     
     color: #1976d2;
 }
 
-.term-color-35 {
+.tc-35 {
     color: #c2185b;
 }
 
-.term-color-36 {
+.tc-36 {
     color: #0097a7;
 }
 
-.term-color-37 {
+.tc-37 {
     color: white;
 }

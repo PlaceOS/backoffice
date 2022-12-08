@@ -18,6 +18,13 @@ export class UploadsService {
         }
     }
 
+    public clearList() {
+        const in_progress_list = this._upload_list
+            .getValue()
+            .filter((file) => file.progress < 100 && !file.error);
+        this._upload_list.next(in_progress_list)
+    }
+
     public uploadFile(file: File) {
         return new Promise<number>((resolve) => {
             let resolved = false;
