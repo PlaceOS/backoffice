@@ -52,7 +52,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 </button>
             </div>
             <div class="flex-1 h-px"></div>
-            <div class="m-2 p-2 rounded-xl border border-gray-200 dark:border-neutral-500 flex flex-col space-y-2" *ngIf="debug_enabled">
+            <div class="m-2 p-2 rounded-xl border border-gray-300 dark:border-neutral-500 flex flex-col space-y-2" *ngIf="debug_enabled">
                 <div class="rounded-xl text-xs mono bg-blue-600 text-center p-1">Debugging Enabled</div>
                 <p class="text-xs p-1 text-center">
                     Listening to {{ debug_module_count }} module(s)<br />
