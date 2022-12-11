@@ -28,7 +28,7 @@ import { SystemStateService } from './system-state.service';
                                 ></app-icon>
                             </button>
                         </item-selection>
-                        <div class="flex flex-col flex-1 h-1/p2">
+                        <div class="flex flex-col flex-1 h-1/2">
                             <ng-container *ngIf="item?.id">
                                 <item-details
                                     [can_edit]="true"
