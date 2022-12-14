@@ -33,19 +33,19 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                     <new-terminal [lines]="logs" [resize]="resize"></new-terminal>
                     <!-- <a-terminal [content]="logs" [resize]="resize"></a-terminal> -->
                     <div
-                        class="absolute h-4 -top-2 left-0 right-0"
+                        class="absolute h-4 -top-2 left-0 right-0 select-none"
                         ns-resize
                         (mousedown)="startResize($event, 'y')"
                         (touchstart)="startResize($event, 'y')"
                     ></div>
                     <div
-                        class="absolute w-4 -left-2 top-0 bottom-0"
+                        class="absolute w-4 -left-2 top-0 bottom-0 select-none"
                         ew-resize
                         (mousedown)="startResize($event, 'x')"
                         (touchstart)="startResize($event, 'x')"
                     ></div>
                     <div
-                        class="absolute w-4 h-4 -left-2 -top-2"
+                        class="absolute w-4 h-4 -left-2 -top-2 select-none"
                         nwse-resize
                         (mousedown)="startResize($event, 'xy')"
                         (touchstart)="startResize($event, 'xy')"
