@@ -87,7 +87,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="field" *ngIf="form.controls.uri">
+            <div class="field" *ngIf="form.controls.uri && !hide_uri">
                 <label
                     for="uri"
                     [class.error]="
@@ -178,7 +178,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                     </mat-error>
                 </mat-form-field>
             </div>
-            <div class="field commit" *ngIf="can_change_commit && is_interface">
+            <div class="field commit">
                 <label for="commit" i18n="@@repoCommitLabel">
                     Repository Commit:
                 </label>
@@ -286,6 +286,10 @@ export class RepositoryFormComponent extends BaseClass {
     public unable_to_load_releases = true;
     public date_pipe = new DateFromPipe();
 
+    public get hide_uri() {
+        return !this.is_interface && this.form.value.id;
+    }
+
     public get is_interface() {
         return this.form?.value?.repo_type === PlaceRepositoryType.Interface;
     }
@@ -312,6 +316,7 @@ export class RepositoryFormComponent extends BaseClass {
                 debounceTime(300),
                 switchMap(() => {
                     const { id, uri, username, password } = this.form.value;
+                    console.log('Branches:', id, uri);
                     return (
                         id
                             ? listRepositoryBranches(id)

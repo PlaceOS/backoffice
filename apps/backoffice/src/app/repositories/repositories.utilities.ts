@@ -5,9 +5,7 @@ import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
  * Generate angular form controls
  * @param repository Trigger to generate the form controls for
  */
-export function generateRepositoryFormFields(
-    repository?: PlaceRepository
-) {
+export function generateRepositoryFormFields(repository?: PlaceRepository) {
     const fields = {
         id: new FormControl(repository?.id || ''),
         commit_hash: new FormControl(repository?.commit_hash || 'HEAD'),
@@ -28,9 +26,6 @@ export function generateRepositoryFormFields(
         password: new FormControl(repository?.password),
     };
     if (repository?.id) {
-        if (repository?.type === PlaceRepositoryType.Driver) {
-            delete fields.uri;
-        }
         delete fields.folder_name;
     }
     if (fields.branch) {
