@@ -27,6 +27,7 @@ export const ROUTES: Routes = [
             { path: 'interfaces', component: AdminInterfacesComponent },
             { path: 'brokers', component: AdminBrokersComponent },
             { path: 'edge', component: PlaceEdgeComponent },
+            { path: 'edge/:id', component: PlaceEdgeComponent },
             { path: 'extensions', component: PlaceExtensionsComponent },
             { path: 'staff-api', component: PlaceStaffAPIComponent },
             { path: 'schemas', component: AdminSchemasComponent },

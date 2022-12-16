@@ -75,7 +75,7 @@ import { SystemStateService } from './system-state.service';
                         class="overflow-x-auto min-w-[60rem]"
                         *ngIf="(modules | async)?.length; else empty_state"
                     >
-                        <div table-head>
+                        <div table-head class="text-sm">
                             <div class="w-10 p-2"></div>
                             <div class="w-12 p-2" i18n="@@moduleStateLabel">
                                 State
@@ -144,45 +144,79 @@ import { SystemStateService } from './system-state.service';
                                         class="h-4 w-4 rounded-full"
                                         [class.bg-black]="!device.running"
                                         [class.bg-error]="
-                                            device.running && device.connected === false
+                                            device.running &&
+                                            device.connected === false
                                         "
                                         [class.bg-success]="
                                             device.running && !!device.connected
                                         "
-                                        [class.bg-pending]="device.running && device.connected === undefined"
+                                        [class.bg-pending]="
+                                            device.running &&
+                                            device.connected === undefined
+                                        "
                                         (click)="power(device)"
                                     ></div>
                                     <mat-spinner
-                                        *ngIf="device.running && device.connected === undefined"
+                                        *ngIf="
+                                            device.running &&
+                                            device.connected === undefined
+                                        "
                                         class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
                                         diameter="32"
                                     ></mat-spinner>
                                 </div>
                                 <div
-                                    class="flex-1 p-2 h-full flex flex-col justify-center"
+                                    class="flex items-center flex-1 h-full p-2"
                                 >
-                                    <a
-                                        [routerLink]="['/modules', device.id]"
-                                        (contextmenu)="$event.stopPropagation()"
-                                        class="truncate underline underline-offset-4 w-full"
-                                        [title]="
-                                            device.driver?.name || '<Unnamed>'
-                                        "
-                                    >
-                                        {{
-                                            device.driver?.name ||
-                                                '&lt;Unnamed&gt;'
-                                        }}
-                                    </a>
                                     <div
-                                        class="text-xs truncate w-full"
-                                        *ngIf="device.notes"
+                                        class="flex-1 flex flex-col justify-center w-px"
                                     >
-                                        {{ device.notes }}
+                                        <a
+                                            [routerLink]="[
+                                                '/modules',
+                                                device.id
+                                            ]"
+                                            (contextmenu)="
+                                                $event.stopPropagation()
+                                            "
+                                            class="truncate underline underline-offset-4 w-full"
+                                            [title]="
+                                                device.driver?.name ||
+                                                '<Unnamed>'
+                                            "
+                                        >
+                                            {{
+                                                device.driver?.name ||
+                                                    '&lt;Unnamed&gt;'
+                                            }}
+                                        </a>
+                                        <div
+                                            class="text-xs truncate w-full"
+                                            *ngIf="device.notes"
+                                        >
+                                            {{ device.notes }}
+                                        </div>
                                     </div>
+                                    <a
+                                        *ngIf="device.edge_id"
+                                        matRipple
+                                        class="text-xs h-6 w-6 rounded-full bg-blue-600 flex items-center justify-center shadow text-white"
+                                        [matTooltip]="device.edge_id"
+                                        [routerLink]="[
+                                            '/admin',
+                                            'edge',
+                                            device.edge_id
+                                        ]"
+                                    >
+                                        E
+                                    </a>
                                 </div>
                                 <div class="w-24 p-2">
-                                    {{ driver_type(device.role || device.driver?.role) }}
+                                    {{
+                                        driver_type(
+                                            device.role || device.driver?.role
+                                        )
+                                    }}
                                 </div>
                                 <div class="w-48 p-2">
                                     <span
@@ -398,7 +432,9 @@ export class SystemModulesComponent extends BaseClass {
     public readonly query_fn = (_: string) =>
         queryModules({ q: _ }).pipe(
             map((_) =>
-                _.data.map((mod) => ({ ...mod, extra: mod.driver?.name })).filter(_ => !_.control_system_id)
+                _.data
+                    .map((mod) => ({ ...mod, extra: mod.driver?.name }))
+                    .filter((_) => !_.control_system_id)
             )
         );
     /** Function for excluding modules already within this system */

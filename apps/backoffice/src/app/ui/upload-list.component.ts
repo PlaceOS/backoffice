@@ -19,6 +19,9 @@ import { UploadsService } from '../common/uploads.service';
                 <div class="flex-1 px-4">
                     Uploads({{ (uploads | async)?.length || '0' }})
                 </div>
+                <button mat-icon-button (click)="clearList()" matTooltip="Clear completed uploads">
+                    <app-icon>clear_all</app-icon>
+                </button>
                 <button mat-icon-button (click)="show = false">
                     <app-icon className="backoffice-cross"></app-icon>
                 </button>
@@ -184,6 +187,10 @@ export class UploadListComponent extends BaseClass implements OnInit {
 
     public hideOverlay() {
         this.timeout('hide_overlay', () => (this.show_overlay = false));
+    }
+
+    public clearList() {
+        this._uploads.clearList();
     }
 
     /** Upload the image to the cloud */

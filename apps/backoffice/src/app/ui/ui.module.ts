@@ -84,6 +84,7 @@ import { PortalModule } from '@angular/cdk/portal';
 import { ItemDetailsComponent } from './item-details.component';
 import { ItemTablistComponent } from './item-tablist.component';
 import { ItemSidebarComponent } from './item-sidebar.component';
+import { NewTerminalComponent } from './new-terminal.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -110,7 +111,8 @@ const FORM_COMPONENTS: Type<any>[] = [
     SelectModuleComponent,
     SelectMethodComponent,
     FunctionArgumentComponent,
-    ItemSidebarComponent
+    ItemSidebarComponent,
+    NewTerminalComponent
 ];
 
 const COMPONENTS: Type<any>[] = [

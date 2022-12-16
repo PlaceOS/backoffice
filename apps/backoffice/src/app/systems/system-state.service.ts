@@ -136,8 +136,8 @@ export class SystemStateService extends BaseClass {
         shareReplay()
     );
     /** Observable for debug state of the active modules */
-    public readonly debug_state = this.modules.pipe(
-        map((modules) => {
+    public readonly debug_state = combineLatest([this.modules, this._debug.changed]).pipe(
+        map(([modules]) => {
             return modules.reduce((mapping, device) => {
                 mapping[device.id] = this._debug.isListening(device);
                 return mapping;

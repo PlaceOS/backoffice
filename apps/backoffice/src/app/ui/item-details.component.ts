@@ -63,6 +63,7 @@ export interface DisplayItem {
                     <div
                         class="px-2 py-1 rounded-xl text-xs bg-blue-600 text-white"
                         *ngIf="item?.edge_id"
+                        [matTooltip]="item?.edge_id"
                         i18n="@@edgeState"
                     >
                         Edge

@@ -123,11 +123,11 @@ jobs:
                 tar -czvf dist/publish/backoffice.tar.gz dist/apps/backoffice/*
                 echo $GITHUB_SHA > dist/publish/backoffice.txt
 
-            - name: Update Changelog
-              run: |
-                node ./config/generate-changelog.js
-                cp ./CHANGELOG.md ./dist/apps/backoffice/
-              if: ${{ env.deploy_branch != 'dev' }}
+            # - name: Update Changelog
+            #   run: |
+            #     node ./config/generate-changelog.js
+            #     cp ./CHANGELOG.md ./dist/apps/backoffice/
+            #   if: ${{ env.deploy_branch != 'dev' }}
 
             - name: Deploy the application
               uses: s0/git-publish-subdir-action@develop

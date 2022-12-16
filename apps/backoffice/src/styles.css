@@ -94,3 +94,37 @@ kbd.light,
         inset 0 0 0.4em rgb(200, 200, 200), 0 0.1em 0 rgb(130, 130, 130),
         0 0.11em 0 rgba(0, 0, 0, 0.4), 0 0.1em 0.11em rgba(0, 0, 0, 0.9);
 }
+
+.tc-30 {
+    color: black;
+}
+
+.tc-31 {
+    color: #d32f2f;
+}
+
+.tc-32 {
+    color: #388e3c;
+}
+
+.tc-33 {
+    
+    color: #fbc02d;
+}
+
+.tc-34 {
+    
+    color: #1976d2;
+}
+
+.tc-35 {
+    color: #c2185b;
+}
+
+.tc-36 {
+    color: #0097a7;
+}
+
+.tc-37 {
+    color: white;
+}

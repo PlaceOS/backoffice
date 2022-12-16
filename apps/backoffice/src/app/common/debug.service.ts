@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BaseClass } from './base.class';
 
-
+export type DebugConsolePosition = 'below' | 'side' | 'floating';
 
 const TERMINAL_COLOURS = {
     debug: '\u001b[34m',
@@ -36,6 +36,10 @@ export class PlaceDebugService extends BaseClass {
     private _module_names: HashMap<string> = {};
     /** Whether debug console is enabled */
     private _enabled: boolean;
+    /** Whether debug console is showing */
+    public is_shown: boolean = true;
+
+    public position: DebugConsolePosition = 'below';
 
     public readonly changed = this._changed.asObservable();
 
@@ -48,6 +52,14 @@ export class PlaceDebugService extends BaseClass {
     public get events(): Observable<PlaceDebugEvent[]> {
         return this._event_obs;
     }
+    
+    public get modules() {
+        return this._bound_modules;
+    }
+    
+    public get module_names() {
+        return this._module_names;
+    }
 
     /** Get terminal display string for all the events */
     public get terminal_string(): string {
@@ -59,7 +71,7 @@ export class PlaceDebugService extends BaseClass {
                     this._module_names[event.mod_id] ||
                     event.mod_id ||
                     '<UNKNOWN>'
-                }, [${event.level.toUpperCase()}]\u001b[0m ${event.message}`
+                }, [${event.level.toUpperCase()}]\u001b[0m ${event.message.split('\n').reverse().join('\n')}`
         );
         return list.join('\n');
     }
@@ -136,6 +148,12 @@ export class PlaceDebugService extends BaseClass {
                 (mod) => mod.id !== module.id
             );
             this._changed.next(Date.now());
+        }
+    }
+
+    public unbindAll() {
+        for (const mod of this._bound_modules) {
+            this.unbind(mod);
         }
     }
 }
