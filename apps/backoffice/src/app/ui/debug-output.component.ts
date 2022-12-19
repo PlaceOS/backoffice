@@ -16,7 +16,12 @@ import { Point } from 'apps/backoffice/src/app/common/types';
     template: `
         <ng-container *ngIf="is_enabled">
             <div
-                [class]="debug_position === 'floating' ? 'absolute bottom-2 right-2' : 'h-full w-full'"
+                [class]="
+                    debug_position === 'floating'
+                        ? 'absolute bottom-2 right-2'
+                        : 'h-full w-full'
+                "
+                (window:resize)="onWindowResize()"
                 *ngIf="is_shown"
             >
                 <div
@@ -24,13 +29,18 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                     content
                     #content
                     [@show]="is_shown ? 'show' : 'hide'"
-                    [style.height]="debug_position === 'side' ? '100%' : height + 'px'"
-                    [style.width]="debug_position === 'below' ? '100%' : width + 'px'"
+                    [style.height]="
+                        debug_position === 'side' ? '100%' : height + 'px'
+                    "
+                    [style.width]="
+                        debug_position === 'below' ? '100%' : width + 'px'
+                    "
                 >
-                    <div class="p-2 text-sm">
-                        {{ event_count }} messages
-                    </div>
-                    <new-terminal [lines]="logs" [resize]="resize"></new-terminal>
+                    <div class="p-2 text-sm">{{ event_count }} messages</div>
+                    <new-terminal
+                        [lines]="logs"
+                        [resize]="resize"
+                    ></new-terminal>
                     <!-- <a-terminal [content]="logs" [resize]="resize"></a-terminal> -->
                     <div
                         class="absolute h-4 -top-2 left-0 right-0 select-none"
@@ -50,18 +60,33 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                         (mousedown)="startResize($event, 'xy')"
                         (touchstart)="startResize($event, 'xy')"
                     ></div>
-                    <div actions class="absolute flex bg-neutral-700 rounded-3xl shadow bottom-2 right-2">
+                    <div
+                        actions
+                        class="absolute flex bg-neutral-700 rounded-3xl shadow bottom-2 right-2"
+                    >
                         <button mat-icon-button (click)="toggleDebugPosition()">
-                            <app-icon matTooltip="Toggle Position">{{ debug_position === 'side' ? 'border_bottom' : 'border_right'}}</app-icon>
+                            <app-icon matTooltip="Toggle Position">{{
+                                debug_position === 'side'
+                                    ? 'border_bottom'
+                                    : 'border_right'
+                            }}</app-icon>
                         </button>
                         <button mat-icon-button (click)="clearDebugMessages()">
-                            <app-icon matTooltip="Clear Messages">clear_all</app-icon>
+                            <app-icon matTooltip="Clear Messages"
+                                >clear_all</app-icon
+                            >
                         </button>
                         <button mat-icon-button (click)="clearBindings()">
-                            <app-icon className="backoffice-uninstall" matTooltip="Unbind Modules"></app-icon>
+                            <app-icon
+                                className="backoffice-uninstall"
+                                matTooltip="Unbind Modules"
+                            ></app-icon>
                         </button>
                         <button mat-icon-button (click)="close()">
-                            <app-icon className="backoffice-cross" matTooltip="Close Console"></app-icon>
+                            <app-icon
+                                className="backoffice-cross"
+                                matTooltip="Close Console"
+                            ></app-icon>
                         </button>
                     </div>
                 </div>
@@ -145,7 +170,9 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
 
     public get module_list() {
         const o = this._service.module_names;
-        return Object.keys(o).map((k) => `${o[k]} (${k})`).join('\n');
+        return Object.keys(o)
+            .map((k) => `${o[k]} (${k})`)
+            .join('\n');
     }
 
     public get debug_position() {
@@ -197,6 +224,10 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
 
     public clearBindings() {
         this._service.unbindAll();
+    }
+
+    public onWindowResize() {
+        this.timeout('resize', () => (this.resize = !this.resize), 50);
     }
 
     public startResize(event: MouseEvent | TouchEvent, dir: 'x' | 'y' | 'xy') {
