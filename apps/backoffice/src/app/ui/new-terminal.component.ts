@@ -37,11 +37,12 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
                 <p class="opacity-60">No debug messages to display</p>
             </div>
             <div
-                class="absolute -top-2 right-2 bg-neutral-800 rounded-b-lg p-2 flex items-center space-x-2"
+                class="absolute -top-11 right-0 p-2 flex items-center space-x-2"
             >
                 <input
                     class="bg-neutral-700 border-none rounded mono text-xs"
                     [(ngModel)]="search"
+                    placeholder="🔍 Filter output"
                     (ngModelChange)="search_string.next($event)"
                 />
                 <div>{{ search_count }} / {{ lines.length }}</div>

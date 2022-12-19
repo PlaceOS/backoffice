@@ -36,7 +36,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                         debug_position === 'below' ? '100%' : width + 'px'
                     "
                 >
-                    <div class="p-2 text-sm">{{ event_count }} messages</div>
+                    <div class="p-3 text-sm">{{ event_count }} messages</div>
                     <new-terminal
                         [lines]="logs"
                         [resize]="resize"
