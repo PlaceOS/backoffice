@@ -47,7 +47,8 @@ let MODEL: HashMap<monaco.editor.ITextModel> = {};
 })
 export class SettingsFieldComponent
     extends BaseClass
-    implements OnInit, OnChanges, OnDestroy, ControlValueAccessor {
+    implements OnInit, OnChanges, OnDestroy, ControlValueAccessor
+{
     /** Whether form field is readonly */
     @Input() public readonly = true;
     /** Resize */
@@ -91,7 +92,7 @@ export class SettingsFieldComponent
     }
 
     public ngOnInit(): void {
-        this.createEditor();
+        this.timeout('resize', () => this.createEditor(), 100);
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
