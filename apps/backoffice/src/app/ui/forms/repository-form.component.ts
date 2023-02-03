@@ -376,11 +376,7 @@ export class RepositoryFormComponent extends BaseClass {
                     const { id, uri, branch, username, password } =
                         this.form.value;
                     return (
-                        id
-                            ? listRepositoryCommits(id)
-                            : isValidUrl(uri) &&
-                              uri.startsWith('http') &&
-                              branch
+                        isValidUrl(uri) && uri.startsWith('http') && branch
                             ? listRemoteRepositoryCommits({
                                   repository_url: uri,
                                   username,
