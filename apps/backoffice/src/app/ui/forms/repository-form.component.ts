@@ -377,7 +377,7 @@ export class RepositoryFormComponent extends BaseClass {
                         this.form.value;
                     return (
                         id
-                            ? listRepositoryCommits(id)
+                            ? listRepositoryCommits(id, { branch })
                             : isValidUrl(uri) &&
                               uri.startsWith('http') &&
                               branch
