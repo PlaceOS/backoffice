@@ -193,10 +193,15 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                             [value]="commit.hash"
                         >
                             <div class="flex items-center space-x-2">
-                                <div class="flex-1 truncate w-1/2">
-                                    {{ commit.subject }}
+                                <div
+                                    class="flex flex-col flex-1 truncate w-1/2 leading-tight"
+                                >
+                                    <div>{{ commit.subject }}</div>
+                                    <div class="text-xs opacity-30">
+                                        {{ commit.date | date: 'medium' }}
+                                    </div>
                                 </div>
-                                <div class="hidden">|</div>
+                                <div class="hidden">&nbsp;|&nbsp;</div>
                                 <code class="text-xs">{{
                                     commit.hash | slice: 0:8
                                 }}</code>
