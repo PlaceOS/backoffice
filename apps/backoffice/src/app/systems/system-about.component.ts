@@ -27,6 +27,12 @@ import { SystemStateService } from './system-state.service';
                     <label i18n="@@systemBookableLabel">Bookable Room:</label>
                     <div class="value">{{ item?.bookable ? 'Yes' : 'No' }}</div>
                 </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.bookable">
+                    <label i18n="@@systemPublicLabel">
+                        Publicly Available:
+                    </label>
+                    <div class="value">{{ item?.public ? 'Yes' : 'No' }}</div>
+                </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.email">
                     <label i18n="@@emailLabel">Email:&nbsp;</label>
                     <a

@@ -204,6 +204,15 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                         Bookable
                     </mat-checkbox>
                 </div>
+                <div class="field" *ngIf="form.controls.public">
+                    <mat-checkbox
+                        name="public"
+                        formControlName="public"
+                        i18n="@@publicLabel"
+                    >
+                        Public
+                    </mat-checkbox>
+                </div>
             </div>
             <div class="field" *ngIf="form.controls.description">
                 <label for="description" i18n="@@descriptionLabel"
@@ -281,7 +290,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                 margin-top: 2.5em;
                 margin-bottom: 1.5em;
             }
-            
+
             @media screen and (max-width: 640px) {
                 mat-checkbox {
                     margin-top: 0;
