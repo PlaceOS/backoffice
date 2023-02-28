@@ -32,6 +32,7 @@ export function generateSystemsFormFields(system?: PlaceSystem) {
         name: new FormControl(system.name || '', [Validators.required]),
         display_name: new FormControl(system.display_name || ''),
         email: new FormControl(system.email || '', [Validators.email]),
+        code: new FormControl(system.code || ''),
         support_url: new FormControl(system.support_url || '', [validateURL]),
         installed_ui_devices: new FormControl(
             system.installed_ui_devices || 0,

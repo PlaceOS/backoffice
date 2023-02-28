@@ -97,19 +97,33 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                     </mat-form-field>
                 </div>
             </div>
-            <div class="field" *ngIf="form.controls.display_name">
-                <label for="display-name" i18n="@@displayNameLabel"
-                    >Display Name:
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="display-name"
-                        placeholder="Display Name"
-                        i18n-placeholder="@@displayNamePlaceholder"
-                        formControlName="display_name"
-                    />
-                </mat-form-field>
+            <div class="fieldset">
+                <div class="field" *ngIf="form.controls.display_name">
+                    <label for="display-name" i18n="@@displayNameLabel"
+                        >Display Name:
+                    </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="display-name"
+                            placeholder="Display Name"
+                            i18n-placeholder="@@displayNamePlaceholder"
+                            formControlName="display_name"
+                        />
+                    </mat-form-field>
+                </div>
+                <div class="field" *ngIf="form.controls.display_name">
+                    <label for="code-name" i18n="@@codeNameLabel">Code: </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="code-name"
+                            placeholder="Code"
+                            i18n-placeholder="@@codeNamePlaceholder"
+                            formControlName="code"
+                        />
+                    </mat-form-field>
+                </div>
             </div>
             <div class="field" *ngIf="form.controls.support_url">
                 <label

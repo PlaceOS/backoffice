@@ -65,7 +65,7 @@
     "@nrwl/tao": "15.0.10",
     "@nrwl/workspace": "15.0.10",
     "@placeos/cloud-uploads": "^0.1.1-dev",
-    "@placeos/ts-client": "^3.18.5",
+    "@placeos/ts-client": "^3.18.7",
     "@sentry/browser": "^7.17.4",
     "@types/jest": "28.1.8",
     "@types/marked": "^4.0.1",

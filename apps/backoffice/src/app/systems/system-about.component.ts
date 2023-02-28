@@ -33,6 +33,10 @@ import { SystemStateService } from './system-state.service';
                     </label>
                     <div class="value">{{ item?.public ? 'Yes' : 'No' }}</div>
                 </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.code">
+                    <label i18n="@@codeLabel">Code:&nbsp;</label>
+                    <p>{{ item?.code }}</p>
+                </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.email">
                     <label i18n="@@emailLabel">Email:&nbsp;</label>
                     <a
