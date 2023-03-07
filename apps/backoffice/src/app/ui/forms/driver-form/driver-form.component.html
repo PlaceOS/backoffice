@@ -48,155 +48,160 @@
         </div>
     </div>
     <ng-container *ngIf="!loading; else load_state">
-        <form
-            [formGroup]="form"
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
-        >
-            <ng-container
-                *ngIf="
-                    (form.controls.commit && form.controls.commit.value) ||
-                    base_commit
-                "
+        <ng-container *ngIf="!failed; else fail_state">
+            <form
+                [formGroup]="form"
+                class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
             >
-                <div class="field" *ngIf="form.controls.name">
-                    <label
-                        for="driver-name"
-                        [class.error]="
-                            form.controls.name.invalid &&
-                            form.controls.name.touched
-                        "
-                        i18n="@@nameLabel"
-                    >
-                        Name<span>*</span>:
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="driver-name"
-                            placeholder="Driver Name"
-                            i18n-placeholder="@@driverNamePlaceholder"
-                            formControlName="name"
-                            required
-                        />
-                        <mat-error
-                            *ngIf="form.controls.name.invalid"
-                            i18n="@@driverNameError"
-                        >
-                            Driver name is required
-                        </mat-error>
-                    </mat-form-field>
-                </div>
-                <div class="field" *ngIf="form.controls.role">
-                    <label for="role" i18n="@@roleLabel">Role: </label>
-                    <mat-form-field appearance="outline">
-                        <mat-select name="role" formControlName="role">
-                            <mat-option
-                                *ngFor="let type of role_types"
-                                [value]="type.id"
-                            >
-                                {{ type.name }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="field" *ngIf="form.controls.description">
-                    <label for="description" i18n="@@descriptionLabel"
-                        >Description:</label
-                    >
-                    <mat-form-field appearance="outline">
-                        <textarea
-                            matInput
-                            name="description"
-                            placeholder="Description"
-                            i18n-placeholder="@@descriptionPlaceholder"
-                            formControlName="description"
-                        ></textarea>
-                    </mat-form-field>
-                </div>
-                <div class="field" *ngIf="form.controls.module_name">
-                    <label
-                        for="module-name"
-                        [class.error]="
-                            form.controls.module_name.invalid &&
-                            form.controls.module_name.touched
-                        "
-                        i18n="@@moduleNameLabel"
-                    >
-                        Module Name<span>*</span>:
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="module-name"
-                            placeholder="Module Name"
-                            i18n="@@moduleNamePlaceholder"
-                            formControlName="module_name"
-                            required
-                        />
-                        <mat-error
-                            *ngIf="form.controls.module_name.invalid"
-                            i18n="@@moduleNameError"
-                        >
-                            Module name is required
-                        </mat-error>
-                    </mat-form-field>
-                </div>
-                <div class="field" *ngIf="form.controls.default_uri">
-                    <label for="default-uri" i18n="@@defaultUriLabel"
-                        >Default URI:</label
-                    >
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="default-uri"
-                            placeholder="Default URI"
-                            i18n="@@defaultUriPlaceholder"
-                            formControlName="default_uri"
-                        />
-                    </mat-form-field>
-                </div>
-                <div class="fieldset">
-                    <div class="field" *ngIf="form.controls.default_port">
+                <ng-container
+                    *ngIf="
+                        (form.controls.commit && form.controls.commit.value) ||
+                        base_commit
+                    "
+                >
+                    <div class="field" *ngIf="form.controls.name">
                         <label
-                            for="default-port"
+                            for="driver-name"
                             [class.error]="
-                                form.controls.default_port.invalid &&
-                                form.controls.default_port.touched
+                                form.controls.name.invalid &&
+                                form.controls.name.touched
                             "
-                            i18n="@@defaultPortLabel"
+                            i18n="@@nameLabel"
                         >
-                            Default Port Number:
+                            Name<span>*</span>:
                         </label>
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
-                                name="default-port"
-                                type="number"
-                                placeholder="Port Number"
-                                i18n="@@defaultPortPlaceholder"
-                                formControlName="default_port"
+                                name="driver-name"
+                                placeholder="Driver Name"
+                                i18n-placeholder="@@driverNamePlaceholder"
+                                formControlName="name"
+                                required
                             />
                             <mat-error
-                                *ngIf="form.controls.default_port.invalid"
-                                i18n="@@portError"
+                                *ngIf="form.controls.name.invalid"
+                                i18n="@@driverNameError"
                             >
-                                A valid port number between 1 - 65535 is
-                                required
+                                Driver name is required
                             </mat-error>
                         </mat-form-field>
                     </div>
-                    <div class="field" *ngIf="form.controls.ignore_connected">
-                        <mat-checkbox
-                            name="ignore-connected"
-                            formControlName="ignore_connected"
-                            i18n="@@ignoreConnectedLabel"
-                        >
-                            Ignore Connected
-                        </mat-checkbox>
+                    <div class="field" *ngIf="form.controls.role">
+                        <label for="role" i18n="@@roleLabel">Role: </label>
+                        <mat-form-field appearance="outline">
+                            <mat-select name="role" formControlName="role">
+                                <mat-option
+                                    *ngFor="let type of role_types"
+                                    [value]="type.id"
+                                >
+                                    {{ type.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
                     </div>
-                </div>
-            </ng-container>
-        </form>
+                    <div class="field" *ngIf="form.controls.description">
+                        <label for="description" i18n="@@descriptionLabel"
+                            >Description:</label
+                        >
+                        <mat-form-field appearance="outline">
+                            <textarea
+                                matInput
+                                name="description"
+                                placeholder="Description"
+                                i18n-placeholder="@@descriptionPlaceholder"
+                                formControlName="description"
+                            ></textarea>
+                        </mat-form-field>
+                    </div>
+                    <div class="field" *ngIf="form.controls.module_name">
+                        <label
+                            for="module-name"
+                            [class.error]="
+                                form.controls.module_name.invalid &&
+                                form.controls.module_name.touched
+                            "
+                            i18n="@@moduleNameLabel"
+                        >
+                            Module Name<span>*</span>:
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="module-name"
+                                placeholder="Module Name"
+                                i18n="@@moduleNamePlaceholder"
+                                formControlName="module_name"
+                                required
+                            />
+                            <mat-error
+                                *ngIf="form.controls.module_name.invalid"
+                                i18n="@@moduleNameError"
+                            >
+                                Module name is required
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="field" *ngIf="form.controls.default_uri">
+                        <label for="default-uri" i18n="@@defaultUriLabel"
+                            >Default URI:</label
+                        >
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="default-uri"
+                                placeholder="Default URI"
+                                i18n="@@defaultUriPlaceholder"
+                                formControlName="default_uri"
+                            />
+                        </mat-form-field>
+                    </div>
+                    <div class="fieldset">
+                        <div class="field" *ngIf="form.controls.default_port">
+                            <label
+                                for="default-port"
+                                [class.error]="
+                                    form.controls.default_port.invalid &&
+                                    form.controls.default_port.touched
+                                "
+                                i18n="@@defaultPortLabel"
+                            >
+                                Default Port Number:
+                            </label>
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="default-port"
+                                    type="number"
+                                    placeholder="Port Number"
+                                    i18n="@@defaultPortPlaceholder"
+                                    formControlName="default_port"
+                                />
+                                <mat-error
+                                    *ngIf="form.controls.default_port.invalid"
+                                    i18n="@@portError"
+                                >
+                                    A valid port number between 1 - 65535 is
+                                    required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div
+                            class="field"
+                            *ngIf="form.controls.ignore_connected"
+                        >
+                            <mat-checkbox
+                                name="ignore-connected"
+                                formControlName="ignore_connected"
+                                i18n="@@ignoreConnectedLabel"
+                            >
+                                Ignore Connected
+                            </mat-checkbox>
+                        </div>
+                    </div>
+                </ng-container>
+            </form>
+        </ng-container>
     </ng-container>
 </div>
 <ng-template #load_state>
@@ -206,6 +211,14 @@
         </div>
         <div class="text" i18n="@@driverCommitLoading">
             Loading driver details for commit...
+        </div>
+    </div>
+</ng-template>
+<ng-template #fail_state>
+    <div class="info-block">
+        <div class="text text-error text-center" i18n="@@driverCommitFail">
+            Failed to load driver details for commit.<br />
+            Please check that the driver compiles correctly and try again.
         </div>
     </div>
 </ng-template>

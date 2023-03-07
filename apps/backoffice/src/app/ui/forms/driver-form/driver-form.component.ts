@@ -96,6 +96,7 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
     public readonly exclude_fn = (repo: PlaceRepository) =>
         repo.type === PlaceRepositoryType.Interface;
     public date_pipe = new DateFromPipe();
+    public failed = false;
 
     public get editing(): boolean {
         return this.form.controls.id && this.form.controls.id.value;
@@ -213,6 +214,7 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
      */
     public async setDriverBase(event: Identity) {
         this.form.controls.commit.setValue(event.id);
+        this.failed = false;
         this.base_commit = event as any;
         this.loading = true;
         this.waiting.emit(true);
@@ -223,6 +225,7 @@ export class DriverFormComponent extends BaseClass implements OnChanges {
             .toPromise()
             .catch((_) => {
                 this.loading = false;
+                this.failed = true;
                 this.waiting.emit(false);
                 throw _;
             });
