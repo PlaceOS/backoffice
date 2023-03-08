@@ -22,13 +22,13 @@ export class UploadsService {
         const in_progress_list = this._upload_list
             .getValue()
             .filter((file) => file.progress < 100 && !file.error);
-        this._upload_list.next(in_progress_list)
+        this._upload_list.next(in_progress_list);
     }
 
     public uploadFile(file: File) {
         return new Promise<number>((resolve) => {
             let resolved = false;
-            const update_fn = (details) =>{
+            const update_fn = (details) => {
                 if (!resolved) {
                     resolve(details.id);
                     resolved = true;
@@ -39,8 +39,8 @@ export class UploadsService {
                         .filter((_) => _.id !== details.id),
                     details,
                 ]);
-            }
-            uploadFile(file).subscribe(update_fn, update_fn, () =>{
+            };
+            uploadFile(file).subscribe(update_fn, update_fn, () => {
                 this._updateUploadHistory();
             });
         });

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { get, apiEndpoint } from '@placeos/ts-client';
 
@@ -99,7 +99,7 @@ export interface PlaceServiceDetails {
             </button>
         </div>
         <section class="flex flex-wrap py-2">
-            <ng-container *ngIf="!api_details?.length; else empty_state">
+            <ng-container *ngIf="api_details.length > 0; else empty_state">
                 <div
                     class="bg-white dark:bg-neutral-700 rounded border border-gray-200 dark:border-neutral-500 m-2 min-w-[40%] flex-1 overflow-hidden"
                     *ngFor="let api of api_details"
@@ -170,7 +170,7 @@ export interface PlaceServiceDetails {
 })
 export class PlaceDetailsComponent extends BaseClass implements OnInit {
     /** Current details about the API */
-    public api_details: PlaceServiceDetails[];
+    public api_details: PlaceServiceDetails[] = [];
     public changelog_data: string = '';
     public backend_version = '';
     public backoffice_logs = '';
@@ -200,7 +200,8 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
 
     constructor(
         private _users: BackofficeUsersService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
+        private _cdr: ChangeDetectorRef
     ) {
         super();
     }
@@ -224,33 +225,38 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
         notifyInfo(`Copied ${name} to clipboard`);
     }
 
-    public loadApiDetails(): void {
-        get(`${apiEndpoint()}/cluster/versions`)
+    public async loadApiDetails() {
+        const details = await get(`${apiEndpoint()}/cluster/versions`)
             .toPromise()
-            .then(
-                (details) => (this.api_details = details as any),
-                (err) =>
-                    notifyError(
-                        `Error loading API details. Error: ${JSON.stringify(
-                            err.response || err.message || err
-                        )}`
-                    )
-            );
-    }
-
-    public async loadPlatformDetails() {
-        const { changelog, version } = await get(`${apiEndpoint()}/platform`)
-            .toPromise()
-            .catch((err) =>{
+            .catch((err) =>
                 notifyError(
                     `Error loading API details. Error: ${JSON.stringify(
                         err.response || err.message || err
                     )}`
                 )
+            );
+        console.log('Details:', details);
+        this.api_details = (details as any) || [];
+        this._cdr.detectChanges();
+    }
+
+    public async loadPlatformDetails() {
+        const { changelog, version } = await get(`${apiEndpoint()}/platform`)
+            .toPromise()
+            .catch((err) => {
+                notifyError(
+                    `Error loading API details. Error: ${JSON.stringify(
+                        err.response || err.message || err
+                    )}`
+                );
                 throw err;
             });
         this.changelog_data = changelog.replace('# Changelog\n\n', '');
         this.backend_version = version;
-        this.backoffice_logs = await (await fetch('https://raw.githubusercontent.com/PlaceOS/backoffice/develop/CHANGELOG.md')).text();
+        this.backoffice_logs = await (
+            await fetch(
+                'https://raw.githubusercontent.com/PlaceOS/backoffice/develop/CHANGELOG.md'
+            )
+        ).text();
     }
 }
