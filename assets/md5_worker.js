@@ -1,30 +1,114 @@
 "use strict";
-/*
 
+// Hashes any blob
+var Md5FileHasher = /** @class */ (function () {
+    function Md5FileHasher(_callback, // Callback to return the result
+    _async, // Async version is not always available in a web worker
+    _partSize) {
+        if (_async === void 0) { _async = true; }
+        if (_partSize === void 0) { _partSize = 1048576; }
+        this._callback = _callback;
+        this._async = _async;
+        this._partSize = _partSize;
+        this._configureReader();
+    }
+    /**
+     * Hash a blob of data in the worker
+     * @param blob Data to hash
+     */
+    Md5FileHasher.prototype.hash = function (blob) {
+        var self = this;
+        self._blob = blob;
+        // self._length = Math.ceil(blob.size / self._partSize);
+        self._part = 0;
+        self._md5 = new Md5();
+        self._processPart();
+    };
+    Md5FileHasher.prototype._fail = function () {
+        this._callback({
+            success: false,
+            result: 'data read failed'
+        });
+    };
+    Md5FileHasher.prototype._hashData = function (e) {
+        var self = this;
+        self._md5.appendByteArray(new Uint8Array(e.target.result));
+        if (self._part * self._partSize >= self._blob.size) {
+            self._callback({
+                success: true,
+                result: self._md5.end()
+            });
+        }
+        else {
+            self._processPart();
+        }
+    };
+    Md5FileHasher.prototype._processPart = function () {
+        var self = this;
+        var endbyte = 0;
+        var current_part;
+        self._part += 1;
+        if (self._blob.size > self._partSize) { // If blob bigger then part_size we will slice it up
+            endbyte = self._part * self._partSize;
+            if (endbyte > self._blob.size) {
+                endbyte = self._blob.size;
+            }
+            current_part = self._blob.slice((self._part - 1) * self._partSize, endbyte);
+        }
+        else {
+            current_part = self._blob;
+        }
+        if (self._async) {
+            self._reader.readAsArrayBuffer(current_part);
+        }
+        else {
+            setTimeout(function () {
+                try {
+                    self._hashData({
+                        target: {
+                            result: self._reader.readAsArrayBuffer(current_part)
+                        },
+                    });
+                }
+                catch (e) {
+                    self._fail();
+                }
+            }, 0);
+        }
+    };
+    Md5FileHasher.prototype._configureReader = function () {
+        var self = this;
+        if (self._async) {
+            self._reader = new FileReader();
+            self._reader.onload = self._hashData.bind(self);
+            self._reader.onerror = self._fail.bind(self);
+            self._reader.onabort = self._fail.bind(self);
+        }
+        else {
+            self._reader = new FileReaderSync();
+        }
+    };
+    return Md5FileHasher;
+}());
+//# sourceMappingURL=md5_file_hasher.js.map"use strict";
+/*
 TypeScript Md5
 ==============
-
 Based on work by
 * Joseph Myers: http://www.myersdaily.org/joseph/javascript/md5-text.html
 * André Cruz: https://github.com/satazor/SparkMD5
 * Raymond Hill: https://github.com/gorhill/yamd5.js
-
 Effectively a TypeScrypt re-write of Raymond Hill JS Library
-
 The MIT License (MIT)
-
 Copyright (C) 2014 Raymond Hill
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,26 +117,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-
-
-            PUBLIC LICENSE
+            DO WHAT YOU WANT TO PUBLIC LICENSE
                     Version 2, December 2004
-
  Copyright (C) 2015 André Cruz <amdfcruz@gmail.com>
-
  Everyone is permitted to copy and distribute verbatim or modified
  copies of this license document, and changing it is allowed as long
  as the name is changed.
-
-            PUBLIC LICENSE
+            DO WHAT YOU WANT TO PUBLIC LICENSE
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-
   0. You just DO WHAT YOU WANT TO.
 
-
 */
+
+;
 var Md5 = /** @class */ (function () {
     function Md5() {
+        this._dataLength = 0;
+        this._bufferLength = 0;
         this._state = new Int32Array(4);
         this._buffer = new ArrayBuffer(68);
         this._buffer8 = new Uint8Array(this._buffer, 0, 68);
@@ -234,6 +315,9 @@ var Md5 = /** @class */ (function () {
         x[2] = c + x[2] | 0;
         x[3] = d + x[3] | 0;
     };
+    /**
+     * Initialise buffer to be hashed
+     */
     Md5.prototype.start = function () {
         this._dataLength = 0;
         this._bufferLength = 0;
@@ -243,6 +327,10 @@ var Md5 = /** @class */ (function () {
     // Char to code point to to array conversion:
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charCodeAt
     // #Example.3A_Fixing_charCodeAt_to_handle_non-Basic-Multilingual-Plane_characters_if_their_presence_earlier_in_the_string_is_unknown
+    /**
+     * Append a UTF-8 string to the hash buffer
+     * @param str String to append
+     */
     Md5.prototype.appendStr = function (str) {
         var buf8 = this._buffer8;
         var buf32 = this._buffer32;
@@ -283,6 +371,10 @@ var Md5 = /** @class */ (function () {
         this._bufferLength = bufLen;
         return this;
     };
+    /**
+     * Append an ASCII string to the hash buffer
+     * @param str String to append
+     */
     Md5.prototype.appendAsciiStr = function (str) {
         var buf8 = this._buffer8;
         var buf32 = this._buffer32;
@@ -304,6 +396,10 @@ var Md5 = /** @class */ (function () {
         this._bufferLength = bufLen;
         return this;
     };
+    /**
+     * Append a byte array to the hash buffer
+     * @param input array to append
+     */
     Md5.prototype.appendByteArray = function (input) {
         var buf8 = this._buffer8;
         var buf32 = this._buffer32;
@@ -325,16 +421,22 @@ var Md5 = /** @class */ (function () {
         this._bufferLength = bufLen;
         return this;
     };
+    /**
+     * Get the state of the hash buffer
+     */
     Md5.prototype.getState = function () {
-        var self = this;
-        var s = self._state;
+        var s = this._state;
         return {
-            buffer: String.fromCharCode.apply(null, self._buffer8),
-            buflen: self._bufferLength,
-            length: self._dataLength,
+            buffer: String.fromCharCode.apply(null, Array.from(this._buffer8)),
+            buflen: this._bufferLength,
+            length: this._dataLength,
             state: [s[0], s[1], s[2], s[3]]
         };
     };
+    /**
+     * Override the current state of the hash buffer
+     * @param state New hash buffer state
+     */
     Md5.prototype.setState = function (state) {
         var buf = state.buffer;
         var x = state.state;
@@ -350,14 +452,18 @@ var Md5 = /** @class */ (function () {
             this._buffer8[i] = buf.charCodeAt(i);
         }
     };
+    /**
+     * Hash the current state of the hash buffer and return the result
+     * @param raw Whether to return the value as an `Int32Array`
+     */
     Md5.prototype.end = function (raw) {
         if (raw === void 0) { raw = false; }
         var bufLen = this._bufferLength;
         var buf8 = this._buffer8;
         var buf32 = this._buffer32;
         var i = (bufLen >> 2) + 1;
-        var dataBitsLen;
         this._dataLength += bufLen;
+        var dataBitsLen = this._dataLength * 8;
         buf8[bufLen] = 0x80;
         buf8[bufLen + 1] = buf8[bufLen + 2] = buf8[bufLen + 3] = 0;
         buf32.set(Md5.buffer32Identity.subarray(i), i);
@@ -367,7 +473,6 @@ var Md5 = /** @class */ (function () {
         }
         // Do the final computation based on the tail and length
         // Beware that the final length may not fit in 32 bits so we take care of that
-        dataBitsLen = this._dataLength * 8;
         if (dataBitsLen <= 0xFFFFFFFF) {
             buf32[14] = dataBitsLen;
         }
@@ -394,97 +499,9 @@ var Md5 = /** @class */ (function () {
     return Md5;
 }());
 if (Md5.hashStr('hello') !== '5d41402abc4b2a76b9719d911017c592') {
-    console.error('Md5 self test failed.');
+    throw new Error('Md5 self test failed.');
 }
-//# sourceMappingURL=md5.js.map"use strict";
-// var md5_1 = require("./md5");
-// Hashes any blob
-var Md5FileHasher = /** @class */ (function () {
-    function Md5FileHasher(_callback, // Callback to return the result
-    _async, // Async version is not always available in a web worker
-    _partSize) {
-        if (_async === void 0) { _async = true; }
-        if (_partSize === void 0) { _partSize = 1048576; }
-        this._callback = _callback;
-        this._async = _async;
-        this._partSize = _partSize;
-        this._configureReader();
-    }
-    Md5FileHasher.prototype.hash = function (blob) {
-        var self = this;
-        self._blob = blob;
-        self._length = Math.ceil(blob.size / self._partSize);
-        self._part = 0;
-        self._md5 = new Md5();
-        self._processPart();
-    };
-    Md5FileHasher.prototype._fail = function () {
-        this._callback({
-            success: false,
-            result: 'data read failed'
-        });
-    };
-    Md5FileHasher.prototype._hashData = function (e) {
-        var self = this;
-        self._md5.appendByteArray(new Uint8Array(e.target.result));
-        if (self._part * self._partSize >= self._blob.size) {
-            self._callback({
-                success: true,
-                result: self._md5.end()
-            });
-        }
-        else {
-            self._processPart();
-        }
-    };
-    Md5FileHasher.prototype._processPart = function () {
-        var self = this;
-        var endbyte = 0;
-        var current_part;
-        self._part += 1;
-        if (self._blob.size > self._partSize) { // If blob bigger then part_size we will slice it up
-            endbyte = self._part * self._partSize;
-            if (endbyte > self._blob.size) {
-                endbyte = self._blob.size;
-            }
-            current_part = self._blob.slice((self._part - 1) * self._partSize, endbyte);
-        }
-        else {
-            current_part = self._blob;
-        }
-        if (self._async) {
-            self._reader.readAsArrayBuffer(current_part);
-        }
-        else {
-            setTimeout(function () {
-                try {
-                    self._hashData({
-                        target: {
-                            result: self._reader.readAsArrayBuffer(current_part)
-                        },
-                    });
-                }
-                catch (e) {
-                    self._fail();
-                }
-            }, 0);
-        }
-    };
-    Md5FileHasher.prototype._configureReader = function () {
-        var self = this;
-        if (self._async) {
-            self._reader = new FileReader();
-            self._reader.onload = self._hashData.bind(self);
-            self._reader.onerror = self._fail.bind(self);
-            self._reader.onabort = self._fail.bind(self);
-        }
-        else {
-            self._reader = new FileReaderSync();
-        }
-    };
-    return Md5FileHasher;
-}());
-//# sourceMappingURL=md5_file_hasher.js.map
+//# sourceMappingURL=md5.js.map
 (function(global) {
     // Older versions of Firefox do not have FileReader in webworkers
     var async = !!global.FileReader;
