@@ -1,10 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import {
-    Component,
-    EventEmitter,
-    Input,
-    Output,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PlaceDriverRole } from '@placeos/ts-client';
 import { downloadFile, jsonToCsv } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
@@ -50,9 +45,17 @@ export interface DisplayItem {
                         other { Other } }
                     </div>
                     <div
+                        class="px-2 py-1 rounded-xl text-xs mono bg-blue-600 text-white"
+                        *ngIf="domain"
+                        i18n="@@domain"
+                    >
+                        {{ domain }}
+                    </div>
+                    <div
                         class="px-2 py-1 rounded-xl text-xs bg-red-600 text-white"
                         *ngIf="
-                            item?.running !== null && item?.running !== undefined
+                            item?.running !== null &&
+                            item?.running !== undefined
                         "
                         [class.!bg-green-600]="item?.running"
                         i18n="@@onlineState"
@@ -170,6 +173,10 @@ export class ItemDetailsComponent {
 
     public get is_admin() {
         return this._users.current().sys_admin;
+    }
+
+    public get domain() {
+        return (this.item as any)?.domain || '';
     }
 
     constructor(
