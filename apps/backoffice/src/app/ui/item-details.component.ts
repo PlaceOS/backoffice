@@ -52,6 +52,12 @@ export interface DisplayItem {
                         {{ domain }}
                     </div>
                     <div
+                        class="px-2 py-1 rounded-xl text-xs bg-blue-600 text-white uppercase"
+                        *ngFor="let tag of tags"
+                    >
+                        {{ tag }}
+                    </div>
+                    <div
                         class="px-2 py-1 rounded-xl text-xs bg-red-600 text-white"
                         *ngIf="
                             item?.running !== null &&
@@ -177,6 +183,10 @@ export class ItemDetailsComponent {
 
     public get domain() {
         return (this.item as any)?.domain || '';
+    }
+
+    public get tags() {
+        return (this.item as any)?.tags || [];
     }
 
     constructor(
