@@ -9,7 +9,7 @@ import {
     Azure,
     Google,
     OpenStack,
-    initialiseUploadService
+    initialiseUploadService,
 } from '@placeos/cloud-uploads';
 
 import { SettingsService } from './common/settings.service';
@@ -26,26 +26,7 @@ import { NavigationEnd, Router } from '@angular/router';
     template: `
         <div class="h-full w-full flex flex-col overflow-hidden">
             <ng-container *ngIf="!(loading | async); else load_state">
-                <!-- <header *ngIf="!simple" [class.joke]="is_fools_day">
-                    <topbar-header
-                        class="w-full"
-                        [(showMenu)]="show"
-                        [(filter)]="filter"
-                    ></topbar-header>
-                </header>
-                <main
-                    class="relative flex flex-1 h-0"
-                    [class.filtered]="filter"
-                >
-                    <sidebar-menu
-                        class="w-0 sm:w-auto"
-                        *ngIf="!simple"
-                        [(show)]="show"
-                    ></sidebar-menu>
-                    <div class="flex-1 w-0"> -->
-                        <router-outlet></router-outlet>
-                    <!-- </div>
-                </main> -->
+                <router-outlet></router-outlet>
                 <ng-container *ngIf="filter">
                     <global-search [(search)]="filter"></global-search>
                 </ng-container>
@@ -119,6 +100,7 @@ export class AppComponent extends BaseClass implements OnInit {
         await this._settings.initialised.pipe(first((_) => _)).toPromise();
         const settings = this._settings.get('composer') || {};
         settings.mock = !!this._settings.get('mock');
+        settings.ignore_api_key = true;
         /** Wait for authentication details to load */
         await setupPlace(settings).catch(() => this.onInitError());
         setupCache(this._cache);
@@ -132,7 +114,7 @@ export class AppComponent extends BaseClass implements OnInit {
                 token: token(),
                 endpoint: '/api/files/v1/uploads',
                 worker_url: 'assets/md5_worker.js',
-                providers: [Amazon, Azure, Google, OpenStack] as any
+                providers: [Amazon, Azure, Google, OpenStack] as any,
             });
         });
         this.interval(
@@ -148,7 +130,7 @@ export class AppComponent extends BaseClass implements OnInit {
             if (event instanceof NavigationEnd) {
                 this.simple = this._router.url.includes('mqtt');
             }
-        })
+        });
     }
 
     private onInitError() {
