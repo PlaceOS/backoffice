@@ -15,6 +15,7 @@ export interface PlaceSettings {
     local_login: boolean;
     /** Whether application should mock out API requests */
     mock: boolean;
+    ignore_api_key?: boolean;
 }
 
 /**
@@ -24,8 +25,13 @@ export async function setupPlace(settings: PlaceSettings): Promise<void> {
     const protocol = settings.protocol || location.protocol;
     const host = settings.domain || location.hostname;
     const port = settings.port || location.port;
-    const url = settings.use_domain ? `${protocol}//${host}:${port}` : location.origin;
-    const route = host.includes('localhost') && port === '4200' ? '' : settings.route || '';
+    const url = settings.use_domain
+        ? `${protocol}//${host}:${port}`
+        : location.origin;
+    const route =
+        host.includes('localhost') && port === '4200'
+            ? ''
+            : settings.route || '';
     const mock =
         settings.mock ||
         location.href.includes('mock=true') ||
@@ -41,10 +47,14 @@ export async function setupPlace(settings: PlaceSettings): Promise<void> {
         handle_login: !settings.local_login,
         token_header: true,
         use_iframe: true,
+        ignore_api_key: settings.ignore_api_key,
         mock,
     };
     if (localStorage) {
-        localStorage.setItem('mock', `${!!mock && !location.href.includes('mock=false')}`);
+        localStorage.setItem(
+            'mock',
+            `${!!mock && !location.href.includes('mock=false')}`
+        );
     }
     return setup(config);
 }
