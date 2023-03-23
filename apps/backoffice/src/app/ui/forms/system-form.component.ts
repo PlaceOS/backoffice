@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { SPACE, ENTER, COMMA } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -7,6 +7,7 @@ import { map } from 'rxjs/operators';
 
 import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
 import { Identity } from 'apps/backoffice/src/app/common/types';
+import { TIMEZONES_IANA } from '../../common/timezones';
 
 @Component({
     selector: 'system-form',
@@ -289,6 +290,28 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                     />
                 </mat-form-field>
             </div>
+            <div class="field">
+                <label for="timezone">Timezone</label>
+                <mat-form-field appearance="outline">
+                    <app-icon matPrefix class="text-2xl">search</app-icon>
+                    <input
+                        matInput
+                        formControlName="timezone"
+                        placeholder="System timezone"
+                        [matAutocomplete]="auto"
+                    />
+                </mat-form-field>
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option
+                        *ngFor="let tz of filtered_timezones"
+                        [value]="tz"
+                        >{{ tz }}</mat-option
+                    >
+                    <mat-option *ngIf="!timezones.length" [disabled]="true">
+                        No matching timezones
+                    </mat-option>
+                </mat-autocomplete>
+            </div>
             <div class="field" *ngIf="form.controls.images">
                 <label for="images" i18n="@@imagesLabel">Images:</label>
                 <image-list-field
@@ -314,6 +337,8 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
     ],
 })
 export class SystemFormComponent extends BaseClass {
+    public timezones: string[] = [];
+    public filtered_timezones: string[] = [];
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
     /** Levels of encyption available for the system's settings */
@@ -331,6 +356,21 @@ export class SystemFormComponent extends BaseClass {
 
     public get feature_list(): string[] {
         return this.form.controls.features.value;
+    }
+
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes.form) {
+            this.updateTimezoneList();
+            this.subscription(
+                'tz-change',
+                this.form.valueChanges.subscribe(
+                    ({ timezone }) =>
+                        (this.filtered_timezones = this.timezones.filter((_) =>
+                            _.toLowerCase().includes(timezone.toLowerCase())
+                        ))
+                )
+            );
+        }
     }
 
     /**
@@ -366,5 +406,13 @@ export class SystemFormComponent extends BaseClass {
             feature_list.splice(index, 1);
             this.form.controls.features.setValue(feature_list);
         }
+    }
+
+    public updateTimezoneList() {
+        const timezone = this.form?.value?.timezone || '';
+        this.timezones = TIMEZONES_IANA;
+        this.filtered_timezones = this.timezones.filter((_) =>
+            _.toLowerCase().includes(timezone.toLowerCase())
+        );
     }
 }

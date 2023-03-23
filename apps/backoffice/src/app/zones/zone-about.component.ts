@@ -90,6 +90,10 @@ import { marked } from 'marked';
                     <label i18n="@@zoneCapacityLabel">Capacity:</label>
                     <div class="value">{{ item?.capacity }}</div>
                 </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.timezone">
+                    <label i18n="@@zoneTimezoneLabel">Timezone:</label>
+                    <div class="value">{{ item?.timezone }}</div>
+                </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.map_id">
                     <label i18n="@@zoneMapLabel">Map:</label>
                     <a class="underline" [href]="item?.map_id">{{

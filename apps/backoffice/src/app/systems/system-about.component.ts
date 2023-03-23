@@ -64,6 +64,10 @@ import { SystemStateService } from './system-state.service';
                     >
                     <div class="value">{{ item?.installed_ui_devices }}</div>
                 </div>
+                <div class="flex items-center space-x-2" *ngIf="item?.timezone">
+                    <label i18n="@@systemTimezoneLabel">Timezone:</label>
+                    <div class="value">{{ item?.timezone }}</div>
+                </div>
                 <div
                     class="flex items-center space-x-2"
                     *ngIf="item?.created_at"
