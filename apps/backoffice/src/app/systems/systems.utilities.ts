@@ -51,6 +51,7 @@ export function generateSystemsFormFields(system?: PlaceSystem) {
         description: new FormControl(system.description || ''),
         images: new FormControl(system.images || []),
         map_id: new FormControl(system.map_id || ''),
+        timezone: new FormControl(system.timezone || ''),
         zone: new FormControl<PlaceZone | null>(null, [Validators.required]),
         zones: new FormControl(system.zones, [Validators.required]),
     };
