@@ -136,7 +136,10 @@ export class SystemStateService extends BaseClass {
         shareReplay()
     );
     /** Observable for debug state of the active modules */
-    public readonly debug_state = combineLatest([this.modules, this._debug.changed]).pipe(
+    public readonly debug_state = combineLatest([
+        this.modules,
+        this._debug.changed,
+    ]).pipe(
         map(([modules]) => {
             return modules.reduce((mapping, device) => {
                 mapping[device.id] = this._debug.isListening(device);
@@ -430,7 +433,8 @@ export class SystemStateService extends BaseClass {
         }
     }
 
-    public async reorderZones(fst: number, snd: number) {
+    public async reorderZones(order: string[]) {
+        if (order.length !== this.active_item.zones.length) return;
         const details = await this.confirm({
             title: 'Change order?',
             content: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
@@ -438,11 +442,9 @@ export class SystemStateService extends BaseClass {
         });
         if (!details || !details.reason) return;
         details.loading('Updating zone order...');
-        const list: string[] = [...this.active_item.zones];
-        moveItemInArray(list, fst, snd);
         const resp = await updateSystem(this.active_item.id, {
             ...this.active_item,
-            zones: list,
+            zones: order,
         })
             .toPromise()
             .catch((err) => {

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { PlaceSystem, PlaceZone, queryZones } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 import { SystemStateService } from './system-state.service';
 
@@ -26,7 +26,15 @@ import { SystemStateService } from './system-state.service';
                 Save Pending
             </button>
         </section>
-        <section>
+        <section class="relative">
+            <button
+                mat-button
+                *ngIf="order_changed"
+                class="shadow z-50 mb-2"
+                (click)="saveZoneOrder()"
+            >
+                Save Zone Order
+            </button>
             <ng-container *ngIf="!(loading | async).zones; else load_state">
                 <div
                     role="table"
@@ -50,6 +58,11 @@ import { SystemStateService } from './system-state.service';
                         <div
                             table-row
                             cdkDrag
+                            class="bg-opacity-40"
+                            [class.bg-pending]="changed[zone.id]"
+                            [matTooltip]="
+                                changed[zone.id] ? 'Zone order changed' : ''
+                            "
                             *ngFor="let zone of zones | async; let i = index"
                         >
                             <div
@@ -116,16 +129,26 @@ import { SystemStateService } from './system-state.service';
     ],
 })
 export class SystemZonesComponent {
+    public order_changed = false;
+
+    public changed: Record<string, boolean> = {};
     /** ID of a zone that the user wishes to add to the system */
-    public readonly pending_zones = new BehaviorSubject([]);
+    public readonly pending_zones = new BehaviorSubject<PlaceZone[]>([]);
+    /** ID of a zone that the user wishes to add to the system */
+    public readonly zone_order = new BehaviorSubject<string[]>([]);
     /** Whether zones for active item are loading */
     public readonly loading = this._service.loading;
     /** List of zones assoicated with the active item */
     public readonly zones = combineLatest([
         this._service.zones,
         this.pending_zones,
+        this.zone_order,
     ]).pipe(
-        map(([z, p]) => [...z, ...p.map((_) => ({ ..._, pending: true }))])
+        map(([zones, pending, order]) =>
+            [...zones, ...pending.map((_) => ({ ..._, pending: true }))].sort(
+                (a, b) => order.indexOf(a.id) - order.indexOf(b.id)
+            )
+        )
     );
 
     /** Query function for systems */
@@ -151,15 +174,36 @@ export class SystemZonesComponent {
         this.pending_zones.next([]);
     };
 
+    public readonly saveZoneOrder = async () => {
+        const zones = await this._service.zones.pipe(take(1)).toPromise();
+        let zone_order = this.zone_order.getValue();
+        if (zones.every(({ id }, idx) => zone_order[idx] === id)) return;
+        await this._service.reorderZones(zone_order);
+        this.order_changed = false;
+        this.changed = {};
+        this.zone_order.next([]);
+    };
+
     public get item(): PlaceSystem {
         return this._service.active_item as any;
     }
 
     constructor(private _service: SystemStateService) {}
 
-    public drop(event) {
+    public async drop(event) {
         if (event && event.previousIndex !== event.currentIndex) {
-            this._service.reorderZones(event.previousIndex, event.currentIndex);
+            const zones = await this._service.zones.pipe(take(1)).toPromise();
+            let zone_order = this.zone_order.getValue();
+            if (zone_order.length != zones.length) {
+                zone_order = zones.map((_) => _.id);
+            }
+            const item = zone_order.splice(event.previousIndex, 1);
+            this.changed[item[0]] = true;
+            zone_order.splice(event.currentIndex, 0, item[0]);
+            this.zone_order.next(zone_order);
+            this.order_changed = !zones.every(
+                ({ id }, idx) => zone_order[idx] === id
+            );
         }
     }
 }

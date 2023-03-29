@@ -59,8 +59,6 @@ export function generateSystemsFormFields(system?: PlaceSystem) {
         fields.zone.valueChanges.subscribe((value: PlaceZone) =>
             fields.zones.setValue([value.id])
         );
-    } else {
-        delete fields.zone;
-    }
+    } else delete fields.zone;
     return new FormGroup(fields);
 }
