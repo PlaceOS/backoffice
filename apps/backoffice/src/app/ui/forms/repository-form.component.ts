@@ -12,22 +12,19 @@ import {
     listRemoteRepositoryCommits,
     listRemoteRepositoryDefaultBranch,
     listRepositoryDefaultBranch,
-    listRepositoryReleases,
 } from '@placeos/ts-client/dist/esm/repositories/functions';
 import { Identity } from 'apps/backoffice/src/app/common/types';
-import { format, isAfter, subMinutes } from 'date-fns';
 import { combineLatest, merge, of, timer } from 'rxjs';
 import {
     catchError,
     debounceTime,
-    distinctUntilKeyChanged,
     map,
     shareReplay,
     switchMap,
     tap,
 } from 'rxjs/operators';
 import { BaseClass } from '../../common/base.class';
-import { isValidUrl, validateURL } from '../../common/validation';
+import { isValidUrl } from '../../common/validation';
 import { DateFromPipe } from '../pipes/date-from.pipe';
 
 @Component({
@@ -155,15 +152,13 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                     "
                     i18n="@@branchLabel"
                 >
-                    {{ is_interface ? 'Release' : 'Branch' }}<span>*</span>:
+                    Branch<span>*</span>:
                 </label>
                 <mat-form-field appearance="outline">
                     <mat-select
                         name="type"
                         formControlName="branch"
-                        [placeholder]="
-                            'Select ' + (is_interface ? 'Release' : 'Branch')
-                        "
+                        [placeholder]="'Select Branch'"
                     >
                         <mat-option
                             *ngFor="let branch of branch_list | async"
@@ -173,8 +168,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         </mat-option>
                     </mat-select>
                     <mat-error i18n="@@repoBranchError">
-                        Working {{ is_interface ? 'Release' : 'Branch' }} name
-                        is required
+                        Working Branch name is required
                     </mat-error>
                 </mat-form-field>
             </div>
@@ -288,7 +282,6 @@ export class RepositoryFormComponent extends BaseClass {
         { id: PlaceRepositoryType.Interface, name: 'Interface' },
     ];
     public show_password: boolean = false;
-    public unable_to_load_releases = true;
     public date_pipe = new DateFromPipe();
 
     public get hide_uri() {
@@ -304,8 +297,7 @@ export class RepositoryFormComponent extends BaseClass {
         const value = this.form.value;
         return !!(
             'repo_type' in value &&
-            (value.repo_types !== PlaceRepositoryType.Interface ||
-                this.unable_to_load_releases)
+            value.repo_type !== PlaceRepositoryType.Interface
         );
     }
 
