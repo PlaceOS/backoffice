@@ -1,5 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
+import { BehaviorSubject } from 'rxjs';
+import { BaseClass } from '../../common/base.class';
+
+import { Md5 } from 'ts-md5';
 
 @Component({
     selector: 'application-form',
@@ -74,6 +78,22 @@ import { UntypedFormGroup } from '@angular/forms';
                     <mat-error>A valid URL is required</mat-error>
                 </mat-form-field>
             </div>
+            <div class="field" *ngIf="form.controls.redirect_uri">
+                <label for="client-id" i18n="@@clientIDLabel">
+                    Client ID:
+                </label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="client-id"
+                        placeholder="MD5 Hash of the Redirect URI"
+                        i18n-placeholder="@@clientIDPlaceholder"
+                        [disabled]="true"
+                        [ngModel]="client_id | async"
+                        [ngModelOptions]="{ standalone: true }"
+                    />
+                </mat-form-field>
+            </div>
         </form>
     `,
     styles: [
@@ -84,7 +104,27 @@ import { UntypedFormGroup } from '@angular/forms';
         `,
     ],
 })
-export class ApplicationFormComponent {
+export class ApplicationFormComponent extends BaseClass {
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
+
+    public readonly client_id = new BehaviorSubject('');
+
+    public ngOnChanges(changes: SimpleChanges) {
+        if (changes.form && this.form) {
+            const { client_id, redirect_uri } = this.form.value;
+            this.client_id.next(
+                client_id || redirect_uri ? Md5.hashStr(redirect_uri || '') : ''
+            );
+            if (client_id) return;
+            this.subscription(
+                'form.redirect_uri',
+                this.form
+                    .get('redirect_uri')
+                    .valueChanges.subscribe((value) => {
+                        this.client_id.next(value ? Md5.hashStr(value) : '');
+                    })
+            );
+        }
+    }
 }

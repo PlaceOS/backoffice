@@ -9,6 +9,7 @@ export function generateApplicationFormFields(app?: PlaceApplication) {
         scopes: new FormControl(app?.scopes || ''),
         skip_authorization: new FormControl(!!app?.skip_authorization),
         redirect_uri: new FormControl(app?.redirect_uri || '', validateURL),
+        client_id: new FormControl(app?.uid || ''),
     };
     return new FormGroup(fields);
 }
