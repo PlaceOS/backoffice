@@ -128,10 +128,9 @@ export class PlaceClusterTaskListComponent extends BaseClass {
 
     public filter = new BehaviorSubject('');
 
-    public readonly process_list: Observable<PlaceProcess[]> = interval(
-        5000
-    ).pipe(
-        startWith(0),
+    private _poll = new BehaviorSubject(0);
+
+    public readonly process_list: Observable<PlaceProcess[]> = this._poll.pipe(
         filter(() => !this.loading),
         switchMap(() => {
             this.loading = true;
@@ -165,6 +164,11 @@ export class PlaceClusterTaskListComponent extends BaseClass {
 
     constructor(private _dialog: MatDialog) {
         super();
+    }
+
+    public ngOnInit() {
+        this._poll.next(Date.now());
+        this.interval('poll', () => this._poll.next(Date.now()), 5000);
     }
 
     public confirmKillProcess(process: PlaceProcess): void {
