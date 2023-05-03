@@ -21,14 +21,25 @@ import {
     updateDomain,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, merge, Observable, of } from 'rxjs';
-import { catchError, filter, first, map, share, shareReplay, switchMap } from 'rxjs/operators';
+import {
+    catchError,
+    filter,
+    first,
+    map,
+    share,
+    shareReplay,
+    switchMap,
+} from 'rxjs/operators';
 import { openConfirmModal } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { AuthSourceModalComponent } from '../overlays/auth-source-modal/auth-source-modal.component';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
 
-export type PlaceAuthSource = PlaceOAuthSource | PlaceSAMLSource | PlaceLDAPSource;
+export type PlaceAuthSource =
+    | PlaceOAuthSource
+    | PlaceSAMLSource
+    | PlaceLDAPSource;
 
 @Injectable({
     providedIn: 'root',
@@ -42,7 +53,10 @@ export class DomainStateService {
 
     public readonly loading = this._loading.asObservable();
 
-    public readonly users: Observable<PlaceUser[]> = combineLatest([this._changed, this.item]).pipe(
+    public readonly users: Observable<PlaceUser[]> = combineLatest([
+        this._changed,
+        this.item,
+    ]).pipe(
         filter(([_, item]) => item instanceof PlaceDomain),
         switchMap(([_, item]) => queryUsers({ authority_id: item.id } as any)),
         map((_) => _.data),
@@ -50,10 +64,9 @@ export class DomainStateService {
         shareReplay(1)
     );
 
-    public readonly auth_sources: Observable<PlaceAuthSource[]> = combineLatest([
-        this._changed,
-        this.item,
-    ]).pipe(
+    public readonly auth_sources: Observable<PlaceAuthSource[]> = combineLatest(
+        [this._changed, this.item]
+    ).pipe(
         filter(([_, item]) => item instanceof PlaceDomain),
         switchMap(([_, item]) => {
             const q = { authority_id: item.id };
@@ -72,21 +85,18 @@ export class DomainStateService {
         shareReplay(1)
     );
 
-    public readonly applications: Observable<PlaceApplication[]> = combineLatest([
-        this._changed,
-        this.item,
-    ]).pipe(
-        filter(([_, item]) => item instanceof PlaceDomain),
-        switchMap(([_, item]) => queryApplications({ authority_id: item.id } as any)),
-        map((_) => _.data),
-        catchError((_) => []),
-        shareReplay(1)
-    );
+    public readonly applications: Observable<PlaceApplication[]> =
+        combineLatest([this._changed, this.item]).pipe(
+            filter(([_, item]) => item instanceof PlaceDomain),
+            switchMap(([_, item]) =>
+                queryApplications({ authority_id: item.id } as any)
+            ),
+            map((_) => _.data),
+            catchError((_) => []),
+            shareReplay(1)
+        );
 
-    public readonly counts = combineLatest([
-        this._changed,
-        this.item,
-    ]).pipe(
+    public readonly counts = combineLatest([this._changed, this.item]).pipe(
         filter(([_, item]) => item instanceof PlaceDomain),
         switchMap(async ([_, item]) => {
             const q = { authority_id: item?.id };
@@ -99,7 +109,12 @@ export class DomainStateService {
                     queryOAuthSources(q as any),
                     queryLDAPSources(q as any),
                 ])
-                    .pipe(map(([saml, oauth, ldap]) => saml.total + oauth.total + ldap.total))
+                    .pipe(
+                        map(
+                            ([saml, oauth, ldap]) =>
+                                saml.total + oauth.total + ldap.total
+                        )
+                    )
                     .toPromise(),
                 queryUsers(q as any)
                     .pipe(map((_) => _.total))
@@ -119,7 +134,10 @@ export class DomainStateService {
         return this._state.active_item;
     }
 
-    constructor(private _state: ActiveItemService, private _dialog: MatDialog) {}
+    constructor(
+        private _state: ActiveItemService,
+        private _dialog: MatDialog
+    ) {}
 
     public async update(domain: PlaceDomain) {
         const item = await updateDomain(domain.id, domain).toPromise();
@@ -139,11 +157,16 @@ export class DomainStateService {
             data: {
                 item,
                 name: 'Application',
-                save: (i) => (i.id ? updateApplication(i.id, i) : addApplication(i)),
+                save: (i) => {
+                    delete i.client_id;
+                    i.id ? updateApplication(i.id, i) : addApplication(i);
+                },
             },
         });
         const details = await Promise.race([
-            ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).toPromise(),
+            ref.componentInstance.event
+                .pipe(first((_) => _.reason === 'done'))
+                .toPromise(),
             ref.afterClosed().toPromise(),
         ]);
         if (!details) return;
@@ -194,7 +217,9 @@ export class DomainStateService {
             },
         });
         const details = await Promise.race([
-            ref.componentInstance.event.pipe(first((_) => _.reason === 'done')).toPromise(),
+            ref.componentInstance.event
+                .pipe(first((_) => _.reason === 'done'))
+                .toPromise(),
             ref.afterClosed().toPromise(),
         ]);
         if (!details) return;
