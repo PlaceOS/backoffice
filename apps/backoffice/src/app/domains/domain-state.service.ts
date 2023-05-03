@@ -159,7 +159,9 @@ export class DomainStateService {
                 name: 'Application',
                 save: (i) => {
                     delete i.client_id;
-                    i.id ? updateApplication(i.id, i) : addApplication(i);
+                    return i.id
+                        ? updateApplication(i.id, i)
+                        : addApplication(i);
                 },
             },
         });
