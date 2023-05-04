@@ -13,6 +13,10 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                     <a [href]="'mailto:' + item?.email">{{ item?.email }}</a>
                 </div>
             </div>
+            <div class="flex items-center space-x-2" *ngIf="item?.department">
+                <label i18n="@@userCreatedAtLabel">Department:</label>
+                <div class="value">{{ item?.department }}</div>
+            </div>
             <div class="flex items-center space-x-2" *ngIf="item?.created_at">
                 <label i18n="@@userCreatedAtLabel">Created:</label>
                 <div class="value">
