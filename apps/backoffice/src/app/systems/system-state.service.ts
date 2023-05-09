@@ -26,6 +26,7 @@ import {
     updateSystem,
     updateTrigger,
     listMetadata,
+    showSystem,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
@@ -284,7 +285,7 @@ export class SystemStateService extends BaseClass {
     }
 
     public async newModule() {
-        const module = await this._state
+        const mod = await this._state
             .edit(
                 new PlaceModule({
                     system: this.active_item,
@@ -292,8 +293,8 @@ export class SystemStateService extends BaseClass {
                 })
             )
             .catch((_) => null);
-        if (!module) return;
-        this.joinModule(module.id);
+        if (!mod) return;
+        this.joinModule(mod.id);
     }
 
     public async editModule(device: PlaceModule) {
@@ -467,7 +468,7 @@ export class SystemStateService extends BaseClass {
      * @param id ID of the module to associate with the active system
      */
     public async joinModule(id: string) {
-        const system = await addSystemModule(this.active_item.id, id)
+        await addSystemModule(this.active_item.id, id)
             .toPromise()
             .catch((err) => {
                 notifyError(
@@ -476,10 +477,13 @@ export class SystemStateService extends BaseClass {
                     }`
                 );
             });
-        if (!system) return;
-        this._state.replaceItem(system);
-        notifySuccess(`Successfully added module to system.`);
-        this._change.next(Date.now());
+        this.timeout('join', async () => {
+            const system = await showSystem(this.active_item.id).toPromise();
+            if (!system) return;
+            this._state.replaceItem(system);
+            notifySuccess(`Successfully added module to system.`);
+            this._change.next(Date.now());
+        });
     }
 
     /**
