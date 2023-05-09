@@ -61,7 +61,9 @@ import { SystemStateService } from './system-state.service';
                 <h3 class="font-medium text-lg mb-2" i18n="@@execHeader">
                     Execute command
                 </h3>
-                <execute-method-field [system]="item"></execute-method-field>
+                <execute-method-field
+                    [system]="item$ | async"
+                ></execute-method-field>
             </section>
             <section device-list>
                 <h3 class="font-medium text-lg mb-2" i18n="@@moduleListHeader">
@@ -366,6 +368,7 @@ export class SystemModulesComponent extends BaseClass {
     /** Whether to show exec block */
     public hide_exec: boolean;
 
+    public readonly item$ = this._service.item;
     public readonly loading = this._service.loading;
     public readonly modules = this._service.modules;
     public readonly debugging = this._service.debug_state;

@@ -45,7 +45,7 @@ export class BookingLimitsModalComponent {
     public readonly domain = this._data.domain;
 
     public form = new FormGroup({
-        booking_limits: new FormControl<{ type: string, amount: string }[]>([]),
+        booking_limits: new FormControl<{ type: string; amount: string }[]>([]),
     });
 
     public loading = false;
@@ -74,7 +74,6 @@ export class BookingLimitsModalComponent {
         for (const { type, amount } of limits) {
             booking_limits[type] = +amount || 0;
         }
-        console.log('Limits:', limits, booking_limits);
         const call = post(
             `/api/staff/v1/tenants/${this.tenant.id}/limits`,
             booking_limits

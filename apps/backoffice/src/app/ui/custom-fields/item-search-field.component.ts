@@ -52,20 +52,21 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                     <mat-spinner diameter="16"></mat-spinner>
                 </div>
             </mat-form-field>
-            <mat-autocomplete
-                #auto="matAutocomplete"
-            >
+            <mat-autocomplete #auto="matAutocomplete">
                 <mat-option
                     *ngFor="let option of item_list"
                     [value]="option.name || option.id"
-                    (click)="search$.next(option); setValue(option);"
+                    (click)="search$.next(option); setValue(option)"
                     class="leading-tight"
                 >
-                    <div
-                        class="flex items-center justify-between h-5"
-                    >
-                        <div name [innerHTML]="item_name[option.id] | sanitize"></div>
-                        <code *ngIf="option.notes" class="!text-xs truncate">{{option.notes}}</code>
+                    <div class="flex items-center justify-between h-5">
+                        <div
+                            name
+                            [innerHTML]="item_name[option.id] | sanitize"
+                        ></div>
+                        <code *ngIf="option.notes" class="!text-xs truncate">{{
+                            option.notes
+                        }}</code>
                     </div>
                     <div class="text-xs opacity-60">
                         {{ option.id }}
@@ -141,7 +142,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
     private _onChange: (_: T) => void;
     /** Form control on touch handler */
     private _onTouch: (_: T) => void;
-    
+
     @ViewChild('input') private _input_el: ElementRef<HTMLInputElement>;
 
     public get items() {
@@ -168,7 +169,6 @@ export class ItemSearchFieldComponent<T extends Identity = any>
             map((list: T[]) => {
                 this.loading = false;
                 const search = (this.search_str || '').toLowerCase();
-                console.log('Results', list);
                 return list.filter((item: any) => {
                     const match =
                         item.name?.toLowerCase().indexOf(search) >= 0 ||
@@ -208,7 +208,8 @@ export class ItemSearchFieldComponent<T extends Identity = any>
                 } else if (this.active_item) {
                     this.search_str = this.active_item.name || this.search_str;
                 }
-                if (this._input_el?.nativeElement) this._input_el.nativeElement.value = this.search_str || '';
+                if (this._input_el?.nativeElement)
+                    this._input_el.nativeElement.value = this.search_str || '';
             },
             50
         );
@@ -273,6 +274,5 @@ export class ItemSearchFieldComponent<T extends Identity = any>
             }
         }
         this.item_name = map;
-        console.log('Name Map:', list, this.item_name);
     }
 }

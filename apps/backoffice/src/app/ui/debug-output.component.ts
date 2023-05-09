@@ -191,7 +191,6 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
             'changes',
             this._service.events.subscribe((_) => {
                 this.logs = this._service.terminal_string.split('\n');
-                // console.log('Logs:', this.logs);
             })
         );
         this.subscription(
@@ -213,7 +212,6 @@ export class DebugOutputComponent extends BaseClass implements OnInit {
         const new_pos = position === 'side' ? 'below' : 'side';
         this.height = new_pos === 'side' ? 768 : 240;
         this.width = new_pos === 'side' ? 240 : 768;
-        console.log('New Position:', new_pos);
         this._service.position = new_pos;
     }
 

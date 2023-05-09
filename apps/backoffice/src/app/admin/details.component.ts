@@ -235,7 +235,6 @@ export class PlaceDetailsComponent extends BaseClass implements OnInit {
                     )}`
                 )
             );
-        console.log('Details:', details);
         this.api_details = (details as any) || [];
         this._cdr.detectChanges();
     }

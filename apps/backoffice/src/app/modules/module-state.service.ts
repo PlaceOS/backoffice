@@ -57,16 +57,13 @@ export class ModuleStateService {
     );
 
     public readonly edge = this.item.pipe(
-        switchMap((item) =>
-            item.edge_id ? showEdge(item.edge_id) : of(null)
-        ),
+        switchMap((item) => (item.edge_id ? showEdge(item.edge_id) : of(null))),
         shareReplay(1)
     );
     /** System assoicated with the active module */
     public readonly system_list = this.item.pipe(
         switchMap((item) => {
             this._loading.next(true);
-            console.log('Loading Systems...');
             return querySystems({ module_id: item.id });
         }),
         map((details) => details.data),
@@ -91,7 +88,6 @@ export class ModuleStateService {
             .toPromise()
             .catch((err) => err);
         if (error) {
-            console.log('Error:', error);
             if (typeof error === 'string' && error.length < 64) {
                 notifyError(error);
             } else {

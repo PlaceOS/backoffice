@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { PlaceSystem, queryModules } from '@placeos/ts-client';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, of } from 'rxjs';
 import {
     catchError,
     distinctUntilChanged,
@@ -67,20 +67,24 @@ export interface ModuleLike {
 })
 export class SelectModuleComponent
     extends BaseClass
-    implements OnInit, OnChanges, ControlValueAccessor {
+    implements OnInit, OnChanges, ControlValueAccessor
+{
     /** ID of the system to select the module from */
     @Input() public system: PlaceSystem;
 
     private _system = new BehaviorSubject('');
+    private _change = new BehaviorSubject(0);
 
     public module: ModuleLike;
 
     public loading: boolean;
 
-    public modules = this._system.pipe(
-        distinctUntilChanged(),
+    public modules = combineLatest([this._system, this._change]).pipe(
+        distinctUntilChanged(
+            ([id1, time1], [id2, time2]) => id1 === id2 && time1 === time2
+        ),
         tap(() => (this.loading = true)),
-        switchMap((id) =>
+        switchMap(([id]) =>
             id
                 ? queryModules({
                       control_system_id: id,
@@ -130,6 +134,7 @@ export class SelectModuleComponent
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.system) {
             this._system.next(this.system.id);
+            this._change.next(this.system.updated_at);
         }
     }
 

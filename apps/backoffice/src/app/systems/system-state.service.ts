@@ -17,7 +17,6 @@ import {
     recompileDriver,
     removeSystemModule,
     removeSystemTrigger,
-    showMetadata,
     startModule,
     startSystem,
     stopModule,
@@ -30,7 +29,6 @@ import {
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
-    debounce,
     debounceTime,
     first,
     map,
@@ -110,8 +108,7 @@ export class SystemStateService extends BaseClass {
     /** Observable for modules associated with system */
     public readonly modules = combineLatest([this.item, this._change]).pipe(
         debounceTime(500),
-        switchMap(async (_) => {
-            const item = _[0];
+        switchMap(async ([item]) => {
             if (!item || !(item instanceof PlaceSystem)) return [];
             this._loading.next({
                 ...this._loading.getValue(),

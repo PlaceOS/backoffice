@@ -271,7 +271,9 @@ export class ActiveItemService extends BaseClass {
                 data: {
                     title: `Delete ${this.actions.singular}`,
                     content: this.actions.delete_message,
-                    extra: this.actions.delete_extra ? await this.actions.delete_extra(item) : null,
+                    extra: this.actions.delete_extra
+                        ? await this.actions.delete_extra(item)
+                        : null,
                     icon: { type: 'icon', class: 'backoffice-trash' },
                 },
             });
@@ -330,8 +332,7 @@ export class ActiveItemService extends BaseClass {
     public replaceItem(item: Identity) {
         if (
             item?.id &&
-            (!this.active_item ||
-                (this.active_item as Object).constructor === item.constructor)
+            (!this.active_item || this.active_item.id === item.id)
         ) {
             this._active_item.next(item as any);
             const list = this._list.getValue().filter((i) => i.id !== item.id);

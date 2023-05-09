@@ -313,7 +313,6 @@ export class RepositoryFormComponent extends BaseClass {
                 debounceTime(300),
                 switchMap(() => {
                     const { id, uri, username, password } = this.form.value;
-                    console.log('Branches:', id, uri);
                     return (
                         id
                             ? listRepositoryBranches(id)

@@ -112,10 +112,7 @@ export class NewTerminalComponent extends BaseClass {
             );
             return out_lines;
         }),
-        catchError((e) => {
-            console.log(e);
-            return of([]);
-        }),
+        catchError(() => of([])),
         shareReplay(1)
     );
 

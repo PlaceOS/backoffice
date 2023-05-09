@@ -192,13 +192,11 @@ export class SystemZonesComponent {
 
     public async drop(event) {
         if (event && event.previousIndex !== event.currentIndex) {
-            console.log('Index:', event.previousIndex, event.currentIndex);
             const zones = await this._service.zones.pipe(take(1)).toPromise();
             let zone_order = this.zone_order.getValue();
             if (zone_order.length !== zones.length) {
                 zone_order = zones.map((_) => _.id);
             }
-            console.log('Order:', zone_order);
             const item = zone_order.splice(event.previousIndex, 1);
             this.changed[item[0]] = true;
             zone_order.splice(event.currentIndex, 0, item[0]);
