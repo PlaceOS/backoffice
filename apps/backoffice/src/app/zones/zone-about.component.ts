@@ -8,9 +8,10 @@ import { marked } from 'marked';
 @Component({
     selector: 'zone-about',
     template: `
-        <section *ngIf="(systems | async)?.length" class="mb-4 flex space-x-2">
+        <section class="mb-4 flex space-x-2">
             <div
                 class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
+                *ngIf="(systems | async)?.length"
             >
                 <header
                     class="font-medium text-lg"
