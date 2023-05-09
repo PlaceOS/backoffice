@@ -92,7 +92,7 @@ export class TriggerInstancesComponent {
     public connected: HashMap<boolean> = {};
 
     public readonly deleteTrigger = (s) =>
-        this._service.removeTriggerFromSystem(s);
+        this._service.removeTriggerFromParent(s);
 
     public get item(): PlaceTrigger {
         return this._service.active_item as any;

@@ -178,9 +178,10 @@ export class TriggerStateService {
             comparisons: [...item.conditions.comparisons],
             time_dependents: [...item.conditions.time_dependents],
         };
-        const index = ((condition as TriggerTimeCondition).type
-            ? item.conditions.time_dependents
-            : item.conditions.comparisons
+        const index = (
+            (condition as TriggerTimeCondition).type
+                ? item.conditions.time_dependents
+                : item.conditions.comparisons
         ).findIndex((i) => JSON.stringify(i) === JSON.stringify(condition));
         conditions.time_dependents.splice(index, 1);
         ((condition as TriggerTimeCondition).type
@@ -221,9 +222,10 @@ export class TriggerStateService {
             functions: [...item.actions.functions],
             mailers: [...item.actions.mailers],
         };
-        const index = ((action as TriggerMailer).emails
-            ? item.actions.mailers
-            : item.actions.functions
+        const index = (
+            (action as TriggerMailer).emails
+                ? item.actions.mailers
+                : item.actions.functions
         ).findIndex((i) => JSON.stringify(i) === JSON.stringify(action));
         ((action as TriggerMailer).emails
             ? actions.mailers
@@ -244,27 +246,33 @@ export class TriggerStateService {
         notifySuccess('Successfully removed trigger action.');
     }
 
-    public async removeTriggerFromSystem(system: PlaceSystem) {
+    public async removeTriggerFromParent(instance: PlaceTrigger) {
+        const type = instance.zone_id ? 'zone' : 'system';
         const details = await openConfirmModal(
             {
-                title: `Remove trigger from system`,
-                content: `Are you sure you want remove this trigger from ${system.name}?<br>The system will be updated <strong>immediately</strong>.`,
+                title: `Remove trigger from ${type}`,
+                content: `Are you sure you want remove this trigger from ${instance.name}?<br>The ${type} will be updated <strong>immediately</strong>.`,
                 icon: { type: 'icon', class: 'backoffice-trash' },
             },
             this._dialog
         );
         if (!details?.reason) return;
-        details.loading('Removing trigger from system...');
-        const err = await removeSystemTrigger(system.id, this.active_item.id)
+        details.loading(`Removing trigger from ${type}...`);
+        const method =
+            type === 'zone' ? removeSystemTrigger : removeSystemTrigger;
+        const err = await method(
+            instance.control_system_id,
+            instance?.id || this.active_item.id
+        )
             .toPromise()
             .catch((_) => _);
         details.close();
         if (err)
             return notifyError(
-                `Error removing trigger from system. Error: ${
+                `Error removing trigger from ${type}. Error: ${
                     err.responseText || err.message || err
                 }`
             );
-        notifySuccess('Successfully removed trigger from system.');
+        notifySuccess(`Successfully removed trigger from ${type}.`);
     }
 }
