@@ -30,6 +30,7 @@ import {
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
+    debounce,
     debounceTime,
     first,
     map,
@@ -108,6 +109,7 @@ export class SystemStateService extends BaseClass {
     );
     /** Observable for modules associated with system */
     public readonly modules = combineLatest([this.item, this._change]).pipe(
+        debounceTime(500),
         switchMap(async (_) => {
             const item = _[0];
             if (!item || !(item instanceof PlaceSystem)) return [];
@@ -127,14 +129,21 @@ export class SystemStateService extends BaseClass {
                 ...this._loading.getValue(),
                 modules: false,
             });
-            modules.sort(
-                (a, b) =>
-                    item.modules.indexOf(a.id) - item.modules.indexOf(b.id)
-            );
+            modules.sort((a, b) => {
+                const index_a =
+                    item.modules.indexOf(a.id) > -1
+                        ? item.modules.indexOf(a.id)
+                        : 9999;
+                const index_b =
+                    item.modules.indexOf(b.id) > -1
+                        ? item.modules.indexOf(b.id)
+                        : 9999;
+                return index_a - index_b;
+            });
             this._modules.next(modules);
             return modules;
         }),
-        shareReplay()
+        shareReplay(1)
     );
     /** Observable for debug state of the active modules */
     public readonly debug_state = combineLatest([

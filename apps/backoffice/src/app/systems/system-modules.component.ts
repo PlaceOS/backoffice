@@ -365,8 +365,6 @@ export class SystemModulesComponent extends BaseClass {
     public new_module: string;
     /** Whether to show exec block */
     public hide_exec: boolean;
-    /** Whether to refresh the list of active modules in the exec options */
-    public refresh_modules: boolean;
 
     public readonly loading = this._service.loading;
     public readonly modules = this._service.modules;
@@ -448,10 +446,7 @@ export class SystemModulesComponent extends BaseClass {
     public readonly joinModule = (id) => this._service.joinModule(id);
     public readonly reloadModule = (d) => this._service.reloadModule(d);
     public readonly toggleDebug = (d) => this._service.toggleModuleDebug(d);
-    public readonly power = (d) => {
-        this._service.toggleModulePower(d);
-        this.refresh_modules = !this.refresh_modules;
-    };
+    public readonly power = (d) => this._service.toggleModulePower(d);
 
     public driver_type(role: PlaceDriverRole): string {
         if (role == null) return '';
