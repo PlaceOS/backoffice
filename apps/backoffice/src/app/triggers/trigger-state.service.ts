@@ -12,7 +12,7 @@ import {
     TriggerTimeCondition,
     updateTrigger,
 } from '@placeos/ts-client';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
 import { first, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal } from '../common/general';
 
@@ -32,10 +32,14 @@ import {
     providedIn: 'root',
 })
 export class TriggerStateService {
+    private _change = new BehaviorSubject(0);
     public readonly item: Observable<PlaceTrigger> = this._service.item as any;
 
-    public readonly instances: Observable<PlaceTrigger[]> = this.item.pipe(
-        switchMap((item) => {
+    public readonly instances: Observable<PlaceTrigger[]> = combineLatest([
+        this.item,
+        this._change,
+    ]).pipe(
+        switchMap(([item]) => {
             if (!(item instanceof PlaceTrigger)) return of([]);
             return listTriggerInstances(item.id);
         }),
@@ -260,19 +264,22 @@ export class TriggerStateService {
         details.loading(`Removing trigger from ${type}...`);
         const method =
             type === 'zone' ? removeSystemTrigger : removeSystemTrigger;
-        const err = await method(
+        let err: any = await method(
             instance.control_system_id,
             instance?.id || this.active_item.id
         )
             .toPromise()
-            .catch((_) => _);
+            .catch((_) => ({ error: _ }));
         details.close();
-        if (err)
+        if (err?.error) {
+            err = err.error;
             return notifyError(
                 `Error removing trigger from ${type}. Error: ${
                     err.responseText || err.message || err
                 }`
             );
+        }
+        this._change.next(Date.now());
         notifySuccess(`Successfully removed trigger from ${type}.`);
     }
 }
