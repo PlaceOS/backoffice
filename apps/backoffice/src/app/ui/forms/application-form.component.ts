@@ -121,8 +121,12 @@ export class ApplicationFormComponent extends BaseClass {
                 'form.redirect_uri',
                 this.form
                     .get('redirect_uri')
-                    .valueChanges.subscribe((value) => {
+                    .valueChanges.subscribe((value: string) => {
                         this.client_id.next(value ? Md5.hashStr(value) : '');
+                        this.form.patchValue(
+                            { redirect_uri: value?.trim() },
+                            { emitEvent: false }
+                        );
                     })
             );
         }
