@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { PlaceModule, querySystems } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 
@@ -14,9 +14,11 @@ import { ActiveItemService } from '../common/item.service';
             <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
             <div class="flex flex-col h-full flex-1 overflow-hidden w-px">
                 <div class="flex flex-1 h-px">
-                    <item-sidebar class="hidden sm:block"
-                [route]="name"
-                title="Modules"></item-sidebar>
+                    <item-sidebar
+                        class="hidden sm:block"
+                        [route]="name"
+                        title="Modules"
+                    ></item-sidebar>
                     <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
                         <item-selection
                             class="z-20 sm:hidden"
@@ -24,7 +26,8 @@ import { ActiveItemService } from '../common/item.service';
                             title="Modules"
                         >
                             <button
-                                mat-icon-button
+                                btn
+                                icon
                                 class="sm:hidden mr-2"
                                 (click)="open_menu = true"
                             >
@@ -83,7 +86,7 @@ import { ActiveItemService } from '../common/item.service';
     `,
     styles: [``],
 })
-export class ModulesComponent extends BaseClass {
+export class ModulesComponent extends AsyncHandler {
     /** Number of systems for the active device */
     public system_count: number;
     public open_menu = false;

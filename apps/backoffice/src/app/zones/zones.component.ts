@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { extensionsForItem } from '../common/api';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { ZonesStateService } from './zones-state.service';
@@ -27,7 +27,8 @@ import { ZonesStateService } from './zones-state.service';
                             title="Zones"
                         >
                             <button
-                                mat-icon-button
+                                btn
+                                icon
                                 class="sm:hidden mr-2"
                                 (click)="open_menu = true"
                             >
@@ -95,7 +96,7 @@ import { ZonesStateService } from './zones-state.service';
     `,
     styles: [``],
 })
-export class ZonesComponent extends BaseClass {
+export class ZonesComponent extends AsyncHandler {
     public readonly name = 'zones';
     public open_menu = false;
 

@@ -19,7 +19,8 @@
             </div>
         </div>
         <button
-            mat-icon-button
+            btn
+            icon
             class="add"
             *ngIf="new && ((total | async) < licenses || !licenses) && is_admin"
             (click)="newItem()"
@@ -38,7 +39,7 @@
         >
             <i class="backoffice-warning"></i>
         </div>
-        <button mat-icon-button class="mobile-only" (click)="toggle()">
+        <button btn icon class="mobile-only" (click)="toggle()">
             <app-icon
                 [icon]="{ class: 'backoffice-' + (close ? 'cross' : 'list') }"
             ></app-icon>
@@ -96,7 +97,7 @@
                 {{ !search ? 'No ' + lowercase_heading : 'No matches found' }}
             </div>
             <div class="btn" *ngIf="new">
-                <button mat-button (click)="newItem()" i18n>
+                <button btn (click)="newItem()" i18n>
                     Add new {{ lowercase_heading }}
                 </button>
             </div>

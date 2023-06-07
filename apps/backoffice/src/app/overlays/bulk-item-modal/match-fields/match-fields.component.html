@@ -3,8 +3,15 @@
         <label [for]="field.id">{{ field.id }}</label>
         <div class="value">
             <mat-form-field appearance="outline">
-                <mat-select [name]="field.id" [(ngModel)]="field_mapping[field.id]" placeholder="Select field">
-                    <mat-option *ngFor="let type of source_fields" [value]="type.id">
+                <mat-select
+                    [name]="field.id"
+                    [(ngModel)]="field_mapping[field.id]"
+                    placeholder="Select field"
+                >
+                    <mat-option
+                        *ngFor="let type of source_fields"
+                        [value]="type.id"
+                    >
                         {{ type.name }}
                     </mat-option>
                 </mat-select>
@@ -13,6 +20,6 @@
     </div>
 </div>
 <div class="actions">
-    <button mat-button class="inverse" (click)="previous.emit()">Back</button>
-    <button mat-button (click)="saveMapping()">Continue</button>
+    <button btn class="inverse" (click)="previous.emit()">Back</button>
+    <button btn (click)="saveMapping()">Continue</button>
 </div>

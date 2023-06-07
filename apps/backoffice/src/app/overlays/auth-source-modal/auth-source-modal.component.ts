@@ -14,7 +14,7 @@ import {
     addOAuthSource,
 } from '@placeos/ts-client';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { DialogEvent, Identity } from 'apps/backoffice/src/app/common/types';
 import {
     generateOAuthSourceForm,
@@ -41,7 +41,7 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
     templateUrl: './auth-source-modal.component.html',
     styleUrls: ['./auth-source-modal.component.scss'],
 })
-export class AuthSourceModalComponent extends BaseClass implements OnInit {
+export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether actions are loading */

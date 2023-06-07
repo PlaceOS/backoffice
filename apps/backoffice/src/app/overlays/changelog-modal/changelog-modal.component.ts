@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 
 import { marked } from 'marked';
 
@@ -14,7 +14,7 @@ export interface ChangelogModalData {
     templateUrl: './changelog-modal.template.html',
     styleUrls: ['./changelog-modal.styles.scss'],
 })
-export class ChangelogModalComponent extends BaseClass {
+export class ChangelogModalComponent extends AsyncHandler {
     /** Whether the changelog is loading */
     public loading: boolean;
     /** Changelog Markdown */
@@ -26,6 +26,6 @@ export class ChangelogModalComponent extends BaseClass {
 
     /** HTML string for rendering the change log */
     public get changelog(): string {
-        return marked(this._data.changelog || '')
+        return marked(this._data.changelog || '');
     }
 }

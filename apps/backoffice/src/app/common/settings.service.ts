@@ -7,7 +7,7 @@ import { log, getItemWithKeys } from 'apps/backoffice/src/app/common/general';
 import { VERSION } from '../../environments/version';
 import { DEFAULT_SETTINGS } from 'apps/backoffice/src/app/common/settings';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 
 declare global {
     interface Window {
@@ -18,7 +18,7 @@ declare global {
 @Injectable({
     providedIn: 'root',
 })
-export class SettingsService extends BaseClass {
+export class SettingsService extends AsyncHandler {
     /** Name of the application */
     private _app_name = 'PlaceOS';
     /** List of override settings in order of priority */

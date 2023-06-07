@@ -11,7 +11,7 @@ import {
 } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { TriggerStateService } from './trigger-state.service';
 
 @Component({
@@ -45,7 +45,8 @@ import { TriggerStateService } from './trigger-state.service';
         </div>
         <header class="flex items-center my-4">
             <button
-                mat-icon-button
+                btn
+                icon
                 [disabled]="!template_system"
                 (click)="editCondition()"
             >
@@ -78,7 +79,8 @@ import { TriggerStateService } from './trigger-state.service';
                     </div>
                     <div class="w-24 flex items-center justify-center">
                         <button
-                            mat-icon-button
+                            btn
+                            icon
                             [disabled]="!template_system"
                             (click)="editCondition(comparison)"
                         >
@@ -86,10 +88,7 @@ import { TriggerStateService } from './trigger-state.service';
                                 [icon]="{ class: 'backoffice-edit' }"
                             ></app-icon>
                         </button>
-                        <button
-                            mat-icon-button
-                            (click)="removeCondition(comparison)"
-                        >
+                        <button btn icon (click)="removeCondition(comparison)">
                             <app-icon
                                 [icon]="{ class: 'backoffice-trash' }"
                             ></app-icon>
@@ -113,13 +112,15 @@ import { TriggerStateService } from './trigger-state.service';
                     </div>
                     <div class="w-24 flex items-center justify-center">
                         <button
-                            mat-icon-button
+                            btn
+                            icon
                             [disabled]="!template_system"
                             (click)="editCondition(time)"
                         >
+                            btn icon
                             <app-icon className="backoffice-edit"></app-icon>
                         </button>
-                        <button mat-icon-button (click)="removeCondition(time)">
+                        <button btn icon (click)="removeCondition(time)">
                             <app-icon className="backoffice-trash"></app-icon>
                         </button>
                     </div>
@@ -128,7 +129,9 @@ import { TriggerStateService } from './trigger-state.service';
         </section>
         <header class="flex items-center space-x-2 my-4">
             <button
-                mat-icon-button
+                icon
+                btn
+                icon
                 [disabled]="!template_system"
                 (click)="editAction()"
             >
@@ -170,7 +173,9 @@ import { TriggerStateService } from './trigger-state.service';
                     </div>
                     <div class="w-24 flex items-center justify-center">
                         <button
-                            mat-icon-button
+                            icon
+                            btn
+                            icon
                             [disabled]="!template_system"
                             (click)="editAction(action)"
                         >
@@ -178,7 +183,7 @@ import { TriggerStateService } from './trigger-state.service';
                                 [icon]="{ class: 'backoffice-edit' }"
                             ></app-icon>
                         </button>
-                        <button mat-icon-button (click)="removeAction(action)">
+                        <button btn icon (click)="removeAction(action)">
                             <app-icon
                                 [icon]="{ class: 'backoffice-trash' }"
                             ></app-icon>
@@ -217,7 +222,9 @@ import { TriggerStateService } from './trigger-state.service';
                     </div>
                     <div class="w-24 flex items-center justify-center">
                         <button
-                            mat-icon-button
+                            icon
+                            btn
+                            icon
                             [disabled]="!template_system"
                             (click)="editAction(action)"
                         >
@@ -225,7 +232,7 @@ import { TriggerStateService } from './trigger-state.service';
                                 [icon]="{ class: 'backoffice-edit' }"
                             ></app-icon>
                         </button>
-                        <button mat-icon-button (click)="removeAction(action)">
+                        <button btn icon (click)="removeAction(action)">
                             <app-icon
                                 [icon]="{ class: 'backoffice-trash' }"
                             ></app-icon>
@@ -264,7 +271,7 @@ import { TriggerStateService } from './trigger-state.service';
         `,
     ],
 })
-export class TriggerAboutComponent extends BaseClass {
+export class TriggerAboutComponent extends AsyncHandler {
     /** System to use for conditions with systen variables and functions */
     public template_system: PlaceSystem;
     /** List of variable comparison trigger conditions */

@@ -73,7 +73,7 @@ export async function openConfirmModal(
  * detect IE
  * returns version of IE or false, if browser is not Internet Explorer
  */
-export function detectIE() {
+export function detectIE(): number {
     var ua = window.navigator.userAgent;
 
     var msie = ua.indexOf('MSIE ');
@@ -96,7 +96,7 @@ export function detectIE() {
     }
 
     // other browser
-    return false;
+    return 0;
 }
 
 /**
@@ -406,7 +406,10 @@ export function getInvalidFields(form: UntypedFormGroup, prefix: string = '') {
         if (form.controls[key] instanceof UntypedFormGroup) {
             invalid = [
                 ...invalid,
-                ...getInvalidFields(form.controls[key] as UntypedFormGroup, `${key}.`),
+                ...getInvalidFields(
+                    form.controls[key] as UntypedFormGroup,
+                    `${key}.`
+                ),
             ];
         } else if (!form.controls[key].valid) {
             invalid.push(`${prefix}${key}`);

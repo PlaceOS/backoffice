@@ -19,7 +19,7 @@ import { SystemStateService } from './system-state.service';
                 (ngModelChange)="addPendingZone($event)"
             ></item-search-field>
             <button
-                mat-button
+                btn
                 [disabled]="!this.pending_zones.getValue().length"
                 (click)="savePendingZones()"
             >
@@ -28,7 +28,7 @@ import { SystemStateService } from './system-state.service';
         </section>
         <section class="relative">
             <button
-                mat-button
+                btn
                 *ngIf="order_changed"
                 class="shadow z-50 mb-2"
                 (click)="saveZoneOrder()"
@@ -94,7 +94,8 @@ import { SystemStateService } from './system-state.service';
                             </div>
                             <div class="w-16 p-2 items-center justify-center">
                                 <button
-                                    mat-icon-button
+                                    btn
+                                    icon
                                     *ngIf="(zones | async).length > 1"
                                     (click)="removeZone(zone)"
                                 >

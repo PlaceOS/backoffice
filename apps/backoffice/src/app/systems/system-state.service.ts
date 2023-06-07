@@ -36,7 +36,7 @@ import {
     switchMap,
 } from 'rxjs/operators';
 import { calculateModuleIndex } from '../common/api';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { openConfirmModal, unique } from '../common/general';
 
@@ -54,7 +54,7 @@ import { ViewResponseModalComponent } from '../overlays/view-response-modal/view
 @Injectable({
     providedIn: 'root',
 })
-export class SystemStateService extends BaseClass {
+export class SystemStateService extends AsyncHandler {
     /** Observable of the active item */
     public readonly item = this._state.item;
 

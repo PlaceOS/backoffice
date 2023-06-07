@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
 import { DialogEvent } from 'apps/backoffice/src/app/common/types';
 
@@ -12,7 +12,7 @@ import { BackofficeExtension } from '../extensions.component';
     templateUrl: './extension-modal.component.html',
     styleUrls: ['./extension-modal.component.scss'],
 })
-export class ExtensionModalComponent extends BaseClass implements OnInit {
+export class ExtensionModalComponent extends AsyncHandler implements OnInit {
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
 

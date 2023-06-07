@@ -18,14 +18,14 @@ import { APIKeyService } from './api-keys.service';
 @Component({
     selector: 'api-key-modal',
     template: `
-        <header class="h-12 flex items-center justify-between p-2">
+        <header class="h-12 flex items-center justify-between p-4">
             <h2>New API Key</h2>
-            <button mat-icon-button mat-dialog-close *ngIf="!loading">
+            <button btn icon mat-dialog-close *ngIf="!loading">
                 <app-icon className="backoffice-cross"></app-icon>
             </button>
         </header>
         <main
-            class="w-[32rem] max-w-[calc(100vw-2rem)]"
+            class="w-[32rem] max-w-[calc(100vw-2rem)] p-4"
             *ngIf="!loading && form; else load_state"
             [formGroup]="form"
         >
@@ -151,9 +151,9 @@ import { APIKeyService } from './api-keys.service';
         </main>
         <footer
             *ngIf="!loading"
-            class="p-2 flex items-center justify-center border-t border-gray-100 dark:border-gray-100/20"
+            class="p-4 flex items-center justify-center border-t border-gray-100 dark:border-gray-100/20"
         >
-            <button mat-button class="w-32" (click)="save()">Save</button>
+            <button btn class="w-32" (click)="save()">Save</button>
         </footer>
         <ng-template #load_state>
             <main
@@ -173,7 +173,10 @@ export class APIKeyModalComponent {
         user: new FormControl(null),
         user_id: new FormControl('', [Validators.required]),
         description: new FormControl(''),
-        scopes: new FormControl([], [Validators.required, Validators.minLength(1)]),
+        scopes: new FormControl(
+            [],
+            [Validators.required, Validators.minLength(1)]
+        ),
         permissions: new FormControl(''),
     });
     public loading: string;

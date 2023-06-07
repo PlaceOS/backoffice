@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { TriggerTimeConditionType } from '@placeos/ts-client';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { numberToPosition } from 'apps/backoffice/src/app/common/general';
 import { TIMEZONES_IANA } from 'apps/backoffice/src/app/common/timezones';
 import { Identity } from 'apps/backoffice/src/app/common/types';
@@ -14,8 +14,9 @@ import { format, setDay, setMonth } from 'date-fns';
     styleUrls: ['./time-form.component.scss'],
 })
 export class TriggerConditionTimeFormComponent
-    extends BaseClass
-    implements OnChanges {
+    extends AsyncHandler
+    implements OnChanges
+{
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
     /** List of available periods for scheduled repetition */

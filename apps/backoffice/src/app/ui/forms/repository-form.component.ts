@@ -23,7 +23,7 @@ import {
     switchMap,
     tap,
 } from 'rxjs/operators';
-import { BaseClass } from '../../common/base.class';
+import { AsyncHandler } from '../../common/base.class';
 import { isValidUrl } from '../../common/validation';
 import { DateFromPipe } from '../pipes/date-from.pipe';
 
@@ -263,7 +263,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
     `,
     styles: [``],
 })
-export class RepositoryFormComponent extends BaseClass {
+export class RepositoryFormComponent extends AsyncHandler {
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
     /** List of commits available for repository */

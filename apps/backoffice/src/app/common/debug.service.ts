@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import {
-    debug, debug_events,
-
-    ignore, PlaceDebugEvent,
-    PlaceModule
+    debug,
+    debug_events,
+    ignore,
+    PlaceDebugEvent,
+    PlaceModule,
 } from '@placeos/ts-client';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { format } from 'date-fns';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { BaseClass } from './base.class';
+import { AsyncHandler } from './base.class';
 
 export type DebugConsolePosition = 'below' | 'side' | 'floating';
 
@@ -24,7 +25,7 @@ const TERMINAL_COLOURS = {
 @Injectable({
     providedIn: 'root',
 })
-export class PlaceDebugService extends BaseClass {
+export class PlaceDebugService extends AsyncHandler {
     private _changed = new BehaviorSubject(0);
     /** List of the current state of events */
     private _events = new BehaviorSubject<PlaceDebugEvent[]>([]);
@@ -52,11 +53,11 @@ export class PlaceDebugService extends BaseClass {
     public get events(): Observable<PlaceDebugEvent[]> {
         return this._event_obs;
     }
-    
+
     public get modules() {
         return this._bound_modules;
     }
-    
+
     public get module_names() {
         return this._module_names;
     }
@@ -71,14 +72,17 @@ export class PlaceDebugService extends BaseClass {
                     this._module_names[event.mod_id] ||
                     event.mod_id ||
                     '<UNKNOWN>'
-                }, [${event.level.toUpperCase()}]\u001b[0m ${event.message.split('\n').reverse().join('\n')}`
+                }, [${event.level.toUpperCase()}]\u001b[0m ${event.message
+                    .split('\n')
+                    .reverse()
+                    .join('\n')}`
         );
         return list.join('\n');
     }
 
     /** Whether there are modules listening for debug messages */
     public get is_enabled(): boolean {
-        return this._enabled
+        return this._enabled;
     }
 
     /** Whether there are modules listening for debug messages */

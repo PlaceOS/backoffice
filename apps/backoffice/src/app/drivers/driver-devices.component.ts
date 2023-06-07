@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { DriverStateService } from './driver-state.service';
 import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
@@ -71,7 +71,8 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                         </div>
                         <div class="w-24 p-2">
                             <button
-                                mat-icon-button
+                                btn
+                                icon
                                 matTooltip="View Systems"
                                 [matMenuTriggerFor]="menu"
                                 (click)="loadSystems(module)"
@@ -115,7 +116,9 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                                 </a>
                             </mat-menu>
                             <button
-                                mat-icon-button
+                                icon
+                                btn
+                                icon
                                 (click)="removeModule(module)"
                             >
                                 <app-icon
@@ -153,7 +156,7 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
         `,
     ],
 })
-export class DriverModulesComponent extends BaseClass {
+export class DriverModulesComponent extends AsyncHandler {
     public loading_systems = false;
     /** Subject holding the value of the search */
     public readonly filter$ = new BehaviorSubject<string>('');

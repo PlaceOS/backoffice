@@ -1,7 +1,7 @@
 import { Component, Input, ViewChild } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { ENTER, COMMA, SPACE } from '@angular/cdk/keycodes';
-import { MatChipList } from '@angular/material/chips';
+import { MatChipGrid } from '@angular/material/chips';
 import { PlaceSystem } from '@placeos/ts-client';
 
 import { Identity } from 'apps/backoffice/src/app/common/types';
@@ -41,41 +41,38 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                         >
                             Email Addresses<span>*</span>:
                         </label>
-                        <mat-form-field appearance="outline">
-                            <mat-chip-list
+                        <mat-form-field appearance="outline" class="w-full">
+                            <mat-chip-grid
                                 #chipList
-                                aria-label="Email addresses"
+                                aria-label="Email Addresses"
                             >
-                                <mat-chip
-                                    *ngFor="let email of email_list"
-                                    [selectable]="true"
-                                    [removable]="true"
-                                    (removed)="removeEmail(email)"
+                                <mat-chip-row
+                                    *ngFor="let item of email_list"
+                                    (removed)="removeEmail(item)"
                                 >
-                                    {{ email }}
-                                    <app-icon
+                                    <div class="truncate max-w-md">
+                                        {{ item }}
+                                    </div>
+                                    <button
                                         matChipRemove
-                                        [icon]="{ class: 'backoffice-cross' }"
-                                    ></app-icon>
-                                </mat-chip>
-                                <input
-                                    [(ngModel)]="new_email"
-                                    [ngModelOptions]="{ standalone: true }"
-                                    placeholder="New email..."
-                                    i18n-placeholder="@@addEmailPlaceholder"
-                                    [matChipInputFor]="chipList"
-                                    [matChipInputSeparatorKeyCodes]="separators"
-                                    [matChipInputAddOnBlur]="true"
-                                    (matChipInputTokenEnd)="
-                                        addEmail($event.value); new_email = ''
-                                    "
-                                />
-                            </mat-chip-list>
-                            <mat-error>{{
-                                form.controls.emails.hasError('email')
-                                    ? 'Email addresses need to be valid'
-                                    : 'An email address is required'
-                            }}</mat-error>
+                                        [attr.aria-label]="'Remove ' + item"
+                                    >
+                                        <app-icon>cancel</app-icon>
+                                    </button>
+                                </mat-chip-row>
+                            </mat-chip-grid>
+                            <input
+                                [(ngModel)]="new_email"
+                                [ngModelOptions]="{ standalone: true }"
+                                placeholder="Add image via URL"
+                                i18n-placeholder
+                                [matChipInputFor]="chipList"
+                                [matChipInputSeparatorKeyCodes]="separators"
+                                [matChipInputAddOnBlur]="true"
+                                (matChipInputTokenEnd)="
+                                    addEmail($event.value); new_email = ''
+                                "
+                            />
                         </mat-form-field>
                     </div>
                     <div class="field" *ngIf="form.controls.content">
@@ -126,7 +123,7 @@ export class TriggerActionFormComponent {
     /** Variable to hold new email addresses */
     public new_email = '';
 
-    @ViewChild('chipList') private chip_list: MatChipList;
+    @ViewChild('chipList') private chip_list: MatChipGrid;
 
     /** List of available trigger action types */
     public action_types: Identity[] = [

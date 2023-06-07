@@ -9,7 +9,7 @@ import {
 } from 'rxjs/operators';
 
 import { PlaceCluster, queryClusters } from '@placeos/ts-client';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 
 import { PlaceClusterUsageStamp } from './cluster-node.component';
@@ -42,7 +42,7 @@ import { interval } from 'rxjs';
                             </mat-card-content>
                             <mat-card-actions>
                                 <button
-                                    mat-button
+                                    btn
                                     (click)="active_cluster = cluster"
                                     i18n="@@viewClusterProcesses"
                                 >
@@ -76,7 +76,10 @@ import { interval } from 'rxjs';
     `,
     styles: [``],
 })
-export class PlaceClusterDetailsComponent extends BaseClass implements OnInit {
+export class PlaceClusterDetailsComponent
+    extends AsyncHandler
+    implements OnInit
+{
     /** List of available clusters on this instance of engine */
     public cluster_list: PlaceCluster[] = [];
     /** Map of clusters to CPU usage history */

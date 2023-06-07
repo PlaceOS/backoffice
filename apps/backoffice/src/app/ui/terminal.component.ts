@@ -9,7 +9,7 @@ import {
     OnChanges,
 } from '@angular/core';
 import { Terminal } from 'xterm';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 
 @Component({
     selector: 'a-terminal',
@@ -31,8 +31,9 @@ import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
     ],
 })
 export class TerminalComponent
-    extends BaseClass
-    implements OnInit, OnChanges, OnDestroy {
+    extends AsyncHandler
+    implements OnInit, OnChanges, OnDestroy
+{
     /** Contents to display on the terminal */
     @Input() public content: string;
     /** Resizes terminal display on change */

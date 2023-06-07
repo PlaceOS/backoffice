@@ -6,7 +6,7 @@ import {
     ViewChild,
 } from '@angular/core';
 import { ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR } from 'apps/backoffice/src/app/common/angular-animations';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { PlaceDebugService } from 'apps/backoffice/src/app/common/debug.service';
 import { eventToPoint } from 'apps/backoffice/src/app/common/general';
 import { Point } from 'apps/backoffice/src/app/common/types';
@@ -64,25 +64,25 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                         actions
                         class="absolute flex bg-neutral-700 rounded-3xl shadow bottom-2 right-2"
                     >
-                        <button mat-icon-button (click)="toggleDebugPosition()">
+                        <button btn icon (click)="toggleDebugPosition()">
                             <app-icon matTooltip="Toggle Position">{{
                                 debug_position === 'side'
                                     ? 'border_bottom'
                                     : 'border_right'
                             }}</app-icon>
                         </button>
-                        <button mat-icon-button (click)="clearDebugMessages()">
+                        <button btn icon (click)="clearDebugMessages()">
                             <app-icon matTooltip="Clear Messages"
                                 >clear_all</app-icon
                             >
                         </button>
-                        <button mat-icon-button (click)="clearBindings()">
+                        <button btn icon (click)="clearBindings()">
                             <app-icon
                                 className="backoffice-uninstall"
                                 matTooltip="Unbind Modules"
                             ></app-icon>
                         </button>
-                        <button mat-icon-button (click)="close()">
+                        <button btn icon (click)="close()">
                             <app-icon
                                 className="backoffice-cross"
                                 matTooltip="Close Console"
@@ -136,7 +136,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
     ],
     animations: [ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR],
 })
-export class DebugOutputComponent extends BaseClass implements OnInit {
+export class DebugOutputComponent extends AsyncHandler implements OnInit {
     /** Whether display output is shown */
     public show_content: boolean = true;
     /** Display string for debug logs */

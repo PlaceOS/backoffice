@@ -16,7 +16,7 @@ import { SettingsService } from './common/settings.service';
 import { setupPlace } from './common/placeos';
 import { setupCache } from './common/application';
 import { setNotifyOutlet } from './common/notifications';
-import { BaseClass } from './common/base.class';
+import { AsyncHandler } from './common/base.class';
 import { log, detectIE } from './common/general';
 import { BackofficeUsersService } from './users/users.service';
 import { NavigationEnd, Router } from '@angular/router';
@@ -55,7 +55,7 @@ import { NavigationEnd, Router } from '@angular/router';
     ],
     encapsulation: ViewEncapsulation.None,
 })
-export class AppComponent extends BaseClass implements OnInit {
+export class AppComponent extends AsyncHandler implements OnInit {
     /** Whether the application is loading */
     private _loading = new BehaviorSubject<boolean>(false);
     /** Observable for whether the application is initialising */

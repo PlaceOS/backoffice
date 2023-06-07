@@ -27,7 +27,7 @@ import { notifyInfo } from '../../common/notifications';
                 </mat-form-field>
             </div>
             <button
-                mat-button
+                btn
                 class="mt-8 min-w-[8rem]"
                 [disabled]="!(domain | async)"
                 (click)="newKey()"
@@ -50,12 +50,16 @@ import { notifyInfo } from '../../common/notifications';
                         class="select-all text-xs opacity-60 mono break-words cursor-pointer"
                         (click)="copyKey()"
                     >
-                        {{ (last_key | async)?.x_api_key}}
+                        {{ (last_key | async)?.x_api_key }}
                     </div>
                 </div>
             </div>
         </div>
-        <div role="table" class="min-w-[60rem]" *ngIf="(key_list | async)?.length; else load_state">
+        <div
+            role="table"
+            class="min-w-[60rem]"
+            *ngIf="(key_list | async)?.length; else load_state"
+        >
             <div table-head>
                 <div class="w-32 p-2">Name</div>
                 <div class="flex-1 p-2">Description</div>
@@ -81,7 +85,7 @@ import { notifyInfo } from '../../common/notifications';
                         {{ item.created_at * 1000 | dateFrom }}
                     </div>
                     <div class="w-16 p-2 flex items-center">
-                        <button mat-icon-button (click)="deleteKey(item)">
+                        <button btn icon (click)="deleteKey(item)">
                             <app-icon className="backoffice-trash"></app-icon>
                         </button>
                     </div>

@@ -21,7 +21,7 @@ import {
     switchMap,
     tap,
 } from 'rxjs/operators';
-import { BaseClass } from '../../../common/base.class';
+import { AsyncHandler } from '../../../common/base.class';
 import { ModuleLike } from './select-module.component';
 
 @Component({
@@ -69,8 +69,9 @@ import { ModuleLike } from './select-module.component';
     ],
 })
 export class SelectMethodComponent
-    extends BaseClass
-    implements OnInit, OnChanges, ControlValueAccessor {
+    extends AsyncHandler
+    implements OnInit, OnChanges, ControlValueAccessor
+{
     /** ID of the system to select the module from */
     @Input() public system: PlaceSystem;
     /** ID of the system to select the module from */
@@ -85,7 +86,7 @@ export class SelectMethodComponent
 
     public method_list = combineLatest([this._system, this._module]).pipe(
         distinctUntilChanged(),
-        tap(() => this.loading = true),
+        tap(() => (this.loading = true)),
         switchMap(([id, { module, index }]) =>
             !!id && !!module ? functionList(id, module, index) : of({})
         ),

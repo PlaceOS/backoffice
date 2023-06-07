@@ -21,7 +21,7 @@ import {
     startOfDay,
 } from 'date-fns';
 
-import { BaseClass } from '../../common/base.class';
+import { AsyncHandler } from '../../common/base.class';
 import { HashMap } from '../../common/types';
 
 @Injectable()
@@ -84,7 +84,7 @@ const FIELD_DATE_FORMATS: MatDateFormats = {
     ],
 })
 export class DateFieldComponent
-    extends BaseClass
+    extends AsyncHandler
     implements OnInit, ControlValueAccessor
 {
     /** Earliest date available the user is allowed to pick */

@@ -8,7 +8,7 @@ import { DomainStateService } from './domain-state.service';
     selector: 'domain-authentication',
     template: `
         <button
-            mat-button
+            btn
             class="w-full sm:w-40 mb-4"
             (click)="newAuthSource()"
             i18n="@@newAction"
@@ -36,15 +36,12 @@ import { DomainStateService } from './domain-state.service';
                     </div>
                     <div class="w-32 p-2 uppercase">{{ item.type }}</div>
                     <div class="w-24 flex items-center justify-center">
-                        <button mat-icon-button (click)="editAuthSource(item)">
+                        <button btn icon (click)="editAuthSource(item)">
                             <app-icon
                                 [icon]="{ class: 'backoffice-edit' }"
                             ></app-icon>
                         </button>
-                        <button
-                            mat-icon-button
-                            (click)="deleteAuthSource(item)"
-                        >
+                        <button btn icon (click)="deleteAuthSource(item)">
                             <app-icon
                                 [icon]="{ class: 'backoffice-trash' }"
                             ></app-icon>

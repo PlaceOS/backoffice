@@ -12,7 +12,7 @@ import {
     removeMetadata,
     updateMetadata,
 } from '@placeos/ts-client';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { validateJSONString } from '../common/validation';
@@ -26,7 +26,7 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
 @Component({
     selector: 'metadata-display',
     template: `
-        <button mat-button (click)="newMetadata()" i18n="@@addMetadataAction">
+        <button btn (click)="newMetadata()" i18n="@@addMetadataAction">
             Add new Metadata Field
         </button>
         <div
@@ -52,14 +52,17 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
                                 <code
                                     class="text-xs mr-2"
                                     [matTooltip]="
-                                        (item.modified_by_id | user | async)?.name + '\n' +
-                                        ((item.updated_at || 0) | date:'medium')
+                                        (item.modified_by_id | user | async)
+                                            ?.name +
+                                        '
+' +
+                                        (item.updated_at || 0 | date: 'medium')
                                     "
                                     >{{ item.updated_at | dateFrom }}</code
                                 >
                                 <ng-container *ngIf="edited[item.name]">
                                     <button
-                                        mat-button
+                                        btn
                                         save
                                         *ngIf="
                                             !loading[item.name];
@@ -73,7 +76,8 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
                                     </button>
                                 </ng-container>
                                 <button
-                                    mat-icon-button
+                                    btn
+                                    icon
                                     class="no-underline"
                                     matTooltip="Edit Metadata Settings"
                                     (click)="
@@ -92,7 +96,8 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
                                     *ngIf="!item.new"
                                 >
                                     <button
-                                        mat-icon-button
+                                        btn
+                                        icon
                                         class="no-underline"
                                         matTooltip="Remove Metadata"
                                         (click)="deleteMetadata(item.name)"
@@ -139,7 +144,7 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
         `,
     ],
 })
-export class MetadataDisplayComponent extends BaseClass {
+export class MetadataDisplayComponent extends AsyncHandler {
     @Input() public item: any;
     /** List of metadata associated with the zone */
     public metadata: PlaceMetadata[] = [];

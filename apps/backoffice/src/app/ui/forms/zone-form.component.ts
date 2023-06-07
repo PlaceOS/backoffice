@@ -3,7 +3,7 @@ import { UntypedFormGroup } from '@angular/forms';
 import { PlaceZone, showZone, queryZones } from '@placeos/ts-client';
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { map } from 'rxjs/operators';
 import {
     addChipItem,
@@ -77,7 +77,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             </div>
             <div class="field" *ngIf="form.controls.tags">
                 <label
-                    for="system-email"
                     [class.error]="
                         form.controls.tags.invalid && form.controls.tags.touched
                     "
@@ -85,29 +84,29 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 >
                     Tags:
                 </label>
-                <mat-form-field appearance="outline">
-                    <mat-chip-list #chipList aria-label="Zone Tags">
-                        <mat-chip
-                            *ngFor="let tag of tag_list"
-                            [selectable]="true"
-                            [removable]="true"
-                            (removed)="removeTag(tag)"
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-chip-grid #chipList aria-label="Image List">
+                        <mat-chip-row
+                            *ngFor="let item of tag_list"
+                            (removed)="removeTag(item)"
                         >
-                            {{ tag }}
-                            <app-icon
+                            <div class="truncate max-w-md">{{ item }}</div>
+                            <button
                                 matChipRemove
-                                [icon]="{ class: 'backoffice-cross' }"
-                            ></app-icon>
-                        </mat-chip>
-                        <input
-                            placeholder="Zone tags..."
-                            i18n-placeholder="@@zoneTagsPlaceholder"
-                            [matChipInputFor]="chipList"
-                            [matChipInputSeparatorKeyCodes]="separators"
-                            [matChipInputAddOnBlur]="true"
-                            (matChipInputTokenEnd)="addTag($event)"
-                        />
-                    </mat-chip-list>
+                                [attr.aria-label]="'Remove ' + item"
+                            >
+                                <app-icon>cancel</app-icon>
+                            </button>
+                        </mat-chip-row>
+                    </mat-chip-grid>
+                    <input
+                        placeholder="Tags..."
+                        i18n-placeholder
+                        [matChipInputFor]="chipList"
+                        [matChipInputSeparatorKeyCodes]="separators"
+                        [matChipInputAddOnBlur]="true"
+                        (matChipInputTokenEnd)="addTag($event)"
+                    />
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
@@ -193,15 +192,15 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             name="count"
                             type="number"
                             placeholder="Resource count. Desks, Hardware, etc."
-                            i18n-placeholder="@@zoneFeatureCountPlaceholder"
+                            i18n-placeholder="@@zoneTagCountPlaceholder"
                             formControlName="count"
                         />
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.capacity">
-                    <label for="capacity" i18n="@@capacityLabel"
-                        >Capacity:</label
-                    >
+                    <label for="capacity" i18n="@@capacityLabel">
+                        Capacity:
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -237,7 +236,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
     `,
     styles: [``],
 })
-export class ZoneFormComponent extends BaseClass {
+export class ZoneFormComponent extends AsyncHandler {
     public timezones: string[] = [];
     public filtered_timezones: string[] = [];
     /** Group of form fields used for creating the system */

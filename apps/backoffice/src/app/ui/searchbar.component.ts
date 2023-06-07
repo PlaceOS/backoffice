@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 
 @Component({
     selector: 'searchbar',
@@ -38,7 +38,8 @@ import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
                 [placeholder]="placeholder"
             />
             <button
-                mat-icon-button
+                btn
+                icon
                 *ngIf="
                     model.speech && dictation && (model.focus || model.dictate)
                 "
@@ -48,7 +49,8 @@ import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
                 <app-icon className="backoffice-mic"></app-icon>
             </button>
             <button
-                mat-icon-button
+                btn
+                icon
                 class="close"
                 *ngIf="filter && clearable"
                 (click)="clear()"
@@ -78,7 +80,7 @@ import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
         `,
     ],
 })
-export class SearchbarComponent extends BaseClass {
+export class SearchbarComponent extends AsyncHandler {
     @Input() public filter: string;
     @Input() public limit: string;
     @Input() public dictation = true;

@@ -7,11 +7,13 @@
     (dragend)="dragging = false"
 >
     <app-icon [icon]="{ class: 'backoffice-upload' }"></app-icon>
-    <div class="text" i18n="uploadCSVAction">Select or drop CSV file to begin</div>
-    <input type="file" (change)="loadCSVData($event)"/>
+    <div class="text" i18n="uploadCSVAction">
+        Select or drop CSV file to begin
+    </div>
+    <input type="file" (change)="loadCSVData($event)" />
 </div>
 <div class="template" *ngIf="template">
-    <button mat-button (click)="downloadTemplateCSV()">Download Template</button>
+    <button btn (click)="downloadTemplateCSV()">Download Template</button>
 </div>
 <ng-template #load_state>
     <div class="load-state">

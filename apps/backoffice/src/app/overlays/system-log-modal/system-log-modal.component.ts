@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 
 export interface SystemLogModalData {
     /** ID of the system to show the logs for */
@@ -13,7 +13,7 @@ export interface SystemLogModalData {
     templateUrl: './system-log-modal.component.html',
     styleUrls: ['./system-log-modal.component.scss'],
 })
-export class SystemLogModalComponent extends BaseClass implements OnInit {
+export class SystemLogModalComponent extends AsyncHandler implements OnInit {
     /** ID of the system to get logs for */
     public id: string;
     /** List of the available log entries for the set system */

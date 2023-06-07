@@ -20,7 +20,7 @@ import {
     startOfDay,
     startOfMinute,
 } from 'date-fns';
-import { BaseClass } from '../../common/base.class';
+import { AsyncHandler } from '../../common/base.class';
 import { Identity } from '../../common/types';
 
 @Component({
@@ -39,7 +39,8 @@ import { Identity } from '../../common/types';
                 (ngModelChange)="setValue($event)"
             />
             <button
-                mat-icon-button
+                btn
+                icon
                 matSuffix
                 class="relative top-1 -right-1"
                 (click)="showSelect()"
@@ -82,7 +83,7 @@ import { Identity } from '../../common/types';
     ],
 })
 export class TimeFieldComponent
-    extends BaseClass
+    extends AsyncHandler
     implements OnInit, OnChanges, ControlValueAccessor
 {
     /** Time step between each allowed time option */

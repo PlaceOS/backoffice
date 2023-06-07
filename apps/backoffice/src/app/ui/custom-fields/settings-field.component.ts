@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
-import { BaseClass } from '../../common/base.class';
+import { AsyncHandler } from '../../common/base.class';
 import { HashMap } from '../../common/types';
 import { BackofficeUsersService } from '../../users/users.service';
 
@@ -46,7 +46,7 @@ let MODEL: HashMap<monaco.editor.ITextModel> = {};
     ],
 })
 export class SettingsFieldComponent
-    extends BaseClass
+    extends AsyncHandler
     implements OnInit, OnChanges, OnDestroy, ControlValueAccessor
 {
     /** Whether form field is readonly */

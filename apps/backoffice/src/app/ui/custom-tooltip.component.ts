@@ -14,7 +14,7 @@ import {
     Type,
     ViewChild,
 } from '@angular/core';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 
 @Injectable()
 export class CustomTooltipData<T = any> {
@@ -51,8 +51,9 @@ export class CustomTooltipData<T = any> {
     `,
 })
 export class CustomTooltipComponent<T = any>
-    extends BaseClass
-    implements OnChanges, OnDestroy {
+    extends AsyncHandler
+    implements OnChanges, OnDestroy
+{
     /** Horizontal position of the rendered overlay */
     @Input('xPosition') public x_pos: 'start' | 'center' | 'end';
     /** Vertical position of the rendered overlay */
@@ -74,8 +75,10 @@ export class CustomTooltipComponent<T = any>
 
     @ViewChild(CdkPortal) private _portal: CdkPortal;
 
-    @HostListener('click') public readonly onClick = () => this.timeout('open', () => this.open());
-    @HostListener('touchend') public readonly onTouch = () => this.timeout('open', () => this.open());
+    @HostListener('click') public readonly onClick = () =>
+        this.timeout('open', () => this.open());
+    @HostListener('touchend') public readonly onTouch = () =>
+        this.timeout('open', () => this.open());
     @HostListener('mouseenter') public readonly onEnter = () =>
         this.hover ? this.open() : '';
     @HostListener('mouseleave') public readonly onLeave = () =>

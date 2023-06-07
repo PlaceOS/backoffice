@@ -15,7 +15,7 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
                     database
                 </p>
                 <button
-                    mat-button
+                    btn
                     class="w-[calc(100%-0.5rem)]"
                     [disabled]="reindexing"
                     (click)="reindex()"
@@ -33,7 +33,7 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
                     database
                 </p>
                 <button
-                    mat-button
+                    btn
                     class="w-[calc(100%-0.5rem)]"
                     [disabled]="backfilling"
                     (click)="backfill()"

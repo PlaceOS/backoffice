@@ -50,8 +50,10 @@ const SYSTEMS = {};
                         <div class="w-1/6">
                             {{ ev.value ? 'Connected' : 'Disconnected' }}
                         </div>
-                        <div class="w-1/6">{{ ev.timestamp * 1000 | dateFrom }}</div>
-                        <button mat-icon-button>
+                        <div class="w-1/6">
+                            {{ ev.timestamp * 1000 | dateFrom }}
+                        </div>
+                        <button btn icon>
                             <app-icon class="text-xl">done</app-icon>
                         </button>
                     </div>
@@ -95,7 +97,7 @@ export class MqttDashboardComponent {
         const system_ids = unique(details.map((_) => _.sys_id));
         const systems = [];
         for (const id of system_ids) {
-            const sys = SYSTEMS[id] || await showSystem(id).toPromise();
+            const sys = SYSTEMS[id] || (await showSystem(id).toPromise());
             systems.push({
                 id,
                 ...sys,

@@ -15,7 +15,7 @@ import { first, map } from 'rxjs/operators';
 
 import { FilterFn } from 'apps/backoffice/src/app/common/types';
 import { toQueryString } from 'apps/backoffice/src/app/common/api';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { SettingsService } from '../common/settings.service';
 
 import * as Sentry from '@sentry/browser';
@@ -26,7 +26,7 @@ type ServiceItem = PlaceUser;
 @Injectable({
     providedIn: 'root',
 })
-export class BackofficeUsersService extends BaseClass {
+export class BackofficeUsersService extends AsyncHandler {
     /** Name for a single user */
     public readonly singular: string = 'user';
     /** Behavior subject with the currently available list of users */
@@ -45,8 +45,12 @@ export class BackofficeUsersService extends BaseClass {
 
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
-        const os_dark = window?.matchMedia ? window?.matchMedia('(prefers-color-scheme: dark)')?.matches : false;
-        const theme = localStorage.getItem('BACKOFFICE.theme') ?? ((this._user.getValue() || {}) as any).ui_theme;
+        const os_dark = window?.matchMedia
+            ? window?.matchMedia('(prefers-color-scheme: dark)')?.matches
+            : false;
+        const theme =
+            localStorage.getItem('BACKOFFICE.theme') ??
+            ((this._user.getValue() || {}) as any).ui_theme;
         return (theme && theme === 'dark') || (!theme && os_dark);
     }
     public set dark_mode(state: boolean) {

@@ -30,14 +30,14 @@ export interface StaffTenantModalData {
         <header>
             <h3>{{ tenant ? 'Edit' : 'New' }} Tenant</h3>
             <div class="flex-1"></div>
-            <button *ngIf="!loading" mat-icon-button mat-dialog-close>
+            <button *ngIf="!loading" btn icon mat-dialog-close>
                 <app-icon className="backoffice-cross"></app-icon>
             </button>
         </header>
         <main
             [formGroup]="form"
             *ngIf="!loading; else load_state"
-            class="overflow-auto"
+            class="overflow-auto p-4"
         >
             <div class="flex items-center flex-wrap space-x-0 sm:space-x-2">
                 <div class="flex flex-col flex-1">
@@ -63,7 +63,9 @@ export interface StaffTenantModalData {
             </div>
             <div
                 class="flex items-center flex-wrap space-x-0 sm:space-x-2"
-                *ngIf="form.value.platform !== 'google' && !form.value.delegated"
+                *ngIf="
+                    form.value.platform !== 'google' && !form.value.delegated
+                "
             >
                 <div class="flex flex-col flex-1">
                     <label>Service Account:</label>
@@ -94,7 +96,12 @@ export interface StaffTenantModalData {
                     >
                         <label class="capitalize">
                             {{ name_map[item.key] || item.key }}
-                            <span *ngIf="item.key !== 'conference_type' && !form.value.id">*</span
+                            <span
+                                *ngIf="
+                                    item.key !== 'conference_type' &&
+                                    !form.value.id
+                                "
+                                >*</span
                             >:
                         </label>
                         <mat-form-field appearance="outline">
@@ -217,7 +224,7 @@ export interface StaffTenantModalData {
             *ngIf="!loading"
             class="p-2 border-t border-gray-200 flex justify-center"
         >
-            <button mat-button class="w-32" (click)="save()">Save</button>
+            <button btn class="w-32" (click)="save()">Save</button>
         </footer>
         <ng-template #load_state>
             <main class="flex flex-col p-8 items-center justify-center">
@@ -309,7 +316,7 @@ export class StaffTenantModalComponent implements OnInit {
             'scopes',
             'sub',
             'domain',
-            'user_agent'
+            'user_agent',
         ];
         const handleDelegation = (delegated) => {
             if (delegated) {
@@ -400,11 +407,14 @@ export class StaffTenantModalComponent implements OnInit {
         if (!Object.keys(value.credentials).length) {
             delete value.credentials;
         }
-        const data = cleanObject({
-            ...(this.tenant || {}),
-            ...value,
-            booking_limits,
-        }, ['', null, undefined]);
+        const data = cleanObject(
+            {
+                ...(this.tenant || {}),
+                ...value,
+                booking_limits,
+            },
+            ['', null, undefined]
+        );
         const call = this.tenant?.id
             ? put(`/api/staff/v1/tenants/${this.tenant.id}`, data)
             : post('/api/staff/v1/tenants', data);

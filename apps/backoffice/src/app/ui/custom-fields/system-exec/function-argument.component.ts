@@ -16,7 +16,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { PlaceModuleFunction } from '@placeos/ts-client';
-import { BaseClass } from '../../../common/base.class';
+import { AsyncHandler } from '../../../common/base.class';
 import { HashMap } from '../../../common/types';
 
 const validateType = (type) => (control: AbstractControl) => {
@@ -99,8 +99,9 @@ const validateType = (type) => (control: AbstractControl) => {
     ],
 })
 export class FunctionArgumentComponent
-    extends BaseClass
-    implements OnChanges, ControlValueAccessor {
+    extends AsyncHandler
+    implements OnChanges, ControlValueAccessor
+{
     @Input() public method: PlaceModuleFunction;
     @Output() public valid = new EventEmitter<boolean>();
 

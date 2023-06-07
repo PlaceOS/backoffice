@@ -8,7 +8,7 @@ import {
     OnInit,
 } from '@angular/core';
 import { MatMenuTrigger, MatMenuPanel } from '@angular/material/menu';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 
 @Component({
     selector: '[context-menu]',
@@ -23,15 +23,18 @@ import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
             [matMenuTriggerFor]="menu"
         ></div>
     `,
-    styles: [`
-        :host {
-            position: relative;
-        }
-    `],
+    styles: [
+        `
+            :host {
+                position: relative;
+            }
+        `,
+    ],
 })
 export class ContextMenuComponent
-    extends BaseClass
-    implements OnInit, AfterViewInit {
+    extends AsyncHandler
+    implements OnInit, AfterViewInit
+{
     /** List of context menu items */
     @Input('context-menu') public menu: MatMenuPanel;
     /** Offset of the context menu on the x axis */

@@ -7,7 +7,7 @@ import {
     queryProcesses,
 } from '@placeos/ts-client';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import {
     ConfirmModalComponent,
     CONFIRM_METADATA,
@@ -28,7 +28,7 @@ import {
     selector: 'engine-cluster-task-list',
     template: `
         <div class="flex items-center mb-4">
-            <button mat-icon-button (click)="close.emit()">
+            <button btn icon (click)="close.emit()">
                 <app-icon
                     [icon]="{ type: 'icon', class: 'backoffice-arrow-left' }"
                 ></app-icon>
@@ -80,10 +80,7 @@ import {
                         {{ element.module_instances }}
                     </div>
                     <div class="w-12 flex items-center justify-center">
-                        <button
-                            mat-icon-button
-                            (click)="confirmKillProcess(element)"
-                        >
+                        <button btn icon (click)="confirmKillProcess(element)">
                             <app-icon className="backoffice-trash"></app-icon>
                         </button>
                     </div>
@@ -108,7 +105,7 @@ import {
         `,
     ],
 })
-export class PlaceClusterTaskListComponent extends BaseClass {
+export class PlaceClusterTaskListComponent extends AsyncHandler {
     /** Cluster to display tasks details for */
     @Input() public cluster: PlaceCluster;
     /** Emitter for close events */

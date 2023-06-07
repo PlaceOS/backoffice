@@ -10,7 +10,7 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
     template: ` <header>
             <h3>Edit Tenant Booking Limits</h3>
             <div class="flex-1"></div>
-            <button *ngIf="!loading" mat-icon-button mat-dialog-close>
+            <button *ngIf="!loading" btn icon mat-dialog-close>
                 <app-icon className="backoffice-cross"></app-icon>
             </button>
         </header>
@@ -30,7 +30,7 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
             *ngIf="!loading"
             class="p-2 border-t border-gray-200 flex justify-center"
         >
-            <button mat-button class="w-32" (click)="save()">Save</button>
+            <button btn class="w-32" (click)="save()">Save</button>
         </footer>
         <ng-template #load_state>
             <main class="flex flex-col p-8 items-center justify-center">

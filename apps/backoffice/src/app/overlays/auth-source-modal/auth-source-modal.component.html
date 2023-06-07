@@ -1,40 +1,56 @@
 <header>
-    <h3 mat-dialog-title>{{!is_new ? 'Edit' : 'New'}} Auth Source</h3>
-    <button mat-icon-button mat-dialog-close>
-        <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
+    <h3>{{ !is_new ? 'Edit' : 'New' }} Auth Source</h3>
+    <button btn icon mat-dialog-close>
+        <app-icon
+            [icon]="{ type: 'icon', class: 'backoffice-cross' }"
+        ></app-icon>
     </button>
 </header>
-<mat-dialog-content>
-    <div class="body" *ngIf="!loading; else load_state">
-        <div class="field type" *ngIf="is_new">
-            <label for="type">Auth Source Type: </label>
-            <mat-form-field appearance="outline">
-                <mat-select name="type" [(ngModel)]="active_type" (ngModelChange)="setType($event)" placeholder="Select auth type">
-                    <mat-option *ngFor="let type of source_types" [value]="type.id">
-                        {{ type.name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-        <ng-container *ngIf="item">
-            <ng-container [ngSwitch]="type">
-                <ng-container *ngSwitchCase="'saml'">
-                    <saml-source-form [form]="form"></saml-source-form>
-                </ng-container>
-                <ng-container *ngSwitchCase="'ldap'">
-                    <ldap-source-form [form]="form"></ldap-source-form>
-                </ng-container>
-                <ng-container *ngSwitchDefault>
-                    <oauth-source-form [form]="form"></oauth-source-form>
-                </ng-container>
+<main class="max-h-[65vh] overflow-auto p-4" *ngIf="!loading; else load_state">
+    <div class="field type" *ngIf="is_new">
+        <label for="type">Auth Source Type: </label>
+        <mat-form-field appearance="outline">
+            <mat-select
+                name="type"
+                [(ngModel)]="active_type"
+                (ngModelChange)="setType($event)"
+                placeholder="Select auth type"
+            >
+                <mat-option *ngFor="let type of source_types" [value]="type.id">
+                    {{ type.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <ng-container *ngIf="item">
+        <ng-container [ngSwitch]="type">
+            <ng-container *ngSwitchCase="'saml'">
+                <saml-source-form [form]="form"></saml-source-form>
+            </ng-container>
+            <ng-container *ngSwitchCase="'ldap'">
+                <ldap-source-form [form]="form"></ldap-source-form>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+                <oauth-source-form [form]="form"></oauth-source-form>
             </ng-container>
         </ng-container>
-    </div>
-</mat-dialog-content>
-<mat-dialog-actions *ngIf="!loading">
-    <button mat-button class="inverse" mat-dialog-close>Cancel</button>
-    <button mat-button type="button" [disabled]="!active_type" (click)="save()">Save</button>
-</mat-dialog-actions>
+    </ng-container>
+</main>
+<footer
+    class="border-t border-gray-200 flex items-center justify-end space-x-2 p-4"
+    *ngIf="!loading"
+>
+    <button btn class="w-32 inverse" mat-dialog-close>Cancel</button>
+    <button
+        btn
+        class="w-32"
+        type="button"
+        [disabled]="!active_type"
+        (click)="save()"
+    >
+        Save
+    </button>
+</footer>
 <ng-template #load_state>
     <div class="body">
         <div class="info-block">

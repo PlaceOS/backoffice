@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ApplicationIcon } from '../common/types';
 
@@ -43,7 +43,7 @@ export interface ItemTab {
     `,
     styles: [``],
 })
-export class ItemTablistComponent extends BaseClass implements OnInit {
+export class ItemTablistComponent extends AsyncHandler implements OnInit {
     @Input() public base: string = 'systems';
     @Input() public item_id: string = '-';
     @Input() public tabs: ItemTab[] = [];
@@ -92,7 +92,10 @@ export class ItemTablistComponent extends BaseClass implements OnInit {
     }
 
     private _updateID() {
-        const parts = this._router.url?.replace(/^\//, '').split('/') || ['1', ''];
+        const parts = this._router.url?.replace(/^\//, '').split('/') || [
+            '1',
+            '',
+        ];
         this.item_id = parts[1];
     }
 }

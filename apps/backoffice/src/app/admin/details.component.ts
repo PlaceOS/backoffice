@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { get, apiEndpoint } from '@placeos/ts-client';
 
 import { VERSION } from '../../environments/version';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import {
     ChangelogModalComponent,
     ChangelogModalData,
@@ -168,7 +168,7 @@ export interface PlaceServiceDetails {
         `,
     ],
 })
-export class PlaceDetailsComponent extends BaseClass implements OnInit {
+export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
     /** Current details about the API */
     public api_details: PlaceServiceDetails[] = [];
     public changelog_data: string = '';

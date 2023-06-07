@@ -2,7 +2,7 @@ import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, Input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { PlaceDomain, queryDomains } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 
 import {
     addChipItem,
@@ -40,7 +40,7 @@ import {
                         placeholder="Select Domain..."
                     >
                         <mat-option
-                            *ngFor="let domain of domain_list"
+                            *ngFor="let domain of domain_list | async"
                             [value]="domain.id"
                         >
                             {{ domain.name }}
@@ -230,32 +230,38 @@ import {
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.groups">
-                <label for="user-groups" i18n="@@groupssLabel">
+                <label
+                    [class.error]="
+                        form.controls.groups.invalid &&
+                        form.controls.groups.touched
+                    "
+                    i18n="@@groupsLabel"
+                >
                     User Groups:
                 </label>
-                <mat-form-field appearance="outline">
-                    <mat-chip-list #chipList aria-label="Zone Tags">
-                        <mat-chip
-                            *ngFor="let group of group_list"
-                            [selectable]="true"
-                            [removable]="true"
-                            (removed)="removeGroup(group)"
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-chip-grid #chipList aria-label="Image List">
+                        <mat-chip-row
+                            *ngFor="let item of group_list"
+                            (removed)="removeGroup(item)"
                         >
-                            {{ group }}
-                            <app-icon
+                            <div class="truncate max-w-md">{{ item }}</div>
+                            <button
                                 matChipRemove
-                                [icon]="{ class: 'backoffice-cross' }"
-                            ></app-icon>
-                        </mat-chip>
-                        <input
-                            placeholder="User groups..."
-                            i18n-placeholder="@@userGroupsPlaceholder"
-                            [matChipInputFor]="chipList"
-                            [matChipInputSeparatorKeyCodes]="separators"
-                            [matChipInputAddOnBlur]="true"
-                            (matChipInputTokenEnd)="addGroup($event)"
-                        />
-                    </mat-chip-list>
+                                [attr.aria-label]="'Remove ' + item"
+                            >
+                                <app-icon>cancel</app-icon>
+                            </button>
+                        </mat-chip-row>
+                    </mat-chip-grid>
+                    <input
+                        placeholder="User Groups..."
+                        i18n-placeholder
+                        [matChipInputFor]="chipList"
+                        [matChipInputSeparatorKeyCodes]="separators"
+                        [matChipInputAddOnBlur]="true"
+                        (matChipInputTokenEnd)="addGroup($event)"
+                    />
                 </mat-form-field>
             </div>
         </form>
@@ -272,8 +278,11 @@ export class UserFormComponent {
     /** Loading state */
     public loading: string = '';
     /** List of available domains */
-    public domain_list: PlaceDomain[];
-    /** List of separator characters for tags */
+    public readonly domain_list = queryDomains().pipe(
+        map(({ data }) => data),
+        shareReplay(1)
+    );
+    /** List of separator characters for groups */
     public readonly separators: number[] = [ENTER, COMMA];
 
     public readonly addGroup = (e) =>
@@ -283,9 +292,6 @@ export class UserFormComponent {
 
     public async ngOnInit() {
         this.loading = 'Loading domains...';
-        this.domain_list = await queryDomains()
-            .pipe(map((r) => r.data))
-            .toPromise();
         if (!this.form.controls.authority_id.value) {
             this.form.controls.authority_id.setValue(this.domain_list[0]?.id);
         }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { extensionsForItem } from '../common/api';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { SettingsService } from '../common/settings.service';
@@ -19,7 +19,8 @@ import { SystemStateService } from './system-state.service';
                     <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
                         <item-selection class="z-20 sm:hidden">
                             <button
-                                mat-icon-button
+                                btn
+                                icon
                                 class="sm:hidden mr-2"
                                 (click)="open_menu = true"
                             >
@@ -73,10 +74,10 @@ import { SystemStateService } from './system-state.service';
                         </button>
                     </div>
                 </div>
-                    <app-debug-output
-                        below
-                        *ngIf="debug_position === 'below'"
-                    ></app-debug-output>
+                <app-debug-output
+                    below
+                    *ngIf="debug_position === 'below'"
+                ></app-debug-output>
             </div>
             <app-debug-output
                 side
@@ -87,7 +88,7 @@ import { SystemStateService } from './system-state.service';
     `,
     styles: [``],
 })
-export class SystemsComponent extends BaseClass {
+export class SystemsComponent extends AsyncHandler {
     public readonly name = 'systems';
     public open_menu = false;
     public scroll = 0;

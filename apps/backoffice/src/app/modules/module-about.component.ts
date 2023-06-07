@@ -95,7 +95,7 @@ import { ModuleStateService } from './module-state.service';
             >
                 <h3 class="w-full text-center">Module Controls</h3>
                 <button
-                    mat-button
+                    btn
                     class="w-full"
                     [disabled]="item.running || stopping"
                     (click)="toggleModuleState()"
@@ -110,7 +110,7 @@ import { ModuleStateService } from './module-state.service';
                     <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
                 </button>
                 <button
-                    mat-button
+                    btn
                     class="w-full"
                     [disabled]="!item.running || stopping"
                     (click)="toggleModuleState()"

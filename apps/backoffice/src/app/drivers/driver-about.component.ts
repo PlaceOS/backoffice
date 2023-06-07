@@ -70,7 +70,7 @@ import { DriverStateService } from './driver-state.service';
                         *ngIf="!(compiled | async)"
                     ></mat-spinner>
                     <button
-                        mat-button
+                        btn
                         *ngIf="compilation_error | async"
                         (click)="viewErrors()"
                     >
@@ -83,11 +83,16 @@ import { DriverStateService } from './driver-state.service';
                 </div>
                 <div class="flex items-center space-x-2">
                     <label i18n="@@driverDetailsFileName">File Name</label>
-                    <div class="font-mono text-sm truncate" [title]="item.file_name">{{ item.file_name }}</div>
+                    <div
+                        class="font-mono text-sm truncate"
+                        [title]="item.file_name"
+                    >
+                        {{ item.file_name }}
+                    </div>
                 </div>
                 <div class="flex-1"></div>
                 <button
-                    mat-button
+                    btn
                     (click)="recompileDriver()"
                     i18n="@@driverReloadAction"
                     class="w-full"

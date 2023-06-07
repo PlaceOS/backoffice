@@ -92,7 +92,7 @@ import { SystemStateService } from './system-state.service';
             >
                 <h3 class="w-full text-center">System Controls</h3>
                 <button
-                    mat-button
+                    btn
                     start
                     class="w-full"
                     (click)="start()"
@@ -101,7 +101,7 @@ import { SystemStateService } from './system-state.service';
                     Start System
                 </button>
                 <button
-                    mat-button
+                    btn
                     stop
                     class="w-full"
                     (click)="stop()"

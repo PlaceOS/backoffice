@@ -19,7 +19,7 @@ import {
 
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
 import { SettingsService } from 'apps/backoffice/src/app/common/settings.service';
 import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
@@ -32,7 +32,7 @@ import { isBefore } from 'date-fns';
     templateUrl: './sidebar.template.html',
     styleUrls: ['./sidebar.styles.scss'],
 })
-export class SidebarComponent extends BaseClass implements OnInit {
+export class SidebarComponent extends AsyncHandler implements OnInit {
     /** Module name to display at the top of the sidebar */
     @Input() public heading = '';
     /** Name of the active module */

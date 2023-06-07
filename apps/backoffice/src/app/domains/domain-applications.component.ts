@@ -10,7 +10,7 @@ import { DomainStateService } from './domain-state.service';
     selector: 'domain-applications',
     template: `
         <button
-            mat-button
+            btn
             class="w-full sm:w-40 mb-4"
             (click)="newApplication()"
             i18n="@@newAction"
@@ -59,15 +59,12 @@ import { DomainStateService } from './domain-state.service';
                     </div>
                     <div class="w-24 p-2">{{ item.scopes }}</div>
                     <div class="w-24 flex items-center justify-center">
-                        <button mat-icon-button (click)="editApplication(item)">
+                        <button btn icon (click)="editApplication(item)">
                             <app-icon
                                 [icon]="{ class: 'backoffice-edit' }"
                             ></app-icon>
                         </button>
-                        <button
-                            mat-icon-button
-                            (click)="deleteApplication(item)"
-                        >
+                        <button btn icon (click)="deleteApplication(item)">
                             <app-icon
                                 [icon]="{ class: 'backoffice-trash' }"
                             ></app-icon>

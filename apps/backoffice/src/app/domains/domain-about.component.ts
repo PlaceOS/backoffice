@@ -3,7 +3,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 
 import { PlaceDomain } from '@placeos/ts-client';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
 import { DomainStateService } from './domain-state.service';
 
@@ -39,7 +39,7 @@ import { DomainStateService } from './domain-state.service';
         `,
     ],
 })
-export class DomainAboutComponent extends BaseClass implements OnInit {
+export class DomainAboutComponent extends AsyncHandler implements OnInit {
     /** Form group for edit domain settings */
     public form = new FormGroup({
         config: new FormControl('', [validateJSONString]),

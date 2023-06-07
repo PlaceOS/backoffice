@@ -9,7 +9,7 @@ import {
 import { SafeHtml } from '@angular/platform-browser';
 import { BehaviorSubject, combineLatest, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { SanitizePipe } from './pipes/sanitise.pipe';
 
 @Component({
@@ -61,7 +61,7 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
     ],
     providers: [SanitizePipe],
 })
-export class NewTerminalComponent extends BaseClass {
+export class NewTerminalComponent extends AsyncHandler {
     @Input() public lines: string[] = [];
     @Input() public search = '';
     @Input() public resize = 0;

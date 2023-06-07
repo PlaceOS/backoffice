@@ -1,12 +1,12 @@
 import { post, apiEndpoint } from '@placeos/ts-client';
 import { Injectable } from '@angular/core';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 
 @Injectable({
     providedIn: 'root',
 })
-export class PlaceDatabase extends BaseClass {
+export class PlaceDatabase extends AsyncHandler {
     public reindex(backfill: boolean = true) {
         const url = `${apiEndpoint()}/reindex${
             backfill ? '?backfill=true' : ''

@@ -9,7 +9,7 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { BackofficeUsersService } from '../users/users.service';
 
 @Component({
@@ -25,8 +25,9 @@ import { BackofficeUsersService } from '../users/users.service';
     styles: [``],
 })
 export class DiffViewerComponent
-    extends BaseClass
-    implements OnInit, OnChanges {
+    extends AsyncHandler
+    implements OnInit, OnChanges
+{
     /** Original version of the document */
     @Input() public original = '';
     /** Newer version of the document */
@@ -60,11 +61,14 @@ export class DiffViewerComponent
 
     private _createEditor() {
         this.unsub('editor');
-        this._editor = monaco.editor.createDiffEditor(this._editor_el.nativeElement, {
-            fontFamily: `"Fira Code", monospace`,
-            theme: !this._users.dark_mode ? 'vs' : 'vs-dark',
-            readOnly: true
-        });
+        this._editor = monaco.editor.createDiffEditor(
+            this._editor_el.nativeElement,
+            {
+                fontFamily: `"Fira Code", monospace`,
+                theme: !this._users.dark_mode ? 'vs' : 'vs-dark',
+                readOnly: true,
+            }
+        );
         this.subscription('editor', () => this._editor.dispose());
         this._updateModel();
         monaco.editor.remeasureFonts();

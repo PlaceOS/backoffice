@@ -26,7 +26,7 @@ import {
 } from '../overlays/duplicate-modal/duplicate-modal.component';
 import { QueryResponse } from '@placeos/ts-client/dist/esm/resources/functions';
 import { log } from './general';
-import { BaseClass } from './base.class';
+import { AsyncHandler } from './base.class';
 import {
     EncryptionLevel,
     PlaceSettings,
@@ -49,7 +49,7 @@ export type ResourceType =
 @Injectable({
     providedIn: 'root',
 })
-export class ActiveItemService extends BaseClass {
+export class ActiveItemService extends AsyncHandler {
     /** Whether active item is loading */
     private _loading = new BehaviorSubject<boolean>(false);
     /** Whether item list should show on mobile */

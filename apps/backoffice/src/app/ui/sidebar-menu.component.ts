@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { authority } from '@placeos/ts-client';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';
@@ -45,31 +45,73 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 </a>
                 <button
                     class="absolute top-1 left-1 sm:hidden"
-                    mat-icon-button
+                    btn
+                    icon
                     (click)="open = false; openChange.emit(false)"
                 >
                     <app-icon className="backoffice-cross"></app-icon>
                 </button>
             </div>
             <div class="flex-1 h-px"></div>
-            <div class="m-2 p-2 rounded-xl border border-gray-300 dark:border-neutral-500 flex flex-col space-y-2" *ngIf="debug_enabled">
-                <div class="rounded-xl text-xs mono bg-blue-600 text-center p-1">Debugging Enabled</div>
+            <div
+                class="m-2 p-2 rounded-xl border border-gray-300 dark:border-neutral-500 flex flex-col space-y-2"
+                *ngIf="debug_enabled"
+            >
+                <div
+                    class="rounded-xl text-xs mono bg-blue-600 text-center p-1"
+                >
+                    Debugging Enabled
+                </div>
                 <p class="text-xs p-1 text-center">
                     Listening to {{ debug_module_count }} module(s)<br />
                     {{ debug_message_count }} module messages
                 </p>
                 <div actions class="flex items-center justify-center space-x-2">
-                    <button mat-icon-button (click)="toggleDebugPosition()" class="bg-black/10 dark:bg-white/5">
-                        <app-icon matTooltip="Toggle Position">{{ debug_position === 'side' ? 'border_bottom' : 'border_right'}}</app-icon>
+                    <button
+                        btn
+                        icon
+                        (click)="toggleDebugPosition()"
+                        class="bg-black/10 dark:bg-white/5"
+                    >
+                        <app-icon matTooltip="Toggle Position">{{
+                            debug_position === 'side'
+                                ? 'border_bottom'
+                                : 'border_right'
+                        }}</app-icon>
                     </button>
-                    <button mat-icon-button (click)="clearDebugMessages()" class="bg-black/10 dark:bg-white/5">
-                        <app-icon className="material-icons" matTooltip="Clear Messages">clear_all</app-icon>
+                    <button
+                        btn
+                        icon
+                        (click)="clearDebugMessages()"
+                        class="bg-black/10 dark:bg-white/5"
+                    >
+                        <app-icon
+                            className="material-icons"
+                            matTooltip="Clear Messages"
+                            >clear_all</app-icon
+                        >
                     </button>
-                    <button mat-icon-button (click)="clearBindings()" class="bg-black/10 dark:bg-white/5">
-                        <app-icon className="backoffice-uninstall" matTooltip="Unbind Modules"></app-icon>
+                    <button
+                        btn
+                        icon
+                        (click)="clearBindings()"
+                        class="bg-black/10 dark:bg-white/5"
+                    >
+                        <app-icon
+                            className="backoffice-uninstall"
+                            matTooltip="Unbind Modules"
+                        ></app-icon>
                     </button>
-                    <button mat-icon-button (click)="openDebug()" class="bg-black/10 dark:bg-white/5">
-                        <app-icon className="backoffice-notification" matTooltip="Open Console"></app-icon>
+                    <button
+                        btn
+                        icon
+                        (click)="openDebug()"
+                        class="bg-black/10 dark:bg-white/5"
+                    >
+                        <app-icon
+                            className="backoffice-notification"
+                            matTooltip="Open Console"
+                        ></app-icon>
                     </button>
                 </div>
             </div>
@@ -103,7 +145,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
     `,
     styles: [``],
 })
-export class SidebarMenuComponent extends BaseClass {
+export class SidebarMenuComponent extends AsyncHandler {
     @Input() public open = true;
     @Output() public openChange = new EventEmitter();
     public items: any[] = [];

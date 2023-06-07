@@ -20,9 +20,11 @@
     </div>
 </mat-dialog-content>
 <mat-dialog-actions *ngIf="!loading">
-    <button mat-button class="inverse" mat-dialog-close i18n="@@cancelAction">Cancel</button>
+    <button btn class="inverse" mat-dialog-close i18n="@@cancelAction">
+        Cancel
+    </button>
     <button
-        mat-button
+        btn
         name="accept"
         [disabled]="!times || times <= 0"
         (click)="duplicate()"
@@ -37,8 +39,20 @@
         <div *ngFor="let itm of temp; let i = index" class="item">
             <div class="name">{{ item.name }} ({{ i + 1 }})</div>
             <div class="status">
-                <app-icon *ngIf="status[i] !== 'loading'" [class]="status[i]" [icon]="{ class: status[i] === 'done' ? 'backoffice-check' : 'backoffice-cross' }"></app-icon>
-                <mat-spinner *ngIf="status[i] === 'loading'" diameter="24"></mat-spinner>
+                <app-icon
+                    *ngIf="status[i] !== 'loading'"
+                    [class]="status[i]"
+                    [icon]="{
+                        class:
+                            status[i] === 'done'
+                                ? 'backoffice-check'
+                                : 'backoffice-cross'
+                    }"
+                ></app-icon>
+                <mat-spinner
+                    *ngIf="status[i] === 'loading'"
+                    diameter="24"
+                ></mat-spinner>
             </div>
         </div>
     </div>

@@ -6,7 +6,9 @@ import { RepositoriesStateService } from './repositories-state.service';
 @Component({
     selector: 'repository-drivers',
     template: `
-        <h3 class="font-medium text-lg mb-2" i18n="@@repoDriverHeader">Available Drivers</h3>
+        <h3 class="font-medium text-lg mb-2" i18n="@@repoDriverHeader">
+            Available Drivers
+        </h3>
         <ng-container *ngIf="!loading; else load_state">
             <div
                 role="table"
@@ -19,10 +21,15 @@ import { RepositoriesStateService } from './repositories-state.service';
                 </div>
                 <div body class="overflow-y-auto">
                     <div table-row *ngFor="let item of driver_list | async">
-                        <div class="flex-1 p-2" [innerHTML]="item | driverFormat"></div>
+                        <div
+                            class="flex-1 p-2"
+                            [innerHTML]="item | driverFormat"
+                        ></div>
                         <div class="w-12 flex justify-center">
-                            <button mat-icon-button (click)="newDriver(item)">
-                                <app-icon className="backoffice-plus"></app-icon>
+                            <button btn icon (click)="newDriver(item)">
+                                <app-icon
+                                    className="backoffice-plus"
+                                ></app-icon>
                             </button>
                         </div>
                     </div>
@@ -62,5 +69,5 @@ export class RepositoryDriversComponent {
 
     public readonly newDriver = (d) => this._service.newDriver(d);
 
-    constructor(private _service: RepositoriesStateService) { }
+    constructor(private _service: RepositoriesStateService) {}
 }

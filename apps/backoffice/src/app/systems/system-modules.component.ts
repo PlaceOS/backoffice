@@ -10,7 +10,7 @@ import {
     showModule,
 } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import {
     notifyError,
     notifySuccess,
@@ -36,7 +36,7 @@ import { SystemStateService } from './system-state.service';
                     (ngModelChange)="new_module = $event.id"
                 ></item-search-field>
                 <button
-                    mat-button
+                    btn
                     class="flex-1 w-40 sm:w-32 sm:flex-none h-11"
                     [disabled]="!new_module"
                     (click)="addModule()"
@@ -45,7 +45,7 @@ import { SystemStateService } from './system-state.service';
                     Add existing
                 </button>
                 <button
-                    mat-button
+                    btn
                     class="flex-1 w-40 sm:w-32 sm:flex-none h-11"
                     (click)="newModule()"
                     i18n="@@newAction"
@@ -267,7 +267,8 @@ import { SystemStateService } from './system-state.service';
                                 </div>
                                 <div class="w-24 flex px-2 justify-center">
                                     <button
-                                        mat-icon-button
+                                        btn
+                                        icon
                                         (click)="editModule(device)"
                                     >
                                         <app-icon
@@ -276,10 +277,7 @@ import { SystemStateService } from './system-state.service';
                                             }"
                                         ></app-icon>
                                     </button>
-                                    <button
-                                        mat-icon-button
-                                        [matMenuTriggerFor]="menu"
-                                    >
+                                    <button btn icon [matMenuTriggerFor]="menu">
                                         <app-icon
                                             [icon]="{
                                                 class: 'backoffice-dots-three-vertical'
@@ -327,7 +325,7 @@ import { SystemStateService } from './system-state.service';
     `,
     styles: [
         `
-            button[mat-button] {
+            button[btn] {
                 min-width: 8rem;
             }
 
@@ -360,7 +358,7 @@ import { SystemStateService } from './system-state.service';
         `,
     ],
 })
-export class SystemModulesComponent extends BaseClass {
+export class SystemModulesComponent extends AsyncHandler {
     /** Whether a device should be listened to */
     public device_listener: HashMap<boolean> = {};
     /** Store for ID of new module to add to system */

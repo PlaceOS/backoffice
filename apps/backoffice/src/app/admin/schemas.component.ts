@@ -30,9 +30,7 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
                     </mat-select>
                 </mat-form-field>
             </div>
-            <button mat-button class="mt-6" (click)="newSchema()">
-                Add Schema
-            </button>
+            <button btn class="mt-6" (click)="newSchema()">Add Schema</button>
         </div>
         <div class="flex items-center space-x-2 mb-4" *ngIf="schema_copy">
             <div class="flex flex-col">
@@ -41,9 +39,7 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
                     <input matInput [(ngModel)]="schema_copy.name" />
                 </mat-form-field>
             </div>
-            <button mat-button class="mt-6" (click)="saveSchema()">
-                Save Schema
-            </button>
+            <button btn class="mt-6" (click)="saveSchema()">Save Schema</button>
         </div>
         <div class="relative flex-1 h-1/2">
             <ng-container *ngIf="schema_copy; else empty_state">

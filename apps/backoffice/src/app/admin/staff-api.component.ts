@@ -32,15 +32,21 @@ export interface PlaceTenant {
                     (ngModelChange)="domain.next($event)"
                     placeholder="Select Domain..."
                 >
-                    <mat-option *ngFor="let domain of domain_list" [value]="domain">
+                    <mat-option
+                        *ngFor="let domain of domain_list"
+                        [value]="domain"
+                    >
                         {{ domain.name }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <button mat-button (click)="editTenant()">Add Tenant</button>
+            <button btn (click)="editTenant()">Add Tenant</button>
         </div>
         <ng-container *ngIf="!loading; else load_state">
-            <div class="w-full" *ngIf="(tenants | async)?.length; else empty_state">
+            <div
+                class="w-full"
+                *ngIf="(tenants | async)?.length; else empty_state"
+            >
                 <div table-head>
                     <div class="w-1/2 p-2">Name</div>
                     <div class="flex-1 p-2">Platform</div>
@@ -50,18 +56,38 @@ export interface PlaceTenant {
                 <div table-body>
                     <div table-row *ngFor="let item of tenants | async">
                         <div class="w-1/2 p-2 truncate">{{ item.name }}</div>
-                        <div class="flex-1 p-2 truncate">{{ item.platform }}</div>
+                        <div class="flex-1 p-2 truncate">
+                            {{ item.platform }}
+                        </div>
                         <div class="w-24 p-2 truncate">
-                            <button mat-button class="clear underline" (click)="editLimits(item)">
+                            <button
+                                btn
+                                class="clear underline"
+                                (click)="editLimits(item)"
+                            >
                                 Edit Limits
                             </button>
                         </div>
                         <div class="w-24 px-2 flex items-center justify-end ">
-                            <button mat-icon-button class="h-10 w-10" (click)="editTenant(item)">
-                                <app-icon className="backoffice-edit"></app-icon>
+                            <button
+                                btn
+                                icon
+                                class="h-10 w-10"
+                                (click)="editTenant(item)"
+                            >
+                                <app-icon
+                                    className="backoffice-edit"
+                                ></app-icon>
                             </button>
-                            <button mat-icon-button class="h-10 w-10" (click)="removeTenant(item)">
-                                <app-icon className="backoffice-trash"></app-icon>
+                            <button
+                                btn
+                                icon
+                                class="h-10 w-10"
+                                (click)="removeTenant(item)"
+                            >
+                                <app-icon
+                                    className="backoffice-trash"
+                                ></app-icon>
                             </button>
                         </div>
                     </div>
@@ -106,7 +132,9 @@ export class PlaceStaffAPIComponent implements OnInit {
         catchError((_) => []),
         map((tenants) => {
             this.loading = '';
-            return tenants.filter((t) => t.domain === this.domain.getValue().domain);
+            return tenants.filter(
+                (t) => t.domain === this.domain.getValue().domain
+            );
         }),
         shareReplay()
     );
@@ -126,14 +154,18 @@ export class PlaceStaffAPIComponent implements OnInit {
         const ref = this._dialog.open(StaffTenantModalComponent, {
             data: { tenant, domain: this.domain.getValue() },
         });
-        ref.afterClosed().subscribe(_ => this.domain.next(this.domain.getValue()));
+        ref.afterClosed().subscribe((_) =>
+            this.domain.next(this.domain.getValue())
+        );
     }
 
     public editLimits(tenant: PlaceTenant) {
         const ref = this._dialog.open(BookingLimitsModalComponent, {
             data: { tenant, domain: this.domain.getValue() },
         });
-        ref.afterClosed().subscribe(_ => this.domain.next(this.domain.getValue()));
+        ref.afterClosed().subscribe((_) =>
+            this.domain.next(this.domain.getValue())
+        );
     }
 
     public async removeTenant(tenant: PlaceTenant) {

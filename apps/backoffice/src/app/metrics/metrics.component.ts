@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { authority } from '@placeos/ts-client';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { SettingsService } from '../common/settings.service';
 
 @Component({
@@ -46,7 +46,7 @@ import { SettingsService } from '../common/settings.service';
         `,
     ],
 })
-export class MetricsComponent extends BaseClass implements OnInit {
+export class MetricsComponent extends AsyncHandler implements OnInit {
     /** Whether to only render the metrics view */
     public fullscreen: boolean;
 

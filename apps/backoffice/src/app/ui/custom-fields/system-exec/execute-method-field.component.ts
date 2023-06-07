@@ -42,13 +42,13 @@ import { ModuleLike } from './select-module.component';
                     class="w-full flex items-center space-x-2 mt-2"
                     *ngIf="can_execute"
                 >
-                    <button class="inverse flex-1" mat-button (click)="clear()">
+                    <button class="inverse flex-1" btn (click)="clear()">
                         Clear Selection
                     </button>
                     <button
                         class="flex-1"
                         [disabled]="!fn || !valid"
-                        mat-button
+                        btn
                         (click)="execute()"
                     >
                         Execute

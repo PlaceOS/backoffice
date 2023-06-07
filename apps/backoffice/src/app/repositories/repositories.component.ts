@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { extensionsForItem } from '../common/api';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { ActiveItemService } from '../common/item.service';
 import { RepositoriesStateService } from './repositories-state.service';
 
@@ -11,11 +11,20 @@ import { RepositoriesStateService } from './repositories-state.service';
             class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
         >
             <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
-            <item-sidebar class="hidden sm:block" [route]="name" title="Repositories"></item-sidebar>
+            <item-sidebar
+                class="hidden sm:block"
+                [route]="name"
+                title="Repositories"
+            ></item-sidebar>
             <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
-                <item-selection class="z-20 sm:hidden" [route]="name" title="Repositories">
+                <item-selection
+                    class="z-20 sm:hidden"
+                    [route]="name"
+                    title="Repositories"
+                >
                     <button
-                        mat-icon-button
+                        btn
+                        icon
                         class="sm:hidden mr-2"
                         (click)="open_menu = true"
                     >
@@ -61,7 +70,7 @@ import { RepositoriesStateService } from './repositories-state.service';
     `,
     styles: [``],
 })
-export class RepositoriesComponent extends BaseClass {
+export class RepositoriesComponent extends AsyncHandler {
     public readonly name = 'repositories';
 
     public open_menu = false;

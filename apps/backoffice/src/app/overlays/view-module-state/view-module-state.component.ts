@@ -6,7 +6,7 @@ import {
     systemModuleState,
 } from '@placeos/ts-client';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 
@@ -24,7 +24,10 @@ export interface ModuleStateModalData {
     templateUrl: './view-module-state.template.html',
     styleUrls: ['./view-module-state.styles.scss'],
 })
-export class ViewModuleStateModalComponent extends BaseClass implements OnInit {
+export class ViewModuleStateModalComponent
+    extends AsyncHandler
+    implements OnInit
+{
     /** Current state of the selected module */
     public state: string;
     /** Whether the module state is being loaded */

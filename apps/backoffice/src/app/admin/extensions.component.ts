@@ -54,12 +54,15 @@ export interface BackofficeExtension {
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <button mat-button (click)="editExtension()">
-                    Add Extension
-                </button>
+                <button btn (click)="editExtension()">Add Extension</button>
             </div>
-            <div class="bg-info my-4 p-4 flex items-center rounded shadow space-x-4 text-sm text-white">
-                <p><strong>Note:</strong> Backoffice requires a full page refresh for extension changes and additions to apply</p>
+            <div
+                class="bg-info my-4 p-4 flex items-center rounded shadow space-x-4 text-sm text-white"
+            >
+                <p>
+                    <strong>Note:</strong> Backoffice requires a full page
+                    refresh for extension changes and additions to apply
+                </p>
             </div>
             <div role="table">
                 <div table-head>
@@ -80,16 +83,14 @@ export interface BackofficeExtension {
                             {{ extension.conditions.length }}
                         </div>
                         <div class="w-24 flex items-center justify-center">
-                            <button
-                                mat-icon-button
-                                (click)="editExtension(extension)"
-                            >
+                            <button btn icon (click)="editExtension(extension)">
                                 <app-icon
                                     [icon]="{ class: 'backoffice-edit' }"
                                 ></app-icon>
                             </button>
                             <button
-                                mat-icon-button
+                                btn
+                                icon
                                 (click)="removeExtension(extension)"
                             >
                                 <app-icon

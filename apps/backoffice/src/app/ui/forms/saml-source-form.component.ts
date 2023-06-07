@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 
 @Component({
@@ -332,7 +332,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
         `,
     ],
 })
-export class SamlSourceFormComponent extends BaseClass implements OnChanges {
+export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
 

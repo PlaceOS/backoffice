@@ -11,7 +11,7 @@ import {
 import { map } from 'rxjs/operators';
 
 import { ItemCreateUpdateModalComponent } from 'apps/backoffice/src/app/overlays/item-modal/item-modal.component';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import {
     notifySuccess,
     notifyError,
@@ -21,7 +21,7 @@ import { openConfirmModal } from 'apps/backoffice/src/app/common/general';
 @Component({
     selector: 'app-brokers',
     template: `
-        <button mat-button class="my-4" (click)="newBroker()">
+        <button btn class="my-4" (click)="newBroker()">
             <div class="flex items-center">
                 <app-icon className="backoffice-plus"></app-icon>
                 <div class="text">Add Broker</div>
@@ -58,15 +58,12 @@ import { openConfirmModal } from 'apps/backoffice/src/app/common/general';
                         </div>
                         <div class="w-32 p-2">{{ item.filters | json }}</div>
                         <div class="w-24 p-2 flex items-center">
-                            <button mat-icon-button (click)="editBroker(item)">
+                            <button btn icon (click)="editBroker(item)">
                                 <app-icon
                                     [icon]="{ class: 'backoffice-edit' }"
                                 ></app-icon>
                             </button>
-                            <button
-                                mat-icon-button
-                                (click)="deleteBroker(item)"
-                            >
+                            <button btn icon (click)="deleteBroker(item)">
                                 <app-icon
                                     [icon]="{ class: 'backoffice-trash' }"
                                 ></app-icon>
@@ -89,7 +86,7 @@ import { openConfirmModal } from 'apps/backoffice/src/app/common/general';
         `,
     ],
 })
-export class AdminBrokersComponent extends BaseClass implements OnInit {
+export class AdminBrokersComponent extends AsyncHandler implements OnInit {
     public brokers: PlaceMQTTBroker[] = [];
 
     constructor(private _dialog: MatDialog) {

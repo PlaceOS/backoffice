@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { PlaceUser } from '@placeos/ts-client';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
 
 @Component({
@@ -45,7 +45,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
         `,
     ],
 })
-export class UserHistoryComponent extends BaseClass {
+export class UserHistoryComponent extends AsyncHandler {
     public logs: { start: number; end: number; systems: string[] }[] = [];
 
     public get item(): PlaceUser {

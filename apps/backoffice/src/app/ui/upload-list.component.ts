@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { copyToClipboard } from 'apps/backoffice/src/app/common/general';
 import { notifyInfo } from 'apps/backoffice/src/app/common/notifications';
 import { SettingsService } from 'apps/backoffice/src/app/common/settings.service';
@@ -19,10 +19,15 @@ import { UploadsService } from '../common/uploads.service';
                 <div class="flex-1 px-4">
                     Uploads({{ (uploads | async)?.length || '0' }})
                 </div>
-                <button mat-icon-button (click)="clearList()" matTooltip="Clear completed uploads">
+                <button
+                    btn
+                    icon
+                    (click)="clearList()"
+                    matTooltip="Clear completed uploads"
+                >
                     <app-icon>clear_all</app-icon>
                 </button>
-                <button mat-icon-button (click)="show = false">
+                <button btn icon (click)="show = false">
                     <app-icon className="backoffice-cross"></app-icon>
                 </button>
             </div>
@@ -34,10 +39,13 @@ import { UploadsService } from '../common/uploads.service';
                         class="my-1 h-12 hover:bg-gray-200"
                         [class.error]="item.error"
                     >
-                        <div class="flex items-center p-2 space-x-2" [title]="item.name">
+                        <div
+                            class="flex items-center p-2 space-x-2"
+                            [title]="item.name"
+                        >
                             <div class="flex-1 w-1/2">{{ item.name }}</div>
                             <a
-                                mat-button
+                                btn
                                 *ngIf="item.progress >= 100 && item.link"
                                 (click)="copyLink(item)"
                                 i18n="@@uploadLink"
@@ -45,7 +53,7 @@ import { UploadsService } from '../common/uploads.service';
                                 Link
                             </a>
                             <button
-                                mat-button
+                                btn
                                 *ngIf="item.error"
                                 (click)="retry(item)"
                                 i18n="@@uploadRetry"
@@ -140,7 +148,7 @@ import { UploadsService } from '../common/uploads.service';
         `,
     ],
 })
-export class UploadListComponent extends BaseClass implements OnInit {
+export class UploadListComponent extends AsyncHandler implements OnInit {
     /** Whether upload list should be displayed */
     public show: boolean = false;
     /** Whether drop details overlay should be shown */

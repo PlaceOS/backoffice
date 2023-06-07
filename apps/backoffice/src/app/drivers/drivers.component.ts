@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PlaceDriver, queryModules } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 
@@ -28,7 +28,8 @@ import { ActiveItemService } from '../common/item.service';
                             title="Drivers"
                         >
                             <button
-                                mat-icon-button
+                                btn
+                                icon
                                 class="sm:hidden mr-2"
                                 (click)="open_menu = true"
                             >
@@ -87,7 +88,7 @@ import { ActiveItemService } from '../common/item.service';
     `,
     styles: [``],
 })
-export class DriversComponent extends BaseClass {
+export class DriversComponent extends AsyncHandler {
     public readonly name = 'drivers';
 
     public open_menu = false;

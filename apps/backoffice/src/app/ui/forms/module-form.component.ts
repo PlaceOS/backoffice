@@ -7,7 +7,7 @@ import {
     querySystems,
 } from '@placeos/ts-client';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -288,7 +288,7 @@ import { map } from 'rxjs/operators';
     `,
     styles: [``],
 })
-export class ModuleFormComponent extends BaseClass implements OnDestroy {
+export class ModuleFormComponent extends AsyncHandler implements OnDestroy {
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
     /** Whether system is readonly */

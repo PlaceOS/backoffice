@@ -1,7 +1,7 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
-import { BaseClass } from '../../common/base.class';
+import { AsyncHandler } from '../../common/base.class';
 
 import { Md5 } from 'ts-md5';
 
@@ -104,7 +104,7 @@ import { Md5 } from 'ts-md5';
         `,
     ],
 })
-export class ApplicationFormComponent extends BaseClass {
+export class ApplicationFormComponent extends AsyncHandler {
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
 

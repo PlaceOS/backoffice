@@ -1,14 +1,17 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 
 @Component({
     selector: 'object-list-field',
     template: `
         <div class="object-list" *ngIf="fields && fields.length">
-            <div class="header row text-sm h-6" *ngIf="active_list && active_list.length">
+            <div
+                class="header row text-sm h-6"
+                *ngIf="active_list && active_list.length"
+            >
                 <div
                     class="field capitalize"
                     *ngFor="let field of fields"
@@ -35,12 +38,12 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                         />
                     </mat-form-field>
                 </div>
-                <button mat-icon-button class="!mt-2" (click)="removeRow(item)">
+                <button btn icon class="!mt-2" (click)="removeRow(item)">
                     <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
                 </button>
             </div>
             <div class="row h-10 text-center">
-                <button mat-button type="button" class="w-full" (click)="addRow()">
+                <button btn type="button" class="w-full" (click)="addRow()">
                     <div class="contents">
                         <app-icon
                             [icon]="{ class: 'backoffice-plus' }"
@@ -100,7 +103,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
     ],
 })
 export class ObjectListFieldComponent
-    extends BaseClass
+    extends AsyncHandler
     implements ControlValueAccessor
 {
     /** List of fields that can be populated for each object */

@@ -1,7 +1,9 @@
 <header>
     <div class="heading">Update metadata details</div>
-    <button mat-icon-button mat-dialog-close>
-        <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
+    <button btn icon mat-dialog-close>
+        <app-icon
+            [icon]="{ type: 'icon', class: 'backoffice-cross' }"
+        ></app-icon>
     </button>
 </header>
 <mat-dialog-content>
@@ -9,7 +11,9 @@
         <div class="field" *ngIf="form.controls.name">
             <label
                 for="property-name"
-                [class.error]="form.controls.name.invalid && form.controls.name.touched"
+                [class.error]="
+                    form.controls.name.invalid && form.controls.name.touched
+                "
                 >Name<span>*</span>:</label
             >
             <mat-form-field appearance="outline">
@@ -49,7 +53,10 @@
                         (removed)="removeEditor(editor)"
                     >
                         {{ editor }}
-                        <app-icon matChipRemove [icon]="{ class: 'backoffice-cross' }"></app-icon>
+                        <app-icon
+                            matChipRemove
+                            [icon]="{ class: 'backoffice-cross' }"
+                        ></app-icon>
                     </mat-chip>
                     <input
                         placeholder="Editors user groups..."
@@ -65,14 +72,23 @@
         <div class="field" *ngIf="form.controls.schema">
             <label for="schema">Schema:</label>
             <mat-form-field appearance="outline">
-                <input matInput name="schema" placeholder="Schema" formControlName="schema" />
+                <input
+                    matInput
+                    name="schema"
+                    placeholder="Schema"
+                    formControlName="schema"
+                />
             </mat-form-field>
         </div>
     </main>
 </mat-dialog-content>
 <mat-dialog-actions>
     <footer>
-        <button [disabled]="!form?.controls.name.valid" mat-button (click)="updateDetails()">
+        <button
+            [disabled]="!form?.controls.name.valid"
+            btn
+            (click)="updateDetails()"
+        >
             Update
         </button>
     </footer>

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { PlaceRepositoryType } from '@placeos/ts-client';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { RepositoriesStateService } from './repositories-state.service';
 
 @Component({
@@ -66,7 +66,11 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </code>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <label i18n="@@repoCommitHashLabel" class="whitespace-nowrap">Commit hash:</label>
+                    <label
+                        i18n="@@repoCommitHashLabel"
+                        class="whitespace-nowrap"
+                        >Commit hash:</label
+                    >
                     <code class="text-xs truncate">
                         {{ item.commit_hash || 'No Commit hash set' }}
                         <span
@@ -79,7 +83,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                 </div>
                 <div class="flex-1"></div>
                 <button
-                    mat-button
+                    btn
                     class="w-full"
                     [disabled]="pulling"
                     (click)="pullLatestCommit()"
@@ -115,7 +119,7 @@ import { RepositoriesStateService } from './repositories-state.service';
         `,
     ],
 })
-export class RepositoryAboutComponent extends BaseClass {
+export class RepositoryAboutComponent extends AsyncHandler {
     /** Whether the latest commit is being pulled on the server */
     public pulling: boolean;
 

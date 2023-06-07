@@ -13,14 +13,15 @@ import {
 import { onlineState, authority, getModule } from '@placeos/ts-client';
 
 import { filter, first } from 'rxjs/operators';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 
 @Directive({
     selector: 'i[bind], [binding], co-bind',
 })
 export class BindingDirective<T = any>
-    extends BaseClass
-    implements OnInit, OnChanges, OnDestroy {
+    extends AsyncHandler
+    implements OnInit, OnChanges, OnDestroy
+{
     /** ID of the system to bind */
     @Input() public sys: string = '';
     /** Class name of the module to bind */

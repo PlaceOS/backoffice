@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { DialogEvent } from 'apps/backoffice/src/app/common/types';
 import { Observable } from 'rxjs';
 
@@ -15,7 +15,7 @@ export interface SelectItemModalData<T = any> {
     templateUrl: './select-item-modal.component.html',
     styleUrls: ['./select-item-modal.component.scss'],
 })
-export class SelectItemModalComponent extends BaseClass {
+export class SelectItemModalComponent extends AsyncHandler {
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether the item is being editing */

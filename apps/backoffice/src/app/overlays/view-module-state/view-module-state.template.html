@@ -1,8 +1,11 @@
 <header>
     <h3 mat-dialog-title>
-        Module State - {{module?.custom_name || module?.name}}</h3>
-    <button mat-icon-button mat-dialog-close>
-        <app-icon [icon]="{ type: 'icon', class: 'backoffice-cross' }"></app-icon>
+        Module State - {{module?.custom_name || module?.name}}
+    </h3>
+    <button btn icon mat-dialog-close>
+        <app-icon
+            [icon]="{ type: 'icon', class: 'backoffice-cross' }"
+        ></app-icon>
     </button>
 </header>
 <mat-dialog-content>
@@ -13,13 +16,14 @@
         </div>
         <div class="field">
             <label>Module:</label>
-            <div class="value">
-                {{ device_classes[module?.id] }}
-            </div>
+            <div class="value">{{ device_classes[module?.id] }}</div>
         </div>
-        <button mat-button (click)="updateState()">Update state</button>
+        <button btn (click)="updateState()">Update state</button>
         <div class="settings">
-            <settings-form-field [ngModel]="state" [readonly]="true"></settings-form-field>
+            <settings-form-field
+                [ngModel]="state"
+                [readonly]="true"
+            ></settings-form-field>
         </div>
     </div>
 </mat-dialog-content>

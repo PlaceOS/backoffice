@@ -18,7 +18,7 @@ import {
 } from '@placeos/ts-client';
 import { UntypedFormGroup } from '@angular/forms';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import {
     DialogEvent,
     Identity,
@@ -66,7 +66,7 @@ export interface CreateEditModalData<T extends Identity = any> {
     styleUrls: ['./item-modal.component.scss'],
 })
 export class ItemCreateUpdateModalComponent
-    extends BaseClass
+    extends AsyncHandler
     implements OnInit
 {
     /** Emitter for user action on the modal */

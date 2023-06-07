@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { ApplicationIcon } from 'apps/backoffice/src/app/common/types';
 import { DialogEvent } from 'apps/backoffice/src/app/common/types';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 
 export type ConfirmExtraType = 'info' | 'warning' | 'error';
 
@@ -43,7 +43,9 @@ export const CONFIRM_METADATA = {
                     *ngIf="extra"
                     [class.bg-blue-500]="extra[0] === 'info'"
                     [class.bg-yellow-500]="extra[0] === 'warning'"
-                    [class.text-white]="extra[0] === 'error' || extra[0] === 'info'"
+                    [class.text-white]="
+                        extra[0] === 'error' || extra[0] === 'info'
+                    "
                     [class.bg-red-500]="extra[0] === 'error'"
                     class="p-2 rounded shadow text-xs"
                     [innerHTML]="extra[1]"
@@ -51,11 +53,11 @@ export const CONFIRM_METADATA = {
             </div>
         </mat-dialog-content>
         <mat-dialog-actions *ngIf="!loading">
-            <button mat-button class="inverse min-w-[8rem]" mat-dialog-close>
+            <button btn class="inverse min-w-[8rem]" mat-dialog-close>
                 Cancel
             </button>
             <button
-                mat-button
+                btn
                 name="accept"
                 class="min-w-[8rem]"
                 (click)="event.emit({ reason: 'done' })"
@@ -85,7 +87,7 @@ export const CONFIRM_METADATA = {
         `,
     ],
 })
-export class ConfirmModalComponent extends BaseClass {
+export class ConfirmModalComponent extends AsyncHandler {
     /** Emitter for user action on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Title of the confirm modal */

@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup, AbstractControl } from '@angular/forms';
 
 import { Identity, HashMap } from 'apps/backoffice/src/app/common/types';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 
 @Component({
     selector: 'oauth-source-form',
@@ -250,7 +250,10 @@ import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
         `,
     ],
 })
-export class OauthSourceFormComponent extends BaseClass implements OnChanges {
+export class OauthSourceFormComponent
+    extends AsyncHandler
+    implements OnChanges
+{
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
     /** List of available token request methods */

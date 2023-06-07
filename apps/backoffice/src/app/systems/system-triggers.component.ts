@@ -20,11 +20,7 @@ export interface TriggerInstanceState {
     selector: 'system-triggers',
     template: `
         <section class="flex items-center mb-4 space-x-2">
-            <button
-                mat-button
-                style="min-width: 8rem"
-                (click)="selectTrigger()"
-            >
+            <button btn style="min-width: 8rem" (click)="selectTrigger()">
                 Add Trigger
             </button>
             <mat-form-field appearance="outline" class="h-12 flex-1">
@@ -116,23 +112,22 @@ export interface TriggerInstanceState {
                             </div>
                             <div class="w-32 p-2 items-center justify-center">
                                 <button
-                                    mat-icon-button
+                                    btn
+                                    icon
                                     (click)="copyWebhookURL(trigger)"
                                 >
                                     <app-icon
                                         className="backoffice-link"
                                     ></app-icon>
                                 </button>
-                                <button
-                                    mat-icon-button
-                                    (click)="editTrigger(trigger)"
-                                >
+                                <button btn icon (click)="editTrigger(trigger)">
                                     <app-icon
                                         className="backoffice-edit"
                                     ></app-icon>
                                 </button>
                                 <button
-                                    mat-icon-button
+                                    btn
+                                    icon
                                     (click)="deleteTrigger(trigger)"
                                 >
                                     <app-icon

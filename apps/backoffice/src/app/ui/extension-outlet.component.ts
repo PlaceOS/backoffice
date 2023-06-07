@@ -3,7 +3,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { onlineState, showMetadata, updateMetadata } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
@@ -25,7 +25,7 @@ export interface FrameMessage {
         [src]="url | safe: 'resource'"
     ></iframe>`,
 })
-export class ExtensionOutletComponent extends BaseClass {
+export class ExtensionOutletComponent extends AsyncHandler {
     public url = '';
     public app_loaded = false;
 
@@ -115,7 +115,7 @@ export class ExtensionOutletComponent extends BaseClass {
     }
 
     private async updateMetadata(item: any, message: FrameMessage) {
-        const exists = await showMetadata(item.id,  message.name).toPromise();
+        const exists = await showMetadata(item.id, message.name).toPromise();
         await updateMetadata(item.id, {
             id: item.id,
             name: message.name,
@@ -141,7 +141,10 @@ export class ExtensionOutletComponent extends BaseClass {
         message: FrameMessage,
         parent: boolean = false
     ) {
-        const metadata = await showMetadata(parent ? item.parent_id : item.id,  message.name).toPromise();
+        const metadata = await showMetadata(
+            parent ? item.parent_id : item.id,
+            message.name
+        ).toPromise();
         if (metadata) {
             this._frame_el.nativeElement.contentWindow.postMessage(
                 JSON.stringify({

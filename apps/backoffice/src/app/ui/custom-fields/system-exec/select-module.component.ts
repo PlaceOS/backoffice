@@ -18,7 +18,7 @@ import {
     tap,
 } from 'rxjs/operators';
 import { calculateModuleIndex } from '../../../common/api';
-import { BaseClass } from '../../../common/base.class';
+import { AsyncHandler } from '../../../common/base.class';
 
 export interface ModuleLike {
     id: string;
@@ -66,7 +66,7 @@ export interface ModuleLike {
     ],
 })
 export class SelectModuleComponent
-    extends BaseClass
+    extends AsyncHandler
     implements OnInit, OnChanges, ControlValueAccessor
 {
     /** ID of the system to select the module from */

@@ -1,18 +1,18 @@
-
 import { Injectable } from '@angular/core';
 
-import { Subscription, BehaviorSubject } from "rxjs";
+import { Subscription, BehaviorSubject } from 'rxjs';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
-export class BaseClass {
+export class AsyncHandler {
     /** Store for named timers */
     protected _timers: { [name: string]: number } = {};
     /** Store for named intervals */
     protected _intervals: { [name: string]: number } = {};
     /** Store for named subscription unsub callbacks */
-    protected _subscriptions: { [name: string]: (Subscription | (() => void)) } = {};
+    protected _subscriptions: { [name: string]: Subscription | (() => void) } =
+        {};
     /** Subject which stores the initialised state of the object */
     protected readonly _initialised = new BehaviorSubject<boolean>(false);
     /** Observable of the initialised state of the object */
@@ -60,7 +60,9 @@ export class BaseClass {
             }, delay);
         } else {
             throw new Error(
-                name ? 'Cannot create named timeout without a name' : 'Cannot create a timeout without a callback'
+                name
+                    ? 'Cannot create named timeout without a name'
+                    : 'Cannot create a timeout without a callback'
             );
         }
     }
@@ -88,7 +90,9 @@ export class BaseClass {
             this._intervals[name] = <any>setInterval(() => fn(), delay);
         } else {
             throw new Error(
-                name ? 'Cannot create named interval without a name' : 'Cannot create a interval without a callback'
+                name
+                    ? 'Cannot create named interval without a name'
+                    : 'Cannot create a interval without a callback'
             );
         }
     }
@@ -111,7 +115,7 @@ export class BaseClass {
      */
     protected subscription(name: string, unsub: Subscription | (() => void)) {
         this.unsub(name);
-        this._subscriptions[name] = unsub
+        this._subscriptions[name] = unsub;
     }
 
     /**

@@ -20,7 +20,7 @@ import {
 
 import { PlaceModule, PlaceDriverRole } from '@placeos/ts-client';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
 
 @Component({
@@ -110,7 +110,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
     ],
 })
 export class ItemSearchFieldComponent<T extends Identity = any>
-    extends BaseClass
+    extends AsyncHandler
     implements OnInit, OnChanges, ControlValueAccessor
 {
     /** Name of the items being query'd */

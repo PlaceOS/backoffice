@@ -5,7 +5,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { EncryptionLevel, queryZones } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 import { TIMEZONES_IANA } from '../../common/timezones';
 
@@ -253,29 +253,29 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 >
                     Features:
                 </label>
-                <mat-form-field appearance="outline">
-                    <mat-chip-list #chipList aria-label="System features">
-                        <mat-chip
-                            *ngFor="let feature of feature_list"
-                            [selectable]="true"
-                            [removable]="true"
-                            (removed)="removeFeature(feature)"
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-chip-grid #chipList aria-label="Image List">
+                        <mat-chip-row
+                            *ngFor="let item of feature_list"
+                            (removed)="removeFeature(item)"
                         >
-                            {{ feature }}
-                            <app-icon
+                            <div class="truncate max-w-md">{{ item }}</div>
+                            <button
                                 matChipRemove
-                                [icon]="{ class: 'backoffice-cross' }"
-                            ></app-icon>
-                        </mat-chip>
-                        <input
-                            placeholder="Features..."
-                            i18n-placeholder="@@featuresPlaceholder"
-                            [matChipInputFor]="chipList"
-                            [matChipInputSeparatorKeyCodes]="separators"
-                            [matChipInputAddOnBlur]="true"
-                            (matChipInputTokenEnd)="addFeature($event)"
-                        />
-                    </mat-chip-list>
+                                [attr.aria-label]="'Remove ' + item"
+                            >
+                                <app-icon>cancel</app-icon>
+                            </button>
+                        </mat-chip-row>
+                    </mat-chip-grid>
+                    <input
+                        placeholder="Features..."
+                        i18n-placeholder
+                        [matChipInputFor]="chipList"
+                        [matChipInputSeparatorKeyCodes]="separators"
+                        [matChipInputAddOnBlur]="true"
+                        (matChipInputTokenEnd)="addFeature($event)"
+                    />
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.map_id">
@@ -336,7 +336,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
         `,
     ],
 })
-export class SystemFormComponent extends BaseClass {
+export class SystemFormComponent extends AsyncHandler {
     public timezones: string[] = [];
     public filtered_timezones: string[] = [];
     /** Group of form fields used for creating the system */

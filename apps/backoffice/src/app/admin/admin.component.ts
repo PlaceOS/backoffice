@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { extensionsForItem } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
@@ -37,7 +37,8 @@ import { BackofficeUsersService } from '../users/users.service';
                         <router-outlet></router-outlet>
                     </div>
                     <button
-                        mat-icon-button
+                        btn
+                        icon
                         class="sm:hidden mr-2 absolute top-2 left-4 z-40"
                         (click)="open_menu = true"
                     >
@@ -73,7 +74,7 @@ import { BackofficeUsersService } from '../users/users.service';
         `,
     ],
 })
-export class PlaceComponent extends BaseClass {
+export class PlaceComponent extends AsyncHandler {
     public tab_list = [];
     public open_menu = false;
 

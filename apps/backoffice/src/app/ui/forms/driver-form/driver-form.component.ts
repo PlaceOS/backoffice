@@ -19,7 +19,7 @@ import {
     queryRepositories,
 } from '@placeos/ts-client';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 import {
@@ -51,7 +51,7 @@ import { format, isAfter, subMinutes } from 'date-fns';
         `,
     ],
 })
-export class DriverFormComponent extends BaseClass implements OnChanges {
+export class DriverFormComponent extends AsyncHandler implements OnChanges {
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
 

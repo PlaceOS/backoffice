@@ -1,6 +1,6 @@
 <form *ngIf="form && used_settings && used_settings.length" [formGroup]="form">
     <div class="actions">
-        <button mat-button *ngIf="edited_count > 0" (click)="clearChanges()">
+        <button btn *ngIf="edited_count > 0" (click)="clearChanges()">
             <div
                 class="text"
                 *ngIf="!saving[shown_option.id]; else spinner"
@@ -10,7 +10,7 @@
             </div>
         </button>
         <button
-            mat-button
+            btn
             *ngIf="active_edited"
             [disabled]="has_errors && !saving[shown_option.id]"
             (click)="save(shown_option.id)"
@@ -24,7 +24,7 @@
             </div>
         </button>
         <button
-            mat-button
+            btn
             *ngIf="edited_count > 1"
             [disabled]="has_errors && !saving[shown_option.id]"
             (click)="saveAll()"
@@ -91,7 +91,8 @@
                         settings[i - 1]?.updated_at * 1000 || 0 | date: 'medium'
                     "
                 >
-                    Last edited: {{ settings[i - 1]?.updated_at * 1000 | dateFrom }}
+                    Last edited:
+                    {{ settings[i - 1]?.updated_at * 1000 | dateFrom }}
                 </code>
             </div>
         </ng-container>

@@ -14,7 +14,7 @@ import {
     addSettings,
 } from '@placeos/ts-client';
 
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 import { validateYAML } from 'apps/backoffice/src/app/systems/systems.utilities';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
@@ -34,8 +34,9 @@ import * as merge from 'deepmerge';
     styleUrls: ['./settings-form.component.scss'],
 })
 export class SettingsFormComponent
-    extends BaseClass
-    implements OnChanges, OnInit {
+    extends AsyncHandler
+    implements OnChanges, OnInit
+{
     /** ID of the parent object */
     @Input() id: string;
     /** List of settings for the  */
@@ -301,21 +302,26 @@ export class SettingsFormComponent
 
     private initForm() {
         this.form = new UntypedFormGroup({
-            settings0: new UntypedFormControl(this.used_settings[0].settings_string, [
-                validateYAML,
-            ]),
-            settings1: new UntypedFormControl(this.used_settings[1].settings_string, [
-                validateYAML,
-            ]),
-            settings2: new UntypedFormControl(this.used_settings[2].settings_string, [
-                validateYAML,
-            ]),
-            settings3: new UntypedFormControl(this.used_settings[3].settings_string, [
-                validateYAML,
-            ]),
-            settings4: new UntypedFormControl(this.used_settings[4].settings_string, [
-                validateYAML,
-            ]),
+            settings0: new UntypedFormControl(
+                this.used_settings[0].settings_string,
+                [validateYAML]
+            ),
+            settings1: new UntypedFormControl(
+                this.used_settings[1].settings_string,
+                [validateYAML]
+            ),
+            settings2: new UntypedFormControl(
+                this.used_settings[2].settings_string,
+                [validateYAML]
+            ),
+            settings3: new UntypedFormControl(
+                this.used_settings[3].settings_string,
+                [validateYAML]
+            ),
+            settings4: new UntypedFormControl(
+                this.used_settings[4].settings_string,
+                [validateYAML]
+            ),
         });
     }
 

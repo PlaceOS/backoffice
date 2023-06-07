@@ -8,7 +8,7 @@ import {
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
 import { map, take } from 'rxjs/operators';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { ActiveItemService } from '../common/item.service';
 
 @Component({
@@ -118,7 +118,7 @@ import { ActiveItemService } from '../common/item.service';
         `,
     ],
 })
-export class ItemSidebarComponent extends BaseClass {
+export class ItemSidebarComponent extends AsyncHandler {
     @Input() public title = 'Systems';
     @Input() public route = 'systems';
 

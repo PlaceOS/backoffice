@@ -8,7 +8,7 @@ import {
     TriggerTimeConditionType,
     updateTrigger,
 } from '@placeos/ts-client';
-import { BaseClass } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import {
     notifyError,
     notifySuccess,
@@ -27,10 +27,47 @@ export interface TriggerConditionData {
 
 @Component({
     selector: 'trigger-condition-modal',
-    templateUrl: './trigger-condition-modal.template.html',
+    template: `
+        <header>
+            <h3>{{ is_new ? 'Edit' : 'New' }} Trigger Condition</h3>
+            <button btn icon mat-dialog-close>
+                <app-icon
+                    [icon]="{ type: 'icon', class: 'backoffice-cross' }"
+                ></app-icon>
+            </button>
+        </header>
+        <main
+            class="max-h-[65vh] overflow-auto p-4"
+            *ngIf="!loading; else load_state"
+        >
+            <trigger-condition-form
+                [form]="form"
+                [system]="system"
+            ></trigger-condition-form>
+        </main>
+        <footer
+            class="border-t border-gray-200 flex items-center justify-end space-x-2 p-4"
+            *ngIf="!loading"
+        >
+            <button btn class="w-32 inverse" mat-dialog-close>Cancel</button>
+            <button btn class="w-32" type="submit" (click)="save()">
+                {{ is_new ? 'Save' : 'Add' }}
+            </button>
+        </footer>
+        <ng-template #load_state>
+            <main>
+                <div class="info-block">
+                    <div class="icon">
+                        <mat-spinner diameter="32"></mat-spinner>
+                    </div>
+                    <div class="text">Processing request...</div>
+                </div>
+            </main>
+        </ng-template>
+    `,
     styleUrls: ['./trigger-condition-modal.styles.scss'],
 })
-export class TriggerConditionModalComponent extends BaseClass {
+export class TriggerConditionModalComponent extends AsyncHandler {
     /** Emitter for events on the modal */
     @Output() public event = new EventEmitter<DialogEvent>();
     /** Whether actions are loading */

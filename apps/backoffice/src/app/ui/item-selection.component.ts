@@ -14,7 +14,7 @@ import {
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
 import { take } from 'rxjs/operators';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ActiveItemService } from '../common/item.service';
 import { SettingsService } from '../common/settings.service';
@@ -103,11 +103,18 @@ import { BackofficeUsersService } from '../users/users.service';
                             <p class="truncate flex-1">
                                 {{ item.name }}
                             </p>
-                            <code class="text-xs opacity-60 truncate" *ngIf="item.extra">
+                            <code
+                                class="text-xs opacity-60 truncate"
+                                *ngIf="item.extra"
+                            >
                                 {{ item.extra }}
                             </code>
                         </a>
-                        <div class="p-2 text-center opacity-30 text-sm bg-gray-300 dark:bg-neutral-800">End of the list</div>
+                        <div
+                            class="p-2 text-center opacity-30 text-sm bg-gray-300 dark:bg-neutral-800"
+                        >
+                            End of the list
+                        </div>
                     </cdk-virtual-scroll-viewport>
                 </div>
             </div>
@@ -141,7 +148,7 @@ import { BackofficeUsersService } from '../users/users.service';
         `,
     ],
 })
-export class ItemSelectionComponent extends BaseClass {
+export class ItemSelectionComponent extends AsyncHandler {
     @Input() public show = true;
     @Input() public title = 'Systems';
     @Input() public route = 'systems';

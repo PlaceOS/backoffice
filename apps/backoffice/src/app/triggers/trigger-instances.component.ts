@@ -57,7 +57,7 @@ import { TriggerStateService } from './trigger-state.service';
                         {{ +item.created_at * 1000 | dateFrom }}
                     </div>
                     <div class="w-12 flex items-center justify-center">
-                        <button mat-icon-button (click)="deleteTrigger(item)">
+                        <button btn icon (click)="deleteTrigger(item)">
                             <app-icon className="backoffice-trash"></app-icon>
                         </button>
                     </div>

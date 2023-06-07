@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BaseClass } from '../common/base.class';
+import { AsyncHandler } from '../common/base.class';
 
 @Component({
     selector: 'clock',
@@ -41,7 +41,7 @@ import { BaseClass } from '../common/base.class';
         `,
     ],
 })
-export class ClockComponent extends BaseClass implements OnInit {
+export class ClockComponent extends AsyncHandler implements OnInit {
     /** Angle to display the hour hand of the clock at */
     public hour_angle: number;
     /** Angle to display the minute hand of the clock at */

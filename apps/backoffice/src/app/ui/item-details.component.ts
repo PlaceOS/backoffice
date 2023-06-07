@@ -86,7 +86,7 @@ export interface DisplayItem {
                     </div>
                 </div>
             </div>
-            <button [matMenuTriggerFor]="action_menu" mat-icon-button>
+            <button [matMenuTriggerFor]="action_menu" btn icon>
                 <app-icon
                     [icon]="{ class: 'backoffice-dots-three-vertical' }"
                 ></app-icon>

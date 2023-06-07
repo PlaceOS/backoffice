@@ -27,7 +27,7 @@ import { EdgeModalComponent } from './edge-modal.component';
 @Component({
     selector: '[admin-edge]',
     template: `
-        <button mat-button class="w-full sm:w-32 my-4" (click)="edit()">
+        <button btn class="w-full sm:w-32 my-4" (click)="edit()">
             Add New Edge
         </button>
         <ng-container *ngIf="!loading; else load_state">
@@ -53,7 +53,8 @@ import { EdgeModalComponent } from './edge-modal.component';
                         </div>
                         <div class="w-24 px-2 flex items-center justify-end ">
                             <button
-                                mat-icon-button
+                                btn
+                                icon
                                 class="h-10 w-10"
                                 (click)="edit(item)"
                             >
@@ -62,7 +63,8 @@ import { EdgeModalComponent } from './edge-modal.component';
                                 ></app-icon>
                             </button>
                             <button
-                                mat-icon-button
+                                btn
+                                icon
                                 class="h-10 w-10"
                                 (click)="remove(item)"
                             >
@@ -82,10 +84,12 @@ import { EdgeModalComponent } from './edge-modal.component';
             [matTooltip]="'Copy API Key for ' + item.name"
             class="absolute flex rounded cursor-pointer items-center right-4 top-4 bg-white dark:bg-neutral-700 shadow border border-gray-200 dark:border-neutral-500 max-w-[calc(100%-11rem)] overflow-hidden"
         >
-            <div class="p-2 flex-1 w-1/2 flex h-full items-center border-r border-gray-200 dark:border-neutral-500 ">
+            <div
+                class="p-2 flex-1 w-1/2 flex h-full items-center border-r border-gray-200 dark:border-neutral-500 "
+            >
                 <code class="flex-1 truncate">{{ item.x_api_key }}</code>
             </div>
-            <button mat-icon-button class="rounded-none">
+            <button btn icon class="rounded-none">
                 <app-icon className="backoffice-copy"></app-icon>
             </button>
         </div>
@@ -138,10 +142,7 @@ export class PlaceEdgeComponent {
         shareReplay()
     );
 
-    public readonly edges = combineLatest([
-        this._edge_list,
-        this._hide
-    ]).pipe(
+    public readonly edges = combineLatest([this._edge_list, this._hide]).pipe(
         debounceTime(500),
         map(([list, hide]) => {
             if (!hide) return list;
