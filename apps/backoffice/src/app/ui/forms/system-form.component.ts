@@ -163,7 +163,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         "
                         i18n="@@panelCountLabel"
                     >
-                        Number of Touch Panels:
+                        Touch Panels:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
