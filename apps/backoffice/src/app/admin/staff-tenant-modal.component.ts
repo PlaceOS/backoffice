@@ -61,6 +61,17 @@ export interface StaffTenantModalData {
                     </mat-form-field>
                 </div>
             </div>
+            <div class="flex flex-col flex-1">
+                <label>Domain Email:</label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        formControlName="domain_email"
+                        placeholder="Domain of Email for Auth"
+                    />
+                    <mat-error>A tenant name is required</mat-error>
+                </mat-form-field>
+            </div>
             <div
                 class="flex items-center flex-wrap space-x-0 sm:space-x-2"
                 *ngIf="
@@ -257,6 +268,7 @@ export class StaffTenantModalComponent implements OnInit {
             this.domain?.domain || this.tenant?.domain || 'localhost'
         ),
         name: new FormControl(this.tenant?.name || '', [Validators.required]),
+        domain_email: new FormControl(this.tenant?.domain_email || ''),
         delegated: new FormControl(this.tenant?.delegated ?? false),
         platform: new FormControl(this.tenant?.platform || 'google', [
             Validators.required,

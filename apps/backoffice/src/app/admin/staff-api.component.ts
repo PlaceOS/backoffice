@@ -13,6 +13,7 @@ export interface PlaceTenant {
     id: string;
     name: string;
     domain: string;
+    domain_email: string;
     platform: string;
     delegated?: boolean;
     service_account?: string;
