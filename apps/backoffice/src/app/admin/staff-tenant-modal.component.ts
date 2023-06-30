@@ -66,7 +66,7 @@ export interface StaffTenantModalData {
                 <mat-form-field appearance="outline">
                     <input
                         matInput
-                        formControlName="domain_email"
+                        formControlName="email_domain"
                         placeholder="Domain of Email for Auth"
                     />
                     <mat-error>A tenant name is required</mat-error>
@@ -268,7 +268,7 @@ export class StaffTenantModalComponent implements OnInit {
             this.domain?.domain || this.tenant?.domain || 'localhost'
         ),
         name: new FormControl(this.tenant?.name || '', [Validators.required]),
-        domain_email: new FormControl(this.tenant?.domain_email || ''),
+        email_domain: new FormControl(this.tenant?.email_domain || ''),
         delegated: new FormControl(this.tenant?.delegated ?? false),
         platform: new FormControl(this.tenant?.platform || 'google', [
             Validators.required,
