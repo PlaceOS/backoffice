@@ -6,12 +6,14 @@ import { PlaceDomain } from '@placeos/ts-client';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
 import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
 import { DomainStateService } from './domain-state.service';
+import { notifySuccess } from '../common/notifications';
 
 @Component({
     selector: 'app-domain-about',
     template: `
         <h3 class="text-lg font-medium mb-2">Settings</h3>
         <section *ngIf="form" [formGroup]="form">
+            <button btn matRipple (click)="saveChanges()">Save Changes</button>
             <mat-tab-group [(selectedIndex)]="index">
                 <mat-tab label="Config"> </mat-tab>
                 <mat-tab label="Internals"> </mat-tab>
@@ -63,33 +65,23 @@ export class DomainAboutComponent extends AsyncHandler implements OnInit {
         );
     }
 
+    /** Save changes to the form fields */
+    public async saveChanges() {
+        if (!this.form.valid) return;
+        const domain = new PlaceDomain({
+            ...this.item,
+            config: JSON.parse(this.form.value.config),
+            internals: JSON.parse(this.form.value.internals),
+        });
+        await this._service.update(domain);
+        notifySuccess('Successfully updated domain settings.');
+    }
+
     /** Load form fields for active item */
     private loadForm(): void {
         this.form.patchValue({
             internals: JSON.stringify(this.item.internals, undefined, 4),
             config: JSON.stringify(this.item.config, undefined, 4),
         });
-        this.subscription(
-            'form',
-            this.form.valueChanges.subscribe(() => this.saveChanges())
-        );
-    }
-
-    /** Save changes to the form fields */
-    private saveChanges(): void {
-        this.timeout(
-            'save',
-            async () => {
-                if (this.form.valid) {
-                    const domain = new PlaceDomain({
-                        ...this.item,
-                        config: JSON.parse(this.form.value.config),
-                        internals: JSON.parse(this.form.value.internals),
-                    });
-                    this._service.update(domain);
-                }
-            },
-            3000
-        );
     }
 }
