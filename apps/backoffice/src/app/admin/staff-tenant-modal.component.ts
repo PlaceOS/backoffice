@@ -62,14 +62,14 @@ export interface StaffTenantModalData {
                 </div>
             </div>
             <div class="flex flex-col flex-1">
-                <label>Domain Email:</label>
+                <label>Email Domain:</label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         formControlName="email_domain"
-                        placeholder="Domain of Email for Auth"
+                        placeholder="Domain of user's email for this tenant"
                     />
-                    <mat-error>A tenant name is required</mat-error>
+                    <mat-error>A e-mail domain is required</mat-error>
                 </mat-form-field>
             </div>
             <div
