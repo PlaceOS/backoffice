@@ -69,7 +69,7 @@ export interface StaffTenantModalData {
                         formControlName="email_domain"
                         placeholder="Domain of user's email for this tenant"
                     />
-                    <mat-error>A e-mail domain is required</mat-error>
+                    <mat-error>A domain is required</mat-error>
                 </mat-form-field>
             </div>
             <div
