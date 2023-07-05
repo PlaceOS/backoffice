@@ -136,7 +136,7 @@ const systems: ItemActions<PlaceSystem> = {
               }),
     remove: (item) => removeSystem(item.id),
     itemConstructor: PlaceSystem,
-    delete_message: `<p>Are you sure you want delete this system?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>`,
+    delete_message: `<p>Are you sure you want delete this system(<strong>{{ name }}</strong>)?</p><p>Deleting this will <strong>immediately</strong> delete modules that are not in another system</p>`,
     singular: 'system',
 };
 

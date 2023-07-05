@@ -270,7 +270,10 @@ export class ActiveItemService extends AsyncHandler {
                 ...CONFIRM_METADATA,
                 data: {
                     title: `Delete ${this.actions.singular}`,
-                    content: this.actions.delete_message,
+                    content: this.actions.delete_message.replace(
+                        '{{ name }}',
+                        (item as any).display_name || item.name
+                    ),
                     extra: this.actions.delete_extra
                         ? await this.actions.delete_extra(item)
                         : null,

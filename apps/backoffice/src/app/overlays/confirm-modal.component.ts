@@ -29,10 +29,10 @@ export const CONFIRM_METADATA = {
 @Component({
     selector: 'confirm-modal',
     template: `
-        <header>
-            <h3 mat-dialog-title>{{ title || 'Confirm' }}</h3>
+        <header class="p-4">
+            <h3>{{ title || 'Confirm' }}</h3>
         </header>
-        <mat-dialog-content>
+        <main>
             <div
                 class="flex items-center justify-center flex-col p-4 space-y-2 text-center min-w-[16rem]"
                 *ngIf="!loading; else load_state"
@@ -51,8 +51,11 @@ export const CONFIRM_METADATA = {
                     [innerHTML]="extra[1]"
                 ></div>
             </div>
-        </mat-dialog-content>
-        <mat-dialog-actions *ngIf="!loading">
+        </main>
+        <footer
+            *ngIf="!loading"
+            class="flex items-center justify-end space-x-2 p-2 border-t border-gray-200"
+        >
             <button btn class="inverse min-w-[8rem]" mat-dialog-close>
                 Cancel
             </button>
@@ -64,7 +67,7 @@ export const CONFIRM_METADATA = {
             >
                 {{ action || 'Ok' }}
             </button>
-        </mat-dialog-actions>
+        </footer>
         <ng-template #load_state>
             <div
                 class="flex items-center justify-center flex-col p-4 space-y-4 h-32 w-64"
