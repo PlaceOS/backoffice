@@ -296,11 +296,15 @@ import { SystemStateService } from './system-state.service';
                                                 handleContextEvent(item, device)
                                             "
                                         >
-                                            <app-icon
-                                                [icon]="item.icon"
-                                            ></app-icon>
-                                            <div class="text">
-                                                {{ item.name }}
+                                            <div
+                                                class="flex items-center space-x-2"
+                                            >
+                                                <app-icon
+                                                    [icon]="item.icon"
+                                                ></app-icon>
+                                                <div class="text">
+                                                    {{ item.name }}
+                                                </div>
                                             </div>
                                         </button>
                                     </mat-menu>
