@@ -266,22 +266,14 @@ import { SystemStateService } from './system-state.service';
                                     </mat-checkbox>
                                 </div>
                                 <div class="w-24 flex px-2 justify-center">
-                                    <button
-                                        btn
-                                        icon
-                                        (click)="editModule(device)"
-                                    >
+                                    <button icon (click)="editModule(device)">
                                         <app-icon
-                                            [icon]="{
-                                                class: 'backoffice-edit'
-                                            }"
+                                            className="backoffice-edit"
                                         ></app-icon>
                                     </button>
-                                    <button btn icon [matMenuTriggerFor]="menu">
+                                    <button icon [matMenuTriggerFor]="menu">
                                         <app-icon
-                                            [icon]="{
-                                                class: 'backoffice-dots-three-vertical'
-                                            }"
+                                            className="backoffice-dots-three-vertical"
                                         ></app-icon>
                                     </button>
                                     <mat-menu #menu="matMenu">
