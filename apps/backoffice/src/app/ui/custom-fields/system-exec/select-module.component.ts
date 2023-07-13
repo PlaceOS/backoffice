@@ -31,7 +31,7 @@ export interface ModuleLike {
     selector: `select-system-module`,
     template: `
         <mat-form-field
-            class="w-full h-12"
+            class="w-full h-14"
             appearance="outline"
             *ngIf="!loading; else load_state"
         >

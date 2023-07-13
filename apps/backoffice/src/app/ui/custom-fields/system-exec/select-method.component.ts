@@ -29,7 +29,7 @@ import { ModuleLike } from './select-module.component';
     template: `
         <ng-container *ngIf="!loading; else load_state">
             <mat-form-field
-                class="w-full h-12"
+                class="w-full h-14"
                 appearance="outline"
                 *ngIf="(method_list | async)?.length; else empty_state"
             >

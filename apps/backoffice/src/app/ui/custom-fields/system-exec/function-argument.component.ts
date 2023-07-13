@@ -53,11 +53,11 @@ const validateType = (type) => (control: AbstractControl) => {
             >
                 <div
                     class="absolute left-0 transform -translate-x-full -translate-y-1/2 border-l-2 border-b-2 border-gray-500 w-4"
-                    [class.h-5]="i === 0"
-                    [class.h-12]="i !== 0"
+                    [class.h-6]="i === 0"
+                    [class.h-14]="i !== 0"
                 ></div>
                 <!-- <label [for]="key">{{ key }}</label> -->
-                <mat-form-field class="w-1/2 flex-1 h-12" appearance="outline">
+                <mat-form-field class="w-1/2 flex-1 h-14" appearance="outline">
                     <input
                         [name]="key"
                         matInput
@@ -71,7 +71,8 @@ const validateType = (type) => (control: AbstractControl) => {
                     class="text-xs rounded px-2 py-1 w-16"
                     [class.bg-success]="required[key]"
                     [class.text-white]="required[key]"
-                    [class.bg-gray-200]="!required[key]"
+                    [class.bg-gray-300]="!required[key]"
+                    [class.text-black]="!required[key]"
                 >
                     {{ required[key] ? 'Required' : 'Optional' }}
                 </div>

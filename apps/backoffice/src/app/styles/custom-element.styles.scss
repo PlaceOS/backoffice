@@ -254,6 +254,18 @@ mat-select {
             }
         }
     }
+
+    mat-select {
+
+
+        .mat-mdc-select-placeholder {
+            color: rgba(#fff, 0.3);   
+        }
+
+        .mat-mdc-select-value-text {
+            color: #fff;
+        }
+    }
 }
 
 mat-slider {
