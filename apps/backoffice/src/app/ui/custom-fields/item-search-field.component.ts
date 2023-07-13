@@ -36,7 +36,9 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                     (ngModelChange)="search$.next($event)"
                     [disabled]="disabled"
                     [placeholder]="
-                        'Search' + (name ? ' for ' + name : '') + '...'
+                        placeholder
+                            ? placeholder
+                            : 'Search' + (name ? ' for ' + name : '') + '...'
                     "
                     i18n-placeholder
                     [matAutocomplete]="auto"
@@ -115,6 +117,8 @@ export class ItemSearchFieldComponent<T extends Identity = any>
 {
     /** Name of the items being query'd */
     @Input() public name: string;
+    /** Placeholder to display on the form input */
+    @Input() public placeholder: string;
     /** Limit available options to these */
     @Input() public options: T[];
     /** Whether the form field should be disabled */

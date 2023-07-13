@@ -30,6 +30,7 @@ import { SystemStateService } from './system-state.service';
                 <item-search-field
                     class="flex-grow-1 w-full sm:flex-1 sm:w-auto h-12"
                     name="module"
+                    placeholder="Add existing module"
                     [query_fn]="query_fn"
                     [exclude]="exclude_fn"
                     [ngModel]="null"
