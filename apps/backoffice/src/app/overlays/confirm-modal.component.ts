@@ -38,7 +38,7 @@ export const CONFIRM_METADATA = {
                 *ngIf="!loading; else load_state"
             >
                 <app-icon class="text-3xl" [icon]="icon"></app-icon>
-                <p [innerHTML]="content || 'Are you sure?'"></p>
+                <p [innerHTML]="content || 'Are you sure?' | safe: 'html'"></p>
                 <div
                     *ngIf="extra"
                     [class.bg-blue-500]="extra[0] === 'info'"

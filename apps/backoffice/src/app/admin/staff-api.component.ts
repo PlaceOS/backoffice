@@ -173,8 +173,16 @@ export class PlaceStaffAPIComponent implements OnInit {
         const details = await openConfirmModal(
             {
                 title: 'Remove tenant?',
-                content: `Remove <strong>${tenant.name}</strong> from this domain?<br>You or your users may lose access to some data.`,
+                content: `Remove <strong>${tenant.name}</strong> from this domain?<br>
+                <p style="text-align: left; width: 100%;">This will remove all related:</p><br>
+                <ul style="list-style: disc;text-align: left;padding-left: 2rem">
+                <li>bookings (such as desk bookings)</li>
+                <li>event metadata (such as catering)</li>
+                <li>guest information</li>
+                <li>survey data</li>
+                </ul>`,
                 icon: { type: 'icon', class: 'backoffice-trash' },
+                action: 'Delete',
             },
             this._dialog
         );
