@@ -42,31 +42,31 @@
                 ></textarea>
             </mat-form-field>
         </div>
-        <div class="field" *ngIf="form.controls.editors">
+        <div class="field" *ngIf="form?.controls?.editors">
             <label for="system-email" i18n="@@editorssLabel">Editors:</label>
-            <mat-form-field appearance="outline">
-                <mat-chip-list #chipList aria-label="Editor Groups">
-                    <mat-chip
-                        *ngFor="let editor of editors"
-                        [selectable]="true"
-                        [removable]="true"
-                        (removed)="removeEditor(editor)"
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-chip-grid #chipList aria-label="Image List">
+                    <mat-chip-row
+                        *ngFor="let item of editors"
+                        (removed)="removeEditor(item)"
                     >
-                        {{ editor }}
-                        <app-icon
+                        <div class="truncate max-w-md">{{ item }}</div>
+                        <button
                             matChipRemove
-                            [icon]="{ class: 'backoffice-cross' }"
-                        ></app-icon>
-                    </mat-chip>
-                    <input
-                        placeholder="Editors user groups..."
-                        i18n-placeholder="@@editorsPlaceholder"
-                        [matChipInputFor]="chipList"
-                        [matChipInputSeparatorKeyCodes]="separators"
-                        [matChipInputAddOnBlur]="true"
-                        (matChipInputTokenEnd)="addEditor($event)"
-                    />
-                </mat-chip-list>
+                            [attr.aria-label]="'Remove ' + item"
+                        >
+                            <app-icon>cancel</app-icon>
+                        </button>
+                    </mat-chip-row>
+                </mat-chip-grid>
+                <input
+                    placeholder="Editors..."
+                    i18n-placeholder
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separators"
+                    [matChipInputAddOnBlur]="true"
+                    (matChipInputTokenEnd)="addEditor($event)"
+                />
             </mat-form-field>
         </div>
         <div class="field" *ngIf="form.controls.schema">
