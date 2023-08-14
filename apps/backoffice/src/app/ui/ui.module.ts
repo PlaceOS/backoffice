@@ -112,7 +112,7 @@ const FORM_COMPONENTS: Type<any>[] = [
     SelectMethodComponent,
     FunctionArgumentComponent,
     ItemSidebarComponent,
-    NewTerminalComponent
+    NewTerminalComponent,
 ];
 
 const COMPONENTS: Type<any>[] = [
@@ -135,7 +135,7 @@ const COMPONENTS: Type<any>[] = [
     CustomTooltipComponent,
     UserMenuTooltipComponent,
     ItemDetailsComponent,
-    ItemTablistComponent
+    ItemTablistComponent,
 ];
 
 const PIPES: Type<any>[] = [
@@ -145,7 +145,7 @@ const PIPES: Type<any>[] = [
     SafePipe,
     SanitizePipe,
     SettingsFormatPipe,
-    UserPipe
+    UserPipe,
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [
@@ -177,10 +177,11 @@ const MATERIAL_MODULES: any[] = [
     MatTabsModule,
     MatCardModule,
     MatExpansionModule,
+    MatChipsModule,
     CdkTableModule,
     MatDatepickerModule,
     MatRippleModule,
-    PortalModule
+    PortalModule,
 ];
 
 @NgModule({

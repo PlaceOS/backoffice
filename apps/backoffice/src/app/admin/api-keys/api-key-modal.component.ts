@@ -55,7 +55,7 @@ import { APIKeyService } from './api-keys.service';
             <div class="flex flex-col">
                 <label for="scope">Scopes<span>*</span></label>
                 <mat-form-field appearance="outline">
-                    <mat-chip-list #chipList aria-label="Scopes">
+                    <mat-chip-grid #chipList aria-label="Scopes">
                         <mat-chip
                             *ngFor="let scope of scope_list"
                             [selectable]="true"
@@ -79,7 +79,7 @@ import { APIKeyService } from './api-keys.service';
                             (matChipInputTokenEnd)="addScope($event)"
                             [matAutocomplete]="auto"
                         />
-                    </mat-chip-list>
+                    </mat-chip-grid>
                     <mat-error>At least one scope is required</mat-error>
                     <mat-autocomplete #auto="matAutocomplete">
                         <mat-option
@@ -106,7 +106,7 @@ import { APIKeyService } from './api-keys.service';
                 <mat-menu #menu="matMenu">
                     <mat-form-field
                         appearance="outline"
-                        class="px-2 h-12"
+                        class="px-2 no-subtext"
                         (click)="
                             $event.preventDefault(); $event.stopPropagation()
                         "
@@ -130,6 +130,14 @@ import { APIKeyService } from './api-keys.service';
                         [class.text-primary]="form.value.user?.id === item.id"
                     >
                         {{ item.name }}
+                    </button>
+                    <button
+                        mat-menu-item
+                        [disabled]="true"
+                        *ngIf="!(users | async)?.length"
+                        class="text-center"
+                    >
+                        No results
                     </button>
                 </mat-menu>
             </div>
