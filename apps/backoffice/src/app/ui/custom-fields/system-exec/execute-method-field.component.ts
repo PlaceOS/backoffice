@@ -3,6 +3,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import {
     executeOnSystem,
+    executeOnZone,
     PlaceModuleFunction,
     PlaceSystem,
     TriggerFunction,
@@ -74,6 +75,7 @@ import { ModuleLike } from './select-module.component';
     ],
 })
 export class ExecuteMethodFieldComponent implements ControlValueAccessor {
+    @Input() public zone?: string;
     /** ID of the system to select the module from */
     @Input() public system: PlaceSystem;
     /** Whether component is allowed to execute methods on the system */
@@ -162,8 +164,9 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     public async execute() {
         this.loading = true;
         this.arguments = this.arguments || {};
-        const result = await executeOnSystem(
-            this.system.id,
+        const method = this.zone ? executeOnZone : executeOnSystem;
+        const result = await method(
+            this.zone || this.system.id,
             (this.fn as any).name,
             this.module.module,
             this.module.index,

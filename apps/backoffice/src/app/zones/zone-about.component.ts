@@ -35,6 +35,7 @@ import { marked } from 'marked';
                 </mat-form-field>
                 <execute-method-field
                     *ngIf="active_system && active_system.id"
+                    [zone]="item?.id"
                     [system]="active_system"
                 ></execute-method-field>
             </div>
