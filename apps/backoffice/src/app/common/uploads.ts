@@ -69,7 +69,7 @@ export function uploadFile(
                         upload_details.link = pub
                             ? `/api/engine/v2/uploads/${encodeURIComponent(
                                   upload.id
-                              )}/`
+                              )}/url`
                             : upload.access_url;
                     }
                     upload_details.progress = state.progress;
