@@ -85,6 +85,7 @@ import { ItemDetailsComponent } from './item-details.component';
 import { ItemTablistComponent } from './item-tablist.component';
 import { ItemSidebarComponent } from './item-sidebar.component';
 import { NewTerminalComponent } from './new-terminal.component';
+import { UploadPermissionsModalComponent } from './upload-permissions-modal.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -136,6 +137,7 @@ const COMPONENTS: Type<any>[] = [
     UserMenuTooltipComponent,
     ItemDetailsComponent,
     ItemTablistComponent,
+    UploadPermissionsModalComponent,
 ];
 
 const PIPES: Type<any>[] = [

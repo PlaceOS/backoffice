@@ -214,7 +214,7 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
                 if (files.length) {
                     this.show = true;
                     for (let i = 0; i < files.length; i++) {
-                        this._uploads.uploadFile(files[i]);
+                        this._uploads.uploadFileWithPermissions(files[i]);
                     }
                 }
             }

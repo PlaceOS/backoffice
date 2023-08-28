@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { UploadDetails, uploadFile } from './uploads';
+import { UploadDetails, UploadPermissions, uploadFile } from './uploads';
+import { MatDialog } from '@angular/material/dialog';
+import { UploadPermissionsModalComponent } from '../ui/upload-permissions-modal.component';
 
 @Injectable({
     providedIn: 'root',
@@ -10,7 +12,7 @@ export class UploadsService {
 
     public readonly upload_list = this._upload_list.asObservable();
 
-    constructor() {
+    constructor(private _dialog: MatDialog) {
         if (localStorage) {
             this._upload_list.next(
                 JSON.parse(localStorage.getItem('BACKOFFICE.uploads') || '[]')
@@ -25,7 +27,26 @@ export class UploadsService {
         this._upload_list.next(in_progress_list);
     }
 
-    public uploadFile(file: File) {
+    public uploadFileWithPermissions(file: File) {
+        const ref = this._dialog.open(UploadPermissionsModalComponent, {
+            data: { file },
+        });
+        ref.afterClosed().subscribe((details) => {
+            if (details) {
+                this.uploadFile(
+                    details.file,
+                    details.is_public,
+                    details.permissions
+                );
+            }
+        });
+    }
+
+    public uploadFile(
+        file: File,
+        pub: boolean = true,
+        permissions: UploadPermissions = 'none'
+    ) {
         return new Promise<number>((resolve) => {
             let resolved = false;
             const update_fn = (details) => {
@@ -40,9 +61,13 @@ export class UploadsService {
                     details,
                 ]);
             };
-            uploadFile(file).subscribe(update_fn, update_fn, () => {
-                this._updateUploadHistory();
-            });
+            uploadFile(file, pub, permissions).subscribe(
+                update_fn,
+                update_fn,
+                () => {
+                    this._updateUploadHistory();
+                }
+            );
         });
     }
 
