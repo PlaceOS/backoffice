@@ -134,6 +134,11 @@ export class PlaceComponent extends AsyncHandler {
                 name: 'Custom Schemas',
                 icon: { class: 'backoffice-list' },
             },
+            {
+                id: 'upload-storage',
+                name: 'Upload Storage',
+                icon: { class: 'backoffice-upload' },
+            },
         ].concat(this.extensions);
     }
 

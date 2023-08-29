@@ -14,6 +14,7 @@ import { PlaceStaffAPIComponent } from './staff-api.component';
 import { PlaceEdgeComponent } from './edge.component';
 import { AdminSchemasComponent } from './schemas.component';
 import { AdminAPIKeysComponent } from './api-keys/api-keys.component';
+import { StorageComponent } from './storage/storage.component';
 
 export const ROUTES: Routes = [
     {
@@ -32,6 +33,7 @@ export const ROUTES: Routes = [
             { path: 'staff-api', component: PlaceStaffAPIComponent },
             { path: 'schemas', component: AdminSchemasComponent },
             { path: 'api-keys', component: AdminAPIKeysComponent },
+            { path: 'upload-storage', component: StorageComponent },
             { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' },
         ],

@@ -26,6 +26,8 @@ import { AdminAPIKeysComponent } from './api-keys/api-keys.component';
 import { APIKeyModalComponent } from './api-keys/api-key-modal.component';
 import { APIKeyService } from './api-keys/api-keys.service';
 import { BookingLimitsModalComponent } from './booking-limits-modal.component';
+import { StorageComponent } from './storage/storage.component';
+import { StorageProviderModalComponent } from './storage/storage-provider-modal.component';
 
 @NgModule({
     declarations: [
@@ -47,7 +49,9 @@ import { BookingLimitsModalComponent } from './booking-limits-modal.component';
         AdminSchemasComponent,
         AdminAPIKeysComponent,
         APIKeyModalComponent,
-        BookingLimitsModalComponent
+        BookingLimitsModalComponent,
+        StorageComponent,
+        StorageProviderModalComponent,
     ],
     imports: [
         CommonModule,
@@ -56,8 +60,6 @@ import { BookingLimitsModalComponent } from './booking-limits-modal.component';
         RouterModule.forChild(ROUTES),
         SharedContentModule,
     ],
-    providers: [
-        APIKeyService
-    ]
+    providers: [APIKeyService],
 })
 export class AppPlaceModule {}
