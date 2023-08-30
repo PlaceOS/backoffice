@@ -134,7 +134,7 @@ import { UploadsService } from '../common/uploads.service';
             :host {
                 position: absolute;
                 pointer-events: none;
-                z-index: 9999;
+                z-index: 999;
                 top: 0;
                 left: 0;
                 right: 0;
