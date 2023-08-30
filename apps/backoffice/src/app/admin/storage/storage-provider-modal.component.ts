@@ -150,7 +150,16 @@ export class StorageProviderModalComponent {
         'txt',
         'csv',
         'tsv',
-    ];
+        'pdf',
+        'tif',
+        'tiff',
+        'mp3',
+        'ogg',
+        'rar',
+        'zip',
+        'mp4',
+        'webm',
+    ].sort((a, b) => a.localeCompare(b));
 
     public readonly ALLOWED_MIME_TYPES = [
         'image/png',
@@ -161,7 +170,15 @@ export class StorageProviderModalComponent {
         'image/svg+xml',
         'text/plain',
         'text/csv',
-    ];
+        'application/pdf',
+        'image/tiff',
+        'audio/mpeg',
+        'audio/ogg',
+        'application/vnd.rar',
+        'application/zip',
+        'video/mp4',
+        'video/webm',
+    ].sort((a, b) => a.localeCompare(b));
     public readonly storage = this._data.item;
     public readonly form = new FormGroup({
         id: new FormControl(this._data.item?.id || ''),
