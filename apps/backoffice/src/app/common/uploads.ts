@@ -66,8 +66,10 @@ export function uploadFile(
                 .pipe(takeWhile((_) => _.status !== 'complete', true))
                 .subscribe((state) => {
                     if (upload.access_url) {
-                        upload_details.link = pub
-                            ? `/api/engine/v2/uploads/${encodeURIComponent(
+                        upload_details.link = !pub
+                            ? `${
+                                  location.origin
+                              }/api/engine/v2/uploads/${encodeURIComponent(
                                   upload.id
                               )}/url`
                             : upload.access_url;
