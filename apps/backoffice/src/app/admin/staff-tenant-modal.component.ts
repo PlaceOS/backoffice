@@ -395,10 +395,10 @@ export class StaffTenantModalComponent implements OnInit {
         this.loading = true;
         const limits: { type: string; amount: string }[] =
             this.form.value.booking_limits || [];
-        const booking_limits = limits.reduce(
-            (m, { type, amount }) => (m[type] = +amount),
-            {}
-        );
+        const booking_limits = limits.reduce((m, { type, amount }) => {
+            m[type] = +amount;
+            return m;
+        }, {});
         const value = this.form.value;
         if (!value.credentials.conference_type)
             delete value.credentials.conference_type;

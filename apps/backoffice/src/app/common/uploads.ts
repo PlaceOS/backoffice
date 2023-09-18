@@ -6,11 +6,9 @@ import {
 import { Observable } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 
-import * as blobUtil from 'blob-util';
-import { HashMap } from './types';
 import { randomInt } from './general';
 
-let _timers: HashMap = {};
+import * as blobUtil from 'blob-util';
 
 export interface UploadDetails {
     /** Unique ID for the upload */

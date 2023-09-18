@@ -64,9 +64,7 @@ export class UploadsService {
             uploadFile(file, pub, permissions).subscribe(
                 update_fn,
                 update_fn,
-                () => {
-                    this._updateUploadHistory();
-                }
+                () => this._updateUploadHistory()
             );
         });
     }
