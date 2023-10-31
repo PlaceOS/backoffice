@@ -51,11 +51,14 @@
 }
 
 .mat-mdc-form-field {
-    .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label:not(.mdc-floating-label--float-above) {
+    .mat-mdc-text-field-wrapper
+        .mat-mdc-form-field-flex
+        .mat-mdc-floating-label:not(.mdc-floating-label--float-above) {
         top: 22px;
     }
 
-    &.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field .mdc-notched-outline__notch {
+    &.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field
+        .mdc-notched-outline__notch {
         border-right: none;
     }
 
@@ -110,20 +113,21 @@
     a {
         color: #3344dd;
         text-decoration: underline;
-        
-        &:hover, &:focus, &:active {
+
+        &:hover,
+        &:focus,
+        &:active {
             color: #bb1122;
             text-decoration: none;
         }
-        
+
         &:visited {
-            color: #884488
+            color: #884488;
         }
     }
 }
 
 mat-form-field {
-
     &.no-subtext {
         .mat-mdc-form-field-subscript-wrapper {
             display: none;
@@ -252,7 +256,6 @@ mat-select {
 
 .dark {
     .mdc-form-field {
-
         &[overlay],
         &[overlay]:hover {
             .mdc-form-field-outline {
@@ -263,15 +266,17 @@ mat-select {
     }
 
     mat-select {
-
-
         .mat-mdc-select-placeholder {
-            color: rgba(#fff, 0.3);   
+            color: rgba(#fff, 0.3);
         }
 
         .mat-mdc-select-value-text {
             color: #fff;
         }
+    }
+
+    mat-expansion-panel-header * {
+        color: #fff;
     }
 }
 
@@ -491,7 +496,7 @@ custom-table[asset-view] {
     [cdk-cell],
     [cdk-header-cell] {
         min-width: 2.5rem;
-    } 
+    }
 
     cdk-header-row {
         background: #d0d0d0;
@@ -567,7 +572,7 @@ a[btn] {
     align-items: center;
     justify-content: center;
     border-radius: 0.25rem;
-    
+
     &.inverse {
         background: none;
         color: var(--color);
@@ -604,7 +609,7 @@ a[btn] {
 .dark {
     button[btn]:not([icon]),
     a[btn] {
-        --color: #C52B67
+        --color: #c52b67;
     }
 }
 
@@ -672,13 +677,12 @@ button.btn icon {
 }
 
 #placeos {
-
     .mdc-text-field--outlined {
         padding: 0 1rem;
     }
 
     .mat-mdc-tab-list {
-        border-bottom: 1px solid #CCC;
+        border-bottom: 1px solid #ccc;
     }
 
     .mat-mdc-form-field-infix {
@@ -695,7 +699,7 @@ button.btn icon {
         left: -200%;
         line-height: 1.1;
     }
-    
+
     .mdc-datepicker-toggle {
         button {
             position: relative;
@@ -709,12 +713,12 @@ button.btn icon {
             height: 24px;
             border-radius: 12px;
         }
-    
+
         .mdc-slide-toggle-thumb-container {
             top: 2px;
             left: 2px;
         }
-    
+
         &.mdc-slide-toggle.mdc-checked .mdc-slide-toggle-thumb-container {
             transform: translate3d(12px, 0, 0);
         }
@@ -796,13 +800,12 @@ button.btn icon {
             width: 100%;
         }
     }
-    
+
     .dark,
     [dark] {
-
         .mat-mdc-checkbox {
-
-            .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate):not([data-indeterminate="true"]) ~ .mdc-checkbox__background {
+            .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate):not([data-indeterminate='true'])
+                ~ .mdc-checkbox__background {
                 border-color: #fff8;
             }
 
@@ -836,7 +839,7 @@ button.btn icon {
         .mdc-datepicker-toggle button {
             color: #fff;
         }
-    
+
         nav {
             .mdc-tab-links {
                 @apply bg-gray-900;
@@ -845,16 +848,16 @@ button.btn icon {
                 @apply text-white;
             }
         }
-    
+
         .mdc-select-value-text,
         .mdc-select-arrow {
             color: #fff;
-        }    
-    
+        }
+
         .mdc-form-field-outline > div {
             color: #fff8;
         }
-    
+
         .mdc-form-field {
             ::placeholder,
             .mdc-select-placeholder {
@@ -865,31 +868,31 @@ button.btn icon {
         input::placehover {
             color: #fffa;
         }
-    
+
         button.mdc-button,
         a[button] {
             color: #fff;
-            
+
             &.inverse {
                 background: none;
                 --color: #fffa;
             }
-    
+
             &.error {
-                --color: var(--error)
+                --color: var(--error);
             }
-    
+
             &[disabled] {
                 opacity: 0.3;
             }
         }
-    
+
         .mdc-slide-toggle-bar {
-            background-color: rgba(255,255,255, 0.2);
+            background-color: rgba(255, 255, 255, 0.2);
         }
-    
+
         .mdc-checked .mdc-slide-toggle-bar {
-            background-color: rgba(255,255,255, 0.4);
+            background-color: rgba(255, 255, 255, 0.4);
         }
 
         .mdc-menu-item {
@@ -913,20 +916,17 @@ button.btn icon {
         .mat-mdc-select-panel {
             background-color: #404040;
             color: #fff;
-
         }
 
         mat-bottom-sheet-container {
             background-color: #404040;
             color: #fff;
-
         }
 
         .mdc-paginator {
             background-color: inherit;
             color: inherit;
         }
-
 
         .mdc-spinner {
             circle {
@@ -937,26 +937,26 @@ button.btn icon {
         mat-pseudo-checkbox.mdc-pseudo-checkbox-checked {
             background: var(--secondary);
         }
-        
+
         .mdc-checkbox-checkmark {
-            fill: #000A;
+            fill: #000a;
         }
         .mdc-checkbox-checked {
             .mdc-checkbox-background {
                 background-color: #fff;
             }
-        
+
             .mdc-checkbox-mixedmark {
-                background-color: #000A;
+                background-color: #000a;
             }
-    
+
             .mdc-checkbox-checkmark-path {
-                stroke: #000A !important;
+                stroke: #000a !important;
             }
         }
 
         .mdc-checkbox-frame {
-            border-color: #fff6
+            border-color: #fff6;
         }
 
         .mdc-radio-outer-circle {
@@ -993,7 +993,7 @@ button.btn icon {
         }
 
         .mdc-menu-panel,
-        .mdc-select-panel  {
+        .mdc-select-panel {
             @apply bg-neutral-800;
         }
 
@@ -1003,16 +1003,16 @@ button.btn icon {
 
         mat-option.mdc-active {
             @apply bg-white/5;
-         }
+        }
 
-       .mdc-active .mdc-option-text {
+        .mdc-active .mdc-option-text {
             @apply text-blue-500;
         }
 
         .mdc-option:hover {
             @apply bg-white/10;
         }
-    
+
         bootstrap,
         [app-bootstrap] {
             @apply bg-neutral-600;
@@ -1024,7 +1024,8 @@ button.btn icon {
     h1 {
         @apply text-2xl mt-2 mb-4 font-medium;
     }
-    h2,h3 {
+    h2,
+    h3 {
         @apply text-xl mb-2;
     }
     ul {
@@ -1033,20 +1034,19 @@ button.btn icon {
     }
 }
 
-mat-list-option.mdc-list-item--selected{
+mat-list-option.mdc-list-item--selected {
     border-right: 3px solid rgba(#212121, 0.85);
 }
 
-.ct-label{
-    color:#000;
+.ct-label {
+    color: #000;
 }
-#placeos .dark .ct-label{
+#placeos .dark .ct-label {
     color: white;
 }
 
 #placeos .dark {
     .mat-mdc-form-field {
-
         &[overlay],
         &[overlay]:hover {
             .mdc-form-field-outline {
@@ -1054,7 +1054,6 @@ mat-list-option.mdc-list-item--selected{
                 border-radius: 4px;
             }
         }
-
 
         .mdc-notched-outline > * {
             border-color: #fff5;
@@ -1116,7 +1115,7 @@ form {
         flex-direction: column;
         width: 100%;
         min-width: 20%;
-    
+
         > * + * {
             margin-bottom: 0.25rem;
         }
@@ -1127,7 +1126,7 @@ form {
         bottom: 0.5rem;
         left: 1rem;
         color: var(--error);
-        font-size: .75rem;
+        font-size: 0.75rem;
         font-weight: 400;
     }
 
