@@ -2,14 +2,10 @@
     "affected": {
         "defaultBase": "master"
     },
-    "npmScope": "placeos",
     "tasksRunnerOptions": {
         "default": {
             "runner": "@nx/workspace/tasks-runners/default",
-            "options": {
-                "cacheableOperations": ["build", "lint", "test", "e2e"],
-                "parallel": 1
-            }
+            "options": {}
         }
     },
     "defaultProject": "backoffice",
@@ -43,20 +39,24 @@
     "targetDefaults": {
         "build": {
             "dependsOn": ["^build"],
-            "inputs": ["production", "^production"]
+            "inputs": ["production", "^production"],
+            "cache": true
         },
         "e2e": {
-            "inputs": ["default", "^production"]
+            "inputs": ["default", "^production"],
+            "cache": true
         },
         "test": {
             "inputs": [
                 "default",
                 "^production",
                 "{workspaceRoot}/jest.preset.js"
-            ]
+            ],
+            "cache": true
         },
         "lint": {
-            "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
+            "inputs": ["default", "{workspaceRoot}/.eslintrc.json"],
+            "cache": true
         }
     },
     "namedInputs": {
@@ -67,7 +67,9 @@
             "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
             "!{projectRoot}/tsconfig.spec.json",
             "!{projectRoot}/jest.config.[jt]s",
-            "!{projectRoot}/.eslintrc.json"
+            "!{projectRoot}/.eslintrc.json",
+            "!{projectRoot}/src/test-setup.[jt]s"
         ]
-    }
+    },
+    "parallel": 1
 }
