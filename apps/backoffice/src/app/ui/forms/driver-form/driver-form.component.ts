@@ -19,7 +19,7 @@ import {
     queryRepositories,
 } from '@placeos/ts-client';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 import {

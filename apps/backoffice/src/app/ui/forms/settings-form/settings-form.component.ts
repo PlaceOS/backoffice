@@ -14,7 +14,7 @@ import {
     addSettings,
 } from '@placeos/ts-client';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 import { validateYAML } from 'apps/backoffice/src/app/systems/systems.utilities';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
@@ -191,7 +191,7 @@ export class SettingsFormComponent
         }
         if (changes.merge_settings) {
             this.timeout(
-                'update_merge',
+                'upete_merge',
                 () => {
                     this.used_settings = this.processSettings(
                         this.settings || []

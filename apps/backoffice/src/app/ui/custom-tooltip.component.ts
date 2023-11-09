@@ -14,7 +14,7 @@ import {
     Type,
     ViewChild,
 } from '@angular/core';
-import { AsyncHandler } from '../common/base.class';
+import { AsyncHandler } from '../common/async-handler.class';
 
 @Injectable()
 export class CustomTooltipData<T = any> {

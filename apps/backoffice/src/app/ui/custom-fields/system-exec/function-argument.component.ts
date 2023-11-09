@@ -16,7 +16,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { PlaceModuleFunction } from '@placeos/ts-client';
-import { AsyncHandler } from '../../../common/base.class';
+import { AsyncHandler } from '../../../common/async-handler.class';
 import { HashMap } from '../../../common/types';
 
 const validateType = (type) => (control: AbstractControl) => {
@@ -52,7 +52,7 @@ const validateType = (type) => (control: AbstractControl) => {
                 *ngFor="let key of method.order; let i = index"
             >
                 <div
-                    class="absolute left-0 transform -translate-x-full -translate-y-1/2 border-l-2 border-b-2 border-gray-500 w-4"
+                    class="absolute left-0 transform -translate-x-full -translate-y-1/2 border-l-2 border-b-2 border-base-200 w-4"
                     [class.h-6]="i === 0"
                     [class.h-14]="i !== 0"
                 ></div>
@@ -70,9 +70,9 @@ const validateType = (type) => (control: AbstractControl) => {
                 <div
                     class="text-xs rounded px-2 py-1 w-16"
                     [class.bg-success]="required[key]"
-                    [class.text-white]="required[key]"
-                    [class.bg-gray-300]="!required[key]"
-                    [class.text-black]="!required[key]"
+                    [class.text-base-100]="required[key]"
+                    [class.bg-base-200]="!required[key]"
+                    [class.text-base-content]="!required[key]"
                 >
                     {{ required[key] ? 'Required' : 'Optional' }}
                 </div>

@@ -26,7 +26,7 @@ function scale(domain, range) {
             <div points class="h-0 w-0">
                 <div
                     dot
-                    class="absolute h-2 w-2 rounded-full transform -translate-x-1/2 -translate-y-1/2 bg-primary"
+                    class="absolute h-2 w-2 rounded-full transform -translate-x-1/2 -translate-y-1/2 bg-secondary"
                     *ngFor="let point of dot_points; let i = index"
                     [style.top]="point.y + '%'"
                     [style.left]="point.x + '%'"
@@ -37,7 +37,7 @@ function scale(domain, range) {
         <div>
             <div
                 x-axis
-                class="absolute left-12 bottom-0 right-0 h-8 flex justify-between border-t border-black dark:border-white"
+                class="absolute left-12 bottom-0 right-0 h-8 flex justify-between border-t border-base-content "
             >
                 <span>10s</span>
                 <span>8s</span>
@@ -48,7 +48,7 @@ function scale(domain, range) {
             </div>
             <div
                 y-axis
-                class="absolute top-0 bottom-8 left-0 flex flex-col w-12 justify-between items-end border-r border-black dark:border-white pr-1"
+                class="absolute top-0 bottom-8 left-0 flex flex-col w-12 justify-between items-end border-r border-base-content  pr-1"
             >
                 <span>100%</span>
                 <span>75%</span>

@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { get, apiEndpoint } from '@placeos/ts-client';
 
 import { VERSION } from '../../environments/version';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import {
     ChangelogModalComponent,
     ChangelogModalData,
@@ -101,16 +101,16 @@ export interface PlaceServiceDetails {
         <section class="flex flex-wrap py-2">
             <ng-container *ngIf="api_details.length > 0; else empty_state">
                 <div
-                    class="bg-white dark:bg-neutral-700 rounded border border-gray-200 dark:border-neutral-500 m-2 min-w-[40%] flex-1 overflow-hidden"
+                    class="bg-base-100  rounded border border-base-200  m-2 min-w-[40%] flex-1 overflow-hidden"
                     *ngFor="let api of api_details"
                 >
                     <h3
-                        class="w-full px-4 py-2 mb-1 border-b border-gray-200 dark:border-neutral-500 mono"
+                        class="w-full px-4 py-2 mb-1 border-b border-base-200  mono"
                     >
                         {{ api.service }}
                     </h3>
                     <div
-                        class="flex items-center px-4 py-1 hover:bg-gray-400/20"
+                        class="flex items-center px-4 py-1 hover:bg-base-200/20"
                     >
                         <label class="w-24">Commit Hash</label>
                         <code>
@@ -118,7 +118,7 @@ export interface PlaceServiceDetails {
                         </code>
                     </div>
                     <div
-                        class="flex items-center px-4 py-1 hover:bg-gray-400/20"
+                        class="flex items-center px-4 py-1 hover:bg-base-200/20"
                     >
                         <label class="w-24">Version</label>
                         <code>
@@ -126,7 +126,7 @@ export interface PlaceServiceDetails {
                         </code>
                     </div>
                     <div
-                        class="flex items-center px-4 py-1 hover:bg-gray-400/20"
+                        class="flex items-center px-4 py-1 hover:bg-base-200/20"
                     >
                         <label class="w-24">Build time</label>
                         <div class="text-sm">
@@ -134,7 +134,7 @@ export interface PlaceServiceDetails {
                         </div>
                     </div>
                     <div
-                        class="flex items-center px-4 py-1 hover:bg-gray-400/20 mb-1"
+                        class="flex items-center px-4 py-1 hover:bg-base-200/20 mb-1"
                     >
                         <label class="w-24">Platform</label>
                         <code>
@@ -146,9 +146,7 @@ export interface PlaceServiceDetails {
         </section>
         <ng-template #empty_state>
             <div class="w-full p-24 flex flex-col items-center justify-center">
-                <div
-                    class="p-4 border rounded-lg border-gray-200 dark:border-neutral-500 opacity-60"
-                >
+                <div class="p-4 border rounded-lg bg-base-200  opacity-60">
                     No API service details available.
                 </div>
             </div>

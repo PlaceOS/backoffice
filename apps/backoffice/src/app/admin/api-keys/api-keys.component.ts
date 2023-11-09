@@ -36,9 +36,9 @@ import { notifyInfo } from '../../common/notifications';
             </button>
             <div
                 *ngIf="last_key | async"
-                class="rounded shadow border border-gray-100 min-w-[24rem]"
+                class="rounded shadow border border-base-200 min-w-[24rem]"
             >
-                <div class="border-b px-2 pb-1 border-gray-200 !w-full">
+                <div class="border-b px-2 pb-1 bg-base-200 !w-full">
                     <label class="p-0 m-0">
                         Last API Key Details ({{
                             (last_key | async)?.name || 'Unanamed API Key'
@@ -74,7 +74,7 @@ import { notifyInfo } from '../../common/notifications';
                     <div class="flex-1 p-2">{{ item.description }}</div>
                     <div class="w-32 p-2 truncate">
                         <span
-                            class="m-1 px-2 py-1 bg-gray-400 rounded text-xs text-white"
+                            class="m-1 px-2 py-1 bg-base-200 rounded text-xs text-base-100"
                             *ngFor="let scope of item.scopes"
                         >
                             {{ scope }}

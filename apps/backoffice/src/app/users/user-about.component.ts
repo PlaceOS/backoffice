@@ -8,7 +8,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
     template: `
         <section class="mb-4 space-y-2">
             <div class="flex items-center space-x-2" *ngIf="item?.created_at">
-                <label i18n="@@userCreatedAtLabel">Email:</label>
+                <label class="w-24" i18n="@@userCreatedAtLabel">Email:</label>
                 <div class="value">
                     <a [href]="'mailto:' + item?.email">{{ item?.email }}</a>
                 </div>
@@ -18,25 +18,27 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                 <div class="value">{{ item?.department }}</div>
             </div>
             <div class="flex items-center space-x-2" *ngIf="item?.created_at">
-                <label i18n="@@userCreatedAtLabel">Created:</label>
+                <label class="w-24" i18n="@@userCreatedAtLabel">Created:</label>
                 <div class="value">
                     {{ item?.created_at * 1000 | dateFrom }}
                 </div>
             </div>
             <div class="flex items-center space-x-2" *ngIf="item?.updated_at">
-                <label i18n="@userUpdatedAtLabel">Updated:</label>
+                <label class="w-24" i18n="@userUpdatedAtLabel">Updated:</label>
                 <div class="value">
                     {{ item?.updated_at * 1000 | dateFrom }}
                 </div>
             </div>
             <div class="flex items-center space-x-2" *ngIf="item?.authority_id">
-                <label i18n="@userUpdatedAtLabel">Authority ID:</label>
+                <label class="w-24" i18n="@userUpdatedAtLabel"
+                    >Authority ID:</label
+                >
                 <div class="value mono">
                     {{ item?.authority_id }}
                 </div>
             </div>
             <div class="flex items-center space-x-2" *ngIf="item?.groups">
-                <label class="my-1" for="groups" i18n="@@userGroupsLabel"
+                <label class="my-1 w-24" for="groups" i18n="@@userGroupsLabel"
                     >User Groups:</label
                 >
                 <div

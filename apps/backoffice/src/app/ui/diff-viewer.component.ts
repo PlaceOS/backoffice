@@ -9,14 +9,14 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { AsyncHandler } from '../common/base.class';
+import { AsyncHandler } from '../common/async-handler.class';
 import { BackofficeUsersService } from '../users/users.service';
 
 @Component({
     selector: 'diff-viewer',
     template: `
         <div
-            class="relative w-full h-[32rem] border border-gray-300 dark:border-gray-400 select-initial"
+            class="relative w-full h-[32rem] border border-gray-300  select-initial"
             editor
             (window:resize)="resizeEditor()"
             #editor

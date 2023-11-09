@@ -9,7 +9,7 @@ import {
     OnChanges,
 } from '@angular/core';
 import { Terminal } from 'xterm';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 
 @Component({
     selector: 'a-terminal',

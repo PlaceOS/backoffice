@@ -6,7 +6,7 @@ import {
     ViewChild,
 } from '@angular/core';
 import { ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR } from 'apps/backoffice/src/app/common/angular-animations';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { PlaceDebugService } from 'apps/backoffice/src/app/common/debug.service';
 import { eventToPoint } from 'apps/backoffice/src/app/common/general';
 import { Point } from 'apps/backoffice/src/app/common/types';
@@ -25,7 +25,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                 *ngIf="is_shown"
             >
                 <div
-                    class="relative overflow-hidden border border-gray-200 dark:border-neutral-500 bg-neutral-800 text-white shadow z-10 flex flex-col"
+                    class="relative overflow-hidden border border-base-200 bg-[#212121] text-white shadow z-10 flex flex-col"
                     content
                     #content
                     [@show]="is_shown ? 'show' : 'hide'"
@@ -62,7 +62,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                     ></div>
                     <div
                         actions
-                        class="absolute flex bg-neutral-700 rounded-3xl shadow bottom-2 right-2"
+                        class="absolute flex bg-[#212121] rounded-3xl shadow bottom-2 right-2"
                     >
                         <button btn icon (click)="toggleDebugPosition()">
                             <app-icon matTooltip="Toggle Position">{{
@@ -76,17 +76,21 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                                 >clear_all</app-icon
                             >
                         </button>
-                        <button btn icon (click)="clearBindings()">
-                            <app-icon
-                                className="backoffice-uninstall"
-                                matTooltip="Unbind Modules"
-                            ></app-icon>
+                        <button
+                            btn
+                            icon
+                            (click)="clearBindings()"
+                            matTooltip="Unbind Modules"
+                        >
+                            <app-icon>cancel_presentation</app-icon>
                         </button>
-                        <button btn icon (click)="close()">
-                            <app-icon
-                                className="backoffice-cross"
-                                matTooltip="Close Console"
-                            ></app-icon>
+                        <button
+                            btn
+                            icon
+                            (click)="close()"
+                            matTooltip="Close Console"
+                        >
+                            <app-icon>close</app-icon>
                         </button>
                     </div>
                 </div>

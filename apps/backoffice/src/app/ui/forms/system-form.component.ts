@@ -5,7 +5,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { EncryptionLevel, queryZones } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 import { TIMEZONES_IANA } from '../../common/timezones';
 

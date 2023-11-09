@@ -82,10 +82,10 @@ import { EdgeModalComponent } from './edge-modal.component';
             (click)="copyKey(item.x_api_key)"
             matRipple
             [matTooltip]="'Copy API Key for ' + item.name"
-            class="absolute flex rounded cursor-pointer items-center right-4 top-4 bg-white dark:bg-neutral-700 shadow border border-gray-200 dark:border-neutral-500 max-w-[calc(100%-11rem)] overflow-hidden"
+            class="absolute flex rounded cursor-pointer items-center right-4 top-4 bg-base-100  shadow border border-base-200  max-w-[calc(100%-11rem)] overflow-hidden"
         >
             <div
-                class="p-2 flex-1 w-1/2 flex h-full items-center border-r border-gray-200 dark:border-neutral-500 "
+                class="p-2 flex-1 w-1/2 flex h-full items-center border-r border-base-200  "
             >
                 <code class="flex-1 truncate">{{ item.x_api_key }}</code>
             </div>

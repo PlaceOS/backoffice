@@ -26,7 +26,7 @@ import {
 } from '../overlays/duplicate-modal/duplicate-modal.component';
 import { QueryResponse } from '@placeos/ts-client/dist/esm/resources/functions';
 import { log } from './general';
-import { AsyncHandler } from './base.class';
+import { AsyncHandler } from './async-handler.class';
 import {
     EncryptionLevel,
     PlaceSettings,

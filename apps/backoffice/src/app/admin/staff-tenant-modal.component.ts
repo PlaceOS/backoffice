@@ -233,7 +233,7 @@ export interface StaffTenantModalData {
         </main>
         <footer
             *ngIf="!loading"
-            class="p-2 border-t border-gray-200 flex justify-center"
+            class="p-2 border-t border-base-200 flex justify-center"
         >
             <button btn class="w-32" (click)="save()">Save</button>
         </footer>

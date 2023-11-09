@@ -3,7 +3,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 
 import { PlaceDomain } from '@placeos/ts-client';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
 import { DomainStateService } from './domain-state.service';
 import { notifySuccess } from '../common/notifications';

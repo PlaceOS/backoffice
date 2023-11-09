@@ -41,19 +41,22 @@ export interface PlaceClusterUsageStamp {
             <div basic-line-graph [points]="points"></div>
         </div>
         <div class="memory-utilisation">
-            <div class="flex items-center space-x-2 p-2">
-                <label i18n="@@cluserMemoryUsed">Memory Used</label>
-                <div class="value">
-                    {{ used_memory }} / {{ total_memory }} ({{
-                        memory_percentage.toFixed(2)
-                    }}%)
+            <div
+                class="flex items-center justify-between space-x-2 p-2 text-left"
+            >
+                <label i18n="@@cluserMemoryUsed" class="w-28">
+                    Memory Used
+                </label>
+                <div class="value flex-1 text-right flex space-x-2">
+                    <code>{{ used_memory }} / {{ total_memory }}</code>
+                    <code> {{ memory_percentage.toFixed(2) }}% </code>
                 </div>
             </div>
             <div
-                class="flex items-center space-x-2 bg-black bg-opacity-5 rounded p-2"
+                class="flex items-center justify-between space-x-2 bg-base-200 rounded p-2 text-left"
             >
-                <label i18n="@@clusterCpuUsage">CPU Usage</label>
-                <div class="value">{{ node?.total_cpu }}%</div>
+                <label i18n="@@clusterCpuUsage" class="w-28">CPU Usage</label>
+                <code> {{ node?.total_cpu }}% </code>
             </div>
         </div>
     `,

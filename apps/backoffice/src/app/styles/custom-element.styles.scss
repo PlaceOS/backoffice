@@ -4,12 +4,68 @@
     }
 }
 
-#placeos .dark {
-    color: #fff;
+.font-heading {
+    font-family: 'Young' 'Roboto', sans-serif;
+    font-weight: 500;
 }
 
 .mdc-tab-body-wrapper {
     flex-grow: 1;
+}
+
+form {
+    label[for] {
+        font-size: 0.8em;
+        font-weight: 500;
+        margin: 0.5em 0;
+
+        &.error {
+            color: var(--error);
+        }
+
+        > span:not(.mat-checkbox-label) {
+            color: var(--pending);
+        }
+    }
+
+    .fieldset {
+        display: flex;
+        flex-wrap: wrap;
+
+        > * + * {
+            margin-left: 0.5rem;
+        }
+    }
+
+    .field {
+        position: relative;
+        display: flex;
+        flex: 1 1 0%;
+        flex-direction: column;
+        width: 100%;
+        min-width: 20%;
+
+        > * + * {
+            margin-bottom: 0.25rem;
+        }
+    }
+
+    .field div.error {
+        position: absolute;
+        bottom: 0.5rem;
+        left: 1rem;
+        color: var(--error);
+        font-size: 0.75rem;
+        font-weight: 400;
+    }
+
+    settings-form-field {
+        margin-bottom: 1.5em;
+    }
+
+    mat-checkbox {
+        margin: 0.25em;
+    }
 }
 
 .panel {
@@ -75,7 +131,7 @@
         align-items: center;
         padding: 0.5em 1em;
         width: 100%;
-        @apply border-b border-gray-200 dark:border-neutral-500;
+        border-bottom: 1px solid var(--b2);
 
         h1,
         h2,
@@ -128,15 +184,9 @@
 }
 
 mat-form-field {
-    &.no-subtext {
-        .mat-mdc-form-field-subscript-wrapper {
-            display: none;
-        }
-    }
-
     &.mdc-form-field-appearance-outline.mdc-focused {
         .mdc-form-field-outline-thick {
-            color: var(--primary);
+            color: var(--p);
         }
     }
 
@@ -159,6 +209,18 @@ mat-form-field {
     }
 }
 
+custom-table {
+    .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+    }
+}
+
+mat-form-field {
+    &.no-subscript .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+    }
+}
+
 .mdc-form-field-infix {
     border-top: none;
 }
@@ -167,7 +229,7 @@ mat-form-field {
     .mdc-option {
         &.mdc-selected {
             &:not(.mdc-option-disabled) {
-                color: var(--primary);
+                color: var(--p);
             }
         }
     }
@@ -190,15 +252,15 @@ mat-select {
 
 .mdc-snack-bar-container {
     &.success {
-        background-color: var(--success);
+        background-color: var(--su);
         color: #fff;
     }
     &.warn {
-        background-color: var(--pending);
+        background-color: var(--wa);
         color: #fff;
     }
     &.error {
-        background-color: var(--error);
+        background-color: var(--er);
         color: #fff;
     }
     &.info {
@@ -254,29 +316,13 @@ mat-select {
     }
 }
 
-.dark {
-    .mdc-form-field {
-        &[overlay],
-        &[overlay]:hover {
-            .mdc-form-field-outline {
-                background-color: #262626;
-                border-radius: 4px;
-            }
+.mdc-form-field {
+    &[overlay],
+    &[overlay]:hover {
+        .mdc-form-field-outline {
+            background-color: var(--n);
+            border-radius: 4px;
         }
-    }
-
-    mat-select {
-        .mat-mdc-select-placeholder {
-            color: rgba(#fff, 0.3);
-        }
-
-        .mat-mdc-select-value-text {
-            color: #fff;
-        }
-    }
-
-    mat-expansion-panel-header * {
-        color: #fff;
     }
 }
 
@@ -293,18 +339,18 @@ mat-slider {
     }
 
     .mdc-slider-thumb {
-        background-color: var(--primary);
+        background-color: var(--p);
     }
 
     .mdc-slider-track-fill {
-        background-color: var(--primary);
+        background-color: var(--p);
     }
 }
 
 mat-form-field {
     &.mdc-form-field-appearance-outline.mdc-focused {
         .mdc-form-field-outline-thick {
-            color: var(--primary);
+            color: var(--p);
         }
     }
 }
@@ -331,28 +377,28 @@ mat-form-field {
 }
 
 .mdc-button-toggle-button[aria-pressed='true'] {
-    background-color: var(--primary);
-    color: var(--font-light);
+    background-color: var(--p);
+    color: var(--pc);
 }
 
 .mdc-chip.mdc-standard-chip {
     &.mdc-primary {
-        color: var(--primary);
+        color: var(--p);
     }
     &.mdc-accent {
-        background-color: var(--pending);
+        background-color: var(--wa);
     }
 }
 
 .mdc-spinner {
     circle {
-        stroke: var(--primary);
+        stroke: var(--p);
     }
 }
 
 .mdc-progress-bar-fill {
     &::after {
-        background-color: var(--primary);
+        background-color: var(--p);
     }
 }
 
@@ -382,10 +428,10 @@ div.mdc-menu-panel {
 
 a-date-picker {
     .date.active {
-        background-color: var(--primary) !important;
+        background-color: var(--p) !important;
     }
     .dot {
-        background-color: var(--primary) !important;
+        background-color: var(--p) !important;
     }
 }
 
@@ -399,8 +445,8 @@ a-date-picker {
         width: 12px;
         transform: rotate(45deg);
         transition: transform 200ms, top 200ms;
-        border-bottom: 3px solid #000;
-        border-right: 3px solid #000;
+        border-bottom: 3px solid var(--bc);
+        border-right: 3px solid var(--bc);
     }
 
     &.upside {
@@ -468,13 +514,13 @@ form {
 custom-table[asset-requests],
 custom-table[purchase-orders] {
     cdk-row {
-        background-color: #fff;
+        background-color: var(--b1);
         [cdk-cell]:not(:first-child) {
-            border-left: 1px solid #ccc;
+            border-left: 1px solid var(--b2);
         }
     }
     cdk-header-row {
-        background: #eee !important;
+        background: var(--b3) !important;
         [cdk-header-cell] {
             background: none;
         }
@@ -508,63 +554,20 @@ custom-table[asset-view] {
 
 custom-table[header-dark] {
     cdk-header-row {
-        background: #263238 !important;
-        color: #fff;
+        background: var(--n) !important;
+        color: var(--nc);
         [cdk-header-cell] {
             background: none;
         }
     }
 }
 
-.dark {
-    button[mat-button].mat-button,
-    a[button] {
-        background-color: var(--placeos-pink);
-        border: 1px solid var(--placeos-pink);
-
-        &.inverse {
-            color: #fff;
-        }
-    }
-}
-
-button[mat-button].mat-button,
-a[button] {
-    background-color: var(--primary);
-    border: 1px solid var(--primary);
-    color: var(--font-light);
-    font-weight: 400;
-    border-radius: 4px;
-
-    &.inverse {
-        background: none;
-        color: #000;
-    }
-
-    &.clear {
-        background: none;
-        border: none;
-        color: inherit;
-    }
-
-    &:focus {
-        outline: none;
-    }
-
-    &[disabled] {
-        background-color: rgba(#000, 0.12);
-        color: rgba(#000, 0.2);
-        border-color: rgba(#000, 0.2);
-        pointer-events: none;
-    }
-}
-
 button[btn]:not([icon]),
 a[btn] {
-    --color: var(--primary);
+    --color: var(--s);
     background-color: var(--color);
     border: 1px solid var(--color);
-    color: var(--font-light);
+    color: var(--sc);
     font-size: 1rem;
     min-height: 2.75em;
     padding: 0 1em;
@@ -573,43 +576,37 @@ a[btn] {
     justify-content: center;
     border-radius: 0.25rem;
 
+    &.success {
+        --color: var(--su);
+    }
+
+    &.clear {
+        background: none;
+        border: none;
+        color: var(--bc);
+    }
+
+    &.error {
+        --color: var(--er);
+        color: var(--erc);
+    }
+
+    &.black {
+        --color: var(--bc);
+    }
+
     &.inverse {
         background: none;
         color: var(--color);
         border-color: currentColor;
     }
 
-    &.success {
-        --color: var(--success);
-    }
-
-    &.clear {
-        background: none;
-        border: none;
-        color: var(--font-dark);
-    }
-
-    &.error {
-        --color: var(--error);
-    }
-
-    &.black {
-        --color: #000;
-    }
-
     &[disabled] {
-        background-color: #ccc;
-        --color: #000;
-        border-color: rgba(#000, 0.1);
+        background-color: var(--n);
+        color: var(--nc);
+        border-color: var(--n);
         pointer-events: none;
         opacity: 0.3;
-    }
-}
-
-.dark {
-    button[btn]:not([icon]),
-    a[btn] {
-        --color: #c52b67;
     }
 }
 
@@ -642,37 +639,9 @@ a[icon] {
     }
 }
 
-a.underline {
-    &:hover {
-        @apply text-blue-700;
-        font-weight: 500;
-    }
-}
-.dark a.underline {
-    &:hover {
-        @apply text-blue-500;
-    }
-}
-
-button.btn icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 2.5rem;
-    width: 2.5rem;
-
-    &:focus {
-        outline: none;
-    }
-
-    .mat-button-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    app-icon {
-        font-size: 1.5rem;
+.white {
+    .mdc-text-field {
+        background: #fff;
     }
 }
 
@@ -682,7 +651,7 @@ button.btn icon {
     }
 
     .mat-mdc-tab-list {
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid var(--b2);
     }
 
     .mat-mdc-form-field-infix {
@@ -725,45 +694,72 @@ button.btn icon {
     }
 
     mat-pseudo-checkbox.mdc-pseudo-checkbox-checked {
-        background: var(--primary);
+        background: var(--p);
     }
 
-    .mdc-checkbox-inner-container {
-        margin-left: 8px;
+    mat-checkbox {
+        .mdc-checkbox__background {
+            border-color: var(--n);
+            svg {
+                color: var(--inc);
+            }
+        }
+
+        .mdc-label {
+            font-weight: normal;
+            margin: 0;
+        }
+
+        &.mat-mdc-checkbox-checked,
+        &[ng-reflect-indeterminate='true'] {
+            .mdc-checkbox__background {
+                border-color: var(--in);
+                background-color: var(--in);
+            }
+        }
     }
-    .mdc-checkbox-checked .mdc-checkbox-background {
-        background-color: var(--primary);
+
+    .mdc-tab__text-label {
+        color: var(--bc);
+    }
+
+    .mdc-tab-indicator__content {
+        border-color: var(--s);
+    }
+
+    [aria-selected='true'] {
+        .mdc-tab__text-label {
+            color: var(--s);
+        }
+    }
+
+    .mat-mdc-paginator {
+        background-color: var(--b2);
+        color: var(--bc);
+
+        .mat-mdc-button-base * {
+            color: var(--bc);
+            border-color: var(--bc);
+            fill: var(--bc);
+        }
     }
 
     .mdc-button__label {
         color: inherit;
     }
 
-    .mdc-checkbox-label {
-        font-weight: normal;
-    }
-
-    .mdc-radio-checked {
-        .mdc-radio-outer-circle {
-            border-color: var(--primary);
-        }
-        .mdc-radio-inner-circle {
-            background-color: var(--primary);
-        }
-    }
-
     .mdc-ink-bar {
-        background-color: var(--primary);
+        background-color: var(--p);
     }
 
     mat-chip {
         &[color='internal'] {
-            color: var(--font-light);
-            background-color: var(--primary);
+            color: var(--pc);
+            background-color: var(--p);
         }
         &[color='external'] {
-            color: var(--font-light);
-            background-color: var(--pending);
+            color: var(--wac);
+            background-color: var(--wa);
         }
     }
 
@@ -797,240 +793,310 @@ button.btn icon {
         .mdc-list-item__primary-text {
             display: flex;
             align-items: center;
-            width: 100%;
         }
     }
 
-    .dark,
-    [dark] {
-        .mat-mdc-checkbox {
-            .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate):not([data-indeterminate='true'])
-                ~ .mdc-checkbox__background {
-                border-color: #fff8;
-            }
+    mat-tab-group {
+        .mdc-tab-label-container {
+            background-color: var(--n);
+        }
+        .mdc-tab-label-content {
+            color: var(--bc);
+        }
+    }
 
-            .mdc-label {
-                color: #fff;
-            }
+    .mdc-datepicker-toggle button {
+        color: var(--bc);
+    }
+
+    nav {
+        .mdc-tab-links {
+            background-color: var(--b2);
+        }
+        .mdc-tab-link {
+            color: var(--bc);
+        }
+    }
+
+    .mdc-select-value-text,
+    .mdc-select-arrow {
+        color: var(--b1);
+    }
+
+    .mdc-form-field-outline > div {
+        color: var(--b2);
+    }
+
+    .mdc-form-field {
+        ::placeholder,
+        .mdc-select-placeholder {
+            color: var(--b2);
+        }
+    }
+
+    button.mdc-button,
+    a[button] {
+        color: var(--bc);
+
+        &.inverse {
+            background: none;
+            --color: var(--b1);
         }
 
-        mat-tab-group {
-            .mdc-tab-label-container {
-                @apply bg-gray-900;
-            }
-            .mdc-tab-label-content {
-                @apply text-white;
-            }
+        &.error {
+            --color: var(--er);
         }
 
-        mat-expansion-panel-header {
-            color: #fff;
-            background-color: #424242;
+        &[disabled] {
+            opacity: 0.3;
         }
+    }
 
-        mat-card {
-            background-color: #424242;
-        }
+    .mdc-slide-toggle-bar {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .mdc-checked .mdc-slide-toggle-bar {
+        background-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .mdc-menu-surface {
+        background-color: var(--b1);
 
         .mdc-list-item__primary-text {
-            @apply text-white;
+            color: var(--bc);
         }
 
-        .mdc-datepicker-toggle button {
-            color: #fff;
-        }
-
-        nav {
-            .mdc-tab-links {
-                @apply bg-gray-900;
-            }
-            .mdc-tab-link {
-                @apply text-white;
+        .mdc-list-item--selected {
+            .mdc-list-item__primary-text {
+                color: var(--s);
             }
         }
+    }
 
-        .mdc-select-value-text,
-        .mdc-select-arrow {
-            color: #fff;
+    mat-pseudo-checkbox {
+        color: var(--bc);
+        border-color: var(--n);
+        &::after {
+            color: var(--bc);
         }
 
-        .mdc-form-field-outline > div {
-            color: #fff8;
+        &.mat-pseudo-checkbox-checked {
+            border-color: var(--s);
+            background-color: var(--s);
+            color: var(--sc);
+        }
+    }
+
+    .mdc-menu-item {
+        color: var(--bc);
+        &:hover {
+            background-color: var(--b3);
         }
 
-        .mdc-form-field {
-            ::placeholder,
-            .mdc-select-placeholder {
-                color: #fff8;
+        mat-pseudo-checkbox {
+            color: var(--s);
+            background-color: none;
+            border-color: none;
+            &::after {
+                color: var(--s);
             }
         }
+    }
 
-        input::placehover {
-            color: #fffa;
-        }
-
-        button.mdc-button,
-        a[button] {
-            color: #fff;
-
-            &.inverse {
-                background: none;
-                --color: #fffa;
-            }
-
-            &.error {
-                --color: var(--error);
-            }
-
-            &[disabled] {
-                opacity: 0.3;
+    .mat-mdc-option {
+        mat-pseudo-checkbox {
+            color: var(--s);
+            background-color: #0000;
+            border-color: #0000;
+            &::after {
+                color: var(--s);
             }
         }
+    }
 
-        .mdc-slide-toggle-bar {
-            background-color: rgba(255, 255, 255, 0.2);
+    custom-table[asset-requests],
+    custom-table[purchase-orders] {
+        cdk-row {
+            background: none;
+            [cdk-cell]:not(:first-child) {
+                border-left: 1px solid var(--b2);
+            }
         }
+    }
+    mat-dialog-container,
+    .mdc-dialog__surface {
+        background-color: var(--b1);
+        color: var(--bc);
+    }
 
-        .mdc-checked .mdc-slide-toggle-bar {
-            background-color: rgba(255, 255, 255, 0.4);
+    .mdc-label {
+        color: var(--bc);
+    }
+
+    mat-bottom-sheet-container {
+        background-color: var(--b1);
+        color: var(--bc);
+    }
+
+    .mdc-paginator {
+        background-color: inherit;
+        color: inherit;
+    }
+
+    mat-spinner {
+        svg {
+            stroke: var(--s);
         }
+    }
 
-        .mdc-menu-item {
+    .mdc-radio-outer-circle,
+    .mdc-radio__outer-circle {
+        border-color: var(--b3);
+    }
+
+    .mdc-radio-checked,
+    .mat-mdc-radio-checked {
+        .mdc-radio-outer-circle,
+        .mdc-radio__outer-circle {
+            border-color: var(--s);
+        }
+        .mdc-radio-inner-circle,
+        .mdc-radio__inner-circle {
+            border-color: var(--s);
+        }
+    }
+
+    .mat-mdc-select-value,
+    .mat-mdc-select-arrow {
+        color: var(--bc);
+    }
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__trailing {
+        border-color: var(--n);
+    }
+
+    .mdc-text-field__input {
+        color: var(--bc);
+    }
+
+    .mdc-text-field--focused {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__trailing {
+            border-color: var(--s);
+        }
+    }
+
+    .mdc-autocomplete-panel {
+        background-color: var(--n);
+    }
+
+    .mdc-ink-bar {
+        background-color: var(--bc);
+    }
+
+    .ql-toolbar {
+        .ql-stroke {
+            stroke: var(--n);
+        }
+        .ql-picker-label::before {
+            color: var(--bc);
+        }
+    }
+    .ql-blank::before {
+        color: var(--n);
+    }
+
+    .mdc-menu-panel,
+    .mdc-select-panel {
+        background-color: var(--n);
+    }
+
+    .mdc-option-text {
+        color: var(--bc);
+    }
+
+    mat-option.mdc-active {
+        background-color: var(--b1);
+    }
+
+    .mdc-active .mdc-option-text {
+        color: var(--s);
+    }
+
+    .mdc-option:hover {
+        background-color: var(--sc);
+    }
+
+    bootstrap,
+    [app-bootstrap] {
+        background-color: var(--n);
+    }
+
+    mat-snack-bar-container {
+        button.mdc-button {
             color: inherit;
-            &:hover {
-                background-color: #fff2;
-            }
         }
-
-        custom-table[asset-requests],
-        custom-table[purchase-orders] {
-            cdk-row {
-                background: none;
-                [cdk-cell]:not(:first-child) {
-                    border-left: 1px solid #737373;
-                }
-            }
-        }
-        .mat-mdc-dialog-surface,
-        .mat-mdc-menu-content,
-        .mat-mdc-select-panel {
-            background-color: #404040;
-            color: #fff;
-        }
-
-        mat-bottom-sheet-container {
-            background-color: #404040;
-            color: #fff;
-        }
-
-        .mdc-paginator {
-            background-color: inherit;
+        .mdc-snackbar__label {
             color: inherit;
         }
-
-        .mdc-spinner {
-            circle {
-                stroke: var(--secondary);
+        &.success {
+            .mdc-snackbar__surface {
+                background-color: var(--su);
+                color: var(--suc);
             }
         }
-
-        mat-pseudo-checkbox.mdc-pseudo-checkbox-checked {
-            background: var(--secondary);
-        }
-
-        .mdc-checkbox-checkmark {
-            fill: #000a;
-        }
-        .mdc-checkbox-checked {
-            .mdc-checkbox-background {
-                background-color: #fff;
-            }
-
-            .mdc-checkbox-mixedmark {
-                background-color: #000a;
-            }
-
-            .mdc-checkbox-checkmark-path {
-                stroke: #000a !important;
+        &.info {
+            .mdc-snackbar__surface {
+                background-color: var(--in);
+                color: var(--inc);
             }
         }
-
-        .mdc-checkbox-frame {
-            border-color: #fff6;
-        }
-
-        .mdc-radio-outer-circle {
-            border-color: #fff4;
-        }
-
-        .mdc-radio-checked {
-            .mdc-radio-outer-circle {
-                border-color: #fff;
-            }
-            .mdc-radio-inner-circle {
-                background-color: #fff;
+        &.error {
+            .mdc-snackbar__surface {
+                background-color: var(--er);
+                color: var(--erc);
             }
         }
-
-        .mdc-autocomplete-panel {
-            @apply bg-neutral-700;
-        }
-
-        .mdc-ink-bar {
-            background-color: #fff;
-        }
-
-        .ql-toolbar {
-            .ql-stroke {
-                stroke: #eee;
-            }
-            .ql-picker-label::before {
-                color: #fff;
+        &.warning,
+        &.warn,
+        &.pending {
+            .mdc-snackbar__surface {
+                background-color: var(--wa);
+                color: var(--wac);
             }
         }
-        .ql-blank::before {
-            color: #fff8;
-        }
+    }
 
-        .mdc-menu-panel,
-        .mdc-select-panel {
-            @apply bg-neutral-800;
-        }
+    [mat-menu-item]:hover {
+        background-color: var(--b2);
+    }
 
-        .mdc-option-text {
-            @apply text-white;
-        }
-
-        mat-option.mdc-active {
-            @apply bg-white/5;
-        }
-
-        .mdc-active .mdc-option-text {
-            @apply text-blue-500;
-        }
-
-        .mdc-option:hover {
-            @apply bg-white/10;
-        }
-
-        bootstrap,
-        [app-bootstrap] {
-            @apply bg-neutral-600;
-        }
+    [mat-menu-item] span {
+        display: flex;
+        align-items: center;
+        width: full;
+        @apply space-x-2;
     }
 }
 
 .markdown {
     h1 {
-        @apply text-2xl mt-2 mb-4 font-medium;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
     }
     h2,
     h3 {
-        @apply text-xl mb-2;
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
     }
     ul {
         list-style: initial;
-        @apply pl-6 mb-2;
+        padding-left: 1.5rem;
+        margin-bottom: 0.5rem;
     }
 }
 
@@ -1038,105 +1104,22 @@ mat-list-option.mdc-list-item--selected {
     border-right: 3px solid rgba(#212121, 0.85);
 }
 
+#placeos .sv-question {
+    overflow-x: hidden;
+}
+
 .ct-label {
-    color: #000;
-}
-#placeos .dark .ct-label {
-    color: white;
+    color: var(--bc);
 }
 
-#placeos .dark {
-    .mat-mdc-form-field {
-        &[overlay],
-        &[overlay]:hover {
-            .mdc-form-field-outline {
-                background-color: #262626;
-                border-radius: 4px;
-            }
-        }
-
-        .mdc-notched-outline > * {
-            border-color: #fff5;
-        }
-
-        input,
-        textarea {
-            color: #fff;
-        }
-
-        input::placeholder,
-        textarea::placeholder {
-            color: #fff5;
-        }
-    }
-
-    mat-tab-group,
-    .mat-mdc-tab-nav-bar {
-        .mdc-tab__text-label,
-        .mat-mdc-tab-header-pagination,
-        .mat-mdc-tab-header-pagination-chevron {
-            color: #fff8;
-            border-color: #fff;
-        }
-        .mdc-tab-indicator--active .mdc-tab__text-label,
-        .mdc-tab-indicator__content--underline {
-            @apply text-pink;
-        }
-    }
+.progress-bar {
+    width: 100%;
+    border-radius: 5px;
 }
-form {
-    label[for] {
-        font-size: 0.8em;
-        font-weight: 500;
-        margin: 0.5em 0;
 
-        &.error {
-            color: var(--error);
-        }
-
-        > span:not(.mat-checkbox-label) {
-            color: var(--pending);
-        }
-    }
-
-    .fieldset {
-        display: flex;
-        flex-wrap: wrap;
-
-        > * + * {
-            margin-left: 0.5rem;
-        }
-    }
-
-    .field {
-        position: relative;
-        display: flex;
-        flex: 1 1 0%;
-        flex-direction: column;
-        width: 100%;
-        min-width: 20%;
-
-        > * + * {
-            margin-bottom: 0.25rem;
-        }
-    }
-
-    .field div.error {
-        position: absolute;
-        bottom: 0.5rem;
-        left: 1rem;
-        color: var(--error);
-        font-size: 0.75rem;
-        font-weight: 400;
-    }
-
-    settings-form-field {
-        margin-bottom: 1.5em;
-    }
-
-    mat-checkbox {
-        margin: 0.25em;
-    }
+.progress-bar-fill {
+    display: block;
+    border-radius: 5px;
 }
 
 [role='table'] {
@@ -1144,17 +1127,35 @@ form {
 }
 
 [table-head] {
-    @apply sticky top-0 z-50 flex items-center bg-gray-300 border-b border-black divide-x divide-gray-400 font-medium;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    background-color: var(--b3);
+    border: 1px solid var(--n);
+    @apply divide-x divide-neutral font-medium;
 
     > div {
-        @apply flex items-center;
+        display: flex;
+        align-items: center;
         height: 2.75rem;
     }
 }
 
+[role='table'] [body],
+[table-body] {
+    @apply border border-neutral;
+    border-top: none;
+}
+
 [table-row] {
-    @apply flex items-center border-b border-gray-300 divide-x divide-gray-300 hover:bg-gray-100;
+    @apply flex items-center border-b border-neutral divide-x divide-neutral hover:bg-base-200;
     height: 3.25rem;
+
+    &:last-child {
+        border-bottom: none;
+    }
 
     > div {
         @apply flex items-center overflow-hidden;
@@ -1165,13 +1166,6 @@ form {
     }
 }
 
-#placeos .dark-mode [table-head],
-#placeos .dark [table-head],
-#placeos.dark [table-head] {
-    @apply bg-gray-600 border-gray-300;
-}
-
-.dark-mode [table-row],
-.dark [table-row] {
-    @apply hover:bg-opacity-10;
+.info-block {
+    @apply w-full p-16 flex flex-col items-center justify-center opacity-30;
 }

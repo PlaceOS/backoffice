@@ -13,9 +13,9 @@ const SYSTEMS = {};
 @Component({
     selector: 'mqtt-dashboard',
     template: `
-        <div class="h-full w-full bg-white dark:bg-[#424242] flex flex-col">
+        <div class="h-full w-full bg-base-100 [#424242] flex flex-col">
             <div
-                class="w-full px-4 py-2 bg-secondary flex items-center justify-between text-white"
+                class="w-full px-4 py-2 bg-secondary flex items-center justify-between text-base-100"
             >
                 <h2 class="text-2xl">PlaceOS Alerts</h2>
                 <div class="flex items-center space-x-2">
@@ -30,19 +30,19 @@ const SYSTEMS = {};
             </div>
             <div class="w-full h-1/2 flex-1 overflow-auto p-4 space-y-4">
                 <div
-                    class="divide-y divide-white/50 border border-white/50"
+                    class="divide-y divide-base-100/50 border border-base-100/50"
                     *ngFor="let sys of systems | async"
                 >
-                    <div class="bg-[#212121] text-white p-2">
+                    <div class="bg-[#212121] text-base-100 p-2">
                         <h2 class="text-xl">
                             {{ sys.display_name || sys.name }} ({{ sys.id }})
                         </h2>
                     </div>
                     <div
                         *ngFor="let ev of sys.events"
-                        [class.bg-red-600]="!ev.value"
+                        [class.bg-error]="!ev.value"
                         [class.bg-teal-800]="ev.value"
-                        class="px-2 flex items-center text-white"
+                        class="px-2 flex items-center text-base-100"
                     >
                         <div class="w-1/6">{{ ev.mod }}</div>
                         <div class="flex-1">{{ ev.driver_id }}</div>

@@ -9,7 +9,7 @@ import {
 } from 'rxjs/operators';
 
 import { PlaceCluster, queryClusters } from '@placeos/ts-client';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 
 import { PlaceClusterUsageStamp } from './cluster-node.component';
@@ -43,8 +43,10 @@ import { interval } from 'rxjs';
                             <mat-card-actions>
                                 <button
                                     btn
+                                    matRipple
                                     (click)="active_cluster = cluster"
                                     i18n="@@viewClusterProcesses"
+                                    class="mx-2"
                                 >
                                     View Processes
                                 </button>
@@ -58,10 +60,7 @@ import { interval } from 'rxjs';
             <div
                 class="absolute inset-0 flex flex-col items-center p-8 space-y-2"
             >
-                <app-icon
-                    class="text-3xl"
-                    [icon]="{ class: 'backoffice-cross' }"
-                ></app-icon>
+                <app-icon class="text-3xl">close</app-icon>
                 <div class="text" i18n="@@clusterListEmpty">
                     No Cluster details to show
                 </div>

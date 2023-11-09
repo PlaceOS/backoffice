@@ -21,7 +21,7 @@ import {
     switchMap,
     tap,
 } from 'rxjs/operators';
-import { AsyncHandler } from '../../../common/base.class';
+import { AsyncHandler } from '../../../common/async-handler.class';
 import { ModuleLike } from './select-module.component';
 
 @Component({

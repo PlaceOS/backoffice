@@ -3,7 +3,7 @@ import { UntypedFormGroup } from '@angular/forms';
 import { PlaceZone, showZone, queryZones } from '@placeos/ts-client';
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { map } from 'rxjs/operators';
 import {
     addChipItem,

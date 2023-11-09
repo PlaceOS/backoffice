@@ -29,7 +29,7 @@ import { TriggerStateService } from './trigger-state.service';
                 <div table-row *ngFor="let item of instances | async">
                     <div class="w-12 flex items-center justify-center">
                         <div
-                            class="h-2 w-2 rounded-full bg-black"
+                            class="h-2 w-2 rounded-full bg-base-content"
                             [class.active]="item.bookable"
                         ></div>
                     </div>

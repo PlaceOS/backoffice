@@ -1,145 +1,286 @@
-@import 'material-design-icons/iconfont/material-icons.css';
 @import 'firacode/distr/fira_code.css';
 @import '../../custom/style.css';
 @import '../../custom/place-fonts.css';
+@import 'material-symbols';
+@import '@material-design-icons/font';
 
-* {
-    font-family: inherit;
-    box-sizing: border-box;
+:root {
+    /* Primary */
+    --p: hsl(336, 57%, 48%); /* #C52B67 */
+    --pf: hsl(336, 57%, 38%); /* Darker shade */
+    --pc: hsl(0, 0%, 100%); /* White content for contrast */
+
+    /* Secondary */
+    --s: hsl(237, 37%, 20%); /* #292F5B */
+    --sf: hsl(237, 37%, 10%); /* Darker shade */
+    --sc: hsl(0, 0%, 100%); /* White content for contrast */
+
+    /* Accent (Complementary color to Primary) */
+    --a: hsl(156, 57%, 48%); /* A contrasting greenish tone */
+    --af: hsl(156, 57%, 38%); /* Darker shade of the a */
+    --ac: hsl(0, 0%, 0%); /* Black content for contrast */
+
+    /* Neutral */
+    --n: hsl(0, 0%, 50%); /* Grey */
+    --nf: hsl(0, 0%, 40%); /* Darker Grey */
+    --nc: hsl(0, 0%, 100%); /* White content on grey background */
+
+    /* Base */
+    --b1: hsl(0, 0%, 98%); /* Near White */
+    --b2: hsl(0, 0%, 90%); /* Light Grey */
+    --b3: hsl(206, 23%, 85%); /* Mid Grey */
+    --bc: hsl(0, 0%, 0%); /* Black content on white background */
+
+    /* Info */
+    --in: hsla(217, 91%, 60%, 1); /* Light Blue */
+    --inl: hsla(214, 100%, 97%, 1); /* Light Blue */
+    --inc: hsl(0, 0%, 100%); /* White content on light blue background */
+
+    /* Success */
+    --su: hsla(118, 50%, 43%, 1); /* Light Green */
+    --sul: hsla(152, 81%, 96%, 1); /* Light Green */
+    --suc: hsl(0, 0%, 100%); /* White content on light green background */
+
+    /* Warning */
+    --wa: hsla(45, 100%, 64%, 1); /* Yellow */
+    --wal: hsla(48, 100%, 96%, 1); /* Yellow */
+    --wac: hsl(0, 0%, 0%); /* Black content on yellow background */
+
+    /* Error */
+    --er: hsla(354, 75%, 53%, 1); /* Red */
+    --erl: hsla(356, 100%, 97%, 1); /* Red */
+    --erc: hsl(0, 0%, 100%); /* White content on red background */
+}
+
+.theme-dark {
+    /* Primary */
+    --p: hsl(336, 57%, 48%); /* #C52B67 */
+    --pf: hsl(336, 57%, 38%); /* Darker shade */
+    --pc: hsl(0, 0%, 100%); /* White content for contrast */
+
+    --s: hsl(336, 57%, 48%); /* #C52B67 */
+    --sf: hsl(336, 57%, 38%); /* Darker shade */
+    --sc: hsl(0, 0%, 100%); /* White content for contrast */
+
+    /* Accent */
+    --a: hsl(156, 57%, 28%); /* Darker shade of complementary color */
+    --af: hsl(158, 17%, 9%); /* Even darker shade */
+    --ac: hsl(0, 0%, 80%); /* Lighter text for contrast */
+
+    /* Neutral */
+    --n: hsl(0, 0%, 20%); /* Dark Grey */
+    --nf: hsl(0, 0%, 15%); /* Even darker Grey */
+    --nc: hsl(0, 0%, 80%); /* Light grey text for contrast */
+
+    /* Base */
+    --b1: hsl(0, 0%, 10%); /* Near Black */
+    --b2: hsl(0, 0%, 15%); /* Dark Grey */
+    --b3: hsl(0, 0%, 20%); /* Mid-Dark Grey */
+    --bc: hsl(0, 0%, 80%); /* Light grey text for contrast */
+
+    /* Info */
+    --in: hsla(217, 91%, 60%, 1); /* Light Blue */
+    --inl: hsla(214, 100%, 97%, 1); /* Light Blue */
+    --inc: hsl(0, 0%, 100%); /* White content on light blue background */
+
+    /* Success */
+    --su: hsla(118, 50%, 43%, 1); /* Light Green */
+    --sul: hsla(152, 81%, 96%, 1); /* Light Green */
+    --suc: hsl(0, 0%, 100%); /* White content on light green background */
+
+    /* Warning */
+    --wa: hsla(45, 100%, 64%, 1); /* Yellow */
+    --wal: hsla(48, 100%, 96%, 1); /* Yellow */
+    --wac: hsl(0, 0%, 0%); /* Black content on yellow background */
+
+    /* Error */
+    --er: hsla(354, 75%, 53%, 1); /* Red */
+    --erl: hsla(356, 100%, 97%, 1); /* Red */
+    --erc: hsl(0, 0%, 100%); /* White content on red background */
+}
+
+@media screen {
+    .print-only {
+        display: none !important;
+    }
+}
+
+@media print {
+    .screen-only {
+        display: none !important;
+    }
+    html,
+    body {
+        position: relative;
+        width: 21cm;
+        min-height: 29.7cm;
+    }
 }
 
 html,
 body {
-    font-family: var(--font);
-    font-size: 16px;
-    @media screen and (max-width: 1024px) {
-        font-size: 16px;
-    }
-    @media screen and (max-width: 640px) {
-        font-size: 16px;
-    }
-}
-
-body.dark {
-    color: #fff;
-}
-
-app-root {
-    display: flex;
-    flex-direction: column;
     height: 100%;
     width: 100%;
-
-    > * {
-        width: 100%;
-    }
-
-    > main {
-        display: flex;
-        flex: 1;
-        min-height: 50%;
-
-        > * {
-            height: 100%;
-        }
-
-        > .content {
-            flex: 1;
-            min-width: 50%;
-        }
-    }
+    padding: 0;
+    margin: 0;
+    font-size: var(--font-size);
+    background-image: url("data:image/svg+xml,%3Csvg width='36' height='36' viewBox='0 0 36 36' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M36 0H0v36h36V0zM15.126 2H2v13.126c.367.094.714.24 1.032.428L15.554 3.032c-.188-.318-.334-.665-.428-1.032zM18 4.874V18H4.874c-.094-.367-.24-.714-.428-1.032L16.968 4.446c.318.188.665.334 1.032.428zM22.874 2h11.712L20 16.586V4.874c1.406-.362 2.512-1.468 2.874-2.874zm10.252 18H20v13.126c.367.094.714.24 1.032.428l12.522-12.522c-.188-.318-.334-.665-.428-1.032zM36 22.874V36H22.874c-.094-.367-.24-.714-.428-1.032l12.522-12.522c.318.188.665.334 1.032.428zm0-7.748V3.414L21.414 18h11.712c.362-1.406 1.468-2.512 2.874-2.874zm-18 18V21.414L3.414 36h11.712c.362-1.406 1.468-2.512 2.874-2.874zM4.874 20h11.712L2 34.586V22.874c1.406-.362 2.512-1.468 2.874-2.874z' fill='%23000000' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
 }
 
-.material-icons {
+body {
+    touch-action: pan-x pan-y;
+    background-color: var(--b1);
+    color: var(--bc);
+}
+
+* {
+    user-select: none;
+    font-family: var(--font);
+    box-sizing: border-box;
+}
+
+.material-icons,
+.material-symbols,
+.material-symbols-outlined {
     font-size: 1em;
 }
 
 span.highlight {
-    color: var(--primary);
+    color: var(--p);
 }
+
 .mono {
     font-family: 'Fira Code', monospace;
 }
 
-/*=======================*\
-||    Font size styles   ||
-\*=======================*/
+/*========================*\
+||   Application styles   ||
+\*========================*/
 
-.fs {
-    &-small {
-        font-size: 0.8rem;
+.i-block {
+    display: flex;
+    align-items: center;
+    justifyc: center;
+    flex-direction: column;
+    margin: 0.5em auto;
+    width: 100%;
+    min-height: 6em;
+
+    .icon {
+        display: flex;
+        align-items: center;
+        justifyc: center;
+        height: 1.2em;
+        width: 1.2em;
+        font-size: 2em;
+
+        a-spinner {
+            font-size: 0.25em;
+        }
     }
-    &-normal {
-        font-size: 1rem;
-    }
-    &-big {
-        font-size: 1.2rem;
-    }
-    &-large {
-        font-size: 1.5rem;
-    }
-}
 
-/*=======================*\
-||    Font size styles   ||
-\*=======================*/
-
-.info-block {
-    @apply flex flex-col items-center justify-center p-8 space-y-2;
-}
-
-/*=======================*\
-||      Media styles     ||
-\*=======================*/
-
-.not-mobile {
-    @media screen and (max-width: 640px) {
-        display: none !important;
+    .text {
+        margin: 0.5em;
+        text-align: center;
     }
 }
 
-.not-tablet {
-    @media screen and (max-width: 1024px) {
-        display: none !important;
+.center,
+[center] {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/*=====================*\
+||  TinyMCE overrides  ||
+\*=====================*/
+
+div.tox-silver-sink {
+    z-index: 9999;
+
+    .tox-notification {
+        display: none;
     }
 }
 
-.not-desktop {
-    @media screen and (min-width: 1025px) {
-        display: none !important;
+div.tox-editor-container {
+    .tox-menubar {
+        button:first-child {
+            display: none;
+        }
     }
 }
 
-.not-laptop {
-    @media screen and (max-width: 1280px) {
-        display: none !important;
+div.tox-tinymce {
+    @media screen and (max-width: 639px) {
+        min-height: 20em;
     }
 }
 
-.mobile-only {
-    display: none !important;
-    @media screen and (max-width: 640px) {
-        display: inherit !important;
+@keyframes crossfade {
+    0% {
+        background-color: #d32f2f;
+    }
+    20% {
+        background-color: #7b1fa2;
+    }
+    40% {
+        background-color: #1976d2;
+    }
+    60% {
+        background-color: #00796b;
+    }
+    80% {
+        background-color: #ff8f00;
+    }
+    100% {
+        background-color: #d32f2f;
     }
 }
 
-.tablet-only {
-    display: none !important;
-    @media screen and (max-width: 1024px) {
-        display: inherit !important;
+#placeos .mat-radio-labelc {
+    font-weight: normal;
+}
+
+#placeos .markdown {
+    ol {
+        list-style-type: decimal;
+        margin-left: 1.5rem;
+    }
+    ul {
+        list-style-type: disc;
+        margin-left: 1.5rem;
+    }
+
+    li {
+        margin-bottom: 0.25rem;
+    }
+
+    p:not(:last-child) {
+        margin-bottom: 0.75rem;
     }
 }
 
-.desktop-only {
-    display: none !important;
-    @media screen and (min-width: 1025px) {
-        display: inherit !important;
+#placeos .selectable {
+    user-select: auto;
+    p,
+    li,
+    code,
+    pre,
+    div {
+        user-select: text;
     }
 }
 
-.laptop-only {
-    display: none !important;
-    @media screen and (max-width: 1280px) {
-        display: inherit !important;
-    }
+.text-mono {
+    font-family: monospace;
+}
+
+.cdk-drag-preview {
+    background-color: var(--b1);
+    border: none;
+    border-radius: 4px;
+    @apply shadow;
 }

@@ -18,7 +18,7 @@ import {
     tap,
 } from 'rxjs/operators';
 import { calculateModuleIndex } from '../../../common/api';
-import { AsyncHandler } from '../../../common/base.class';
+import { AsyncHandler } from '../../../common/async-handler.class';
 
 export interface ModuleLike {
     id: string;

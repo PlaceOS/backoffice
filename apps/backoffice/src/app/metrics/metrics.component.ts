@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { authority } from '@placeos/ts-client';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { SettingsService } from '../common/settings.service';
 
 @Component({
     selector: 'app-metrics',
     template: `
         <div
-            class="h-full w-full flex flex-col bg-gray-700"
+            class="h-full w-full flex flex-col bg-neutral"
             [class.fullscreen]="fullscreen"
         >
             <div
-                class="flex items-center w-full bg-primary text-white py-2 px-4 border-b border-gray-400"
+                class="flex items-center w-full bg-secondary text-base-100 py-2 px-4 border-b border-gray-400"
             >
                 <div class="text-2xl flex-1 font-medium" i18n="@@metricsHeader">
                     Metrics

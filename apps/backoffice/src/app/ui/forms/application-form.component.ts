@@ -1,7 +1,7 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
-import { AsyncHandler } from '../../common/base.class';
+import { AsyncHandler } from '../../common/async-handler.class';
 
 import { Md5 } from 'ts-md5';
 

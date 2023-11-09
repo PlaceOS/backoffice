@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { copyToClipboard } from 'apps/backoffice/src/app/common/general';
 import { notifyInfo } from 'apps/backoffice/src/app/common/notifications';
 import { SettingsService } from 'apps/backoffice/src/app/common/settings.service';
@@ -13,9 +13,9 @@ import { UploadsService } from '../common/uploads.service';
         <div
             *ngIf="show"
             upload-list
-            class="absolute bottom-2 left-2 rounded overflow-hidden bg-white border border-gray-200 text-sm text-black shadow pointer-events-auto"
+            class="absolute bottom-2 left-2 rounded overflow-hidden bg-base-100 border border-base-200 text-sm text-base-content shadow pointer-events-auto"
         >
-            <div class="flex items-center bg-gray-700 text-white">
+            <div class="flex items-center bg-neutral text-base-100">
                 <div class="flex-1 px-4">
                     Uploads({{ (uploads | async)?.length || '0' }})
                 </div>
@@ -36,7 +36,7 @@ import { UploadsService } from '../common/uploads.service';
                     <li
                         upload-file
                         *ngFor="let item of uploads | async"
-                        class="my-1 h-12 hover:bg-gray-200"
+                        class="my-1 h-12 hover:bg-base-200"
                         [class.error]="item.error"
                     >
                         <div
@@ -72,12 +72,12 @@ import { UploadsService } from '../common/uploads.service';
                             <app-icon
                                 *ngIf="item.progress >= 100 && !item.error"
                                 className="backoffice-check"
-                                class="bg-success text-white rounded-full"
+                                class="bg-success text-base-100 rounded-full"
                             ></app-icon>
                             <app-icon
                                 *ngIf="item.error"
                                 className="backoffice-cross"
-                                class="bg-error text-white rounded-full"
+                                class="bg-error text-base-100 rounded-full"
                                 [matTooltip]="item.error"
                             ></app-icon>
                         </div>
@@ -97,7 +97,7 @@ import { UploadsService } from '../common/uploads.service';
             (drop)="hideOverlay()"
         ></div>
         <div
-            class="fixed inset-0 bg-black bg-opacity-60"
+            class="fixed inset-0 bg-base-content bg-opacity-60"
             dropzone
             (dragend)="show_overlay = false"
             (dragleave)="show_overlay = false"
@@ -108,10 +108,10 @@ import { UploadsService } from '../common/uploads.service';
                 class="absolute bottom-0 p-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center pointer-events-none"
             >
                 <app-icon
-                    class="animate-bounce mb-4 text-7xl text-white"
+                    class="animate-bounce mb-4 text-7xl text-base-100"
                     className="backoffice-upload-to-cloud"
                 ></app-icon>
-                <div class="bg-white rounded p-4 text-black shadow">
+                <div class="bg-base-100 rounded p-4 text-base-content shadow">
                     Drop files to upload them to the cloud
                 </div>
             </div>

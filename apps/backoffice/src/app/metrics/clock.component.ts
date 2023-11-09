@@ -1,30 +1,30 @@
 import { Component, OnInit } from '@angular/core';
-import { AsyncHandler } from '../common/base.class';
+import { AsyncHandler } from '../common/async-handler.class';
 
 @Component({
     selector: 'clock',
     template: `
-        <div class="rounded-full h-12 w-12 border-2 border-white relative">
+        <div class="rounded-full h-12 w-12 border-2 border-base-100 relative">
             <div
-                class="hand absolute bottom-1/2 left-1/2 bg-white h-3 w-1 rounded"
+                class="hand absolute bottom-1/2 left-1/2 bg-base-100 h-3 w-1 rounded"
                 [style.transform]="
                     'translateX(-50%) rotate(' + hour_angle + 'deg)'
                 "
             ></div>
             <div
-                class="hand absolute bottom-1/2 left-1/2 bg-white h-4 minute"
+                class="hand absolute bottom-1/2 left-1/2 bg-base-100 h-4 minute"
                 [style.transform]="
                     'translateX(-50%) rotate(' + minute_angle + 'deg)'
                 "
             ></div>
             <div
-                class="hand absolute bottom-1/2 left-1/2 bg-white h-5 w-px"
+                class="hand absolute bottom-1/2 left-1/2 bg-base-100 h-5 w-px"
                 [style.transform]="
                     'translateX(-50%) rotate(' + second_angle + 'deg)'
                 "
             ></div>
             <div
-                class="absolute top-1/2 left-1/2 h-2 w-2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-full"
+                class="absolute top-1/2 left-1/2 h-2 w-2 transform -translate-x-1/2 -translate-y-1/2 bg-base-100 rounded-full"
             ></div>
         </div>
     `,

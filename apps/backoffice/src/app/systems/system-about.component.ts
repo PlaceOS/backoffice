@@ -7,7 +7,7 @@ import { SystemStateService } from './system-state.service';
     template: `
         <section class="flex items-center space-x-2 mb-4">
             <div
-                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
             >
                 <div
                     class="flex items-center space-x-2"
@@ -88,7 +88,7 @@ import { SystemStateService } from './system-state.service';
                 </div>
             </div>
             <div
-                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
             >
                 <h3 class="w-full text-center">System Controls</h3>
                 <button

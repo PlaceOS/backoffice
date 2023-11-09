@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { authority } from '@placeos/ts-client';
-import { AsyncHandler } from '../common/base.class';
+import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';
@@ -20,7 +20,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
     selector: 'sidebar-menu',
     template: `
         <div
-            class="absolute pointer-events-none sm:pointer-events-auto inset-0 sm:relative sm:inset-auto hidden sm:flex flex-col sm:w-52 justify-between h-full overflow-hidden bg-gray-200 dark:bg-neutral-800 z-40 sm:z-0"
+            class="absolute pointer-events-none sm:pointer-events-auto inset-0 sm:relative sm:inset-auto hidden sm:flex flex-col sm:w-52 justify-between h-full overflow-hidden bg-base-100 z-40 sm:z-0"
             [class.!flex]="open"
             [class.!pointer-events-auto]="open"
             (click)="close()"
@@ -28,9 +28,9 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             <div class="flex flex-col items-center space-y-2">
                 <a
                     [routerLink]="['/']"
-                    class="font-heading text-4xl mt-4 w-[calc(100%-2rem)] dark:text-white ml-16 sm:ml-0"
+                    class="font-heading text-4xl mt-4 w-[calc(100%-2rem)]  ml-16 sm:ml-0"
                 >
-                    Place<span class="text-pink font-heading">OS</span>
+                    Place<span class="text-primary font-heading">OS</span>
                 </a>
                 <a
                     menu
@@ -49,16 +49,16 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     icon
                     (click)="open = false; openChange.emit(false)"
                 >
-                    <app-icon className="backoffice-cross"></app-icon>
+                    <app-icon>close</app-icon>
                 </button>
             </div>
             <div class="flex-1 h-px"></div>
             <div
-                class="m-2 p-2 rounded-xl border border-gray-300 dark:border-neutral-500 flex flex-col space-y-2"
+                class="m-2 p-2 rounded-xl border border-base-300  flex flex-col space-y-2"
                 *ngIf="debug_enabled"
             >
                 <div
-                    class="rounded-xl text-xs mono bg-blue-600 text-center p-1"
+                    class="rounded-xl text-xs mono bg-info text-info-content text-center p-1"
                 >
                     Debugging Enabled
                 </div>
@@ -68,10 +68,10 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 </p>
                 <div actions class="flex items-center justify-center space-x-2">
                     <button
-                        btn
                         icon
+                        matRipple
                         (click)="toggleDebugPosition()"
-                        class="bg-black/10 dark:bg-white/5"
+                        class="bg-base-200"
                     >
                         <app-icon matTooltip="Toggle Position">{{
                             debug_position === 'side'
@@ -80,10 +80,10 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                         }}</app-icon>
                     </button>
                     <button
-                        btn
                         icon
+                        matRipple
                         (click)="clearDebugMessages()"
-                        class="bg-black/10 dark:bg-white/5"
+                        class="bg-base-200"
                     >
                         <app-icon
                             className="material-icons"
@@ -92,10 +92,10 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                         >
                     </button>
                     <button
-                        btn
                         icon
+                        matRipple
                         (click)="clearBindings()"
-                        class="bg-black/10 dark:bg-white/5"
+                        class="bg-base-200"
                     >
                         <app-icon
                             className="backoffice-uninstall"
@@ -103,10 +103,10 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                         ></app-icon>
                     </button>
                     <button
-                        btn
                         icon
+                        matRipple
                         (click)="openDebug()"
-                        class="bg-black/10 dark:bg-white/5"
+                        class="bg-base-200"
                     >
                         <app-icon
                             className="backoffice-notification"
@@ -117,7 +117,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             </div>
             <button
                 matRipple
-                class="flex items-center space-x-2 p-2 border-t border-gray-300 dark:border-neutral-600 text-left dark:text-white"
+                class="flex items-center space-x-2 p-2 border-t border-base-300  text-left "
                 customTooltip
                 user
                 [content]="user_controls"
@@ -125,7 +125,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 xPosition="start"
             >
                 <div
-                    class="rounded-full h-10 w-10 bg-neutral-500 bg-cover bg-center"
+                    class="rounded-full h-10 w-10 bg-base-300 bg-cover bg-center"
                     [style.background-image]="'url(' + user?.image + ')'"
                 ></div>
                 <div class="flex flex-col flex-1 w-1/2 leading-tight">
@@ -143,7 +143,14 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             </button>
         </div>
     `,
-    styles: [``],
+    styles: [
+        `
+            .active {
+                background-color: var(--s);
+                color: var(--sc);
+            }
+        `,
+    ],
 })
 export class SidebarMenuComponent extends AsyncHandler {
     @Input() public open = true;

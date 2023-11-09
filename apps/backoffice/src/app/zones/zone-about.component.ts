@@ -10,7 +10,7 @@ import { marked } from 'marked';
     template: `
         <section class="mb-4 flex space-x-2">
             <div
-                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
                 *ngIf="(systems | async)?.length"
             >
                 <header
@@ -40,13 +40,15 @@ import { marked } from 'marked';
                 ></execute-method-field>
             </div>
             <div
-                class="rounded p-4 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-4 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
             >
                 <div
                     class="flex items-center space-x-2"
                     *ngIf="item?.parent_id"
                 >
-                    <label i18n="@@zoneParentLabel">Parent ID:</label>
+                    <label class="w-24" i18n="@@zoneParentLabel"
+                        >Parent ID:</label
+                    >
                     <div class="value underline mono">
                         <a
                             [routerLink]="['/zones', item?.parent_id, 'about']"
@@ -58,7 +60,9 @@ import { marked } from 'marked';
                     class="flex items-center space-x-2"
                     *ngIf="item?.created_at"
                 >
-                    <label i18n="@@zoneCreatedAtLabel">Created:</label>
+                    <label class="w-24" i18n="@@zoneCreatedAtLabel"
+                        >Created:</label
+                    >
                     <div class="value">
                         {{ item?.created_at * 1000 | dateFrom }}
                     </div>
@@ -67,47 +71,57 @@ import { marked } from 'marked';
                     class="flex items-center space-x-2"
                     *ngIf="item?.updated_at"
                 >
-                    <label i18n="@@zoneUpdatedAtLabel">Updated:</label>
+                    <label class="w-24" i18n="@@zoneUpdatedAtLabel"
+                        >Updated:</label
+                    >
                     <div class="value">
                         {{ item?.updated_at * 1000 | dateFrom }}
                     </div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.location">
-                    <label i18n="@@zoneLocationLabel">Location:</label>
+                    <label class="w-24" i18n="@@zoneLocationLabel"
+                        >Location:</label
+                    >
                     <div class="value">{{ item?.location }}</div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.code">
-                    <label i18n="@@zoneCodeLabel">Code:</label>
+                    <label class="w-24" i18n="@@zoneCodeLabel">Code:</label>
                     <div class="value">{{ item?.code }}</div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.type">
-                    <label i18n="@@zoneTypeLabel">Type:&nbsp;</label>
+                    <label class="w-24" i18n="@@zoneTypeLabel"
+                        >Type:&nbsp;</label
+                    >
                     <div class="value">{{ item?.type }}</div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.count">
-                    <label i18n="@@zoneCountLabel">Count:</label>
+                    <label class="w-24" i18n="@@zoneCountLabel">Count:</label>
                     <div class="value">{{ item?.count }}</div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.capacity">
-                    <label i18n="@@zoneCapacityLabel">Capacity:</label>
+                    <label class="w-24" i18n="@@zoneCapacityLabel"
+                        >Capacity:</label
+                    >
                     <div class="value">{{ item?.capacity }}</div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.timezone">
-                    <label i18n="@@zoneTimezoneLabel">Timezone:</label>
+                    <label class="w-24" i18n="@@zoneTimezoneLabel"
+                        >Timezone:</label
+                    >
                     <div class="value">{{ item?.timezone }}</div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.map_id">
-                    <label i18n="@@zoneMapLabel">Map:</label>
+                    <label class="w-24" i18n="@@zoneMapLabel">Map:</label>
                     <a class="underline" [href]="item?.map_id">{{
                         item?.map_id
                     }}</a>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.tags">
-                    <label class="my-1" for="tags" i18n="@@zoneTagsLabel"
-                        >Tags:</label
-                    >
+                    <label class="w-24 my-1" for="tags" i18n="@@zoneTagsLabel">
+                        Tags:
+                    </label>
                     <div
-                        class="value flex flex-wrap"
+                        class="value flex flex-wrap flex-1"
                         *ngIf="
                             tag_list && tag_list.length;
                             else empty_tag_state
@@ -115,7 +129,7 @@ import { marked } from 'marked';
                     >
                         <div
                             *ngFor="let tag of tag_list"
-                            class="mono text-xs px-3 py-2 m-2 bg-gray-200 dark:bg-neutral-500 rounded-2xl"
+                            class="mono text-xs px-3 py-2 m-2 bg-base-200  rounded-2xl"
                         >
                             {{ tag }}
                         </div>

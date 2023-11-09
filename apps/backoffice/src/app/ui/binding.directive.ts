@@ -13,7 +13,7 @@ import {
 import { onlineState, authority, getModule } from '@placeos/ts-client';
 
 import { filter, first } from 'rxjs/operators';
-import { AsyncHandler } from '../common/base.class';
+import { AsyncHandler } from '../common/async-handler.class';
 
 @Directive({
     selector: 'i[bind], [binding], co-bind',

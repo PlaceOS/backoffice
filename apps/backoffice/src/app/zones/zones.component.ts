@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { extensionsForItem } from '../common/api';
-import { AsyncHandler } from '../common/base.class';
+import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { ZonesStateService } from './zones-state.service';
@@ -10,7 +10,7 @@ import { ZonesStateService } from './zones-state.service';
     selector: 'new-zones-view',
     template: `
         <div
-            class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
+            class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-base-200  bg-base-100 "
         >
             <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
             <div class="flex flex-col h-full flex-1 overflow-hidden w-px">
@@ -60,7 +60,7 @@ import { ZonesStateService } from './zones-state.service';
                             </ng-container>
                         </div>
                         <button
-                            class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
+                            class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content"
                             matTooltip="New zone"
                             matTooltipPosition="right"
                             matRipple
@@ -72,7 +72,7 @@ import { ZonesStateService } from './zones-state.service';
                             ></app-icon>
                         </button>
                         <button
-                            class="absolute bottom-16 left-2 sm:-left-8 w-10 h-10 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
+                            class="absolute bottom-16 left-2 sm:-left-8 w-10 h-10 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content"
                             matTooltip="Bulk add zones"
                             matTooltipPosition="right"
                             matRipple

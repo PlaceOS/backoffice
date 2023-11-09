@@ -6,17 +6,16 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { SafeHtml } from '@angular/platform-browser';
 import { BehaviorSubject, combineLatest, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
-import { AsyncHandler } from '../common/base.class';
+import { AsyncHandler } from '../common/async-handler.class';
 import { SanitizePipe } from './pipes/sanitise.pipe';
 
 @Component({
     selector: 'new-terminal',
     template: `
         <div
-            class="bg-gray-700 w-full h-full text-xs flex items-end relative"
+            class="bg-[#424242] text-white w-full h-full text-xs flex items-end relative"
             #container
         >
             <cdk-virtual-scroll-viewport
@@ -27,7 +26,7 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
                 <div
                     *cdkVirtualFor="let item of output_lines | async"
                     [innerHTML]="item | safe"
-                    class="mono p-1 hover:bg-black/10"
+                    class="mono p-1 hover:bg-base-content/10"
                 ></div>
             </cdk-virtual-scroll-viewport>
             <div
@@ -40,7 +39,7 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
                 class="absolute -top-11 right-0 p-2 flex items-center space-x-2"
             >
                 <input
-                    class="bg-neutral-700 border-none rounded mono text-xs"
+                    class="bg-neutral-700 border-none mono text-sm p-1"
                     [(ngModel)]="search"
                     placeholder="🔍 Filter output"
                     (ngModelChange)="search_string.next($event)"

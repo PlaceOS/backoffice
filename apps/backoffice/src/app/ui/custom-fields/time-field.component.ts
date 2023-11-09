@@ -20,7 +20,7 @@ import {
     startOfDay,
     startOfMinute,
 } from 'date-fns';
-import { AsyncHandler } from '../../common/base.class';
+import { AsyncHandler } from '../../common/async-handler.class';
 import { Identity } from '../../common/types';
 
 @Component({
@@ -45,7 +45,7 @@ import { Identity } from '../../common/types';
                 class="relative top-1 -right-1"
                 (click)="showSelect()"
             >
-                <app-icon class="text-2xl text-black text-opacity-50">
+                <app-icon class="text-2xl text-base-content text-opacity-50">
                     arrow_drop_down
                 </app-icon>
             </button>

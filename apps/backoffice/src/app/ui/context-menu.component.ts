@@ -8,7 +8,7 @@ import {
     OnInit,
 } from '@angular/core';
 import { MatMenuTrigger, MatMenuPanel } from '@angular/material/menu';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 
 @Component({
     selector: '[context-menu]',

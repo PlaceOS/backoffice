@@ -1,20 +1,16 @@
 input,
 textarea {
-    font-size: 1em;
-    min-width: 2rem;
-    padding: 0.5em;
-    border: 1px solid #ccc;
-    outline: none;
-    background-color: #fff;
-    color: rgba(var(--font-dark), 0.87);
     user-select: text;
+    background: none;
+}
 
-    &::placeholder {
-        color: rgba(#000, 0.35);
+.theme-dark {
+    input {
+        color-scheme: dark;
     }
-
-    &:focus {
-        border-bottom-color: var(--primary);
+    input::placeholder {
+        color: inherit;
+        opacity: 0.6;
     }
 }
 
@@ -27,28 +23,36 @@ section > label {
     }
 }
 
-.dark-mode {
-    input,
-    textarea {
-        color: rgba(var(--font-light), 0.87);
+:not(.mat-form-field-label-wrapper) > label {
+    width: 100%;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    font-weight: bold;
 
-        &::placeholder {
-            color: rgba(#fff, 0.35);
-        }
+    > span:first-child {
+        color: hsl(var(--wa));
     }
 
-    hr {
-        opacity: 0.4;
+    &.error {
+        color: hsl(var(--er));
     }
 }
 
-hr {
-    opacity: 0.6;
-}
+#placeos {
+    .svg-viewer__label {
+        min-width: 12rem;
+    }
 
-/*=======================*\
-||      Table styles     ||
-\*=======================*/
+    ::placeholder,
+    .mat-form-field-label,
+    .mat-mdc-select-placeholder {
+        color: var(--n);
+    }
+
+    input {
+        caret-color: var(--p);
+    }
+}
 
 table {
     width: 100%;
@@ -60,32 +64,32 @@ table {
     }
 }
 
-table:not([role="grid"]) {
-
+table:not([role='grid']) {
     thead {
         opacity: 0.85;
-        background-color: rgba(#000, 0.15);
+        background-color: var(--b3);
     }
 
     tr {
         width: 100%;
         &:nth-child(2n) {
-            background-color: rgba(#000, 0.05);
+            background-color: var(--b2);
         }
 
         &:hover {
-            background-color: rgba(#000, 0.1);
+            background-color: var(--b3);
         }
 
         &.cdk-drag-preview {
-            background-color: #fff;
+            background-color: var(--b1);
+            border-color: var(--n);
             border-radius: 4px;
             @apply shadow;
         }
     }
 
     td {
-        border-color: #ccc;
+        border-color: var(--n);
         padding: 0.25em 0.5em;
 
         &.small {
@@ -96,29 +100,10 @@ table:not([role="grid"]) {
     }
 }
 
-a {
-    color: inherit;
-}
-
-a[target],
-a.underline {
-    color: #3344dd;
-    &:hover {
-        color: #bb1122;
-    }
-    &:active {
-        color: #884488
-    }
-}
-.dark {
-    a[target],
-    a.underline {
-        color: #7fc9ff;
-        &:hover {
-            color: #bb1122;
-        }
-        &:active {
-            color: #884488
-        }
-    }
+code {
+    padding: 0.125rem 0.25rem;
+    background-color: var(--b2);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    @apply truncate;
 }

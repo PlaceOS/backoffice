@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PlaceDriver, queryModules } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 import { extensionsForItem } from '../common/api';
-import { AsyncHandler } from '../common/base.class';
+import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 
@@ -11,7 +11,7 @@ import { ActiveItemService } from '../common/item.service';
     selector: 'new-drivers-view',
     template: `
         <div
-            class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
+            class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-base-200  bg-base-100 "
         >
             <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
             <div class="flex flex-col h-full flex-1 overflow-hidden w-px">
@@ -61,7 +61,7 @@ import { ActiveItemService } from '../common/item.service';
                             </ng-container>
                         </div>
                         <button
-                            class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-primary dark:bg-pink rounded-lg shadow z-30 text-white"
+                            class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content"
                             matTooltip="New driver"
                             matTooltipPosition="right"
                             matRipple

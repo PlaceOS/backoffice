@@ -16,7 +16,7 @@ import { SettingsService } from './common/settings.service';
 import { setupPlace } from './common/placeos';
 import { setupCache } from './common/application';
 import { setNotifyOutlet } from './common/notifications';
-import { AsyncHandler } from './common/base.class';
+import { AsyncHandler } from './common/async-handler.class';
 import { log, detectIE } from './common/general';
 import { BackofficeUsersService } from './users/users.service';
 import { NavigationEnd, Router } from '@angular/router';
@@ -42,7 +42,7 @@ import { NavigationEnd, Router } from '@angular/router';
         </div>
         <div
             *ngIf="!online && !(loading | async)"
-            class="fixed bottom-2 left-1/2 -translate-x-1/2 shadow rounded-3xl px-4 py-2 bg-error text-white text-xs z-[9999]"
+            class="fixed bottom-2 left-1/2 -translate-x-1/2 shadow rounded-3xl px-4 py-2 bg-error text-base-100 text-xs z-[9999]"
         >
             Unable to reach server... Some features may not work.
         </div>

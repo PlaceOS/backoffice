@@ -9,7 +9,7 @@ import {
     map,
 } from 'rxjs/operators';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
 import { ModuleStateService } from './module-state.service';
 

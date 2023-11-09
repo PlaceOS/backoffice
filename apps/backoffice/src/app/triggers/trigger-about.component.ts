@@ -11,7 +11,7 @@ import {
 } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { TriggerStateService } from './trigger-state.service';
 
 @Component({
@@ -19,11 +19,15 @@ import { TriggerStateService } from './trigger-state.service';
     template: `
         <section class="space-y-2">
             <div class="flex items-center space-x-2" *ngIf="item?.created_at">
-                <label i18n="@@triggerCreatedAtLabel">Created:</label>
+                <label i18n="@@triggerCreatedAtLabel" class="w-24">
+                    Created:
+                </label>
                 <div class="value">{{ item.created_at * 1000 | dateFrom }}</div>
             </div>
             <div class="flex items-center space-x-2" *ngIf="item?.updated_at">
-                <label i18n="@triggerUpdatedAtLabel">Updated:</label>
+                <label i18n="@triggerUpdatedAtLabel" class="w-24">
+                    Updated:
+                </label>
                 <div class="value">{{ item.updated_at * 1000 | dateFrom }}</div>
             </div>
         </section>
@@ -112,15 +116,14 @@ import { TriggerStateService } from './trigger-state.service';
                     </div>
                     <div class="w-24 flex items-center justify-center">
                         <button
-                            btn
                             icon
+                            matRipple
                             [disabled]="!template_system"
                             (click)="editCondition(time)"
                         >
-                            btn icon
                             <app-icon className="backoffice-edit"></app-icon>
                         </button>
-                        <button btn icon (click)="removeCondition(time)">
+                        <button icon matRipple (click)="removeCondition(time)">
                             <app-icon className="backoffice-trash"></app-icon>
                         </button>
                     </div>
@@ -190,7 +193,7 @@ import { TriggerStateService } from './trigger-state.service';
                         </button>
                     </div>
                     <div
-                        class="p-4 border-4 border-dashed border-black bg-gray-300"
+                        class="w-[calc(100-0.5rem)] m-1 h-10 rounded border-2 border-dashed border-neutral bg-base-200"
                         *cdkDragPlaceholder
                     ></div>
                 </div>
@@ -239,7 +242,7 @@ import { TriggerStateService } from './trigger-state.service';
                         </button>
                     </div>
                     <div
-                        class="p-4 border-4 border-dashed border-black bg-gray-300"
+                        class="w-[calc(100-0.5rem)] m-1 h-10 rounded border-2 border-dashed border-neutral bg-base-200"
                         *cdkDragPlaceholder
                     ></div>
                 </div>

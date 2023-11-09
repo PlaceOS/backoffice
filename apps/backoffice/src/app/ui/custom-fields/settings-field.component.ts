@@ -13,9 +13,9 @@ import {
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
-import { AsyncHandler } from '../../common/base.class';
+import { AsyncHandler } from '../../common/async-handler.class';
 import { HashMap } from '../../common/types';
-import { BackofficeUsersService } from '../../users/users.service';
+import { SettingsService } from '../../common/settings.service';
 
 let MODEL: HashMap<monaco.editor.ITextModel> = {};
 
@@ -67,13 +67,14 @@ export class SettingsFieldComponent
     private _onTouch: (_: string) => void;
 
     private _active_decorators: string[] = [];
+    private _theme = 'light';
 
     /** Reference to the element container the monaco editor */
     @ViewChild('editor', { static: true }) private element: ElementRef;
     /** API object for the monaco editor */
     private editor: any;
 
-    constructor(private _users: BackofficeUsersService) {
+    constructor(private _settings: SettingsService) {
         super();
         if (!MODEL) {
             MODEL = {
@@ -93,6 +94,19 @@ export class SettingsFieldComponent
 
     public ngOnInit(): void {
         this.timeout('resize', () => this.createEditor(), 100);
+        this.interval(
+            'theme',
+            () => {
+                const theme = this._settings.get('theme');
+                if (theme !== this._theme) {
+                    this._theme = theme;
+                    this.editor?.updateOptions({
+                        theme: theme !== 'dark' ? 'vs' : 'vs-dark',
+                    });
+                }
+            },
+            1000
+        );
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
@@ -194,7 +208,8 @@ export class SettingsFieldComponent
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
                 readOnly: this.readonly,
-                theme: !this._users.dark_mode ? 'vs' : 'vs-dark',
+                theme:
+                    this._settings.get('theme') !== 'dark' ? 'vs' : 'vs-dark',
             });
             this.editor.onDidChangeModelContent((e) => {
                 this.setValue(this.editor.getValue());

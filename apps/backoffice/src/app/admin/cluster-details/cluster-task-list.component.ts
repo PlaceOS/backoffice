@@ -7,7 +7,7 @@ import {
     queryProcesses,
 } from '@placeos/ts-client';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import {
     ConfirmModalComponent,
     CONFIRM_METADATA,

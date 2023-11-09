@@ -23,7 +23,7 @@ import {
     switchMap,
     tap,
 } from 'rxjs/operators';
-import { AsyncHandler } from '../../common/base.class';
+import { AsyncHandler } from '../../common/async-handler.class';
 import { isValidUrl } from '../../common/validation';
 import { DateFromPipe } from '../pipes/date-from.pipe';
 

@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { ApplicationIcon } from 'apps/backoffice/src/app/common/types';
 import { DialogEvent } from 'apps/backoffice/src/app/common/types';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 
 export type ConfirmExtraType = 'info' | 'warning' | 'error';
 
@@ -41,12 +41,12 @@ export const CONFIRM_METADATA = {
                 <p [innerHTML]="content || 'Are you sure?' | safe: 'html'"></p>
                 <div
                     *ngIf="extra"
-                    [class.bg-blue-500]="extra[0] === 'info'"
-                    [class.bg-yellow-500]="extra[0] === 'warning'"
-                    [class.text-white]="
-                        extra[0] === 'error' || extra[0] === 'info'
-                    "
-                    [class.bg-red-500]="extra[0] === 'error'"
+                    [class.bg-info]="extra[0] === 'info'"
+                    [class.bg-warning]="extra[0] === 'warning'"
+                    [class.bg-error]="extra[0] === 'error'"
+                    [class.text-info-content]="extra[0] === 'info'"
+                    [class.text-warning-content]="extra[0] === 'warning'"
+                    [class.text-error-content]="extra[0] === 'error'"
                     class="p-2 rounded shadow text-xs"
                     [innerHTML]="extra[1]"
                 ></div>
@@ -54,7 +54,7 @@ export const CONFIRM_METADATA = {
         </main>
         <footer
             *ngIf="!loading"
-            class="flex items-center justify-end space-x-2 p-2 border-t border-gray-200"
+            class="flex items-center justify-end space-x-2 p-2 border-t border-base-200"
         >
             <button btn class="inverse min-w-[8rem]" mat-dialog-close>
                 Cancel

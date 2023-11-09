@@ -36,7 +36,7 @@ export interface DisplayItem {
                         {{ item?.id }}
                     </a>
                     <div
-                        class="px-2 py-1 rounded-xl text-xs bg-blue-600 text-white"
+                        class="px-2 py-1 rounded-xl text-xs bg-info text-info-content"
                         *ngIf="driver_type"
                         i18n="@@driverType"
                     >
@@ -45,32 +45,33 @@ export interface DisplayItem {
                         other { Other } }
                     </div>
                     <div
-                        class="px-2 py-1 rounded-xl text-xs mono bg-blue-600 text-white"
+                        class="px-2 py-1 rounded-xl text-xs mono bg-info text-info-content"
                         *ngIf="domain"
                         i18n="@@domain"
                     >
                         {{ domain }}
                     </div>
                     <div
-                        class="px-2 py-1 rounded-xl text-xs bg-blue-600 text-white uppercase"
+                        class="px-2 py-1 rounded-xl text-xs bg-info text-info-content uppercase"
                         *ngFor="let tag of tags"
                     >
                         {{ tag }}
                     </div>
                     <div
-                        class="px-2 py-1 rounded-xl text-xs bg-red-600 text-white"
+                        class="px-2 py-1 rounded-xl text-xs bg-error text-error-content"
                         *ngIf="
                             item?.running !== null &&
                             item?.running !== undefined
                         "
-                        [class.!bg-green-600]="item?.running"
+                        [class.!bg-success]="item?.running"
+                        [class.!text-success-content]="item?.running"
                         i18n="@@onlineState"
                     >
                         { item?.running, select, true { Online } false { Offline
                         } other { Other } }
                     </div>
                     <div
-                        class="px-2 py-1 rounded-xl text-xs bg-blue-600 text-white"
+                        class="px-2 py-1 rounded-xl text-xs bg-info text-info-content"
                         *ngIf="item?.edge_id"
                         [matTooltip]="item?.edge_id"
                         i18n="@@edgeState"
@@ -78,7 +79,7 @@ export interface DisplayItem {
                         Edge
                     </div>
                     <div
-                        class="px-2 py-1 rounded-xl text-xs bg-green-600 flex items-center space-x-2 text-white"
+                        class="px-2 py-1 rounded-xl text-xs bg-success flex items-center space-x-2 text-success-content"
                         *ngIf="item?.tls"
                     >
                         <div class="icon"><i class="backoffice-lock"></i></div>
@@ -86,10 +87,8 @@ export interface DisplayItem {
                     </div>
                 </div>
             </div>
-            <button [matMenuTriggerFor]="action_menu" btn icon>
-                <app-icon
-                    [icon]="{ class: 'backoffice-dots-three-vertical' }"
-                ></app-icon>
+            <button [matMenuTriggerFor]="action_menu" icon matRipple>
+                <app-icon>more_vert</app-icon>
             </button>
         </div>
         <mat-menu #action_menu="matMenu">

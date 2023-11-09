@@ -7,7 +7,7 @@ import { DriverStateService } from './driver-state.service';
     template: `
         <section class="mb-4 flex space-x-2">
             <div
-                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 min-w-[45%] flex-1"
+                class="rounded p-2 border border-base-200  space-y-2 min-w-[45%] flex-1"
             >
                 <div
                     class="flex items-center space-x-2"
@@ -58,7 +58,7 @@ import { DriverStateService } from './driver-state.service';
                 </div>
             </div>
             <div
-                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 min-w-[45%] flex-1 flex flex-col"
+                class="rounded p-2 border border-base-200  space-y-2 min-w-[45%] flex-1 flex flex-col"
             >
                 <div class="flex items-center space-x-2">
                     <label i18n="@@driverDetailsCompiled">Compiled</label>

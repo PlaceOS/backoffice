@@ -82,7 +82,7 @@ export interface TriggerInstanceState {
                             >
                                 <div
                                     class="h-2 w-2 rounded-full"
-                                    [class.bg-black]="
+                                    [class.bg-base-content]="
                                         !trigger_state[trigger.id]?.triggered
                                     "
                                     [class.bg-success]="

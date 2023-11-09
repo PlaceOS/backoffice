@@ -8,7 +8,7 @@ import {
     updateTrigger,
 } from '@placeos/ts-client';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { DialogEvent } from 'apps/backoffice/src/app/common/types';
 import { generateTriggerActionForm } from 'apps/backoffice/src/app/triggers/triggers.utilities';
 import {
@@ -46,7 +46,7 @@ export interface TriggerActionModalData {
             ></trigger-action-form>
         </main>
         <footer
-            class="border-t border-gray-200 flex items-center justify-end space-x-2 p-4"
+            class="border-t border-base-200 flex items-center justify-end space-x-2 p-4"
             *ngIf="!loading"
         >
             <button btn class="w-32 inverse" mat-dialog-close>Cancel</button>

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { DriverStateService } from './driver-state.service';
 import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
@@ -51,7 +51,7 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                                 bind="connected"
                             ></i>
                             <div
-                                class="h-2 w-2 rounded-full bg-black"
+                                class="h-2 w-2 rounded-full bg-base-content"
                                 [class.bg-error]="
                                     module.running && !module.connected
                                 "
@@ -81,7 +81,7 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                             </button>
                             <mat-menu #menu="matMenu">
                                 <div
-                                    class="flex items-center justify-center px-2 pb-2 opacity-70 border-b border-gray-200 text-sm"
+                                    class="flex items-center justify-center px-2 pb-2 opacity-70 border-b border-base-200 text-sm"
                                 >
                                     {{ systems[module.id]?.length }} System(s)
                                 </div>

@@ -10,7 +10,7 @@ import {
     showModule,
 } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import {
     notifyError,
     notifySuccess,
@@ -122,7 +122,7 @@ import { SystemStateService } from './system-state.service';
                                 "
                             >
                                 <div
-                                    class="w-full h-10 border-2 border-dashed border-gray-600 bg-gray-300 bg-opacity-25"
+                                    class="w-[calc(100-0.5rem)] m-1 h-10 rounded border-2 border-dashed border-neutral bg-base-200"
                                     *cdkDragPlaceholder
                                 ></div>
                                 <div
@@ -145,7 +145,9 @@ import { SystemStateService } from './system-state.service';
                                         bind="connected"
                                         [(model)]="device.connected"
                                         class="h-4 w-4 rounded-full"
-                                        [class.bg-black]="!device.running"
+                                        [class.bg-base-content]="
+                                            !device.running
+                                        "
                                         [class.bg-error]="
                                             device.running &&
                                             device.connected === false
@@ -203,7 +205,7 @@ import { SystemStateService } from './system-state.service';
                                     <a
                                         *ngIf="device.edge_id"
                                         matRipple
-                                        class="text-xs h-6 w-6 rounded-full bg-blue-600 flex items-center justify-center shadow text-white"
+                                        class="text-xs h-6 w-6 rounded-full bg-info flex items-center justify-center shadow text-info-content"
                                         [matTooltip]="device.edge_id"
                                         [routerLink]="[
                                             '/admin',

@@ -66,7 +66,7 @@ import { SystemStateService } from './system-state.service';
                             *ngFor="let zone of zones | async; let i = index"
                         >
                             <div
-                                class="w-full h-10 border-2 border-dashed border-gray-600 bg-gray-300 bg-opacity-25"
+                                class="w-[calc(100-0.5rem)] m-1 h-10 rounded border-2 border-dashed border-neutral bg-base-200 bg-opacity-25"
                                 *cdkDragPlaceholder
                             ></div>
                             <div

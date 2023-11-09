@@ -11,7 +11,7 @@ import {
 import { map } from 'rxjs/operators';
 
 import { ItemCreateUpdateModalComponent } from 'apps/backoffice/src/app/overlays/item-modal/item-modal.component';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import {
     notifySuccess,
     notifyError,

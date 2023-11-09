@@ -20,7 +20,7 @@ import {
 
 import { PlaceModule, PlaceDriverRole } from '@placeos/ts-client';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
 
 @Component({

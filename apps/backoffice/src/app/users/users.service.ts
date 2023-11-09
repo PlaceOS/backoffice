@@ -15,7 +15,7 @@ import { first, map } from 'rxjs/operators';
 
 import { FilterFn } from 'apps/backoffice/src/app/common/types';
 import { toQueryString } from 'apps/backoffice/src/app/common/api';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { SettingsService } from '../common/settings.service';
 
 import * as Sentry from '@sentry/browser';

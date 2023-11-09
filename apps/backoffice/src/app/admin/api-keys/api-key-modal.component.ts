@@ -65,7 +65,7 @@ import { APIKeyService } from './api-keys.service';
                             {{ scope }}
                             <app-icon
                                 matChipRemove
-                                class="dark:text-black"
+                                class=""
                                 className="backoffice-cross"
                             ></app-icon>
                         </mat-chip>
@@ -127,7 +127,7 @@ import { APIKeyService } from './api-keys.service';
                             form.patchValue({ user: item, user_id: item.id });
                             setSearch('')
                         "
-                        [class.text-primary]="form.value.user?.id === item.id"
+                        [class.text-secondary]="form.value.user?.id === item.id"
                     >
                         {{ item.name }}
                     </button>
@@ -159,7 +159,7 @@ import { APIKeyService } from './api-keys.service';
         </main>
         <footer
             *ngIf="!loading"
-            class="p-4 flex items-center justify-center border-t border-gray-100 dark:border-gray-100/20"
+            class="p-4 flex items-center justify-center border-t border-base-200 /20"
         >
             <button btn class="w-32" (click)="save()">Save</button>
         </footer>

@@ -127,7 +127,7 @@ import { notifyError, notifySuccess } from '../../common/notifications';
             </div>
         </form>
         <footer
-            class="flex items-center justify-end space-x-2 px-4 py-2 border-t border-gray-200"
+            class="flex items-center justify-end space-x-2 px-4 py-2 border-t border-base-200"
             *ngIf="!loading"
         >
             <button btn matRipple mat-dialog-close class="inverse w-32">

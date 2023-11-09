@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { TriggerTimeConditionType } from '@placeos/ts-client';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { numberToPosition } from 'apps/backoffice/src/app/common/general';
 import { TIMEZONES_IANA } from 'apps/backoffice/src/app/common/timezones';
 import { Identity } from 'apps/backoffice/src/app/common/types';

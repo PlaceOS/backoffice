@@ -8,7 +8,7 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
     template: `
         <div class="flex w-full p-4 space-x-4">
             <div
-                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
             >
                 <p class="text-center p-2">
                     Re-index elasticsearch for the<br />current state of the
@@ -26,7 +26,7 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
                 </button>
             </div>
             <div
-                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
             >
                 <p class="text-center p-2">
                     Backfill elasticsearch with the<br />current state of the

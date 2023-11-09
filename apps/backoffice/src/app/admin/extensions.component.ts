@@ -57,7 +57,7 @@ export interface BackofficeExtension {
                 <button btn (click)="editExtension()">Add Extension</button>
             </div>
             <div
-                class="bg-info my-4 p-4 flex items-center rounded shadow space-x-4 text-sm text-white"
+                class="bg-info my-4 p-4 flex items-center rounded shadow space-x-4 text-sm text-info-content"
             >
                 <p>
                     <strong>Note:</strong> Backoffice requires a full page

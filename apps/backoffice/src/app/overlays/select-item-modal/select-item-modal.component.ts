@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { DialogEvent } from 'apps/backoffice/src/app/common/types';
 import { Observable } from 'rxjs';
 

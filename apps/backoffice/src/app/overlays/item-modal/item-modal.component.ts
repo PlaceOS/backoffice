@@ -18,7 +18,7 @@ import {
 } from '@placeos/ts-client';
 import { UntypedFormGroup } from '@angular/forms';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import {
     DialogEvent,
     Identity,

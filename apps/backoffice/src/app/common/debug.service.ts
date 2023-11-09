@@ -9,7 +9,7 @@ import {
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { format } from 'date-fns';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { AsyncHandler } from './base.class';
+import { AsyncHandler } from './async-handler.class';
 
 export type DebugConsolePosition = 'below' | 'side' | 'floating';
 

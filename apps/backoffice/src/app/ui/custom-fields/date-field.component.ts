@@ -21,7 +21,7 @@ import {
     startOfDay,
 } from 'date-fns';
 
-import { AsyncHandler } from '../../common/base.class';
+import { AsyncHandler } from '../../common/async-handler.class';
 import { HashMap } from '../../common/types';
 
 @Injectable()

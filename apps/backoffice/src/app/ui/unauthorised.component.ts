@@ -4,16 +4,17 @@ import { Component } from '@angular/core';
     selector: 'app-unauthorised',
     template: `
         <div
-            class="unauthorised bg-white text-black rounded border border-gray-300 text-center pt-2 px-8 pb-8 m-4"
+            class="unauthorised bg-base-100 text-base-content rounded border border-gray-300 text-center pt-2 px-8 pb-8 m-4"
         >
             <h1>403</h1>
             <h3 i18n="@@forbiddenLabel">Access forbidden.</h3>
             <p i18n="@@invalidPermissionLabel">
-                You do not have permission to view this page and your access attempt has been
-                recorded.
+                You do not have permission to view this page and your access
+                attempt has been recorded.
             </p>
             <p i18n="@@contactAdminLabel">
-                Contact your Administrator if you feel that you should have access.
+                Contact your Administrator if you feel that you should have
+                access.
             </p>
         </div>
     `,

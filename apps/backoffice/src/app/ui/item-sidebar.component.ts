@@ -8,25 +8,21 @@ import {
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
 import { map, take } from 'rxjs/operators';
-import { AsyncHandler } from '../common/base.class';
+import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 
 @Component({
     selector: 'item-sidebar',
     template: `
         <div
-            class="flex flex-col w-[24rem] max-w-[25vw] space-y-2 bg-white dark:bg-neutral-700 shadow rounded overflow-hidden h-full sm:border-r border-gray-200 dark:border-neutral-500"
+            class="flex flex-col w-[24rem] max-w-[25vw] space-y-2 bg-base-100  shadow rounded overflow-hidden h-full sm:border-r border-base-200 "
             (click)="$event.stopPropagation()"
         >
-            <div
-                class="flex items-center border-b border-gray-200 dark:border-neutral-500"
-            >
-                <app-icon class="text-2xl ml-2 dark:text-white"
-                    >search</app-icon
-                >
+            <div class="flex items-center border-b border-base-200 ">
+                <app-icon class="text-2xl ml-2 ">search</app-icon>
                 <input
                     #search_input
-                    class="border-none flex-1 py-3 px-2 text-lg bg-transparent dark:text-white"
+                    class="border-none flex-1 py-3 px-2 text-lg bg-transparent "
                     [(ngModel)]="search"
                     (ngModelChange)="updateSearch($event)"
                     [placeholder]="'Search for ' + title"
@@ -37,16 +33,16 @@ import { ActiveItemService } from '../common/item.service';
                     class="mr-2"
                 ></mat-spinner>
             </div>
-            <p class="text-sm dark:text-white opacity-60 w-full px-2">
+            <p class="text-sm  opacity-60 w-full px-2">
                 {{ total | async }} item(s)
             </p>
             <div class="flex flex-col flex-1 h-1/2">
                 <cdk-virtual-scroll-viewport
-                    itemSize="48"
+                    itemSize="64"
                     (scroll)="(is_scrolled)"
                     (scrolledIndexChange)="atBottom()"
                     *ngIf="(items | async)?.length; else empty_state"
-                    class="relative flex-1 h-1/2 dark:text-white w-full"
+                    class="relative flex-1 h-1/2  w-full"
                 >
                     <a
                         *cdkVirtualFor="
@@ -71,7 +67,8 @@ import { ActiveItemService } from '../common/item.service';
                         </p>
                         <div class="w-full inline-block overflow-hidden">
                             <span
-                                class="text-xs mono opacity-60 truncate max-w-full px-2 py-1 bg-black/10 dark:bg-white/5 rounded mt-1"
+                                extra
+                                class="text-xs mono opacity-60 truncate max-w-full px-2 py-1 bg-base-content/10 /5 rounded mt-1"
                                 *ngIf="item.extra"
                             >
                                 {{ item.extra }}
@@ -79,7 +76,7 @@ import { ActiveItemService } from '../common/item.service';
                         </div>
                     </a>
                     <div
-                        class="p-2 text-center opacity-30 text-sm bg-gray-300 dark:bg-neutral-800"
+                        class="p-2 text-center opacity-30 text-sm bg-base-200 "
                     >
                         End of the list
                     </div>
@@ -88,7 +85,7 @@ import { ActiveItemService } from '../common/item.service';
         </div>
         <ng-template #empty_state>
             <div
-                class="p-8 flex flex-col items-center justify-center opacity-30 dark:text-white"
+                class="p-8 flex flex-col items-center justify-center opacity-30 "
             >
                 <p>
                     {{
@@ -106,14 +103,26 @@ import { ActiveItemService } from '../common/item.service';
                 height: 100%;
             }
             a:nth-child(2n) {
-                background-color: rgba(0, 0, 0, 0.1);
+                background-color: var(--b2);
             }
             a:hover {
-                background-color: rgba(0, 0, 0, 0.2);
+                background-color: var(--b3);
             }
             a.active {
-                background-color: var(--primary);
-                color: #fff;
+                background-color: var(--s);
+                color: var(--sc);
+            }
+
+            a:hover [extra] {
+                background-color: var(--b2);
+            }
+
+            a [extra] {
+                background-color: var(--b3);
+            }
+
+            a.active [extra] {
+                background-color: var(--sf);
             }
         `,
     ],

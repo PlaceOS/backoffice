@@ -8,7 +8,7 @@ import { ModuleStateService } from './module-state.service';
     template: `
         <section class="space-x-2 flex">
             <div
-                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1"
+                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1"
             >
                 <div class="flex items-center space-x-2" *ngIf="item.notes">
                     <label i18n="@moduleNotesLabel">Notes:</label>
@@ -27,10 +27,10 @@ import { ModuleStateService } from './module-state.service';
                     *ngIf="item.tls || item.udp"
                 >
                     <label i18n="@moduleTLSLabel">Protocol:</label>
-                    <code *ngIf="item.tls" class="bg-success text-white"
+                    <code *ngIf="item.tls" class="bg-success text-base-100"
                         >TLS</code
                     >
-                    <code *ngIf="item.udp" class="bg-success text-white"
+                    <code *ngIf="item.udp" class="bg-success text-base-100"
                         >UDP</code
                     >
                 </div>
@@ -85,13 +85,13 @@ import { ModuleStateService } from './module-state.service';
                     <app-icon
                         *ngIf="(edge | async).description"
                         className="backoffice-info"
-                        class="border border-gray-200 dark:border-neutral-500 rounded-full"
+                        class="border border-base-200  rounded-full"
                         [matTooltip]="(edge | async).description"
                     ></app-icon>
                 </div>
             </div>
             <div
-                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
             >
                 <h3 class="w-full text-center">Module Controls</h3>
                 <button

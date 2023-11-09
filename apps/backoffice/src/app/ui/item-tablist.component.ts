@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { AsyncHandler } from '../common/base.class';
+import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ApplicationIcon } from '../common/types';
 
@@ -31,7 +31,7 @@ export interface ItemTab {
                         <app-icon [icon]="link.icon"></app-icon>&nbsp;
                         <div class="name">{{ link.name }}&nbsp;</div>
                         <div
-                            class="text-xs rounded-full bg-gray-200 dark:bg-neutral-600 flex items-center justify-center h-5 min-w-[1.25rem] px-1.5"
+                            class="text-xs rounded-full bg-base-200  flex items-center justify-center h-5 min-w-[1.25rem] px-1.5"
                             *ngIf="link.count || link.count === 0"
                         >
                             {{ link.count || '0' }}

@@ -14,7 +14,7 @@ import {
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
 import { take } from 'rxjs/operators';
-import { AsyncHandler } from '../common/base.class';
+import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ActiveItemService } from '../common/item.service';
 import { SettingsService } from '../common/settings.service';
@@ -24,19 +24,15 @@ import { BackofficeUsersService } from '../users/users.service';
     selector: 'item-selection',
     template: `
         <div
-            class="w-full p-2 flex items-center justify-center border-b border-gray-200 dark:border-neutral-500"
+            class="w-full p-2 flex items-center justify-center border-b border-base-200 "
         >
             <ng-content></ng-content>
             <button
                 (click)="open()"
-                class="border border-gray-200 dark:border-neutral-500 rounded-lg flex items-center flex-1 sm:flex-auto sm:max-w-[512px] max-w-[calc(100vw-1rem)]"
+                class="border border-base-200  rounded-lg flex items-center flex-1 sm:flex-auto sm:max-w-[512px] max-w-[calc(100vw-1rem)]"
             >
-                <app-icon class="text-2xl ml-2 dark:text-white"
-                    >search</app-icon
-                >
-                <p
-                    class="p-2 text-lg opacity-30 dark:text-white flex-1 w-1/2 text-left"
-                >
+                <app-icon class="text-2xl ml-2 ">search</app-icon>
+                <p class="p-2 text-lg opacity-30  flex-1 w-1/2 text-left">
                     View {{ title }}
                 </p>
                 <span class="keycap mr-2 text-xs">K</span>
@@ -44,23 +40,19 @@ import { BackofficeUsersService } from '../users/users.service';
         </div>
         <ng-container *ngIf="show_view">
             <div
-                class="absolute inset-0 bg-white/80 dark:bg-black/30"
+                class="absolute inset-0 bg-base-100/80 /30"
                 (click)="show = false"
                 (window:keydown.esc)="show = false"
             ></div>
             <div
-                class=" absolute left-1/2 top-2 -translate-x-1/2 flex flex-col w-[512px] max-w-[calc(100vw-1rem)] space-y-2 bg-white dark:bg-neutral-700 shadow rounded overflow-hidden"
+                class=" absolute left-1/2 top-2 -translate-x-1/2 flex flex-col w-[512px] max-w-[calc(100vw-1rem)] space-y-2 bg-base-100  shadow rounded overflow-hidden"
                 (click)="$event.stopPropagation()"
             >
-                <div
-                    class="flex items-center border-b border-gray-200 dark:border-neutral-600"
-                >
-                    <app-icon class="text-2xl ml-2 dark:text-white"
-                        >search</app-icon
-                    >
+                <div class="flex items-center border-b border-base-200 ">
+                    <app-icon class="text-2xl ml-2 ">search</app-icon>
                     <input
                         #search_input
-                        class="border-none flex-1 py-3 px-2 text-lg bg-transparent dark:text-white"
+                        class="border-none flex-1 py-3 px-2 text-lg bg-transparent "
                         [(ngModel)]="search"
                         (ngModelChange)="updateSearch($event)"
                         [placeholder]="'Search for ' + title"
@@ -71,7 +63,7 @@ import { BackofficeUsersService } from '../users/users.service';
                         class="mr-2"
                     ></mat-spinner>
                 </div>
-                <p class="text-sm dark:text-white opacity-60 w-full px-4">
+                <p class="text-sm  opacity-60 w-full px-4">
                     {{ total | async }} item(s)
                 </p>
                 <div class="flex flex-col flex-1 h-1/2">
@@ -80,7 +72,7 @@ import { BackofficeUsersService } from '../users/users.service';
                         (scroll)="(is_scrolled)"
                         (scrolledIndexChange)="atBottom()"
                         *ngIf="(items | async)?.length; else empty_state"
-                        class="max-h-[65vh] h-[768px] dark:text-white"
+                        class="max-h-[65vh] h-[768px] "
                     >
                         <a
                             *cdkVirtualFor="
@@ -111,7 +103,7 @@ import { BackofficeUsersService } from '../users/users.service';
                             </code>
                         </a>
                         <div
-                            class="p-2 text-center opacity-30 text-sm bg-gray-300 dark:bg-neutral-800"
+                            class="p-2 text-center opacity-30 text-sm bg-base-200 "
                         >
                             End of the list
                         </div>
@@ -121,7 +113,7 @@ import { BackofficeUsersService } from '../users/users.service';
         </ng-container>
         <ng-template #empty_state>
             <div
-                class="p-8 flex flex-col items-center justify-center opacity-30 dark:text-white"
+                class="p-8 flex flex-col items-center justify-center opacity-30 "
             >
                 <p>
                     {{
@@ -142,7 +134,7 @@ import { BackofficeUsersService } from '../users/users.service';
                 background-color: rgba(0, 0, 0, 0.2);
             }
             a.active {
-                background-color: var(--primary);
+                background-color: var(--secondary);
                 color: #fff;
             }
         `,

@@ -12,7 +12,7 @@ import {
     removeMetadata,
     updateMetadata,
 } from '@placeos/ts-client';
-import { AsyncHandler } from '../common/base.class';
+import { AsyncHandler } from '../common/async-handler.class';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { validateJSONString } from '../common/validation';
@@ -124,7 +124,10 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
             </mat-accordion>
         </div>
         <ng-template #empty_state>
-            <div class="info-block">
+            <div
+                class="w-full p-16 flex flex-col items-center justify-center opacity-30"
+            >
+                <app-icon class="text-3xl">close</app-icon>
                 <div class="text" i18n="@@metadataEmpty">No metadata found</div>
             </div>
         </ng-template>

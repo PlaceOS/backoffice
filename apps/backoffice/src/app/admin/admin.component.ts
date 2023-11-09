@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { extensionsForItem } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
@@ -11,19 +11,17 @@ import { BackofficeUsersService } from '../users/users.service';
     selector: 'app-engine',
     template: `
         <div
-            class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-gray-300 dark:divide-neutral-600 bg-white dark:bg-neutral-700"
+            class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-base-200  bg-base-100 "
         >
             <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
             <div class="flex flex-col h-full flex-1 overflow-hidden w-px">
-                <div
-                    class="flex flex-1 z-0 h-1/2 dark:text-white dark:bg-neutral-700"
-                >
+                <div class="flex flex-1 z-0 h-1/2  ">
                     <div
-                        class="h-full relative sm:w-56 px-2 my-4 border-r border-gray-400 border-opacity-30 z-10 pt-10 sm:pt-0"
+                        class="h-full relative sm:w-56 px-2 my-4 border-r border-base-200 z-10 pt-10 sm:pt-0"
                     >
                         <a
                             *ngFor="let item of tab_list"
-                            class="flex items-center space-x-2 m-2 rounded h-8 px-3 hover:bg-primary hover:bg-opacity-25"
+                            class="flex items-center space-x-2 m-2 rounded h-8 px-3 hover:bg-base-200"
                             [routerLink]="['/admin', item.id]"
                             routerLinkActive="active"
                         >
@@ -32,7 +30,7 @@ import { BackofficeUsersService } from '../users/users.service';
                         </a>
                     </div>
                     <div
-                        class="relative flex-1 w-1/2 h-full z-0 px-4 dark:text-white overflow-auto"
+                        class="relative flex-1 w-1/2 h-full z-0 px-4  overflow-auto"
                     >
                         <router-outlet></router-outlet>
                     </div>
@@ -67,8 +65,8 @@ import { BackofficeUsersService } from '../users/users.service';
             }
 
             .active {
-                background-color: var(--primary) !important;
-                color: #fff;
+                background-color: var(--s) !important;
+                color: var(--sc);
                 margin-right: -1px;
             }
         `,

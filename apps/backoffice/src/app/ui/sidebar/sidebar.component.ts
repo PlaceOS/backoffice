@@ -19,7 +19,7 @@ import {
 
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/base.class';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
 import { SettingsService } from 'apps/backoffice/src/app/common/settings.service';
 import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';

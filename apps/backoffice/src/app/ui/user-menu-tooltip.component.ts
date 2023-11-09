@@ -9,9 +9,7 @@ import { BackofficeUsersService } from '../users/users.service';
 @Component({
     selector: 'user-menu-tooltip',
     template: `
-        <div
-            class="bg-white dark:bg-neutral-700 rounded m-2 divide-y divide-gray-200 dark:divide-neutral-600 dark:text-white shadow"
-        >
+        <div class="bg-base-100  rounded m-2 divide-y divide-base-200 shadow">
             <a
                 matRipple
                 type="button"
@@ -53,7 +51,7 @@ import { BackofficeUsersService } from '../users/users.service';
                 target="_blank"
                 ref="noopener noreferer"
                 report
-                [href]="github_link | safe:'url'"
+                [href]="github_link | safe: 'url'"
                 class="space-x-2"
             >
                 <app-icon [className]="'backoffice-github'"></app-icon>
@@ -83,10 +81,10 @@ import { BackofficeUsersService } from '../users/users.service';
 export class UserMenuTooltipComponent {
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
-        return this._users.dark_mode;
+        return this._settings.get('theme') === 'dark';
     }
     public set dark_mode(state: boolean) {
-        this._users.dark_mode = state;
+        this._settings.setTheme(state ? 'dark' : 'light');
     }
 
     public get github_link() {
@@ -100,10 +98,7 @@ export class UserMenuTooltipComponent {
         )}&body=${encodeURIComponent(description)}&labels=bug`;
     }
 
-    constructor(
-        private _settings: SettingsService,
-        private _users: BackofficeUsersService
-    ) {}
+    constructor(private _settings: SettingsService) {}
 
     public logout() {
         logout();

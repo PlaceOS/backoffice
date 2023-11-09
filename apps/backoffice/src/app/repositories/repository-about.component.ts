@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { PlaceRepositoryType } from '@placeos/ts-client';
-import { AsyncHandler } from '../common/base.class';
+import { AsyncHandler } from '../common/async-handler.class';
 import { RepositoriesStateService } from './repositories-state.service';
 
 @Component({
@@ -8,7 +8,7 @@ import { RepositoriesStateService } from './repositories-state.service';
     template: `
         <section class="mb-4 text-center flex space-x-2">
             <div
-                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
             >
                 <div class="flex items-center space-x-2">
                     <label i18n="@@descriptionLabel">Description:</label>
@@ -49,7 +49,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                 </div>
             </div>
             <div
-                class="rounded p-2 border border-gray-200 dark:border-neutral-500 space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
             >
                 <div class="flex items-center space-x-2">
                     <label i18n="@@repoUriLabel">Repository URI:</label>
