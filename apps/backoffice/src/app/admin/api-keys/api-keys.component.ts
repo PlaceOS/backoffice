@@ -3,6 +3,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { take } from 'rxjs/operators';
 import { APIKeyService } from './api-keys.service';
 import { notifyInfo } from '../../common/notifications';
+import { authority } from '@placeos/ts-client';
 
 @Component({
     selector: 'admin-api-keys',
@@ -61,7 +62,7 @@ import { notifyInfo } from '../../common/notifications';
             *ngIf="(key_list | async)?.length; else load_state"
         >
             <div table-head>
-                <div class="w-32 p-2">Name</div>
+                <div class="w-48 p-2">Name</div>
                 <div class="flex-1 p-2">Description</div>
                 <div class="w-32 p-2 truncate">Scopes</div>
                 <div class="w-28 p-2">Permissions</div>
@@ -70,15 +71,14 @@ import { notifyInfo } from '../../common/notifications';
             </div>
             <div table-body>
                 <div table-row *ngFor="let item of key_list | async">
-                    <div class="w-32 p-2">{{ item.name }}</div>
-                    <div class="flex-1 p-2">{{ item.description }}</div>
-                    <div class="w-32 p-2 truncate">
-                        <span
-                            class="m-1 px-2 py-1 bg-base-200 rounded text-xs text-base-100"
-                            *ngFor="let scope of item.scopes"
-                        >
+                    <div class="w-48 p-2 truncate text-sm" [title]="item.name">
+                        {{ item.name }}
+                    </div>
+                    <div class="flex-1 p-2 text-xs">{{ item.description }}</div>
+                    <div class="w-32 p-2 truncate flex items-center flex-wrap">
+                        <code *ngFor="let scope of item.scopes" class="m-1">
                             {{ scope }}
-                        </span>
+                        </code>
                     </div>
                     <div class="w-28 p-2">{{ item.permissions || 'None' }}</div>
                     <div class="w-32 p-2">
@@ -93,8 +93,9 @@ import { notifyInfo } from '../../common/notifications';
             </div>
         </div>
         <ng-template #load_state>
-            <div class="flex flex-col items-center">
-                <p>No API Keys</p>
+            <div class="info-block">
+                <app-icon class="text-3xl">close</app-icon>
+                <p>No API keys configured for this domain</p>
             </div>
         </ng-template>
     `,
@@ -114,6 +115,14 @@ export class AdminAPIKeysComponent {
         private _service: APIKeyService,
         private _clipboard: Clipboard
     ) {}
+
+    public async ngOnInit() {
+        const domain = authority();
+        const domain_list = await this.domain_list.pipe(take(1)).toPromise();
+        if (!domain_list?.length) return;
+        const match = domain_list.find((d) => d.id === domain.id);
+        if (match) this.setDomain(match);
+    }
 
     public async copyKey() {
         const key = await this.last_key.pipe(take(1)).toPromise();

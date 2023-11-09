@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { PlaceDomain, queryDomains, updateDomain } from '@placeos/ts-client';
+import {
+    PlaceDomain,
+    authority,
+    queryDomains,
+    updateDomain,
+} from '@placeos/ts-client';
 import { first, map } from 'rxjs/operators';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import { ApplicationIcon } from 'apps/backoffice/src/app/common/types';
@@ -64,7 +69,7 @@ export interface BackofficeExtension {
                     refresh for extension changes and additions to apply
                 </p>
             </div>
-            <div role="table">
+            <div role="table" *ngIf="extension_list.length; else empty_state">
                 <div table-head>
                     <div class="w-24 p-2">Type</div>
                     <div class="w-40 p-2">Name</div>
@@ -110,6 +115,12 @@ export interface BackofficeExtension {
                 <div class="text">{{ loading }}</div>
             </div>
         </ng-template>
+        <ng-template #empty_state>
+            <div class="info-block">
+                <app-icon class="text-3xl">close</app-icon>
+                <p>No extensions configured for this domain</p>
+            </div>
+        </ng-template>
     `,
     styles: [
         `
@@ -137,7 +148,10 @@ export class PlaceExtensionsComponent implements OnInit {
         this.domain_list = await queryDomains()
             .pipe(map((r) => r.data))
             .toPromise();
-        this.setDomain(this.domain_list[0]);
+        const domain = authority();
+        if (!this.domain_list?.length) return;
+        const match = this.domain_list.find((d) => d.id === domain.id);
+        if (match) this.setDomain(match);
         this.loading = '';
     }
 

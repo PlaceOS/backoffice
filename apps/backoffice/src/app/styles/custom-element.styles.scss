@@ -1069,6 +1069,12 @@ a[icon] {
         }
     }
 
+    .mat-mdc-card.mdc-card {
+        border: 1px solid var(--b2);
+        background-color: var(--b1);
+        color: var(--bc);
+    }
+
     [mat-menu-item]:hover {
         background-color: var(--b2);
     }

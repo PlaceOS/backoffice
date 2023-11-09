@@ -7,7 +7,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
     selector: 'app-interfaces',
     template: `
         <div
-            role="table" 
+            role="table"
             class="pt-4"
             *ngIf="interfaces && interfaces.length; else load_state"
         >
@@ -20,7 +20,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                     <div class="flex-1 p-2">{{ item.id }}</div>
                     <div class="w-[20rem] p-2">
                         <code>
-                            {{ item.name || "~No Commit Hash~" }}
+                            {{ item.name || '~No Commit Hash~' }}
                         </code>
                     </div>
                 </div>
@@ -56,5 +56,6 @@ export class AdminInterfacesComponent implements OnInit {
             id,
             name: interfaces[id],
         }));
+        this.interfaces.sort((a, b) => `${a.id}`?.localeCompare(`${b.id}`));
     }
 }

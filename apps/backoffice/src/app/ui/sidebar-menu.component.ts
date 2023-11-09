@@ -20,7 +20,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
     selector: 'sidebar-menu',
     template: `
         <div
-            class="absolute pointer-events-none sm:pointer-events-auto inset-0 sm:relative sm:inset-auto hidden sm:flex flex-col sm:w-52 justify-between h-full overflow-hidden bg-base-100 z-40 sm:z-0"
+            class="absolute pointer-events-none sm:pointer-events-auto inset-0 sm:relative sm:inset-auto hidden sm:flex flex-col sm:w-52 justify-between h-full overflow-hidden bg-base-200 z-40 sm:z-0"
             [class.!flex]="open"
             [class.!pointer-events-auto]="open"
             (click)="close()"
@@ -35,7 +35,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 <a
                     menu
                     matRipple
-                    class="flex items-center p-2 rounded space-x-2 w-[calc(100%-2rem)]"
+                    class="flex items-center p-2 rounded space-x-2 w-[calc(100%-2rem)] hover:bg-base-100"
                     *ngFor="let item of items"
                     [routerLink]="[item.route]"
                     routerLinkActive="active"

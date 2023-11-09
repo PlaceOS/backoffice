@@ -70,7 +70,7 @@ const validateType = (type) => (control: AbstractControl) => {
                 <div
                     class="text-xs rounded px-2 py-1 w-16"
                     [class.bg-success]="required[key]"
-                    [class.text-base-100]="required[key]"
+                    [class.text-success-content]="required[key]"
                     [class.bg-base-200]="!required[key]"
                     [class.text-base-content]="!required[key]"
                 >

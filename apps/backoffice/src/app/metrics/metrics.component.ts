@@ -8,11 +8,11 @@ import { SettingsService } from '../common/settings.service';
     selector: 'app-metrics',
     template: `
         <div
-            class="h-full w-full flex flex-col bg-neutral"
+            class="h-full w-full flex flex-col bg-base-100"
             [class.fullscreen]="fullscreen"
         >
             <div
-                class="flex items-center w-full bg-secondary text-base-100 py-2 px-4 border-b border-gray-400"
+                class="flex items-center w-full bg-base-200 text-base-content py-2 px-4 border-b border-neutral"
             >
                 <div class="text-2xl flex-1 font-medium" i18n="@@metricsHeader">
                     Metrics
@@ -25,7 +25,7 @@ import { SettingsService } from '../common/settings.service';
                     </div>
                 </div>
             </div>
-            <div class="flex-1 w-full h-1/2 relative">
+            <div class="flex-1 w-full h-[60vh] relative">
                 <iframe
                     class="absolute inset-0 w-full h-full"
                     [src]="metrics_url | safe: 'resource'"
@@ -35,12 +35,16 @@ import { SettingsService } from '../common/settings.service';
     `,
     styles: [
         `
+            :host {
+                height: 100%;
+                width: 100%;
+            }
             .fullscreen {
                 position: fixed !important;
                 top: 0;
                 left: 0;
-                right: 0;
-                bottom: 0;
+                height: 100vh;
+                width: 100vw;
                 z-index: 9999;
             }
         `,

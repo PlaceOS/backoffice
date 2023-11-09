@@ -13,7 +13,9 @@ import { SystemStateService } from './system-state.service';
                     class="flex items-center space-x-2"
                     *ngIf="item?.support_url"
                 >
-                    <label i18n="@@systemUrlLabel">Support URL:</label>
+                    <label class="w-24" i18n="@@systemUrlLabel"
+                        >Support URL:</label
+                    >
                     <div class="value">
                         <a
                             class="underline"
@@ -24,11 +26,13 @@ import { SystemStateService } from './system-state.service';
                     </div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.bookable">
-                    <label i18n="@@systemBookableLabel">Bookable Room:</label>
+                    <label class="w-24" i18n="@@systemBookableLabel"
+                        >Bookable Room:</label
+                    >
                     <div class="value">{{ item?.bookable ? 'Yes' : 'No' }}</div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.bookable">
-                    <label i18n="@@systemPublicLabel">
+                    <label class="w-24" i18n="@@systemPublicLabel">
                         Publicly Available:
                     </label>
                     <div class="value">{{ item?.public ? 'Yes' : 'No' }}</div>
@@ -38,7 +42,7 @@ import { SystemStateService } from './system-state.service';
                     <p>{{ item?.code }}</p>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.email">
-                    <label i18n="@@emailLabel">Email:&nbsp;</label>
+                    <label class="w-24" i18n="@@emailLabel">Email:&nbsp;</label>
                     <a
                         *ngIf="item?.email"
                         class="underline select-all truncate"
@@ -48,31 +52,35 @@ import { SystemStateService } from './system-state.service';
                     >
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.capacity">
-                    <label i18n="@@capacityLabel">Capacity:</label>
+                    <label class="w-24" i18n="@@capacityLabel">Capacity:</label>
                     <div class="value">{{ item?.capacity }}</div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.map_id">
-                    <label i18n="@@mapIdLabel">Map ID:</label>
+                    <label class="w-24" i18n="@@mapIdLabel">Map ID:</label>
                     <div class="value mono">{{ item?.map_id }}</div>
                 </div>
                 <div
                     class="flex items-center space-x-2"
                     *ngIf="item?.installed_ui_devices"
                 >
-                    <label i18n="@@systemPanelCountLabel"
-                        >Installed Touch Panels:</label
-                    >
+                    <label class="w-24" i18n="@@systemPanelCountLabel">
+                        Installed Touch Panels:
+                    </label>
                     <div class="value">{{ item?.installed_ui_devices }}</div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.timezone">
-                    <label i18n="@@systemTimezoneLabel">Timezone:</label>
+                    <label class="w-24" i18n="@@systemTimezoneLabel"
+                        >Timezone:</label
+                    >
                     <div class="value">{{ item?.timezone }}</div>
                 </div>
                 <div
                     class="flex items-center space-x-2"
                     *ngIf="item?.created_at"
                 >
-                    <label i18n="@@systemCreatedAtLabel">Created:</label>
+                    <label class="w-24" i18n="@@systemCreatedAtLabel"
+                        >Created:</label
+                    >
                     <div class="value">
                         {{ item?.created_at * 1000 | dateFrom }}
                     </div>
@@ -81,7 +89,9 @@ import { SystemStateService } from './system-state.service';
                     class="flex items-center space-x-2"
                     *ngIf="item?.updated_at"
                 >
-                    <label i18n="@systemUpdatedAtLabel">Updated:</label>
+                    <label class="w-24" i18n="@systemUpdatedAtLabel"
+                        >Updated:</label
+                    >
                     <div class="value">
                         {{ item?.updated_at * 1000 | dateFrom }}
                     </div>

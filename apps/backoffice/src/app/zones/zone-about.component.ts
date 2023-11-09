@@ -99,20 +99,22 @@ import { marked } from 'marked';
                     <div class="value">{{ item?.count }}</div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.capacity">
-                    <label class="w-24" i18n="@@zoneCapacityLabel"
-                        >Capacity:</label
-                    >
+                    <label class="w-24" i18n="@@zoneCapacityLabel">
+                        Capacity:
+                    </label>
                     <div class="value">{{ item?.capacity }}</div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.timezone">
-                    <label class="w-24" i18n="@@zoneTimezoneLabel"
-                        >Timezone:</label
-                    >
+                    <label class="w-24" i18n="@@zoneTimezoneLabel">
+                        Timezone:
+                    </label>
                     <div class="value">{{ item?.timezone }}</div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.map_id">
-                    <label class="w-24" i18n="@@zoneMapLabel">Map:</label>
-                    <a class="underline" [href]="item?.map_id">{{
+                    <label class="min-w-[6rem] w-24" i18n="@@zoneMapLabel">
+                        Map:
+                    </label>
+                    <a class="underline truncate" [href]="item?.map_id">{{
                         item?.map_id
                     }}</a>
                 </div>

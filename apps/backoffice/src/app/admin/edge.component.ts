@@ -10,7 +10,6 @@ import {
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import {
     catchError,
-    debounce,
     debounceTime,
     map,
     shareReplay,
@@ -27,18 +26,18 @@ import { EdgeModalComponent } from './edge-modal.component';
 @Component({
     selector: '[admin-edge]',
     template: `
-        <button btn class="w-full sm:w-32 my-4" (click)="edit()">
+        <button btn class="w-full sm:w-40 my-4" (click)="edit()">
             Add New Edge
         </button>
         <ng-container *ngIf="!loading; else load_state">
             <div
                 table
-                class="w-full min-w-[48rem]"
+                class="w-full min-w-[52rem]"
                 *ngIf="(edges | async)?.length; else empty_state"
             >
                 <div table-head>
                     <div class="w-32 p-2">ID</div>
-                    <div class="w-32 p-2">Name</div>
+                    <div class="w-40 p-2">Name</div>
                     <div class="flex-1 p-2">Description</div>
                     <div class="w-24 p-2 h-10"></div>
                 </div>
@@ -47,8 +46,10 @@ import { EdgeModalComponent } from './edge-modal.component';
                         <div class="w-32 p-2 truncate text-xs font-mono">
                             {{ item.id }}
                         </div>
-                        <div class="w-32 p-2 truncate">{{ item.name }}</div>
-                        <div class="flex-1 w-1/4 p-2 truncate">
+                        <div class="w-40 p-2 truncate text-sm">
+                            {{ item.name }}
+                        </div>
+                        <div class="flex-1 w-1/4 p-2 truncate text-xs">
                             {{ item.description }}
                         </div>
                         <div class="w-24 px-2 flex items-center justify-end ">

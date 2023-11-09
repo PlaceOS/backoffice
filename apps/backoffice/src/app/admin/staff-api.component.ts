@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { del, get, PlaceDomain, queryDomains } from '@placeos/ts-client';
+import {
+    authority,
+    del,
+    get,
+    PlaceDomain,
+    queryDomains,
+} from '@placeos/ts-client';
 import { BehaviorSubject } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal } from '../common/general';
@@ -147,7 +153,10 @@ export class PlaceStaffAPIComponent implements OnInit {
         this.domain_list = await queryDomains()
             .pipe(map((r) => r.data))
             .toPromise();
-        this.domain.next(this.domain_list[0]);
+        const domain = authority();
+        if (!this.domain_list?.length) return;
+        const match = this.domain_list.find((d) => d.id === domain.id);
+        if (match) this.domain.next(match);
         this.loading = '';
     }
 

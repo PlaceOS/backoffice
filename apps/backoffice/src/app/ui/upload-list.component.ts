@@ -13,9 +13,9 @@ import { UploadsService } from '../common/uploads.service';
         <div
             *ngIf="show"
             upload-list
-            class="absolute bottom-2 left-2 rounded overflow-hidden bg-base-100 border border-base-200 text-sm text-base-content shadow pointer-events-auto"
+            class="absolute bottom-2 left-2 rounded overflow-hidden bg-base-100 border border-base-300 text-sm text-base-content shadow pointer-events-auto"
         >
-            <div class="flex items-center bg-neutral text-base-100">
+            <div class="flex items-center bg-base-200 text-base-content">
                 <div class="flex-1 px-4">
                     Uploads({{ (uploads | async)?.length || '0' }})
                 </div>
