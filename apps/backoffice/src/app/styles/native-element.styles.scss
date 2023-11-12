@@ -4,6 +4,14 @@ textarea {
     background: none;
 }
 
+.underline > a:not([btn]),
+a:not([btn]).underline {
+    color: var(--in);
+    &:hover {
+        color: var(--er);
+    }
+}
+
 .theme-dark {
     input {
         color-scheme: dark;
