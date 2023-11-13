@@ -131,11 +131,11 @@ body {
     touch-action: pan-x pan-y;
     background-color: var(--b1);
     color: var(--bc);
+    font-family: var(--font);
 }
 
 * {
     user-select: none;
-    font-family: var(--font);
     box-sizing: border-box;
 }
 
