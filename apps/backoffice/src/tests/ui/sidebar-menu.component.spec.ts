@@ -4,7 +4,10 @@ import { MockComponent } from 'ng-mocks';
 
 import { HotkeysService } from '../../app/common/hotkeys.service';
 import { SettingsService } from '../../app/common/settings.service';
-import { CustomTooltipComponent, CustomTooltipData } from '../../app/ui/custom-tooltip.component';
+import {
+    CustomTooltipComponent,
+    CustomTooltipData,
+} from '../../app/ui/custom-tooltip.component';
 import { IconComponent } from '../../app/ui/icon.component';
 import { SidebarMenuComponent } from '../../app/ui/sidebar-menu.component';
 import { BackofficeUsersService } from '../../app/users/users.service';
@@ -24,7 +27,7 @@ describe('SidebarMenuComponent', () => {
         ],
         declarations: [
             MockComponent(IconComponent),
-            MockComponent(CustomTooltipComponent)
+            MockComponent(CustomTooltipComponent),
         ],
     });
 
@@ -33,13 +36,15 @@ describe('SidebarMenuComponent', () => {
     it('should create component', () =>
         expect(spectator.component).toBeTruthy());
 
-        it('should list menu items', fakeAsync(() => {
-            expect('a[menu]').not.toExist();
-            spectator.inject(SettingsService).get.mockImplementation(() => [{ id: 1, route: '' }]);
-            spectator.component.ngOnInit();
-            spectator.detectChanges();
-            expect('a[menu]').toExist();
-        }));
+    it('should list menu items', fakeAsync(() => {
+        expect('a[menu]').not.toExist();
+        spectator
+            .inject(SettingsService)
+            .get.mockImplementation(() => [{ id: 1, route: '' }] as any);
+        spectator.component.ngOnInit();
+        spectator.detectChanges();
+        expect('a[menu]').toExist();
+    }));
 
-        it('should show user menu', () => expect('button[user]').toExist());
+    it('should show user menu', () => expect('button[user]').toExist());
 });

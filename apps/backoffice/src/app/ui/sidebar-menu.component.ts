@@ -35,7 +35,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 <a
                     menu
                     matRipple
-                    class="flex items-center p-2 rounded space-x-2 w-[calc(100%-2rem)] hover:bg-base-100"
+                    class="flex items-center p-2 rounded space-x-2 w-[calc(100%-2rem)] hover:bg-base-100 hover:text-base-content"
                     *ngFor="let item of items"
                     [routerLink]="[item.route]"
                     routerLinkActive="active"

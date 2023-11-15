@@ -1,7 +1,7 @@
 import { FormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { createRoutingFactory, SpectatorRouting } from '@ngneat/spectator/jest';
-import { MockComponent, MockModule } from 'ng-mocks';
+import { MockComponent, MockModule, MockProvider } from 'ng-mocks';
 import { SettingsService } from '../../app/common/settings.service';
 import { IconComponent } from '../../app/ui/icon.component';
 import { SafePipe } from '../../app/ui/pipes/safe.pipe';
@@ -13,11 +13,11 @@ describe('UserMenuTooltipComponent', () => {
     const createComponent = createRoutingFactory({
         component: UserMenuTooltipComponent,
         providers: [
-            { provide: SettingsService, useValue: { post: jest.fn() } },
-            {
-                provide: BackofficeUsersService,
-                useValue: { post: jest.fn(), dark_mode: false },
-            },
+            MockProvider(SettingsService, { get: jest.fn(), post: jest.fn() }),
+            MockProvider(BackofficeUsersService, {
+                post: jest.fn(),
+                dark_mode: false,
+            } as any),
         ],
         declarations: [SafePipe, MockComponent(IconComponent)],
         imports: [MockModule(MatSlideToggleModule), FormsModule],

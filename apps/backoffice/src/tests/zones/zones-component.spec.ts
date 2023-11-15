@@ -1,6 +1,6 @@
 import { createRoutingFactory, SpectatorRouting } from '@ngneat/spectator/jest';
 import { PlaceZone } from '@placeos/ts-client';
-import { MockComponent } from 'ng-mocks';
+import { MockComponent, MockProvider } from 'ng-mocks';
 import { BehaviorSubject } from 'rxjs';
 
 import { ActiveItemService } from '../../app/common/item.service';
@@ -18,17 +18,15 @@ describe('ZonesComponent', () => {
     const createComponent = createRoutingFactory({
         component: ZonesComponent,
         providers: [
-            {
-                provide: ZonesStateService,
-                useValue: {
-                    active_item: new PlaceZone(),
-                    counts: new BehaviorSubject({}),
-                },
-            },
-            {
-                provide: ActiveItemService,
-                useValue: { create: jest.fn(), bulkAdd: jest.fn() },
-            },
+            MockProvider(ZonesStateService, {
+                active_item: new PlaceZone(),
+                counts: new BehaviorSubject({}),
+            }),
+            MockProvider(ActiveItemService, {
+                create: jest.fn(),
+                bulkAdd: jest.fn(),
+                active_item$: new BehaviorSubject(null),
+            } as any),
         ],
         declarations: [
             MockComponent(IconComponent),
@@ -36,7 +34,7 @@ describe('ZonesComponent', () => {
             MockComponent(ItemSidebarComponent),
             MockComponent(ItemSelectionComponent),
             MockComponent(ItemDetailsComponent),
-            MockComponent(ItemTablistComponent)
+            MockComponent(ItemTablistComponent),
         ],
     });
 

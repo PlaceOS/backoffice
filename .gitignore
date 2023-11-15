@@ -43,3 +43,4 @@ Thumbs.db
 apps/backoffice/src/environments/version.ts
 
 .nx/cache
+migrations.json

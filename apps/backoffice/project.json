@@ -94,12 +94,12 @@
             "executor": "@angular-devkit/build-angular:dev-server",
             "configurations": {
                 "production": {
-                    "browserTarget": "backoffice:build:production"
+                    "buildTarget": "backoffice:build:production"
                 },
                 "development": {
                     "proxyConfig": "config/proxy.conf.js",
                     "host": "0.0.0.0",
-                    "browserTarget": "backoffice:build:development"
+                    "buildTarget": "backoffice:build:development"
                 }
             },
             "defaultConfiguration": "development"
@@ -107,7 +107,7 @@
         "extract-i18n": {
             "executor": "@angular-devkit/build-angular:extract-i18n",
             "options": {
-                "browserTarget": "backoffice:build"
+                "buildTarget": "backoffice:build"
             }
         },
         "lint": {
@@ -124,8 +124,7 @@
             "executor": "@nx/jest:jest",
             "outputs": ["{workspaceRoot}/coverage/apps/backoffice"],
             "options": {
-                "jestConfig": "apps/backoffice/jest.config.ts",
-                "passWithNoTests": true
+                "jestConfig": "apps/backoffice/jest.config.ts"
             }
         }
     },

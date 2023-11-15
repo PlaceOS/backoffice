@@ -1,17 +1,14 @@
 import { SwUpdate } from '@angular/service-worker';
 
 import { log } from './general';
-import { Subscription } from 'rxjs';
 import { notifyInfo } from './notifications';
 
-let _available: Subscription;
-let _activated: Subscription;
 let _timer: number;
-let _cache: SwUpdate;
+let _new_version = false;
 
-const NOTIFY_CHANGE = true;
-
-export type Notification = (message: string, callback: () => void) => void;
+export function hasNewVersion() {
+    return _new_version;
+}
 
 /**
  * Setup handler for cache change events
@@ -19,52 +16,33 @@ export type Notification = (message: string, callback: () => void) => void;
  * @param notify Function to call on changes to the cache
  * @param interval Time interval to check the cache for changes
  */
-export function setupCache(
-    cache: SwUpdate,
-    notify: Notification = () => null,
-    interval: number = 5 * 60 * 1000
-) {
-    _cache = cache;
+export function setupCache(cache: SwUpdate, interval: number = 5 * 60 * 1000) {
     if (cache.isEnabled) {
-        if (_available) _available.unsubscribe();
-        if (_activated) _activated.unsubscribe();
         if (_timer) clearInterval(_timer);
-        _available = cache.available.subscribe((event) => {
-            const current = `current version is ${event.current.hash}`;
-            const available = `available version is ${event.available.hash}`;
-            log('CACHE', `Update available: ${current} ${available}`);
-            activateUpdate();
-        });
-        _activated = cache.activated.subscribe(() => {
-            log('CACHE', `Updates activated. Reloading...`);
-            if (NOTIFY_CHANGE) {
-                notify('Newer version of the application is available', () =>
-                    location.reload()
-                );
-            } else location.reload();
-        });
         _timer = <any>setInterval(() => {
             log('CACHE', `Checking for updates...`);
-            _cache.checkForUpdate();
+            activateUpdate(cache);
         }, interval);
     }
+}
+
+export function clearCacheCheck() {
+    if (_timer) clearInterval(_timer);
 }
 
 /**
  * Update the cache and reload the page
  *
  */
-function activateUpdate() {
-    if (_cache?.isEnabled) {
+async function activateUpdate(cache: SwUpdate) {
+    if (cache.isEnabled && (await cache.checkForUpdate())) {
         log('CACHE', `Activating changes to the cache...`);
-        _cache.activateUpdate().then(() => {
-            if (NOTIFY_CHANGE) {
-                notifyInfo(
-                    'Newer version of the application is available',
-                    'Reload',
-                    () => location.reload()
-                );
-            } else location.reload();
-        });
+        if (!(await cache.activateUpdate())) return;
+        _new_version = true;
+        notifyInfo(
+            'Newer version of the application is available',
+            'Refresh',
+            () => location.reload()
+        );
     }
 }
