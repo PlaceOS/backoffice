@@ -59,7 +59,10 @@ import { ActiveItemService } from '../common/item.service';
                             exact: false,
                             __change_detection_hack__: item.id + subroute
                         }"
-                        class="flex flex-col px-2 py-2 w-[23rem] m-2 max-w-[calc(25vw-1rem)] rounded"
+                        [matTooltip]="
+                            item.update_available ? 'Update available' : ''
+                        "
+                        class="relative flex flex-col px-2 py-2 w-[23rem] m-2 max-w-[calc(25vw-1rem)] rounded"
                         (click)="show = false"
                     >
                         <p class="truncate w-full">
@@ -74,6 +77,12 @@ import { ActiveItemService } from '../common/item.service';
                                 {{ item.extra }}
                             </span>
                         </div>
+                        <app-icon
+                            class="absolute -top-1 -right-1 text-info text-2xl rotate-12"
+                            *ngIf="item.update_available"
+                        >
+                            new_releases
+                        </app-icon>
                     </a>
                     <div
                         class="p-2 text-center opacity-30 text-sm bg-base-200 "
