@@ -9,12 +9,14 @@ import { DriverAboutComponent } from './driver-about.component';
 import { DriverModulesComponent } from './driver-devices.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
 import { DriversComponent } from './drivers.component';
+import { DriverUpdateListModalComponent } from './driver-update-list-modal.component';
 
 @NgModule({
     declarations: [
         DriverAboutComponent,
         DriverModulesComponent,
-        DriversComponent
+        DriversComponent,
+        DriverUpdateListModalComponent,
     ],
     imports: [
         CommonModule,

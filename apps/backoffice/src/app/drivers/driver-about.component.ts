@@ -93,6 +93,15 @@ import { DriverStateService } from './driver-state.service';
                 <div class="flex-1"></div>
                 <button
                     btn
+                    (click)="updateDriver()"
+                    i18n="@@driverReloadAction"
+                    class="w-full"
+                    *ngIf="item.update_available"
+                >
+                    Update Driver
+                </button>
+                <button
+                    btn
                     (click)="recompileDriver()"
                     i18n="@@driverReloadAction"
                     class="w-full"
@@ -137,6 +146,7 @@ export class DriverAboutComponent {
     public readonly compilation_error = this._service.last_error;
 
     public readonly recompileDriver = () => this._service.recompileDriver();
+    public readonly updateDriver = () => this._service.updateDriver();
     public readonly viewErrors = () => this._service.viewError();
 
     public get item(): PlaceDriver {
