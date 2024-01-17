@@ -62,24 +62,45 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                     ></div>
                     <div
                         actions
-                        class="absolute flex bg-[#212121] rounded-3xl shadow bottom-2 right-2"
+                        class="absolute flex items-center space-x-2 bottom-2 right-2"
                     >
-                        <button btn icon (click)="toggleDebugPosition()">
+                        <button
+                            btn
+                            icon
+                            class="bg-neutral-focus text-neutral-content shadow rounded-full"
+                            (click)="downloadLogs()"
+                        >
+                            <app-icon matTooltip="Download Messages">
+                                download
+                            </app-icon>
+                        </button>
+                        <button
+                            btn
+                            icon
+                            class="bg-neutral-focus text-neutral-content shadow rounded-full"
+                            (click)="toggleDebugPosition()"
+                        >
                             <app-icon matTooltip="Toggle Position">{{
                                 debug_position === 'side'
                                     ? 'border_bottom'
                                     : 'border_right'
                             }}</app-icon>
                         </button>
-                        <button btn icon (click)="clearDebugMessages()">
-                            <app-icon matTooltip="Clear Messages"
-                                >clear_all</app-icon
-                            >
+                        <button
+                            btn
+                            icon
+                            class="bg-neutral-focus text-neutral-content shadow rounded-full"
+                            (click)="clearDebugMessages()"
+                        >
+                            <app-icon matTooltip="Clear Messages">
+                                clear_all
+                            </app-icon>
                         </button>
                         <button
                             btn
                             icon
                             (click)="clearBindings()"
+                            class="bg-neutral-focus text-neutral-content shadow rounded-full"
                             matTooltip="Unbind Modules"
                         >
                             <app-icon>cancel_presentation</app-icon>
@@ -88,6 +109,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                             btn
                             icon
                             (click)="close()"
+                            class="bg-neutral-focus text-neutral-content shadow rounded-full"
                             matTooltip="Close Console"
                         >
                             <app-icon>close</app-icon>
@@ -287,5 +309,16 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
         }
         this._resize_start = point;
         this.timeout('resize', () => (this.resize = !this.resize), 50);
+    }
+
+    public downloadLogs() {
+        const blob = new Blob([this.logs.join('\n')], {
+            type: 'text/plain;charset=utf-8',
+        });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'debug.log';
+        a.click();
     }
 }
