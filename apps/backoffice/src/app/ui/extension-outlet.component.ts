@@ -91,7 +91,11 @@ export class ExtensionOutletComponent extends AsyncHandler {
                     // Handle updating metadata
                     const url = this.loadResource(item, message);
                     this._frame_el?.nativeElement?.contentWindow?.postMessage(
-                        JSON.stringify({ type: 'resource', content: url }),
+                        JSON.stringify({
+                            type: 'backoffice',
+                            status: 'success',
+                            content: url,
+                        }),
                         '*'
                     );
                 }
