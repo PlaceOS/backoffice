@@ -192,14 +192,6 @@ export class DriverUpdateListModalComponent {
             this.loading = '';
             this._dialog_ref.disableClose = false;
         });
-        this.loading = 'Recompiling updated drivers...';
-        await Promise.all(
-            selected.map((driver) => recompileDriver(driver.id).toPromise())
-        ).catch((_) => {
-            notifyError('Error recompiling updated drivers', _);
-            this.loading = '';
-            this._dialog_ref.disableClose = false;
-        });
         notifySuccess(`Successfully updated ${selected.length} drivers`);
         this.loading = '';
         if (this.all_selected) this._dialog_ref.close();
