@@ -1,16 +1,24 @@
 import { Location } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { onlineState, showMetadata, updateMetadata } from '@placeos/ts-client';
+import {
+    apiKey,
+    onlineState,
+    showMetadata,
+    token,
+    updateMetadata,
+} from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 
+const RESOURCE_STORE = new Map<string, string>();
+
 export interface FrameMessage {
     type: 'backoffice';
-    action: 'update' | 'load' | 'metadata';
+    action: 'update' | 'load' | 'metadata' | 'resource';
     name?: string;
     parent?: boolean;
     content: HashMap;
@@ -79,6 +87,13 @@ export class ExtensionOutletComponent extends AsyncHandler {
                 } else if (message.action === 'load' && message.name) {
                     // Handle updating metadata
                     this.loadMetadata(item, message, message.parent);
+                } else if (message.action === 'resource' && message.name) {
+                    // Handle updating metadata
+                    const url = this.loadResource(item, message);
+                    this._frame_el?.nativeElement?.contentWindow?.postMessage(
+                        JSON.stringify({ type: 'resource', content: url }),
+                        '*'
+                    );
                 }
             }
         });
@@ -154,5 +169,30 @@ export class ExtensionOutletComponent extends AsyncHandler {
                 '*'
             );
         }
+    }
+
+    private async loadResource(item: any, message: FrameMessage) {
+        const src = message.name;
+        // If not an API call, just load the image
+        if (!src.includes('/api/engine/v2/uploads')) return src;
+        const as_string = JSON.stringify(item);
+        // Prevent resolving resources for not owned by the parent item
+        if (!as_string.includes(src)) return src;
+        // If image has already been loaded, just use the cached version
+        if (RESOURCE_STORE.has(src)) return RESOURCE_STORE.get(src);
+
+        const tkn = token();
+        document.cookie = `${
+            tkn === 'x-api-key'
+                ? 'api-key=' + encodeURIComponent(apiKey())
+                : 'bearer_token=' + encodeURIComponent(tkn)
+        };max-age=60;path=/api/;samesite=strict;${
+            location.protocol === 'https:' ? 'secure;' : ''
+        }`;
+        const response = await fetch(src);
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        RESOURCE_STORE.set(src, url);
+        return url;
     }
 }
