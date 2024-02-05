@@ -17,6 +17,7 @@ import { HashMap } from '../common/types';
 const RESOURCE_STORE = new Map<string, string>();
 
 export interface FrameMessage {
+    id: string;
     type: 'backoffice';
     action: 'update' | 'load' | 'metadata' | 'resource';
     name?: string;
@@ -59,11 +60,8 @@ export class ExtensionOutletComponent extends AsyncHandler {
                 this.timeout('init', () => (this.app_loaded = true))
             );
         this._route.queryParamMap.subscribe((params) => {
-            if (params.has('embed')) {
-                this.url = params.get('embed');
-            } else {
-                this._location.back();
-            }
+            if (params.has('embed')) this.url = params.get('embed');
+            else this._location.back();
         });
         window.addEventListener('message', this.onMessage);
         this.subscription('message', () =>
@@ -75,7 +73,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
         if (!this._frame_el?.nativeElement) {
             return this.timeout('not_ready', () => this.handleMessage(message));
         }
-        this.timeout('on_message', () => {
+        this.timeout(`on_message:${message.action}`, async () => {
             const item = this._service.active_item;
             if (message.type === 'backoffice' && item) {
                 if (message.action === 'update') {
@@ -89,15 +87,13 @@ export class ExtensionOutletComponent extends AsyncHandler {
                     this.loadMetadata(item, message, message.parent);
                 } else if (message.action === 'resource' && message.name) {
                     // Handle updating metadata
-                    const url = this.loadResource(item, message);
-                    this._frame_el?.nativeElement?.contentWindow?.postMessage(
-                        JSON.stringify({
-                            type: 'backoffice',
-                            status: 'success',
-                            content: url,
-                        }),
-                        '*'
-                    );
+                    const url = await this.loadResource(item, message);
+                    this._postMessage({
+                        id: message.id,
+                        type: 'backoffice',
+                        status: 'success',
+                        content: url,
+                    } as any);
                 }
             }
         });
@@ -123,13 +119,11 @@ export class ExtensionOutletComponent extends AsyncHandler {
                     }`
                 );
             }
-            this._frame_el.nativeElement.contentWindow.postMessage(
-                JSON.stringify({
-                    type: 'backoffice',
-                    status: updated_item ? 'success' : 'error',
-                }),
-                '*'
-            );
+            this._postMessage({
+                id: message.id,
+                type: 'backoffice',
+                status: updated_item ? 'success' : 'error',
+            } as any);
         }
     }
 
@@ -146,13 +140,11 @@ export class ExtensionOutletComponent extends AsyncHandler {
                 this._service.actions.singular || 'item'
             } metadata`
         );
-        this._frame_el.nativeElement.contentWindow.postMessage(
-            JSON.stringify({
-                type: 'backoffice',
-                status: 'success',
-            }),
-            '*'
-        );
+        this._postMessage({
+            id: message.id,
+            type: 'backoffice',
+            status: 'success',
+        } as any);
     }
 
     private async loadMetadata(
@@ -165,13 +157,12 @@ export class ExtensionOutletComponent extends AsyncHandler {
             message.name
         ).toPromise();
         if (metadata) {
-            this._frame_el.nativeElement.contentWindow.postMessage(
-                JSON.stringify({
-                    type: 'backoffice',
-                    content: (metadata as any).details,
-                }),
-                '*'
-            );
+            this._postMessage({
+                id: message.id,
+                type: 'backoffice',
+                content: (metadata as any).details,
+                status: 'success',
+            } as any);
         }
     }
 
@@ -195,8 +186,21 @@ export class ExtensionOutletComponent extends AsyncHandler {
         }`;
         const response = await fetch(src);
         const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
+
+        const url = await new Promise<string>((resolve) => {
+            var a = new FileReader();
+            a.onload = (e) => resolve(e.target.result as any);
+            a.readAsDataURL(blob);
+        });
+
         RESOURCE_STORE.set(src, url);
         return url;
+    }
+
+    private _postMessage(message: FrameMessage) {
+        this._frame_el?.nativeElement?.contentWindow?.postMessage(
+            JSON.stringify(message),
+            '*'
+        );
     }
 }
