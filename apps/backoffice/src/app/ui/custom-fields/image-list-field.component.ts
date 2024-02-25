@@ -10,12 +10,13 @@ import {
 } from '@placeos/cloud-uploads';
 
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, takeWhile } from 'rxjs/operators';
+import { map, take, takeWhile } from 'rxjs/operators';
 
 import * as blobUtil from 'blob-util';
 import { randomInt, unique } from '../../common/general';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { notifyInfo } from '../../common/notifications';
+import { UploadsService } from '../../common/uploads.service';
 
 export interface UploadDetails {
     /** Unique ID for the upload */
@@ -254,7 +255,10 @@ export class ImageListFieldComponent extends AsyncHandler {
 
     @ViewChild('image_list') private _list_el: ElementRef<HTMLDivElement>;
 
-    constructor(private _clipboard: Clipboard) {
+    constructor(
+        private _clipboard: Clipboard,
+        private _uploads: UploadsService
+    ) {
         super();
     }
 
@@ -311,8 +315,13 @@ export class ImageListFieldComponent extends AsyncHandler {
             const files: FileList = element.files;
             /* istanbul ignore else */
             if (files.length) {
+                this.interval('update_status', () =>
+                    this._updateUploadHistory()
+                );
                 for (let i = 0; i < files.length; i++) {
-                    const id = await this.uploadFile(files[i]);
+                    const id = await this._uploads.uploadFileWithPermissions(
+                        files[i]
+                    );
                     this.upload_ids.next([...this.upload_ids.getValue(), id]);
                 }
             }
@@ -337,37 +346,19 @@ export class ImageListFieldComponent extends AsyncHandler {
     public readonly registerOnTouched = (fn: (_: string[]) => void) =>
         (this._onTouch = fn);
 
-    public uploadFile(file: File) {
-        return new Promise<number>((resolve) => {
-            let resolved = false;
-            const update_fn = (details) => {
-                if (!resolved) {
-                    resolve(details.id);
-                    resolved = true;
-                }
-                this._upload_list.next([
-                    ...this._upload_list
-                        .getValue()
-                        .filter((_) => _.id !== details.id),
-                    details,
-                ]);
-            };
-            uploadFile(file).subscribe(update_fn, update_fn, () => {
-                this._updateUploadHistory();
-            });
-        });
-    }
-
-    private _updateUploadHistory() {
-        const done_list = this._upload_list
-            .getValue()
-            .filter((file) => file.progress >= 100);
+    private async _updateUploadHistory() {
+        const list = this.upload_ids.getValue();
+        if (list.length === 0) return;
+        const global_list = await this._uploads.upload_list
+            .pipe(take(1))
+            .toPromise();
+        const new_list = global_list.filter((_) =>
+            list.find((i) => i === _.id)
+        );
+        const done_list = new_list.filter((file) => file.progress >= 100);
+        this._upload_list.next(new_list);
         done_list.forEach((i) => delete i.upload);
-        if (localStorage) {
-            localStorage.setItem(
-                'CONCIERGE.uploads',
-                JSON.stringify(done_list)
-            );
-        }
+        if (done_list.length >= list.length)
+            this.clearInterval('update_status');
     }
 }

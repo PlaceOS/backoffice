@@ -28,17 +28,23 @@ export class UploadsService {
     }
 
     public uploadFileWithPermissions(file: File) {
-        const ref = this._dialog.open(UploadPermissionsModalComponent, {
-            data: { file },
-        });
-        ref.afterClosed().subscribe((details) => {
-            if (details) {
-                this.uploadFile(
-                    details.file,
-                    details.is_public,
-                    details.permissions
-                );
-            }
+        return new Promise<number>((resolve, reject) => {
+            const ref = this._dialog.open(UploadPermissionsModalComponent, {
+                data: { file },
+            });
+            ref.afterClosed().subscribe(async (details) => {
+                if (details) {
+                    const id = await this.uploadFile(
+                        details.file,
+                        details.is_public,
+                        details.permissions
+                    ).catch((e) => {
+                        reject(e);
+                        throw e;
+                    });
+                    resolve(id);
+                } else reject();
+            });
         });
     }
 
