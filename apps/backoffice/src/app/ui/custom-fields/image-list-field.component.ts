@@ -152,7 +152,7 @@ export function uploadFile(file: File): Observable<UploadDetails> {
                     *ngIf="item.error"
                     class="absolute inset-0 hover:bg-base-content hover:bg-opacity-50 text-base-100 flex items-center justify-center"
                 >
-                    <app-icon class="text-3xl opacity-0">retry</app-icon>
+                    <app-icon class="text-3xl opacity-0">refresh</app-icon>
                 </div>
             </div>
             <button
@@ -180,7 +180,7 @@ export function uploadFile(file: File): Observable<UploadDetails> {
             <mat-chip-grid #chipList aria-label="Image List">
                 <mat-chip-row
                     *ngFor="let item of list"
-                    (removed)="removeItem(item)"
+                    (removed)="removeImage(item)"
                 >
                     <div class="truncate max-w-md">{{ item }}</div>
                     <button matChipRemove [attr.aria-label]="'Remove ' + item">
@@ -308,14 +308,10 @@ export class ImageListFieldComponent extends AsyncHandler {
         this.setValue(unique([...this.list, url]));
     }
 
-    /**
-     * Retry a failed upload
-     * @param details Details of the failed upload
-     */
-    public retryUpload(details: UploadDetails) {
-        if (details.error) {
-            details.error = null;
-            details.upload.resume();
+    public retryUpload(item: UploadDetails) {
+        if (item.error) {
+            item.error = null;
+            item.upload.resume();
         }
     }
 
