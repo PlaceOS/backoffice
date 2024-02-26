@@ -308,6 +308,17 @@ export class ImageListFieldComponent extends AsyncHandler {
         this.setValue(unique([...this.list, url]));
     }
 
+    /**
+     * Retry a failed upload
+     * @param details Details of the failed upload
+     */
+    public retry(details: UploadDetails) {
+        if (details.error) {
+            details.error = null;
+            details.upload.resume();
+        }
+    }
+
     public async uploadImages(event) {
         const element: HTMLInputElement = event.target as any;
         /* istanbul ignore else */
