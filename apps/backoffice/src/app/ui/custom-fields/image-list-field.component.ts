@@ -3,17 +3,12 @@ import { Component, ElementRef, forwardRef, ViewChild } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { Clipboard } from '@angular/cdk/clipboard';
-import {
-    humanReadableByteCount,
-    Upload,
-    uploadFiles,
-} from '@placeos/cloud-uploads';
+import { Upload } from '@placeos/cloud-uploads';
 
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, take, takeWhile } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 
-import * as blobUtil from 'blob-util';
-import { randomInt, unique } from '../../common/general';
+import { unique } from '../../common/general';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { notifyInfo } from '../../common/notifications';
 import { UploadsService } from '../../common/uploads.service';
@@ -35,50 +30,6 @@ export interface UploadDetails {
     error?: string;
     /** Upload object associated with the file */
     upload: Upload;
-}
-/**
- * Upload the given file to the cloud
- * @param file File to upload
- */
-export function uploadFile(file: File): Observable<UploadDetails> {
-    return new Observable((observer) => {
-        const fileReader = new FileReader();
-        fileReader.addEventListener('loadend', (e: any) => {
-            const arrayBuffer = e.target.result;
-            const upload_details: UploadDetails = {
-                id: randomInt(9999_9999_9999),
-                name: file.name,
-                progress: 0,
-                link: '',
-                formatted_size: humanReadableByteCount(file.size),
-                size: file.size,
-                upload: null,
-            };
-            const blob = blobUtil.arrayBufferToBlob(arrayBuffer, file.type);
-            const upload_list = uploadFiles([blob], { file_name: file.name });
-            const upload = upload_list[0];
-            upload_details.upload = upload;
-            upload.status
-                .pipe(takeWhile((_) => _.status !== 'complete', true))
-                .subscribe(
-                    (state) => {
-                        if (upload.access_url)
-                            upload_details.link = upload.access_url;
-                        upload_details.progress = state.progress;
-                        observer.next(upload_details);
-                        if (state.status === 'error')
-                            observer.error({
-                                ...upload_details,
-                                error: state.error,
-                            });
-                        if (state.status === 'complete') observer.complete();
-                    },
-                    (e) => (upload_details.error = e)
-                );
-            observer.next(upload_details);
-        });
-        fileReader.readAsArrayBuffer(file);
-    });
 }
 
 @Component({
@@ -106,14 +57,16 @@ export function uploadFile(file: File): Observable<UploadDetails> {
             <div
                 image
                 *ngFor="let url of list; let i = index"
-                class="bg-center bg-cover h-32 w-36 relative rounded overflow-hidden flex-shrink-0"
+                class="bg-center bg-cover h-32 w-36 relative rounded overflow-hidden flex-shrink-0 bg-base-200"
                 [style.transform]="'translate(-' + offset + '00%)'"
-                [style.background-image]="'url(' + url + ')'"
             >
-                <div
-                    overlay
-                    class="absolute inset-0 hover:bg-base-content/50 text-base-100"
-                >
+                <img
+                    auth
+                    [src]="url | safe: 'resource'"
+                    class="object-contain absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none"
+                />
+                <div overlay class="absolute inset-0 text-base-100 z-20">
+                    <div bg class="absolute inset-0 opacity-0 bg-black"></div>
                     <div
                         actions
                         class="absolute top-0 left-0 right-0 flex items-center justify-center space-x-2 opacity-0"
@@ -208,13 +161,17 @@ export function uploadFile(file: File): Observable<UploadDetails> {
                 transition: background 200ms;
             }
 
-            [overlay]:hover [actions],
-            [overlay]:hover > app-icon {
+            [image]:hover [actions],
+            [image]:hover > app-icon {
                 opacity: 1 !important;
             }
 
+            [image]:hover [bg] {
+                opacity: 0.4 !important;
+            }
+
             [actions],
-            [overlay] > app-icon {
+            [image] > app-icon {
                 transition: opacity 200ms;
             }
 
