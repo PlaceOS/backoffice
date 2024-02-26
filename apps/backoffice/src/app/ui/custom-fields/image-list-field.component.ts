@@ -312,7 +312,7 @@ export class ImageListFieldComponent extends AsyncHandler {
      * Retry a failed upload
      * @param details Details of the failed upload
      */
-    public retry(details: UploadDetails) {
+    public retryUpload(details: UploadDetails) {
         if (details.error) {
             details.error = null;
             details.upload.resume();
