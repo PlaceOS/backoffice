@@ -79,9 +79,9 @@ import { marked } from 'marked';
                     </div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.location">
-                    <label class="w-24" i18n="@@zoneLocationLabel"
-                        >Location:</label
-                    >
+                    <label class="w-24" i18n="@@zoneLocationLabel">
+                        Location:
+                    </label>
                     <div class="value">{{ item?.location }}</div>
                 </div>
                 <div class="flex items-center space-x-2" *ngIf="item?.code">

@@ -86,6 +86,7 @@ import { ItemTablistComponent } from './item-tablist.component';
 import { ItemSidebarComponent } from './item-sidebar.component';
 import { NewTerminalComponent } from './new-terminal.component';
 import { UploadPermissionsModalComponent } from './upload-permissions-modal.component';
+import { AuthenticatedImageDirective } from './authenticated-image.directive';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -126,6 +127,7 @@ const COMPONENTS: Type<any>[] = [
     UnauthorisedComponent,
     UploadListComponent,
     BindingDirective,
+    AuthenticatedImageDirective,
     BasicLineGraphComponent,
     DiffViewerComponent,
     SettingsHistoryViewComponent,
