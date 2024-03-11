@@ -50,7 +50,7 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
                                     }}
                                 </div>
                                 <code
-                                    class="text-xs mr-2"
+                                    class="text-xs mr-2 bg-base-300"
                                     [matTooltip]="
                                         (item.modified_by_id | user | async)
                                             ?.name +

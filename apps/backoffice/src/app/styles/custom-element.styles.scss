@@ -776,6 +776,23 @@ a[icon] {
         display: block;
     }
 
+    .mat-expansion-panel {
+        background-color: var(--b2);
+        color: var(--bc);
+    }
+
+    .mat-mdc-tab-header-pagination-chevron {
+        border-color: var(--bc);
+    }
+
+    .mat-expansion-panel-header-title {
+        color: var(--bc);
+    }
+
+    .mat-expansion-indicator::after {
+        color: var(--bc);
+    }
+
     .mat-mdc-form-field-icon-prefix > * {
         position: relative;
         top: 0;
