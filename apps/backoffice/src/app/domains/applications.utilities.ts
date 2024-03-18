@@ -10,6 +10,7 @@ export function generateApplicationFormFields(app?: PlaceApplication) {
         skip_authorization: new FormControl(!!app?.skip_authorization),
         redirect_uri: new FormControl(app?.redirect_uri || '', validateURL),
         client_id: new FormControl(app?.uid || ''),
+        preserve_client_id: new FormControl(false),
     };
     return new FormGroup(fields);
 }

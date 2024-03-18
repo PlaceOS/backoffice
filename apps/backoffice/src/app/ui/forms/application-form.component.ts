@@ -65,7 +65,7 @@ import { Md5 } from 'ts-md5';
             </div>
             <div class="field" *ngIf="form.controls.redirect_uri">
                 <label for="redirect-uri" i18n="@@redirectLabel">
-                    Login URL:
+                    Redirect URL:
                 </label>
                 <mat-form-field appearance="outline">
                     <input
@@ -94,6 +94,11 @@ import { Md5 } from 'ts-md5';
                     />
                 </mat-form-field>
             </div>
+            <div class="field">
+                <mat-checkbox formControlName="preserve_client_id">
+                    Preserve Client ID
+                </mat-checkbox>
+            </div>
         </form>
     `,
     styles: [
@@ -116,7 +121,6 @@ export class ApplicationFormComponent extends AsyncHandler {
             this.client_id.next(
                 client_id || redirect_uri ? Md5.hashStr(redirect_uri || '') : ''
             );
-            if (client_id) return;
             this.subscription(
                 'form.redirect_uri',
                 this.form
