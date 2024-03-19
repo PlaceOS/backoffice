@@ -3,7 +3,13 @@ import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { invalidateToken, isMock, isOnline, token } from '@placeos/ts-client';
+import {
+    get,
+    invalidateToken,
+    isMock,
+    isOnline,
+    token,
+} from '@placeos/ts-client';
 import {
     Amazon,
     Azure,
@@ -20,13 +26,18 @@ import { AsyncHandler } from './common/async-handler.class';
 import { log, detectIE } from './common/general';
 import { BackofficeUsersService } from './users/users.service';
 import { NavigationEnd, Router } from '@angular/router';
+import { currentUser } from './common/user-state';
+import { addDays, format, getUnixTime } from 'date-fns';
 
 @Component({
     selector: 'placeos-root',
     template: `
         <div class="h-full w-full flex flex-col overflow-hidden">
             <ng-container *ngIf="!(loading | async); else load_state">
-                <router-outlet></router-outlet>
+                <global-banner></global-banner>
+                <div class="flex-1 w-full relative h-1/2">
+                    <router-outlet></router-outlet>
+                </div>
                 <ng-container *ngIf="filter">
                     <global-search [(search)]="filter"></global-search>
                 </ng-container>
@@ -131,6 +142,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
                 this.simple = this._router.url.includes('mqtt');
             }
         });
+        this._checkTenants();
     }
 
     private onInitError() {
@@ -138,5 +150,25 @@ export class AppComponent extends AsyncHandler implements OnInit {
         log('Init', 'Failed to initialise user. Restarting application...');
         invalidateToken();
         location.reload();
+    }
+
+    private async _checkTenants() {
+        if (!currentUser()?.sys_admin) return;
+        const tenant_list: any = await get('/api/staff/v1/tenants').toPromise();
+        for (const tenant of tenant_list) {
+            if (!tenant.secret_expiry) continue;
+            if (tenant.secret_expiry > getUnixTime(addDays(Date.now(), -30))) {
+                this._settings.post('banner', {
+                    id: `tenant_secret_expiry-${tenant.id}`,
+                    type: 'warn',
+                    content: `Staff API Tenant "${
+                        tenant.name
+                    }" has a secret that will expire on ${format(
+                        tenant.secret_expiry * 1000,
+                        "MMM do 'at' h:mma"
+                    )}.`,
+                });
+            }
+        }
     }
 }

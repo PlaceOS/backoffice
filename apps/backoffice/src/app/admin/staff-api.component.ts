@@ -14,6 +14,7 @@ import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { BookingLimitsModalComponent } from './booking-limits-modal.component';
 import { StaffTenantModalComponent } from './staff-tenant-modal.component';
+import { addDays, getUnixTime, startOfDay } from 'date-fns';
 
 export interface PlaceTenant {
     id: string;
@@ -25,6 +26,7 @@ export interface PlaceTenant {
     service_account?: string;
     booking_limits: Record<string, number>;
     credentials?: HashMap<string>;
+    secret_expiry?: number;
 }
 
 @Component({
@@ -51,22 +53,62 @@ export interface PlaceTenant {
         </div>
         <ng-container *ngIf="!loading; else load_state">
             <div
-                class="w-full"
+                class="w-full min-w-[56rem]"
                 *ngIf="(tenants | async)?.length; else empty_state"
             >
                 <div table-head>
-                    <div class="w-1/2 p-2">Name</div>
-                    <div class="flex-1 p-2">Platform</div>
-                    <div class="w-24 p-2 h-10"></div>
+                    <div class="flex-1 p-2">Name</div>
+                    <div class="w-40 p-2">Platform</div>
+                    <div class="w-48 p-2 h-10">Expires</div>
+                    <div class="w-32 p-2 h-10"></div>
                     <div class="w-24 p-2 h-10"></div>
                 </div>
                 <div table-body>
                     <div table-row *ngFor="let item of tenants | async">
-                        <div class="w-1/2 p-2 truncate">{{ item.name }}</div>
-                        <div class="flex-1 p-2 truncate">
+                        <div class="flex-1 p-2 truncate">{{ item.name }}</div>
+                        <div class="w-40 p-2 truncate">
                             {{ item.platform }}
                         </div>
-                        <div class="w-24 p-2 truncate">
+                        <div class="w-48 p-2">
+                            <div
+                                class="rounded-2xl px-3 py-1 text-xs"
+                                [class.bg-base-200]="!item.secret_expiry"
+                                [class.text-neutral]="!item.secret_expiry"
+                                [class.bg-success]="
+                                    item.secret_expiry && !expiring(item)
+                                "
+                                [class.text-success-content]="
+                                    item.secret_expiry && !expiring(item)
+                                "
+                                [class.bg-warning]="
+                                    item.secret_expiry &&
+                                    expiring(item) &&
+                                    !expired(item)
+                                "
+                                [class.text-warning-content]="
+                                    item.secret_expiry &&
+                                    expiring(item) &&
+                                    !expired(item)
+                                "
+                                [class.bg-error]="
+                                    item.secret_expiry && expired(item)
+                                "
+                                [class.text-error-content]="
+                                    item.secret_expiry && expired(item)
+                                "
+                            >
+                                {{
+                                    !item.secret_expiry
+                                        ? 'Never'
+                                        : (item.secret_expiry * 1000
+                                              | date: 'mediumDate') +
+                                          ' &ndash; ' +
+                                          (item.secret_expiry * 1000
+                                              | date: 'shortTime')
+                                }}
+                            </div>
+                        </div>
+                        <div class="w-32 p-2 truncate">
                             <button
                                 btn
                                 class="clear underline"
@@ -145,6 +187,18 @@ export class PlaceStaffAPIComponent implements OnInit {
         }),
         shareReplay()
     );
+
+    public expiring(tenant: PlaceTenant): boolean {
+        const expiry = tenant.secret_expiry;
+        const after_time = getUnixTime(startOfDay(addDays(Date.now(), -30)));
+        return expiry && expiry >= after_time;
+    }
+
+    public expired(tenant: PlaceTenant): boolean {
+        const expiry = tenant.secret_expiry;
+        const after_time = getUnixTime(Date.now());
+        return expiry && expiry >= after_time;
+    }
 
     constructor(private _dialog: MatDialog) {}
 

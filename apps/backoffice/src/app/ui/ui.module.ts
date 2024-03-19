@@ -87,6 +87,7 @@ import { ItemSidebarComponent } from './item-sidebar.component';
 import { NewTerminalComponent } from './new-terminal.component';
 import { UploadPermissionsModalComponent } from './upload-permissions-modal.component';
 import { AuthenticatedImageDirective } from './authenticated-image.directive';
+import { GlobalBannerComponent } from './global-banner.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -140,6 +141,7 @@ const COMPONENTS: Type<any>[] = [
     ItemDetailsComponent,
     ItemTablistComponent,
     UploadPermissionsModalComponent,
+    GlobalBannerComponent,
 ];
 
 const PIPES: Type<any>[] = [
