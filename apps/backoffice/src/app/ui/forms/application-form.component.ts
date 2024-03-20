@@ -113,11 +113,14 @@ export class ApplicationFormComponent extends AsyncHandler {
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
 
+    public default_redirect_uri: string;
+
     public readonly client_id = new BehaviorSubject('');
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.form && this.form) {
-            const { client_id, redirect_uri } = this.form.value;
+            const { id, client_id, redirect_uri } = this.form.value;
+            this.default_redirect_uri = redirect_uri || '';
             this.client_id.next(
                 client_id || redirect_uri ? Md5.hashStr(redirect_uri || '') : ''
             );
@@ -126,11 +129,24 @@ export class ApplicationFormComponent extends AsyncHandler {
                 this.form
                     .get('redirect_uri')
                     .valueChanges.subscribe((value: string) => {
+                        if (this.form.value.preserve_client_id) return;
                         this.client_id.next(value ? Md5.hashStr(value) : '');
                         this.form.patchValue(
                             { redirect_uri: value?.trim() },
                             { emitEvent: false }
                         );
+                    })
+            );
+            this.subscription(
+                'form.preserve_client_id',
+                this.form
+                    .get('preserve_client_id')
+                    .valueChanges.subscribe((preserve: boolean) => {
+                        const value = this.form.value.redirect_uri;
+                        const uri = preserve
+                            ? this.default_redirect_uri
+                            : value;
+                        this.client_id.next(uri ? Md5.hashStr(uri) : '');
                     })
             );
         }
