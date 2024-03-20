@@ -60,7 +60,10 @@ import { ActiveItemService } from '../common/item.service';
                             __change_detection_hack__: item.id + subroute
                         }"
                         [matTooltip]="
-                            item.update_available ? 'Update available' : ''
+                            item.update_available &&
+                            item.commit !== item.update_info.commit
+                                ? 'Update available'
+                                : ''
                         "
                         class="relative flex flex-col px-2 py-2 w-[23rem] m-2 max-w-[calc(25vw-1rem)] rounded"
                         (click)="show = false"
@@ -79,7 +82,10 @@ import { ActiveItemService } from '../common/item.service';
                         </div>
                         <app-icon
                             class="absolute -top-1 -right-1 text-info text-2xl rotate-12"
-                            *ngIf="item.update_available"
+                            *ngIf="
+                                item.update_available &&
+                                item.commit !== item.update_info.commit
+                            "
                         >
                             new_releases
                         </app-icon>

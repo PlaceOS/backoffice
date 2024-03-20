@@ -96,7 +96,10 @@ import { DriverStateService } from './driver-state.service';
                     (click)="updateDriver()"
                     i18n="@@driverReloadAction"
                     class="w-full"
-                    *ngIf="item.update_available"
+                    *ngIf="
+                        item.update_available &&
+                        item.commit !== item.update_info.commit
+                    "
                 >
                     Update Driver
                 </button>
