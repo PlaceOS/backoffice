@@ -1,9 +1,5 @@
 import { Component } from '@angular/core';
-import {
-    queryDrivers,
-    recompileDriver,
-    updateDriver,
-} from '@placeos/ts-client';
+import { queryDrivers, updateDriver } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
 import {
     catchError,
@@ -182,10 +178,12 @@ export class DriverUpdateListModalComponent {
         );
         await Promise.all(
             selected.map((driver) =>
-                updateDriver(driver.id, {
-                    ...driver,
-                    commit: driver.update_info.commit,
-                }).toPromise()
+                driver.commit !== driver.update_info.commit
+                    ? updateDriver(driver.id, {
+                          ...driver,
+                          commit: driver.update_info.commit,
+                      }).toPromise()
+                    : Promise.resolve()
             )
         ).catch((_) => {
             notifyError('Error updating drivers', _);
