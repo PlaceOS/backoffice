@@ -129,6 +129,7 @@ export class DriverUpdateListModalComponent {
             }).pipe(catchError(() => of({ data: [], total: 0 })));
         }),
         map((_) => {
+            _.data = _.data.filter((_) => _.commit !== _.update_info.commit);
             _.data = _.data.sort((a, b) => a.name.localeCompare(b.name));
             this.selected_drivers = _.data.map((d) => d.id);
             this.driver_count = _.total;
