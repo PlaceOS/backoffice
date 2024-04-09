@@ -15,7 +15,7 @@ import { ActiveItemService } from '../common/item.service';
     selector: 'item-sidebar',
     template: `
         <div
-            class="flex flex-col w-[24rem] max-w-[25vw] space-y-2 bg-base-100  shadow rounded overflow-hidden h-full sm:border-r border-base-200 "
+            class="flex flex-col w-[24rem] min-w-64 max-w-[25vw] space-y-2 bg-base-100  shadow rounded overflow-hidden h-full sm:border-r border-base-200 "
             (click)="$event.stopPropagation()"
         >
             <div class="flex items-center border-b border-base-200 ">
@@ -38,11 +38,12 @@ import { ActiveItemService } from '../common/item.service';
             </p>
             <div class="flex flex-col flex-1 h-1/2">
                 <cdk-virtual-scroll-viewport
+                    no-x-scroll
                     itemSize="64"
                     (scroll)="(is_scrolled)"
                     (scrolledIndexChange)="atBottom()"
                     *ngIf="(items | async)?.length; else empty_state"
-                    class="relative flex-1 h-1/2  w-full"
+                    class="relative flex-1 h-1/2 w-full"
                 >
                     <a
                         *cdkVirtualFor="
@@ -65,7 +66,7 @@ import { ActiveItemService } from '../common/item.service';
                                 ? 'Update available'
                                 : ''
                         "
-                        class="relative flex flex-col px-2 py-2 w-[23rem] m-2 max-w-[calc(25vw-1rem)] rounded"
+                        class="relative flex flex-col px-2 py-2 w-[23rem] m-2 max-w-[calc(100%-1rem)] rounded"
                         (click)="show = false"
                     >
                         <p class="truncate w-full">

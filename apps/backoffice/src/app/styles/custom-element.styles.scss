@@ -650,6 +650,25 @@ a[icon] {
         padding: 0 1rem;
     }
 
+    [no-x-scroll] {
+        .cdk-virtual-scroll-content-wrapper {
+            width: 100%;
+        }
+    }
+
+    .mat-mdc-menu-panel {
+        background-color: var(--b1);
+        color: var(--bc);
+    }
+
+    .mat-mdc-menu-item {
+        color: var(--bc);
+
+        &:hover {
+            background-color: var(--b2);
+        }
+    }
+
     .mat-mdc-tab-list {
         border-bottom: 1px solid var(--b2);
     }
