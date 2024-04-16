@@ -349,7 +349,9 @@ export class MetadataDisplayComponent extends AsyncHandler {
 
     private loadMetadata() {
         listMetadata(this.item.id).subscribe((map) => {
-            this.metadata = Object.keys(map).map((key) => map[key]);
+            this.metadata = Object.keys(map)
+                .map((key) => map[key])
+                .sort((a, b) => a.name.localeCompare(b.name));
             this.generateForms();
         });
     }
