@@ -275,6 +275,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                                         matRipple
                                         class="text-error"
                                         matTooltip="View Runtime Errors"
+                                        matTooltipPosition="left"
                                         (click)="viewRuntimeError(device)"
                                         [class.opacity-0]="
                                             !device.has_runtime_errors
@@ -433,7 +434,7 @@ export class SystemModulesComponent extends AsyncHandler {
         {
             id: 'view-error',
             name: 'View Runtime Errors',
-            // disable_on: 'has_runtime_errors',
+            disable_on: 'has_runtime_errors',
             icon: { type: 'icon', content: 'error' },
         } as any,
     ];
