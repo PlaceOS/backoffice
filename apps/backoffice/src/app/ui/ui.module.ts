@@ -88,6 +88,7 @@ import { NewTerminalComponent } from './new-terminal.component';
 import { UploadPermissionsModalComponent } from './upload-permissions-modal.component';
 import { AuthenticatedImageDirective } from './authenticated-image.directive';
 import { GlobalBannerComponent } from './global-banner.component';
+import { ModuleRuntimeErrorsModalComponent } from './module-runtime-errors.modal';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -142,6 +143,7 @@ const COMPONENTS: Type<any>[] = [
     ItemTablistComponent,
     UploadPermissionsModalComponent,
     GlobalBannerComponent,
+    ModuleRuntimeErrorsModalComponent,
 ];
 
 const PIPES: Type<any>[] = [

@@ -1,16 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
-import { Subject, Observable, of, BehaviorSubject, combineLatest } from 'rxjs';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    switchMap,
-    catchError,
-    map,
-} from 'rxjs/operators';
+import { Component } from '@angular/core';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
-import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
 import { ModuleStateService } from './module-state.service';
 
 @Component({

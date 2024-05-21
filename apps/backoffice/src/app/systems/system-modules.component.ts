@@ -21,6 +21,7 @@ import {
     ViewModuleStateModalComponent,
 } from 'apps/backoffice/src/app/overlays/view-module-state/view-module-state.component';
 import { SystemStateService } from './system-state.service';
+import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
 
 @Component({
     selector: 'system-modules',
@@ -101,7 +102,7 @@ import { SystemStateService } from './system-state.service';
                             >
                                 Debug
                             </div>
-                            <div class="w-24 p-2 h-9"></div>
+                            <div class="w-32 p-2 h-9"></div>
                         </div>
                         <div
                             body
@@ -268,13 +269,36 @@ import { SystemStateService } from './system-state.service';
                                     >
                                     </mat-checkbox>
                                 </div>
-                                <div class="w-24 flex px-2 justify-center">
-                                    <button icon (click)="editModule(device)">
+                                <div class="w-32 flex px-2 justify-center">
+                                    <button
+                                        icon
+                                        matRipple
+                                        class="text-error"
+                                        matTooltip="View Runtime Errors"
+                                        (click)="viewRuntimeError(device)"
+                                        [class.opacity-0]="
+                                            !device.has_runtime_errors
+                                        "
+                                        [class.pointer-events-none]="
+                                            !device.has_runtime_errors
+                                        "
+                                    >
+                                        <app-icon>error</app-icon>
+                                    </button>
+                                    <button
+                                        icon
+                                        matRipple
+                                        (click)="editModule(device)"
+                                    >
                                         <app-icon
                                             className="backoffice-edit"
                                         ></app-icon>
                                     </button>
-                                    <button icon [matMenuTriggerFor]="menu">
+                                    <button
+                                        icon
+                                        matRipple
+                                        [matMenuTriggerFor]="menu"
+                                    >
                                         <app-icon
                                             className="backoffice-dots-three-vertical"
                                         ></app-icon>
@@ -286,6 +310,10 @@ import { SystemStateService } from './system-state.service';
                                                 let item of device.running
                                                     ? menu_options
                                                     : offline_options
+                                            "
+                                            [disabled]="
+                                                item.disable_on &&
+                                                !device[item.disable_on]
                                             "
                                             (click)="
                                                 handleContextEvent(item, device)
@@ -402,6 +430,12 @@ export class SystemModulesComponent extends AsyncHandler {
             name: 'Load Module',
             icon: { type: 'icon', class: 'backoffice-arrow-with-circle-up' },
         },
+        {
+            id: 'view-error',
+            name: 'View Runtime Errors',
+            // disable_on: 'has_runtime_errors',
+            icon: { type: 'icon', content: 'error' },
+        } as any,
     ];
 
     public offline_options: AppLink[] = [
@@ -500,6 +534,9 @@ export class SystemModulesComponent extends AsyncHandler {
                 case 'edit':
                     this.editModule(device);
                     break;
+                case 'view-error':
+                    this.viewRuntimeError(device);
+                    break;
             }
         }
     }
@@ -561,5 +598,12 @@ export class SystemModulesComponent extends AsyncHandler {
         if (!this.new_module) return;
         this.joinModule(this.new_module);
         this.new_module = '';
+    }
+
+    public viewRuntimeError(device: PlaceModule) {
+        this._dialog.open<ModuleRuntimeErrorsModalComponent>(
+            ModuleRuntimeErrorsModalComponent,
+            { data: device.id }
+        );
     }
 }

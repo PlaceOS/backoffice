@@ -14,7 +14,7 @@ import { ModulesComponent } from './modules.component';
     declarations: [
         ModuleAboutComponent,
         ModuleSystemsComponent,
-        ModulesComponent
+        ModulesComponent,
     ],
     imports: [
         CommonModule,
