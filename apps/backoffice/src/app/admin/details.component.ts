@@ -33,6 +33,9 @@ export interface PlaceServiceDetails {
 @Component({
     selector: 'app-engine-details',
     template: `
+        <div class="flex items-center justify-between space-x-2 my-4">
+            <div class="text-2xl">Backoffice & PlaceOS Details</div>
+        </div>
         <div class="flex items-center space-x-2">
             <h3 class="text-lg font-medium" i18n="@@backoffice">
                 Application Details (Backoffice)

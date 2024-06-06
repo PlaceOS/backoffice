@@ -1,25 +1,21 @@
 <header>
-    <h3 mat-dialog-title>Changelog</h3>
+    <h3>Changelog</h3>
     <button btn icon mat-dialog-close>
-        <app-icon
-            [icon]="{ type: 'icon', class: 'backoffice-cross' }"
-        ></app-icon>
+        <app-icon>close</app-icon>
     </button>
 </header>
-<mat-dialog-content>
-    <div
-        class="body markdown"
-        *ngIf="changelog; else empty_state"
-        [innerHTML]="changelog | safe:'html'"
-    ></div>
-    <ng-template #empty_state>
-        <div class="body">
-            <div class="info-block">
-                <div class="icon">
-                    <i class="backoffice-cross"></i>
-                </div>
-                <div class="text">No changelog</div>
+<div
+    class="body markdown items-start"
+    *ngIf="changelog; else empty_state"
+    [innerHTML]="changelog | safe:'html'"
+></div>
+<ng-template #empty_state>
+    <div class="body">
+        <div class="info-block">
+            <div class="icon">
+                <i class="backoffice-cross"></i>
             </div>
+            <div class="text">No changelog</div>
         </div>
-    </ng-template>
-</mat-dialog-content>
+    </div>
+</ng-template>
