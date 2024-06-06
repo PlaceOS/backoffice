@@ -32,126 +32,116 @@ export interface PlaceTenant {
 @Component({
     selector: 'staff-api',
     template: `
-        <div class="flex items-center space-x-2 my-4">
-            <label for="type">Domain: </label>
-            <mat-form-field class="h-12" appearance="outline">
-                <mat-select
-                    name="type"
-                    [ngModel]="domain | async"
-                    (ngModelChange)="domain.next($event)"
-                    placeholder="Select Domain..."
-                >
-                    <mat-option
-                        *ngFor="let domain of domain_list"
-                        [value]="domain"
+        <div class="flex flex-col h-full w-full">
+            <div class="flex items-center justify-between space-x-2 my-4">
+                <div class="text-2xl">Staff API Tenants</div>
+                <div class="flex items-center space-x-2">
+                    <mat-form-field
+                        class="no-subscript w-56"
+                        appearance="outline"
                     >
-                        {{ domain.name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <button btn (click)="editTenant()">Add Tenant</button>
-        </div>
-        <ng-container *ngIf="!loading; else load_state">
-            <div
-                class="w-full min-w-[56rem]"
-                *ngIf="(tenants | async)?.length; else empty_state"
-            >
-                <div table-head>
-                    <div class="flex-1 p-2">Name</div>
-                    <div class="w-40 p-2">Platform</div>
-                    <div class="w-48 p-2 h-10">Expires</div>
-                    <div class="w-32 p-2 h-10"></div>
-                    <div class="w-24 p-2 h-10"></div>
-                </div>
-                <div table-body>
-                    <div table-row *ngFor="let item of tenants | async">
-                        <div class="flex-1 p-2 truncate">{{ item.name }}</div>
-                        <div class="w-40 p-2 truncate">
-                            {{ item.platform }}
-                        </div>
-                        <div class="w-48 p-2">
-                            <div
-                                class="rounded-2xl px-3 py-1 text-xs"
-                                [class.bg-base-200]="!item.secret_expiry"
-                                [class.text-neutral]="!item.secret_expiry"
-                                [class.bg-success]="
-                                    item.secret_expiry && !expiring(item)
-                                "
-                                [class.text-success-content]="
-                                    item.secret_expiry && !expiring(item)
-                                "
-                                [class.bg-warning]="
-                                    item.secret_expiry &&
-                                    expiring(item) &&
-                                    !expired(item)
-                                "
-                                [class.text-warning-content]="
-                                    item.secret_expiry &&
-                                    expiring(item) &&
-                                    !expired(item)
-                                "
-                                [class.bg-error]="
-                                    item.secret_expiry && expired(item)
-                                "
-                                [class.text-error-content]="
-                                    item.secret_expiry && expired(item)
-                                "
+                        <mat-select
+                            name="type"
+                            [ngModel]="domain | async"
+                            (ngModelChange)="domain.next($event)"
+                            placeholder="Select Domain..."
+                        >
+                            <mat-option
+                                *ngFor="let domain of domain_list"
+                                [value]="domain"
                             >
-                                {{
-                                    !item.secret_expiry
-                                        ? 'Never'
-                                        : (item.secret_expiry * 1000
-                                              | date: 'mediumDate') +
-                                          ' &ndash; ' +
-                                          (item.secret_expiry * 1000
-                                              | date: 'shortTime')
-                                }}
-                            </div>
-                        </div>
-                        <div class="w-32 p-2 truncate">
-                            <button
-                                btn
-                                class="clear underline"
-                                (click)="editLimits(item)"
-                            >
-                                Edit Limits
-                            </button>
-                        </div>
-                        <div class="w-24 px-2 flex items-center justify-end ">
-                            <button
-                                btn
-                                icon
-                                class="h-10 w-10"
-                                (click)="editTenant(item)"
-                            >
-                                <app-icon
-                                    className="backoffice-edit"
-                                ></app-icon>
-                            </button>
-                            <button
-                                btn
-                                icon
-                                class="h-10 w-10"
-                                (click)="removeTenant(item)"
-                            >
-                                <app-icon
-                                    className="backoffice-trash"
-                                ></app-icon>
-                            </button>
-                        </div>
-                    </div>
+                                {{ domain.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button
+                        btn
+                        matRipple
+                        class="h-12 w-32"
+                        (click)="editTenant()"
+                    >
+                        Add Tenant
+                    </button>
                 </div>
             </div>
-        </ng-container>
-        <ng-template #empty_state>
-            <div class="flex flex-col items-center justify-center">
-                <p>No tenants for selected domain</p>
+            <div class="flex-1 w-full h-1/2 overflow-auto">
+                <simple-table
+                    class="min-w-[48rem] block text-sm"
+                    [data]="tenants"
+                    [columns]="[
+                        { key: 'name', name: 'Name' },
+                        { key: 'platform', name: 'Platform' },
+                        {
+                            key: 'secret_expiry',
+                            name: 'Expires',
+                            content: expires_template,
+                            size: '10rem'
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            content: actions_template,
+                            sortable: false,
+                            size: '8.75rem'
+                        }
+                    ]"
+                    [sortable]="true"
+                    empty_message="No tenants for selected domain"
+                ></simple-table>
+            </div>
+        </div>
+        <ng-template #expires_template let-data="data" let-row="row">
+            <div class="px-2">
+                <div
+                    class="rounded-2xl px-3 py-1 text-xs"
+                    [class.bg-base-200]="!data"
+                    [class.text-neutral]="!data"
+                    [class.bg-success]="data && !expiring(row)"
+                    [class.text-success-content]="data && !expiring(row)"
+                    [class.bg-warning]="data && expiring(row) && !expired(row)"
+                    [class.text-warning-content]="
+                        data && expiring(row) && !expired(row)
+                    "
+                    [class.bg-error]="data && expired(row)"
+                    [class.text-error-content]="data && expired(row)"
+                >
+                    {{
+                        !data
+                            ? 'Never'
+                            : (data * 1000 | date: 'mediumDate') +
+                              ' &ndash; ' +
+                              (data * 1000 | date: 'shortTime')
+                    }}
+                </div>
             </div>
         </ng-template>
-        <ng-template #load_state>
-            <div class="w-full flex flex-col items-center justify-center">
-                <mat-spinner class="mb-4" [diameter]="48"></mat-spinner>
-                <p>{{ loading }}</p>
+        <ng-template #actions_template let-row="row">
+            <div class="flex items-center space-x-2 p-2">
+                <button
+                    icon
+                    matRipple
+                    matTooltip="Edit Tenant Booking Limits"
+                    (click)="editLimits(row)"
+                >
+                    <app-icon>app_registration</app-icon>
+                </button>
+                <button
+                    icon
+                    matRipple
+                    matTooltip="Edit Tenant"
+                    (click)="editTenant(row)"
+                >
+                    <app-icon>edit</app-icon>
+                </button>
+                <button
+                    icon
+                    matRipple
+                    class="text-error"
+                    matTooltip="Remove Tenant"
+                    (click)="removeTenant(row)"
+                >
+                    <app-icon>delete</app-icon>
+                </button>
             </div>
         </ng-template>
     `,
@@ -182,7 +172,7 @@ export class PlaceStaffAPIComponent implements OnInit {
         map((tenants) => {
             this.loading = '';
             return tenants.filter(
-                (t) => t.domain === this.domain.getValue().domain
+                (t) => t.domain === this.domain.getValue()?.domain
             );
         }),
         shareReplay()

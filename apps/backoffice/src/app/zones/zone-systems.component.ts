@@ -24,26 +24,38 @@ import { ZonesStateService } from './zones-state.service';
             </mat-form-field>
         </div>
         <div role="table" *ngIf="(systems | async)?.length; else empty_state">
-            <div table-head>
-                <div class="flex-1 p-2" i18n="@@systemTableName">Name</div>
-                <div class="w-28 p-2" i18n="@@systemTablePanelCount">No. Modules</div>
-                <div class="w-32 p-2" i18n="@@systemTableCreated">Created</div>
-            </div>
-            <div table-body>
-                <div table-row *ngFor="let item of systems | async">
-                    <div class="flex-1 p-2 underline">
-                        <a
-                            [routerLink]="['/systems', item.id]"
-                            [matTooltip]="item.id"
-                            matTooltipPosition="right"
-                        >
-                            {{ item.name }}
-                        </a>
-                    </div>
-                    <div class="w-28 p-2">{{ item.modules.length }}</div>
-                    <div class="w-32 p-2">{{ item?.created_at * 1000 | dateFrom }}</div>
+            <simple-table
+                class="min-w-[32rem] block text-sm"
+                [data]="systems"
+                [columns]="[
+                    { key: 'name', name: 'Name', content: name_template },
+                    {
+                        key: 'installed_ui_devices',
+                        name: 'No. Modules',
+                        size: '10rem'
+                    },
+                    {
+                        key: 'created_at',
+                        name: 'Created',
+                        content: added_template,
+                        size: '10rem'
+                    }
+                ]"
+                [sortable]="true"
+            ></simple-table>
+            <ng-template #name_template let-row="row">
+                <a
+                    class="truncate p-4 underline"
+                    [routerLink]="['/systems', row.id]"
+                >
+                    {{ row.name }}
+                </a>
+            </ng-template>
+            <ng-template #added_template let-row="row">
+                <div class="p-4">
+                    {{ +row.created_at * 1000 | dateFrom }}
                 </div>
-            </div>
+            </ng-template>
         </div>
         <ng-template #empty_state>
             <div class="flex flex-col items-center p-8">
@@ -63,13 +75,18 @@ import { ZonesStateService } from './zones-state.service';
 export class ZoneSystemsComponent {
     public readonly filter$ = new BehaviorSubject<string>('');
 
-    public readonly systems = combineLatest([this.filter$, this._state.systems]).pipe(
+    public readonly systems = combineLatest([
+        this.filter$,
+        this._state.systems,
+    ]).pipe(
         map((details) => {
             const [filter, systems] = details;
             const search = filter.toLowerCase();
             return !filter
                 ? systems
-                : systems.filter((sys) => sys.name.toLowerCase().includes(search));
+                : systems.filter((sys) =>
+                      sys.name.toLowerCase().includes(search)
+                  );
         })
     );
 

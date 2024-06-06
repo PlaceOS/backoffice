@@ -7,52 +7,63 @@ import { DomainStateService } from './domain-state.service';
 @Component({
     selector: 'domain-authentication',
     template: `
-        <button
-            btn
-            class="w-full sm:w-40 mb-4"
-            (click)="newAuthSource()"
-            i18n="@@newAction"
-        >
-            New Auth Source
-        </button>
-        <div
-            role="table"
-            class="min-w-[36rem]"
-            *ngIf="(auth_sources | async)?.length; else empty_state"
-        >
-            <div table-head>
-                <div class="w-48 p-2" i18n="@@authTableID">ID</div>
-                <div class="flex-1 p-2" i18n="@@authTableName">Name</div>
-                <div class="w-32 p-2" i18n="@@authTableType">Type</div>
-                <div class="w-24 p-2"></div>
+        <div class="flex flex-col h-full w-full">
+            <div header class="">
+                <button
+                    btn
+                    class="w-full sm:w-40 mb-4"
+                    (click)="newAuthSource()"
+                    i18n="@@newAction"
+                >
+                    New Auth Source
+                </button>
             </div>
-            <div table-body>
-                <div table-row *ngFor="let item of auth_sources | async">
-                    <div class="w-48 p-2 mono text-xs">
-                        {{ item.id }}
-                    </div>
-                    <div class="flex-1 p-2">
-                        {{ item.name }}
-                    </div>
-                    <div class="w-32 p-2 uppercase">{{ item.type }}</div>
-                    <div class="w-24 flex items-center justify-center">
-                        <button btn icon (click)="editAuthSource(item)">
-                            <app-icon
-                                [icon]="{ class: 'backoffice-edit' }"
-                            ></app-icon>
-                        </button>
-                        <button btn icon (click)="deleteAuthSource(item)">
-                            <app-icon
-                                [icon]="{ class: 'backoffice-trash' }"
-                            ></app-icon>
-                        </button>
-                    </div>
-                </div>
+            <div class="flex-1 w-full h-1/2 overflow-auto">
+                <simple-table
+                    class="min-w-[40rem] block text-sm"
+                    [data]="auth_sources"
+                    [columns]="[
+                        { key: 'name', name: 'Name', content: name_template },
+                        {
+                            key: 'type',
+                            name: 'Type',
+                            size: '6rem',
+                            content: type_template
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            content: actions_template,
+                            size: '6.5rem'
+                        }
+                    ]"
+                    [sortable]="true"
+                    empty_message="No authentication sources for domain"
+                ></simple-table>
             </div>
         </div>
-        <ng-template #empty_state>
-            <div empty-state>
-                <p i18n="@@authTableEmpty">No authentication sources found</p>
+        <ng-template #name_template let-row="row">
+            <div class="flex flex-col px-4 py-2">
+                <div class="text-sm">{{ row.name }}</div>
+                <div class="text-xs opacity-30">{{ row.id }}</div>
+            </div>
+        </ng-template>
+        <ng-template #type_template let-row="row">
+            <div class="p-4 uppercase">{{ row.type }}</div>
+        </ng-template>
+        <ng-template #actions_template let-row="row">
+            <div class="flex items-center space-x-2 p-2 mx-auto">
+                <button icon matRipple (click)="editAuthSource(row)">
+                    <app-icon className="backoffice-edit"></app-icon>
+                </button>
+                <button
+                    icon
+                    matRipple
+                    class="text-error"
+                    (click)="removeAuthSource(row)"
+                >
+                    <app-icon className="backoffice-trash"></app-icon>
+                </button>
             </div>
         </ng-template>
     `,

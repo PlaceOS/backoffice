@@ -23,38 +23,38 @@ import { ModuleStateService } from './module-state.service';
             </mat-form-field>
         </section>
         <section *ngIf="!(loading | async); else load_state">
-            <div
-                role="table"
-                class="overflow-x-auto"
-                *ngIf="(system_list | async)?.length; else empty_state"
-            >
-                <div table-head>
-                    <div flex class="flex-1 p-2" i18n="@@nameLabel">Name</div>
-                    <div class="w-48 p-2" i18n="@@systemLabel">No. Modules</div>
-                    <div class="w-36 p-2" i18n="@@createdLabel">Created</div>
+            <simple-table
+                class="min-w-[32rem] block text-sm"
+                [data]="system_list"
+                [columns]="[
+                    { key: 'name', name: 'Name', content: name_template },
+                    {
+                        key: 'installed_ui_devices',
+                        name: 'No. Modules',
+                        size: '10rem'
+                    },
+                    {
+                        key: 'created_at',
+                        name: 'Created',
+                        content: added_template,
+                        size: '10rem'
+                    }
+                ]"
+                [sortable]="true"
+            ></simple-table>
+            <ng-template #name_template let-row="row">
+                <a
+                    class="truncate p-4 underline"
+                    [routerLink]="['/systems', row.id]"
+                >
+                    {{ row.name }}
+                </a>
+            </ng-template>
+            <ng-template #added_template let-row="row">
+                <div class="p-4">
+                    {{ +row.created_at * 1000 | dateFrom }}
                 </div>
-                <div table-body class="overflow-y-auto">
-                    <div
-                        table-row
-                        *ngFor="
-                            let system of system_list | async;
-                            let i = index
-                        "
-                    >
-                        <div flex class="flex-1 p-2 underline">
-                            <a [routerLink]="['/systems', system.id]">{{
-                                system.name
-                            }}</a>
-                        </div>
-                        <div class="w-48 p-2">
-                            {{ system.installed_ui_devices || '0' }}
-                        </div>
-                        <div class="w-36 p-2">
-                            {{ system.created_at * 1000 | dateFrom }}
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </ng-template>
         </section>
         <ng-template #load_state>
             <div class="flex flex-col items-center p-8 mx-auto">

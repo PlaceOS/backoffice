@@ -8,94 +8,129 @@ import { authority } from '@placeos/ts-client';
 @Component({
     selector: 'admin-api-keys',
     template: `
-        <div class="flex items-start space-x-2 my-4">
-            <div class="flex flex-col space-y-1">
-                <label for="type">Domain: </label>
-                <mat-form-field appearance="outline" class="h-12">
-                    <mat-select
-                        name="type"
-                        [ngModel]="domain | async"
-                        (ngModelChange)="setDomain($event)"
-                        placeholder="Select Domain..."
-                    >
-                        <mat-option
-                            *ngFor="let domain of domain_list | async"
-                            [value]="domain"
+        <div class="flex flex-col h-full w-full">
+            <div class="flex items-center justify-between space-x-2 my-4">
+                <div class="text-2xl">PlaceOS API Keys</div>
+                <div class="flex items-center space-x-2">
+                    <mat-form-field appearance="outline" class="h-12">
+                        <mat-select
+                            name="type"
+                            [ngModel]="domain | async"
+                            (ngModelChange)="setDomain($event)"
+                            placeholder="Select Domain..."
                         >
-                            {{ domain.name }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <button
-                btn
-                class="mt-8 min-w-[8rem]"
-                [disabled]="!(domain | async)"
-                (click)="newKey()"
-            >
-                Add API Key
-            </button>
-            <div
-                *ngIf="last_key | async"
-                class="rounded shadow border border-base-200 min-w-[24rem]"
-            >
-                <div class="border-b px-2 pb-1 bg-base-200 !w-full">
-                    <label class="p-0 m-0">
-                        Last API Key Details ({{
-                            (last_key | async)?.name || 'Unanamed API Key'
-                        }})
-                    </label>
-                </div>
-                <div class="p-2">
-                    <div
-                        class="select-all text-xs opacity-60 mono break-words cursor-pointer"
-                        (click)="copyKey()"
+                            <mat-option
+                                *ngFor="let domain of domain_list | async"
+                                [value]="domain"
+                            >
+                                {{ domain.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button
+                        btn
+                        matRipple
+                        class="w-32"
+                        [disabled]="!(domain | async)"
+                        (click)="newKey()"
                     >
-                        {{ (last_key | async)?.x_api_key }}
+                        Add API Key
+                    </button>
+                </div>
+            </div>
+            <div
+                class="flex items-start space-x-2 my-4"
+                *ngIf="last_key | async"
+            >
+                <div
+                    class="rounded shadow border border-base-200 min-w-[24rem]"
+                >
+                    <div class="border-b px-2 pb-1 bg-base-200 !w-full">
+                        <label class="p-0 m-0">
+                            Last API Key Details ({{
+                                (last_key | async)?.name || 'Unanamed API Key'
+                            }})
+                        </label>
+                    </div>
+                    <div class="p-2">
+                        <div
+                            class="select-all text-xs opacity-60 mono break-words cursor-pointer"
+                            (click)="copyKey()"
+                        >
+                            {{ (last_key | async)?.x_api_key }}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div
-            role="table"
-            class="min-w-[60rem]"
-            *ngIf="(key_list | async)?.length; else load_state"
-        >
-            <div table-head>
-                <div class="w-48 p-2">Name</div>
-                <div class="flex-1 p-2">Description</div>
-                <div class="w-32 p-2 truncate">Scopes</div>
-                <div class="w-28 p-2">Permissions</div>
-                <div class="w-32 p-2">Created</div>
-                <div class="w-16 p-2"></div>
+            <div class="flex-1 w-full h-1/2 overflow-auto">
+                <simple-table
+                    class="min-w-[64rem] block text-sm"
+                    [data]="key_list"
+                    [columns]="[
+                        { key: 'name', name: 'Name' },
+                        {
+                            key: 'description',
+                            name: 'Description',
+                            content: description_template
+                        },
+                        {
+                            key: 'scopes',
+                            name: 'Scopes',
+                            content: scopes_template
+                        },
+                        {
+                            key: 'permissions',
+                            name: 'Access',
+                            content: access_template,
+                            size: '6rem'
+                        },
+                        {
+                            key: 'created_at',
+                            name: 'Created',
+                            content: data_from_template,
+                            size: '8rem'
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            content: actions_template,
+                            size: '3.5rem',
+                            sortable: false
+                        }
+                    ]"
+                    [sortable]="true"
+                    empty_message="No API keys configured for this domain"
+                ></simple-table>
+                <div class="w-full h-12"></div>
             </div>
-            <div table-body>
-                <div table-row *ngFor="let item of key_list | async">
-                    <div class="w-48 p-2 truncate text-sm" [title]="item.name">
-                        {{ item.name }}
-                    </div>
-                    <div class="flex-1 p-2 text-xs">{{ item.description }}</div>
-                    <div class="w-32 p-2 truncate flex items-center flex-wrap">
-                        <code *ngFor="let scope of item.scopes" class="m-1">
-                            {{ scope }}
-                        </code>
-                    </div>
-                    <div class="w-28 p-2">{{ item.permissions || 'None' }}</div>
-                    <div class="w-32 p-2">
-                        {{ item.created_at * 1000 | dateFrom }}
-                    </div>
-                    <div class="w-16 p-2 flex items-center">
-                        <button btn icon (click)="deleteKey(item)">
-                            <app-icon className="backoffice-trash"></app-icon>
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
-        <ng-template #load_state>
-            <div class="info-block">
-                <app-icon class="text-3xl">close</app-icon>
-                <p>No API keys configured for this domain</p>
+        <ng-template #scopes_template let-data="data">
+            <div class="px-4 py-2 flex flex-wrap">
+                <code *ngFor="let scope of data" class="m-1">
+                    {{ scope }}
+                </code>
+            </div>
+        </ng-template>
+        <ng-template #description_template let-data="data">
+            <div class="p-4 text-xs">
+                {{ data }}
+            </div>
+        </ng-template>
+        <ng-template #access_template let-data="data">
+            <div class="p-4 font-mono text-xs uppercase">
+                {{ data }}
+            </div>
+        </ng-template>
+        <ng-template #data_from_template let-data="data">
+            <div class="p-4">
+                {{ +data * 1000 | dateFrom }}
+            </div>
+        </ng-template>
+        <ng-template #actions_template let-row="row">
+            <div class="flex items-center space-x-2 p-2 mx-auto">
+                <button icon matRipple (click)="deleteKey(row)">
+                    <app-icon class="text-error">delete</app-icon>
+                </button>
             </div>
         </ng-template>
     `,

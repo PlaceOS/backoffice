@@ -39,105 +39,100 @@ export interface TriggerInstanceState {
         </section>
         <section>
             <ng-container *ngIf="!(loading | async).triggers; else load_state">
-                <div
-                    role="table"
-                    class="overflow-x-auto"
-                    *ngIf="(triggers | async)?.length; else empty_state"
-                >
-                    <div table-head>
-                        <div class="w-12 p-2"></div>
-                        <div flex class="flex-1 p-2" i18n="@@nameLabel">
-                            Name
-                        </div>
-                        <div class="w-16 p-2" i18n="@@triggerCountLabel">
-                            Count
-                        </div>
-                        <div class="w-16 p-2" i18n="@@triggerErrorsLabel">
-                            Errors
-                        </div>
-                        <div class="w-28 p-2" i18n="@@descriptionLabel">
-                            Added
-                        </div>
-                        <div class="w-32 p-2"></div>
+                <simple-table
+                    class="min-w-[32rem] block text-sm"
+                    [data]="triggers"
+                    [columns]="[
+                        {
+                            key: 'status',
+                            name: ' ',
+                            size: '3rem',
+                            content: status_template
+                        },
+                        { key: 'name', name: 'Name', content: name_template },
+                        {
+                            key: 'count',
+                            name: 'Count',
+                            content: count_template
+                        },
+                        {
+                            key: 'errors',
+                            name: 'Errors',
+                            content: errors_template
+                        },
+                        {
+                            key: 'added',
+                            name: 'Added',
+                            content: added_template
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            content: actions_template,
+                            size: '8.75rem'
+                        }
+                    ]"
+                ></simple-table>
+                <ng-template #status_template let-row="row">
+                    <i
+                        hidden
+                        binding
+                        [sys]="item.id"
+                        mod="_TRIGGER__1"
+                        [bind]="row.id"
+                        [(model)]="trigger_state[row.id]"
+                        (modelChange)="updateComparisons(row.id)"
+                    ></i>
+                    <div
+                        class="h-2 w-2 rounded-full mx-auto"
+                        [class.bg-base-content]="
+                            !trigger_state[row.id]?.triggered
+                        "
+                        [class.bg-success]="trigger_state[row.id]?.triggered"
+                    ></div>
+                </ng-template>
+                <ng-template #name_template let-row="row">
+                    <a
+                        class="truncate p-4 underline"
+                        [routerLink]="['/triggers', row.id]"
+                    >
+                        {{ row.name }}
+                    </a>
+                </ng-template>
+                <ng-template #count_template let-row="row">
+                    <div class="p-4">
+                        {{ trigger_state[row.id]?.trigger_count }}
                     </div>
-                    <div table-body class="overflow-y-auto">
-                        <div
-                            table-row
-                            *ngFor="
-                                let trigger of triggers | async;
-                                let i = index
-                            "
-                        >
-                            <i
-                                hidden
-                                binding
-                                [sys]="item.id"
-                                mod="_TRIGGER__1"
-                                [bind]="trigger.id"
-                                [(model)]="trigger_state[trigger.id]"
-                                (modelChange)="updateComparisons(trigger.id)"
-                            ></i>
-                            <div
-                                class="w-12 flex items-center justify-center h-full p-2"
-                            >
-                                <div
-                                    class="h-2 w-2 rounded-full"
-                                    [class.bg-base-content]="
-                                        !trigger_state[trigger.id]?.triggered
-                                    "
-                                    [class.bg-success]="
-                                        trigger_state[trigger.id]?.triggered
-                                    "
-                                ></div>
-                            </div>
-                            <div flex class="flex-1 p-2">
-                                <a
-                                    class="truncate"
-                                    [routerLink]="['/triggers', trigger.id]"
-                                    >{{ trigger.name }}</a
-                                >
-                            </div>
-                            <div desc class="w-16 p-2">
-                                {{ trigger_state[trigger.id]?.trigger_count }}
-                            </div>
-                            <div desc class="w-16 p-2">
-                                {{
-                                    trigger_state[trigger.id]?.action_errors +
-                                        trigger_state[trigger.id]
-                                            ?.comparison_errors || '0'
-                                }}
-                            </div>
-                            <div desc class="w-28 p-2">
-                                {{ +trigger.created_at * 1000 | dateFrom }}
-                            </div>
-                            <div class="w-32 p-2 items-center justify-center">
-                                <button
-                                    btn
-                                    icon
-                                    (click)="copyWebhookURL(trigger)"
-                                >
-                                    <app-icon
-                                        className="backoffice-link"
-                                    ></app-icon>
-                                </button>
-                                <button btn icon (click)="editTrigger(trigger)">
-                                    <app-icon
-                                        className="backoffice-edit"
-                                    ></app-icon>
-                                </button>
-                                <button
-                                    btn
-                                    icon
-                                    (click)="deleteTrigger(trigger)"
-                                >
-                                    <app-icon
-                                        className="backoffice-trash"
-                                    ></app-icon>
-                                </button>
-                            </div>
-                        </div>
+                </ng-template>
+                <ng-template #errors_template let-row="row">
+                    <div class="p-4">
+                        {{
+                            trigger_state[row.id]?.action_errors +
+                                trigger_state[row.id]?.comparison_errors || '0'
+                        }}
                     </div>
-                </div>
+                </ng-template>
+                <ng-template #added_template let-row="row">
+                    <div class="p-4">
+                        {{ +row.created_at * 1000 | dateFrom }}
+                    </div>
+                </ng-template>
+                <ng-template #actions_template let-row="row">
+                    <div class="flex items-center space-x-2 p-2">
+                        <button icon matRipple (click)="copyWebhookURL(row)">
+                            <app-icon className="backoffice-link"></app-icon>
+                        </button>
+                        <button icon matRipple (click)="editTrigger(row)">
+                            <app-icon className="backoffice-edit"></app-icon>
+                        </button>
+                        <button icon matRipple (click)="deleteTrigger(row)">
+                            <app-icon
+                                class="text-error"
+                                className="backoffice-trash"
+                            ></app-icon>
+                        </button>
+                    </div>
+                </ng-template>
             </ng-container>
         </section>
         <ng-template #load_state>

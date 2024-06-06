@@ -6,7 +6,37 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
 @Component({
     selector: 'user-about',
     template: `
-        <section class="mb-4 space-y-2">
+        <section class="flex items-center space-x-2 mb-4">
+            <div
+                class="flex items-center space-x-2 border border-base-300 p-2 rounded-3xl"
+            >
+                <div class="px-2">Tech Support</div>
+                <div
+                    class="rounded-2xl px-2 py-1 text-xs"
+                    [class.bg-success]="item?.support === true"
+                    [class.text-success-content]="item?.support === true"
+                    [class.bg-error]="item?.support !== true"
+                    [class.text-error-content]="item?.support !== true"
+                >
+                    {{ item?.support === true ? 'Yes' : 'No' }}
+                </div>
+            </div>
+            <div
+                class="flex items-center space-x-2 border border-base-300 p-2 rounded-3xl"
+            >
+                <div class="px-2">System Admin</div>
+                <div
+                    class="rounded-2xl px-2 py-1 text-xs"
+                    [class.bg-success]="item?.sys_admin === true"
+                    [class.text-success-content]="item?.sys_admin === true"
+                    [class.bg-error]="item?.sys_admin !== true"
+                    [class.text-error-content]="item?.sys_admin !== true"
+                >
+                    {{ item?.sys_admin === true ? 'Yes' : 'No' }}
+                </div>
+            </div>
+        </section>
+        <section class="space-y-2 p-2">
             <div class="flex items-center space-x-2" *ngIf="item?.created_at">
                 <label class="w-24" i18n="@@userCreatedAtLabel">Email:</label>
                 <div class="value">
@@ -46,38 +76,10 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                     *ngIf="item.groups?.length; else empty_group_state"
                 >
                     <mat-chip-list name="groups">
-                        <mat-chip *ngFor="let group of item.groups">{{
-                            group
-                        }}</mat-chip>
+                        <mat-chip class="m-1" *ngFor="let group of item.groups">
+                            {{ group }}
+                        </mat-chip>
                     </mat-chip-list>
-                </div>
-            </div>
-        </section>
-        <section>
-            <div role="table">
-                <div table-head>
-                    <div class="w-40 p-2" i18n="@@techSupportRole">
-                        User Role
-                    </div>
-                    <div class="flex-1 p-2"></div>
-                </div>
-                <div table-body>
-                    <div table-row>
-                        <div class="w-40 p-2" i18n="@@techSupportRole">
-                            Tech Support
-                        </div>
-                        <div class="flex-1 p-2">
-                            {{ item?.support === true }}
-                        </div>
-                    </div>
-                    <div table-row>
-                        <div class="w-40 p-2" i18n="@@systemAdminRole">
-                            System Admin
-                        </div>
-                        <div class="flex-1 p-2">
-                            {{ item?.sys_admin === true }}
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>

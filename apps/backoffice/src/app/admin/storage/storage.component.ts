@@ -1,7 +1,14 @@
 import { Component } from '@angular/core';
 import { PlaceDomain, queryDomains } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import {
+    catchError,
+    debounceTime,
+    map,
+    shareReplay,
+    switchMap,
+    tap,
+} from 'rxjs/operators';
 import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
 import { MatDialog } from '@angular/material/dialog';
 import { StorageProviderModalComponent } from './storage-provider-modal.component';
@@ -10,106 +17,97 @@ import { openConfirmModal } from '../../common/general';
 @Component({
     selector: 'app-storage',
     template: `
-        <div class="flex items-center justify-between space-x-2 my-4">
-            <div class="flex flex-col space-y-2">
-                <mat-form-field class="h-12" appearance="outline">
-                    <mat-select
-                        name="type"
-                        [ngModel]="domain | async"
-                        (ngModelChange)="domain.next($event)"
-                        placeholder="All Domains"
-                    >
-                        <mat-option [value]="{}">All Domains</mat-option>
-                        <mat-option
-                            *ngFor="let domain of domain_list | async"
-                            [value]="domain"
+        <div class="flex flex-col h-full w-full">
+            <div class="flex items-center justify-between space-x-2 my-4">
+                <div class="text-2xl">PlaceOS Upload Storage</div>
+                <div class="flex items-center space-x-2">
+                    <mat-form-field class="h-12" appearance="outline">
+                        <mat-select
+                            name="type"
+                            [ngModel]="domain | async"
+                            (ngModelChange)="domain.next($event)"
+                            placeholder="All Domains"
                         >
-                            {{ domain.name }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
+                            <mat-option [value]="{}">All Domains</mat-option>
+                            <mat-option
+                                *ngFor="let domain of domain_list | async"
+                                [value]="domain"
+                            >
+                                {{ domain.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button btn matRipple class="w-40" (click)="edit()">
+                        Add Provider
+                    </button>
+                </div>
             </div>
-            <button btn matRipple (click)="edit()">Add Storage Provider</button>
+            <div class="flex-1 w-full h-1/2 overflow-auto">
+                <simple-table
+                    class="min-w-[40rem] block text-sm"
+                    [data]="storage_list"
+                    [columns]="[
+                        { key: 'name', name: 'Domain', content: name_template },
+                        {
+                            key: 'storage_type',
+                            name: 'Type',
+                            content: code_template,
+                            size: '6rem'
+                        },
+                        {
+                            key: 'region',
+                            name: 'Region',
+                            content: code_template
+                        },
+                        {
+                            key: 'updated_at',
+                            name: 'Updated',
+                            content: date_from_template,
+                            size: '10rem'
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            content: actions_template,
+                            size: '6.5rem',
+                            sortable: false,
+                        }
+                    ]"
+                    [sortable]="true"
+                    [empty_message]="
+                        'No storage providers for' +
+                        (domain.getValue() ? 'selected' : 'any') +
+                        'domain'
+                    "
+                ></simple-table>
+            </div>
         </div>
-        <ng-container *ngIf="!loading; else load_state">
-            <div
-                class="w-full min-w-[40rem]"
-                *ngIf="(storage_list | async)?.length; else empty_state"
-            >
-                <div table-head>
-                    <div class="flex-1 p-2">Domain</div>
-                    <div class="w-32 p-2">Store Type</div>
-                    <div class="w-28 p-2 h-10">Region</div>
-                    <div class="w-28 p-2 h-10">Updated</div>
-                    <div class="w-24 p-2 h-10"></div>
+        <ng-template #name_template let-row="row">
+            <div class="flex flex-col px-4 py-2">
+                <div>
+                    {{ row.domain?.name || row.authority_id || '[DEFAULT]' }}
                 </div>
-                <div table-body>
-                    <div table-row *ngFor="let item of storage_list | async">
-                        <div class="flex-1 p-2 truncate">
-                            <a
-                                class="underline"
-                                [routerLink]="[
-                                    '/domains',
-                                    item.authority_id || '_',
-                                    'about'
-                                ]"
-                            >
-                                {{
-                                    item.domain?.name ||
-                                        item.authority_id ||
-                                        '[DEFAULT]'
-                                }}
-                            </a>
-                        </div>
-                        <div class="w-32 p-2 truncate text-xs">
-                            <code>{{ item.storage_type }}</code>
-                        </div>
-                        <div class="w-28 p-2 h-12 text-xs">
-                            <code>{{ item.region }}</code>
-                        </div>
-                        <div class="w-28 p-2 h-12">
-                            {{ item.updated_at * 1000 | dateFrom }}
-                        </div>
-                        <div class="w-24 px-2 flex items-center justify-end ">
-                            <button
-                                btn
-                                icon
-                                class="h-10 w-10"
-                                (click)="edit(item)"
-                            >
-                                <app-icon
-                                    className="backoffice-edit"
-                                ></app-icon>
-                            </button>
-                            <button
-                                btn
-                                icon
-                                class="h-10 w-10"
-                                (click)="remove(item)"
-                            >
-                                <app-icon
-                                    className="backoffice-trash"
-                                ></app-icon>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </ng-container>
-        <ng-template #empty_state>
-            <div
-                class="flex flex-col items-center justify-center opacity-30 p-8"
-            >
-                <p>
-                    No storage providers for
-                    {{ domain.getValue() ? 'selected' : 'any' }} domain
-                </p>
+                <div class="text-xs opacity-30">{{ row.authority_id }}</div>
             </div>
         </ng-template>
-        <ng-template #load_state>
-            <div class="w-full flex flex-col items-center justify-center">
-                <mat-spinner class="mb-4" [diameter]="48"></mat-spinner>
-                <p>{{ loading }}</p>
+        <ng-template #code_template let-data="data">
+            <div class="p-4">
+                <code>{{ data }}</code>
+            </div>
+        </ng-template>
+        <ng-template #date_from_template let-data="data">
+            <div class="p-4">
+                {{ +data * 1000 | dateFrom }}
+            </div>
+        </ng-template>
+        <ng-template #actions_template let-row="row">
+            <div class="flex items-center space-x-2 p-2 mx-auto">
+                <button icon matRipple (click)="edit(row)">
+                    <app-icon>edit</app-icon>
+                </button>
+                <button icon matRipple (click)="remove(row)">
+                    <app-icon class="text-error">delete</app-icon>
+                </button>
             </div>
         </ng-template>
     `,
@@ -128,6 +126,7 @@ export class StorageComponent {
     public readonly domain = new BehaviorSubject<PlaceDomain>(null);
 
     public readonly storage_data = this.domain.pipe(
+        debounceTime(300),
         switchMap((_) => {
             this.loading = 'Loading Storage Providers...';
             return queryStorage({ auth_id: _?.id });

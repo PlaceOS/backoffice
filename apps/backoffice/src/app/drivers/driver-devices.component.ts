@@ -26,109 +26,106 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
             </mat-form-field>
         </section>
         <section>
-            <div
-                role="table"
-                class="overflow-x-auto"
-                *ngIf="(modules | async)?.length; else empty_state"
-            >
-                <div table-head>
-                    <div class="w-12 p-2">State</div>
-                    <div flex class="flex-1 p-2" i18n="@@nameLabel">Name</div>
-                    <div class="w-24 p-2"></div>
-                </div>
-                <div table-body class="overflow-y-auto">
-                    <div
-                        table-row
-                        *ngFor="let module of modules | async; let i = index"
+            <simple-table
+                class="min-w-[32rem] block text-sm"
+                [data]="modules"
+                [columns]="[
+                    {
+                        key: 'state',
+                        name: 'State',
+                        content: state_template,
+                        size: '4rem',
+                        sortable: false
+                    },
+                    {
+                        key: 'name',
+                        name: 'Module Name',
+                        content: name_template
+                    },
+                    {
+                        key: 'actions',
+                        name: ' ',
+                        content: actions_template,
+                        size: '6rem',
+                        sortable: false
+                    }
+                ]"
+                [sortable]="true"
+            ></simple-table>
+            <ng-template #state_template let-row="row">
+                <i
+                    *ngIf="row.system"
+                    binding
+                    [(model)]="row.connected"
+                    [sys]="row.system.id"
+                    [mod]="row"
+                    bind="connected"
+                ></i>
+                <div
+                    class="h-2 w-2 rounded-full mx-auto"
+                    [class.bg-base-content]="!row.running"
+                    [class.bg-error]="row.running && !row.connected"
+                    [class.bg-success]="row.running && row.connected"
+                ></div>
+            </ng-template>
+            <ng-template #name_template let-row="row">
+                <a
+                    class="truncate p-4 underline"
+                    [routerLink]="['/systems', row.id]"
+                >
+                    {{ row.name }}
+                </a>
+            </ng-template>
+            <ng-template #actions_template let-row="row">
+                <div class="flex items-center space-x-2 p-2 mx-auto">
+                    <button
+                        icon
+                        matRipple
+                        matTooltip="View Systems"
+                        [matMenuTriggerFor]="menu"
+                        (click)="loadSystems(row)"
                     >
-                        <div class="w-12 p-2 flex items-center justify-center">
-                            <i
-                                *ngIf="module.system"
-                                binding
-                                [(model)]="module.connected"
-                                [sys]="module.system.id"
-                                [mod]="module"
-                                bind="connected"
-                            ></i>
-                            <div
-                                class="h-2 w-2 rounded-full bg-base-content"
-                                [class.bg-error]="
-                                    module.running && !module.connected
-                                "
-                                [class.bg-success]="
-                                    module.running && module.connected
-                                "
-                            ></div>
+                        <app-icon className="backoffice-eye"></app-icon>
+                    </button>
+                    <button icon matRipple (click)="removeModule(row)">
+                        <app-icon
+                            class="text-error"
+                            className="backoffice-trash"
+                        ></app-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <div
+                            class="flex items-center justify-center px-2 pb-2 opacity-70 border-b border-base-200 text-sm"
+                        >
+                            {{ systems[row.id]?.length }} System(s)
                         </div>
                         <div
-                            flex
-                            class="flex-1 p-2 underline"
-                            i18n="@@nameLabel"
+                            *ngIf="loading_systems"
+                            class="flex items-center space-x-2 p-2 text-sm"
                         >
-                            <a [routerLink]="['/modules', module.id]">
-                                {{ module.custom_name || module.name }}
-                            </a>
+                            <mat-spinner [diameter]="32"></mat-spinner>
+                            <span>Loading systems...</span>
                         </div>
-                        <div class="w-24 p-2">
-                            <button
-                                btn
-                                icon
-                                matTooltip="View Systems"
-                                [matMenuTriggerFor]="menu"
-                                (click)="loadSystems(module)"
+                        <a
+                            mat-menu-item
+                            *ngFor="let system of systems[row.id] || []"
+                            class="leading-tight"
+                            [routerLink]="['/systems', system.id]"
+                        >
+                            <div
+                                class="flex flex-col justify-center px-2 h-full"
                             >
-                                <app-icon className="backoffice-eye"></app-icon>
-                            </button>
-                            <mat-menu #menu="matMenu">
-                                <div
-                                    class="flex items-center justify-center px-2 pb-2 opacity-70 border-b border-base-200 text-sm"
-                                >
-                                    {{ systems[module.id]?.length }} System(s)
+                                <div class="text-base">
+                                    {{ system.display_name || system.name }}
                                 </div>
-                                <div
-                                    *ngIf="loading_systems"
-                                    class="flex items-center space-x-2 p-2 text-sm"
-                                >
-                                    <mat-spinner [diameter]="32"></mat-spinner>
-                                    <span>Loading systems...</span>
+                                <div class="text-xs opacity-60">
+                                    {{ system.id }}
                                 </div>
-                                <a
-                                    mat-menu-item
-                                    *ngFor="
-                                        let system of systems[module.id] || []
-                                    "
-                                    class="leading-tight"
-                                    [routerLink]="['/systems', system.id]"
-                                >
-                                    <div
-                                        class="flex flex-col justify-center px-2 h-full"
-                                    >
-                                        <div class="text-base">
-                                            {{
-                                                system.display_name ||
-                                                    system.name
-                                            }}
-                                        </div>
-                                        <div class="text-xs opacity-60">
-                                            {{ system.id }}
-                                        </div>
-                                    </div>
-                                </a>
-                            </mat-menu>
-                            <button
-                                icon
-                                btn
-                                icon
-                                (click)="removeModule(module)"
-                            >
-                                <app-icon
-                                    className="backoffice-trash"
-                                ></app-icon>
-                            </button>
-                        </div>
-                    </div>
+                            </div>
+                        </a>
+                    </mat-menu>
                 </div>
-            </div>
+            </ng-template>
         </section>
         <ng-template #load_state>
             <div class="flex flex-col items-center p-8 mx-auto">

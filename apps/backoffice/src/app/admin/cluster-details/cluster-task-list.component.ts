@@ -13,16 +13,17 @@ import {
     CONFIRM_METADATA,
 } from 'apps/backoffice/src/app/overlays/confirm-modal.component';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
-import { BehaviorSubject, combineLatest, interval, Observable, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import {
     catchError,
     filter,
     map,
     shareReplay,
-    startWith,
     switchMap,
     tap,
 } from 'rxjs/operators';
+
+const task_details = {};
 
 @Component({
     selector: 'engine-cluster-task-list',
@@ -50,46 +51,60 @@ import {
                 />
             </mat-form-field>
         </div>
-        <div
-            role="table"
-            class="h-1/2 flex-1"
-            *ngIf="(filtered_list | async)?.length; else empty_state"
-        >
-            <div table-head>
-                <div class="flex-1 p-2">Name</div>
-                <div class="w-24 p-2">CPU %</div>
-                <div class="w-24 p-2">Memory</div>
-                <div class="w-24 p-2">Instances</div>
-                <div class="w-12 p-2"></div>
-            </div>
-            <div table-body>
-                <div table-row *ngFor="let element of filtered_list | async">
-                    <div class="flex-1 p-2" [title]="element.id">
-                        <code
-                            class="truncate"
-                            [innerHTML]="element.id | driverFormat"
-                        ></code>
+        <simple-table
+            class="min-w-[40rem] block text-sm"
+            [data]="filtered_list"
+            [columns]="[
+                { key: 'id', name: 'Name', content: name_template },
+                {
+                    key: 'cpu_usage',
+                    name: 'CPU %',
+                    content: cpu_template,
+                    size: '6rem'
+                },
+                { key: 'used_memory', name: 'Memory', size: '7rem' },
+                { key: 'module_instances', name: 'Instances', size: '6rem' },
+                {
+                    key: 'actions',
+                    name: ' ',
+                    content: actions_template,
+                    size: '3.5rem'
+                }
+            ]"
+            [sortable]="true"
+            empty_message="No tasks running on cluster"
+        ></simple-table>
+        <ng-template #name_template let-row="row">
+            <div class="flex flex-col px-4 py-2 font-mono">
+                <div class="mb-1">{{ taskDetails(row.id).path }}</div>
+                <div class="flex items-center text-[0.625rem] space-x-2">
+                    <div class="px-2 bg-info text-info-content rounded">
+                        {{ taskDetails(row.id).type }}
                     </div>
-                    <div class="w-24 p-2 text-right justify-end">
-                        {{ element.cpu_usage.toFixed(2) }}%
+                    <div class="px-2 bg-base-200 rounded">
+                        {{ taskDetails(row.id).hash }}
                     </div>
-                    <div class="w-24 p-2 text-right justify-end">
-                        {{ element.used_memory }}
-                    </div>
-                    <div class="w-24 p-2 text-right justify-end">
-                        {{ element.module_instances }}
-                    </div>
-                    <div class="w-12 flex items-center justify-center">
-                        <button btn icon (click)="confirmKillProcess(element)">
-                            <app-icon className="backoffice-trash"></app-icon>
-                        </button>
+                    <div class="px-2 bg-base-200 rounded">
+                        {{ taskDetails(row.id).arch }}
                     </div>
                 </div>
             </div>
-        </div>
-        <ng-template #empty_state>
-            <div class="flex flex-col items-center p-8">
-                <p i18n="@@processTableEmpty">No tasks running on cluster</p>
+        </ng-template>
+        <ng-template #cpu_template let-row="row">
+            <div class="p-4 w-full text-right">
+                {{ row.cpu_usage.toFixed(2) }}%
+            </div>
+        </ng-template>
+        <ng-template #actions_template let-row="row">
+            <div class="flex items-center space-x-2 p-2 mx-auto">
+                <button
+                    icon
+                    matRipple
+                    class="text-error"
+                    (click)="confirmKillProcess(row)"
+                >
+                    <app-icon className="backoffice-trash"></app-icon>
+                </button>
             </div>
         </ng-template>
     `,
@@ -126,6 +141,20 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
     public filter = new BehaviorSubject('');
 
     private _poll = new BehaviorSubject(0);
+
+    public taskDetails(id: string) {
+        if (task_details[id]) return task_details[id];
+        const [type, ...path] = id.split('_');
+        const arch = path.pop();
+        const hash = path.pop();
+        task_details[id] = {
+            type,
+            path: path.join('/'),
+            hash,
+            arch,
+        };
+        return task_details[id];
+    }
 
     public readonly process_list: Observable<PlaceProcess[]> = this._poll.pipe(
         filter(() => !this.loading),

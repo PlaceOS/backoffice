@@ -8,67 +8,63 @@ import { TriggerStateService } from './trigger-state.service';
 @Component({
     selector: 'trigger-systems',
     template: `
-        <div role="table" *ngIf="(instances | async)?.length; else empty_state">
-            <div table-head>
-                <td class="w-12 h-10"></td>
-                <td
-                    class="flex-1 h-10 flex items-center px-2"
-                    i18n="@@systemTableName"
-                >
-                    Parent ID
-                </td>
-                <td
-                    class="w-32 h-10 flex items-center px-2"
-                    i18n="@@systemTableAdded"
-                >
-                    Added
-                </td>
-                <td class="w-12 h-10"></td>
+        <simple-table
+            class="min-w-[32rem] block text-sm"
+            [data]="instances"
+            [columns]="[
+                {
+                    key: 'state',
+                    name: 'State',
+                    content: state_template,
+                    size: '4rem',
+                    sortable: false
+                },
+                {
+                    key: 'name',
+                    name: 'Module Name',
+                    content: name_template
+                },
+                {
+                    key: 'actions',
+                    name: ' ',
+                    content: actions_template,
+                    size: '4.5rem',
+                    sortable: false
+                }
+            ]"
+            [sortable]="true"
+            empty_message="No instances of trigger"
+        ></simple-table>
+        <ng-template #state_template let-row="row">
+            <div
+                class="h-2 w-2 rounded-full mx-auto"
+                [class.bg-base-content]="!row.bookable"
+                [class.bg-success]="row.bookable"
+            ></div>
+        </ng-template>
+        <ng-template #name_template let-row="row">
+            <a
+                class="underline p-4"
+                [routerLink]="
+                    row.zone_id
+                        ? ['/zones', row.zone_id]
+                        : ['/systems', row.control_system_id]
+                "
+                [matTooltip]="row.zone_id || row.control_system_id"
+            >
+                {{ row.name || row.zone_id || row.control_system_id }}
+            </a>
+        </ng-template>
+        <ng-template #added_template let-row="row">
+            <div class="p-4">
+                {{ +row.created_at * 1000 | dateFrom }}
             </div>
-            <div table-body>
-                <div table-row *ngFor="let item of instances | async">
-                    <div class="w-12 flex items-center justify-center">
-                        <div
-                            class="h-2 w-2 rounded-full bg-base-content"
-                            [class.active]="item.bookable"
-                        ></div>
-                    </div>
-                    <div class="flex-1 p-2">
-                        <a
-                            *ngIf="item.id"
-                            class="underline"
-                            [routerLink]="
-                                item.zone_id
-                                    ? ['/zones', item.zone_id]
-                                    : ['/systems', item.control_system_id]
-                            "
-                            [matTooltip]="
-                                item.zone_id || item.control_system_id
-                            "
-                        >
-                            {{
-                                item.name ||
-                                    item.zone_id ||
-                                    item.control_system_id
-                            }}
-                        </a>
-                    </div>
-                    <div class="w-32 p-2">
-                        {{ +item.created_at * 1000 | dateFrom }}
-                    </div>
-                    <div class="w-12 flex items-center justify-center">
-                        <button btn icon (click)="deleteTrigger(item)">
-                            <app-icon className="backoffice-trash"></app-icon>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <ng-template #empty_state>
-            <div class="flex flex-col items-center p-8">
-                <div class="text" i18n="@@systemTableEmpty">
-                    No instances of trigger
-                </div>
+        </ng-template>
+        <ng-template #actions_template let-row="row">
+            <div class="flex items-center space-x-2 p-2 mx-auto">
+                <button icon matRipple (click)="deleteTrigger(item)">
+                    <app-icon className="backoffice-trash"></app-icon>
+                </button>
             </div>
         </ng-template>
     `,
@@ -77,10 +73,6 @@ import { TriggerStateService } from './trigger-state.service';
             :host {
                 height: 100%;
                 width: 100%;
-            }
-
-            .active {
-                background-color: var(--success) !important;
             }
         `,
     ],

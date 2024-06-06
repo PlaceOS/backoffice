@@ -18,6 +18,9 @@ import { interval } from 'rxjs';
 @Component({
     selector: 'engine-cluster-details',
     template: `
+        <div class="flex items-center justify-between space-x-2 my-4 px-2">
+            <div class="text-2xl">PlaceOS Clusters</div>
+        </div>
         <div class="flex flex-wrap overflow-auto max-h-full">
             <ng-container
                 *ngIf="cluster_list && cluster_list.length; else empty_state"

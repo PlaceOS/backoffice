@@ -13,6 +13,7 @@ import {
     debounceTime,
     map,
     shareReplay,
+    startWith,
     switchMap,
 } from 'rxjs/operators';
 import { copyToClipboard, openConfirmModal } from '../common/general';
@@ -26,58 +27,6 @@ import { EdgeModalComponent } from './edge-modal.component';
 @Component({
     selector: '[admin-edge]',
     template: `
-        <button btn class="w-full sm:w-40 my-4" (click)="edit()">
-            Add New Edge
-        </button>
-        <ng-container *ngIf="!loading; else load_state">
-            <div
-                table
-                class="w-full min-w-[52rem]"
-                *ngIf="(edges | async)?.length; else empty_state"
-            >
-                <div table-head>
-                    <div class="w-32 p-2">ID</div>
-                    <div class="w-40 p-2">Name</div>
-                    <div class="flex-1 p-2">Description</div>
-                    <div class="w-24 p-2 h-10"></div>
-                </div>
-                <div table-body>
-                    <div table-row *ngFor="let item of edges | async">
-                        <div class="w-32 p-2 truncate text-xs font-mono">
-                            {{ item.id }}
-                        </div>
-                        <div class="w-40 p-2 truncate text-sm">
-                            {{ item.name }}
-                        </div>
-                        <div class="flex-1 w-1/4 p-2 truncate text-xs">
-                            {{ item.description }}
-                        </div>
-                        <div class="w-24 px-2 flex items-center justify-end ">
-                            <button
-                                btn
-                                icon
-                                class="h-10 w-10"
-                                (click)="edit(item)"
-                            >
-                                <app-icon
-                                    className="backoffice-edit"
-                                ></app-icon>
-                            </button>
-                            <button
-                                btn
-                                icon
-                                class="h-10 w-10"
-                                (click)="remove(item)"
-                            >
-                                <app-icon
-                                    className="backoffice-trash"
-                                ></app-icon>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </ng-container>
         <div
             *ngIf="(last_change | async)?.x_api_key"
             (click)="copyKey(item.x_api_key)"
@@ -94,15 +43,62 @@ import { EdgeModalComponent } from './edge-modal.component';
                 <app-icon className="backoffice-copy"></app-icon>
             </button>
         </div>
-        <ng-template #empty_state>
-            <div class="flex flex-col items-center justify-center">
-                <p>No edges</p>
+        <div class="flex flex-col h-full w-full">
+            <div class="flex items-center justify-between space-x-2 my-4">
+                <div class="text-2xl">PlaceOS Edge Nodes</div>
+                <div class="flex items-center space-x-2">
+                    <button btn class="w-40" (click)="edit()">
+                        Add New Edge
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 w-full h-1/2 overflow-auto">
+                <simple-table
+                    class="min-w-[64rem] block text-sm"
+                    [data]="edges"
+                    [columns]="[
+                        {
+                            key: 'id',
+                            name: 'Name',
+                            content: name_template,
+                        },
+                        {
+                            key: 'description',
+                            name: 'Description',
+                            size: '40rem',
+                            content: description_template
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            content: actions_template,
+                            size: '6rem'
+                        }
+                    ]"
+                    [sortable]="true"
+                    empty_message="No available edges on cluster"
+                ></simple-table>
+            </div>
+        </div>
+        <ng-template #name_template let-row="row">
+            <div class="flex flex-col px-4 py-2">
+                <div class="text-sm">{{ row.name }}</div>
+                <div class="text-xs opacity-30">{{ row.id }}</div>
             </div>
         </ng-template>
-        <ng-template #load_state>
-            <div class="w-full flex flex-col items-center justify-center">
-                <mat-spinner class="mb-4" [diameter]="48"></mat-spinner>
-                <p>{{ loading }}</p>
+        <ng-template #description_template let-row="row">
+            <div class="px-4 py-2 select-text overflow-hidden w-full">
+                {{ row.description }}
+            </div>
+        </ng-template>
+        <ng-template #actions_template let-row="row">
+            <div class="flex items-center space-x-2 p-2">
+                <button icon matRipple (click)="edit(row)">
+                    <app-icon className="backoffice-edit"></app-icon>
+                </button>
+                <button icon matRipple class="text-error" (click)="remove(row)">
+                    <app-icon className="backoffice-trash"></app-icon>
+                </button>
             </div>
         </ng-template>
     `,
@@ -140,7 +136,8 @@ export class PlaceEdgeComponent {
                 a.id?.localeCompare(b.id)
             );
         }),
-        shareReplay()
+        startWith([]),
+        shareReplay(1)
     );
 
     public readonly edges = combineLatest([this._edge_list, this._hide]).pipe(

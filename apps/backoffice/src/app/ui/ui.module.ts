@@ -89,6 +89,7 @@ import { UploadPermissionsModalComponent } from './upload-permissions-modal.comp
 import { AuthenticatedImageDirective } from './authenticated-image.directive';
 import { GlobalBannerComponent } from './global-banner.component';
 import { ModuleRuntimeErrorsModalComponent } from './module-runtime-errors.modal';
+import { SimpleTableComponent } from './simple-table.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -144,6 +145,8 @@ const COMPONENTS: Type<any>[] = [
     UploadPermissionsModalComponent,
     GlobalBannerComponent,
     ModuleRuntimeErrorsModalComponent,
+
+    SimpleTableComponent,
 ];
 
 const PIPES: Type<any>[] = [

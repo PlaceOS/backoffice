@@ -9,73 +9,115 @@ import { DomainStateService } from './domain-state.service';
 @Component({
     selector: 'domain-applications',
     template: `
-        <button
-            btn
-            class="w-full sm:w-40 mb-4"
-            (click)="newApplication()"
-            i18n="@@newAction"
-        >
-            New Application
-        </button>
-        <div
-            role="table"
-            class="overflow-x-auto"
-            *ngIf="(applications | async)?.length; else empty_state"
-        >
-            <div table-head>
-                <div class="w-40 p-2" i18n="@@applicationTableName">Name</div>
-                <div class="flex-1 p-2" i18n="@@applicationTableRedirect">
-                    Redirect
-                </div>
-                <div class="w-48 p-2" i18n="@@applicationTableClientId">
-                    Client ID
-                </div>
-                <div class="w-48 p-2" i18n="@@applicationTableClientSecret">
-                    Secret
-                </div>
-                <div class="w-24 p-2" i18n="@@applicationTableScope">Scope</div>
-                <div class="w-24"></div>
+        <div class="flex flex-col h-full w-full">
+            <div header class="">
+                <button
+                    btn
+                    class="w-full sm:w-40 mb-4"
+                    (click)="newApplication()"
+                    i18n="@@newAction"
+                >
+                    New Application
+                </button>
             </div>
-            <div table-body>
-                <div table-row *ngFor="let item of applications | async">
-                    <div class="w-40 p-2" [matTooltip]="item.id">
-                        {{ item.name }}
-                    </div>
-                    <div class="flex-1 p-2 underline overflow-hidden">
-                        <a [href]="item.redirect_uri" class="truncate">{{
-                            item.redirect_uri
-                        }}</a>
-                    </div>
-                    <div class="w-48 p-2 truncate text-xs">{{ item.uid }}</div>
-                    <div
-                        class="w-48 p-2 truncate underline text-center text-xs"
-                        (click)="
-                            !show_secret[item.id]
-                                ? (show_secret[item.id] = true)
-                                : copySecret(item)
-                        "
-                    >
-                        {{ show_secret[item.id] ? item.secret : 'Show' }}
-                    </div>
-                    <div class="w-24 p-2">{{ item.scopes }}</div>
-                    <div class="w-24 flex items-center justify-center">
-                        <button btn icon (click)="editApplication(item)">
-                            <app-icon
-                                [icon]="{ class: 'backoffice-edit' }"
-                            ></app-icon>
-                        </button>
-                        <button btn icon (click)="deleteApplication(item)">
-                            <app-icon
-                                [icon]="{ class: 'backoffice-trash' }"
-                            ></app-icon>
-                        </button>
-                    </div>
-                </div>
+            <div class="flex-1 w-full h-1/2 overflow-auto">
+                <simple-table
+                    class="min-w-[84rem] block text-sm"
+                    [data]="applications"
+                    [columns]="[
+                        { key: 'name', name: 'Name', content: name_template },
+                        {
+                            key: 'redirect_uri',
+                            name: 'Redirect URI',
+                            content: redirect_template,
+                            size: '20rem'
+                        },
+                        {
+                            key: 'uid',
+                            name: 'Client ID',
+                            content: client_id_template,
+                            size: '17rem'
+                        },
+                        {
+                            key: 'secret',
+                            name: 'Client Secret',
+                            content: secret_template
+                        },
+                        { key: 'scopes', name: 'Scopes' },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            size: '6rem',
+                            sortable: false,
+                            content: actions_template
+                        }
+                    ]"
+                    [sortable]="true"
+                    empty_message="No applications for domain"
+                ></simple-table>
             </div>
         </div>
-        <ng-template #empty_state>
-            <div empty-state>
-                <p i18n="@@applicationTableEmpty">No applications found</p>
+        <ng-template #name_template let-row="row">
+            <div class="flex flex-col px-4 py-2">
+                <div class="text-sm">{{ row.name }}</div>
+            </div>
+        </ng-template>
+        <ng-template #redirect_template let-row="row">
+            <a
+                [href]="row.redirect_uri"
+                target="_blank"
+                class="truncate p-4 underline"
+            >
+                {{ row.redirect_uri }}
+            </a>
+        </ng-template>
+        <ng-template #client_id_template let-row="row">
+            <div class="p-4 font-mono text-xs">{{ row.uid }}</div>
+        </ng-template>
+        <ng-template #secret_template let-row="row">
+            <div class="flex items-center p-2">
+                <button
+                    icon
+                    matRipple
+                    (click)="copySecret(item)"
+                    matTooltip="Copy Secret to Clipboard"
+                >
+                    <app-icon className="backoffice-copy"></app-icon>
+                </button>
+                <button
+                    icon
+                    matRipple
+                    (mousedown)="show_secret[item.id] = true"
+                    (touchstart)="show_secret[item.id] = true"
+                    (window:mouseup)="show_secret[item.id] = false"
+                    (window:touchend)="show_secret[item.id] = false"
+                    matTooltip="View Secret"
+                >
+                    <app-icon className="backoffice-eye"></app-icon>
+                </button>
+                <div class="p-2 font-mono text-xs">
+                    <span
+                        *ngIf="!show_secret[item.id]"
+                        class="p-2 bg-base-200 rounded"
+                        >Hidden</span
+                    >
+                    <span *ngIf="show_secret[item.id]">{{ row.secret }}</span>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template #actions_template let-row="row">
+            <div class="flex items-center space-x-2 p-2 mx-auto">
+                <button icon matRipple (click)="editApplication(item)">
+                    <app-icon className="backoffice-edit"></app-icon>
+                </button>
+                <button
+                    icon
+                    matRipple
+                    class="text-error"
+                    (click)="removeApplication(item)"
+                >
+                    <app-icon className="backoffice-trash"></app-icon>
+                </button>
             </div>
         </ng-template>
     `,

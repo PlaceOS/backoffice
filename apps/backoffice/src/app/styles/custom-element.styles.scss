@@ -951,15 +951,6 @@ a[icon] {
         }
     }
 
-    custom-table[asset-requests],
-    custom-table[purchase-orders] {
-        cdk-row {
-            background: none;
-            [cdk-cell]:not(:first-child) {
-                border-left: 1px solid var(--b2);
-            }
-        }
-    }
     mat-dialog-container,
     .mdc-dialog__surface {
         background-color: var(--b1);
@@ -1164,6 +1155,12 @@ mat-list-option.mdc-list-item--selected {
     border-radius: 5px;
 }
 
+mat-form-field {
+    &.no-subscript .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+    }
+}
+
 [role='table'] {
     overflow: auto;
 }
@@ -1175,8 +1172,8 @@ mat-list-option.mdc-list-item--selected {
     display: flex;
     align-items: center;
     background-color: var(--b3);
-    border: 1px solid var(--n);
-    @apply divide-x divide-neutral font-medium;
+    border: 1px solid var(--b2);
+    @apply divide-x divide-base-200 font-medium;
 
     > div {
         display: flex;
@@ -1187,12 +1184,12 @@ mat-list-option.mdc-list-item--selected {
 
 [role='table'] [body],
 [table-body] {
-    @apply border border-neutral;
+    @apply border border-base-200;
     border-top: none;
 }
 
 [table-row] {
-    @apply flex items-center border-b border-neutral divide-x divide-neutral hover:bg-base-200;
+    @apply flex items-center border-b border-base-200 divide-x divide-base-200 hover:bg-base-200;
     height: 3.25rem;
 
     &:last-child {

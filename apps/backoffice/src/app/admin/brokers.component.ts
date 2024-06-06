@@ -8,7 +8,7 @@ import {
     queryBrokers,
     removeBroker,
 } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
+import { debounceTime, map, shareReplay, switchMap } from 'rxjs/operators';
 
 import { ItemCreateUpdateModalComponent } from 'apps/backoffice/src/app/overlays/item-modal/item-modal.component';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -17,65 +17,114 @@ import {
     notifyError,
 } from 'apps/backoffice/src/app/common/notifications';
 import { openConfirmModal } from 'apps/backoffice/src/app/common/general';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
     selector: 'app-brokers',
     template: `
-        <button btn class="my-4" (click)="newBroker()">
-            <div class="flex items-center">
-                <app-icon className="backoffice-plus"></app-icon>
-                <div class="text">Add Broker</div>
+        <div class="flex flex-col h-full w-full">
+            <div class="flex items-center justify-between space-x-2 my-4">
+                <div class="text-2xl">MQTT Brokers</div>
+                <div class="flex items-center space-x-2">
+                    <button btn matRipple (click)="newBroker()">
+                        <div class="flex items-center">
+                            <app-icon className="backoffice-plus"></app-icon>
+                            <div class="text">Add Broker</div>
+                        </div>
+                    </button>
+                </div>
             </div>
-        </button>
-        <div class="overflow-auto">
-            <div
-                role="table"
-                *ngIf="brokers && brokers.length; else load_state"
-                class="min-w-[52rem]"
-            >
-                <div table-head>
-                    <div class="w-32 p-2">Name</div>
-                    <div class="w-24 p-2">Auth Type</div>
-                    <div class="flex-1 p-2">Description</div>
-                    <div class="w-32 p-2 truncate">Host</div>
-                    <div class="w-16 p-2">Port</div>
-                    <div class="w-16 p-2">TLS</div>
-                    <div class="w-32 p-2">Filters</div>
-                    <div class="w-24 p-2"></div>
-                </div>
-                <div table-body>
-                    <div table-row *ngFor="let item of brokers">
-                        <div class="w-32 p-2">{{ item.name }}</div>
-                        <div class="w-24 p-2">
-                            { item.auth_type, select, 0 { Certificate }, 2 {
-                            User Password }, other { No Auth }}
-                        </div>
-                        <div class="flex-1 p-2">{{ item.description }}</div>
-                        <div class="w-32 p-2 truncate">{{ item.host }}</div>
-                        <div class="w-16 p-2">{{ item.port }}</div>
-                        <div class="w-16 p-2">
-                            { item.tls, select, true { Yes }, false { No } }
-                        </div>
-                        <div class="w-32 p-2">{{ item.filters | json }}</div>
-                        <div class="w-24 p-2 flex items-center">
-                            <button btn icon (click)="editBroker(item)">
-                                <app-icon
-                                    [icon]="{ class: 'backoffice-edit' }"
-                                ></app-icon>
-                            </button>
-                            <button btn icon (click)="deleteBroker(item)">
-                                <app-icon
-                                    [icon]="{ class: 'backoffice-trash' }"
-                                ></app-icon>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <div class="flex-1 w-full h-1/2 overflow-auto">
+                <simple-table
+                    class="min-w-[64rem] block text-sm"
+                    [data]="brokers"
+                    [columns]="[
+                        { key: 'name', name: 'Name' },
+                        {
+                            key: 'auth_type',
+                            name: 'Auth Type',
+                            content: auth_type_template
+                        },
+                        { key: 'description', name: 'Description' },
+                        { key: 'host', name: 'Host', content: mono_template },
+                        {
+                            key: 'port',
+                            name: 'Port',
+                            content: mono_template,
+                            size: '6rem'
+                        },
+                        {
+                            key: 'tls',
+                            name: 'TLS',
+                            content: tls_template,
+                            size: '4rem'
+                        },
+                        {
+                            key: 'filters',
+                            name: 'Filters',
+                            content: filters_template
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            size: '6rem',
+                            content: actions_template,
+                            sortable: false
+                        }
+                    ]"
+                    [sortable]="true"
+                    empty_message="No MQTT Brokers"
+                ></simple-table>
             </div>
         </div>
-        <ng-template #load_state>
-            <div class="flex flex-col items-center">
-                <p>No Brokers</p>
+        <ng-template #mono_template let-data="data">
+            <div class="p-4 font-mono text-sm">{{ data }}</div>
+        </ng-template>
+
+        <ng-template #auth_type_template let-data="data">
+            <div class="p-4" [ngSwitch]="data">
+                <span *ngSwitchCase="0">Certificate</span>
+                <span *ngSwitchCase="2">User Password</span>
+                <span *ngSwitchDefault>No Auth</span>
+            </div>
+        </ng-template>
+        <ng-template #tls_template let-data="data">
+            <div
+                *ngIf="data"
+                class="h-8 w-8 bg-success rounded flex items-center justify-center mx-auto"
+            >
+                <app-icon class="text-xl text-success-content">lock</app-icon>
+            </div>
+            <div
+                *ngIf="!data"
+                class="h-8 w-8 bg-error rounded flex items-center justify-center mx-auto"
+            >
+                <app-icon class="text-xl text-error-content">
+                    lock_open
+                </app-icon>
+            </div>
+        </ng-template>
+        <ng-template #filters_template let-data="data">
+            <div class="p-4">
+                <code *ngIf="data">{{ data | json }}</code>
+                <span class="text-xs opacity-30" *ngIf="!data">
+                    No Filters
+                </span>
+            </div>
+        </ng-template>
+        <ng-template #actions_template let-row="row">
+            <div class="flex items-center space-x-2 p-2">
+                <button icon matRipple (click)="editBroker(row)">
+                    <app-icon className="backoffice-edit"></app-icon>
+                </button>
+                <button
+                    icon
+                    matRipple
+                    class="text-error"
+                    (click)="deleteBroker(row)"
+                >
+                    <app-icon className="backoffice-trash"></app-icon>
+                </button>
             </div>
         </ng-template>
     `,
@@ -87,14 +136,21 @@ import { openConfirmModal } from 'apps/backoffice/src/app/common/general';
     ],
 })
 export class AdminBrokersComponent extends AsyncHandler implements OnInit {
-    public brokers: PlaceMQTTBroker[] = [];
+    private _change = new BehaviorSubject<number>(0);
+
+    public readonly brokers = this._change.pipe(
+        debounceTime(300),
+        switchMap(() => queryBrokers()),
+        map(({ data }) => data),
+        shareReplay(1)
+    );
 
     constructor(private _dialog: MatDialog) {
         super();
     }
 
     public ngOnInit() {
-        this.loadBrokers();
+        this._change.next(Date.now());
     }
 
     public newBroker(): void {
@@ -112,9 +168,8 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
         this.subscription(
             'modal_events',
             ref.componentInstance.event.subscribe((event) => {
-                if (event.reason === 'done') {
-                    this.loadBrokers();
-                }
+                if (event.reason !== 'done') return;
+                this._change.next(Date.now());
             })
         );
     }
@@ -134,9 +189,8 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
         this.subscription(
             'modal_events',
             ref.componentInstance.event.subscribe((event) => {
-                if (event.reason === 'done') {
-                    this.loadBrokers();
-                }
+                if (event.reason !== 'done') return;
+                this._change.next(Date.now());
             })
         );
     }
@@ -164,14 +218,7 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
                     )}`
                 );
             notifySuccess(`Successfully deleted broker "${item.name}".`);
-            this.loadBrokers();
+            this._change.next(Date.now());
         }
-    }
-
-    private async loadBrokers() {
-        const brokers = await queryBrokers()
-            .pipe(map((resp) => resp.data))
-            .toPromise();
-        this.brokers = brokers;
     }
 }

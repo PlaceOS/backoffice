@@ -6,7 +6,14 @@ import {
     queryDomains,
     updateDomain,
 } from '@placeos/ts-client';
-import { first, map } from 'rxjs/operators';
+import {
+    debounceTime,
+    first,
+    map,
+    shareReplay,
+    switchMap,
+    take,
+} from 'rxjs/operators';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import { ApplicationIcon } from 'apps/backoffice/src/app/common/types';
 import {
@@ -14,6 +21,7 @@ import {
     ConfirmModalData,
 } from 'apps/backoffice/src/app/overlays/confirm-modal.component';
 import { ExtensionModalComponent } from './extension-modal/extension-modal.component';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 
 export interface BackofficeExtension {
     /** Section of backoffice to extend */
@@ -40,87 +48,92 @@ export interface BackofficeExtension {
 @Component({
     selector: '[app-extensions]',
     template: `
-        <h2 class="text-lg font-medium mb-4 mt-4">Backoffice extensions</h2>
-        <div *ngIf="!loading; else load_state">
-            <div class="flex items-center space-x-2 mb-4">
-                <label for="type">Domain: </label>
-                <mat-form-field appearance="outline" class="h-12">
-                    <mat-select
-                        name="type"
-                        [(ngModel)]="domain"
-                        (ngModelChange)="setDomain($event)"
-                        placeholder="Select Domain..."
-                    >
-                        <mat-option
-                            *ngFor="let domain of domain_list"
-                            [value]="domain"
+        <div class="flex flex-col h-full w-full">
+            <div class="flex items-center justify-between space-x-2 my-4">
+                <div class="text-2xl">Extensions</div>
+                <div class="flex items-center space-x-2">
+                    <mat-form-field appearance="outline" class="h-12">
+                        <mat-select
+                            name="type"
+                            [ngModel]="domain.getValue()"
+                            (ngModelChange)="setDomain($event)"
+                            placeholder="Select Domain..."
                         >
-                            {{ domain.name }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <button btn (click)="editExtension()">Add Extension</button>
+                            <mat-option
+                                *ngFor="let domain of domain_list"
+                                [value]="domain"
+                            >
+                                {{ domain.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button btn matRipple (click)="editExtension()">
+                        Add Extension
+                    </button>
+                </div>
             </div>
             <div
-                class="bg-info my-4 p-4 flex items-center rounded shadow space-x-4 text-sm text-info-content"
+                class="bg-info mb-4 p-4 flex items-center rounded shadow space-x-4 text-sm text-info-content"
             >
                 <p>
                     <strong>Note:</strong> Backoffice requires a full page
                     refresh for extension changes and additions to apply
                 </p>
             </div>
-            <div role="table" *ngIf="extension_list.length; else empty_state">
-                <div table-head>
-                    <div class="w-24 p-2">Type</div>
-                    <div class="w-40 p-2">Name</div>
-                    <div class="flex-1 p-2">URL</div>
-                    <div class="w-28 p-2">Conditions</div>
-                    <div class="w-24 p-2"></div>
-                </div>
-                <div table-body>
-                    <div table-row *ngFor="let extension of extension_list">
-                        <div class="w-24 p-2 capitalize">
-                            {{ extension.type }}
-                        </div>
-                        <div class="w-40 p-2">{{ extension.name }}</div>
-                        <div class="flex-1 p-2">{{ extension.url }}</div>
-                        <div class="w-28 p-2">
-                            {{ extension.conditions.length }}
-                        </div>
-                        <div class="w-24 flex items-center justify-center">
-                            <button btn icon (click)="editExtension(extension)">
-                                <app-icon
-                                    [icon]="{ class: 'backoffice-edit' }"
-                                ></app-icon>
-                            </button>
-                            <button
-                                btn
-                                icon
-                                (click)="removeExtension(extension)"
-                            >
-                                <app-icon
-                                    [icon]="{ class: 'backoffice-trash' }"
-                                ></app-icon>
-                            </button>
-                        </div>
+            <div class="flex-1 w-full h-1/2 overflow-auto">
+                <simple-table
+                    class="min-w-[32rem] block text-sm"
+                    [data]="extensions"
+                    [columns]="[
+                        { key: 'type', name: 'Type', content: type_template },
+                        { key: 'name', name: 'Tab Name' },
+                        { key: 'url', name: 'URL', content: url_template },
+                        {
+                            key: 'conditions',
+                            name: 'Checks',
+                            content: conditions_template,
+                            size: '6rem'
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            size: '6rem',
+                            content: actions_template
+                        }
+                    ]"
+                    [sortable]="true"
+                    empty_message="No extensions configured for this domain"
+                ></simple-table>
+                <ng-template #type_template let-row="row">
+                    <div class="p-4 uppercase font-mono text-xs">
+                        {{ row.type }}
                     </div>
-                </div>
+                </ng-template>
+                <ng-template #url_template let-row="row">
+                    <a
+                        class="truncate p-4 underline"
+                        [href]="row.url | safe: 'url'"
+                    >
+                        {{ row.url }}
+                    </a>
+                </ng-template>
+                <ng-template #conditions_template let-row="row">
+                    <div class="p-4">
+                        {{ row.conditions.length }}
+                    </div>
+                </ng-template>
+                <ng-template #actions_template let-row="row">
+                    <div class="flex items-center space-x-2 p-2">
+                        <button icon matRipple (click)="editExtension(row)">
+                            <app-icon>edit</app-icon>
+                        </button>
+                        <button icon matRipple (click)="removeExtension(row)">
+                            <app-icon class="text-error">delete</app-icon>
+                        </button>
+                    </div>
+                </ng-template>
             </div>
         </div>
-        <ng-template #load_state>
-            <div class="info-block">
-                <div class="icon">
-                    <mat-spinner [diameter]="32"></mat-spinner>
-                </div>
-                <div class="text">{{ loading }}</div>
-            </div>
-        </ng-template>
-        <ng-template #empty_state>
-            <div class="info-block">
-                <app-icon class="text-3xl">close</app-icon>
-                <p>No extensions configured for this domain</p>
-            </div>
-        </ng-template>
     `,
     styles: [
         `
@@ -136,10 +149,40 @@ export class PlaceExtensionsComponent implements OnInit {
     public loading: string = '';
     /** List of available domains */
     public domain_list: PlaceDomain[];
-    /** Currently active domain */
-    public domain: PlaceDomain;
-    /** List of extension available on the current domain */
-    public extension_list: BackofficeExtension[] = [];
+
+    public readonly domain = new BehaviorSubject<PlaceDomain>(null);
+
+    private _change = new BehaviorSubject<number>(0);
+
+    public extensions = combineLatest([this.domain, this._change]).pipe(
+        debounceTime(300),
+        map(([domain]) => {
+            if (!domain) return [];
+            const config = domain.config?.backoffice?.extend || {};
+            const extensions: BackofficeExtension[] = [];
+            for (const type in config) {
+                if (!config[type]) {
+                    continue;
+                }
+                for (const name in config[type]) {
+                    if (!config[type][name]) {
+                        continue;
+                    }
+                    extensions.push({
+                        ...config[type][name],
+                        name,
+                        type,
+                    });
+                }
+            }
+            extensions.sort(
+                (a, b) =>
+                    a.type.localeCompare(b.type) || a.name.localeCompare(b.name)
+            );
+            return extensions;
+        }),
+        shareReplay(1)
+    );
 
     constructor(private _dialog: MatDialog) {}
 
@@ -156,29 +199,7 @@ export class PlaceExtensionsComponent implements OnInit {
     }
 
     public setDomain(domain: PlaceDomain) {
-        this.domain = domain;
-        const config = this.domain.config?.backoffice?.extend || {};
-        const extensions: BackofficeExtension[] = [];
-        for (const type in config) {
-            if (!config[type]) {
-                continue;
-            }
-            for (const name in config[type]) {
-                if (!config[type][name]) {
-                    continue;
-                }
-                extensions.push({
-                    ...config[type][name],
-                    name,
-                    type,
-                });
-            }
-        }
-        this.extension_list = extensions;
-        this.extension_list.sort(
-            (a, b) =>
-                a.type.localeCompare(b.type) || a.name.localeCompare(b.name)
-        );
+        this.domain.next(domain);
     }
 
     public editExtension(item?: BackofficeExtension) {
@@ -189,13 +210,10 @@ export class PlaceExtensionsComponent implements OnInit {
             .pipe(first((_) => _.reason === 'done'))
             .subscribe(async (event) => {
                 ref.componentInstance.loading = true;
-                if (item) {
-                    this.extension_list = this.extension_list.filter(
-                        (i) => i !== item
-                    );
-                }
-                this.extension_list.push(event.metadata);
-                await this.updateDomain();
+                let ext_list = await this.extensions.pipe(take(1)).toPromise();
+                ext_list = ext_list.filter((i) => i.name !== item.name);
+                ext_list.push(event.metadata);
+                await this.updateDomain(ext_list);
                 ref.componentInstance.loading = false;
                 ref.close();
             });
@@ -216,10 +234,9 @@ export class PlaceExtensionsComponent implements OnInit {
             .pipe(first((_) => _.reason === 'done'))
             .subscribe(async (_) => {
                 ref.componentInstance.loading = 'Removing extension...';
-                this.extension_list = this.extension_list.filter(
-                    (i) => i !== item
-                );
-                await this.updateDomain().catch((e) =>
+                let ext_list = await this.extensions.pipe(take(1)).toPromise();
+                ext_list = ext_list.filter((i) => i.name !== item.name);
+                await this.updateDomain(ext_list).catch((e) =>
                     notifyError(`Error removing extension: ${e}`)
                 );
                 ref.componentInstance.loading = '';
@@ -227,9 +244,11 @@ export class PlaceExtensionsComponent implements OnInit {
             });
     }
 
-    public async updateDomain() {
+    public async updateDomain(extension_list: BackofficeExtension[]) {
+        const domain = await this.domain.pipe(take(1)).toPromise();
+        if (!domain) return;
         const extensions = {};
-        for (const ext of this.extension_list) {
+        for (const ext of extension_list) {
             if (!extensions[ext.type]) {
                 extensions[ext.type] = {};
             }
@@ -239,16 +258,16 @@ export class PlaceExtensionsComponent implements OnInit {
             extensions[ext.type][ext.name] = data;
         }
         const updated = new PlaceDomain({
-            ...this.domain,
+            ...domain,
             config: {
-                ...this.domain.config,
+                ...domain.config,
                 backoffice: {
-                    ...(this.domain.config.backoffice || {}),
+                    ...(domain.config.backoffice || {}),
                     extend: extensions,
                 },
             },
         });
-        const domain = await updateDomain(this.domain.id, updated).toPromise();
-        this.setDomain(domain);
+        const new_domain = await updateDomain(domain.id, updated).toPromise();
+        this.setDomain(new_domain);
     }
 }

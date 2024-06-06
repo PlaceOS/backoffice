@@ -10,7 +10,11 @@ import { ZonesStateService } from './zones-state.service';
     template: `
         <div class="flex items-center">
             <mat-form-field class="flex-1" appearance="outline">
-                <app-icon class="text-lg" matPrefix className="backoffice-magnifying-glass"></app-icon>
+                <app-icon
+                    class="text-lg"
+                    matPrefix
+                    className="backoffice-magnifying-glass"
+                ></app-icon>
                 <input
                     matInput
                     [ngModel]="''"
@@ -21,48 +25,64 @@ import { ZonesStateService } from './zones-state.service';
                 />
             </mat-form-field>
         </div>
-        <div role="table" *ngIf="(children | async)?.length > 0; else empty_state">
-            <div table-head>
-                <div class="flex-1 p-2" i18n="@@zoneChildrenTableName">Name</div>
-                <div class="w-3/5 p-2" i18n="@@descriptionLabel">Description</div>
-            </div>
-            <div table-body>
-                <div table-row *ngFor="let item of children | async">
-                    <div class="flex-1 p-2 underline">
-                        <a
-                            [routerLink]="['/zones', item.id]"
-                            routerLinkActive="router-link-active"
-                            [matTooltip]="item.id"
-                        >
-                            {{ item.name }} (<span class="id">{{ item.id }}</span
-                            >)
-                        </a>
-                    </div>
-                    <div class="w-3/5 p-2">{{ item.description }}</div>
-                </div>
-            </div>
+        <div
+            role="table"
+            *ngIf="(children | async)?.length > 0; else empty_state"
+        >
+            <simple-table
+                class="min-w-[32rem] block text-sm"
+                [data]="children"
+                [columns]="[
+                    { key: 'name', name: 'Name', content: name_template },
+                    {
+                        key: 'description',
+                        name: 'Description',
+                    }
+                ]"
+                [sortable]="true"
+            ></simple-table>
+            <ng-template #name_template let-row="row">
+                <a
+                    class="truncate p-4 underline"
+                    [routerLink]="['/zones', row.id]"
+                >
+                    {{ row.name }}
+                </a>
+            </ng-template>
         </div>
         <ng-template #empty_state>
-            <div class="flex flex-col items-center p-8" i18n="@@zoneChildrenTableEmpty">
+            <div
+                class="flex flex-col items-center p-8"
+                i18n="@@zoneChildrenTableEmpty"
+            >
                 No child zones found
             </div>
         </ng-template>
     `,
-    styles: [`
-        :host {
-            width: 100%;
-            height: 100%;
-        }
-    `],
+    styles: [
+        `
+            :host {
+                width: 100%;
+                height: 100%;
+            }
+        `,
+    ],
 })
 export class ZoneChildrenComponent {
     public readonly filter$ = new BehaviorSubject<string>('');
     /** List of triggers associated with the zone */
-    public readonly children = combineLatest([this.filter$, this._state.children]).pipe(
+    public readonly children = combineLatest([
+        this.filter$,
+        this._state.children,
+    ]).pipe(
         map((details) => {
             const [filter, zones] = details;
             const search = filter.toLowerCase();
-            return !filter ? zones : zones.filter((sys) => sys.name.toLowerCase().includes(search));
+            return !filter
+                ? zones
+                : zones.filter((sys) =>
+                      sys.name.toLowerCase().includes(search)
+                  );
         })
     );
 

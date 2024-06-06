@@ -6,37 +6,43 @@ import { DomainStateService } from './domain-state.service';
 @Component({
     selector: 'domain-users',
     template: `
-        <div role="table" *ngIf="(users | async)?.length; else empty_state">
-            <div table-head>
-                <div class="w-64 p-2" i18n="@@userTableName">Name</div>
-                <div class="flex-1 p-2" i18n="@@userTableEmail">Email</div>
-                <div class="w-24 p-2" i18n="@@userTableRole">Role</div>
-            </div>
-            <div table-body>
-                <div table-row *ngFor="let item of users | async">
-                    <div class="w-64 p-2 underline">
-                        <a
-                            [routerLink]="['/users', item.id]"
-                            [matTooltip]="item.id"
-                            matTooltipPosition="right"
-                        >
-                            {{ item.name }}
-                        </a>
-                    </div>
-                    <div class="flex-1 p-2 underline">
-                        <a [href]="'mailto:' + item.email">{{ item.email }}</a>
-                    </div>
-                    <div class="w-24 p-2">
-                        <code [class.text-opacity-20]="!item.sys_admin && !item.support">
-                            {{ item.sys_admin ? 'Admin' : item.support ? 'Support' : 'None' }}
-                        </code>
-                    </div>
-                </div>
-            </div>
+        <div class="w-full h-full overflow-auto">
+            <simple-table
+                class="min-w-[32rem] block text-sm"
+                [data]="users"
+                [columns]="[
+                    { key: 'name', name: 'User', content: name_template },
+                    {
+                        key: 'role',
+                        name: 'Role',
+                        content: role_template,
+                        size: '6rem'
+                    }
+                ]"
+                [sortable]="true"
+                empty_message="No users associated with domain"
+            ></simple-table>
         </div>
-        <ng-template #empty_state>
-            <div class="flex flex-col items-center p-8">
-                <p i18n="@@userTableEmpty">No users associated with domain</p>
+        <ng-template #name_template let-row="row">
+            <div class="flex flex-col px-4 py-2">
+                <div class="text-sm">{{ row.name }}</div>
+                <div class="text-xs opacity-30">{{ row.email }}</div>
+            </div>
+        </ng-template>
+        <ng-template #role_template let-row="row">
+            <div class="p-4">
+                <code
+                    [class.text-opacity-20]="!item.sys_admin && !item.support"
+                    class="px-2 py-1"
+                >
+                    {{
+                        item.sys_admin
+                            ? 'Admin'
+                            : item.support
+                            ? 'Support'
+                            : 'None'
+                    }}
+                </code>
             </div>
         </ng-template>
     `,
