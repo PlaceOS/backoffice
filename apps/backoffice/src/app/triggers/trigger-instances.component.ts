@@ -21,7 +21,7 @@ import { TriggerStateService } from './trigger-state.service';
                 },
                 {
                     key: 'name',
-                    name: 'Module Name',
+                    name: 'Instance Name',
                     content: name_template
                 },
                 {

@@ -72,7 +72,7 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
             <ng-template #name_template let-row="row">
                 <a
                     class="truncate p-4 underline"
-                    [routerLink]="['/systems', row.id]"
+                    [routerLink]="['/modules', row.id]"
                 >
                     {{ row.name }}
                 </a>
