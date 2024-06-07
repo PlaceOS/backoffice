@@ -54,7 +54,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [disabled]="!template_system"
                 (click)="editCondition()"
             >
-                <app-icon className="backoffice-plus"></app-icon>
+                <app-icon>add</app-icon>
             </button>
             <div class="font-medium text-lg" i18n="@@triggerConditionsHeader">
                 Conditions
@@ -88,14 +88,10 @@ import { TriggerStateService } from './trigger-state.service';
                             [disabled]="!template_system"
                             (click)="editCondition(comparison)"
                         >
-                            <app-icon
-                                [icon]="{ class: 'backoffice-edit' }"
-                            ></app-icon>
+                            <app-icon>edit</app-icon>
                         </button>
                         <button btn icon (click)="removeCondition(comparison)">
-                            <app-icon
-                                [icon]="{ class: 'backoffice-trash' }"
-                            ></app-icon>
+                            <app-icon>delete</app-icon>
                         </button>
                     </div>
                 </div>
@@ -121,10 +117,10 @@ import { TriggerStateService } from './trigger-state.service';
                             [disabled]="!template_system"
                             (click)="editCondition(time)"
                         >
-                            <app-icon className="backoffice-edit"></app-icon>
+                            <app-icon>edit</app-icon>
                         </button>
                         <button icon matRipple (click)="removeCondition(time)">
-                            <app-icon className="backoffice-trash"></app-icon>
+                            <app-icon>delete</app-icon>
                         </button>
                     </div>
                 </div>
@@ -138,7 +134,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [disabled]="!template_system"
                 (click)="editAction()"
             >
-                <app-icon className="backoffice-plus"></app-icon>
+                <app-icon>add</app-icon>
             </button>
             <div class="font-medium text-lg" i18n="@@triggerActionsHeader">
                 Actions
@@ -165,9 +161,7 @@ import { TriggerStateService } from './trigger-state.service';
                         class="w-12 flex items-center justify-center"
                         cdkDragHandle
                     >
-                        <app-icon
-                            [icon]="{ class: 'backoffice-select-arrows' }"
-                        ></app-icon>
+                        <app-icon class="text-2xl">unfold_more</app-icon>
                     </div>
                     <div class="flex-1 p-2">
                         {{ action.mod }}, {{ action.method }}({{
@@ -182,14 +176,10 @@ import { TriggerStateService } from './trigger-state.service';
                             [disabled]="!template_system"
                             (click)="editAction(action)"
                         >
-                            <app-icon
-                                [icon]="{ class: 'backoffice-edit' }"
-                            ></app-icon>
+                            <app-icon>edit</app-icon>
                         </button>
                         <button btn icon (click)="removeAction(action)">
-                            <app-icon
-                                [icon]="{ class: 'backoffice-trash' }"
-                            ></app-icon>
+                            <app-icon>delete</app-icon>
                         </button>
                     </div>
                     <div
@@ -211,9 +201,7 @@ import { TriggerStateService } from './trigger-state.service';
                         class="w-12 flex items-center justify-center"
                         cdkDragHandle
                     >
-                        <app-icon
-                            [icon]="{ class: 'backoffice-select-arrows' }"
-                        ></app-icon>
+                        <app-icon class="text-2xl">unfold_more</app-icon>
                     </div>
                     <div class="flex-1 p-2">
                         <span
@@ -231,14 +219,10 @@ import { TriggerStateService } from './trigger-state.service';
                             [disabled]="!template_system"
                             (click)="editAction(action)"
                         >
-                            <app-icon
-                                [icon]="{ class: 'backoffice-edit' }"
-                            ></app-icon>
+                            <app-icon>edit</app-icon>
                         </button>
                         <button btn icon (click)="removeAction(action)">
-                            <app-icon
-                                [icon]="{ class: 'backoffice-trash' }"
-                            ></app-icon>
+                            <app-icon>delete</app-icon>
                         </button>
                     </div>
                     <div

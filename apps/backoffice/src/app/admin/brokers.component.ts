@@ -28,7 +28,7 @@ import { BehaviorSubject } from 'rxjs';
                 <div class="flex items-center space-x-2">
                     <button btn matRipple (click)="newBroker()">
                         <div class="flex items-center">
-                            <app-icon className="backoffice-plus"></app-icon>
+                            <app-icon>add</app-icon>
                             <div class="text">Add Broker</div>
                         </div>
                     </button>
@@ -115,7 +115,7 @@ import { BehaviorSubject } from 'rxjs';
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2">
                 <button icon matRipple (click)="editBroker(row)">
-                    <app-icon className="backoffice-edit"></app-icon>
+                    <app-icon>edit</app-icon>
                 </button>
                 <button
                     icon
@@ -123,7 +123,7 @@ import { BehaviorSubject } from 'rxjs';
                     class="text-error"
                     (click)="deleteBroker(row)"
                 >
-                    <app-icon className="backoffice-trash"></app-icon>
+                    <app-icon>delete</app-icon>
                 </button>
             </div>
         </ng-template>

@@ -17,11 +17,11 @@ import { BackofficeUsersService } from '../users/users.service';
                 [routerLink]="['/profile']"
                 class="space-x-2"
             >
-                <app-icon [className]="'backoffice-user'"></app-icon>
+                <app-icon>person</app-icon>
                 Profile
             </a>
             <div dark-mode class="flex items-center p-4 w-[16rem]">
-                <app-icon [className]="'backoffice-moon'"></app-icon>
+                <app-icon>dark_mode</app-icon>
                 <p class="flex-1 w-1/2">Dark Mode</p>
                 <mat-slide-toggle [(ngModel)]="dark_mode"></mat-slide-toggle>
             </div>
@@ -32,7 +32,7 @@ import { BackofficeUsersService } from '../users/users.service';
                 class="space-x-2"
                 (click)="logout()"
             >
-                <app-icon [className]="'backoffice-log-out'"></app-icon>
+                <app-icon>logout</app-icon>
                 Logout
             </button>
             <button
@@ -42,7 +42,7 @@ import { BackofficeUsersService } from '../users/users.service';
                 uploads
                 (click)="showUploadHistory()"
             >
-                <app-icon [className]="'backoffice-clock'"></app-icon>
+                <app-icon>schedule</app-icon>
                 Upload History
             </button>
             <a

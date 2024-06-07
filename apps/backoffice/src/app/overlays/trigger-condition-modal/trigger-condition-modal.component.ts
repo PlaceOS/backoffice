@@ -31,9 +31,7 @@ export interface TriggerConditionData {
         <header>
             <h3>{{ is_new ? 'Edit' : 'New' }} Trigger Condition</h3>
             <button btn icon mat-dialog-close>
-                <app-icon
-                    [icon]="{ type: 'icon', class: 'backoffice-cross' }"
-                ></app-icon>
+                <app-icon>close</app-icon>
             </button>
         </header>
         <main

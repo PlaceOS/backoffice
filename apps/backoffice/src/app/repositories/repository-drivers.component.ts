@@ -27,9 +27,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                         ></div>
                         <div class="w-12 flex justify-center">
                             <button btn icon (click)="newDriver(item)">
-                                <app-icon
-                                    className="backoffice-plus"
-                                ></app-icon>
+                                <app-icon>add</app-icon>
                             </button>
                         </div>
                     </div>

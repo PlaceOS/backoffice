@@ -82,7 +82,7 @@ import { DomainStateService } from './domain-state.service';
                     (click)="copySecret(item)"
                     matTooltip="Copy Secret to Clipboard"
                 >
-                    <app-icon className="backoffice-copy"></app-icon>
+                    <app-icon>content_copy</app-icon>
                 </button>
                 <button
                     icon
@@ -93,7 +93,7 @@ import { DomainStateService } from './domain-state.service';
                     (window:touchend)="show_secret[item.id] = false"
                     matTooltip="View Secret"
                 >
-                    <app-icon className="backoffice-eye"></app-icon>
+                    <app-icon>visibility</app-icon>
                 </button>
                 <div class="p-2 font-mono text-xs">
                     <span
@@ -108,7 +108,7 @@ import { DomainStateService } from './domain-state.service';
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2 mx-auto">
                 <button icon matRipple (click)="editApplication(item)">
-                    <app-icon className="backoffice-edit"></app-icon>
+                    <app-icon>edit</app-icon>
                 </button>
                 <button
                     icon
@@ -116,7 +116,7 @@ import { DomainStateService } from './domain-state.service';
                     class="text-error"
                     (click)="removeApplication(item)"
                 >
-                    <app-icon className="backoffice-trash"></app-icon>
+                    <app-icon>delete</app-icon>
                 </button>
             </div>
         </ng-template>

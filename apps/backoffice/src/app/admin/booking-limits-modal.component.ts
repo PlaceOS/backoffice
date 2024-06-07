@@ -11,7 +11,7 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
             <h3>Edit Tenant Booking Limits</h3>
             <div class="flex-1"></div>
             <button *ngIf="!loading" btn icon mat-dialog-close>
-                <app-icon className="backoffice-cross"></app-icon>
+                <app-icon>close</app-icon>
             </button>
         </header>
         <main

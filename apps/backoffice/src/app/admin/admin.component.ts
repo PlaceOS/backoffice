@@ -40,7 +40,7 @@ import { BackofficeUsersService } from '../users/users.service';
                         class="sm:hidden mr-2 absolute top-2 left-4 z-40"
                         (click)="open_menu = true"
                     >
-                        <app-icon className="backoffice-menu"></app-icon>
+                        <app-icon>menu</app-icon>
                     </button>
                 </div>
                 <app-debug-output

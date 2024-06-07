@@ -85,11 +85,7 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
                                         $event.stopPropagation()
                                     "
                                 >
-                                    <app-icon
-                                        [icon]="{
-                                            class: 'backoffice-edit'
-                                        }"
-                                    ></app-icon>
+                                    <app-icon>edit</app-icon>
                                 </button>
                                 <div
                                     class="flex min-w-[2rem] justify-end"
@@ -102,11 +98,7 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
                                         matTooltip="Remove Metadata"
                                         (click)="deleteMetadata(item.name)"
                                     >
-                                        <app-icon
-                                            [icon]="{
-                                                class: 'backoffice-trash'
-                                            }"
-                                        ></app-icon>
+                                        <app-icon>delete</app-icon>
                                     </button>
                                 </div>
                             </mat-panel-title>

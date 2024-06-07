@@ -10,11 +10,11 @@ import { ZonesStateService } from './zones-state.service';
     template: `
         <div class="flex items-center">
             <mat-form-field class="flex-1" appearance="outline">
-                <app-icon
-                    class="text-lg"
-                    matPrefix
-                    className="backoffice-magnifying-glass"
-                ></app-icon>
+                <div class="prefix" matPrefix>
+                    <app-icon class="text-2xl relative -left-0.5">
+                        search
+                    </app-icon>
+                </div>
                 <input
                     matInput
                     [ngModel]="''"

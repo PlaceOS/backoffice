@@ -85,9 +85,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                         (click)="clearDebugMessages()"
                         class="bg-base-200"
                     >
-                        <app-icon
-                            className="material-icons"
-                            matTooltip="Clear Messages"
+                        <app-icon matTooltip="Clear Messages"
                             >clear_all</app-icon
                         >
                     </button>

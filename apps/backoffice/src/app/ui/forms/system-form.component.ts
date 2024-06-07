@@ -293,7 +293,11 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             <div class="field">
                 <label for="timezone">Timezone</label>
                 <mat-form-field appearance="outline">
-                    <app-icon matPrefix class="text-2xl">search</app-icon>
+                    <div class="prefix" matPrefix>
+                        <app-icon class="text-2xl relative -left-0.5">
+                            search
+                        </app-icon>
+                    </div>
                     <input
                         matInput
                         formControlName="timezone"

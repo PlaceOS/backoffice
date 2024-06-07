@@ -130,10 +130,9 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                                     class="w-10 flex justify-center h-full"
                                     style="cursor: grab"
                                 >
-                                    <app-icon
-                                        className="backoffice-select-arrows"
-                                        cdkDragHandle
-                                    ></app-icon>
+                                    <app-icon class="text-2xl" cdkDragHandle>
+                                        unfold_more
+                                    </app-icon>
                                 </div>
                                 <div
                                     class="w-12 flex items-center justify-center p-2 h-full relative"
@@ -234,10 +233,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                                 <div
                                     class="w-48 text-right flex items-center h-full p-2"
                                 >
-                                    <app-icon
-                                        *ngIf="device.tls"
-                                        className="backoffice-lock"
-                                    ></app-icon>
+                                    <app-icon *ngIf="device.tls">lock</app-icon>
                                     <a
                                         [href]="
                                             device.ip
@@ -291,18 +287,14 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                                         matRipple
                                         (click)="editModule(device)"
                                     >
-                                        <app-icon
-                                            className="backoffice-edit"
-                                        ></app-icon>
+                                        <app-icon>edit</app-icon>
                                     </button>
                                     <button
                                         icon
                                         matRipple
                                         [matMenuTriggerFor]="menu"
                                     >
-                                        <app-icon
-                                            className="backoffice-dots-three-vertical"
-                                        ></app-icon>
+                                        <app-icon>more_vert</app-icon>
                                     </button>
                                     <mat-menu #menu="matMenu">
                                         <button

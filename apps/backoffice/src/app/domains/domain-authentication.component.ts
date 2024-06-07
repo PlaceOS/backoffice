@@ -54,7 +54,7 @@ import { DomainStateService } from './domain-state.service';
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2 mx-auto">
                 <button icon matRipple (click)="editAuthSource(row)">
-                    <app-icon className="backoffice-edit"></app-icon>
+                    <app-icon>edit</app-icon>
                 </button>
                 <button
                     icon
@@ -62,7 +62,7 @@ import { DomainStateService } from './domain-state.service';
                     class="text-error"
                     (click)="removeAuthSource(row)"
                 >
-                    <app-icon className="backoffice-trash"></app-icon>
+                    <app-icon>delete</app-icon>
                 </button>
             </div>
         </ng-template>

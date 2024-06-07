@@ -28,7 +28,7 @@ import { UploadsService } from '../common/uploads.service';
                     <app-icon>clear_all</app-icon>
                 </button>
                 <button btn icon (click)="show = false">
-                    <app-icon className="backoffice-cross"></app-icon>
+                    <app-icon>delete</app-icon>
                 </button>
             </div>
             <div list class="overflow-auto max-h-[65vh]">
@@ -71,15 +71,17 @@ import { UploadsService } from '../common/uploads.service';
                             </div>
                             <app-icon
                                 *ngIf="item.progress >= 100 && !item.error"
-                                className="backoffice-check"
                                 class="bg-success text-base-100 rounded-full"
-                            ></app-icon>
+                            >
+                                done
+                            </app-icon>
                             <app-icon
                                 *ngIf="item.error"
-                                className="backoffice-cross"
                                 class="bg-error text-base-100 rounded-full"
                                 [matTooltip]="item.error"
-                            ></app-icon>
+                            >
+                                close
+                            </app-icon>
                         </div>
                         <mat-progress-bar
                             *ngIf="item.progress < 100 && !item.error"
@@ -107,10 +109,9 @@ import { UploadsService } from '../common/uploads.service';
             <div
                 class="absolute bottom-0 p-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center pointer-events-none"
             >
-                <app-icon
-                    class="animate-bounce mb-4 text-7xl text-base-100"
-                    className="backoffice-upload-to-cloud"
-                ></app-icon>
+                <app-icon class="animate-bounce mb-4 text-7xl text-base-100">
+                    cloud_upload
+                </app-icon>
                 <div class="bg-base-100 rounded p-4 text-base-content shadow">
                     Drop files to upload them to the cloud
                 </div>
@@ -124,7 +125,7 @@ import { UploadsService } from '../common/uploads.service';
         </div>
         <ng-template #no_uploads>
             <div class="w-full flex flex-col items-center m-auto p-8">
-                <app-icon className="backoffice-cross"></app-icon>
+                <app-icon>close</app-icon>
                 <p>No uploads to show</p>
             </div>
         </ng-template>

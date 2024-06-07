@@ -10,7 +10,7 @@ import { notifyError, notifySuccess } from '../../common/notifications';
         <header>
             <h2>{{ storage?.id ? 'Edit' : 'New' }} Storage Provider</h2>
             <button btn icon matRipple mat-dialog-close>
-                <app-icon className="backoffice-close"></app-icon>
+                <app-icon>close</app-icon>
             </button>
         </header>
         <form [formGroup]="form" class="max-h-[65vh] overflow-auto px-4 py-2">

@@ -46,7 +46,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                     (blur)="resetSearchString()"
                 />
                 <div class="prefix" matPrefix>
-                    <app-icon class="text-2xl relative top-0.5 -left-0.5"
+                    <app-icon class="text-2xl relative -left-0.5"
                         >search</app-icon
                     >
                 </div>

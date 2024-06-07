@@ -75,14 +75,11 @@ import { SystemStateService } from './system-state.service';
                                 [class.pointer-events-none]="zone.pending"
                                 [class.text-pending]="zone.pending"
                             >
-                                <app-icon
-                                    [className]="
-                                        zone.pending
-                                            ? 'backoffice-warning'
-                                            : 'backoffice-select-arrows'
-                                    "
-                                    cdkDragHandle
-                                ></app-icon>
+                                <app-icon class="text-2xl" cdkDragHandle>
+                                    {{
+                                        zone.pending ? 'warning' : 'unfold_more'
+                                    }}
+                                </app-icon>
                             </div>
                             <div class="w-48 p-2">
                                 <a [routerLink]="['/zones', zone.id]">
@@ -99,9 +96,7 @@ import { SystemStateService } from './system-state.service';
                                     *ngIf="(zones | async).length > 1"
                                     (click)="removeZone(zone)"
                                 >
-                                    <app-icon
-                                        className="backoffice-trash"
-                                    ></app-icon>
+                                    <app-icon>delete</app-icon>
                                 </button>
                             </div>
                         </div>

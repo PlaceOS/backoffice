@@ -28,7 +28,7 @@ import { TriggerStateService } from './trigger-state.service';
                     key: 'actions',
                     name: ' ',
                     content: actions_template,
-                    size: '4.5rem',
+                    size: '3.5rem',
                     sortable: false
                 }
             ]"
@@ -63,7 +63,7 @@ import { TriggerStateService } from './trigger-state.service';
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2 mx-auto">
                 <button icon matRipple (click)="deleteTrigger(item)">
-                    <app-icon className="backoffice-trash"></app-icon>
+                    <app-icon class="text-error">delete</app-icon>
                 </button>
             </div>
         </ng-template>

@@ -9,10 +9,11 @@ import { ModuleStateService } from './module-state.service';
     template: `
         <section class="flex items-center mb-4">
             <mat-form-field appearance="outline" class="h-12 flex-1">
-                <app-icon
-                    matPrefix
-                    className="backoffice-magnifying-glass text-xl mr-2"
-                ></app-icon>
+                <div class="prefix" matPrefix>
+                    <app-icon class="text-2xl relative -left-0.5">
+                        search
+                    </app-icon>
+                </div>
                 <input
                     [ngModel]="''"
                     (ngModelChange)="filter$.next($event)"

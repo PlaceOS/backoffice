@@ -21,7 +21,7 @@ import { APIKeyService } from './api-keys.service';
         <header class="h-12 flex items-center justify-between p-4">
             <h2>New API Key</h2>
             <button btn icon mat-dialog-close *ngIf="!loading">
-                <app-icon className="backoffice-cross"></app-icon>
+                <app-icon>close</app-icon>
             </button>
         </header>
         <main
@@ -63,11 +63,7 @@ import { APIKeyService } from './api-keys.service';
                             (removed)="removeScope(scope)"
                         >
                             {{ scope }}
-                            <app-icon
-                                matChipRemove
-                                class=""
-                                className="backoffice-cross"
-                            ></app-icon>
+                            <app-icon matChipRemove>close</app-icon>
                         </mat-chip>
                         <input
                             matInput
@@ -159,7 +155,7 @@ import { APIKeyService } from './api-keys.service';
         </main>
         <footer
             *ngIf="!loading"
-            class="p-4 flex items-center justify-center border-t border-base-200 /20"
+            class="p-2 flex items-center justify-end border-t border-base-200"
         >
             <button btn class="w-32" (click)="save()">Save</button>
         </footer>

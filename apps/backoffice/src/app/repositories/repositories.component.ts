@@ -28,7 +28,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                         class="sm:hidden mr-2"
                         (click)="open_menu = true"
                     >
-                        <app-icon className="backoffice-menu"></app-icon>
+                        <app-icon>menu</app-icon>
                     </button>
                 </item-selection>
                 <div class="flex flex-col flex-1 h-1/2">
@@ -60,10 +60,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     matRipple
                     (click)="newItem()"
                 >
-                    <app-icon
-                        [className]="'backoffice-plus'"
-                        class="text-3xl"
-                    ></app-icon>
+                    <app-icon class="text-3xl">add</app-icon>
                 </button>
             </div>
         </div>

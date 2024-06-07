@@ -219,10 +219,7 @@ import { AuthType } from '@placeos/ts-client';
                             (removed)="removeFilter(filter)"
                         >
                             {{ filter }}
-                            <app-icon
-                                matChipRemove
-                                [icon]="{ class: 'backoffice-cross' }"
-                            ></app-icon>
+                            <app-icon matChipRemove>close</app-icon>
                         </mat-chip>
                         <input
                             placeholder="Broker filters..."

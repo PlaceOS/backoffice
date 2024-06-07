@@ -24,10 +24,11 @@ export interface TriggerInstanceState {
                 Add Trigger
             </button>
             <mat-form-field appearance="outline" class="h-12 flex-1">
-                <app-icon
-                    matPrefix
-                    className="backoffice-magnifying-glass text-xl mr-2"
-                ></app-icon>
+                <div class="prefix" matPrefix>
+                    <app-icon class="text-2xl relative -left-0.5">
+                        search
+                    </app-icon>
+                </div>
                 <input
                     [ngModel]="''"
                     (ngModelChange)="filter$.next($event)"
@@ -120,16 +121,13 @@ export interface TriggerInstanceState {
                 <ng-template #actions_template let-row="row">
                     <div class="flex items-center space-x-2 p-2">
                         <button icon matRipple (click)="copyWebhookURL(row)">
-                            <app-icon className="backoffice-link"></app-icon>
+                            <app-icon>link</app-icon>
                         </button>
                         <button icon matRipple (click)="editTrigger(row)">
-                            <app-icon className="backoffice-edit"></app-icon>
+                            <app-icon>edit</app-icon>
                         </button>
                         <button icon matRipple (click)="deleteTrigger(row)">
-                            <app-icon
-                                class="text-error"
-                                className="backoffice-trash"
-                            ></app-icon>
+                            <app-icon class="text-error">delete</app-icon>
                         </button>
                     </div>
                 </ng-template>

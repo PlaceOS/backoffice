@@ -30,19 +30,18 @@ const task_details = {};
     template: `
         <div class="flex items-center mb-4">
             <button btn icon (click)="close.emit()">
-                <app-icon
-                    [icon]="{ type: 'icon', class: 'backoffice-arrow-left' }"
-                ></app-icon>
+                <app-icon>arrow_back</app-icon>
             </button>
             <h3 class="text-lg font-medium" i18n="@@clusterHeader">
                 Cluster - {{ cluster?.hostname }}
             </h3>
             <div class="flex-1"></div>
             <mat-form-field appearance="outline" class="h-12">
-                <app-icon
-                    matPrefix
-                    className="backoffice-magnifying-glass"
-                ></app-icon>
+                <div class="prefix" matPrefix>
+                    <app-icon class="text-2xl relative -left-0.5">
+                        search
+                    </app-icon>
+                </div>
                 <input
                     matInput
                     [ngModel]="filter.getValue()"
@@ -103,7 +102,7 @@ const task_details = {};
                     class="text-error"
                     (click)="confirmKillProcess(row)"
                 >
-                    <app-icon className="backoffice-trash"></app-icon>
+                    <app-icon>delete</app-icon>
                 </button>
             </div>
         </ng-template>

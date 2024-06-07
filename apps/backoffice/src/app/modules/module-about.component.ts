@@ -84,10 +84,10 @@ import { ModuleStateService } from './module-state.service';
                     </a>
                     <app-icon
                         *ngIf="(edge | async).description"
-                        className="backoffice-info"
                         class="border border-base-200  rounded-full"
                         [matTooltip]="(edge | async).description"
-                    ></app-icon>
+                        >info</app-icon
+                    >
                 </div>
             </div>
             <div

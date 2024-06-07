@@ -13,10 +13,11 @@ import { ZonesStateService } from './zones-state.service';
                 Add Trigger
             </button>
             <mat-form-field appearance="outline" class="h-12 flex-1">
-                <app-icon
-                    matPrefix
-                    className="backoffice-magnifying-glass text-xl mr-2"
-                ></app-icon>
+                <div class="prefix" matPrefix>
+                    <app-icon class="text-2xl relative -left-0.5">
+                        search
+                    </app-icon>
+                </div>
                 <input
                     [ngModel]="''"
                     (ngModelChange)="filter$.next($event)"
@@ -66,9 +67,7 @@ import { ZonesStateService } from './zones-state.service';
                                     icon
                                     (click)="deleteTrigger(trigger)"
                                 >
-                                    <app-icon
-                                        className="backoffice-trash"
-                                    ></app-icon>
+                                    <app-icon>delete</app-icon>
                                 </button>
                             </div>
                         </div>

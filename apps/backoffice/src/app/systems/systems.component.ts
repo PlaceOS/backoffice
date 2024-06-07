@@ -23,9 +23,7 @@ import { SystemStateService } from './system-state.service';
                                 class="sm:hidden mr-2"
                                 (click)="open_menu = true"
                             >
-                                <app-icon
-                                    className="backoffice-menu"
-                                ></app-icon>
+                                <app-icon>menu</app-icon>
                             </button>
                         </item-selection>
                         <div class="flex flex-col flex-1 h-1/2">
@@ -57,10 +55,7 @@ import { SystemStateService } from './system-state.service';
                             matRipple
                             (click)="newItem()"
                         >
-                            <app-icon
-                                [className]="'backoffice-plus'"
-                                class="text-3xl"
-                            ></app-icon>
+                            <app-icon class="text-3xl">add</app-icon>
                         </button>
                         <button
                             class="absolute bottom-16 left-2 sm:-left-8 w-10 h-10 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content"

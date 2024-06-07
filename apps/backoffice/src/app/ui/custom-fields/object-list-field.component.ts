@@ -39,15 +39,13 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                     </mat-form-field>
                 </div>
                 <button btn icon class="!mt-2" (click)="removeRow(item)">
-                    <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+                    <app-icon>delete</app-icon>
                 </button>
             </div>
             <div class="row h-10 text-center">
                 <button btn type="button" class="w-full" (click)="addRow()">
                     <div class="contents">
-                        <app-icon
-                            [icon]="{ class: 'backoffice-plus' }"
-                        ></app-icon>
+                        <app-icon>add</app-icon>
                         <div class="text" i18n="@@newItem">New Item</div>
                     </div>
                 </button>

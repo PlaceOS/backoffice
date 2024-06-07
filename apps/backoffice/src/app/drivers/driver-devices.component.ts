@@ -12,10 +12,11 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
     template: `
         <section class="flex items-center mb-4">
             <mat-form-field appearance="outline" class="h-12 flex-1">
-                <app-icon
-                    matPrefix
-                    className="backoffice-magnifying-glass text-xl mr-2"
-                ></app-icon>
+                <div class="prefix" matPrefix>
+                    <app-icon class="text-2xl relative -left-0.5">
+                        search
+                    </app-icon>
+                </div>
                 <input
                     [ngModel]="''"
                     (ngModelChange)="filter$.next($event)"
@@ -85,13 +86,10 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                         [matMenuTriggerFor]="menu"
                         (click)="loadSystems(row)"
                     >
-                        <app-icon className="backoffice-eye"></app-icon>
+                        <app-icon>visibility</app-icon>
                     </button>
                     <button icon matRipple (click)="removeModule(row)">
-                        <app-icon
-                            class="text-error"
-                            className="backoffice-trash"
-                        ></app-icon>
+                        <app-icon class="text-error">delete</app-icon>
                     </button>
                     <mat-menu #menu="matMenu">
                         <div

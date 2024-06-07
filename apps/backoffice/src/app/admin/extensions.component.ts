@@ -82,11 +82,16 @@ export interface BackofficeExtension {
             </div>
             <div class="flex-1 w-full h-1/2 overflow-auto">
                 <simple-table
-                    class="min-w-[32rem] block text-sm"
+                    class="min-w-[40rem] block text-sm"
                     [data]="extensions"
                     [columns]="[
-                        { key: 'type', name: 'Type', content: type_template },
-                        { key: 'name', name: 'Tab Name' },
+                        {
+                            key: 'type',
+                            name: 'Type',
+                            content: type_template,
+                            size: '5rem'
+                        },
+                        { key: 'name', name: 'Tab Name', size: '10rem' },
                         { key: 'url', name: 'URL', content: url_template },
                         {
                             key: 'conditions',

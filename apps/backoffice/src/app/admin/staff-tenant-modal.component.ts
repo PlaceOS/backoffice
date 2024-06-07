@@ -31,7 +31,7 @@ export interface StaffTenantModalData {
             <h3>{{ tenant ? 'Edit' : 'New' }} Tenant</h3>
             <div class="flex-1"></div>
             <button *ngIf="!loading" btn icon mat-dialog-close>
-                <app-icon className="backoffice-cross"></app-icon>
+                <app-icon>close</app-icon>
             </button>
         </header>
         <main
@@ -233,7 +233,7 @@ export interface StaffTenantModalData {
         </main>
         <footer
             *ngIf="!loading"
-            class="p-2 border-t border-base-200 flex justify-center"
+            class="p-2 border-t border-base-200 flex items-center justify-end"
         >
             <button btn class="w-32" (click)="save()">Save</button>
         </footer>

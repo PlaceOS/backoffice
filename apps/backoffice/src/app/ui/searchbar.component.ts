@@ -24,10 +24,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
             tabindex="0"
             (focus)="model.focus || filter || model.dictate ? '' : focusInput()"
         >
-            <app-icon
-                class="text-xl"
-                className="backoffice-magnifying-glass"
-            ></app-icon>
+            <app-icon class="text-xl">search</app-icon>
             <input
                 #input
                 class="flex-1 w-24 bg-base-100 bg-opacity-0 outline-none border-none"
@@ -38,24 +35,24 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                 [placeholder]="placeholder"
             />
             <button
-                btn
                 icon
+                matRipple
                 *ngIf="
                     model.speech && dictation && (model.focus || model.dictate)
                 "
                 [class.active]="model.dictate"
                 (click)="startDictation()"
             >
-                <app-icon className="backoffice-mic"></app-icon>
+                <app-icon>mic</app-icon>
             </button>
             <button
-                btn
                 icon
+                matRipple
                 class="close"
                 *ngIf="filter && clearable"
                 (click)="clear()"
             >
-                <app-icon className="backoffice-cross"></app-icon>
+                <app-icon>close</app-icon>
             </button>
             <ng-content></ng-content>
         </div>

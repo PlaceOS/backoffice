@@ -31,9 +31,7 @@ export interface TriggerActionModalData {
         <header>
             <h3>{{ is_new ? 'Edit' : 'New' }} Trigger Action</h3>
             <button btn icon mat-dialog-close>
-                <app-icon
-                    [icon]="{ type: 'icon', class: 'backoffice-cross' }"
-                ></app-icon>
+                <app-icon>close</app-icon>
             </button>
         </header>
         <main

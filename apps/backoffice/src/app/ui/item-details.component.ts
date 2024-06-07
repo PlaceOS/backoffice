@@ -82,7 +82,7 @@ export interface DisplayItem {
                         class="px-2 py-1 rounded-xl text-xs bg-success flex items-center space-x-2 text-success-content"
                         *ngIf="item?.tls"
                     >
-                        <div class="icon"><i class="backoffice-lock"></i></div>
+                        <app-icon>lock</app-icon>
                         <div class="text" i18n="@@secure">Secure</div>
                     </div>
                 </div>
@@ -98,7 +98,7 @@ export interface DisplayItem {
                 class="flex items-center space-x-2"
                 (click)="edit.emit(); editItem()"
             >
-                <app-icon [icon]="{ class: 'backoffice-edit' }"></app-icon>
+                <app-icon>edit</app-icon>
                 <div class="text flex-1" i18n="@@editAction">
                     Edit {{ type }}
                 </div>
@@ -110,7 +110,7 @@ export interface DisplayItem {
                 disabled="true"
                 (click)="create.emit(false); newFromItem()"
             >
-                <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
+                <app-icon>add</app-icon>
                 <div class="text" i18n="@@copyItemAction">
                     Create new from this {{ type }}
                 </div>
@@ -133,7 +133,7 @@ export interface DisplayItem {
                 class="flex items-center space-x-2"
                 (click)="exportAsTSV()"
             >
-                <app-icon [icon]="{ class: 'backoffice-download' }"></app-icon>
+                <app-icon>download</app-icon>
                 <div class="text" i18n="@@exportAction">
                     Export {{ type }} as TSV template
                 </div>
@@ -144,7 +144,7 @@ export interface DisplayItem {
                 class="flex items-center space-x-2"
                 (click)="delete.emit(); deleteItem()"
             >
-                <app-icon [icon]="{ class: 'backoffice-trash' }"></app-icon>
+                <app-icon>delete</app-icon>
                 <div class="text flex-1" i18n="@@deleteAction">
                     Delete {{ type }}
                 </div>
