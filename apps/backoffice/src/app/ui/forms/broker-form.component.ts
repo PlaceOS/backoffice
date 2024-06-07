@@ -4,6 +4,7 @@ import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 
 import { AuthType } from '@placeos/ts-client';
+import { unique } from '../../common/general';
 
 @Component({
     selector: 'broker-form',
@@ -169,15 +170,13 @@ import { AuthType } from '@placeos/ts-client';
                             />
                             <app-icon
                                 matSuffix
-                                [icon]="{
-                                    class: 'material-icons',
-                                    content: 'visibility'
-                                }"
                                 (mousedown)="show_password = true"
                                 (window:mouseup)="show_password = false"
                                 (touchstart)="show_password = true"
                                 (window:touchend)="show_password = false"
-                            ></app-icon>
+                            >
+                                visibility
+                            </app-icon>
                             <mat-error i18n="@@passordError"
                                 >A valid password is required</mat-error
                             >
@@ -206,30 +205,30 @@ import { AuthType } from '@placeos/ts-client';
             </ng-container>
             <div class="field" *ngIf="form.controls.filters">
                 <label for="filters" i18n="@@filtersLabel"> Filters: </label>
-                <mat-form-field appearance="outline">
-                    <mat-chip-list
-                        #chipList
-                        name="filters"
-                        aria-label="Broker Filters"
-                    >
-                        <mat-chip
-                            *ngFor="let filter of filters"
-                            [selectable]="true"
-                            [removable]="true"
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-chip-grid #chipGrid aria-label="Enter fruits">
+                        @for (filter of filters; track filter) {
+                        <mat-chip-row
                             (removed)="removeFilter(filter)"
+                            [aria-description]="'Press enter to edit ' + filter"
                         >
                             {{ filter }}
-                            <app-icon matChipRemove>close</app-icon>
-                        </mat-chip>
+                            <button
+                                matChipRemove
+                                [attr.aria-label]="'Remove ' + filter"
+                            >
+                                <app-icon>cancel</app-icon>
+                            </button>
+                        </mat-chip-row>
+                        }
                         <input
                             placeholder="Broker filters..."
-                            i18n-placeholder="@@brokerFiltersPlaceholder"
-                            [matChipInputFor]="chipList"
+                            [matChipInputFor]="chipGrid"
                             [matChipInputSeparatorKeyCodes]="separators"
                             [matChipInputAddOnBlur]="true"
                             (matChipInputTokenEnd)="addFilter($event)"
                         />
-                    </mat-chip-list>
+                    </mat-chip-grid>
                 </mat-form-field>
             </div>
         </form>
@@ -261,7 +260,7 @@ export class BrokerFormComponent {
         { id: AuthType.UserPassword, name: 'Password' },
     ];
     /** List of separator characters for filters */
-    public readonly separators: number[] = [ENTER, COMMA];
+    public readonly separators = [ENTER, COMMA] as const;
     /** Whether to show password field value */
     public show_password: boolean;
 
@@ -274,19 +273,12 @@ export class BrokerFormComponent {
      * @param event Input event
      */
     public addFilter(event: MatChipInputEvent): void {
-        if (!this.form || !this.form.controls.filter_list) return;
-        const input = event.input;
-        const value = event.value;
-        const filter_list = this.filters;
-        if ((value || '').trim()) {
-            filter_list.push(value);
-            this.form.controls.filters.setValue(filter_list);
+        const value = (event.value || '').trim();
+        if (value) {
+            const filter_list = this.filters;
+            this.form.patchValue({ filters: unique([...filter_list, value]) });
         }
-
-        // Reset the input value
-        if (input) {
-            input.value = '';
-        }
+        event.chipInput!.clear();
     }
 
     /**
@@ -294,7 +286,7 @@ export class BrokerFormComponent {
      * @param existing_filter Filter to remove
      */
     public removeFilter(existing_filter: string): void {
-        if (!this.form || !this.form.controls.filter_list) return;
+        if (!this.filters?.length) return;
         const filter_list = this.filters;
         const index = filter_list.indexOf(existing_filter);
 
