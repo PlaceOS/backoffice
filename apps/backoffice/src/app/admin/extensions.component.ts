@@ -103,7 +103,8 @@ export interface BackofficeExtension {
                             key: 'actions',
                             name: ' ',
                             size: '6rem',
-                            content: actions_template
+                            content: actions_template,
+                            sortable: false
                         }
                     ]"
                     [sortable]="true"

@@ -70,7 +70,8 @@ export interface TriggerInstanceState {
                             key: 'actions',
                             name: ' ',
                             content: actions_template,
-                            size: '8.75rem'
+                            size: '8.75rem',
+                            sortable: false
                         }
                     ]"
                 ></simple-table>

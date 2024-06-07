@@ -34,7 +34,8 @@ import { DomainStateService } from './domain-state.service';
                             key: 'actions',
                             name: ' ',
                             content: actions_template,
-                            size: '6.5rem'
+                            size: '6.5rem',
+                            sortable: false
                         }
                     ]"
                     [sortable]="true"

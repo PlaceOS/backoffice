@@ -72,7 +72,8 @@ import { EdgeModalComponent } from './edge-modal.component';
                             key: 'actions',
                             name: ' ',
                             content: actions_template,
-                            size: '6rem'
+                            size: '6rem',
+                            sortable: false
                         }
                     ]"
                     [sortable]="true"

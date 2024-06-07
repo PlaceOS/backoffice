@@ -67,7 +67,8 @@ const task_details = {};
                     key: 'actions',
                     name: ' ',
                     content: actions_template,
-                    size: '3.5rem'
+                    size: '3.5rem',
+                    sortable: false
                 }
             ]"
             [sortable]="true"
