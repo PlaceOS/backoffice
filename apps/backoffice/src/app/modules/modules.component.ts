@@ -108,18 +108,18 @@ export class ModulesComponent extends AsyncHandler {
             {
                 id: 'about',
                 name: 'About',
-                icon: { class: 'backoffice-info-with-circle' },
+                icon: { content: 'info' },
             },
             {
                 id: 'systems',
                 name: 'Systems',
                 count: this.system_count,
-                icon: { class: 'backoffice-documents' },
+                icon: { content: 'meeting_room' },
             },
             {
                 id: 'history',
                 name: 'Settings History',
-                icon: { class: 'backoffice-clock' },
+                icon: { content: 'schedule' },
             },
         ].concat(this.extensions);
     }

@@ -1,4 +1,3 @@
-
 import { ApplicationIcon } from './types';
 
 export interface SettingsOptions {
@@ -42,7 +41,7 @@ export interface ApplicationSettings {
     general: GeneralAppSettings;
 }
 
-export interface GeneralAppSettings { }
+export interface GeneralAppSettings {}
 
 /*=======================*\
 ||    GENERAL SETTINGS   ||
@@ -55,8 +54,7 @@ const general = {
             route: '/systems',
             icon: {
                 type: 'icon',
-                class: 'backoffice-documents',
-                content: '',
+                content: 'meeting_room',
             },
         },
         {
@@ -64,8 +62,7 @@ const general = {
             route: '/modules',
             icon: {
                 type: 'icon',
-                class: 'backoffice-tablet',
-                content: '',
+                content: 'tablet',
             },
         },
         {
@@ -73,8 +70,7 @@ const general = {
             route: '/zones',
             icon: {
                 type: 'icon',
-                class: 'backoffice-layers',
-                content: '',
+                content: 'layers',
             },
         },
         {
@@ -82,8 +78,7 @@ const general = {
             route: '/drivers',
             icon: {
                 type: 'icon',
-                class: 'backoffice-tools',
-                content: '',
+                content: 'construction',
             },
         },
         {
@@ -92,8 +87,7 @@ const general = {
             needs_role: 'sys_admin',
             icon: {
                 type: 'icon',
-                class: 'backoffice-package',
-                content: '',
+                content: 'inventory_2',
             },
         },
         {
@@ -101,8 +95,7 @@ const general = {
             route: '/triggers',
             icon: {
                 type: 'icon',
-                class: 'backoffice-stopwatch',
-                content: '',
+                content: 'timer',
             },
         },
         {
@@ -110,8 +103,7 @@ const general = {
             route: '/metrics',
             icon: {
                 type: 'icon',
-                class: 'backoffice-line-graph',
-                content: '',
+                content: 'monitoring',
             },
         },
         {
@@ -120,8 +112,7 @@ const general = {
             needs_role: 'sys_admin',
             icon: {
                 type: 'icon',
-                class: 'backoffice-users',
-                content: '',
+                content: 'group',
             },
         },
         {
@@ -130,8 +121,7 @@ const general = {
             needs_role: 'sys_admin',
             icon: {
                 type: 'icon',
-                class: 'backoffice-browser',
-                content: '',
+                content: 'domain',
             },
         },
         {
@@ -140,8 +130,7 @@ const general = {
             needs_role: 'sys_admin',
             icon: {
                 type: 'icon',
-                class: 'backoffice-classic-computer',
-                content: '',
+                content: 'settings',
             },
         },
     ],
@@ -238,8 +227,8 @@ const app = {
     systems,
     triggers,
     users,
-    zones
-}
+    zones,
+};
 
 /*=======================*\
 ||   COMPOSER SETTINGS   ||
@@ -251,8 +240,7 @@ const composer = {
     protocol: '',
     use_domain: false,
     local_login: false,
-}
-
+};
 
 /**
  * ROOT SETTIGNS
@@ -264,4 +252,3 @@ export const DEFAULT_SETTINGS = {
     composer,
     app,
 };
-

@@ -117,36 +117,36 @@ export class ZonesComponent extends AsyncHandler {
             {
                 id: 'about',
                 name: 'About',
-                icon: { class: 'backoffice-info-with-circle' },
+                icon: { content: 'info' },
             },
             {
                 id: 'systems',
                 name: 'Systems',
                 count: details.systems ?? '?',
-                icon: { class: 'backoffice-documents' },
+                icon: { content: 'meeting_room' },
             },
             {
                 id: 'triggers',
                 name: 'Triggers',
                 count: details.triggers ?? '?',
-                icon: { class: 'backoffice-stopwatch' },
+                icon: { content: 'timer' },
             },
             {
                 id: 'metadata',
                 name: 'Metadata',
                 count: details.metadata ?? '?',
-                icon: { class: 'backoffice-gist' },
+                icon: { content: 'code_blocks' },
             },
             {
                 id: 'children',
                 name: 'Children',
                 count: details.children ?? '?',
-                icon: { class: 'backoffice-flow-tree' },
+                icon: { content: 'account_tree' },
             },
             {
                 id: 'history',
                 name: 'Settings History',
-                icon: { class: 'backoffice-clock' },
+                icon: { content: 'schedule' },
             },
         ].concat(this.extensions);
     }

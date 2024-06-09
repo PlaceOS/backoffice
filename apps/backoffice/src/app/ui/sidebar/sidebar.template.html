@@ -27,7 +27,7 @@
             [matTooltip]="'Add ' + heading + ' [N]'"
             i18n-matTooltip
         >
-            <app-icon [icon]="{ class: 'backoffice-plus' }"></app-icon>
+            <app-icon>add</app-icon>
         </button>
         <div
             class="error"
@@ -37,12 +37,10 @@
             until the total is below you license count."
             i18n-matTooltip
         >
-            <i class="backoffice-warning"></i>
+            <app-icon>warning</app-icon>
         </div>
         <button btn icon class="mobile-only" (click)="toggle()">
-            <app-icon
-                [icon]="{ class: 'backoffice-' + (close ? 'cross' : 'list') }"
-            ></app-icon>
+            <app-icon>{{ close ? 'close' : 'list' }}</app-icon>
         </button>
     </header>
     <section class="search">
@@ -78,9 +76,7 @@
                                 class="text"
                                 [innerHTML]="item_name[item.id] | sanitize"
                             ></div>
-                            <app-icon
-                                [icon]="{ type: 'icon', class: 'backoffice-check' }"
-                            ></app-icon>
+                            <app-icon>done</app-icon>
                         </div>
                     </a>
                 </ng-container>
@@ -90,9 +86,7 @@
             class="info-block center"
             *ngIf="!(loading | async) && !(items | async).length"
         >
-            <div class="icon">
-                <i class="backoffice-cross"></i>
-            </div>
+            <app-icon>close</app-icon>
             <div class="text">
                 {{ !search ? 'No ' + lowercase_heading : 'No matches found' }}
             </div>

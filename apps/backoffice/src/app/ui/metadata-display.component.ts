@@ -205,7 +205,7 @@ export class MetadataDisplayComponent extends AsyncHandler {
                 content: `
                     <p>Are you sure you want delete the metadata property "${field}"?</p>
                 `,
-                icon: { type: 'icon', class: 'backoffice-trash' },
+                icon: { type: 'icon', content: 'delete' },
             },
         });
         this.subscription(

@@ -28,7 +28,8 @@ export interface ItemTab {
                         #rla="routerLinkActive"
                         [active]="rla.isActive"
                     >
-                        <app-icon [icon]="link.icon"></app-icon>&nbsp;
+                        <app-icon class="text-xl" [icon]="link.icon"></app-icon
+                        >&nbsp;
                         <div class="name">{{ link.name }}&nbsp;</div>
                         <div
                             class="text-xs rounded-full bg-base-200  flex items-center justify-center h-5 min-w-[1.25rem] px-1.5"

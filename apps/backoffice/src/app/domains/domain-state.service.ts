@@ -184,7 +184,7 @@ export class DomainStateService {
             {
                 title: `Delete application`,
                 content: `<p>Are you sure you want delete the application ${item.name}?</p><p>Configuration will be <strong>immediately</strong> updated</p>`,
-                icon: { type: 'icon', class: 'backoffice-trash' },
+                icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
         );
@@ -237,7 +237,7 @@ export class DomainStateService {
             {
                 title: `Delete auth source`,
                 content: `<p>Are you sure you want delete this auth source?</p><p>Deleting this will remove this auth source <strong>immediately</strong></p>`,
-                icon: { type: 'icon', class: 'backoffice-trash' },
+                icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
         );

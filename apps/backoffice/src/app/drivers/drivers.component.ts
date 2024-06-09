@@ -122,18 +122,18 @@ export class DriversComponent extends AsyncHandler {
             {
                 id: 'about',
                 name: 'About',
-                icon: { class: 'backoffice-info-with-circle' },
+                icon: { content: 'info' },
             },
             {
                 id: 'modules',
                 name: 'Modules',
                 count: this.device_count ?? '?',
-                icon: { class: 'backoffice-tablet' },
+                icon: { content: 'tablet' },
             },
             {
                 id: 'history',
                 name: 'Settings History',
-                icon: { class: 'backoffice-clock' },
+                icon: { content: 'schedule' },
             },
         ].concat(this.extensions);
     }

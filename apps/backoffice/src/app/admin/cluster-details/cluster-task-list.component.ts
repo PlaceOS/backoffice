@@ -207,7 +207,7 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
                     <p>The process will be terminated <strong>immediately</strong>.
                     The process may be restarted after a short while.</p>
                 `,
-                icon: { type: 'icon', class: 'backoffice-trash' },
+                icon: { type: 'icon', content: 'delete' },
             },
         });
         this.subscription(

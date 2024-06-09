@@ -234,7 +234,7 @@ export class PlaceStaffAPIComponent implements OnInit {
                 <li>guest information</li>
                 <li>survey data</li>
                 </ul>`,
-                icon: { type: 'icon', class: 'backoffice-trash' },
+                icon: { type: 'icon', content: 'delete' },
                 action: 'Delete',
             },
             this._dialog

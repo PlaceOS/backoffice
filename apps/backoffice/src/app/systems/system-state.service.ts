@@ -391,7 +391,7 @@ export class SystemStateService extends AsyncHandler {
         const details = await this.confirm({
             title: `Remove trigger`,
             content: `<p>Are you sure you want remove trigger "${trigger.name}"?</p><p>Configuration will be updated <strong>immediately</strong>.</p>`,
-            icon: { type: 'icon', class: 'backoffice-trash' },
+            icon: { type: 'icon', content: 'delete' },
         });
         if (!details || !details.reason) return;
         await removeSystemTrigger(this.active_item.id, trigger.id)
@@ -414,7 +414,7 @@ export class SystemStateService extends AsyncHandler {
         const details = await this.confirm({
             title: 'Change order?',
             content: `Are you sure you want to change the module priority?<br>Settings will be updated immediately for the system.`,
-            icon: { type: 'icon', class: 'backoffice-layers' },
+            icon: { type: 'icon', content: 'layers' },
         });
         if (!details || !details.reason) return;
         details.loading('Updating module order...');
@@ -445,7 +445,7 @@ export class SystemStateService extends AsyncHandler {
         const details = await this.confirm({
             title: 'Change order?',
             content: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
-            icon: { type: 'icon', class: 'backoffice-layers' },
+            icon: { type: 'icon', content: 'layers' },
         });
         if (!details || !details.reason) return;
         details.loading('Updating zone order...');
@@ -500,7 +500,7 @@ export class SystemStateService extends AsyncHandler {
         const details = await this.confirm({
             title: 'Remove module?',
             content: `Remove ${device.driver_id} from this system?<br>If this is not used elsewhere the associated data will be removed immediately.`,
-            icon: { type: 'icon', class: 'backoffice-trash' },
+            icon: { type: 'icon', content: 'delete' },
         });
         if (!details || !details.reason) return;
         const system = await removeSystemModule(this.active_item.id, device.id)
@@ -580,7 +580,7 @@ export class SystemStateService extends AsyncHandler {
         const details = await this.confirm({
             title: 'Remove zone?',
             content: `<p>Are you sure you want remove zone "${zone.name}" from the system?</p>Configuration will be updated immediately.`,
-            icon: { type: 'icon', class: 'backoffice-trash' },
+            icon: { type: 'icon', content: 'delete' },
         });
         if (!details || !details.reason) return;
         const zones = this.active_item.zones.filter((z) => z !== zone.id);

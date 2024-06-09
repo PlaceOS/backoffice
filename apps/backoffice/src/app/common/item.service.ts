@@ -277,7 +277,7 @@ export class ActiveItemService extends AsyncHandler {
                     extra: this.actions.delete_extra
                         ? await this.actions.delete_extra(item)
                         : null,
-                    icon: { type: 'icon', class: 'backoffice-trash' },
+                    icon: { type: 'icon', content: 'delete' },
                 },
             });
             ref.componentInstance.event

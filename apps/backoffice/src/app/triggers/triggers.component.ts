@@ -107,13 +107,13 @@ export class TriggersComponent extends AsyncHandler {
             {
                 id: 'about',
                 name: 'About',
-                icon: { class: 'backoffice-info-with-circle' },
+                icon: { content: 'info' },
             },
             {
                 id: 'instances',
                 name: 'Instances',
                 count: this.instance_count,
-                icon: { class: 'backoffice-documents' },
+                icon: { content: 'meeting_room' },
             },
         ].concat(this.extensions);
     }

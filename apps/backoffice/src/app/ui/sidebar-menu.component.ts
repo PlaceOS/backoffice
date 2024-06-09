@@ -33,15 +33,17 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     Place<span class="text-primary font-heading">OS</span>
                 </a>
                 <a
-                    menu
+                    btn
                     matRipple
-                    class="flex items-center p-2 rounded space-x-2 w-[calc(100%-2rem)] hover:bg-base-100 hover:text-base-content"
+                    class="clear hover:bg-base-100 text-left w-[calc(100%-1rem)]"
                     *ngFor="let item of items"
                     [routerLink]="[item.route]"
-                    routerLinkActive="active"
+                    routerLinkActive="!bg-secondary text-secondary-content"
                 >
-                    <app-icon [icon]="item.icon"></app-icon>
-                    <p>{{ item?.name }}</p>
+                    <div class="flex items-center space-x-2 w-full">
+                        <app-icon class="text-xl" [icon]="item.icon"></app-icon>
+                        <p>{{ item?.name }}</p>
+                    </div>
                 </a>
                 <button
                     class="absolute top-1 left-1 sm:hidden"

@@ -12,7 +12,14 @@ import {
     updateZone,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { catchError, debounceTime, first, map, shareReplay, switchMap } from 'rxjs/operators';
+import {
+    catchError,
+    debounceTime,
+    first,
+    map,
+    shareReplay,
+    switchMap,
+} from 'rxjs/operators';
 import { openConfirmModal, unique } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -32,7 +39,10 @@ export class ZonesStateService {
 
     public readonly item = this._service.item;
 
-    public readonly counts = combineLatest([this._service.active_item$, this._change]).pipe(
+    public readonly counts = combineLatest([
+        this._service.active_item$,
+        this._change,
+    ]).pipe(
         debounceTime(300),
         switchMap(async (d) => {
             const [item] = d;
@@ -110,22 +120,28 @@ export class ZonesStateService {
         return this._service.active_item as any;
     }
 
-    constructor(private _service: ActiveItemService, private _dialog: MatDialog) {
+    constructor(
+        private _service: ActiveItemService,
+        private _dialog: MatDialog
+    ) {
         setTimeout(() => this._change.next(!this._change.getValue()), 1000);
     }
 
     public async selectTrigger() {
-        const ref = this._dialog.open<SelectItemModalComponent, SelectItemModalData>(
+        const ref = this._dialog.open<
             SelectItemModalComponent,
-            {
-                data: {
-                    service_name: 'Triggers',
-                    query_fn: (_) => queryTriggers({ q: _ }).pipe(map((resp) => resp.data)),
-                },
-            }
-        );
+            SelectItemModalData
+        >(SelectItemModalComponent, {
+            data: {
+                service_name: 'Triggers',
+                query_fn: (_) =>
+                    queryTriggers({ q: _ }).pipe(map((resp) => resp.data)),
+            },
+        });
         const details = await Promise.race([
-            ref.componentInstance.event.pipe(first((_) => _.reason === 'action')).toPromise(),
+            ref.componentInstance.event
+                .pipe(first((_) => _.reason === 'action'))
+                .toPromise(),
             ref.afterClosed().toPromise(),
         ]);
         if (!details || !details.reason) return ref.close();
@@ -146,7 +162,7 @@ export class ZonesStateService {
             {
                 title: `Remove trigger`,
                 content: `<p>Are you sure you want remove trigger "${trigger.name}"?</p><p>Configuration will be updated <strong>immediately</strong>.</p>`,
-                icon: { type: 'icon', class: 'backoffice-trash' },
+                icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
         );

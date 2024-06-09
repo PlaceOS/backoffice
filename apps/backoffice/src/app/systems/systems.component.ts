@@ -109,36 +109,36 @@ export class SystemsComponent extends AsyncHandler {
             {
                 id: 'about',
                 name: 'About',
-                icon: { class: 'backoffice-info-with-circle' },
+                icon: { content: 'info' },
             },
             {
                 id: 'modules',
                 name: 'Modules',
                 count: counts?.devices ?? '?',
-                icon: { class: 'backoffice-tablet' },
+                icon: { content: 'tablet' },
             },
             {
                 id: 'zones',
                 name: 'Zones',
                 count: counts?.zones ?? '?',
-                icon: { class: 'backoffice-layers' },
+                icon: { content: 'layers' },
             },
             {
                 id: 'triggers',
                 name: 'Triggers',
                 count: counts?.triggers ?? '?',
-                icon: { class: 'backoffice-stopwatch' },
+                icon: { content: 'timer' },
             },
             {
                 id: 'metadata',
                 name: 'Metadata',
                 count: counts?.metadata ?? '?',
-                icon: { class: 'backoffice-gist' },
+                icon: { content: 'code_blocks' },
             },
             {
                 id: 'history',
                 name: 'Settings History',
-                icon: { class: 'backoffice-clock' },
+                icon: { content: 'schedule' },
             },
         ].concat(this.extensions);
     }

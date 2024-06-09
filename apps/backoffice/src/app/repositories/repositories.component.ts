@@ -91,20 +91,20 @@ export class RepositoriesComponent extends AsyncHandler {
                       {
                           id: 'about',
                           name: 'About',
-                          icon: { class: 'backoffice-info-with-circle' },
+                          icon: { content: 'info' },
                       },
                   ]
                 : [
                       {
                           id: 'about',
                           name: 'About',
-                          icon: { class: 'backoffice-info-with-circle' },
+                          icon: { content: 'info' },
                       },
                       {
                           id: 'drivers',
                           name: 'Drivers',
                           count: this.driver_count,
-                          icon: { class: 'backoffice-documents' },
+                          icon: { content: 'meeting_room' },
                       },
                   ]
         ).concat(this.extensions);

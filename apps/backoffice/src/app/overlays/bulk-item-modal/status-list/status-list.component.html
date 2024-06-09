@@ -2,11 +2,12 @@
 <div *ngFor="let item of list; let i = index" class="item">
     <div class="name">{{ item.name }}</div>
     <div class="status">
-        <app-icon
-            *ngIf="status[i] !== 'loading'"
-            [class]="status[i]"
-            [icon]="{ class: status[i] === 'done' ? 'backoffice-check' : 'backoffice-cross' }"
-        ></app-icon>
-        <mat-spinner *ngIf="status[i] === 'loading'" diameter="24"></mat-spinner>
+        <app-icon *ngIf="status[i] !== 'loading'" [class]="status[i]">
+            {{ status[i] === 'done' ? 'done' : 'close' }}
+        </app-icon>
+        <mat-spinner
+            *ngIf="status[i] === 'loading'"
+            diameter="24"
+        ></mat-spinner>
     </div>
 </div>

@@ -95,25 +95,25 @@ export class DomainsComponent extends AsyncHandler {
             {
                 id: 'about',
                 name: 'About',
-                icon: { class: 'backoffice-info-with-circle' },
+                icon: { content: 'info' },
             },
             {
                 id: 'applications',
                 name: 'Applications',
                 count: count.applications || 0,
-                icon: { class: 'backoffice-publish' },
+                icon: { content: 'login' },
             },
             {
                 id: 'authentication',
                 name: 'Authentication',
                 count: count.auth_sources || 0,
-                icon: { class: 'backoffice-lock-open' },
+                icon: { content: 'lock_open' },
             },
             {
                 id: 'users',
                 name: 'Users',
                 count: count.users || 0,
-                icon: { class: 'backoffice-users' },
+                icon: { content: 'group' },
             },
         ].concat(this.extensions);
     }

@@ -43,7 +43,7 @@ import { SystemStateService } from './system-state.service';
                 >
                     <div table-head>
                         <div class="w-12 p-2"></div>
-                        <div class="w-48 p-2" i18n="@@nameLabel">Name</div>
+                        <div class="w-64 p-2" i18n="@@nameLabel">Name</div>
                         <div desc class="flex-1 p-2" i18n="@@descriptionLabel">
                             Description
                         </div>
@@ -81,22 +81,30 @@ import { SystemStateService } from './system-state.service';
                                     }}
                                 </app-icon>
                             </div>
-                            <div class="w-48 p-2">
-                                <a [routerLink]="['/zones', zone.id]">
+                            <div class="w-64 p-2 flex flex-col items-start">
+                                <a
+                                    [routerLink]="['/zones', zone.id]"
+                                    class="underline"
+                                >
                                     {{ zone.name }}
                                 </a>
+                                <div class="text-xs opacity-30">
+                                    {{ zone.id }}
+                                </div>
                             </div>
-                            <div desc class="flex-1 truncate">
+                            <div desc class="flex-1 truncate text-xs">
                                 {{ zone.description }}
                             </div>
                             <div class="w-16 p-2 items-center justify-center">
                                 <button
-                                    btn
                                     icon
+                                    matRipple
                                     *ngIf="(zones | async).length > 1"
                                     (click)="removeZone(zone)"
                                 >
-                                    <app-icon>delete</app-icon>
+                                    <app-icon class="text-error"
+                                        >delete</app-icon
+                                    >
                                 </button>
                             </div>
                         </div>

@@ -39,16 +39,9 @@
         <div *ngFor="let itm of temp; let i = index" class="item">
             <div class="name">{{ item.name }} ({{ i + 1 }})</div>
             <div class="status">
-                <app-icon
-                    *ngIf="status[i] !== 'loading'"
-                    [class]="status[i]"
-                    [icon]="{
-                        class:
-                            status[i] === 'done'
-                                ? 'backoffice-check'
-                                : 'backoffice-cross'
-                    }"
-                ></app-icon>
+                <app-icon *ngIf="status[i] !== 'loading'" [class]="status[i]">
+                    {{ status[i] === 'done' ? 'done' : 'close' }}
+                </app-icon>
                 <mat-spinner
                     *ngIf="status[i] === 'loading'"
                     diameter="24"

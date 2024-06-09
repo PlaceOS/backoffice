@@ -316,6 +316,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                                                 class="flex items-center space-x-2"
                                             >
                                                 <app-icon
+                                                    class="text-xl"
                                                     [icon]="item.icon"
                                                 ></app-icon>
                                                 <div class="text">
@@ -396,32 +397,27 @@ export class SystemModulesComponent extends AsyncHandler {
         {
             id: 'power',
             name: 'Toggle Power',
-            icon: { type: 'icon', class: 'backoffice-power-plug' },
+            icon: { type: 'icon', content: 'power' },
         },
         {
             id: 'state',
             name: 'View State',
-            icon: { type: 'icon', class: 'backoffice-eye' },
+            icon: { type: 'icon', content: 'visibility' },
         },
         {
             id: 'reload',
             name: 'Recompile Driver',
-            icon: { type: 'icon', class: 'backoffice-cw' },
+            icon: { type: 'icon', content: 'refresh' },
         },
         {
             id: 'edit',
             name: 'Edit Module',
-            icon: { type: 'icon', class: 'backoffice-edit' },
-        },
-        {
-            id: 'remove',
-            name: 'Remove Module',
-            icon: { type: 'icon', class: 'backoffice-trash' },
+            icon: { type: 'icon', content: 'edit' },
         },
         {
             id: 'load',
             name: 'Load Module',
-            icon: { type: 'icon', class: 'backoffice-arrow-with-circle-up' },
+            icon: { type: 'icon', content: 'cloud_download' },
         },
         {
             id: 'view-error',
@@ -429,28 +425,41 @@ export class SystemModulesComponent extends AsyncHandler {
             disable_on: 'has_runtime_errors',
             icon: { type: 'icon', content: 'error' },
         } as any,
+        {
+            id: 'remove',
+            name: 'Remove Module',
+            icon: {
+                type: 'icon',
+                class: 'material-symbols-rounded text-error',
+                content: 'delete',
+            },
+        },
     ];
 
     public offline_options: AppLink[] = [
         {
             id: 'power',
             name: 'Toggle Power',
-            icon: { type: 'icon', class: 'backoffice-power-plug' },
+            icon: { type: 'icon', content: 'power' },
         },
         {
             id: 'edit',
             name: 'Edit Module',
-            icon: { type: 'icon', class: 'backoffice-edit' },
-        },
-        {
-            id: 'remove',
-            name: 'Remove Module',
-            icon: { type: 'icon', class: 'backoffice-trash' },
+            icon: { type: 'icon', content: 'edit' },
         },
         {
             id: 'load',
             name: 'Load Module',
-            icon: { type: 'icon', class: 'backoffice-arrow-with-circle-up' },
+            icon: { type: 'icon', content: 'cloud_download' },
+        },
+        {
+            id: 'remove',
+            name: 'Remove Module',
+            icon: {
+                type: 'icon',
+                class: 'material-symbols-rounded text-error',
+                content: 'delete',
+            },
         },
     ];
     /** Query method for modules */

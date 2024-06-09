@@ -232,7 +232,7 @@ export class PlaceExtensionsComponent implements OnInit {
                 data: {
                     title: 'Remove extension',
                     content: `Are you sure you want to remove the extension "${item.name}" from ${item.type}?`,
-                    icon: { class: 'backoffice-trash' },
+                    icon: { content: 'delete' },
                 },
             }
         );

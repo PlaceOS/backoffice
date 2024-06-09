@@ -201,7 +201,7 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
                 {
                     title: `Delete MQTT Broker`,
                     content: `<p>Are you sure you want delete this boker?</p><p>The broker will be deleted <strong>immediately.</strong></p>`,
-                    icon: { type: 'icon', class: 'backoffice-trash' },
+                    icon: { type: 'icon', content: 'delete' },
                 },
                 this._dialog
             );

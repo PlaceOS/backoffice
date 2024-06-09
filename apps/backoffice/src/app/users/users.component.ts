@@ -97,18 +97,18 @@ export class UsersComponent extends AsyncHandler {
             {
                 id: 'about',
                 name: 'About',
-                icon: { class: 'backoffice-info-with-circle' },
+                icon: { content: 'info' },
             },
             {
                 id: 'metadata',
                 name: 'Metadata',
                 count: details?.metadata,
-                icon: { class: 'backoffice-gist' },
+                icon: { content: 'code_blocks' },
             },
             {
                 id: 'history',
                 name: 'History',
-                icon: { class: 'backoffice-list' },
+                icon: { content: 'history' },
             },
         ].concat(this.extensions);
     }

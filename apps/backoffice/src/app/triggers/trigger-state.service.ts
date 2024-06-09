@@ -130,7 +130,7 @@ export class TriggerStateService {
             {
                 title: `Reoreder trigger ${type} action`,
                 content: `Are you sure you want remove this trigger condition?<br>All systems using this trigger will be updated <strong>immediately</strong>.`,
-                icon: { type: 'icon', class: 'backoffice-trash' },
+                icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
         );
@@ -171,7 +171,7 @@ export class TriggerStateService {
             {
                 title: `Remove trigger condition`,
                 content: `Are you sure you want remove this trigger condition?<br>All systems using this trigger will be updated <strong>immediately</strong>.`,
-                icon: { type: 'icon', class: 'backoffice-trash' },
+                icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
         );
@@ -215,7 +215,7 @@ export class TriggerStateService {
             {
                 title: `Remove trigger action`,
                 content: `Are you sure you want remove this trigger action?<br>All systems using this trigger will be updated <strong>immediately</strong>.`,
-                icon: { type: 'icon', class: 'backoffice-trash' },
+                icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
         );
@@ -256,7 +256,7 @@ export class TriggerStateService {
             {
                 title: `Remove trigger from ${type}`,
                 content: `Are you sure you want remove this trigger from ${instance.name}?<br>The ${type} will be updated <strong>immediately</strong>.`,
-                icon: { type: 'icon', class: 'backoffice-trash' },
+                icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
         );

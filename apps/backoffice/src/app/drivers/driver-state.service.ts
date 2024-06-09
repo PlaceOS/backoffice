@@ -139,7 +139,7 @@ export class DriverStateService {
             {
                 title: `Recompile Driver`,
                 content: `<p>Are you sure you want recompile this driver?</p><p>New driver code will be loaded and device settings will be updated.</p>`,
-                icon: { type: 'icon', class: 'backoffice-cycle' },
+                icon: { type: 'icon', content: 'autorenew' },
             },
             this._dialog
         );
@@ -162,7 +162,7 @@ export class DriverStateService {
                     'error',
                     'Note that all associated data be deleted immediatedly.',
                 ],
-                icon: { type: 'icon', class: 'backoffice-trash' },
+                icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
         );

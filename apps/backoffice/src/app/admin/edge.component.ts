@@ -170,7 +170,7 @@ export class PlaceEdgeComponent {
             {
                 title: 'Remove edge?',
                 content: `Remove <strong>${i.name}</strong>?<br>You or your users may lose access to some data.`,
-                icon: { type: 'icon', class: 'backoffice-trash' },
+                icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
         );
