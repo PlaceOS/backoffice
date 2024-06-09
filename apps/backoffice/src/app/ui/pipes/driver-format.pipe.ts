@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-    name: 'driverFormat'
+    name: 'driverFormat',
 })
 export class DriverFormatPipe implements PipeTransform {
     public transform(format: string): string {
@@ -10,9 +10,9 @@ export class DriverFormatPipe implements PipeTransform {
             const parts = format.split('/');
             parts.splice(0, 1);
             return `<div class="formatted-driver-name">${parts
-                .map(i => `<div class="name-part">${i}</div>`)
+                .map((i) => `<div class="name-part">${i}</div>`)
                 .join(
-                    '<div class="icon"><i class="material-icons">keyboard_arrow_right</i></div>'
+                    '<div class="icon"><i class="material-symbols-outlined">keyboard_arrow_right</i></div>'
                 )}</div>`;
         }
         return format || '';

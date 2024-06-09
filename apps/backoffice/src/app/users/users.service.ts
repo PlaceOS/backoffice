@@ -97,7 +97,7 @@ export class BackofficeUsersService extends AsyncHandler {
                 (user) => {
                     if (user) {
                         this._user.next(user);
-                        Sentry.configureScope((scope) =>
+                        Sentry.withScope((scope) =>
                             scope.setUser({ email: user.email })
                         );
                         this.state.next('success');

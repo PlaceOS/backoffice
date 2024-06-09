@@ -17,16 +17,24 @@ import { BackofficeUsersService } from '../users/users.service';
             <div class="flex flex-col h-full flex-1 overflow-hidden w-px">
                 <div class="flex flex-1 z-0 h-1/2  ">
                     <div
-                        class="h-full relative sm:w-56 px-2 border-r border-base-200 z-10 pt-10 sm:py-4"
+                        class="h-full relative sm:w-56 px-2 border-r border-base-200 z-10 pt-10 sm:py-4 space-y-2"
                     >
                         <a
+                            btn
+                            matRipple
                             *ngFor="let item of tab_list"
-                            class="flex items-center space-x-2 m-2 rounded h-8 px-3 hover:bg-base-200"
+                            class="clear text-left w-auto min-w-full hover:bg-base-200"
                             [routerLink]="['/admin', item.id]"
-                            routerLinkActive="active"
+                            routerLinkActive="!bg-secondary text-secondary-content"
                         >
-                            <app-icon [icon]="item.icon"></app-icon>
-                            <span class="hidden sm:block">{{ item.name }}</span>
+                            <div class="flex items-center space-x-2 w-full">
+                                <app-icon class="text-2xl">{{
+                                    item.icon?.value
+                                }}</app-icon>
+                                <span class="hidden sm:block">{{
+                                    item.name
+                                }}</span>
+                            </div>
                         </a>
                     </div>
                     <div
@@ -90,52 +98,52 @@ export class PlaceComponent extends AsyncHandler {
 
     public updateTabList() {
         this.tab_list = [
-            { id: 'about', name: 'About', icon: { class: 'backoffice-info' } },
+            { id: 'about', name: 'About', icon: { value: 'info' } },
             {
                 id: 'database',
                 name: 'Database',
-                icon: { class: 'backoffice-database' },
+                icon: { value: 'database' },
             },
             {
                 id: 'clusters',
                 name: 'Clusters',
-                icon: { class: 'backoffice-server' },
+                icon: { value: 'dns' },
             },
-            { id: 'edge', name: 'Edges', icon: { class: 'backoffice-server' } },
+            { id: 'edge', name: 'Edges', icon: { value: 'network_node' } },
             {
                 id: 'interfaces',
                 name: 'Interfaces',
-                icon: { class: 'backoffice-browser' },
+                icon: { value: 'web' },
             },
             {
                 id: 'brokers',
                 name: 'MQTT Brokers',
-                icon: { class: 'backoffice-server' },
+                icon: { value: 'sensors' },
             },
             {
                 id: 'staff-api',
                 name: 'Staff API',
-                icon: { class: 'backoffice-gist' },
+                icon: { value: 'api' },
             },
             {
                 id: 'extensions',
                 name: 'Extensions',
-                icon: { class: 'backoffice-gist' },
+                icon: { value: 'webhook' },
             },
             {
                 id: 'api-keys',
                 name: 'API Keys',
-                icon: { class: 'backoffice-key' },
+                icon: { value: 'key' },
             },
             {
                 id: 'schemas',
                 name: 'Custom Schemas',
-                icon: { class: 'backoffice-list' },
+                icon: { value: 'list' },
             },
             {
                 id: 'upload-storage',
                 name: 'Upload Storage',
-                icon: { class: 'backoffice-upload' },
+                icon: { value: 'cloud_upload' },
             },
         ].concat(this.extensions);
     }

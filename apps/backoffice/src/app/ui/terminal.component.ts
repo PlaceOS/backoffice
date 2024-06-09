@@ -8,7 +8,7 @@ import {
     SimpleChanges,
     OnChanges,
 } from '@angular/core';
-import { Terminal } from 'xterm';
+import { Terminal } from '@xterm/xterm';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 
 @Component({

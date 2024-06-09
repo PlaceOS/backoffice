@@ -24,7 +24,6 @@ export function notify(
     on_action?: () => void,
     icon: ApplicationIcon = {
         type: 'icon',
-        class: 'material-icons',
         content: 'info',
     }
 ): void {
@@ -47,10 +46,13 @@ export function notify(
  * @param action Display text for the callback action
  * @param on_action Callback of action on the notification
  */
-export function notifySuccess(msg: string, action?: string, on_action?: () => void): void {
+export function notifySuccess(
+    msg: string,
+    action?: string,
+    on_action?: () => void
+): void {
     const icon: ApplicationIcon = {
         type: 'icon',
-        class: 'material-icons',
         content: 'done',
     };
     console.debug(msg);
@@ -63,10 +65,13 @@ export function notifySuccess(msg: string, action?: string, on_action?: () => vo
  * @param action Display text for the callback action
  * @param on_action Callback of action on the notification
  */
-export function notifyError(msg: string, action?: string, on_action?: () => void): void {
+export function notifyError(
+    msg: string,
+    action?: string,
+    on_action?: () => void
+): void {
     const icon: ApplicationIcon = {
         type: 'icon',
-        class: 'material-icons',
         content: 'error',
     };
     console.error(msg);
@@ -79,10 +84,13 @@ export function notifyError(msg: string, action?: string, on_action?: () => void
  * @param action Display text for the callback action
  * @param on_action Callback of action on the notification
  */
-export function notifyWarn(msg: string, action?: string, on_action?: () => void): void {
+export function notifyWarn(
+    msg: string,
+    action?: string,
+    on_action?: () => void
+): void {
     const icon: ApplicationIcon = {
         type: 'icon',
-        class: 'material-icons',
         content: 'warning',
     };
     console.warn(msg);
@@ -95,7 +103,11 @@ export function notifyWarn(msg: string, action?: string, on_action?: () => void)
  * @param action Display text for the callback action
  * @param on_action Callback of action on the notification
  */
-export function notifyInfo(msg: string, action?: string, on_action?: () => void): void {
+export function notifyInfo(
+    msg: string,
+    action?: string,
+    on_action?: () => void
+): void {
     console.info(msg);
     notify('info', msg, action, on_action);
 }

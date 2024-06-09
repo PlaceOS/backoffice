@@ -43,4 +43,5 @@ Thumbs.db
 apps/backoffice/src/environments/version.ts
 
 .nx/cache
+.nx/workspace-data
 migrations.json

@@ -87,21 +87,19 @@ export interface DisplayItem {
                     </div>
                 </div>
             </div>
-            <button [matMenuTriggerFor]="action_menu" icon matRipple>
+            <button icon matRipple [matMenuTriggerFor]="action_menu">
                 <app-icon>more_vert</app-icon>
             </button>
         </div>
-        <mat-menu #action_menu="matMenu">
+        <mat-menu #action_menu="matMenu" class="min-w-[22rem]">
             <button
                 *ngIf="can_edit"
                 mat-menu-item
                 class="flex items-center space-x-2"
                 (click)="edit.emit(); editItem()"
             >
-                <app-icon>edit</app-icon>
-                <div class="text flex-1" i18n="@@editAction">
-                    Edit {{ type }}
-                </div>
+                <app-icon class="text-2xl">edit</app-icon>
+                <div class="flex-1" i18n="@@editAction">Edit {{ type }}</div>
                 <span class="keycap">E</span>
             </button>
             <button
@@ -110,8 +108,8 @@ export interface DisplayItem {
                 disabled="true"
                 (click)="create.emit(false); newFromItem()"
             >
-                <app-icon>add</app-icon>
-                <div class="text" i18n="@@copyItemAction">
+                <app-icon class="text-2xl">add</app-icon>
+                <div i18n="@@copyItemAction">
                     Create new from this {{ type }}
                 </div>
             </button>
@@ -121,20 +119,16 @@ export interface DisplayItem {
                 disabled="true"
                 (click)="create.emit(true); duplicateItem()"
             >
-                <app-icon
-                    [icon]="{ class: 'backoffice-flow-branch' }"
-                ></app-icon>
-                <div class="text" i18n="@@duplicateAction">
-                    Duplicate {{ type }}
-                </div>
+                <app-icon class="text-2xl">call_split</app-icon>
+                <div i18n="@@duplicateAction">Duplicate {{ type }}</div>
             </button>
             <button
                 mat-menu-item
                 class="flex items-center space-x-2"
                 (click)="exportAsTSV()"
             >
-                <app-icon>download</app-icon>
-                <div class="text" i18n="@@exportAction">
+                <app-icon class="text-2xl">download</app-icon>
+                <div i18n="@@exportAction">
                     Export {{ type }} as TSV template
                 </div>
             </button>
@@ -144,8 +138,8 @@ export interface DisplayItem {
                 class="flex items-center space-x-2"
                 (click)="delete.emit(); deleteItem()"
             >
-                <app-icon>delete</app-icon>
-                <div class="text flex-1" i18n="@@deleteAction">
+                <app-icon class="text-error text-2xl">delete</app-icon>
+                <div class="flex-1" i18n="@@deleteAction">
                     Delete {{ type }}
                 </div>
                 <span class="keycap">⌦</span>

@@ -78,7 +78,7 @@ export const ZONES = [
                             id: 'visitor',
                             name: 'Visitors',
                             color: '#fff',
-                            icon: { class: 'material-icons', value: 'face' },
+                            icon: { value: 'face' },
                             settings: 'visitors',
                         },
                         {
@@ -93,7 +93,6 @@ export const ZONES = [
                             name: 'Control',
                             color: '#fff',
                             icon: {
-                                class: 'material-icons',
                                 value: 'settings_remote',
                             },
                         },

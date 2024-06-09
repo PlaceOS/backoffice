@@ -183,12 +183,10 @@ import {
                     />
                     <app-icon
                         matSuffix
-                        [icon]="{
-                            class: 'material-icons',
-                            content: 'visibility'
-                        }"
                         (click)="show_password = !show_password"
-                    ></app-icon>
+                    >
+                        visibility
+                    </app-icon>
                     <mat-error i18n="@@passordError"
                         >A valid password is required</mat-error
                     >
@@ -216,14 +214,9 @@ import {
                         formControlName="confirm_password"
                         minlength="1"
                     />
-                    <app-icon
-                        matSuffix
-                        [icon]="{
-                            class: 'material-icons',
-                            content: 'visibility'
-                        }"
-                        (click)="show_confirm = !show_confirm"
-                    ></app-icon>
+                    <app-icon matSuffix (click)="show_confirm = !show_confirm">
+                        visibility
+                    </app-icon>
                     <mat-error i18n="@@checkPasswordError"
                         >Passwords don't match</mat-error
                     >

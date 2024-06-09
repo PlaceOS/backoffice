@@ -351,7 +351,7 @@ export class SettingsFormComponent
                 obj[key] = '<MASKED>';
             }
             const settings_string = (setting.keys || []).length
-                ? yaml.safeDump(obj)
+                ? yaml.dump(obj)
                 : '';
             return new PlaceSettings({
                 ...setting,
@@ -372,7 +372,7 @@ export class SettingsFormComponent
         const local_settings = (settings || []).map((item) => {
             let obj = {};
             try {
-                obj = yaml.safeLoad(item.settings_string) || {};
+                obj = yaml.load(item.settings_string) || {};
             } catch (err) {
                 for (const key of item.keys) {
                     obj[key] = '<MASKED>';
@@ -383,7 +383,7 @@ export class SettingsFormComponent
         const remote_settings = merge_settings.map((item) => {
             let obj = {};
             try {
-                obj = yaml.safeLoad(item.settings_string) || {};
+                obj = yaml.load(item.settings_string) || {};
             } catch (err) {
                 for (const key of item.keys) {
                     obj[key] = '<MASKED>';
@@ -395,7 +395,7 @@ export class SettingsFormComponent
             .concat(local_settings)
             .reduce((m, i) => ({ ...m, ...i }), {});
         const settings_string = Object.keys(merged_settings).length
-            ? yaml.safeDump(merged_settings, { strict: true })
+            ? yaml.dump(merged_settings, { strict: true })
             : '';
         this.merge_decorations = this.decorationForSettings(
             settings_string,

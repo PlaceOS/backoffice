@@ -28,7 +28,7 @@ import { ApplicationIcon } from '../common/types';
     ],
 })
 export class IconComponent {
-    @Input() public className: string = 'material-icons';
+    @Input() public className: string = 'material-symbols-outlined';
     /** Icon details */
     @Input() public icon: ApplicationIcon;
 }

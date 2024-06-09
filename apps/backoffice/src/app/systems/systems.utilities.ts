@@ -19,7 +19,7 @@ export function validateYAML(control: AbstractControl) {
     const value = control.value || '';
     let message = '';
     try {
-        yaml.safeLoad(value, { strict: true });
+        yaml.load(value, { strict: true });
     } catch (e) {
         console.error(e);
         message = e.message;

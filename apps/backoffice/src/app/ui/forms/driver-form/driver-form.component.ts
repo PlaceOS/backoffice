@@ -251,7 +251,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
             try {
                 JSON.parse(driver.default_settings);
                 const doc = yaml.load(driver.default_settings);
-                settings = yaml.safeDump(doc);
+                settings = yaml.dump(doc);
             } catch {}
             this.form.controls.settings.setValue(settings || '');
             this.form.controls.description.setValue(driver.description || '');
