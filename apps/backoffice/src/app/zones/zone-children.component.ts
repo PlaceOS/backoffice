@@ -25,37 +25,31 @@ import { ZonesStateService } from './zones-state.service';
                 />
             </mat-form-field>
         </div>
-        <div
-            role="table"
-            *ngIf="(children | async)?.length > 0; else empty_state"
-        >
-            <simple-table
-                class="min-w-[32rem] block text-sm"
-                [data]="children"
-                [columns]="[
+        <mat-progress-bar
+            mode="indeterminate"
+            class="w-full"
+            [class.opacity-0]="!(loading | async)"
+        ></mat-progress-bar>
+        <simple-table
+            class="min-w-[32rem] block text-sm"
+            [data]="children"
+            [columns]="[
                     { key: 'name', name: 'Name', content: name_template },
                     {
                         key: 'description',
                         name: 'Description',
                     }
                 ]"
-                [sortable]="true"
-            ></simple-table>
-            <ng-template #name_template let-row="row">
-                <a
-                    class="truncate p-4 underline"
-                    [routerLink]="['/zones', row.id]"
-                >
+            [sortable]="true"
+        ></simple-table>
+        <ng-template #name_template let-row="row">
+            <div class="flex flex-col items-start px-4 py-2 leading-snug">
+                <a class="truncate underline" [routerLink]="['/zones', row.id]">
                     {{ row.name }}
                 </a>
-            </ng-template>
-        </div>
-        <ng-template #empty_state>
-            <div
-                class="flex flex-col items-center p-8 opacity-30"
-                i18n="@@zoneChildrenTableEmpty"
-            >
-                No child zones found
+                <div class="text-[0.625rem] opacity-30 font-mono">
+                    {{ row.id }}
+                </div>
             </div>
         </ng-template>
     `,

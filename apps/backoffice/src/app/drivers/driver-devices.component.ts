@@ -27,6 +27,11 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
             </mat-form-field>
         </section>
         <section>
+            <mat-progress-bar
+                mode="indeterminate"
+                class="w-full"
+                [class.opacity-0]="!(loading | async)"
+            ></mat-progress-bar>
             <simple-table
                 class="min-w-[32rem] block text-sm"
                 [data]="modules"
@@ -70,12 +75,17 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                 ></div>
             </ng-template>
             <ng-template #name_template let-row="row">
-                <a
-                    class="truncate p-4 underline"
-                    [routerLink]="['/modules', row.id]"
-                >
-                    {{ row.name }}
-                </a>
+                <div class="flex flex-col items-start px-4 py-2 leading-snug">
+                    <a
+                        class="truncate underline"
+                        [routerLink]="['/modules', row.id]"
+                    >
+                        {{ row.name }}
+                    </a>
+                    <div class="text-[0.625rem] opacity-30 font-mono">
+                        {{ row.id }}
+                    </div>
+                </div>
             </ng-template>
             <ng-template #actions_template let-row="row">
                 <div class="flex items-center space-x-2 p-2 mx-auto">
@@ -125,12 +135,6 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                 </div>
             </ng-template>
         </section>
-        <ng-template #load_state>
-            <div class="flex flex-col items-center p-8 mx-auto">
-                <mat-spinner [diameter]="48" class="mb-4"></mat-spinner>
-                <p>Loading modules...</p>
-            </div>
-        </ng-template>
     `,
     styles: [
         `

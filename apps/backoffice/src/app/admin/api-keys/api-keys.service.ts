@@ -11,7 +11,14 @@ import {
     remove,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { debounceTime, first, map, shareReplay, switchMap } from 'rxjs/operators';
+import {
+    debounceTime,
+    first,
+    map,
+    shareReplay,
+    switchMap,
+    tap,
+} from 'rxjs/operators';
 import { openConfirmModal } from '../../common/general';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { PlaceAPIKeyDetails } from './api-key-details.class';
@@ -23,17 +30,21 @@ export class APIKeyService {
     private _domain = new BehaviorSubject<PlaceDomain>(null);
     private _last_key = new BehaviorSubject<PlaceAPIKeyDetails>(null);
     private _change = new BehaviorSubject<number>(0);
+    private _loading = new BehaviorSubject<boolean>(false);
 
     public readonly last_key = this._last_key.asObservable();
     public readonly active_domain = this._domain.asObservable();
+    public readonly loading = this._loading.asObservable();
 
     public readonly available_domains = queryDomains({ limit: 500 }).pipe(
         map((_) => _.data),
         shareReplay(1)
     );
 
-    public readonly available_scopes: Observable<string[]> = get('/api/engine/v2/scopes').pipe(
-        map(_ => _ as any),
+    public readonly available_scopes: Observable<string[]> = get(
+        '/api/engine/v2/scopes'
+    ).pipe(
+        map((_) => _ as any),
         shareReplay(1)
     );
 
@@ -42,6 +53,7 @@ export class APIKeyService {
         this._change,
     ]).pipe(
         switchMap(([domain]) => {
+            this._loading.next(true);
             return domain
                 ? query({
                       query_params: { authority_id: domain.id },
@@ -50,6 +62,7 @@ export class APIKeyService {
                   }).pipe(map((_) => _.data as PlaceAPIKeyDetails[]))
                 : of([] as PlaceAPIKeyDetails[]);
         }),
+        tap(() => this._loading.next(false)),
         shareReplay(1)
     );
 

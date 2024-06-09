@@ -21,6 +21,11 @@ import { DomainStateService } from './domain-state.service';
                 </button>
             </div>
             <div class="flex-1 w-full h-1/2 overflow-auto">
+                <mat-progress-bar
+                    mode="indeterminate"
+                    class="w-full"
+                    [class.opacity-0]="!(loading | async)"
+                ></mat-progress-bar>
                 <simple-table
                     class="min-w-[84rem] block text-sm"
                     [data]="applications"
@@ -79,7 +84,7 @@ import { DomainStateService } from './domain-state.service';
                 <button
                     icon
                     matRipple
-                    (click)="copySecret(item)"
+                    (click)="copySecret(row)"
                     matTooltip="Copy Secret to Clipboard"
                 >
                     <app-icon>content_copy</app-icon>
@@ -87,34 +92,34 @@ import { DomainStateService } from './domain-state.service';
                 <button
                     icon
                     matRipple
-                    (mousedown)="show_secret[item.id] = true"
-                    (touchstart)="show_secret[item.id] = true"
-                    (window:mouseup)="show_secret[item.id] = false"
-                    (window:touchend)="show_secret[item.id] = false"
+                    (mousedown)="show_secret[row.id] = true"
+                    (touchstart)="show_secret[row.id] = true"
+                    (window:mouseup)="show_secret[row.id] = false"
+                    (window:touchend)="show_secret[row.id] = false"
                     matTooltip="View Secret"
                 >
                     <app-icon>visibility</app-icon>
                 </button>
                 <div class="p-2 font-mono text-xs">
                     <span
-                        *ngIf="!show_secret[item.id]"
+                        *ngIf="!show_secret[row.id]"
                         class="p-2 bg-base-200 rounded"
                         >Hidden</span
                     >
-                    <span *ngIf="show_secret[item.id]">{{ row.secret }}</span>
+                    <span *ngIf="show_secret[row.id]">{{ row.secret }}</span>
                 </div>
             </div>
         </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2 mx-auto">
-                <button icon matRipple (click)="editApplication(item)">
+                <button icon matRipple (click)="editApplication(row)">
                     <app-icon>edit</app-icon>
                 </button>
                 <button
                     icon
                     matRipple
                     class="text-error"
-                    (click)="removeApplication(item)"
+                    (click)="removeApplication(row)"
                 >
                     <app-icon>delete</app-icon>
                 </button>
@@ -137,6 +142,7 @@ import { DomainStateService } from './domain-state.service';
 export class DomainApplicationsComponent {
     /** List of applications associated with the active domain */
     public readonly applications = this._service.applications;
+    public readonly loading = this._service.loading;
 
     public show_secret: HashMap<boolean> = {};
 

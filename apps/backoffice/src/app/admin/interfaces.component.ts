@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { listInterfaceRepositories } from '@placeos/ts-client';
 
 import { BehaviorSubject } from 'rxjs';
-import { debounceTime, map, shareReplay, switchMap } from 'rxjs/operators';
+import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-interfaces',
@@ -10,6 +10,11 @@ import { debounceTime, map, shareReplay, switchMap } from 'rxjs/operators';
         <div class="flex items-center justify-between space-x-2 my-4">
             <div class="text-2xl">PlaceOS Interfaces</div>
         </div>
+        <mat-progress-bar
+            mode="indeterminate"
+            class="w-full"
+            [class.opacity-0]="!loading"
+        ></mat-progress-bar>
         <simple-table
             class="min-w-[36rem] block text-sm"
             [data]="interfaces"
@@ -25,6 +30,7 @@ import { debounceTime, map, shareReplay, switchMap } from 'rxjs/operators';
             [sortable]="true"
             empty_message="No interfaces"
         ></simple-table>
+        <div class="w-full h-12"></div>
         <ng-template #name_template let-row="row">
             <div class="p-4">
                 <div class="font-mono" *ngIf="row.name">{{ row.name }}</div>
@@ -47,10 +53,14 @@ export class AdminInterfacesComponent implements OnInit {
     /** List of interfaces */
 
     private _change = new BehaviorSubject<number>(0);
+    public loading = false;
 
     public interfaces = this._change.pipe(
         debounceTime(300),
-        switchMap(() => listInterfaceRepositories()),
+        switchMap(() => {
+            this.loading = true;
+            return listInterfaceRepositories();
+        }),
         map((mapping) => {
             const list = Object.keys(mapping).map((id) => ({
                 id,
@@ -59,6 +69,7 @@ export class AdminInterfacesComponent implements OnInit {
             list.sort((a, b) => `${a.id}`?.localeCompare(`${b.id}`));
             return list;
         }),
+        tap(() => (this.loading = false)),
         shareReplay(1)
     );
 

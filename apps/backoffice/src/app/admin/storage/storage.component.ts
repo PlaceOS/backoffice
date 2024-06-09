@@ -43,6 +43,11 @@ import { openConfirmModal } from '../../common/general';
                 </div>
             </div>
             <div class="flex-1 w-full h-1/2 overflow-auto">
+                <mat-progress-bar
+                    mode="indeterminate"
+                    class="w-full"
+                    [class.opacity-0]="!loading"
+                ></mat-progress-bar>
                 <simple-table
                     class="min-w-[40rem] block text-sm"
                     [data]="storage_list"

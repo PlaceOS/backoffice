@@ -63,6 +63,11 @@ import { authority } from '@placeos/ts-client';
                 </div>
             </div>
             <div class="flex-1 w-full h-1/2 overflow-auto">
+                <mat-progress-bar
+                    mode="indeterminate"
+                    class="w-full"
+                    [class.opacity-0]="!(loading | async)"
+                ></mat-progress-bar>
                 <simple-table
                     class="min-w-[64rem] block text-sm"
                     [data]="key_list"
@@ -141,6 +146,8 @@ export class AdminAPIKeysComponent {
     public readonly domain_list = this._service.available_domains;
     public readonly key_list = this._service.available_keys;
     public readonly last_key = this._service.last_key;
+
+    public readonly loading = this._service.loading;
 
     public readonly setDomain = (d) => this._service.setDomain(d);
     public readonly newKey = () => this._service.newKey();

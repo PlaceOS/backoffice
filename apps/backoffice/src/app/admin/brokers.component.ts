@@ -8,7 +8,7 @@ import {
     queryBrokers,
     removeBroker,
 } from '@placeos/ts-client';
-import { debounceTime, map, shareReplay, switchMap } from 'rxjs/operators';
+import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 
 import { ItemCreateUpdateModalComponent } from 'apps/backoffice/src/app/overlays/item-modal/item-modal.component';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
@@ -18,6 +18,7 @@ import {
 } from 'apps/backoffice/src/app/common/notifications';
 import { openConfirmModal } from 'apps/backoffice/src/app/common/general';
 import { BehaviorSubject } from 'rxjs';
+import { ta } from 'date-fns/locale';
 
 @Component({
     selector: 'app-brokers',
@@ -35,6 +36,11 @@ import { BehaviorSubject } from 'rxjs';
                 </div>
             </div>
             <div class="flex-1 w-full h-1/2 overflow-auto">
+                <mat-progress-bar
+                    mode="indeterminate"
+                    class="w-full"
+                    [class.opacity-0]="!loading"
+                ></mat-progress-bar>
                 <simple-table
                     class="min-w-[64rem] block text-sm"
                     [data]="brokers"
@@ -137,11 +143,16 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class AdminBrokersComponent extends AsyncHandler implements OnInit {
     private _change = new BehaviorSubject<number>(0);
+    public loading = false;
 
     public readonly brokers = this._change.pipe(
         debounceTime(300),
-        switchMap(() => queryBrokers()),
+        switchMap(() => {
+            this.loading = true;
+            return queryBrokers();
+        }),
         map(({ data }) => data),
+        tap(() => (this.loading = false)),
         shareReplay(1)
     );
 

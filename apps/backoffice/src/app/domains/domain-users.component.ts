@@ -7,6 +7,11 @@ import { DomainStateService } from './domain-state.service';
     selector: 'domain-users',
     template: `
         <div class="w-full h-full overflow-auto">
+            <mat-progress-bar
+                mode="indeterminate"
+                class="w-full"
+                [class.opacity-0]="!(loading | async)"
+            ></mat-progress-bar>
             <simple-table
                 class="min-w-[32rem] block text-sm"
                 [data]="users"
@@ -57,6 +62,7 @@ import { DomainStateService } from './domain-state.service';
 })
 export class DomainUsersComponent {
     public readonly users = this._service.users;
+    public readonly loading = this._service.loading;
 
     public get item(): PlaceDomain {
         return this._service.active_item as any;

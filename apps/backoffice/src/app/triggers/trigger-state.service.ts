@@ -13,7 +13,7 @@ import {
     updateTrigger,
 } from '@placeos/ts-client';
 import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
-import { first, shareReplay, switchMap } from 'rxjs/operators';
+import { first, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { openConfirmModal } from '../common/general';
 
 import { ActiveItemService } from '../common/item.service';
@@ -33,16 +33,21 @@ import {
 })
 export class TriggerStateService {
     private _change = new BehaviorSubject(0);
+    private _loading = new BehaviorSubject<boolean>(false);
     public readonly item: Observable<PlaceTrigger> = this._service.item as any;
+
+    public readonly loading = this._loading.asObservable();
 
     public readonly instances: Observable<PlaceTrigger[]> = combineLatest([
         this.item,
         this._change,
     ]).pipe(
         switchMap(([item]) => {
+            this._loading.next(true);
             if (!(item instanceof PlaceTrigger)) return of([]);
             return listTriggerInstances(item.id);
         }),
+        tap(() => this._loading.next(false)),
         shareReplay(1)
     );
 

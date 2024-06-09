@@ -8,6 +8,11 @@ import { TriggerStateService } from './trigger-state.service';
 @Component({
     selector: 'trigger-systems',
     template: `
+        <mat-progress-bar
+            mode="indeterminate"
+            class="w-full"
+            [class.opacity-0]="!(loading | async)"
+        ></mat-progress-bar>
         <simple-table
             class="min-w-[32rem] block text-sm"
             [data]="instances"
@@ -80,6 +85,7 @@ import { TriggerStateService } from './trigger-state.service';
 export class TriggerInstancesComponent {
     /** List of systems associated with the trigger */
     public readonly instances = this._service.instances;
+    public readonly loading = this._service.loading;
     /** Map of systems ids to connected status */
     public connected: HashMap<boolean> = {};
 

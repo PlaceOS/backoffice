@@ -19,6 +19,11 @@ import { DomainStateService } from './domain-state.service';
                 </button>
             </div>
             <div class="flex-1 w-full h-1/2 overflow-auto">
+                <mat-progress-bar
+                    mode="indeterminate"
+                    class="w-full"
+                    [class.opacity-0]="!(loading | async)"
+                ></mat-progress-bar>
                 <simple-table
                     class="min-w-[40rem] block text-sm"
                     [data]="auth_sources"
@@ -80,6 +85,7 @@ import { DomainStateService } from './domain-state.service';
 export class DomainAuthenticationComponent {
     /** List of auth sources associated with the active domain */
     public readonly auth_sources = this._service.auth_sources;
+    public readonly loading = this._service.loading;
     /** Mapping of auth sources to their type */
     public source_types: HashMap<'oauth' | 'saml' | 'ldap'> = {};
 

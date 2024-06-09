@@ -50,6 +50,11 @@ const task_details = {};
                 />
             </mat-form-field>
         </div>
+        <mat-progress-bar
+            mode="indeterminate"
+            class="w-full"
+            [class.opacity-0]="!loading"
+        ></mat-progress-bar>
         <simple-table
             class="min-w-[40rem] block text-sm"
             [data]="filtered_list"
