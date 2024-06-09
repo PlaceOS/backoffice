@@ -52,7 +52,7 @@ import { ZonesStateService } from './zones-state.service';
         </div>
         <ng-template #empty_state>
             <div
-                class="flex flex-col items-center p-8"
+                class="flex flex-col items-center p-8 opacity-30"
                 i18n="@@zoneChildrenTableEmpty"
             >
                 No child zones found

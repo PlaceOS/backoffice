@@ -63,11 +63,6 @@ import { ModuleStateService } from './module-state.service';
                 <p>Loading systems...</p>
             </div>
         </ng-template>
-        <ng-template #empty_state>
-            <div class="flex flex-col items-center p-8 mx-auto">
-                <p>No systems with module</p>
-            </div>
-        </ng-template>
     `,
     styles: [
         `

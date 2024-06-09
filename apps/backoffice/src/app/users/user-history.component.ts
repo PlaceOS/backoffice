@@ -31,7 +31,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
             </div>
         </div>
         <ng-template #empty_state>
-            <div class="p-8 text-center" i18n="@@logTableEmpty">
+            <div class="p-8 text-center opacity-30" i18n="@@logTableEmpty">
                 No logs found
             </div>
         </ng-template>

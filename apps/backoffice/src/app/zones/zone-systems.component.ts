@@ -59,7 +59,9 @@ import { ZonesStateService } from './zones-state.service';
         </div>
         <ng-template #empty_state>
             <div class="flex flex-col items-center p-8">
-                <p i18n="@@systemTableEmpty">No systems found</p>
+                <p i18n="@@systemTableEmpty" class="opacity-30">
+                    No systems found
+                </p>
             </div>
         </ng-template>
     `,

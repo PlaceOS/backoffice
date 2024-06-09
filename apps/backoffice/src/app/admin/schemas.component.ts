@@ -68,7 +68,7 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
             </div>
             <ng-template #empty_state>
                 <div class="absolute inset-0 flex items-center justify-center">
-                    <p class="p-8">Select a schema to edit</p>
+                    <p class="p-8 opacity-30">Select a schema to edit</p>
                 </div>
             </ng-template>
         </div>

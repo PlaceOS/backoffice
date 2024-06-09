@@ -80,7 +80,7 @@ const validateType = (type) => (control: AbstractControl) => {
         </form>
         <ng-template #empty_state>
             <div class="p-4 flex space-x-2 items-center justify-center">
-                <p>No arguments for selected method</p>
+                <p class="opacity-30">No arguments for selected method</p>
             </div>
         </ng-template>
     `,

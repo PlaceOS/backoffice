@@ -38,7 +38,7 @@ import { AsyncHandler } from '../common/async-handler.class';
                 class="flex flex-col items-center justify-center w-[24rem] h-64 space-y-2"
             >
                 <mat-spinner diameter="32"></mat-spinner>
-                <div class="text">Loading details...</div>
+                <div class="opacity-30">Loading details...</div>
             </main>
         </ng-template>
     `,

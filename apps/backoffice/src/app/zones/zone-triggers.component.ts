@@ -78,11 +78,11 @@ import { ZonesStateService } from './zones-state.service';
         <ng-template #load_state>
             <div class="flex flex-col items-center p-8 mx-auto">
                 <mat-spinner [diameter]="48" class="mb-4"></mat-spinner>
-                <p>Loading triggers...</p>
+                <p class="opacity-30">Loading triggers...</p>
             </div>
         </ng-template>
         <ng-template #empty_state>
-            <div class="flex flex-col items-center p-8 mx-auto">
+            <div class="flex flex-col items-center p-8 mx-auto opacity-30">
                 <p>No triggers for zone</p>
             </div>
         </ng-template>

@@ -149,7 +149,9 @@ export interface PlaceServiceDetails {
         </section>
         <ng-template #empty_state>
             <div class="w-full p-24 flex flex-col items-center justify-center">
-                <div class="p-4 border rounded-lg bg-base-200  opacity-60">
+                <div
+                    class="p-4 border border-base-300 rounded-lg bg-base-200 opacity-30"
+                >
                     No API service details available.
                 </div>
             </div>

@@ -113,7 +113,7 @@ import { BackofficeUsersService } from '../users/users.service';
         </ng-container>
         <ng-template #empty_state>
             <div
-                class="p-8 flex flex-col items-center justify-center opacity-30 "
+                class="p-8 flex flex-col items-center justify-center opacity-30"
             >
                 <p>
                     {{

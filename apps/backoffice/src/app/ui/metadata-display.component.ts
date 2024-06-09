@@ -116,11 +116,11 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
             </mat-accordion>
         </div>
         <ng-template #empty_state>
-            <div
-                class="w-full p-16 flex flex-col items-center justify-center opacity-30"
-            >
+            <div class="w-full p-16 flex flex-col items-center justify-center">
                 <app-icon class="text-3xl">close</app-icon>
-                <div class="text" i18n="@@metadataEmpty">No metadata found</div>
+                <div class="opacity-30" i18n="@@metadataEmpty">
+                    No metadata found
+                </div>
             </div>
         </ng-template>
         <ng-template #load_state>

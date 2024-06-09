@@ -80,7 +80,9 @@ import { MatDialogRef } from '@angular/material/dialog';
                     </ng-container>
                     <ng-template #empty_state>
                         <tr>
-                            <td colspan="4">No drivers require updating.</td>
+                            <td colspan="4" class="opacity-30">
+                                No drivers require updating.
+                            </td>
                         </tr>
                     </ng-template>
                 </tbody>

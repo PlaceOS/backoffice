@@ -131,11 +131,6 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                 <p>Loading modules...</p>
             </div>
         </ng-template>
-        <ng-template #empty_state>
-            <div class="flex flex-col items-center p-8 mx-auto">
-                <p>No modules with driver</p>
-            </div>
-        </ng-template>
     `,
     styles: [
         `

@@ -64,8 +64,8 @@ import { interval } from 'rxjs';
                 class="absolute inset-0 flex flex-col items-center p-8 space-y-2"
             >
                 <app-icon class="text-3xl">close</app-icon>
-                <div class="text" i18n="@@clusterListEmpty">
-                    No Cluster details to show
+                <div class="text opacity-30" i18n="@@clusterListEmpty">
+                    No cluster details available
                 </div>
             </div>
         </ng-template>

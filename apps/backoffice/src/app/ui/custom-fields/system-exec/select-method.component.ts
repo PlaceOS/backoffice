@@ -55,7 +55,7 @@ import { ModuleLike } from './select-module.component';
         </ng-template>
         <ng-template #empty_state>
             <div class="p-4 flex space-x-2 items-center justify-center">
-                <p>No available methods for module</p>
+                <p class="opacity-30">No available methods for module</p>
             </div>
         </ng-template>
     `,

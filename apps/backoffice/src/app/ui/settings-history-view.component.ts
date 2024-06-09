@@ -60,14 +60,14 @@ import { ActiveItemService } from '../common/item.service';
         </div>
         <ng-template #empty_state>
             <div
-                class="w-full p-16 opacity-40 text-center"
+                class="w-full p-16 opacity-30 text-center"
                 *ngIf="(history$ | async).length; else no_history_state"
             >
                 Select an current setting and old setting to compare them.
             </div>
         </ng-template>
         <ng-template #no_history_state>
-            <div class="w-full p-16 opacity-40 text-center">
+            <div class="w-full p-16 opacity-30 text-center">
                 Selected setting is the first version
             </div>
         </ng-template>
@@ -79,8 +79,10 @@ export class SettingsHistoryViewComponent {
     public readonly old_setting = new BehaviorSubject<PlaceSettings>(null);
 
     public readonly settings$ = this._service.item.pipe(
-        switchMap((i) => !i ? of({ data:[] }) : querySettings({ parent_id: i.id })),
-        map(_ => _.data),
+        switchMap((i) =>
+            !i ? of({ data: [] }) : querySettings({ parent_id: i.id })
+        ),
+        map((_) => _.data),
         shareReplay(1)
     );
     public readonly history$ = this.active_setting.pipe(

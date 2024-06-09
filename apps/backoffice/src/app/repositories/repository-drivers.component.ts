@@ -36,13 +36,17 @@ import { RepositoriesStateService } from './repositories-state.service';
         </ng-container>
         <ng-template #empty_state>
             <div class="flex flex-col p-8 items-center justify-center">
-                <p i18n="@@driverListEmpty">No drivers for repository</p>
+                <p class="opacity-30" i18n="@@driverListEmpty">
+                    No drivers for repository
+                </p>
             </div>
         </ng-template>
         <ng-template #load_state>
             <div class="flex flex-col p-8 items-center justify-center">
                 <mat-spinner class="mb-4" diameter="48"></mat-spinner>
-                <p i18n="@@driverListLoading">Loading driver list...</p>
+                <p class="opacity-30" i18n="@@driverListLoading">
+                    Loading driver list...
+                </p>
             </div>
         </ng-template>
     `,

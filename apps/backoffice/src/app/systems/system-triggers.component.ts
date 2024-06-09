@@ -137,12 +137,12 @@ export interface TriggerInstanceState {
         <ng-template #load_state>
             <div class="flex flex-col items-center p-8 mx-auto">
                 <mat-spinner [diameter]="48" class="mb-4"></mat-spinner>
-                <p>Loading triggers...</p>
+                <p class="opacity-30">Loading triggers...</p>
             </div>
         </ng-template>
         <ng-template #empty_state>
             <div class="flex flex-col items-center p-8 mx-auto">
-                <p>No triggers for system</p>
+                <p class="opacity-30">No triggers for system</p>
             </div>
         </ng-template>
     `,
