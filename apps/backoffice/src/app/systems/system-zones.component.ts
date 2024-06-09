@@ -10,114 +10,118 @@ import { ReorderItemsModalComponent } from '../ui/reorder-items-modal.component'
 @Component({
     selector: 'system-zones',
     template: `
-        <section class="flex items-center space-x-2 mb-2">
-            <item-search-field
-                name="zone"
-                class="flex-1 h-12"
-                [query_fn]="query_fn"
-                [exclude]="exclude_fn"
-                [clear_on_select]="true"
-                [ngModel]="null"
-                (ngModelChange)="addPendingZone($event)"
-            ></item-search-field>
-        </section>
-        <section class="flex items-center space-x-2 mb-2">
-            <button
-                btn
-                matRipple
-                [disabled]="!this.has_changes"
-                class="flex-1 inverse"
-                (click)="clearChanges()"
-            >
-                Clear Changes
-            </button>
-            <button
-                btn
-                matRipple
-                class="flex-1 inverse"
-                [disabled]="!this.has_changes"
-                (mousedown)="show_original = true"
-                (touchstart)="show_original = true"
-                (window:mouseup)="show_original = false"
-                (window:touchend)="show_original = false"
-            >
-                View Orginal
-            </button>
-            <button btn matRipple class="flex-1" (click)="reorderZones()">
-                Reorder Zones
-            </button>
-            <button
-                btn
-                matRipple
-                class="flex-1"
-                [disabled]="!this.has_changes"
-                (click)="saveChanges()"
-            >
-                Save Changes
-            </button>
-        </section>
-        <section class="relative">
-            <mat-progress-bar
-                mode="indeterminate"
-                class="w-full"
-                [class.opacity-0]="!(loading | async).zones"
-            ></mat-progress-bar>
-            <simple-table
-                class="min-w-[32rem] block text-sm"
-                [data]="show_original ? original_zones : zones"
-                [columns]="[
-                    {
-                        key: 'name',
-                        name: 'Name',
-                        content: name_template,
-                        size: '14rem'
-                    },
-                    {
-                        key: 'description',
-                        name: 'Description',
-                        description_template
-                    },
-                    {
-                        key: 'actions',
-                        name: ' ',
-                        size: '3.5rem',
-                        content: actions_template
-                    }
-                ]"
-                [color]="show_original ? {} : (changed_colours | async)"
-            ></simple-table>
-            <div class="w-full h-12"></div>
-            <ng-template #name_template let-row="row">
-                <div class="flex flex-col items-start px-4 py-2 leading-snug">
-                    <a
-                        class="truncate underline"
-                        [routerLink]="['/zones', row.id]"
+        <div class="flex flex-col h-full w-full">
+            <section class="flex items-center space-x-2 mb-2">
+                <item-search-field
+                    name="zone"
+                    class="flex-1 h-12"
+                    [query_fn]="query_fn"
+                    [exclude]="exclude_fn"
+                    [clear_on_select]="true"
+                    [ngModel]="null"
+                    (ngModelChange)="addPendingZone($event)"
+                ></item-search-field>
+            </section>
+            <section class="flex items-center space-x-2 mb-2">
+                <button
+                    btn
+                    matRipple
+                    [disabled]="!this.has_changes"
+                    class="flex-1 inverse"
+                    (click)="clearChanges()"
+                >
+                    Clear Changes
+                </button>
+                <button
+                    btn
+                    matRipple
+                    class="flex-1 inverse"
+                    [disabled]="!this.has_changes"
+                    (mousedown)="show_original = true"
+                    (touchstart)="show_original = true"
+                    (window:mouseup)="show_original = false"
+                    (window:touchend)="show_original = false"
+                >
+                    View Orginal
+                </button>
+                <button btn matRipple class="flex-1" (click)="reorderZones()">
+                    Reorder Zones
+                </button>
+                <button
+                    btn
+                    matRipple
+                    class="flex-1"
+                    [disabled]="!this.has_changes"
+                    (click)="saveChanges()"
+                >
+                    Save Changes
+                </button>
+            </section>
+            <section class="w-full flex-1 h-1/2 overflow-auto">
+                <mat-progress-bar
+                    mode="indeterminate"
+                    class="w-full"
+                    [class.opacity-0]="!(loading | async).zones"
+                ></mat-progress-bar>
+                <simple-table
+                    class="min-w-[32rem] block text-sm"
+                    [data]="show_original ? original_zones : zones"
+                    [columns]="[
+                        {
+                            key: 'name',
+                            name: 'Name',
+                            content: name_template,
+                            size: '14rem'
+                        },
+                        {
+                            key: 'description',
+                            name: 'Description',
+                            description_template
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            size: '3.5rem',
+                            content: actions_template
+                        }
+                    ]"
+                    [color]="show_original ? {} : (changed_colours | async)"
+                ></simple-table>
+                <div class="w-full h-12"></div>
+                <ng-template #name_template let-row="row">
+                    <div
+                        class="flex flex-col items-start px-4 py-2 leading-snug"
                     >
-                        {{ row.name }}
-                    </a>
-                    <div class="text-[0.625rem] opacity-30 font-mono">
-                        {{ row.id }}
+                        <a
+                            class="truncate underline"
+                            [routerLink]="['/zones', row.id]"
+                        >
+                            {{ row.name }}
+                        </a>
+                        <div class="text-[0.625rem] opacity-30 font-mono">
+                            {{ row.id }}
+                        </div>
                     </div>
-                </div>
-            </ng-template>
-            <ng-template #description_template let-row="row">
-                <div class="p-4 text-xs">
-                    {{ row.description }}
-                </div>
-            </ng-template>
-            <ng-template #actions_template let-row="row">
-                <div class="flex items-center space-x-2 p-2 mx-auto">
-                    <button
-                        icon
-                        matRipple
-                        *ngIf="(zones | async)?.length > 1"
-                        (click)="deleteZone(row)"
-                    >
-                        <app-icon class="text-error">delete</app-icon>
-                    </button>
-                </div>
-            </ng-template>
-        </section>
+                </ng-template>
+                <ng-template #description_template let-row="row">
+                    <div class="p-4 text-xs">
+                        {{ row.description }}
+                    </div>
+                </ng-template>
+                <ng-template #actions_template let-row="row">
+                    <div class="flex items-center space-x-2 p-2 mx-auto">
+                        <button
+                            icon
+                            matRipple
+                            *ngIf="(zones | async)?.length > 1"
+                            (click)="removeZone(row)"
+                        >
+                            <app-icon class="text-error">delete</app-icon>
+                        </button>
+                    </div>
+                </ng-template>
+            </section>
+        </div>
     `,
     styles: [
         `
