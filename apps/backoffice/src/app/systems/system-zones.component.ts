@@ -4,11 +4,13 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 import { SystemStateService } from './system-state.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ReorderItemsModalComponent } from '../ui/reorder-items-modal.component';
 
 @Component({
     selector: 'system-zones',
     template: `
-        <section class="flex items-center space-x-2 mb-4">
+        <section class="flex items-center space-x-2 mb-2">
             <item-search-field
                 name="zone"
                 class="flex-1 h-12"
@@ -18,106 +20,104 @@ import { SystemStateService } from './system-state.service';
                 [ngModel]="null"
                 (ngModelChange)="addPendingZone($event)"
             ></item-search-field>
+        </section>
+        <section class="flex items-center space-x-2 mb-2">
             <button
                 btn
-                [disabled]="!this.pending_zones.getValue().length"
-                (click)="savePendingZones()"
+                matRipple
+                [disabled]="!this.has_changes"
+                class="flex-1 inverse"
+                (click)="clearChanges()"
             >
-                Save Pending
+                Clear Changes
+            </button>
+            <button
+                btn
+                matRipple
+                class="flex-1 inverse"
+                [disabled]="!this.has_changes"
+                (mousedown)="show_original = true"
+                (touchstart)="show_original = true"
+                (window:mouseup)="show_original = false"
+                (window:touchend)="show_original = false"
+            >
+                View Orginal
+            </button>
+            <button btn matRipple class="flex-1" (click)="reorderZones()">
+                Reorder Zones
+            </button>
+            <button
+                btn
+                matRipple
+                class="flex-1"
+                [disabled]="!this.has_changes"
+                (click)="saveChanges()"
+            >
+                Save Changes
             </button>
         </section>
         <section class="relative">
-            <button
-                btn
-                *ngIf="order_changed"
-                class="shadow z-50 mb-2"
-                (click)="saveZoneOrder()"
-            >
-                Save Zone Order
-            </button>
-            <ng-container *ngIf="!(loading | async).zones; else load_state">
-                <div
-                    role="table"
-                    class="overflow-x-auto"
-                    *ngIf="(zones | async)?.length"
-                >
-                    <div table-head>
-                        <div class="w-12 p-2"></div>
-                        <div class="w-64 p-2" i18n="@@nameLabel">Name</div>
-                        <div desc class="flex-1 p-2" i18n="@@descriptionLabel">
-                            Description
-                        </div>
-                        <div class="w-16 p-2"></div>
-                    </div>
-                    <div
-                        body
-                        cdkDropList
-                        (cdkDropListDropped)="drop($event)"
-                        class="overflow-y-auto"
+            <mat-progress-bar
+                mode="indeterminate"
+                class="w-full"
+                [class.opacity-0]="!(loading | async).zones"
+            ></mat-progress-bar>
+            <simple-table
+                class="min-w-[32rem] block text-sm"
+                [data]="show_original ? original_zones : zones"
+                [columns]="[
+                    {
+                        key: 'name',
+                        name: 'Name',
+                        content: name_template,
+                        size: '14rem'
+                    },
+                    {
+                        key: 'description',
+                        name: 'Description',
+                        description_template
+                    },
+                    {
+                        key: 'actions',
+                        name: ' ',
+                        size: '3.5rem',
+                        content: actions_template
+                    }
+                ]"
+                [color]="show_original ? {} : (changed_colours | async)"
+            ></simple-table>
+            <div class="w-full h-12"></div>
+            <ng-template #name_template let-row="row">
+                <div class="flex flex-col items-start px-4 py-2 leading-snug">
+                    <a
+                        class="truncate underline"
+                        [routerLink]="['/zones', row.id]"
                     >
-                        <div
-                            table-row
-                            cdkDrag
-                            class="bg-opacity-40"
-                            [class.bg-pending]="changed[zone.id]"
-                            [matTooltip]="
-                                changed[zone.id] ? 'Zone order changed' : ''
-                            "
-                            *ngFor="let zone of zones | async; let i = index"
-                        >
-                            <div
-                                class="w-[calc(100-0.5rem)] m-1 h-10 rounded border-2 border-dashed border-neutral bg-base-200 bg-opacity-25"
-                                *cdkDragPlaceholder
-                            ></div>
-                            <div
-                                class="w-12 flex justify-center h-full p-2"
-                                style="cursor: grab"
-                                [class.pointer-events-none]="zone.pending"
-                                [class.text-pending]="zone.pending"
-                            >
-                                <app-icon class="text-2xl" cdkDragHandle>
-                                    {{
-                                        zone.pending ? 'warning' : 'unfold_more'
-                                    }}
-                                </app-icon>
-                            </div>
-                            <div class="w-64 p-2 flex flex-col items-start">
-                                <a
-                                    [routerLink]="['/zones', zone.id]"
-                                    class="underline"
-                                >
-                                    {{ zone.name }}
-                                </a>
-                                <div class="text-xs opacity-30">
-                                    {{ zone.id }}
-                                </div>
-                            </div>
-                            <div desc class="flex-1 truncate text-xs">
-                                {{ zone.description }}
-                            </div>
-                            <div class="w-16 p-2 items-center justify-center">
-                                <button
-                                    icon
-                                    matRipple
-                                    *ngIf="(zones | async).length > 1"
-                                    (click)="removeZone(zone)"
-                                >
-                                    <app-icon class="text-error"
-                                        >delete</app-icon
-                                    >
-                                </button>
-                            </div>
-                        </div>
+                        {{ row.name }}
+                    </a>
+                    <div class="text-[0.625rem] opacity-30 font-mono">
+                        {{ row.id }}
                     </div>
                 </div>
-            </ng-container>
+            </ng-template>
+            <ng-template #description_template let-row="row">
+                <div class="p-4 text-xs">
+                    {{ row.description }}
+                </div>
+            </ng-template>
+            <ng-template #actions_template let-row="row">
+                <div class="flex items-center space-x-2 p-2 mx-auto">
+                    <button
+                        icon
+                        matRipple
+                        *ngIf="(zones | async)?.length > 1"
+                        (click)="deleteZone(row)"
+                    >
+                        <app-icon class="text-error">delete</app-icon>
+                    </button>
+                </div>
+            </ng-template>
         </section>
-        <ng-template #load_state>
-            <div class="flex flex-col items-center p-8 mx-auto">
-                <mat-spinner [diameter]="48" class="mb-4"></mat-spinner>
-                <p>Loading zones...</p>
-            </div>
-        </ng-template>
     `,
     styles: [
         `
@@ -134,6 +134,10 @@ import { SystemStateService } from './system-state.service';
 })
 export class SystemZonesComponent {
     public order_changed = false;
+
+    public show_original = false;
+
+    public original_zones = this._service.zones;
 
     public changed: Record<string, boolean> = {};
     /** ID of a zone that the user wishes to add to the system */
@@ -154,6 +158,27 @@ export class SystemZonesComponent {
             )
         )
     );
+
+    public readonly changed_colours = combineLatest([
+        this.zones,
+        this.pending_zones,
+    ]).pipe(
+        map(([zones, pending]) => {
+            const has_changed = zones.map(
+                (i) => this.changed[i.id] || pending.find((_) => _.id === i.id)
+            );
+            const colours = {};
+            has_changed.forEach((i, index) =>
+                i ? (colours[index] = 'var(--wal)') : ''
+            );
+            console.log('Changed:', colours, this.changed);
+            return colours;
+        })
+    );
+
+    public get has_changes() {
+        return this.pending_zones.getValue().length > 0 || this.order_changed;
+    }
 
     /** Query function for systems */
     public readonly query_fn = (_) =>
@@ -188,26 +213,44 @@ export class SystemZonesComponent {
         this.zone_order.next([]);
     };
 
+    public async saveChanges() {
+        await this.savePendingZones();
+        await this.saveZoneOrder();
+    }
+
+    public clearChanges() {
+        this.order_changed = false;
+        this.changed = {};
+        this.zone_order.next([]);
+        this.pending_zones.next([]);
+    }
+
     public get item(): PlaceSystem {
         return this._service.active_item as any;
     }
 
-    constructor(private _service: SystemStateService) {}
+    constructor(
+        private _service: SystemStateService,
+        private _dialog: MatDialog
+    ) {}
 
-    public async drop(event) {
-        if (event && event.previousIndex !== event.currentIndex) {
-            const zones = await this._service.zones.pipe(take(1)).toPromise();
-            let zone_order = this.zone_order.getValue();
-            if (zone_order.length !== zones.length) {
-                zone_order = zones.map((_) => _.id);
-            }
-            const item = zone_order.splice(event.previousIndex, 1);
-            this.changed[item[0]] = true;
-            zone_order.splice(event.currentIndex, 0, item[0]);
-            this.zone_order.next(zone_order);
-            this.order_changed = !zones.every(
-                ({ id }, idx) => zone_order[idx] === id
-            );
+    public async reorderZones() {
+        const zones = await this.zones.pipe(take(1)).toPromise();
+        const ref = this._dialog.open(ReorderItemsModalComponent, {
+            data: {
+                type: 'Zones',
+                items: zones.map((i) => ({
+                    id: i.id,
+                    name: i.display_name || i.name,
+                })),
+            },
+        });
+        const [changed, order] = (await ref.afterClosed().toPromise()) || [];
+        if (!order) return;
+        for (const id of changed) {
+            this.changed[id] = true;
         }
+        this.zone_order.next(order);
+        this.order_changed = true;
     }
 }

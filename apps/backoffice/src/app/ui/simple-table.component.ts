@@ -81,6 +81,7 @@ export interface TableColumn {
                     [class.border-b]="i !== (data_view$ | async)?.length - 1"
                     (mouseenter)="active_row = i"
                     (touchstart)="active_row = i"
+                    [style.background]="color[i]"
                 >
                     <mat-checkbox
                         [checked]="selected.includes(i)"
@@ -98,6 +99,7 @@ export interface TableColumn {
                     [class.width]="column.size"
                     (mouseenter)="active_row = i"
                     (touchstart)="active_row = i"
+                    [style.background]="color[i]"
                 >
                     <ng-container [ngSwitch]="columnType(column)">
                         <div class="p-4" *ngSwitchDefault>
@@ -175,6 +177,7 @@ export class SimpleTableComponent<T extends {} = any> {
     @Input() public sortable = false;
     @Input() public selected: number[] = [];
     @Input() public page_size = -1;
+    @Input() public color: Record<number, string> = {};
     @Input() public empty_message = 'No data to list';
     @Output() public selectedChange = new EventEmitter<number[]>();
     @Output() public rowClicked = new EventEmitter<number>();

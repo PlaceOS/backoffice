@@ -1,5 +1,6 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CdkTableModule } from '@angular/cdk/table';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule, Type } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -90,6 +91,7 @@ import { AuthenticatedImageDirective } from './authenticated-image.directive';
 import { GlobalBannerComponent } from './global-banner.component';
 import { ModuleRuntimeErrorsModalComponent } from './module-runtime-errors.modal';
 import { SimpleTableComponent } from './simple-table.component';
+import { ReorderItemsModalComponent } from './reorder-items-modal.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -147,6 +149,7 @@ const COMPONENTS: Type<any>[] = [
     ModuleRuntimeErrorsModalComponent,
 
     SimpleTableComponent,
+    ReorderItemsModalComponent,
 ];
 
 const PIPES: Type<any>[] = [
@@ -189,10 +192,11 @@ const MATERIAL_MODULES: any[] = [
     MatCardModule,
     MatExpansionModule,
     MatChipsModule,
-    CdkTableModule,
     MatDatepickerModule,
     MatRippleModule,
     PortalModule,
+    DragDropModule,
+    CdkTableModule,
 ];
 
 @NgModule({
