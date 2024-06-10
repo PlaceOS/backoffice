@@ -77,7 +77,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                     [class.opacity-0]="!(loading | async).modules"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[72rem] block text-sm"
+                    class="min-w-[80rem] block text-sm overflow-visible"
                     [data]="modules"
                     [columns]="[
                         {
@@ -90,21 +90,25 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                             key: 'name',
                             name: 'Name',
                             content: name_template,
-                            size: '14rem'
+                            size: '16rem'
                         },
                         {
                             key: 'type',
                             name: 'Type',
                             content: type_template,
-                            size: '6rem'
+                            size: '7rem'
                         },
                         {
                             key: 'class',
                             name: 'Class',
                             content: class_template,
-                            size: '12rem'
+                            size: '16rem'
                         },
-                        { key: 'url', name: 'Address', content: url_template },
+                        {
+                            key: 'url',
+                            name: 'Address',
+                            content: url_template,
+                        },
                         {
                             key: 'debug',
                             name: 'Debug',
@@ -186,7 +190,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                     </div>
                 </ng-template>
                 <ng-template #url_template let-row="row">
-                    <div class="p-4 flex items-center max-w-full">
+                    <div class="p-4 flex items-center max-w-[22rem]">
                         <app-icon [class.opacity-0]="!row.tls" class="text-xl">
                             lock
                         </app-icon>
@@ -198,7 +202,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                                     : row.uri
                             "
                             target="_blank"
-                            class="truncate underline"
+                            class="truncate underline max-w-[20rem]"
                         >
                             {{ row.ip || row.uri }}
                         </a>

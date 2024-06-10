@@ -24,7 +24,7 @@ export interface TableColumn {
     template: `
         <div
             role="table"
-            class="grid border border-base-200"
+            class="grid border border-base-200 overflow-visible"
             [style.gridTemplateColumns]="column_template"
             (click)="active_row >= 0 ? onclick.emit(active_row) : null"
             (touchend)="active_row = -1"
