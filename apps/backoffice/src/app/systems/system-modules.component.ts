@@ -26,7 +26,22 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
 @Component({
     selector: 'system-modules',
     template: `
-        <ng-container *ngIf="item">
+        <div class="w-full h-full flex flex-col" *ngIf="item">
+            <section
+                exec
+                *ngIf="item.id && item.modules && !hide_exec"
+                class="mb-4"
+            >
+                <h3 class="font-medium text-lg mb-2" i18n="@@execHeader">
+                    Execute command
+                </h3>
+                <execute-method-field
+                    [system]="item$ | async"
+                ></execute-method-field>
+            </section>
+            <h3 class="font-medium text-lg mb-2" i18n="@@moduleListHeader">
+                Module List
+            </h3>
             <section add-module class="flex space-x-2 flex-wrap mb-2">
                 <item-search-field
                     class="flex-grow-1 w-full sm:flex-1 sm:w-auto h-12"
@@ -55,294 +70,192 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                     Add new
                 </button>
             </section>
-            <section
-                exec
-                *ngIf="item.id && item.modules && !hide_exec"
-                class="mb-2"
-            >
-                <h3 class="font-medium text-lg mb-2" i18n="@@execHeader">
-                    Execute command
-                </h3>
-                <execute-method-field
-                    [system]="item$ | async"
-                ></execute-method-field>
-            </section>
-            <section device-list>
-                <h3 class="font-medium text-lg mb-2" i18n="@@moduleListHeader">
-                    Module List
-                </h3>
-                <ng-container
-                    *ngIf="!(loading | async).modules; else load_state"
-                >
+            <section device-list class="flex-1 h-1/2 overflow-auto w-full">
+                <mat-progress-bar
+                    mode="indeterminate"
+                    class="w-full"
+                    [class.opacity-0]="!(loading | async).modules"
+                ></mat-progress-bar>
+                <simple-table
+                    class="min-w-[72rem] block text-sm"
+                    [data]="modules"
+                    [columns]="[
+                        {
+                            key: 'state',
+                            name: 'State',
+                            content: state_template,
+                            size: '4rem'
+                        },
+                        {
+                            key: 'name',
+                            name: 'Name',
+                            content: name_template,
+                            size: '14rem'
+                        },
+                        {
+                            key: 'type',
+                            name: 'Type',
+                            content: type_template,
+                            size: '6rem'
+                        },
+                        {
+                            key: 'class',
+                            name: 'Class',
+                            content: class_template,
+                            size: '12rem'
+                        },
+                        { key: 'url', name: 'Address', content: url_template },
+                        {
+                            key: 'debug',
+                            name: 'Debug',
+                            content: debug_template,
+                            size: '4.5rem'
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            size: '6.5rem',
+                            content: actions_template
+                        }
+                    ]"
+                    [can_reorder]="true"
+                    [color]="colors | async"
+                    (ondrop)="drop($event)"
+                ></simple-table>
+                <div class="w-full h-12"></div>
+                <ng-template #state_template let-row="row" let-index="index">
                     <div
-                        role="table"
-                        class="overflow-x-auto min-w-[60rem]"
-                        *ngIf="(modules | async)?.length; else empty_state"
-                    >
-                        <div table-head class="text-sm">
-                            <div class="w-10 p-2"></div>
-                            <div class="w-12 p-2" i18n="@@moduleStateLabel">
-                                State
-                            </div>
-                            <div class="flex-1 p-2" i18n="@@moduleNameLabel">
-                                Name
-                            </div>
-                            <div class="w-24 p-2" i18n="@@moduleTypeLabel">
-                                Type
-                            </div>
-                            <div class="w-48 p-2" i18n="@@moduleClassLabel">
-                                Class
-                            </div>
-                            <div class="w-48 p-2" i18n="@@moduleIpLabel">
-                                IP/URI
-                            </div>
-                            <div
-                                class="w-[3.5rem] p-2"
-                                i18n="@@moduleStateLabel"
-                            >
-                                Debug
-                            </div>
-                            <div class="w-32 p-2 h-9"></div>
-                        </div>
+                        dot
+                        binding
+                        [sys]="item.id"
+                        [mod]="(bindings | async)[index]"
+                        bind="connected"
+                        [(model)]="row.connected"
+                        class="h-4 w-4 rounded-full mx-auto"
+                        [class.bg-base-content]="!row.running"
+                        [class.bg-error]="
+                            row.running && row.connected === false
+                        "
+                        [class.bg-success]="row.running && !!row.connected"
+                        [class.bg-pending]="
+                            row.running && row.connected === undefined
+                        "
+                        (click)="power(row)"
+                    ></div>
+                    <mat-spinner
+                        *ngIf="row.running && row.connected === undefined"
+                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+                        diameter="32"
+                    ></mat-spinner>
+                </ng-template>
+                <ng-template #name_template let-row="row">
+                    <div class="flex items-center px-4 py-2 max-w-full">
                         <div
-                            body
-                            cdkDropList
-                            (cdkDropListDropped)="drop($event)"
-                            class="overflow-y-auto"
+                            class="flex-1 flex flex-col items-start leading-snug max-w-full overflow-hidden"
                         >
-                            <div
-                                table-row
-                                cdkDrag
-                                *ngFor="
-                                    let device of modules | async;
-                                    let i = index
-                                "
-                                [context-menu]="menu"
-                                (contextAction)="
-                                    handleContextEvent($event, device)
-                                "
+                            <a
+                                class="truncate underline max-w-full"
+                                [routerLink]="['/modules', row.id]"
                             >
-                                <div
-                                    class="w-[calc(100-0.5rem)] m-1 h-10 rounded border-2 border-dashed border-neutral bg-base-200"
-                                    *cdkDragPlaceholder
-                                ></div>
-                                <div
-                                    class="w-10 flex justify-center h-full"
-                                    style="cursor: grab"
-                                >
-                                    <app-icon class="text-2xl" cdkDragHandle>
-                                        unfold_more
-                                    </app-icon>
-                                </div>
-                                <div
-                                    class="w-12 flex items-center justify-center p-2 h-full relative"
-                                >
-                                    <div
-                                        dot
-                                        binding
-                                        [sys]="item.id"
-                                        [mod]="(bindings | async)[i]"
-                                        bind="connected"
-                                        [(model)]="device.connected"
-                                        class="h-4 w-4 rounded-full"
-                                        [class.bg-base-content]="
-                                            !device.running
-                                        "
-                                        [class.bg-error]="
-                                            device.running &&
-                                            device.connected === false
-                                        "
-                                        [class.bg-success]="
-                                            device.running && !!device.connected
-                                        "
-                                        [class.bg-pending]="
-                                            device.running &&
-                                            device.connected === undefined
-                                        "
-                                        (click)="power(device)"
-                                    ></div>
-                                    <mat-spinner
-                                        *ngIf="
-                                            device.running &&
-                                            device.connected === undefined
-                                        "
-                                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-                                        diameter="32"
-                                    ></mat-spinner>
-                                </div>
-                                <div
-                                    class="flex items-center flex-1 h-full p-2"
-                                >
-                                    <div
-                                        class="flex-1 flex flex-col justify-center w-px"
-                                    >
-                                        <a
-                                            [routerLink]="[
-                                                '/modules',
-                                                device.id
-                                            ]"
-                                            (contextmenu)="
-                                                $event.stopPropagation()
-                                            "
-                                            class="truncate underline underline-offset-4 w-full"
-                                            [title]="
-                                                device.driver?.name ||
-                                                '<Unnamed>'
-                                            "
-                                        >
-                                            {{
-                                                device.driver?.name ||
-                                                    '&lt;Unnamed&gt;'
-                                            }}
-                                        </a>
-                                        <div
-                                            class="text-xs truncate w-full"
-                                            *ngIf="device.notes"
-                                        >
-                                            {{ device.notes }}
-                                        </div>
-                                    </div>
-                                    <a
-                                        *ngIf="device.edge_id"
-                                        matRipple
-                                        class="text-xs h-6 w-6 rounded-full bg-info flex items-center justify-center shadow text-info-content"
-                                        [matTooltip]="device.edge_id"
-                                        [routerLink]="[
-                                            '/admin',
-                                            'edge',
-                                            device.edge_id
-                                        ]"
-                                    >
-                                        E
-                                    </a>
-                                </div>
-                                <div class="w-24 p-2">
-                                    {{
-                                        driver_type(
-                                            device.role || device.driver?.role
-                                        )
-                                    }}
-                                </div>
-                                <div class="w-48 p-2">
-                                    <span
-                                        class="truncate"
-                                        [title]="(bindings | async)[i]"
-                                        >{{ (bindings | async)[i] }}</span
-                                    >
-                                </div>
-                                <div
-                                    class="w-48 text-right flex items-center h-full p-2"
-                                >
-                                    <app-icon *ngIf="device.tls">lock</app-icon>
-                                    <a
-                                        [href]="
-                                            device.ip
-                                                ? (device.tls
-                                                      ? 'https://'
-                                                      : 'http://') + device.ip
-                                                : device.uri
-                                        "
-                                        target="_blank"
-                                        class="truncate underline"
-                                        >{{ device.ip || device.uri }}</a
-                                    >
-                                </div>
-                                <div
-                                    class="w-[3.5rem] flex items-center justify-center p-2 h-full"
-                                >
-                                    <mat-checkbox
-                                        [disabled]="!device.running"
-                                        [checked]="
-                                            (debugging | async)[device.id]
-                                        "
-                                        [matTooltip]="
-                                            ((debugging | async)[device.id]
-                                                ? 'Disable'
-                                                : 'Enable') + ' Debugging'
-                                        "
-                                        matTooltipPosition="left"
-                                        (change)="toggleDebug(device)"
-                                    >
-                                    </mat-checkbox>
-                                </div>
-                                <div class="w-32 flex px-2 justify-center">
-                                    <button
-                                        icon
-                                        matRipple
-                                        class="text-error"
-                                        matTooltip="View Runtime Errors"
-                                        matTooltipPosition="left"
-                                        (click)="viewRuntimeError(device)"
-                                        [class.opacity-0]="
-                                            !device.has_runtime_errors
-                                        "
-                                        [class.pointer-events-none]="
-                                            !device.has_runtime_errors
-                                        "
-                                    >
-                                        <app-icon>error</app-icon>
-                                    </button>
-                                    <button
-                                        icon
-                                        matRipple
-                                        (click)="editModule(device)"
-                                    >
-                                        <app-icon>edit</app-icon>
-                                    </button>
-                                    <button
-                                        icon
-                                        matRipple
-                                        [matMenuTriggerFor]="menu"
-                                    >
-                                        <app-icon>more_vert</app-icon>
-                                    </button>
-                                    <mat-menu #menu="matMenu">
-                                        <button
-                                            mat-menu-item
-                                            *ngFor="
-                                                let item of device.running
-                                                    ? menu_options
-                                                    : offline_options
-                                            "
-                                            [disabled]="
-                                                item.disable_on &&
-                                                !device[item.disable_on]
-                                            "
-                                            (click)="
-                                                handleContextEvent(item, device)
-                                            "
-                                        >
-                                            <div
-                                                class="flex items-center space-x-2"
-                                            >
-                                                <app-icon
-                                                    class="text-xl"
-                                                    [icon]="item.icon"
-                                                ></app-icon>
-                                                <div class="text">
-                                                    {{ item.name }}
-                                                </div>
-                                            </div>
-                                        </button>
-                                    </mat-menu>
-                                </div>
+                                {{ row.driver?.name || row.name }}
+                            </a>
+                            <div class="text-[0.625rem] opacity-30 font-mono">
+                                {{ row.notes || row.id }}
                             </div>
                         </div>
+                        <a
+                            *ngIf="row.edge_id"
+                            icon
+                            matRipple
+                            class="text-xs h-6 w-6 rounded-full bg-info shadow text-info-content"
+                            [matTooltip]="row.edge_id"
+                            [routerLink]="['/admin', 'edge', row.edge_id]"
+                        >
+                            E
+                        </a>
                     </div>
-                </ng-container>
+                </ng-template>
+                <ng-template #type_template let-row="row">
+                    <div class="p-4">
+                        {{ driver_type(row.role || row.driver?.role) }}
+                    </div>
+                </ng-template>
+                <ng-template #class_template let-row="row" let-index="index">
+                    <div class="p-4 font-mono text-xs">
+                        {{ (bindings | async)[index] }}
+                    </div>
+                </ng-template>
+                <ng-template #url_template let-row="row">
+                    <div class="p-4 flex items-center max-w-full">
+                        <app-icon [class.opacity-0]="!row.tls" class="text-xl">
+                            lock
+                        </app-icon>
+                        <a
+                            [href]="
+                                row.ip
+                                    ? (row.tls ? 'https://' : 'http://') +
+                                      row.ip
+                                    : row.uri
+                            "
+                            target="_blank"
+                            class="truncate underline"
+                        >
+                            {{ row.ip || row.uri }}
+                        </a>
+                    </div>
+                </ng-template>
+                <ng-template #debug_template let-row="row">
+                    <div class="mx-auto">
+                        <mat-checkbox
+                            [disabled]="!row.running"
+                            [checked]="(debugging | async)[row.id]"
+                            [matTooltip]="
+                                ((debugging | async)[row.id]
+                                    ? 'Disable'
+                                    : 'Enable') + ' Debugging'
+                            "
+                            matTooltipPosition="left"
+                            (change)="toggleDebug(row)"
+                        >
+                        </mat-checkbox>
+                    </div>
+                </ng-template>
+                <ng-template #actions_template let-row="row">
+                    <div class="flex items-center space-x-2 p-2 mx-auto">
+                        <button icon matRipple (click)="editModule(row)">
+                            <app-icon>edit</app-icon>
+                        </button>
+                        <button icon matRipple [matMenuTriggerFor]="menu">
+                            <app-icon>more_vert</app-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button
+                                mat-menu-item
+                                *ngFor="
+                                    let m_item of row.running
+                                        ? menu_options
+                                        : offline_options
+                                "
+                                [disabled]="
+                                    m_item.disable_on && !row[m_item.disable_on]
+                                "
+                                (click)="handleContextEvent(m_item, row)"
+                            >
+                                <div class="flex items-center space-x-2">
+                                    <app-icon
+                                        class="text-xl"
+                                        [icon]="m_item.icon"
+                                    ></app-icon>
+                                    <div class="text">
+                                        {{ m_item.name }}
+                                    </div>
+                                </div>
+                            </button>
+                        </mat-menu>
+                    </div>
+                </ng-template>
             </section>
-        </ng-container>
-        <ng-template #load_state>
-            <div class="flex flex-col items-center p-8 mx-auto">
-                <mat-spinner [diameter]="48" class="mb-4"></mat-spinner>
-                <p class="opacity-30">Loading modules...</p>
-            </div>
-        </ng-template>
-        <ng-template #empty_state>
-            <div class="flex flex-col items-center p-8 mx-auto">
-                <p class="opacity-30">No devices for system</p>
-            </div>
-        </ng-template>
+        </div>
     `,
     styles: [
         `
@@ -357,11 +270,6 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
 
             button .text {
                 margin-left: 1rem;
-            }
-
-            [role='table'] > div {
-                width: 100%;
-                min-width: 48rem;
             }
 
             .bg-success {
@@ -392,6 +300,18 @@ export class SystemModulesComponent extends AsyncHandler {
     public readonly modules = this._service.modules;
     public readonly debugging = this._service.debug_state;
     public readonly bindings = this._service.module_bindings;
+
+    public readonly colors = this.modules.pipe(
+        map((list) => {
+            const colors: Record<number, string> = {};
+            for (const i in list) {
+                if (list[i].has_runtime_error) {
+                    colors[i] = 'var(--erl)';
+                }
+            }
+            return colors;
+        })
+    );
     /** Actions available for the context menu */
     public menu_options: AppLink[] = [
         {
@@ -587,13 +507,9 @@ export class SystemModulesComponent extends AsyncHandler {
      * Handle drop event for reordering the devices
      * @param event Drag drop details
      */
-    public drop(event: CdkDragDrop<any[]>) {
-        if (event && event.previousIndex !== event.currentIndex) {
-            this._service.reorderModules(
-                event.previousIndex,
-                event.currentIndex
-            );
-        }
+    public drop([previous, current]: [number, number]) {
+        if (previous === current) return;
+        this._service.reorderModules(previous, current);
     }
 
     public addModule() {

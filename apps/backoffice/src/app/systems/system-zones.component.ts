@@ -4,8 +4,7 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 import { SystemStateService } from './system-state.service';
-import { MatDialog } from '@angular/material/dialog';
-import { ReorderItemsModalComponent } from '../ui/reorder-items-modal.component';
+import { moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
     selector: 'system-zones',
@@ -44,9 +43,6 @@ import { ReorderItemsModalComponent } from '../ui/reorder-items-modal.component'
                 >
                     View Orginal
                 </button>
-                <button btn matRipple class="flex-1" (click)="reorderZones()">
-                    Reorder Zones
-                </button>
                 <button
                     btn
                     matRipple
@@ -82,10 +78,13 @@ import { ReorderItemsModalComponent } from '../ui/reorder-items-modal.component'
                             key: 'actions',
                             name: ' ',
                             size: '3.5rem',
-                            content: actions_template
+                            content: actions_template,
+                            show: (zones | async)?.length > 1
                         }
                     ]"
                     [color]="show_original ? {} : (changed_colours | async)"
+                    [can_reorder]="true"
+                    (ondrop)="reorder($event)"
                 ></simple-table>
                 <div class="w-full h-12"></div>
                 <ng-template #name_template let-row="row">
@@ -110,12 +109,7 @@ import { ReorderItemsModalComponent } from '../ui/reorder-items-modal.component'
                 </ng-template>
                 <ng-template #actions_template let-row="row">
                     <div class="flex items-center space-x-2 p-2 mx-auto">
-                        <button
-                            icon
-                            matRipple
-                            *ngIf="(zones | async)?.length > 1"
-                            (click)="removeZone(row)"
-                        >
+                        <button icon matRipple (click)="removeZone(row)">
                             <app-icon class="text-error">delete</app-icon>
                         </button>
                     </div>
@@ -233,28 +227,13 @@ export class SystemZonesComponent {
         return this._service.active_item as any;
     }
 
-    constructor(
-        private _service: SystemStateService,
-        private _dialog: MatDialog
-    ) {}
+    constructor(private _service: SystemStateService) {}
 
-    public async reorderZones() {
+    public async reorder([previous, current]: [number, number]) {
         const zones = await this.zones.pipe(take(1)).toPromise();
-        const ref = this._dialog.open(ReorderItemsModalComponent, {
-            data: {
-                type: 'Zones',
-                items: zones.map((i) => ({
-                    id: i.id,
-                    name: i.display_name || i.name,
-                })),
-            },
-        });
-        const [changed, order] = (await ref.afterClosed().toPromise()) || [];
-        if (!order) return;
-        for (const id of changed) {
-            this.changed[id] = true;
-        }
-        this.zone_order.next(order);
+        moveItemInArray(zones, previous, current);
+        this.changed[zones[previous].id] = true;
+        this.zone_order.next(zones.map(({ id }) => id));
         this.order_changed = true;
     }
 }

@@ -26,15 +26,23 @@ export interface TableColumn {
             role="table"
             class="grid border border-base-200"
             [style.gridTemplateColumns]="column_template"
-            (click)="active_row >= 0 ? rowClicked.emit(active_row) : null"
+            (click)="active_row >= 0 ? onclick.emit(active_row) : null"
             (touchend)="active_row = -1"
             (mouseleave)="active_row = -1"
+            cdkDropList
+            (cdkDropListDropped)="
+                ondrop.emit([$event.previousIndex, $event.currentIndex])
+            "
         >
             <div
-                *ngIf="selectable"
-                id="column-selector"
+                *ngIf="can_reorder"
                 class="sticky top-0 flex items-center justify-between px-2 border-r border-base-200 bg-base-300 min-h-full z-10"
                 [style.gridArea]="gridSquare(1, 1)"
+            ></div>
+            <div
+                *ngIf="selectable"
+                class="sticky top-0 flex items-center justify-between px-2 border-r border-base-200 bg-base-300 min-h-full z-10"
+                [style.gridArea]="gridSquare(1, 1 + (can_reorder ? 1 : 0))"
             >
                 <mat-checkbox
                     [checked]="selected.length === (data_view$ | async)?.length"
@@ -51,9 +59,14 @@ export interface TableColumn {
                 *ngFor="let column of active_columns; let i = index"
                 [id]="'column-' + column.key"
                 class="sticky top-0 flex items-center justify-between p-4 border-base-200 bg-base-300 min-h-full z-10"
-                [style.gridArea]="gridSquare(1, 1 + i + (selectable ? 1 : 0))"
+                [style.gridArea]="
+                    gridSquare(
+                        1,
+                        1 + i + (selectable ? 1 : 0) + (can_reorder ? 1 : 0)
+                    )
+                "
                 [class.pointer-events-none]="
-                    !sortable || column.sortable === false
+                    !can_sort || column.sortable === false
                 "
                 (click)="setSort(column.key)"
                 [class.active]="sort?.key === column.key"
@@ -63,7 +76,7 @@ export interface TableColumn {
                 <div class="font-medium">{{ column.name || column.key }}</div>
                 <app-icon
                     class="text-[1.25em]"
-                    *ngIf="sortable && column.sortable !== false"
+                    *ngIf="can_sort && column.sortable !== false"
                 >
                     {{
                         sort?.key === column.key && sort?.reverse
@@ -73,68 +86,52 @@ export interface TableColumn {
                 </app-icon>
             </button>
             <ng-container *ngFor="let row of data_view$ | async; let i = index">
+                @if (can_reorder) {
                 <div
-                    *ngIf="selectable"
-                    id="column-selector"
-                    class="flex items-center justify-between px-2 border-r border-base-200 min-h-full z-0"
-                    [style.gridArea]="gridSquare(2 + i, 1)"
-                    [class.border-b]="i !== (data_view$ | async)?.length - 1"
-                    (mouseenter)="active_row = i"
-                    (touchstart)="active_row = i"
-                    [style.background]="color[i]"
+                    class="grid"
+                    cdkDrag
+                    [style.gridArea]="i + 2 + '/1/' + (i + 2) + '/' + -1"
+                    [style.gridTemplateColumns]="column_template"
                 >
-                    <mat-checkbox
-                        [checked]="selected.includes(i)"
-                        (change)="select(i, $event.checked)"
-                    ></mat-checkbox>
+                    <div
+                        *cdkDragPlaceholder
+                        class="border-2 border-base-300 bg-base-200 w-full border-dashed h-16"
+                        [style.gridArea]="
+                            i + 2 + '/1/' + (i + 2) + '/' + column_count
+                        "
+                    ></div>
+                    <div
+                        class="flex items-center justify-center px-2 border-r border-base-200 min-h-full z-0"
+                        [style.gridArea]="gridSquare(2 + i, 1)"
+                        [class.border-b]="
+                            i !== (data_view$ | async)?.length - 1
+                        "
+                        [style.background]="color[i]"
+                    >
+                        <button
+                            icon
+                            matRipple
+                            class=" h-full w-full rounded-none"
+                            cdkDragHandle
+                        >
+                            <app-icon class="text-2xl">unfold_more</app-icon>
+                        </button>
+                    </div>
+                    <ng-container
+                        *ngTemplateOutlet="
+                            row_template;
+                            context: { row: row, index: i }
+                        "
+                    ></ng-container>
                 </div>
-                <div
-                    *ngFor="let column of active_columns; let j = index"
-                    class="flex items-center justify-between border-base-200 min-h-full z-0"
-                    [style.gridArea]="
-                        gridSquare(2 + i, 1 + j + (selectable ? 1 : 0))
+                } @else {
+                <ng-container
+                    *ngTemplateOutlet="
+                        row_template;
+                        context: { row: row, index: i }
                     "
-                    [class.border-b]="i !== (data_view$ | async)?.length - 1"
-                    [class.border-r]="j !== active_columns.length - 1"
-                    [class.width]="column.size"
-                    (mouseenter)="active_row = i"
-                    (touchstart)="active_row = i"
-                    [style.background]="color[i]"
-                >
-                    <ng-container [ngSwitch]="columnType(column)">
-                        <div class="p-4" *ngSwitchDefault>
-                            {{ row[column.key] }}
-                            <span
-                                *ngIf="row[column.key] == null"
-                                class="opacity-30"
-                            >
-                                N/A
-                            </span>
-                        </div>
-                        <ng-container *ngSwitchCase="'template'">
-                            <ng-container
-                                *ngTemplateOutlet="
-                                    column.content;
-                                    context: {
-                                        first: i === 0,
-                                        last:
-                                            i ===
-                                                (data_view$ | async)?.length -
-                                                    1 ||
-                                            i ===
-                                                (data_view$ | async)?.length -
-                                                    1,
-                                        index: i,
-                                        data: row[column.key],
-                                        row: row,
-                                        key: column.key,
-                                        name: column.name || column.key
-                                    }
-                                "
-                            ></ng-container>
-                        </ng-container>
-                    </ng-container>
-                </div>
+                ></ng-container>
+                }
             </ng-container>
             <div
                 *ngIf="!(data_view$ | async)?.length"
@@ -145,6 +142,69 @@ export interface TableColumn {
             </div>
             <!-- TODO: Add pagination -->
         </div>
+        <ng-template #row_template let-row="row" let-i="index">
+            <div
+                *ngIf="selectable"
+                class="flex items-center justify-between px-2 border-r border-base-200 min-h-full z-0"
+                [style.gridArea]="gridSquare(2 + i, 1 + (can_reorder ? 1 : 0))"
+                [class.border-b]="i !== (data_view$ | async)?.length - 1"
+                [style.background]="color[i]"
+                (mouseenter)="active_row = i"
+                (touchstart)="active_row = i"
+            >
+                <mat-checkbox
+                    [checked]="selected.includes(i)"
+                    (change)="select(i, $event.checked)"
+                ></mat-checkbox>
+            </div>
+            <div
+                *ngFor="let column of active_columns; let j = index"
+                class="relative flex items-center justify-between border-base-200 min-h-full z-0"
+                [style.gridArea]="
+                    gridSquare(
+                        2 + i,
+                        1 + j + (selectable ? 1 : 0) + (can_reorder ? 1 : 0)
+                    )
+                "
+                [class.border-b]="i !== (data_view$ | async)?.length - 1"
+                [class.border-r]="j !== active_columns.length - 1"
+                [class.width]="column.size"
+                (mouseenter)="active_row = i"
+                (touchstart)="active_row = i"
+                [style.background]="color[i]"
+            >
+                <ng-container [ngSwitch]="columnType(column)">
+                    <div class="p-4" *ngSwitchDefault>
+                        {{ row[column.key] }}
+                        <span
+                            *ngIf="row[column.key] == null"
+                            class="opacity-30"
+                        >
+                            N/A
+                        </span>
+                    </div>
+                    <ng-container *ngSwitchCase="'template'">
+                        <ng-container
+                            *ngTemplateOutlet="
+                                column.content;
+                                context: {
+                                    first: i === 0,
+                                    last:
+                                        i ===
+                                            (data_view$ | async)?.length - 1 ||
+                                        i === (data_view$ | async)?.length - 1,
+                                    index: i,
+                                    data: row[column.key],
+                                    row: row,
+                                    key: column.key,
+                                    name: column.name || column.key
+                                }
+                            "
+                        ></ng-container>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </ng-template>
     `,
     styles: [
         `
@@ -175,12 +235,15 @@ export class SimpleTableComponent<T extends {} = any> {
     @Input() public selectable = false;
     @Input() public filter: string = '';
     @Input() public sortable = false;
+    @Input() public can_reorder = false;
     @Input() public selected: number[] = [];
     @Input() public page_size = -1;
     @Input() public color: Record<number, string> = {};
     @Input() public empty_message = 'No data to list';
     @Output() public selectedChange = new EventEmitter<number[]>();
-    @Output() public rowClicked = new EventEmitter<number>();
+    @Output() public onclick = new EventEmitter<number>();
+    @Output() public oncontext = new EventEmitter<number>();
+    @Output() public ondrop = new EventEmitter<[number, number]>();
 
     public page = 0;
     public active_row = -1;
@@ -194,6 +257,10 @@ export class SimpleTableComponent<T extends {} = any> {
 
     public data_view$?: Observable<T[]> = null;
 
+    public get can_sort() {
+        return !this.can_reorder && this.sortable;
+    }
+
     public get sort() {
         return this._sort$.getValue();
     }
@@ -203,14 +270,20 @@ export class SimpleTableComponent<T extends {} = any> {
     }
 
     public get column_count() {
-        return this.active_columns.length + (this.selectable ? 1 : 0);
+        return (
+            this.active_columns.length +
+            (this.selectable ? 1 : 0) +
+            (this.can_reorder ? 1 : 0)
+        );
     }
 
     public get column_template() {
-        const template = this.active_columns
+        let template = this.active_columns
             .map((_) => _.size || 'auto')
             .join(' ');
-        return this.selectable ? `3.5rem ${template}` : template;
+        template = this.selectable ? `3.5rem ${template}` : template;
+        template = this.can_reorder ? `3.5rem ${template}` : template;
+        return template;
     }
 
     public ngOnInit() {}
