@@ -135,7 +135,7 @@ export interface TableColumn {
             </ng-container>
             <div
                 *ngIf="!(data_view$ | async)?.length"
-                [style.gridColumnStart]="'span ' + active_columns.length"
+                [style.gridArea]="2 + '/1/' + 2 + '/' + -1"
                 class="flex items-center justify-center p-8 opacity-30"
             >
                 {{ empty_message }}

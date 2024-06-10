@@ -111,7 +111,7 @@ import { authority } from '@placeos/ts-client';
         </div>
         <ng-template #scopes_template let-data="data">
             <div class="px-4 py-2 flex flex-wrap">
-                <code *ngFor="let scope of data" class="m-1">
+                <code *ngFor="let scope of data" class="m-1 text-xs">
                     {{ scope }}
                 </code>
             </div>
@@ -119,11 +119,13 @@ import { authority } from '@placeos/ts-client';
         <ng-template #description_template let-data="data">
             <div class="p-4 text-xs">
                 {{ data }}
+                <span class="opacity-30" *ngIf="!data">No description</span>
             </div>
         </ng-template>
         <ng-template #access_template let-data="data">
             <div class="p-4 font-mono text-xs uppercase">
                 {{ data }}
+                <span class="opacity-30" *ngIf="!data">No permissions</span>
             </div>
         </ng-template>
         <ng-template #data_from_template let-data="data">

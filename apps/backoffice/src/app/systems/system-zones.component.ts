@@ -85,6 +85,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                     [color]="show_original ? {} : (changed_colours | async)"
                     [can_reorder]="true"
                     (ondrop)="reorder($event)"
+                    empty_message="No zones for selected system"
                 ></simple-table>
                 <div class="w-full h-12"></div>
                 <ng-template #name_template let-row="row">
@@ -102,9 +103,14 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                         </div>
                     </div>
                 </ng-template>
-                <ng-template #description_template let-row="row">
-                    <div class="p-4 text-xs">
-                        {{ row.description }}
+                <ng-template #description_template let-data="data">
+                    <div
+                        class="px-4 py-2 select-text overflow-hidden w-full text-xs"
+                    >
+                        {{ data }}
+                        <span class="opacity-30" *ngIf="!data.trim()">
+                            No description
+                        </span>
                     </div>
                 </ng-template>
                 <ng-template #actions_template let-row="row">

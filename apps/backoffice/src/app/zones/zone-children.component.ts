@@ -34,13 +34,15 @@ import { ZonesStateService } from './zones-state.service';
             class="min-w-[32rem] block text-sm"
             [data]="children"
             [columns]="[
-                    { key: 'name', name: 'Name', content: name_template },
-                    {
-                        key: 'description',
-                        name: 'Description',
-                    }
-                ]"
+                { key: 'name', name: 'Name', content: name_template },
+                {
+                    key: 'description',
+                    name: 'Description',
+                    content: description_template
+                }
+            ]"
             [sortable]="true"
+            empty_message="No children zones for selected zone"
         ></simple-table>
         <ng-template #name_template let-row="row">
             <div class="flex flex-col items-start px-4 py-2 leading-snug">
@@ -50,6 +52,12 @@ import { ZonesStateService } from './zones-state.service';
                 <div class="text-[0.625rem] opacity-30 font-mono">
                     {{ row.id }}
                 </div>
+            </div>
+        </ng-template>
+        <ng-template #description_template let-data="data">
+            <div class="px-4 py-2 select-text overflow-hidden w-full text-xs">
+                {{ data }}
+                <span class="opacity-30" *ngIf="!data">No description</span>
             </div>
         </ng-template>
     `,

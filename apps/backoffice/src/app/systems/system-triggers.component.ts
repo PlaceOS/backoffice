@@ -78,6 +78,7 @@ export interface TriggerInstanceState {
                         sortable: false
                     }
                 ]"
+                empty_message="No triggers for selected system"
             ></simple-table>
             <ng-template #status_template let-row="row">
                 <i

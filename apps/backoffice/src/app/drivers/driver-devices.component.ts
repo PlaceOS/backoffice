@@ -57,6 +57,7 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                     }
                 ]"
                 [sortable]="true"
+                empty_message="No modules created for driver"
             ></simple-table>
             <ng-template #state_template let-row="row">
                 <i

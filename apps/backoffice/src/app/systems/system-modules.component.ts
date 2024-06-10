@@ -125,6 +125,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                     [can_reorder]="true"
                     [color]="colors | async"
                     (ondrop)="drop($event)"
+                    empty_message="No modules for selected system"
                 ></simple-table>
                 <div class="w-full h-12"></div>
                 <ng-template #state_template let-row="row" let-index="index">

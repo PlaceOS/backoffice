@@ -51,6 +51,7 @@ import { ZonesStateService } from './zones-state.service';
                         sortable: false
                     }
                 ]"
+                empty_message="No triggers for selected zone"
             ></simple-table>
             <ng-template #name_template let-row="row">
                 <div class="flex flex-col items-start px-4 py-2 leading-snug">

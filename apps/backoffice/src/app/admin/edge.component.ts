@@ -92,9 +92,10 @@ import { EdgeModalComponent } from './edge-modal.component';
                 <div class="text-xs opacity-30">{{ row.id }}</div>
             </div>
         </ng-template>
-        <ng-template #description_template let-row="row">
+        <ng-template #description_template let-data="data">
             <div class="px-4 py-2 select-text overflow-hidden w-full text-xs">
-                {{ row.description }}
+                {{ data }}
+                <span class="opacity-30" *ngIf="!data">No description</span>
             </div>
         </ng-template>
         <ng-template #actions_template let-row="row">
