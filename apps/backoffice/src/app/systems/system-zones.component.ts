@@ -72,7 +72,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                         {
                             key: 'description',
                             name: 'Description',
-                            description_template
+                            content: description_template
                         },
                         {
                             key: 'actions',
@@ -108,7 +108,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                         class="px-4 py-2 select-text overflow-hidden w-full text-xs"
                     >
                         {{ data }}
-                        <span class="opacity-30" *ngIf="!data.trim()">
+                        <span class="opacity-30" *ngIf="!data">
                             No description
                         </span>
                     </div>
