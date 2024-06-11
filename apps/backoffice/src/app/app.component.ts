@@ -147,6 +147,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
 
     private onInitError() {
         if (isMock()) return;
+
         log('Init', 'Failed to initialise user. Restarting application...');
         invalidateToken();
         location.reload();
