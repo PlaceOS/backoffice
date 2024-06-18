@@ -149,7 +149,7 @@ export class DomainApplicationsComponent {
     public readonly newApplication = () => this._service.editApplication();
     public readonly editApplication = (item) =>
         this._service.editApplication(item);
-    public readonly deleteApplication = (item) =>
+    public readonly removeApplication = (item) =>
         this._service.deleteApplication(item);
 
     public get item(): PlaceDomain {
