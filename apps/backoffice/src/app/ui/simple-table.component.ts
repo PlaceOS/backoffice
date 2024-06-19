@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map, take } from 'rxjs/operators';
+import { AsyncHandler } from '../common/async-handler.class';
 
 export interface TableColumn {
     key: string;
@@ -45,10 +46,10 @@ export interface TableColumn {
                 [style.gridArea]="gridSquare(1, 1 + (can_reorder ? 1 : 0))"
             >
                 <mat-checkbox
-                    [checked]="selected.length === (data_view$ | async)?.length"
+                    [checked]="selected.length === (data$ | async)?.length"
                     [indeterminate]="
                         selected.length > 0 &&
-                        selected.length < (data_view$ | async)?.length
+                        selected.length < (data$ | async)?.length
                     "
                     (change)="selectAll($event.checked)"
                 ></mat-checkbox>
@@ -86,7 +87,7 @@ export interface TableColumn {
                 </app-icon>
             </button>
             <ng-container
-                *ngFor="let row of (data_view$ | async) || []; let i = index"
+                *ngFor="let row of (data$ | async) || []; let i = index"
             >
                 @if (can_reorder) {
                 <div
@@ -105,9 +106,7 @@ export interface TableColumn {
                     <div
                         class="flex items-center justify-center px-2 border-r border-base-200 min-h-full z-0"
                         [style.gridArea]="gridSquare(2 + i, 1)"
-                        [class.border-b]="
-                            i !== (data_view$ | async)?.length - 1
-                        "
+                        [class.border-b]="i !== (data$ | async)?.length - 1"
                         [style.background]="color[i]"
                     >
                         <button
@@ -136,9 +135,9 @@ export interface TableColumn {
                 }
             </ng-container>
             <div
-                *ngIf="!(data_view$ | async)?.length"
+                *ngIf="!(data$ | async)?.length"
                 [style.gridArea]="2 + '/1/' + 2 + '/' + -1"
-                class="flex items-center justify-center p-8 opacity-30"
+                class="flex items-center justify-center p-4 opacity-30"
             >
                 {{ empty_message }}
             </div>
@@ -149,7 +148,7 @@ export interface TableColumn {
                 *ngIf="selectable"
                 class="flex items-center justify-between px-2 border-r border-base-200 min-h-full z-0"
                 [style.gridArea]="gridSquare(2 + i, 1 + (can_reorder ? 1 : 0))"
-                [class.border-b]="i !== (data_view$ | async)?.length - 1"
+                [class.border-b]="i !== (data$ | async)?.length - 1"
                 [style.background]="color[i]"
                 (mouseenter)="active_row = i"
                 (touchstart)="active_row = i"
@@ -168,7 +167,7 @@ export interface TableColumn {
                         1 + j + (selectable ? 1 : 0) + (can_reorder ? 1 : 0)
                     )
                 "
-                [class.border-b]="i !== (data_view$ | async)?.length - 1"
+                [class.border-b]="i !== (data$ | async)?.length - 1"
                 [class.border-r]="j !== active_columns.length - 1"
                 [class.width]="column.size"
                 (mouseenter)="active_row = i"
@@ -192,9 +191,8 @@ export interface TableColumn {
                                 context: {
                                     first: i === 0,
                                     last:
-                                        i ===
-                                            (data_view$ | async)?.length - 1 ||
-                                        i === (data_view$ | async)?.length - 1,
+                                        i === (data$ | async)?.length - 1 ||
+                                        i === (data$ | async)?.length - 1,
                                     index: i,
                                     data: row[column.key],
                                     row: row,
@@ -231,7 +229,7 @@ export interface TableColumn {
         `,
     ],
 })
-export class SimpleTableComponent<T extends {} = any> {
+export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
     @Input() public data: T[] | Observable<T[]>;
     @Input() public columns: TableColumn[] = [];
     @Input() public selectable = false;
@@ -257,7 +255,43 @@ export class SimpleTableComponent<T extends {} = any> {
         null
     );
 
-    public data_view$?: Observable<T[]> = null;
+    public data$: Observable<T[]> = combineLatest([
+        this._data$,
+        this._filter$,
+        this._sort$,
+    ]).pipe(
+        map(([data, filter, sort]) => {
+            data = [...(data || [])];
+            if (filter) {
+                data = data.filter((_) =>
+                    Object.values(_).some((i) =>
+                        JSON.stringify(i)
+                            .toLowerCase()
+                            .includes(filter.toLowerCase())
+                    )
+                );
+            }
+            if (sort && data.length) {
+                const type = data[0][sort.key];
+                if (type === 'number') {
+                    data = data.sort((a, b) => {
+                        const result = a[sort.key] - b[sort.key];
+                        return sort.reverse ? -result : result;
+                    });
+                } else {
+                    data = data.sort((a, b) => {
+                        const a_value = JSON.stringify(a[sort.key]);
+                        const b_value = JSON.stringify(b[sort.key]);
+                        const result = a_value.localeCompare(b_value);
+                        return sort.reverse ? -result : result;
+                    });
+                }
+            }
+            this.selected = [];
+            this.page = 0;
+            return data;
+        })
+    );
 
     public get can_sort() {
         return !this.can_reorder && this.sortable;
@@ -265,10 +299,6 @@ export class SimpleTableComponent<T extends {} = any> {
 
     public get sort() {
         return this._sort$.getValue();
-    }
-
-    public get data$(): Observable<T[]> {
-        return this.data instanceof Array ? this._data$ : this.data;
     }
 
     public get column_count() {
@@ -288,8 +318,6 @@ export class SimpleTableComponent<T extends {} = any> {
         return template;
     }
 
-    public ngOnInit() {}
-
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.filter) {
             this._filter$.next(this.filter);
@@ -298,43 +326,14 @@ export class SimpleTableComponent<T extends {} = any> {
             this.active_columns = this.columns.filter((_) => _.show !== false);
         }
         if (changes.data) {
-            this.data_view$ = combineLatest([
-                this.data$,
-                this._filter$,
-                this._sort$,
-            ]).pipe(
-                map(([data, filter, sort]) => {
-                    data = [...(data || [])];
-                    if (filter) {
-                        data = data.filter((_) =>
-                            Object.values(_).some((i) =>
-                                JSON.stringify(i)
-                                    .toLowerCase()
-                                    .includes(filter.toLowerCase())
-                            )
-                        );
-                    }
-                    if (sort && data.length) {
-                        const type = data[0][sort.key];
-                        if (type === 'number') {
-                            data = data.sort((a, b) => {
-                                const result = a[sort.key] - b[sort.key];
-                                return sort.reverse ? -result : result;
-                            });
-                        } else {
-                            data = data.sort((a, b) => {
-                                const a_value = JSON.stringify(a[sort.key]);
-                                const b_value = JSON.stringify(b[sort.key]);
-                                const result = a_value.localeCompare(b_value);
-                                return sort.reverse ? -result : result;
-                            });
-                        }
-                    }
-                    this.selected = [];
-                    this.page = 0;
-                    return data;
-                })
-            );
+            if (this.data instanceof Array) {
+                this._data$.next(this.data);
+            } else {
+                this.subscription(
+                    'data',
+                    this.data.subscribe((_) => this._data$.next(_))
+                );
+            }
         }
     }
 
@@ -352,7 +351,7 @@ export class SimpleTableComponent<T extends {} = any> {
     }
 
     public async selectAll(state: boolean) {
-        const list = await this.data_view$.pipe(take(1)).toPromise();
+        const list = await this.data$.pipe(take(1)).toPromise();
         if (state) this.selected = list.map((_, i) => i);
         else this.selected = [];
     }

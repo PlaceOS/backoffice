@@ -77,206 +77,179 @@ import { TriggerStateService } from './trigger-state.service';
             ></item-search-field>
         </div>
         <header class="flex items-center my-4">
+            <div
+                class="font-medium text-lg flex-1"
+                i18n="@@triggerConditionsHeader"
+            >
+                Conditions
+            </div>
             <button
                 btn
-                icon
+                matRipple
+                class="w-48"
                 [disabled]="!template_system"
                 (click)="editCondition()"
             >
-                <app-icon>add</app-icon>
+                <app-icon class="text-2xl">add</app-icon>
+                <div class="mr-4 ml-2">Add Condition</div>
             </button>
-            <div class="font-medium text-lg" i18n="@@triggerConditionsHeader">
-                Conditions
-            </div>
         </header>
-        <section
-            role="table"
-            *ngIf="
-                comparisons.length || time_dependents.length;
-                else no_conditions
-            "
-        >
-            <div
-                table-head
-                i18n="@@triggerComparisonLabel"
-                *ngIf="comparisons.length"
-            >
-                <div class="flex-1 p-2">Variable Comparison Condtions</div>
-            </div>
-            <div table-body>
-                <div table-row *ngFor="let comparison of comparisons">
-                    <div class="w-12"></div>
-                    <div class="flex-1 p-2">
-                        {{ comparison.left | json }} {{ comparison.operator }}
-                        {{ comparison.right | json }}
-                    </div>
-                    <div class="w-24 flex items-center justify-center">
-                        <button
-                            btn
-                            icon
-                            [disabled]="!template_system"
-                            (click)="editCondition(comparison)"
-                        >
-                            <app-icon>edit</app-icon>
-                        </button>
-                        <button btn icon (click)="removeCondition(comparison)">
-                            <app-icon>delete</app-icon>
-                        </button>
-                    </div>
+        <section>
+            <simple-table
+                class="w-full min-w-[32rem] block text-sm mb-4"
+                [data]="comparisons || []"
+                [columns]="[
+                    {
+                        key: 'operator',
+                        name: 'Variable Comparison Condtion',
+                        content: comparison_template
+                    },
+                    {
+                        key: 'actions',
+                        name: ' ',
+                        size: '6rem',
+                        sortable: false,
+                        content: actions_template
+                    }
+                ]"
+                [sortable]="true"
+                empty_message="No variable comparison conditions for trigger"
+            ></simple-table>
+            <simple-table
+                class="w-full min-w-[32rem] block text-sm"
+                [data]="time_dependents || []"
+                [columns]="[
+                    {
+                        key: 'time',
+                        name: 'Time Dependent Condition',
+                        content: time_dep_template
+                    },
+                    {
+                        key: 'actions',
+                        name: ' ',
+                        size: '6rem',
+                        sortable: false,
+                        content: actions_template
+                    }
+                ]"
+                [sortable]="true"
+                empty_message="No time dependent conditions for trigger"
+            ></simple-table>
+            <ng-template #time_dep_template let-row="row">
+                <div class="flex items-center space-x-2 p-4">
+                    {{ row.type === 'at' ? 'At time' : 'CRON' }}
+                    {{ row.type === 'at' ? row.time : row.cron }}
                 </div>
-            </div>
-            <div
-                table-head
-                i18n="@@triggerTimeLabel"
-                *ngIf="time_dependents.length"
-            >
-                <div class="flex-1 p-2">Time Dependent Conditions</div>
-            </div>
-            <div table-body>
-                <div table-row *ngFor="let time of time_dependents">
-                    <div class="w-12"></div>
-                    <div class="flex-1 p-2">
-                        {{ time.type === 'at' ? 'At time' : 'CRON' }}
-                        {{ time.type === 'at' ? time.time : time.cron }}
-                    </div>
-                    <div class="w-24 flex items-center justify-center">
-                        <button
-                            icon
-                            matRipple
-                            [disabled]="!template_system"
-                            (click)="editCondition(time)"
-                        >
-                            <app-icon>edit</app-icon>
-                        </button>
-                        <button icon matRipple (click)="removeCondition(time)">
-                            <app-icon>delete</app-icon>
-                        </button>
-                    </div>
+            </ng-template>
+            <ng-template #comparison_template let-row="row">
+                <div class="flex items-center space-x-2 p-4">
+                    {{ row.left | json }} {{ row.operator }}
+                    {{ row.right | json }}
                 </div>
-            </div>
+            </ng-template>
+            <ng-template #actions_template let-row="row">
+                <div class="flex items-center space-x-2 p-2 mx-auto">
+                    <button icon matRipple (click)="editCondition(row)">
+                        <app-icon>edit</app-icon>
+                    </button>
+                    <button icon matRipple (click)="removeCondition(row)">
+                        <app-icon class="text-error">delete</app-icon>
+                    </button>
+                </div>
+            </ng-template>
         </section>
         <header class="flex items-center space-x-2 my-4">
+            <div
+                class="font-medium text-lg flex-1"
+                i18n="@@triggerActionsHeader"
+            >
+                Actions
+            </div>
             <button
-                icon
                 btn
-                icon
+                matRipple
+                class="w-48"
                 [disabled]="!template_system"
                 (click)="editAction()"
             >
-                <app-icon>add</app-icon>
+                <app-icon class="text-2xl">add</app-icon>
+                <div class="mr-4 ml-2">Add Action</div>
             </button>
-            <div class="font-medium text-lg" i18n="@@triggerActionsHeader">
-                Actions
-            </div>
         </header>
-        <section
-            role="table"
-            *ngIf="functions.length || mailers.length; else no_actions"
-        >
-            <div
-                table-head
-                i18n="@@triggerFunctionsLabel"
-                *ngIf="functions.length"
-            >
-                <div class="flex-1 p-2">Function Call Actions</div>
-            </div>
-            <div
-                table-body
-                cdkDropList
-                (cdkDropListDropped)="confirmReorder('function', $event)"
-            >
-                <div table-row *ngFor="let action of functions" cdkDrag>
-                    <div
-                        class="w-12 flex items-center justify-center"
-                        cdkDragHandle
-                    >
-                        <app-icon class="text-2xl">unfold_more</app-icon>
-                    </div>
-                    <div class="flex-1 p-2">
-                        {{ action.mod }}, {{ action.method }}({{
-                            action.args | json
-                        }})
-                    </div>
-                    <div class="w-24 flex items-center justify-center">
-                        <button
-                            icon
-                            btn
-                            icon
-                            [disabled]="!template_system"
-                            (click)="editAction(action)"
-                        >
-                            <app-icon>edit</app-icon>
-                        </button>
-                        <button btn icon (click)="removeAction(action)">
-                            <app-icon>delete</app-icon>
-                        </button>
-                    </div>
-                    <div
-                        class="w-[calc(100-0.5rem)] m-1 h-10 rounded border-2 border-dashed border-neutral bg-base-200"
-                        *cdkDragPlaceholder
-                    ></div>
+        <section>
+            <simple-table
+                class="w-full min-w-[32rem] block text-sm mb-4"
+                [data]="functions || []"
+                [columns]="[
+                    {
+                        key: 'time',
+                        name: 'Function Call Action',
+                        content: function_call_template
+                    },
+                    {
+                        key: 'actions',
+                        name: ' ',
+                        size: '6rem',
+                        sortable: false,
+                        content: fn_actions_template
+                    }
+                ]"
+                [can_reorder]="true"
+                (ondrop)="confirmReorder('function', $event)"
+                empty_message="No function call actions for trigger"
+            ></simple-table>
+            <simple-table
+                class="w-full min-w-[32rem] block text-sm mb-4"
+                [data]="mailers || []"
+                [columns]="[
+                    {
+                        key: 'time',
+                        name: 'Email Action',
+                        content: email_call_template
+                    },
+                    {
+                        key: 'actions',
+                        name: ' ',
+                        size: '6rem',
+                        sortable: false,
+                        content: fn_actions_template
+                    }
+                ]"
+                [can_reorder]="true"
+                (ondrop)="confirmReorder('function', $event)"
+                empty_message="No email actions for trigger"
+            ></simple-table>
+            <ng-template #function_call_template let-row="row">
+                <div class="flex items-center space-x-2 p-4">
+                    {{ row.mod }}, {{ row.method }}({{ row.args | json }})
                 </div>
-            </div>
-            <div table-head i18n="@@triggerEmailsLabel" *ngIf="mailers.length">
-                <div class="flex-1 p-2">Email Actions</div>
-            </div>
-            <div
-                table-body
-                cdkDropList
-                (cdkDropListDropped)="confirmReorder('mailer', $event)"
-            >
-                <div table-row *ngFor="let action of mailers" cdkDrag>
-                    <div
-                        class="w-12 flex items-center justify-center"
-                        cdkDragHandle
-                    >
-                        <app-icon class="text-2xl">unfold_more</app-icon>
-                    </div>
-                    <div class="flex-1 p-2">
-                        <span
-                            [matTooltip]="action.emails | formatList"
-                            i18n="@@emailCountDisplay"
-                            >{{ action.emails.length }} { action.emails.length,
-                            plural, =1 { Address } other { Addresses } }</span
-                        >&nbsp; | Body Length: {{ action.content.length }}
-                    </div>
-                    <div class="w-24 flex items-center justify-center">
-                        <button
-                            icon
-                            btn
-                            icon
-                            [disabled]="!template_system"
-                            (click)="editAction(action)"
-                        >
-                            <app-icon>edit</app-icon>
-                        </button>
-                        <button btn icon (click)="removeAction(action)">
-                            <app-icon>delete</app-icon>
-                        </button>
-                    </div>
-                    <div
-                        class="w-[calc(100-0.5rem)] m-1 h-10 rounded border-2 border-dashed border-neutral bg-base-200"
-                        *cdkDragPlaceholder
-                    ></div>
+            </ng-template>
+            <ng-template #email_call_template let-row="row">
+                <div class="flex items-center space-x-2 p-4">
+                    <span
+                        [matTooltip]="row.emails | formatList"
+                        i18n="@@emailCountDisplay"
+                        >{{ row.emails.length }} { row.emails.length, plural, =1
+                        { Address } other { Addresses } }</span
+                    >&nbsp; | Body Length: {{ row.content.length }}
                 </div>
-            </div>
+            </ng-template>
+            <ng-template #fn_actions_template let-row="row">
+                <div class="flex items-center space-x-2 p-2 mx-auto">
+                    <button
+                        icon
+                        matRipple
+                        [disabled]="!template_system"
+                        (click)="editAction(row)"
+                    >
+                        <app-icon>edit</app-icon>
+                    </button>
+                    <button icon matRipple (click)="removeAction(row)">
+                        <app-icon class="text-error">delete</app-icon>
+                    </button>
+                </div>
+            </ng-template>
         </section>
-        <ng-template #no_conditions>
-            <div
-                class="flex flex-col items-center p-8"
-                i18n="@@triggerConditionsEmpty"
-            >
-                No condtions for trigger
-            </div>
-        </ng-template>
-        <ng-template #no_actions>
-            <div
-                class="flex flex-col items-center p-8"
-                i18n="@@triggerActionsEmpty"
-            >
-                No actions for trigger
-            </div>
-        </ng-template>
     `,
     styles: [
         `
@@ -338,14 +311,9 @@ export class TriggerAboutComponent extends AsyncHandler {
      */
     public confirmReorder(
         type: 'function' | 'mailer',
-        event: CdkDragDrop<any[]>
+        [previous, current]: [number, number]
     ): void {
-        if (event && event.previousIndex !== event.currentIndex) {
-            this._service.reorderAction(
-                type,
-                event.previousIndex,
-                event.currentIndex
-            );
-        }
+        if (previous === current) return;
+        this._service.reorderAction(type, previous, current);
     }
 }
