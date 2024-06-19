@@ -13,11 +13,14 @@ import {
 import { BehaviorSubject, of } from 'rxjs';
 import {
     catchError,
+    debounceTime,
     filter,
     map,
     share,
     shareReplay,
+    startWith,
     switchMap,
+    tap,
 } from 'rxjs/operators';
 
 import { ActiveItemService } from '../common/item.service';
@@ -38,6 +41,7 @@ export class RepositoriesStateService {
     public readonly item = this._state.item;
     /** List of available drivers for repository */
     public readonly driver_list = this._state.active_item$.pipe(
+        debounceTime(300),
         switchMap((item: PlaceRepository) => {
             if (
                 !(item instanceof PlaceRepository) ||
@@ -45,13 +49,13 @@ export class RepositoriesStateService {
             )
                 return of(null);
             this._loading.next(true);
-            return listRepositoryDrivers(item.id, { limit: 2000 });
+            return listRepositoryDrivers(item.id, { limit: 2000 }).pipe(
+                catchError((_) => [])
+            );
         }),
-        catchError((_) => []),
-        map((_) => {
-            this._loading.next(false);
-            return _;
-        })
+        tap((_) => this._loading.next(false)),
+        startWith([]),
+        shareReplay(1)
     );
     /** Get latest commit for the active repository */
     public readonly commit = this._state.active_item$.pipe(

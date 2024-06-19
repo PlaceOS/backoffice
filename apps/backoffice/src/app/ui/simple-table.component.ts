@@ -85,7 +85,9 @@ export interface TableColumn {
                     }}
                 </app-icon>
             </button>
-            <ng-container *ngFor="let row of data_view$ | async; let i = index">
+            <ng-container
+                *ngFor="let row of (data_view$ | async) || []; let i = index"
+            >
                 @if (can_reorder) {
                 <div
                     class="grid"
@@ -302,7 +304,7 @@ export class SimpleTableComponent<T extends {} = any> {
                 this._sort$,
             ]).pipe(
                 map(([data, filter, sort]) => {
-                    data = [...data];
+                    data = [...(data || [])];
                     if (filter) {
                         data = data.filter((_) =>
                             Object.values(_).some((i) =>

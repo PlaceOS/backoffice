@@ -6,85 +6,141 @@ import { RepositoriesStateService } from './repositories-state.service';
 @Component({
     selector: 'repository-about',
     template: `
-        <section class="mb-4 text-center flex space-x-2">
+        <section class="mb-4 flex space-x-2">
             <div
-                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-4 overflow-hidden"
+                [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@descriptionLabel">Description:</label>
-                    <div class="value select-all">
-                        {{ item.description || 'No description' }}
-                    </div>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@descriptionLabel"
+                >
+                    Description:
                 </div>
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@repoTypeLabel">Type:</label>
-                    <div class="value" i18n="@@driverListEmpty">
-                        { item.type, select, interface { Interface Repository }
-                        driver { Driver Repository }, other { =Unknown=} }
-                    </div>
+                <div class="select-all">
+                    {{ item.description || 'No description' }}
                 </div>
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@repoFolderNameLabel">Folder name:</label>
-                    <div
-                        class="value select-all"
-                        [class.underline]="item.type === 'interface'"
-                        [class.pointer-events-none]="item.type !== 'interface'"
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoTypeLabel"
+                >
+                    Type:
+                </div>
+                <div i18n="@@driverListEmpty">
+                    { item.type, select, interface { Interface Repository }
+                    driver { Driver Repository }, other { =Unknown=} }
+                </div>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoFolderNameLabel"
+                >
+                    Folder name:
+                </div>
+                <div
+                    class="select-all"
+                    [class.underline]="item.type === 'interface'"
+                    [class.pointer-events-none]="item.type !== 'interface'"
+                >
+                    <a [href]="local_url" target="_blank">{{
+                        item.folder_name || 'No folder set'
+                    }}</a>
+                </div>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoCreatedAtLabel"
+                >
+                    Created:
+                </div>
+                <div class=" flex items-center">
+                    <span
+                        [matTooltip]="
+                            (item.created_at * 1000 | date: 'mediumDate') +
+                            ', ' +
+                            (item.created_at * 1000 | date: 'shortTime')
+                        "
+                        matTooltipPosition="right"
                     >
-                        <a [href]="local_url" target="_blank">{{
-                            item.folder_name || 'No folder set'
-                        }}</a>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@repoCreatedAtLabel">Created:</label>
-                    <div class="value">
                         {{ item.created_at * 1000 | dateFrom }}
-                    </div>
+                    </span>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@repoUpdatedAtLabel">Updated:</label>
-                    <div class="value">
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoUpdatedAtLabel"
+                >
+                    Updated:
+                </div>
+                <div class=" flex items-center">
+                    <span
+                        [matTooltip]="
+                            (item.updated_at * 1000 | date: 'mediumDate') +
+                            ', ' +
+                            (item.updated_at * 1000 | date: 'shortTime')
+                        "
+                        matTooltipPosition="right"
+                    >
                         {{ item.updated_at * 1000 | dateFrom }}
-                    </div>
+                    </span>
                 </div>
             </div>
             <div
-                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-4 overflow-hidden"
+                [style.gridTemplateColumns]="'6.5rem auto'"
             >
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@repoUriLabel">Repository URI:</label>
-                    <div class="value underline select-all">
-                        <a [href]="item.uri | safe: 'url'" target="_blank">{{
-                            repo_uri || 'No URI set'
-                        }}</a>
-                    </div>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoUriLabel"
+                >
+                    Repository URI:
                 </div>
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@repoBranchLabel">Branch:</label>
-                    <code class="text-xs">
+                <div class="underline select-all overflow-hidden">
+                    <a
+                        class="truncate w-full block"
+                        [href]="item.uri | safe: 'url'"
+                        target="_blank"
+                        >{{ repo_uri || 'No URI set' }}</a
+                    >
+                </div>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoBranchLabel"
+                >
+                    Branch:
+                </div>
+                <div class="flex items-center overflow-hidden">
+                    <code
+                        class="text-xs truncate inline-block max-w-full"
+                        [matTooltip]="item.branch"
+                    >
                         {{ item.branch }}
                     </code>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <label
-                        i18n="@@repoCommitHashLabel"
-                        class="whitespace-nowrap"
-                        >Commit hash:</label
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoCommitHashLabel"
+                >
+                    Commit hash:
+                </div>
+                <div class="flex items-center overflow-hidden">
+                    <code
+                        class="text-xs truncate inline-block max-w-full"
+                        [matTooltip]="
+                            commit && commit !== item.commit_hash
+                                ? commit
+                                : item.commit_hash
+                        "
                     >
-                    <code class="text-xs truncate">
                         {{ item.commit_hash || 'No Commit hash set' }}
                         <span
-                            class="select-text mono"
+                            class="select-text mono  break-words"
                             *ngIf="commit && commit !== item.commit_hash"
                         >
                             ({{ commit }})
                         </span>
                     </code>
                 </div>
-                <div class="flex-1"></div>
                 <button
                     btn
-                    class="w-full"
+                    class="w-full col-span-2"
                     [disabled]="pulling"
                     (click)="pullLatestCommit()"
                 >

@@ -9,10 +9,10 @@ export class DriverFormatPipe implements PipeTransform {
         if ((format || '').indexOf('/') >= 0) {
             const parts = format.split('/');
             parts.splice(0, 1);
-            return `<div class="formatted-driver-name">${parts
+            return `<div class="flex items-center space-x-2">${parts
                 .map((i) => `<div class="name-part">${i}</div>`)
                 .join(
-                    '<div class="icon"><i class="material-symbols-outlined">keyboard_arrow_right</i></div>'
+                    '<i class="material-symbols-outlined text-xl">keyboard_arrow_right</i>'
                 )}</div>`;
         }
         return format || '';
