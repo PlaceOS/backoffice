@@ -131,7 +131,7 @@ import { marked } from 'marked';
                     >
                         Tags:
                     </div>
-                    <div class="flex flex-wrap flex-1">
+                    <div class="flex flex-wrap flex-1 -mx-1">
                         <div
                             *ngFor="let tag of tag_list"
                             class="mono text-[0.625rem] px-2 py-1 m-1 bg-base-200 rounded"

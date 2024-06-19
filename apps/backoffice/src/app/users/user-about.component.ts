@@ -82,7 +82,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                 </div>
                 <div
                     *ngIf="item.groups?.length; else empty_group_state"
-                    class="flex flex-wrap"
+                    class="flex flex-wrap -mx-1"
                 >
                     <div
                         *ngFor="let group of item.groups"
