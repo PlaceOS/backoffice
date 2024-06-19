@@ -36,10 +36,14 @@ export interface PlaceServiceDetails {
         <div class="flex items-center justify-between space-x-2 my-4">
             <div class="text-2xl">Backoffice & PlaceOS Details</div>
         </div>
-        <div class="flex items-center space-x-2 mb-4">
+        <div
+            class="flex items-center space-x-2 mb-4 px-4 py-2 bg-base-200 rounded"
+        >
             <h3 class="text-lg font-medium" i18n="@@backoffice">
-                Application Details (Backoffice)
+                Application Details
+                <span class="mono opacity-60 ml-2">Backoffice</span>
             </h3>
+            <div class="flex-1"></div>
             <button
                 *ngIf="backoffice_logs"
                 class="p-2 text-xs underline"
@@ -48,11 +52,18 @@ export interface PlaceServiceDetails {
                 View Changelog
             </button>
         </div>
-        <section class="space-y-2 mb-4 flex flex-col px-2">
-            <div class="flex items-center">
-                <label for="version" class="w-24" i18n="@@version"
-                    >Version:</label
-                >
+        <section
+            class="border border-base-200 rounded p-4 mb-4 inline-grid gap-2"
+            [style.gridTemplateColumns]="'6.5rem auto'"
+        >
+            <div
+                class="text-sm font-medium flex items-center"
+                for="version"
+                i18n="@@version"
+            >
+                Version:
+            </div>
+            <div class="flex items-center space-x-2">
                 <code
                     name="version"
                     (click)="copy('version', backoffice_version)"
@@ -67,32 +78,41 @@ export interface PlaceServiceDetails {
                     {{ backoffice_tag }}
                 </code>
             </div>
-            <div class="flex items-center">
-                <label for="hash" class="w-24" i18n="@@commitHash"
-                    >Commit Hash:</label
-                >
+            <div
+                class="text-sm font-medium flex items-center"
+                for="hash"
+                i18n="@@commitHash"
+            >
+                Commit Hash:
+            </div>
+            <div>
                 <code name="hash" (click)="copy('hash', backoffice_hash)">
                     {{ backoffice_hash }}
                 </code>
             </div>
-            <div class="flex items-center">
-                <label for="build-time" class="w-24" i18n="@@buildTime"
-                    >Build:</label
-                >
-                <div
-                    name="build-time"
-                    class="text-sm"
-                    (click)="copy('build time', backoffice_build)"
-                >
-                    {{ backoffice_build }}
-                </div>
+            <div
+                class="text-sm font-medium flex items-center"
+                for="build-time"
+                i18n="@@buildTime"
+            >
+                Build:
+            </div>
+            <div
+                name="build-time"
+                class="text-sm"
+                (click)="copy('build time', backoffice_build)"
+            >
+                {{ backoffice_build }}
             </div>
         </section>
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-4 px-4 py-2 bg-base-200 rounded">
             <div class="text-lg font-medium" i18n="@@apiHeader">
-                API Services
+                Backend Services <span class="mono opacity-60 ml-2">API</span>
             </div>
-            <code *ngIf="backend_version">{{ backend_version }}</code>
+            <code class="bg-base-300" *ngIf="backend_version">
+                {{ backend_version }}
+            </code>
+            <div class="flex-1"></div>
             <button
                 *ngIf="changelog_data"
                 class="p-2 text-xs underline"
@@ -101,48 +121,43 @@ export interface PlaceServiceDetails {
                 View Changelog
             </button>
         </div>
-        <section class="flex flex-wrap py-2">
+        <section class="flex flex-wrap py-2 -mx-2">
             <ng-container *ngIf="api_details.length > 0; else empty_state">
                 <div
                     class="bg-base-100  rounded border border-base-200  m-2 min-w-[40%] flex-1 overflow-hidden"
                     *ngFor="let api of api_details"
                 >
-                    <h3
-                        class="w-full px-4 py-2 mb-1 border-b border-base-200  mono"
-                    >
+                    <h3 class="w-full px-4 py-2 border-b border-base-200 mono">
                         {{ api.service }}
                     </h3>
                     <div
-                        class="flex items-center px-4 py-1 hover:bg-base-200/20"
+                        class="p-4 inline-grid gap-2"
+                        [style.gridTemplateColumns]="'6.5rem auto'"
                     >
-                        <label class="w-24">Commit Hash</label>
-                        <code>
-                            {{ api.commit | slice: 0:8 }}
-                        </code>
-                    </div>
-                    <div
-                        class="flex items-center px-4 py-1 hover:bg-base-200/20"
-                    >
-                        <label class="w-24">Version</label>
-                        <code>
-                            {{ api.version }}
-                        </code>
-                    </div>
-                    <div
-                        class="flex items-center px-4 py-1 hover:bg-base-200/20"
-                    >
-                        <label class="w-24">Build time</label>
+                        <div class="text-sm font-medium flex items-center">
+                            Commit Hash:
+                        </div>
+                        <div>
+                            <code>{{ api.commit | slice: 0:8 }}</code>
+                        </div>
+                        <div class="text-sm font-medium flex items-center">
+                            Version:
+                        </div>
+                        <div>
+                            <code>{{ api.version }}</code>
+                        </div>
+                        <div class="text-sm font-medium flex items-center">
+                            Platform:
+                        </div>
+                        <div>
+                            <code>{{ api.platform_version }}</code>
+                        </div>
+                        <div class="text-sm font-medium flex items-center">
+                            Build time:
+                        </div>
                         <div class="text-sm">
                             {{ api.build_time | date: 'MMM d, y, h:mm a' }}
                         </div>
-                    </div>
-                    <div
-                        class="flex items-center px-4 py-1 hover:bg-base-200/20 mb-1"
-                    >
-                        <label class="w-24">Platform</label>
-                        <code>
-                            {{ api.platform_version }}
-                        </code>
                     </div>
                 </div>
             </ng-container>
