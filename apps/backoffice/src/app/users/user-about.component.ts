@@ -36,55 +36,103 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                 </div>
             </div>
         </section>
-        <section class="space-y-2 p-2">
-            <div class="flex items-center space-x-2" *ngIf="item?.created_at">
-                <label class="w-24" i18n="@@userCreatedAtLabel">Email:</label>
-                <div class="value">
-                    <a [href]="'mailto:' + item?.email">{{ item?.email }}</a>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.department">
-                <label i18n="@@userCreatedAtLabel">Department:</label>
-                <div class="value">{{ item?.department }}</div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.created_at">
-                <label class="w-24" i18n="@@userCreatedAtLabel">Created:</label>
-                <div class="value">
-                    {{ item?.created_at * 1000 | dateFrom }}
-                </div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.updated_at">
-                <label class="w-24" i18n="@userUpdatedAtLabel">Updated:</label>
-                <div class="value">
-                    {{ item?.updated_at * 1000 | dateFrom }}
-                </div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.authority_id">
-                <label class="w-24" i18n="@userUpdatedAtLabel"
-                    >Authority ID:</label
+        <section class="flex space-x-2 mb-4">
+            <div
+                class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-2"
+                [style.gridTemplateColumns]="'5.5rem auto'"
+            >
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@userCreatedAtLabel"
                 >
-                <div class="value mono">
+                    Email:
+                </div>
+                <div>
+                    <a
+                        class="underline mono text-sm truncate"
+                        [href]="'mailto:' + item?.email"
+                    >
+                        {{ item?.email }}
+                    </a>
+                </div>
+                <ng-container *ngIf="item?.department">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@userCreatedAtLabel"
+                    >
+                        Department:
+                    </div>
+                    <div>{{ item?.department }}</div>
+                </ng-container>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@userUpdatedAtLabel"
+                >
+                    Authority ID:
+                </div>
+                <div class="mono text-sm">
                     {{ item?.authority_id }}
                 </div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.groups">
-                <label class="my-1 w-24" for="groups" i18n="@@userGroupsLabel"
-                    >User Groups:</label
-                >
                 <div
-                    class="value"
-                    *ngIf="item.groups?.length; else empty_group_state"
+                    class="text-sm font-medium flex items-center"
+                    for="groups"
+                    i18n="@@userGroupsLabel"
                 >
-                    <mat-chip-list name="groups">
-                        <mat-chip class="m-1" *ngFor="let group of item.groups">
-                            {{ group }}
-                        </mat-chip>
-                    </mat-chip-list>
+                    User Groups:
                 </div>
+                <div
+                    *ngIf="item.groups?.length; else empty_group_state"
+                    class="flex flex-wrap"
+                >
+                    <div
+                        *ngFor="let group of item.groups"
+                        class="mono text-[0.625rem] px-2 py-1 m-1 bg-base-200 rounded"
+                    >
+                        {{ group }}
+                    </div>
+                </div>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoCreatedAtLabel"
+                >
+                    Created:
+                </div>
+                <div class=" flex items-center">
+                    <span
+                        [matTooltip]="
+                            (item.created_at * 1000 | date: 'mediumDate') +
+                            ', ' +
+                            (item.created_at * 1000 | date: 'shortTime')
+                        "
+                        matTooltipPosition="right"
+                    >
+                        {{ item.created_at * 1000 | dateFrom }}
+                    </span>
+                </div>
+                <ng-template *ngIf="item.updated_at">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@repoUpdatedAtLabel"
+                    >
+                        Updated:
+                    </div>
+                    <div class=" flex items-center">
+                        <span
+                            [matTooltip]="
+                                (item.updated_at * 1000 | date: 'mediumDate') +
+                                ', ' +
+                                (item.updated_at * 1000 | date: 'shortTime')
+                            "
+                            matTooltipPosition="right"
+                        >
+                            {{ item.updated_at * 1000 | dateFrom }}
+                        </span>
+                    </div>
+                </ng-template>
             </div>
         </section>
         <ng-template #empty_group_state>
-            <div class="value">No Access Groups</div>
+            <div class="opacity-30">No Access Groups</div>
         </ng-template>
     `,
     styles: [

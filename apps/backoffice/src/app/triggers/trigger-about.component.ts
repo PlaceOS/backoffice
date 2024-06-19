@@ -17,18 +17,47 @@ import { TriggerStateService } from './trigger-state.service';
 @Component({
     selector: 'trigger-about',
     template: `
-        <section class="space-y-2">
-            <div class="flex items-center space-x-2" *ngIf="item?.created_at">
-                <label i18n="@@triggerCreatedAtLabel" class="w-24">
+        <section class="flex space-x-2 mb-4">
+            <div
+                class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-2"
+                [style.gridTemplateColumns]="'5.5rem auto'"
+            >
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoCreatedAtLabel"
+                >
                     Created:
-                </label>
-                <div class="value">{{ item.created_at * 1000 | dateFrom }}</div>
-            </div>
-            <div class="flex items-center space-x-2" *ngIf="item?.updated_at">
-                <label i18n="@triggerUpdatedAtLabel" class="w-24">
+                </div>
+                <div class=" flex items-center">
+                    <span
+                        [matTooltip]="
+                            (item.created_at * 1000 | date: 'mediumDate') +
+                            ', ' +
+                            (item.created_at * 1000 | date: 'shortTime')
+                        "
+                        matTooltipPosition="right"
+                    >
+                        {{ item.created_at * 1000 | dateFrom }}
+                    </span>
+                </div>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoUpdatedAtLabel"
+                >
                     Updated:
-                </label>
-                <div class="value">{{ item.updated_at * 1000 | dateFrom }}</div>
+                </div>
+                <div class=" flex items-center">
+                    <span
+                        [matTooltip]="
+                            (item.updated_at * 1000 | date: 'mediumDate') +
+                            ', ' +
+                            (item.updated_at * 1000 | date: 'shortTime')
+                        "
+                        matTooltipPosition="right"
+                    >
+                        {{ item.updated_at * 1000 | dateFrom }}
+                    </span>
+                </div>
             </div>
         </section>
         <hr class="my-4" />

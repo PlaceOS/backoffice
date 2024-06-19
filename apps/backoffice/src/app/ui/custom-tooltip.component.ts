@@ -32,7 +32,7 @@ export class CustomTooltipData<T = any> {
         <ng-content></ng-content>
 
         <ng-template cdk-portal>
-            <div custom-tooltip class="relative" [ngSwitch]="type">
+            <div custom-tooltip class="relative print:hidden" [ngSwitch]="type">
                 <ng-container *ngSwitchCase="'component'">
                     <ng-container
                         *ngComponentOutlet="content; injector: injector"
@@ -66,6 +66,8 @@ export class CustomTooltipComponent<T = any>
     @Input() public backdrop = true;
     /** Whether tooltip has a backdrop */
     @Input() public hover = false;
+    /** Delay time in milliseconds to close after hover */
+    @Input() public delay = 0;
     /** Type of content to render */
     public type: 'template' | 'component' | 'html' = 'template';
 
@@ -75,10 +77,8 @@ export class CustomTooltipComponent<T = any>
 
     @ViewChild(CdkPortal) private _portal: CdkPortal;
 
-    @HostListener('click') public readonly onClick = () =>
-        this.timeout('open', () => this.open());
-    @HostListener('touchend') public readonly onTouch = () =>
-        this.timeout('open', () => this.open());
+    @HostListener('click') public readonly onClick = () => this.open();
+    @HostListener('touchend') public readonly onTouch = () => this.open();
     @HostListener('mouseenter') public readonly onEnter = () =>
         this.hover ? this.open() : '';
     @HostListener('mouseleave') public readonly onLeave = () =>
@@ -109,42 +109,63 @@ export class CustomTooltipComponent<T = any>
 
     public open() {
         if (!this.content) return;
-        this._updateType();
-        if (this._overlay_ref) this.close();
-        if (!this._portal) return;
-        this._overlay_ref = this._overlay.create({
-            hasBackdrop: !!this.backdrop,
-            positionStrategy: this._overlay
-                .position()
-                .flexibleConnectedTo(this._element)
-                .withPositions([
-                    {
-                        originX: this.x_pos || 'end',
-                        originY:
-                            (this.y_pos === 'top'
-                                ? 'bottom'
-                                : this.y_pos == 'bottom'
-                                ? 'top'
-                                : this.y_pos) || 'bottom',
-                        overlayX: this.x_pos || 'end',
-                        overlayY: this.y_pos || 'top',
-                    },
-                ]),
-        });
-        this._overlay_ref.attach(this._portal);
-        if (this.backdrop) {
-            this.subscription(
-                'backdrop',
-                this._overlay_ref.backdropClick().subscribe(() => this.close())
-            );
-        }
+        this.timeout(
+            'open',
+            () => {
+                if (this.hover && this.delay) {
+                    this.timeout('onclose', () => this.close(), this.delay);
+                }
+                this._updateType();
+                if (this._overlay_ref) this.close();
+                if (!this._portal) return;
+                const pos = this._element.nativeElement.getBoundingClientRect();
+                const default_x = 'end';
+                const default_y = 'top';
+                this._overlay_ref = this._overlay.create({
+                    hasBackdrop: !!this.backdrop && !this.hover,
+                    positionStrategy: this._overlay
+                        .position()
+                        .flexibleConnectedTo(this._element)
+                        .withPositions([
+                            {
+                                originX: this.x_pos || default_x,
+                                originY:
+                                    (this.y_pos === 'top'
+                                        ? 'bottom'
+                                        : this.y_pos == 'bottom'
+                                        ? 'top'
+                                        : this.y_pos) || default_y,
+                                overlayX: this.x_pos || default_x,
+                                overlayY: this.y_pos || default_y,
+                            },
+                        ]),
+                });
+                this._overlay_ref.attach(this._portal);
+                if (this.backdrop) {
+                    this.subscription(
+                        'backdrop',
+                        this._overlay_ref
+                            .backdropClick()
+                            .subscribe(() => this.close())
+                    );
+                }
+            },
+            50
+        );
     }
 
     public close() {
-        if (this._overlay_ref) {
-            this._overlay_ref.dispose();
-            this._overlay_ref = null;
-        }
+        this.clearTimeout('open');
+        this.timeout(
+            'close',
+            () => {
+                if (this._overlay_ref) {
+                    this._overlay_ref.dispose();
+                    this._overlay_ref = null;
+                }
+            },
+            50
+        );
     }
 
     private _updateType() {

@@ -8,7 +8,7 @@ import { RepositoriesStateService } from './repositories-state.service';
     template: `
         <section class="mb-4 flex space-x-2">
             <div
-                class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-4 overflow-hidden"
+                class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-2"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
                 <div
@@ -83,7 +83,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                 </div>
             </div>
             <div
-                class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-4 overflow-hidden"
+                class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-2 overflow-hidden"
                 [style.gridTemplateColumns]="'6.5rem auto'"
             >
                 <div

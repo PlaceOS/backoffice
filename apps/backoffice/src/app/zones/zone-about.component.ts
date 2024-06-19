@@ -40,102 +40,144 @@ import { marked } from 'marked';
                 ></execute-method-field>
             </div>
             <div
-                class="rounded p-4 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-4 border border-base-200 w-1/3 flex-1 inline-grid gap-2"
+                [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div
-                    class="flex items-center space-x-2"
-                    *ngIf="item?.parent_id"
-                >
-                    <label class="w-24" i18n="@@zoneParentLabel"
-                        >Parent ID:</label
+                <ng-container *ngIf="item?.parent_id">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@zoneParentLabel"
                     >
-                    <div class="value underline mono">
+                        Parent ID:
+                    </div>
+                    <div>
                         <a
+                            class="underline mono text-sm"
                             [routerLink]="['/zones', item?.parent_id, 'about']"
                             >{{ item?.parent_id }}</a
                         >
                     </div>
-                </div>
-                <div
-                    class="flex items-center space-x-2"
-                    *ngIf="item?.created_at"
-                >
-                    <label class="w-24" i18n="@@zoneCreatedAtLabel"
-                        >Created:</label
+                </ng-container>
+                <ng-container *ngIf="item?.location">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@zoneLocationLabel"
                     >
-                    <div class="value">
-                        {{ item?.created_at * 1000 | dateFrom }}
-                    </div>
-                </div>
-                <div
-                    class="flex items-center space-x-2"
-                    *ngIf="item?.updated_at"
-                >
-                    <label class="w-24" i18n="@@zoneUpdatedAtLabel"
-                        >Updated:</label
-                    >
-                    <div class="value">
-                        {{ item?.updated_at * 1000 | dateFrom }}
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.location">
-                    <label class="w-24" i18n="@@zoneLocationLabel">
                         Location:
-                    </label>
-                    <div class="value">{{ item?.location }}</div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.code">
-                    <label class="w-24" i18n="@@zoneCodeLabel">Code:</label>
-                    <div class="value">{{ item?.code }}</div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.type">
-                    <label class="w-24" i18n="@@zoneTypeLabel"
-                        >Type:&nbsp;</label
+                    </div>
+                    <div>{{ item?.location }}</div>
+                </ng-container>
+                <ng-container *ngIf="item?.code">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@zoneCodeLabel"
                     >
-                    <div class="value">{{ item?.type }}</div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.count">
-                    <label class="w-24" i18n="@@zoneCountLabel">Count:</label>
-                    <div class="value">{{ item?.count }}</div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.capacity">
-                    <label class="w-24" i18n="@@zoneCapacityLabel">
+                        Code:
+                    </div>
+                    <div>{{ item?.code }}</div>
+                </ng-container>
+                <ng-container *ngIf="item?.type">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@zoneTypeLabel"
+                    >
+                        Type:&nbsp;
+                    </div>
+                    <div>{{ item?.type }}</div>
+                </ng-container>
+                <ng-container *ngIf="item?.count">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@zoneCountLabel"
+                    >
+                        Count:
+                    </div>
+                    <div>{{ item?.count }}</div>
+                </ng-container>
+                <ng-container *ngIf="item?.capacity">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@zoneCapacityLabel"
+                    >
                         Capacity:
-                    </label>
-                    <div class="value">{{ item?.capacity }}</div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.timezone">
-                    <label class="w-24" i18n="@@zoneTimezoneLabel">
+                    </div>
+                    <div>{{ item?.capacity }}</div>
+                </ng-container>
+                <ng-container *ngIf="item?.timezone">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@zoneTimezoneLabel"
+                    >
                         Timezone:
-                    </label>
-                    <div class="value">{{ item?.timezone }}</div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.map_id">
-                    <label class="min-w-[6rem] w-24" i18n="@@zoneMapLabel">
+                    </div>
+                    <div class="mono text-sm">{{ item?.timezone }}</div>
+                </ng-container>
+                <ng-container *ngIf="item?.map_id">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@zoneMapLabel"
+                    >
                         Map:
-                    </label>
+                    </div>
                     <a class="underline truncate" [href]="item?.map_id">{{
                         item?.map_id
                     }}</a>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.tags">
-                    <label class="w-24 my-1" for="tags" i18n="@@zoneTagsLabel">
-                        Tags:
-                    </label>
+                </ng-container>
+                <ng-container *ngIf="item?.tags">
                     <div
-                        class="value flex flex-wrap flex-1"
-                        *ngIf="
-                            tag_list && tag_list.length;
-                            else empty_tag_state
-                        "
+                        class="text-sm font-medium flex items-center"
+                        for="tags"
+                        i18n="@@zoneTagsLabel"
                     >
+                        Tags:
+                    </div>
+                    <div class="flex flex-wrap flex-1">
                         <div
                             *ngFor="let tag of tag_list"
-                            class="mono text-xs px-3 py-2 m-2 bg-base-200  rounded-2xl"
+                            class="mono text-[0.625rem] px-2 py-1 m-1 bg-base-200 rounded"
                         >
                             {{ tag }}
                         </div>
+                        <span *ngIf="!tag_list?.length" class="opacity-30">
+                            No tags
+                        </span>
                     </div>
+                </ng-container>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoCreatedAtLabel"
+                >
+                    Created:
+                </div>
+                <div class=" flex items-center">
+                    <span
+                        [matTooltip]="
+                            (item.created_at * 1000 | date: 'mediumDate') +
+                            ', ' +
+                            (item.created_at * 1000 | date: 'shortTime')
+                        "
+                        matTooltipPosition="right"
+                    >
+                        {{ item.created_at * 1000 | dateFrom }}
+                    </span>
+                </div>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoUpdatedAtLabel"
+                >
+                    Updated:
+                </div>
+                <div class=" flex items-center">
+                    <span
+                        [matTooltip]="
+                            (item.updated_at * 1000 | date: 'mediumDate') +
+                            ', ' +
+                            (item.updated_at * 1000 | date: 'shortTime')
+                        "
+                        matTooltipPosition="right"
+                    >
+                        {{ item.updated_at * 1000 | dateFrom }}
+                    </span>
                 </div>
             </div>
         </section>
@@ -167,11 +209,6 @@ import { marked } from 'marked';
                 <mat-spinner class="mb-4" diameter="48"></mat-spinner>
                 <p i18n="@@zoneLoadingLabel">Loading zone settings...</p>
             </div>
-        </ng-template>
-        <ng-template #empty_tag_state>
-            <p class="text-center py-1" i18n="@@zoneTagsEmpty">
-                &lt;No Tags&gt;
-            </p>
         </ng-template>
     `,
     styles: [

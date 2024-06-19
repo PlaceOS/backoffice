@@ -5,102 +5,148 @@ import { SystemStateService } from './system-state.service';
 @Component({
     selector: 'system-about',
     template: `
-        <section class="flex items-center space-x-2 mb-4">
-            <div
-                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
-            >
+        <section class="flex space-x-2 mb-4">
+            <div class="flex-1">
                 <div
-                    class="flex items-center space-x-2"
-                    *ngIf="item?.support_url"
+                    class="rounded p-4 border border-base-200 w-full inline-grid gap-2"
+                    [style.gridTemplateColumns]="'7.5rem auto'"
                 >
-                    <label class="w-24" i18n="@@systemUrlLabel"
-                        >Support URL:</label
-                    >
-                    <div class="value">
+                    <ng-container *ngIf="item?.support_url">
+                        <div
+                            class="text-sm font-medium flex items-center"
+                            i18n="@@systemUrlLabel"
+                        >
+                            Support URL:
+                        </div>
                         <a
-                            class="underline"
+                            class="underline select-all truncate"
                             [href]="item?.support_url"
                             target="_blank"
-                            >{{ item?.support_url }}</a
                         >
+                            {{ item?.support_url }}
+                        </a>
+                    </ng-container>
+                    <ng-container *ngIf="item?.email">
+                        <div
+                            class="text-sm font-medium flex items-center"
+                            i18n="@@systemBookableLabel"
+                        >
+                            Bookable Room:
+                        </div>
+                        <div>{{ item?.bookable ? 'Yes' : 'No' }}</div>
+                    </ng-container>
+                    <ng-container *ngIf="item?.email">
+                        <div
+                            class="text-sm font-medium flex items-center"
+                            i18n="@@systemPublicLabel"
+                        >
+                            Publicly Available:
+                        </div>
+                        <div>{{ item?.public ? 'Yes' : 'No' }}</div>
+                    </ng-container>
+                    <ng-container *ngIf="item?.code">
+                        <div
+                            class="text-sm font-medium flex items-center"
+                            i18n="@@codeLabel"
+                        >
+                            Code:
+                        </div>
+                        <div>{{ item?.code }}</div>
+                    </ng-container>
+                    <ng-container *ngIf="item?.email">
+                        <div
+                            class="text-sm font-medium flex items-center"
+                            i18n="@@emailLabel"
+                        >
+                            Email:
+                        </div>
+                        <a
+                            class="underline select-all truncate"
+                            [href]="'mailto:' + item?.email"
+                            target="_blank"
+                            >{{ item?.email }}</a
+                        >
+                    </ng-container>
+                    <ng-container *ngIf="item?.capacity">
+                        <div
+                            class="text-sm font-medium flex items-center"
+                            i18n="@@capacityLabel"
+                        >
+                            Capacity:
+                        </div>
+                        <div>{{ item?.capacity }}</div>
+                    </ng-container>
+                    <ng-container *ngIf="item?.map_id">
+                        <div
+                            class="text-sm font-medium flex items-center"
+                            i18n="@@mapIdLabel"
+                        >
+                            Map ID:
+                        </div>
+                        <div class="value mono">{{ item?.map_id }}</div>
+                    </ng-container>
+                    <ng-container *ngIf="item?.installed_ui_devices">
+                        <div
+                            class="text-sm font-medium flex items-center"
+                            i18n="@@systemPanelCountLabel"
+                        >
+                            Installed Touch Panels:
+                        </div>
+                        <div>{{ item?.installed_ui_devices }}</div>
+                    </ng-container>
+                    <ng-container *ngIf="item?.timezone">
+                        <div
+                            class="text-sm font-medium flex items-center"
+                            i18n="@@systemTimezoneLabel"
+                        >
+                            Timezone:
+                        </div>
+                        <div>{{ item?.timezone }}</div>
+                    </ng-container>
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@repoCreatedAtLabel"
+                    >
+                        Created:
                     </div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.bookable">
-                    <label class="w-24" i18n="@@systemBookableLabel"
-                        >Bookable Room:</label
-                    >
-                    <div class="value">{{ item?.bookable ? 'Yes' : 'No' }}</div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.bookable">
-                    <label class="w-24" i18n="@@systemPublicLabel">
-                        Publicly Available:
-                    </label>
-                    <div class="value">{{ item?.public ? 'Yes' : 'No' }}</div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.code">
-                    <label i18n="@@codeLabel">Code:&nbsp;</label>
-                    <p>{{ item?.code }}</p>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.email">
-                    <label class="w-24" i18n="@@emailLabel">Email:&nbsp;</label>
-                    <a
-                        *ngIf="item?.email"
-                        class="underline select-all truncate"
-                        [href]="'mailto:' + item?.email"
-                        target="_blank"
-                        >{{ item?.email }}</a
-                    >
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.capacity">
-                    <label class="w-24" i18n="@@capacityLabel">Capacity:</label>
-                    <div class="value">{{ item?.capacity }}</div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.map_id">
-                    <label class="w-24" i18n="@@mapIdLabel">Map ID:</label>
-                    <div class="value mono">{{ item?.map_id }}</div>
-                </div>
-                <div
-                    class="flex items-center space-x-2"
-                    *ngIf="item?.installed_ui_devices"
-                >
-                    <label class="w-24" i18n="@@systemPanelCountLabel">
-                        Installed Touch Panels:
-                    </label>
-                    <div class="value">{{ item?.installed_ui_devices }}</div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item?.timezone">
-                    <label class="w-24" i18n="@@systemTimezoneLabel"
-                        >Timezone:</label
-                    >
-                    <div class="value">{{ item?.timezone }}</div>
-                </div>
-                <div
-                    class="flex items-center space-x-2"
-                    *ngIf="item?.created_at"
-                >
-                    <label class="w-24" i18n="@@systemCreatedAtLabel"
-                        >Created:</label
-                    >
-                    <div class="value">
-                        {{ item?.created_at * 1000 | dateFrom }}
+                    <div class=" flex items-center">
+                        <span
+                            [matTooltip]="
+                                (item.created_at * 1000 | date: 'mediumDate') +
+                                ', ' +
+                                (item.created_at * 1000 | date: 'shortTime')
+                            "
+                            matTooltipPosition="right"
+                        >
+                            {{ item.created_at * 1000 | dateFrom }}
+                        </span>
                     </div>
-                </div>
-                <div
-                    class="flex items-center space-x-2"
-                    *ngIf="item?.updated_at"
-                >
-                    <label class="w-24" i18n="@systemUpdatedAtLabel"
-                        >Updated:</label
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@repoUpdatedAtLabel"
                     >
-                    <div class="value">
-                        {{ item?.updated_at * 1000 | dateFrom }}
+                        Updated:
+                    </div>
+                    <div class=" flex items-center">
+                        <span
+                            [matTooltip]="
+                                (item.updated_at * 1000 | date: 'mediumDate') +
+                                ', ' +
+                                (item.updated_at * 1000 | date: 'shortTime')
+                            "
+                            matTooltipPosition="right"
+                        >
+                            {{ item.updated_at * 1000 | dateFrom }}
+                        </span>
                     </div>
                 </div>
             </div>
             <div
-                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-4 border border-base-200  space-y-4 w-1/3 flex-1 inline-flex flex-col"
             >
-                <h3 class="w-full text-center">System Controls</h3>
+                <h3 class="w-full text-center font-medium mono uppercase">
+                    System Controls
+                </h3>
                 <button
                     btn
                     start

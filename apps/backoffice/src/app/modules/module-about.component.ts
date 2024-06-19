@@ -8,63 +8,75 @@ import { ModuleStateService } from './module-state.service';
     template: `
         <section class="space-x-2 flex">
             <div
-                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1"
+                class="rounded p-4 border border-base-200 w-1/3 flex-1 inline-grid gap-2"
+                [style.gridTemplateColumns]="'4.5rem auto'"
             >
-                <div class="flex items-center space-x-2" *ngIf="item.notes">
-                    <label i18n="@moduleNotesLabel">Notes:</label>
-                    <div class="value">{{ item.notes }}</div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item.ip">
-                    <label i18n="@moduleIPLabel">IP:</label>
-                    <div class="value">{{ item.ip }}</div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="item.port > 1">
-                    <label i18n="@modulePortLabel">Port:</label>
-                    <div class="value">{{ item.port }}</div>
-                </div>
-                <div
-                    class="flex items-center space-x-2"
-                    *ngIf="item.tls || item.udp"
-                >
-                    <label i18n="@moduleTLSLabel">Protocol:</label>
-                    <code *ngIf="item.tls" class="bg-success text-base-100"
-                        >TLS</code
+                <ng-container *ngIf="item.notes">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@moduleNotesLabel"
                     >
-                    <code *ngIf="item.udp" class="bg-success text-base-100"
-                        >UDP</code
+                        Notes:
+                    </div>
+                    <div>{{ item.notes }}</div>
+                </ng-container>
+                <ng-container *ngIf="item.ip">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@moduleIPLabel"
                     >
-                </div>
-                <div
-                    class="flex items-center space-x-2"
-                    *ngIf="item.created_at"
-                >
-                    <label i18n="@@moduleCreatedAtLabel">Created:</label>
-                    <div class="value">
-                        {{ item.created_at * 1000 | dateFrom }}
+                        IP:
                     </div>
-                </div>
-                <div
-                    class="flex items-center space-x-2"
-                    *ngIf="item.updated_at"
-                >
-                    <label i18n="@moduleUpdatedAtLabel">Updated:</label>
-                    <div class="value">
-                        {{ item.updated_at * 1000 | dateFrom }}
+                    <div class="mono">{{ item.ip }}</div>
+                </ng-container>
+                <ng-container *ngIf="item.port > 1">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@modulePortLabel"
+                    >
+                        Port:
                     </div>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="driver | async">
-                    <label i18n="@moduleUpdatedAtLabel">Driver:</label>
+                    <div class="mono">{{ item.port }}</div>
+                </ng-container>
+                <ng-container *ngIf="item.tls || item.udp">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@moduleTLSLabel"
+                    >
+                        Protocol:
+                    </div>
+                    <div class="flex items-center">
+                        <code *ngIf="item.tls" class="bg-success text-base-100">
+                            TLS
+                        </code>
+                        <code *ngIf="item.udp" class="bg-success text-base-100">
+                            UDP
+                        </code>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="driver | async">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@moduleUpdatedAtLabel"
+                    >
+                        Driver:
+                    </div>
                     <a
-                        class="underline"
+                        class="underline truncate"
                         [routerLink]="['/drivers', item.driver_id]"
                     >
                         {{ (driver | async).name || '&lt;Unnamed&gt;' }}
                     </a>
-                </div>
-                <div class="flex items-center space-x-2" *ngIf="system | async">
-                    <label i18n="@moduleUpdatedAtLabel">System:</label>
+                </ng-container>
+                <ng-container *ngIf="system | async">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@moduleUpdatedAtLabel"
+                    >
+                        System:
+                    </div>
                     <a
-                        class="underline"
+                        class="underline truncate"
                         [routerLink]="[
                             '/systems',
                             (system | async).id,
@@ -73,27 +85,92 @@ import { ModuleStateService } from './module-state.service';
                     >
                         {{ (system | async).name }}
                     </a>
+                </ng-container>
+                <ng-container *ngIf="edge | async">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@moduleUpdatedAtLabel"
+                    >
+                        Edge:
+                    </div>
+                    <div class="flex items-center">
+                        <a
+                            class="underline truncate"
+                            [routerLink]="['/admin', 'edge', (edge | async).id]"
+                        >
+                            {{ (edge | async).name }}
+                        </a>
+                        <div class="flex-1 w-px"></div>
+                        <button
+                            icon
+                            customTooltip
+                            [hover]="true"
+                            [backdrop]="false"
+                            [content]="edge_desc_template"
+                            yPosition="top"
+                            xPosition="center"
+                        >
+                            <app-icon
+                                *ngIf="(edge | async).description"
+                                class="border border-base-200  rounded-full"
+                                >info</app-icon
+                            >
+                        </button>
+                    </div>
+                    <ng-template #edge_desc_template>
+                        <div
+                            class="bg-base-100 p-2 rounded max-w-[24rem] pointer-events-none border border-base-200 shadow"
+                        >
+                            <pre
+                                class="text-sm overflow-hidden bg-base-200 p-2 rounded-xl"
+                                >{{ (edge | async).description }}</pre
+                            >
+                        </div>
+                    </ng-template>
+                </ng-container>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoCreatedAtLabel"
+                >
+                    Created:
                 </div>
-                <div class="flex items-center space-x-2" *ngIf="edge | async">
-                    <label i18n="@moduleUpdatedAtLabel">Edge:</label>
-                    <a
-                        class="underline flex-1"
-                        [routerLink]="['/admin', 'edge', (edge | async).id]"
+                <div class=" flex items-center">
+                    <span
+                        [matTooltip]="
+                            (item.created_at * 1000 | date: 'mediumDate') +
+                            ', ' +
+                            (item.created_at * 1000 | date: 'shortTime')
+                        "
+                        matTooltipPosition="right"
                     >
-                        {{ (edge | async).name }}
-                    </a>
-                    <app-icon
-                        *ngIf="(edge | async).description"
-                        class="border border-base-200  rounded-full"
-                        [matTooltip]="(edge | async).description"
-                        >info</app-icon
+                        {{ item.created_at * 1000 | dateFrom }}
+                    </span>
+                </div>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoUpdatedAtLabel"
+                >
+                    Updated:
+                </div>
+                <div class=" flex items-center">
+                    <span
+                        [matTooltip]="
+                            (item.updated_at * 1000 | date: 'mediumDate') +
+                            ', ' +
+                            (item.updated_at * 1000 | date: 'shortTime')
+                        "
+                        matTooltipPosition="right"
                     >
+                        {{ item.updated_at * 1000 | dateFrom }}
+                    </span>
                 </div>
             </div>
             <div
-                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
+                class="rounded p-4 border border-base-200 space-y-4 w-1/3 flex-1 flex flex-col"
             >
-                <h3 class="w-full text-center">Module Controls</h3>
+                <h3 class="w-full text-center mono uppercase">
+                    Module Controls
+                </h3>
                 <button
                     btn
                     class="w-full"

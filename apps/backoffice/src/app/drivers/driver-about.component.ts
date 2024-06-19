@@ -7,63 +7,109 @@ import { DriverStateService } from './driver-state.service';
     template: `
         <section class="mb-4 flex space-x-2">
             <div
-                class="rounded p-2 border border-base-200  space-y-2 min-w-[45%] flex-1"
+                class="rounded p-4 border border-base-200 w-1/3 flex-1 inline-grid gap-2"
+                [style.gridTemplateColumns]="'6rem auto'"
             >
-                <div
-                    class="flex items-center space-x-2"
-                    *ngIf="item.default_uri"
-                >
-                    <label i18n="@@driverDefaultURILabel">Default URI</label>
-                    <div class="value">{{ item.default_uri }}</div>
-                </div>
-                <div
-                    class="flex items-center space-x-2"
-                    *ngIf="item.default_port"
-                >
-                    <label i18n="@@driverDefaultPortLabel">
-                        Default Port
-                    </label>
-                    <div class="value">{{ item.default_port }}</div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@driverDetailsCommit">Repository</label>
-                    <div class="value">
+                <ng-container *ngIf="item.default_uri">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@driverDefaultURILabel"
+                    >
+                        Default URI
+                    </div>
+                    <div class="underline select-all overflow-hidden">
                         <a
-                            [routerLink]="[
-                                '/repositories',
-                                item.repository_id,
-                                'about'
-                            ]"
-                            class="underline"
-                        >
-                            {{ item.repository_id }}</a
+                            class="truncate w-full block mono text-sm"
+                            [href]="item.default_uri | safe: 'url'"
+                            target="_blank"
+                            >{{ item.default_uri }}</a
                         >
                     </div>
+                </ng-container>
+                <ng-container *ngIf="item.default_port">
+                    <div
+                        class="text-sm font-medium flex items-center"
+                        i18n="@@driverDefaultPortLabel"
+                    >
+                        Default Port
+                    </div>
+                    <div class="mono text-sm">{{ item.default_port }}</div>
+                </ng-container>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@driverDetailsCommit"
+                >
+                    Repository
                 </div>
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@driverDetailsModuleName">Module Name</label>
-                    <div class="value">{{ item?.module_name }}</div>
+                <div>
+                    <a
+                        [routerLink]="[
+                            '/repositories',
+                            item.repository_id,
+                            'about'
+                        ]"
+                        class="underline mono text-sm"
+                    >
+                        {{ item.repository_id }}</a
+                    >
                 </div>
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@driverCreatedAtLabel">Created</label>
-                    <div class="value">
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@driverDetailsModuleName"
+                >
+                    Module Name
+                </div>
+                <div class="mono text-sm truncate">{{ item?.module_name }}</div>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoCreatedAtLabel"
+                >
+                    Created:
+                </div>
+                <div class=" flex items-center">
+                    <span
+                        [matTooltip]="
+                            (item.created_at * 1000 | date: 'mediumDate') +
+                            ', ' +
+                            (item.created_at * 1000 | date: 'shortTime')
+                        "
+                        matTooltipPosition="right"
+                    >
                         {{ item.created_at * 1000 | dateFrom }}
-                    </div>
+                    </span>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@driverUpdatedAtLabel">Updated</label>
-                    <div class="value">
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@repoUpdatedAtLabel"
+                >
+                    Updated:
+                </div>
+                <div class=" flex items-center">
+                    <span
+                        [matTooltip]="
+                            (item.updated_at * 1000 | date: 'mediumDate') +
+                            ', ' +
+                            (item.updated_at * 1000 | date: 'shortTime')
+                        "
+                        matTooltipPosition="right"
+                    >
                         {{ item.updated_at * 1000 | dateFrom }}
-                    </div>
+                    </span>
                 </div>
             </div>
             <div
-                class="rounded p-2 border border-base-200  space-y-2 min-w-[45%] flex-1 flex flex-col"
+                class="rounded p-4 border border-base-200 flex-1 w-1/3 inline-grid gap-2"
+                [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@driverDetailsCompiled">Compiled</label>
-                    <div class="value">
-                        {{ (compiled | async) ? 'true' : 'false' }}
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@driverDetailsCompiled"
+                >
+                    Compiled
+                </div>
+                <div class="flex items-center">
+                    <div>
+                        {{ (compiled | async) ? 'Yes' : 'No' }}
                     </div>
                     <mat-spinner
                         diameter="24"
@@ -77,25 +123,39 @@ import { DriverStateService } from './driver-state.service';
                         View Errors
                     </button>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@driverDetailsCommit">Commit</label>
-                    <code>{{ item.commit }}</code>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@driverDetailsCommit"
+                >
+                    Commit
                 </div>
-                <div class="flex items-center space-x-2">
-                    <label i18n="@@driverDetailsFileName">File Name</label>
+                <div class="flex items-center overflow-hidden">
+                    <code
+                        class="text-xs truncate inline-block max-w-full"
+                        [matTooltip]="item.commit"
+                    >
+                        {{ item.commit }}
+                    </code>
+                </div>
+                <div
+                    class="text-sm font-medium flex items-center"
+                    i18n="@@driverDetailsFileName"
+                >
+                    File Name
+                </div>
+                <div class="flex items-center overflow-hidden">
                     <div
-                        class="font-mono text-sm truncate"
-                        [title]="item.file_name"
+                        class="mono text-sm truncate"
+                        [matTooltip]="item.file_name"
                     >
                         {{ item.file_name }}
                     </div>
                 </div>
-                <div class="flex-1"></div>
                 <button
                     btn
                     (click)="updateDriver()"
                     i18n="@@driverReloadAction"
-                    class="w-full"
+                    class="col-span-2"
                     *ngIf="
                         item.update_available &&
                         item.commit !== item.update_info.commit
@@ -107,7 +167,7 @@ import { DriverStateService } from './driver-state.service';
                     btn
                     (click)="recompileDriver()"
                     i18n="@@driverReloadAction"
-                    class="w-full"
+                    class="col-span-2"
                 >
                     Recompile Driver
                 </button>
