@@ -129,7 +129,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                 ></simple-table>
                 <div class="w-full h-12"></div>
                 <ng-template #state_template let-row="row" let-index="index">
-                    <div
+                    <button
                         dot
                         binding
                         [sys]="item.id"
@@ -145,8 +145,33 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                         [class.bg-pending]="
                             row.running && row.connected === undefined
                         "
-                        (click)="power(row)"
-                    ></div>
+                        [matMenuTriggerFor]="status_menu"
+                        (contextmenu)="$event.preventDefault(); power(row)"
+                    ></button>
+                    <mat-menu #status_menu="matMenu">
+                        <button
+                            mat-menu-item
+                            *ngFor="
+                                let m_item of row.running
+                                    ? menu_options
+                                    : offline_options
+                            "
+                            [disabled]="
+                                m_item.disable_on && !row[m_item.disable_on]
+                            "
+                            (click)="handleContextEvent(m_item, row)"
+                        >
+                            <div class="flex items-center space-x-2">
+                                <app-icon
+                                    class="text-xl"
+                                    [icon]="m_item.icon"
+                                ></app-icon>
+                                <div class="text">
+                                    {{ m_item.name }}
+                                </div>
+                            </div>
+                        </button>
+                    </mat-menu>
                     <mat-spinner
                         *ngIf="row.running && row.connected === undefined"
                         class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
@@ -230,10 +255,10 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                         <button icon matRipple (click)="editModule(row)">
                             <app-icon>edit</app-icon>
                         </button>
-                        <button icon matRipple [matMenuTriggerFor]="menu">
+                        <button icon matRipple [matMenuTriggerFor]="end_menu">
                             <app-icon>more_vert</app-icon>
                         </button>
-                        <mat-menu #menu="matMenu">
+                        <mat-menu #end_menu="matMenu">
                             <button
                                 mat-menu-item
                                 *ngFor="
