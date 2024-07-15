@@ -68,7 +68,11 @@ export interface ItemActions<T> {
 }
 
 const domains: ItemActions<PlaceDomain> = {
-    query: (_) => queryDomains({ q: _ }),
+    query: (_) =>
+        queryDomains({
+            q: _,
+            fields: ['id', 'name', 'domain'].join(','),
+        } as any),
     show: (_) => showDomain(_),
     save: (item) => (item.id ? updateDomain(item.id, item) : addDomain(item)),
     remove: (item) => removeDomain(item.id),
@@ -78,7 +82,11 @@ const domains: ItemActions<PlaceDomain> = {
 };
 
 const drivers: ItemActions<PlaceDriver> = {
-    query: (_) => queryDrivers({ q: _ } as any),
+    query: (_) =>
+        queryDrivers({
+            q: _,
+            fields: ['id', 'name', 'module_name'].join(','),
+        } as any),
     show: (_) => showDriver(_),
     save: (item) => (item.id ? updateDriver(item.id, item) : addDriver(item)),
     remove: (item) => removeDriver(item.id),
@@ -101,7 +109,11 @@ const drivers: ItemActions<PlaceDriver> = {
 };
 
 const modules: ItemActions<PlaceModule> = {
-    query: (_) => queryModules({ q: _ }),
+    query: (_) =>
+        queryModules({
+            q: _,
+            fields: ['id', 'name', 'module_name'].join(','),
+        } as any),
     show: (_) => showModule(_),
     save: (item) => (item.id ? updateModule(item.id, item) : addModule(item)),
     remove: (item) => removeModule(item.id),
@@ -111,7 +123,11 @@ const modules: ItemActions<PlaceModule> = {
 };
 
 const repositories: ItemActions<PlaceRepository> = {
-    query: (_) => queryRepositories({ q: _ }),
+    query: (_) =>
+        queryRepositories({
+            q: _,
+            fields: ['id', 'name', 'repo_type'].join(','),
+        } as any),
     show: (_) => showRepository(_),
     save: (item) =>
         item.id ? updateRepository(item.id, item) : addRepository(item),
@@ -122,7 +138,11 @@ const repositories: ItemActions<PlaceRepository> = {
 };
 
 const systems: ItemActions<PlaceSystem> = {
-    query: (_) => querySystems({ q: _ }),
+    query: (_) =>
+        querySystems({
+            q: _,
+            fields: ['id', 'name', 'display_name'].join(','),
+        } as any),
     show: (_) => showSystem(_),
     save: (item) =>
         item.id
@@ -151,7 +171,11 @@ function processURL(system: HashMap, url: string) {
 }
 
 const triggers: ItemActions<PlaceTrigger> = {
-    query: (_) => queryTriggers({ q: _ }),
+    query: (_) =>
+        queryTriggers({
+            q: _,
+            fields: ['id', 'name', 'display_name'].join(','),
+        } as any),
     show: (_) => showTrigger(_),
     save: (item) => (item.id ? updateTrigger(item.id, item) : addTrigger(item)),
     remove: (item) => removeTrigger(item.id),
@@ -161,7 +185,11 @@ const triggers: ItemActions<PlaceTrigger> = {
 };
 
 const users: ItemActions<PlaceUser> = {
-    query: (_) => queryUsers({ q: _ }),
+    query: (_) =>
+        queryUsers({
+            q: _,
+            fields: ['id', 'name', 'email', 'authority_id', 'groups'].join(','),
+        } as any),
     show: (_) => showUser(_),
     save: (item) => (item.id ? updateUser(item.id, item) : addUser(item)),
     remove: (item) => removeUser(item.id),
@@ -171,7 +199,11 @@ const users: ItemActions<PlaceUser> = {
 };
 
 const zones: ItemActions<PlaceZone> = {
-    query: (_) => queryZones({ q: _ }),
+    query: (_) =>
+        queryZones({
+            q: _,
+            fields: ['id', 'name', 'display_name', 'tags'].join(','),
+        } as any),
     show: (_) => showZone(_),
     save: (item) => (item.id ? updateZone(item.id, item) : addZone(item)),
     remove: (item) => removeZone(item.id),
