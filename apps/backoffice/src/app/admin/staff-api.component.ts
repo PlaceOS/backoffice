@@ -27,6 +27,7 @@ export interface PlaceTenant {
     booking_limits: Record<string, number>;
     credentials?: HashMap<string>;
     secret_expiry?: number;
+    early_checkin?: number;
 }
 
 @Component({

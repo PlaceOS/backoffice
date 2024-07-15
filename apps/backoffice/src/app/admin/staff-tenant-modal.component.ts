@@ -72,6 +72,33 @@ export interface StaffTenantModalData {
                     <mat-error>A domain is required</mat-error>
                 </mat-form-field>
             </div>
+            <div class="flex flex-col space-y-2">
+                <label>Early Check-in before Meeting</label>
+                <mat-form-field appearance="outline">
+                    <mat-select
+                        name="early_checkin"
+                        formControlName="early_checkin"
+                        placeholder="Select time"
+                    >
+                        <mat-option [value]="15 * 60"> 15 minutes </mat-option>
+                        <mat-option [value]="30 * 60"> 30 minutes </mat-option>
+                        <mat-option [value]="45 * 60"> 45 minutes </mat-option>
+                        <mat-option [value]="60 * 60"> 1 hour </mat-option>
+                        <mat-option [value]="1.5 * 60 * 60">
+                            1 hour 30 minutes
+                        </mat-option>
+                        <mat-option [value]="2 * 60 * 60"> 2 hours </mat-option>
+                        <mat-option [value]="2.5 * 60 * 60">
+                            2 hours 30 minutes
+                        </mat-option>
+                        <mat-option [value]="3 * 60 * 60"> 3 hours </mat-option>
+                        <mat-option [value]="3.5 * 60 * 60">
+                            3 hours 30 minutes
+                        </mat-option>
+                        <mat-option [value]="4 * 60 * 60"> 4 hours </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
             <div
                 class="flex items-center flex-wrap space-x-0 sm:space-x-2"
                 *ngIf="
@@ -277,6 +304,7 @@ export class StaffTenantModalComponent implements OnInit {
             Validators.email,
         ]),
         booking_limits: new FormControl([]),
+        early_checkin: new FormControl(this.tenant?.early_checkin || 60),
         credentials:
             this.tenant?.platform === 'office365'
                 ? this.office_form
