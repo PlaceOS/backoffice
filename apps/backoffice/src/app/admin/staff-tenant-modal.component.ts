@@ -304,7 +304,7 @@ export class StaffTenantModalComponent implements OnInit {
             Validators.email,
         ]),
         booking_limits: new FormControl([]),
-        early_checkin: new FormControl(this.tenant?.early_checkin || 60),
+        early_checkin: new FormControl(this.tenant?.early_checkin || 60 * 60),
         credentials:
             this.tenant?.platform === 'office365'
                 ? this.office_form
