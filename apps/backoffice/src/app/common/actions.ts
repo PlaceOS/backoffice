@@ -72,7 +72,7 @@ const domains: ItemActions<PlaceDomain> = {
         queryDomains({
             q: _,
             fields: ['id', 'name', 'domain'].join(','),
-        } as any),
+        }),
     show: (_) => showDomain(_),
     save: (item) => (item.id ? updateDomain(item.id, item) : addDomain(item)),
     remove: (item) => removeDomain(item.id),
@@ -113,7 +113,7 @@ const modules: ItemActions<PlaceModule> = {
         queryModules({
             q: _,
             fields: ['id', 'name', 'module_name'].join(','),
-        } as any),
+        }),
     show: (_) => showModule(_),
     save: (item) => (item.id ? updateModule(item.id, item) : addModule(item)),
     remove: (item) => removeModule(item.id),
@@ -127,7 +127,7 @@ const repositories: ItemActions<PlaceRepository> = {
         queryRepositories({
             q: _,
             fields: ['id', 'name', 'repo_type'].join(','),
-        } as any),
+        }),
     show: (_) => showRepository(_),
     save: (item) =>
         item.id ? updateRepository(item.id, item) : addRepository(item),
@@ -142,7 +142,7 @@ const systems: ItemActions<PlaceSystem> = {
         querySystems({
             q: _,
             fields: ['id', 'name', 'display_name'].join(','),
-        } as any),
+        }),
     show: (_) => showSystem(_),
     save: (item) =>
         item.id
@@ -175,7 +175,7 @@ const triggers: ItemActions<PlaceTrigger> = {
         queryTriggers({
             q: _,
             fields: ['id', 'name', 'display_name'].join(','),
-        } as any),
+        }),
     show: (_) => showTrigger(_),
     save: (item) => (item.id ? updateTrigger(item.id, item) : addTrigger(item)),
     remove: (item) => removeTrigger(item.id),
@@ -189,7 +189,7 @@ const users: ItemActions<PlaceUser> = {
         queryUsers({
             q: _,
             fields: ['id', 'name', 'email', 'authority_id', 'groups'].join(','),
-        } as any),
+        }),
     show: (_) => showUser(_),
     save: (item) => (item.id ? updateUser(item.id, item) : addUser(item)),
     remove: (item) => removeUser(item.id),
@@ -203,7 +203,7 @@ const zones: ItemActions<PlaceZone> = {
         queryZones({
             q: _,
             fields: ['id', 'name', 'display_name', 'tags'].join(','),
-        } as any),
+        }),
     show: (_) => showZone(_),
     save: (item) => (item.id ? updateZone(item.id, item) : addZone(item)),
     remove: (item) => removeZone(item.id),
