@@ -90,10 +90,10 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                 <div class="w-full h-12"></div>
                 <ng-template #name_template let-row="row">
                     <div
-                        class="flex flex-col items-start px-4 py-2 leading-snug"
+                        class="flex flex-col items-start px-4 py-2 leading-snug w-full"
                     >
                         <a
-                            class="truncate underline"
+                            class="truncate underline w-full"
                             [routerLink]="['/zones', row.id]"
                         >
                             {{ row.name }}
