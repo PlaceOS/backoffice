@@ -10,7 +10,7 @@ import {
     removeSystemModule,
     updateDriver,
 } from '@placeos/ts-client';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import {
     catchError,
     delay,
@@ -122,35 +122,9 @@ export class DriverStateService {
             .toPromise()
             .catch((_) => null);
         if (!success) {
-            details.close();
-            return notifyError('Failed to recompiled driver.');
+            notifyError('Failed to recompiled driver.');
         }
-        details.loading('Recompiling driver...');
-        success = await recompileDriver(item.id)
-            .toPromise()
-            .catch((_) => null);
         details.close();
-        if (!success) return notifyError('Failed to recompiled driver.');
-        notifySuccess('Successfully updated and recompiled driver.');
-    }
-
-    public async recompileDriver() {
-        const details = await openConfirmModal(
-            {
-                title: `Recompile Driver`,
-                content: `<p>Are you sure you want recompile this driver?</p><p>New driver code will be loaded and device settings will be updated.</p>`,
-                icon: { type: 'icon', content: 'autorenew' },
-            },
-            this._dialog
-        );
-        if (!details || !details.reason) return details.close();
-        details.loading('Recompiling driver...');
-        const success = await recompileDriver(this._state.active_item.id)
-            .toPromise()
-            .catch((_) => null);
-        details.close();
-        if (!success) return notifyError('Failed to recompiled driver.');
-        notifySuccess('Successfully recompiled driver.');
     }
 
     public async removeModule(device: PlaceModule) {

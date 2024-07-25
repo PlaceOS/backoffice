@@ -14,7 +14,6 @@ import {
     put,
     queryModules,
     queryTriggers,
-    recompileDriver,
     removeSystemModule,
     removeSystemTrigger,
     startModule,
@@ -516,32 +515,6 @@ export class SystemStateService extends AsyncHandler {
         if (!system) return;
         this._state.replaceItem(system);
         notifySuccess(`Successfully removed module from system.`);
-    }
-
-    /**
-     * Reload module from the active system
-     * @param id ID of the module to disassociate with the active system
-     */
-    public async reloadModule(device: PlaceModule) {
-        const details = await this.confirm({
-            title: 'Recompile module?',
-            content: `New driver code will be loaded and the device settings will be reloaded.`,
-            icon: { type: 'icon', class: 'backoffice-install' },
-        });
-        if (!details || !details.reason) return;
-        details.loading('Recompiling and reloading driver...');
-        await recompileDriver(device.driver?.id || device.driver_id)
-            .toPromise()
-            .catch((err) => {
-                notifyError(
-                    `Error removing module ${device.id} from system. Error: ${
-                        err.statusText || err.message || err
-                    }`
-                );
-                throw err;
-            });
-        notifySuccess(`Successfully removed module from system.`);
-        details.close();
     }
 
     /**

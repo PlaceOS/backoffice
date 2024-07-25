@@ -163,14 +163,6 @@ import { DriverStateService } from './driver-state.service';
                 >
                     Update Driver
                 </button>
-                <button
-                    btn
-                    (click)="recompileDriver()"
-                    i18n="@@driverReloadAction"
-                    class="col-span-2"
-                >
-                    Recompile Driver
-                </button>
             </div>
         </section>
         <hr class="my-4" />
