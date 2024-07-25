@@ -146,7 +146,6 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                             row.running && row.connected === undefined
                         "
                         [matMenuTriggerFor]="status_menu"
-                        (contextmenu)="$event.preventDefault(); power(row)"
                     ></button>
                     <mat-menu #status_menu="matMenu">
                         <button
