@@ -200,7 +200,6 @@ export class DriverAboutComponent {
     public readonly compiled = this._service.is_compiled;
     public readonly compilation_error = this._service.last_error;
 
-    public readonly recompileDriver = () => this._service.recompileDriver();
     public readonly updateDriver = () => this._service.updateDriver();
     public readonly viewErrors = () => this._service.viewError();
 

@@ -355,11 +355,6 @@ export class SystemModulesComponent extends AsyncHandler {
             icon: { type: 'icon', content: 'visibility' },
         },
         {
-            id: 'reload',
-            name: 'Recompile Driver',
-            icon: { type: 'icon', content: 'refresh' },
-        },
-        {
             id: 'edit',
             name: 'Edit Module',
             icon: { type: 'icon', content: 'edit' },

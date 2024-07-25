@@ -6,7 +6,6 @@ import {
     PlaceModule,
     queryDrivers,
     queryModules,
-    recompileDriver,
     removeSystemModule,
     updateDriver,
 } from '@placeos/ts-client';
