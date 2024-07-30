@@ -187,16 +187,14 @@ export class TriggerStateService {
             comparisons: [...item.conditions.comparisons],
             time_dependents: [...item.conditions.time_dependents],
         };
-        const index = (
-            (condition as TriggerTimeCondition).type
-                ? item.conditions.time_dependents
-                : item.conditions.comparisons
-        ).findIndex((i) => JSON.stringify(i) === JSON.stringify(condition));
-        conditions.time_dependents.splice(index, 1);
-        ((condition as TriggerTimeCondition).type
+        const list = (condition as TriggerTimeCondition).type
             ? conditions.time_dependents
-            : conditions.comparisons
-        ).splice(index, 1);
+            : conditions.comparisons;
+        const index = list.findIndex(
+            (i) => JSON.stringify(i) === JSON.stringify(condition)
+        );
+        list.splice(index, 1);
+        console.log('Conditions:', list, conditions);
         const resp = await updateTrigger(item.id, {
             ...item.toJSON(),
             conditions,

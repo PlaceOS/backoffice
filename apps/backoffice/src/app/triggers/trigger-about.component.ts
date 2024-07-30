@@ -135,15 +135,18 @@ import { TriggerStateService } from './trigger-state.service';
                 empty_message="No time dependent conditions for trigger"
             ></simple-table>
             <ng-template #time_dep_template let-row="row">
-                <div class="flex items-center space-x-2 p-4">
+                <div class="flex items-center space-x-2 p-4 mono text-sm">
                     {{ row.type === 'at' ? 'At time' : 'CRON' }}
                     {{ row.type === 'at' ? row.time : row.cron }}
                 </div>
             </ng-template>
             <ng-template #comparison_template let-row="row">
-                <div class="flex items-center space-x-2 p-4">
-                    {{ row.left | json }} {{ row.operator }}
-                    {{ row.right | json }}
+                <div class="flex items-center space-x-4 p-4 mono text-xs">
+                    <pre>{{ row.left | json }}</pre>
+                    <code class="bg-success text-success-content">
+                        {{ row.operator }}
+                    </code>
+                    <pre>{{ row.right | json }}</pre>
                 </div>
             </ng-template>
             <ng-template #actions_template let-row="row">
@@ -224,9 +227,9 @@ import { TriggerStateService } from './trigger-state.service';
                 empty_message="No email actions for trigger"
             ></simple-table>
             <ng-template #function_call_template let-row="row">
-                <div class="flex items-center space-x-2 p-4">
-                    {{ row.mod }}, {{ row.method }}({{ row.args | json }})
-                </div>
+                <pre
+                    class="flex space-x-2 p-4 mono text-xs"
+                ><div><code class="mr-2">{{ row.mod }}</code></div> {{ row.method }}({{ row.args | json }})</pre>
             </ng-template>
             <ng-template #email_call_template let-row="row">
                 <div class="flex items-center space-x-2 p-4">
