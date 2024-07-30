@@ -328,15 +328,7 @@ export class SystemModulesComponent extends AsyncHandler {
 
     public readonly item$ = this._service.item;
     public readonly loading = this._service.loading;
-    public readonly modules = this._service.modules.pipe(
-        tap((_) => {
-            if (_.find((_) => _.has_runtime_error)) {
-                notifyError(
-                    'One or more modules have runtime errors. Please view the errors for each module.'
-                );
-            }
-        })
-    );
+    public readonly modules = this._service.module;
     public readonly debugging = this._service.debug_state;
     public readonly bindings = this._service.module_bindings;
 
