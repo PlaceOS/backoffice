@@ -64,7 +64,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             <input
                                 [(ngModel)]="new_email"
                                 [ngModelOptions]="{ standalone: true }"
-                                placeholder="Add image via URL"
+                                placeholder="List of email addresses"
                                 i18n-placeholder
                                 [matChipInputFor]="chipList"
                                 [matChipInputSeparatorKeyCodes]="separators"

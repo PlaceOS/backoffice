@@ -61,17 +61,16 @@ import { TriggerStateService } from './trigger-state.service';
             </div>
         </section>
         <hr class="my-4" />
-        <div class="flex items-center space-x-2">
+        <div class="flex flex-col">
             <label
                 for="driver"
-                class="whitespace-nowrap"
                 matTooltip="System to use for available status variables and function calls"
                 i18n="@@triggerTemplateSystemLabel"
                 >Template System:
             </label>
             <item-search-field
-                class="h-12"
                 name="system"
+                class="w-full"
                 [query_fn]="query_fn"
                 [(ngModel)]="template_system"
             ></item-search-field>
@@ -149,7 +148,12 @@ import { TriggerStateService } from './trigger-state.service';
             </ng-template>
             <ng-template #actions_template let-row="row">
                 <div class="flex items-center space-x-2 p-2 mx-auto">
-                    <button icon matRipple (click)="editCondition(row)">
+                    <button
+                        icon
+                        matRipple
+                        [disabled]="!template_system"
+                        (click)="editCondition(row)"
+                    >
                         <app-icon>edit</app-icon>
                     </button>
                     <button icon matRipple (click)="removeCondition(row)">
@@ -294,12 +298,12 @@ export class TriggerAboutComponent extends AsyncHandler {
         this.subscription(
             'item',
             this._service.item.subscribe((item) => {
-                if (this.item && this.item.conditions) {
-                    this.comparisons = this.item.conditions.comparisons || [];
+                if (item) {
+                    this.comparisons = item.conditions?.comparisons || [];
                     this.time_dependents =
-                        this.item.conditions.time_dependents || [];
-                    this.functions = this.item.actions.functions || [];
-                    this.mailers = this.item.actions.mailers || [];
+                        item.conditions?.time_dependents || [];
+                    this.functions = item.actions?.functions || [];
+                    this.mailers = item.actions?.mailers || [];
                 }
             })
         );
