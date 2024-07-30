@@ -54,7 +54,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </ng-container>
                 </div>
                 <button
-                    class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content"
+                    class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content border border-base-200"
                     matTooltip="New repository"
                     matTooltipPosition="right"
                     matRipple

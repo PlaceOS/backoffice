@@ -9,7 +9,7 @@ import {
     queryModules,
     showModule,
 } from '@placeos/ts-client';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import {
     notifyError,
@@ -178,7 +178,9 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                     ></mat-spinner>
                 </ng-template>
                 <ng-template #name_template let-row="row">
-                    <div class="flex items-center px-4 py-2 max-w-full">
+                    <div
+                        class="flex items-center justify-between space-x-2 px-4 py-2 max-w-full w-full"
+                    >
                         <div
                             class="flex-1 flex flex-col items-start leading-snug max-w-full overflow-hidden"
                         >
@@ -196,7 +198,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                             *ngIf="row.edge_id"
                             icon
                             matRipple
-                            class="text-xs h-6 w-6 rounded-full bg-info shadow text-info-content"
+                            class="text-xs h-6 w-6 max-w-6 min-w-6 rounded-full bg-info border border-base-200 text-info-content"
                             [matTooltip]="row.edge_id"
                             [routerLink]="['/admin', 'edge', row.edge_id]"
                         >
@@ -326,7 +328,15 @@ export class SystemModulesComponent extends AsyncHandler {
 
     public readonly item$ = this._service.item;
     public readonly loading = this._service.loading;
-    public readonly modules = this._service.modules;
+    public readonly modules = this._service.modules.pipe(
+        tap((_) => {
+            if (_.find((_) => _.has_runtime_error)) {
+                notifyError(
+                    'One or more modules have runtime errors. Please view the errors for each module.'
+                );
+            }
+        })
+    );
     public readonly debugging = this._service.debug_state;
     public readonly bindings = this._service.module_bindings;
 
@@ -424,7 +434,6 @@ export class SystemModulesComponent extends AsyncHandler {
     public readonly removeModule = (d) => this._service.removeModule(d);
     public readonly editModule = (d) => this._service.editModule(d);
     public readonly joinModule = (id) => this._service.joinModule(id);
-    public readonly reloadModule = (d) => this._service.reloadModule(d);
     public readonly toggleDebug = (d) => this._service.toggleModuleDebug(d);
     public readonly power = (d) => this._service.toggleModulePower(d);
 
@@ -467,9 +476,6 @@ export class SystemModulesComponent extends AsyncHandler {
                     break;
                 case 'state':
                     this.viewState(device);
-                    break;
-                case 'reload':
-                    this.reloadModule(device);
                     break;
                 case 'remove':
                     this.removeModule(device);

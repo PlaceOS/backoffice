@@ -49,7 +49,7 @@ import { SystemStateService } from './system-state.service';
                             </ng-container>
                         </div>
                         <button
-                            class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content"
+                            class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content border border-base-200"
                             matTooltip="New system"
                             matTooltipPosition="right"
                             matRipple
@@ -58,7 +58,7 @@ import { SystemStateService } from './system-state.service';
                             <app-icon class="text-3xl">add</app-icon>
                         </button>
                         <button
-                            class="absolute bottom-16 left-2 sm:-left-8 w-10 h-10 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content"
+                            class="absolute bottom-16 left-2 sm:-left-8 w-10 h-10 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content border border-base-200"
                             matTooltip="Bulk add systems"
                             matTooltipPosition="right"
                             matRipple
