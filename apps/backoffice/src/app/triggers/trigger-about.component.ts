@@ -227,9 +227,12 @@ import { TriggerStateService } from './trigger-state.service';
                 empty_message="No email actions for trigger"
             ></simple-table>
             <ng-template #function_call_template let-row="row">
-                <pre
-                    class="flex space-x-2 p-4 mono text-xs"
-                ><div><code class="mr-2">{{ row.mod }}</code></div> {{ row.method }}({{ row.args | json }})</pre>
+                <div class="flex space-x-2 p-4 mono text-xs">
+                    <div>
+                        <code>{{ row.mod }}</code>
+                    </div>
+                    <pre>{{ row.method }}({{ row.args | json }})</pre>
+                </div>
             </ng-template>
             <ng-template #email_call_template let-row="row">
                 <div class="flex items-center space-x-2 p-4">
