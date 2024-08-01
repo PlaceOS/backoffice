@@ -156,7 +156,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                                     : offline_options
                             "
                             [disabled]="
-                                m_item.disable_on && !row[m_item.disable_on]
+                                m_item.enable_on && !row[m_item.enable_on]
                             "
                             (click)="handleContextEvent(m_item, row)"
                         >
@@ -268,7 +268,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                                         : offline_options
                                 "
                                 [disabled]="
-                                    m_item.disable_on && !row[m_item.disable_on]
+                                    m_item.enable_on && !row[m_item.enable_on]
                                 "
                                 (click)="handleContextEvent(m_item, row)"
                             >
@@ -368,7 +368,7 @@ export class SystemModulesComponent extends AsyncHandler {
         {
             id: 'view-error',
             name: 'View Runtime Errors',
-            disable_on: 'has_runtime_errors',
+            enable_on: 'has_runtime_error',
             icon: { type: 'icon', content: 'error' },
         } as any,
         {

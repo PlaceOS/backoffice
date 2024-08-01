@@ -37,7 +37,7 @@ import {
 import { calculateModuleIndex } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
-import { openConfirmModal, unique } from '../common/general';
+import { openConfirmModal, randomInt, unique } from '../common/general';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
