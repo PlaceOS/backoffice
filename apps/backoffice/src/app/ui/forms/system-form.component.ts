@@ -210,24 +210,35 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         </mat-error>
                     </mat-form-field>
                 </div>
-                <div class="field" *ngIf="form.controls.bookable">
-                    <mat-checkbox
-                        name="bookable"
-                        formControlName="bookable"
-                        i18n="@@bookableLabel"
-                    >
-                        Bookable
-                    </mat-checkbox>
-                </div>
-                <div class="field" *ngIf="form.controls.public">
-                    <mat-checkbox
-                        name="public"
-                        formControlName="public"
-                        i18n="@@publicLabel"
-                    >
-                        Public
-                    </mat-checkbox>
-                </div>
+            </div>
+            <div class="flex items-center space-x-4 mb-4">
+                <mat-checkbox
+                    name="bookable"
+                    formControlName="bookable"
+                    i18n="@@bookableLabel"
+                    class="m-0 flex-1"
+                    *ngIf="form.controls.bookable"
+                >
+                    Bookable
+                </mat-checkbox>
+                <mat-checkbox
+                    name="signage"
+                    formControlName="signage"
+                    i18n="@@signageLabel"
+                    class="m-0 flex-1"
+                    *ngIf="form.controls.signage"
+                >
+                    Signage
+                </mat-checkbox>
+                <mat-checkbox
+                    name="public"
+                    formControlName="public"
+                    i18n="@@publicLabel"
+                    class="m-0 flex-1"
+                    *ngIf="form.controls.public"
+                >
+                    Public
+                </mat-checkbox>
             </div>
             <div class="field" *ngIf="form.controls.description">
                 <label for="description" i18n="@@descriptionLabel"

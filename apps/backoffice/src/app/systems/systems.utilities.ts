@@ -47,6 +47,7 @@ export function generateSystemsFormFields(system?: PlaceSystem) {
             Validators.pattern('[0-9]*'),
         ]),
         bookable: new FormControl(system.bookable || false),
+        signage: new FormControl(system.signage || false),
         public: new FormControl(system.public || false),
         description: new FormControl(system.description || ''),
         images: new FormControl(system.images || []),
