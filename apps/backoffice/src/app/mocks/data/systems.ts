@@ -402,7 +402,7 @@ export const SYSTEMS = [
         edge_id: 'edge-KiBexw2DWK',
         name: '2.30.Central-Core',
         description: null,
-        email: 'conference_Powderfinger@splunk.com',
+        email: 'example@placeos.com',
         capacity: 0,
         features: null,
         bookable: false,
