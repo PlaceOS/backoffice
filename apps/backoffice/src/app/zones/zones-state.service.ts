@@ -26,7 +26,7 @@ import { notifyError, notifySuccess } from '../common/notifications';
 import {
     SelectItemModalComponent,
     SelectItemModalData,
-} from '../overlays/select-item-modal/select-item-modal.component';
+} from '../overlays/select-item-modal.component';
 
 @Injectable({
     providedIn: 'root',

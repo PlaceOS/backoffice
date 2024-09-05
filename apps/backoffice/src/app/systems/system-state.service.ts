@@ -47,7 +47,7 @@ import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-moda
 import {
     SelectItemModalComponent,
     SelectItemModalData,
-} from '../overlays/select-item-modal/select-item-modal.component';
+} from '../overlays/select-item-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal/view-response-modal.component';
 
 @Injectable({

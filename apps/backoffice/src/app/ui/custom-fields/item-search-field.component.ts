@@ -42,6 +42,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                     "
                     i18n-placeholder
                     [matAutocomplete]="auto"
+                    [matAutocompleteDisabled]="display_list"
                     (focus)="search_str = ''; search$.next(' ')"
                     (blur)="resetSearchString()"
                 />
@@ -54,6 +55,45 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                     <mat-spinner diameter="16"></mat-spinner>
                 </div>
             </mat-form-field>
+            <ng-container *ngIf="display_list">
+                <div
+                    class="overflow-auto max-h-[50vh] space-y-2"
+                    *ngIf="item_list?.length; else empty_state"
+                >
+                    <button
+                        matRipple
+                        *ngFor="let option of item_list"
+                        (click)="search$.next(option); setValue(option)"
+                        class="rounded hover:bg-base-200 text-left px-4 py-2 w-full"
+                    >
+                        <div class="leading-tight">
+                            <ng-container
+                                *ngTemplateOutlet="
+                                    item_option;
+                                    context: { option: option }
+                                "
+                            ></ng-container>
+                        </div>
+                    </button>
+                </div>
+            </ng-container>
+            <ng-template #empty_state>
+                <div
+                    class="flex flex-col items-center justify-center p-8 min-h-48 opacity-30"
+                >
+                    <p class="text-sm">
+                        {{
+                            search_str?.length
+                                ? 'No matching ' +
+                                  (name || 'item') +
+                                  ' for search string'
+                                : 'No ' +
+                                  (name || 'items') +
+                                  ' available to search'
+                        }}
+                    </p>
+                </div>
+            </ng-template>
             <mat-autocomplete #auto="matAutocomplete">
                 <mat-option
                     *ngFor="let option of item_list"
@@ -61,21 +101,29 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                     (click)="search$.next(option); setValue(option)"
                     class="leading-tight"
                 >
-                    <div class="flex items-center justify-between h-5">
-                        <div
-                            name
-                            [innerHTML]="item_name[option.id] | sanitize"
-                        ></div>
-                        <code *ngIf="option.notes" class="!text-xs truncate">{{
-                            option.notes
-                        }}</code>
-                    </div>
-                    <div class="text-xs opacity-60">
-                        {{ option.id }}
-                        {{ option.extra ? ' - ' + option.extra : '' }}
-                    </div>
+                    <ng-container
+                        *ngTemplateOutlet="
+                            item_option;
+                            context: { option: option }
+                        "
+                    ></ng-container>
                 </mat-option>
             </mat-autocomplete>
+            <ng-template #item_option let-option="option">
+                <div class="flex items-center justify-between h-5">
+                    <div
+                        name
+                        [innerHTML]="item_name[option.id] | sanitize"
+                    ></div>
+                    <code *ngIf="option.notes" class="!text-xs truncate">{{
+                        option.notes
+                    }}</code>
+                </div>
+                <div class="text-xs opacity-60">
+                    {{ option.id }}
+                    {{ option.extra ? ' - ' + option.extra : '' }}
+                </div>
+            </ng-template>
         </div>
     `,
     styles: [
@@ -123,6 +171,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
     @Input() public options: T[];
     /** Whether the form field should be disabled */
     @Input() public disabled: boolean;
+    @Input() public display_list: boolean = false;
     @Input() public clear_on_select: boolean = false;
     /** Function for filtering out options */
     @Input() public exclude: (_: T) => boolean;

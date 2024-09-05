@@ -38,14 +38,14 @@ export interface TriggerInstanceState {
                 />
             </mat-form-field>
         </section>
-        <section>
+        <section class="max-w-full overflow-auto">
             <mat-progress-bar
                 mode="indeterminate"
                 class="w-full"
                 [class.opacity-0]="!(loading | async).triggers"
             ></mat-progress-bar>
             <simple-table
-                class="min-w-[32rem] block text-sm"
+                class="min-w-[42rem] block text-sm"
                 [data]="triggers"
                 [columns]="[
                     {
