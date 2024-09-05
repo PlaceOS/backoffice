@@ -693,7 +693,7 @@ describe('Systems test', () => {
         });
         cy.wait(1000);
         cy.get('*[class^="mat-button-wrapper"]')
-            .contains('Add new Metadata Field')
+            .contains('New Metadata Field')
             .click();
         cy.get('*[class^="mt-4 ng-star-inserted"]').click();
         cy.get('*[class^="view-lines monaco-mouse-cursor-text"]')
@@ -756,7 +756,7 @@ describe('Systems test', () => {
         });
         cy.wait(1000);
         cy.get('*[class^="mat-button-wrapper"]')
-            .contains('Add new Metadata Field')
+            .contains('New Metadata Field')
             .click();
         cy.get('*[class^="mt-4 ng-star-inserted"]').click();
         cy.get('*[class^="view-lines monaco-mouse-cursor-text"]')

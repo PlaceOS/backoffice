@@ -27,7 +27,7 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
     selector: 'metadata-display',
     template: `
         <button btn (click)="newMetadata()" i18n="@@addMetadataAction">
-            Add new Metadata Field
+            New Metadata Field
         </button>
         <div
             class="mt-4"
