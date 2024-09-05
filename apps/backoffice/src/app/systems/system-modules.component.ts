@@ -19,7 +19,7 @@ import { AppLink, HashMap } from 'apps/backoffice/src/app/common/types';
 import {
     ModuleStateModalData,
     ViewModuleStateModalComponent,
-} from 'apps/backoffice/src/app/overlays/view-module-state/view-module-state.component';
+} from 'apps/backoffice/src/app/overlays/view-module-state.component';
 import { SystemStateService } from './system-state.service';
 import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
 

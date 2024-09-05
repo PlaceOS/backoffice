@@ -1,4 +1,3 @@
-
 import { NgModule, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -12,7 +11,7 @@ import { SelectItemModalComponent } from './select-item-modal/select-item-modal.
 import { SystemLogModalComponent } from './system-log-modal/system-log-modal.component';
 import { TriggerActionModalComponent } from './trigger-action-modal/trigger-action-modal.component';
 import { TriggerConditionModalComponent } from './trigger-condition-modal/trigger-condition-modal.component';
-import { ViewModuleStateModalComponent } from './view-module-state/view-module-state.component';
+import { ViewModuleStateModalComponent } from './view-module-state.component';
 import { AuthSourceModalComponent } from './auth-source-modal/auth-source-modal.component';
 import { ViewResponseModalComponent } from './view-response-modal/view-response-modal.component';
 import { MetadataDetailsModalComponent } from './metadata-details-modal/metadata-details-modal.component';
@@ -22,7 +21,6 @@ import { MatchFieldsComponent } from './bulk-item-modal/match-fields/match-field
 import { ListComponent } from './bulk-item-modal/list/list.component';
 import { StatusListComponent } from './bulk-item-modal/status-list/status-list.component';
 import { DuplicateModalComponent } from './duplicate-modal/duplicate-modal.component';
-
 
 const OVERLAYS: Type<any>[] = [
     ConfirmModalComponent,
@@ -46,16 +44,14 @@ const OVERLAYS: Type<any>[] = [
         MatchFieldsComponent,
         ListComponent,
         StatusListComponent,
-        DuplicateModalComponent
+        DuplicateModalComponent,
     ],
     imports: [
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
-        SharedContentModule
+        SharedContentModule,
     ],
-    exports: [
-        ...OVERLAYS
-    ]
+    exports: [...OVERLAYS],
 })
 export class SharedOverlaysModule {}

@@ -21,8 +21,83 @@ export interface ModuleStateModalData {
 
 @Component({
     selector: 'view-module-state-modal',
-    templateUrl: './view-module-state.template.html',
-    styleUrls: ['./view-module-state.styles.scss'],
+    template: `
+        <header class="flex items-center justify-between space-x-2">
+            <h3 class="text-xl">Module State</h3>
+            <button icon mat-dialog-close>
+                <app-icon>close</app-icon>
+            </button>
+        </header>
+        <main class="w-[80vw] p-4 space-y-2" *ngIf="!loading; else load_state">
+            <div class="flex items-center space-x-2 mb-4">
+                <div
+                    class="relative px-4 py-2 rounded border border-base-300 min-w-48"
+                >
+                    <div
+                        class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded text-xs px-2 py-1"
+                    >
+                        System
+                    </div>
+                    <div class="truncate">
+                        {{ system?.display_name || system?.name }}
+                    </div>
+                    <div class="opacity-30 text-xs">{{ system?.id }}</div>
+                </div>
+                <div
+                    class="relative px-4 py-2 rounded border border-base-300 min-w-48"
+                >
+                    <div
+                        class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded text-xs px-2 py-1"
+                    >
+                        Module
+                    </div>
+                    <div class="truncate">
+                        {{ module?.custom_name || module?.name }}
+                    </div>
+                    <div class="opacity-30 text-xs">
+                        {{ device_classes[module?.id] }}
+                    </div>
+                </div>
+                <div class="flex-1 w-px"></div>
+                <div>
+                    <button btn matRipple class="w-40" (click)="updateState()">
+                        Update state
+                    </button>
+                </div>
+            </div>
+            <!-- <div
+                class="flex items-center space-x-2 hover:bg-base-200 p-2 rounded"
+            >
+                <label class="w-16 m-0">System:</label>
+                <div class="mono">
+                    {{ system?.display_name || system?.name }}
+                </div>
+            </div>
+            <div
+                class="flex items-center space-x-2 hover:bg-base-200 p-2 rounded"
+            >
+                <label class="w-16 m-0">Module:</label>
+                <div class="mono">{{ device_classes[module?.id] }}</div>
+            </div> -->
+            <div class="settings">
+                <settings-form-field
+                    [ngModel]="state"
+                    [readonly]="true"
+                ></settings-form-field>
+            </div>
+        </main>
+        <ng-template #load_state>
+            <main class="">
+                <div class="info-block">
+                    <div class="icon">
+                        <mat-spinner diameter="32"></mat-spinner>
+                    </div>
+                    <div class="text">Loading state...</div>
+                </div>
+            </main>
+        </ng-template>
+    `,
+    styles: [``],
 })
 export class ViewModuleStateModalComponent
     extends AsyncHandler
