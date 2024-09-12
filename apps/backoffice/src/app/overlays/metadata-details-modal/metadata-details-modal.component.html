@@ -1,93 +1,80 @@
-<header>
-    <div class="heading">Update metadata details</div>
+<header class="p-2 flex items-center justify-between space-x-4">
+    <div class="px-2 text-lg font-medium py-2">Update metadata details</div>
     <button btn icon mat-dialog-close>
         <app-icon>close</app-icon>
     </button>
 </header>
-<mat-dialog-content>
-    <main *ngIf="form" [formGroup]="form">
-        <div class="field" *ngIf="form.controls.name">
-            <label
-                for="property-name"
-                [class.error]="
-                    form.controls.name.invalid && form.controls.name.touched
-                "
-                >Name<span>*</span>:</label
+<main *ngIf="form" [formGroup]="form" class="flex flex-col p-4 w-[32rem]">
+    <label
+        for="property-name"
+        [class.error]="form.controls.name.invalid && form.controls.name.touched"
+        >Name<span class="text-pending">*</span>:</label
+    >
+    <mat-form-field appearance="outline">
+        <input
+            matInput
+            name="property-name"
+            placeholder="Property Name"
+            formControlName="name"
+            required
+        />
+        <mat-error>{{
+            form.controls.name?.errors?.name
+                ? 'Property name must be unique'
+                : 'Property name is required'
+        }}</mat-error>
+    </mat-form-field>
+    <label for="description">Description:</label>
+    <mat-form-field appearance="outline">
+        <textarea
+            matInput
+            name="description"
+            placeholder="Description"
+            formControlName="description"
+        ></textarea>
+    </mat-form-field>
+    <label for="system-email" i18n="@@editorssLabel">Editors:</label>
+    <mat-form-field appearance="outline" class="w-full">
+        <mat-chip-grid #chipList aria-label="Image List">
+            <mat-chip-row
+                *ngFor="let item of editors"
+                (removed)="removeEditor(item)"
             >
-            <mat-form-field appearance="outline">
-                <input
-                    matInput
-                    name="property-name"
-                    placeholder="Property Name"
-                    formControlName="name"
-                    required
-                />
-                <mat-error *ngIf="form.controls.name.invalid">{{
-                    form.controls.name.errors.name
-                        ? 'Property name must be unique'
-                        : 'Property name is required'
-                }}</mat-error>
-            </mat-form-field>
-        </div>
-        <div class="field" *ngIf="form.controls.description">
-            <label for="description">Description:</label>
-            <mat-form-field appearance="outline">
-                <textarea
-                    matInput
-                    name="description"
-                    placeholder="Description"
-                    formControlName="description"
-                ></textarea>
-            </mat-form-field>
-        </div>
-        <div class="field" *ngIf="form?.controls?.editors">
-            <label for="system-email" i18n="@@editorssLabel">Editors:</label>
-            <mat-form-field appearance="outline" class="w-full">
-                <mat-chip-grid #chipList aria-label="Image List">
-                    <mat-chip-row
-                        *ngFor="let item of editors"
-                        (removed)="removeEditor(item)"
-                    >
-                        <div class="truncate max-w-md">{{ item }}</div>
-                        <button
-                            matChipRemove
-                            [attr.aria-label]="'Remove ' + item"
-                        >
-                            <app-icon>cancel</app-icon>
-                        </button>
-                    </mat-chip-row>
-                </mat-chip-grid>
-                <input
-                    placeholder="Editors..."
-                    i18n-placeholder
-                    [matChipInputFor]="chipList"
-                    [matChipInputSeparatorKeyCodes]="separators"
-                    [matChipInputAddOnBlur]="true"
-                    (matChipInputTokenEnd)="addEditor($event)"
-                />
-            </mat-form-field>
-        </div>
-        <div class="field" *ngIf="form.controls.schema">
-            <label for="schema">Schema:</label>
-            <mat-form-field appearance="outline">
-                <input
-                    matInput
-                    name="schema"
-                    placeholder="Schema"
-                    formControlName="schema"
-                />
-            </mat-form-field>
-        </div>
-    </main>
-</mat-dialog-content>
-<mat-dialog-actions>
-    <footer>
-        <button
-            [disabled]="!form?.controls.name.valid"
-            btn
-            (click)="updateDetails()"
-        >
-            Update
-        </button>
-    </footer>
-</mat-dialog-actions>
+                <div class="truncate max-w-md">{{ item }}</div>
+                <button matChipRemove [attr.aria-label]="'Remove ' + item">
+                    <app-icon>cancel</app-icon>
+                </button>
+            </mat-chip-row>
+        </mat-chip-grid>
+        <input
+            placeholder="Editors..."
+            i18n-placeholder
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separators"
+            [matChipInputAddOnBlur]="true"
+            (matChipInputTokenEnd)="addEditor($event)"
+        />
+    </mat-form-field>
+    <label for="schema">Schema:</label>
+    <mat-form-field appearance="outline">
+        <input
+            matInput
+            name="schema"
+            placeholder="Schema"
+            formControlName="schema"
+        />
+    </mat-form-field>
+</main>
+<footer
+    class="flex items-center justify-end space-x-2 py-2 px-4 border-t border-base-200"
+>
+    <button
+        btn
+        matRipple
+        class="w-40"
+        [disabled]="!form?.controls.name.valid"
+        (click)="updateDetails()"
+    >
+        Update
+    </button>
+</footer>

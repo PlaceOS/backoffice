@@ -15,7 +15,11 @@ export interface ItemTab {
     template: `
         <div class="w-full h-12">
             <div class="w-full overflow-hidden h-14">
-                <nav mat-tab-nav-bar [class.shadow]="scrolled">
+                <nav
+                    mat-tab-nav-bar
+                    [class.shadow]="scrolled"
+                    [tabPanel]="tabPanel"
+                >
                     <a
                         class="tab"
                         mat-tab-link
@@ -41,6 +45,7 @@ export interface ItemTab {
                 </nav>
             </div>
         </div>
+        <mat-tab-nav-panel #tabPanel class="hidden"></mat-tab-nav-panel>
     `,
     styles: [``],
 })

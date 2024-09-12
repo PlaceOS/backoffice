@@ -195,9 +195,7 @@ export class StorageProviderModalComponent {
         access_key: new FormControl(this._data.item?.access_key || '', [
             Validators.required,
         ]),
-        access_secret: new FormControl(this._data.item?.access_secret || '', [
-            Validators.required,
-        ]),
+        access_secret: new FormControl('', [Validators.required]),
         endpoint: new FormControl(this._data.item?.endpoint || ''),
         ext_filter: new FormControl(this._data.item?.ext_filter || []),
         mime_filter: new FormControl(this._data.item?.mime_filter || []),
@@ -215,6 +213,7 @@ export class StorageProviderModalComponent {
         if (this.form.invalid) return;
         this.loading = true;
         this._dialog_ref.disableClose = true;
+
         await saveStorage(this.form.value as PlaceStorage)
             .toPromise()
             .catch((e) => {
