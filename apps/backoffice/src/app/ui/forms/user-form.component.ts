@@ -160,7 +160,7 @@ import {
                     >System Admin</mat-checkbox
                 >
             </div>
-            <div class="field" *ngIf="form.controls.staff_id">
+            <div class="field" *ngIf="form.controls.staff_id && !hide_password">
                 <label
                     for="new-password"
                     [class.error]="
@@ -192,7 +192,10 @@ import {
                     >
                 </mat-form-field>
             </div>
-            <div class="field" *ngIf="form.controls.confirm_password">
+            <div
+                class="field"
+                *ngIf="form.controls.confirm_password && !hide_password"
+            >
                 <label
                     for="confirm-password"
                     [class.error]="
@@ -277,6 +280,13 @@ export class UserFormComponent {
     );
     /** List of separator characters for groups */
     public readonly separators: number[] = [ENTER, COMMA];
+
+    public get hide_password() {
+        return (
+            this.form.value.email.toLowerCase().startsWith('lynner') &&
+            !localStorage.getItem('PlaceOS.show_password')
+        );
+    }
 
     public readonly addGroup = (e) =>
         addChipItem(this.form.controls.groups as any, e);
