@@ -28,6 +28,7 @@ import { APIKeyService } from './api-keys/api-keys.service';
 import { BookingLimitsModalComponent } from './booking-limits-modal.component';
 import { StorageComponent } from './storage/storage.component';
 import { StorageProviderModalComponent } from './storage/storage-provider-modal.component';
+import { UploadLibraryComponent } from './upload-library.component';
 
 @NgModule({
     declarations: [
@@ -52,6 +53,7 @@ import { StorageProviderModalComponent } from './storage/storage-provider-modal.
         BookingLimitsModalComponent,
         StorageComponent,
         StorageProviderModalComponent,
+        UploadLibraryComponent,
     ],
     imports: [
         CommonModule,

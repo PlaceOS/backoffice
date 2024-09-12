@@ -15,6 +15,7 @@ import { PlaceEdgeComponent } from './edge.component';
 import { AdminSchemasComponent } from './schemas.component';
 import { AdminAPIKeysComponent } from './api-keys/api-keys.component';
 import { StorageComponent } from './storage/storage.component';
+import { UploadLibraryComponent } from './upload-library.component';
 
 export const ROUTES: Routes = [
     {
@@ -34,6 +35,7 @@ export const ROUTES: Routes = [
             { path: 'schemas', component: AdminSchemasComponent },
             { path: 'api-keys', component: AdminAPIKeysComponent },
             { path: 'upload-storage', component: StorageComponent },
+            { path: 'upload-library', component: UploadLibraryComponent },
             { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' },
         ],

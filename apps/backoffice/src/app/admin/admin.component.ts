@@ -145,6 +145,11 @@ export class PlaceComponent extends AsyncHandler {
                 name: 'Upload Storage',
                 icon: { value: 'cloud_upload' },
             },
+            {
+                id: 'upload-library',
+                name: 'Uploads Library',
+                icon: { value: 'photo_album' },
+            },
         ].concat(this.extensions);
     }
 
