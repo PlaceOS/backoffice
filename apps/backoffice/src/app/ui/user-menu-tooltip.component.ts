@@ -14,7 +14,7 @@ import { BackofficeUsersService } from '../users/users.service';
                 matRipple
                 type="button"
                 profile
-                [routerLink]="['/profile']"
+                [routerLink]="['/users', 'current', 'about']"
                 class="space-x-2"
             >
                 <app-icon>person</app-icon>
