@@ -29,6 +29,7 @@ import { BookingLimitsModalComponent } from './booking-limits-modal.component';
 import { StorageComponent } from './storage/storage.component';
 import { StorageProviderModalComponent } from './storage/storage-provider-modal.component';
 import { UploadLibraryComponent } from './upload-library.component';
+import { ViewUploadModalComponent } from './view-upload-modal.component';
 
 @NgModule({
     declarations: [
@@ -54,6 +55,7 @@ import { UploadLibraryComponent } from './upload-library.component';
         StorageComponent,
         StorageProviderModalComponent,
         UploadLibraryComponent,
+        ViewUploadModalComponent,
     ],
     imports: [
         CommonModule,

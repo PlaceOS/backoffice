@@ -1,8 +1,72 @@
 import { Component } from '@angular/core';
-import { PlaceDomain, queryDomains } from '@placeos/ts-client';
-import { map, shareReplay } from 'rxjs/operators';
+import {
+    authority,
+    PlaceDomain,
+    query,
+    queryDomains,
+    remove,
+} from '@placeos/ts-client';
+import {
+    catchError,
+    filter,
+    map,
+    shareReplay,
+    startWith,
+    switchMap,
+    take,
+} from 'rxjs/operators';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { UploadDetails } from '../common/uploads';
+import { downloadFile, openConfirmModal } from '../common/general';
+import { MatDialog } from '@angular/material/dialog';
+import { ViewUploadModalComponent } from './view-upload-modal.component';
+
+function getMimeType(filename) {
+    // Mapping of file extensions to MIME types
+    const mimeTypes = {
+        txt: 'text/plain',
+        html: 'text/html',
+        htm: 'text/html',
+        css: 'text/css',
+        js: 'application/javascript',
+        json: 'application/json',
+        xml: 'application/xml',
+        pdf: 'application/pdf',
+        csv: 'text/csv',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        png: 'image/png',
+        gif: 'image/gif',
+        bmp: 'image/bmp',
+        webp: 'image/webp',
+        mp3: 'audio/mpeg',
+        wav: 'audio/wav',
+        mp4: 'video/mp4',
+        avi: 'video/x-msvideo',
+        mov: 'video/quicktime',
+        zip: 'application/zip',
+        rar: 'application/x-rar-compressed',
+        '7z': 'application/x-7z-compressed',
+        // Add more mappings as needed
+    };
+
+    // Extract the file extension
+    const extension = filename.split('.').pop().toLowerCase();
+
+    // Return the MIME type or a default value
+    return mimeTypes[extension] || 'application/octet-stream';
+}
+
+export interface UploadInfo {
+    id: string;
+    file_name: string;
+    file_size: number;
+    mime_type: string;
+    created_at: number;
+    permissions: string;
+    public: boolean;
+    uploaded_by: string;
+    uploaded_email: number;
+}
 
 @Component({
     selector: 'upload-library',
@@ -50,7 +114,7 @@ import { UploadDetails } from '../common/uploads';
                     class="min-w-[64rem] block text-sm"
                     [data]="uploads_list"
                     [columns]="[
-                        { key: 'name', name: 'Name' },
+                        { key: 'file_name', name: 'Name' },
                         {
                             key: 'mime_type',
                             name: 'File Type',
@@ -110,6 +174,10 @@ import { UploadDetails } from '../common/uploads';
                         icon
                         matRipple
                         (click)="viewUpload(row)"
+                        [disabled]="
+                            !row.mime_type.includes('image') &&
+                            !row.mime_type.includes('video')
+                        "
                         matTooltip="View Upload"
                     >
                         <app-icon>visibility</app-icon>
@@ -138,7 +206,33 @@ export class UploadLibraryComponent {
         shareReplay(1)
     );
 
-    public readonly uploads_list: Observable<UploadDetails[]> = of([]);
+    public readonly uploads_list: Observable<UploadInfo[]> = this.domain.pipe(
+        filter((_) => !!_),
+        switchMap((domain) =>
+            query<any>({
+                path: 'uploads',
+                query_params: {
+                    limit: 1000,
+                    authority_id: domain.id,
+                },
+            }).pipe(catchError((_) => of({ data: [] })))
+        ),
+        map((r) =>
+            r.data.map((_) => ({ ..._, mime_type: getMimeType(_.name) }))
+        ),
+        startWith([]),
+        shareReplay(1)
+    );
+
+    constructor(private _dialog: MatDialog) {}
+
+    public async ngOnInit() {
+        const domain = authority();
+        const domain_list = await this.domain_list.pipe(take(1)).toPromise();
+        if (!domain_list?.length) return;
+        const match = domain_list.find((d) => d.id === domain.id);
+        if (match) this.domain.next(match);
+    }
 
     public sizeOf(bytes: number) {
         const sizes = [' B', 'KB', 'MB', 'GB', 'TB', 'PB'];
@@ -153,9 +247,34 @@ export class UploadLibraryComponent {
 
     public uploadFile() {}
 
-    public downloadUpload(upload: UploadDetails) {}
+    public async downloadUpload(upload: UploadInfo) {
+        const url = `/api/engine/v2/uploads/${upload.id}/url`;
+        const data = await fetch(url).then((r) => r.blob());
+        downloadFile(upload.file_name, data.toString());
+    }
 
-    public viewUpload(upload: UploadDetails) {}
+    public viewUpload(upload: UploadInfo) {
+        this._dialog.open(ViewUploadModalComponent, {
+            data: { upload },
+        });
+    }
 
-    public removeUpload(upload: UploadDetails) {}
+    public async removeUpload(upload: UploadInfo) {
+        const result = await openConfirmModal(
+            {
+                title: 'Remove upload',
+                content: `<p>Are you sure you want remove the upload "${upload.file_name}"?</p><p>The upload will be deleted <strong>immediately</strong>.</p>`,
+                icon: { type: 'icon', content: 'delete' },
+            },
+            this._dialog
+        );
+        if (result?.reason !== 'done') return;
+        result.loading('Removing upload...');
+        await remove({
+            id: upload.id,
+            query_params: {},
+            path: 'uploads',
+        }).toPromise();
+        result.close();
+    }
 }
