@@ -20,7 +20,7 @@ import { downloadFile, openConfirmModal } from '../common/general';
 import { MatDialog } from '@angular/material/dialog';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
 
-function getMimeType(filename) {
+function getMimeType(filename: string): string {
     // Mapping of file extensions to MIME types
     const mimeTypes = {
         txt: 'text/plain',
@@ -38,6 +38,8 @@ function getMimeType(filename) {
         gif: 'image/gif',
         bmp: 'image/bmp',
         webp: 'image/webp',
+        svg: 'image/svg+xml',
+        avif: 'image/avif',
         mp3: 'audio/mpeg',
         wav: 'audio/wav',
         mp4: 'video/mp4',
@@ -50,7 +52,7 @@ function getMimeType(filename) {
     };
 
     // Extract the file extension
-    const extension = filename.split('.').pop().toLowerCase();
+    const extension = `${filename}`.split('.').pop().toLowerCase();
 
     // Return the MIME type or a default value
     return mimeTypes[extension] || 'application/octet-stream';
@@ -111,15 +113,18 @@ export interface UploadInfo {
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[64rem] block text-sm"
+                    class="min-w-[56rem] block text-sm mb-4"
                     [data]="uploads_list"
                     [columns]="[
-                        { key: 'file_name', name: 'Name' },
+                        {
+                            key: 'file_name',
+                            name: 'Name',
+                            content: name_template
+                        },
                         {
                             key: 'mime_type',
                             name: 'File Type',
-                            content: type_template,
-                            size: '12rem'
+                            content: type_template
                         },
                         {
                             key: 'file_size',
@@ -131,7 +136,7 @@ export interface UploadInfo {
                             key: 'created_at',
                             name: 'Created',
                             content: from_template,
-                            size: '12rem'
+                            size: '8rem'
                         },
                         {
                             key: 'actions',
@@ -150,11 +155,20 @@ export interface UploadInfo {
                     {{ +data * 1000 | dateFrom }}
                 </div>
             </ng-template>
+            <ng-template #name_template let-data="data">
+                <div
+                    class="p-4 mono text-xs break-words max-w-[calc(50vw-11rem)]"
+                >
+                    {{ data }}
+                </div>
+            </ng-template>
             <ng-template #type_template let-data="data">
-                <div class="p-4 mono text-sm">{{ data }}</div>
+                <div class="p-4 mono text-xs">
+                    {{ data }}
+                </div>
             </ng-template>
             <ng-template #size_template let-data="data">
-                <div class="p-4 mono text-sm w-full text-right">
+                <div class="p-4 mono text-xs w-full text-right">
                     {{ sizeOf(data) }}
                 </div>
             </ng-template>
@@ -218,7 +232,7 @@ export class UploadLibraryComponent {
             }).pipe(catchError((_) => of({ data: [] })))
         ),
         map((r) =>
-            r.data.map((_) => ({ ..._, mime_type: getMimeType(_.name) }))
+            r.data.map((_) => ({ ..._, mime_type: getMimeType(_.file_name) }))
         ),
         startWith([]),
         shareReplay(1)
@@ -241,7 +255,6 @@ export class UploadLibraryComponent {
         const level = Math.floor(order);
         const divisor = Math.pow(1024, level);
         const short_bytes = Math.floor((bytes / divisor) * 100) / 100;
-        console.log('Size of:', bytes, short_bytes, divisor, level);
         return `${short_bytes} ${sizes[level]}`;
     }
 
