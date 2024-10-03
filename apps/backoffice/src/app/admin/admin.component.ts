@@ -126,6 +126,11 @@ export class PlaceComponent extends AsyncHandler {
                 icon: { value: 'api' },
             },
             {
+                id: 'resource-imports',
+                name: 'Resource Imports',
+                icon: { value: 'publish' },
+            },
+            {
                 id: 'extensions',
                 name: 'Extensions',
                 icon: { value: 'webhook' },

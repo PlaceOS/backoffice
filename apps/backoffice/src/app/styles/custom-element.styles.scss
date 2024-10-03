@@ -634,8 +634,9 @@ a[icon] {
         font-size: 1.5em;
     }
 
-    &[disabled] {
-        opacity: 0.35;
+    &[disabled]:not([disabled='false']) {
+        opacity: 0.3;
+        pointer-events: none;
     }
 }
 

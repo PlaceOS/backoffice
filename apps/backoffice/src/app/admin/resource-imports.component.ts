@@ -1,0 +1,289 @@
+import { Component } from '@angular/core';
+import {
+    authority,
+    PlaceDomain,
+    queryDomains,
+    query,
+    querySystems,
+    querySystemsWithEmails,
+    addSystem,
+} from '@placeos/ts-client';
+import { id } from 'date-fns/locale';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import {
+    catchError,
+    filter,
+    map,
+    shareReplay,
+    startWith,
+    switchMap,
+    take,
+} from 'rxjs/operators';
+import { notifySuccess } from '../common/notifications';
+import { openConfirmModal } from '../common/general';
+import { MatDialog } from '@angular/material/dialog';
+
+export interface ExternalResource {
+    id: string;
+    booking_type: string;
+    capacity: number;
+    display_name: string;
+    email: string;
+    is_accessible: boolean;
+    nickname: string;
+    phone: string;
+    tags: string[];
+    imported?: boolean;
+    system_id?: string;
+}
+
+@Component({
+    selector: 'resource-imports',
+    template: `
+        <div class="flex flex-col h-full w-full">
+            <div class="flex items-center justify-between space-x-2 my-4">
+                <div class="text-2xl">Resource Imports</div>
+                <div class="flex items-center space-x-2">
+                    <mat-form-field
+                        class="no-subscript w-56"
+                        appearance="outline"
+                    >
+                        <mat-select
+                            name="type"
+                            [ngModel]="domain | async"
+                            (ngModelChange)="domain.next($event)"
+                            placeholder="Select Domain..."
+                        >
+                            <mat-option
+                                *ngFor="let domain of domain_list | async"
+                                [value]="domain"
+                            >
+                                {{ domain.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button
+                        btn
+                        matRipple
+                        class="w-40"
+                        [disabled]="!(domain | async)"
+                        (click)="importMissingResources()"
+                    >
+                        Import All
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 w-full h-1/2 overflow-auto">
+                <mat-progress-bar
+                    mode="indeterminate"
+                    class="sticky left-0 w-full"
+                    [class.opacity-0]="!(loading | async)"
+                ></mat-progress-bar>
+                <simple-table
+                    class="min-w-[56rem] block text-sm mb-4"
+                    [data]="resource_list"
+                    [columns]="[
+                        {
+                            key: 'display_name',
+                            name: 'Name',
+                            content: name_template,
+                        },
+                        {
+                            key: 'email',
+                            name: 'Email',
+                            content: email_template
+                        },
+                        {
+                            key: 'imported',
+                            name: 'Imported',
+                            content: bool_template,
+                            size: '5.5rem'
+                        },
+                        {
+                            key: 'actions',
+                            name: ' ',
+                            content: actions_template,
+                            sortable: false,
+                            size: '6.25rem'
+                        }
+                    ]"
+                    [sortable]="true"
+                    empty_message="No uploads for selected domain"
+                ></simple-table>
+                <ng-template #email_template let-data="data">
+                    <div class="p-4 mono text-xs">{{ data }}</div>
+                </ng-template>
+                <ng-template #email_template let-data="data">
+                    <div class="p-4 mono text-xs">{{ data }}</div>
+                </ng-template>
+                <ng-template #bool_template let-data="data">
+                    <div
+                        [class.bg-error]="!data"
+                        [class.bg-success]="data"
+                        class="rounded h-8 w-8 flex items-center justify-center text-2xl text-white mx-auto"
+                    >
+                        <app-icon>{{ data ? 'done' : 'close' }}</app-icon>
+                    </div>
+                </ng-template>
+                <ng-template #name_template let-row="row">
+                    <div
+                        class="flex items-center justify-between space-x-2 px-4 py-2"
+                    >
+                        <div class="flex-1 flex flex-col">
+                            <div class="truncate w-full">
+                                {{ row.display_name }}
+                            </div>
+                            <div
+                                class="text-xs opacity-30"
+                                *ngIf="row.nickname !== row.display_name"
+                            >
+                                {{ row.nickname }}
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template #actions_template let-row="row">
+                    <div class="flex items-center space-x-2 p-2">
+                        <button
+                            icon
+                            matRipple
+                            (click)="importResource(row)"
+                            [disabled]="row.imported"
+                            matTooltip="Import Resource"
+                        >
+                            <app-icon>publish</app-icon>
+                        </button>
+                        <a
+                            icon
+                            matRipple
+                            matTooltip="View System"
+                            [attr.disabled]="row.system_id === ''"
+                            [routerLink]="['/systems', row.system_id, 'about']"
+                        >
+                            <app-icon>visibility</app-icon>
+                        </a>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    `,
+    styles: [``],
+})
+export class ResourceImportsComponent {
+    public readonly loading = new BehaviorSubject<boolean>(false);
+    public readonly domain = new BehaviorSubject<PlaceDomain>(null);
+
+    public readonly domain_list = queryDomains({ limit: 100 }).pipe(
+        map((r) => r.data),
+        shareReplay(1)
+    );
+
+    public readonly resource_list: Observable<ExternalResource[]> =
+        this.domain.pipe(
+            filter((_) => !!_),
+            switchMap((domain) =>
+                query<any>({
+                    path: 'place',
+                    endpoint: '/api/staff/v1/',
+                    query_params: {
+                        limit: 1000,
+                        authority_id: domain.id,
+                    },
+                }).pipe(catchError((_) => of({ data: [] })))
+            ),
+            switchMap(async (r) => {
+                const list = r.data.map((_) => ({
+                    id: _.id || '',
+                    booking_type: _.bookingType,
+                    capacity: _.capacity,
+                    display_name: _.displayName || '',
+                    email: _.emailAddress || '',
+                    is_accessible: _.isWheelChairAccessible ?? false,
+                    nickname: _.nickname || '',
+                    phone: _.phone || '',
+                    tags: _.tags || [],
+                    imported: false,
+                    system_id: '',
+                }));
+                const { data } = await querySystemsWithEmails({
+                    in: list.map((_) => _.email).join(','),
+                }).toPromise();
+                for (const resource of list) {
+                    const system = data.find(
+                        (_) =>
+                            _.email.toLowerCase() ===
+                            resource.email.toLowerCase()
+                    );
+                    if (system) {
+                        resource.imported = true;
+                        resource.system_id = system.id;
+                    }
+                }
+                return list;
+            }),
+            startWith([]),
+            shareReplay(1)
+        );
+
+    constructor(private _dialog: MatDialog) {}
+
+    public async ngOnInit() {
+        const domain = authority();
+        const domain_list = await this.domain_list.pipe(take(1)).toPromise();
+        if (!domain_list?.length) return;
+        const match = domain_list.find((d) => d.id === domain.id);
+        if (match) this.domain.next(match);
+        this.resource_list.subscribe((_) => console.log(_));
+    }
+
+    public async importMissingResources() {
+        const domain = this.domain.getValue();
+        if (!domain) return;
+        const list = await this.resource_list.pipe(take(1)).toPromise();
+        const missing = list.filter((_) => !_.imported);
+        if (!missing.length) return;
+        const resp = await openConfirmModal(
+            {
+                title: 'Import missing resources?',
+                content: `
+                <p class="mb-4">Are you sure you want to import the following ${
+                    missing.length
+                } resources?</p>
+                <ul class="list-disc ml-4 text-left px-8 text-sm">${missing
+                    .map((_) => `<li>${_.display_name}</li>`)
+                    .join('')}</ul>
+                `,
+                icon: { type: 'icon', content: 'publish' },
+                action: 'Import',
+            },
+            this._dialog
+        );
+
+        if (resp?.reason !== 'done') return;
+        resp.loading('Importing resources...');
+        await Promise.all(missing.map((_) => this.importResource(_, false)));
+        resp.close();
+        notifySuccess(`Successfully imported ${missing.length} resources.`);
+    }
+
+    public async importResource(
+        resource: ExternalResource,
+        notify: boolean = true
+    ) {
+        const domain = this.domain.getValue();
+        if (!domain) return;
+        const system = await addSystem({
+            name: `[${domain.name}] ${resource.display_name}`,
+            email: resource.email,
+            display_name: resource.display_name,
+            capacity: resource.capacity,
+        }).toPromise();
+        if (!system) return;
+        resource.system_id = system.id;
+        resource.imported = true;
+        if (!notify) return;
+        notifySuccess(
+            `Successfully imported resource "${resource.display_name}".`
+        );
+    }
+}

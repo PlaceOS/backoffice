@@ -30,6 +30,7 @@ import { StorageComponent } from './storage/storage.component';
 import { StorageProviderModalComponent } from './storage/storage-provider-modal.component';
 import { UploadLibraryComponent } from './upload-library.component';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
+import { ResourceImportsComponent } from './resource-imports.component';
 
 @NgModule({
     declarations: [
@@ -56,6 +57,7 @@ import { ViewUploadModalComponent } from './view-upload-modal.component';
         StorageProviderModalComponent,
         UploadLibraryComponent,
         ViewUploadModalComponent,
+        ResourceImportsComponent,
     ],
     imports: [
         CommonModule,
