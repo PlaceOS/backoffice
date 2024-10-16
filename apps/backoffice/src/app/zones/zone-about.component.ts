@@ -8,6 +8,12 @@ import { marked } from 'marked';
 @Component({
     selector: 'zone-about',
     template: `
+        <div
+            class="p-2 rounded bg-warning text-warning-content mono text-xs text-center mb-2 w-full"
+            *ngIf="requires_parent"
+        >
+            Tags set in this zone require a parent zone to work correctly.
+        </div>
         <section class="mb-4 flex space-x-2">
             <div
                 class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
@@ -237,6 +243,15 @@ export class ZoneAboutComponent {
     /** List of tags associated with the zone */
     public get tag_list(): string[] {
         return this.item ? this.item?.tags : [];
+    }
+
+    public get requires_parent() {
+        return (
+            (this.item.tags.includes('level') ||
+                this.item.tags.includes('building') ||
+                this.item.tags.includes('region')) &&
+            !this.item.parent_id
+        );
     }
 
     constructor(private _service: ZonesStateService) {}

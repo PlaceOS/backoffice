@@ -6,6 +6,7 @@ import {
     PlaceModule,
     PlaceRepository,
     PlaceSystem,
+    PlaceZone,
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
 import { map, take } from 'rxjs/operators';
@@ -94,7 +95,11 @@ import { ActiveItemService } from '../common/item.service';
                         <div
                             class="absolute -top-1 -right-1 text-warning-content bg-warning rounded-full h-8 w-8 text-2xl rotate-12 flex items-center justify-center"
                             *ngIf="item.zone_issues"
-                            matTooltip="Room system does not contain all required zones"
+                            [matTooltip]="
+                                item.zone_issues === 'system'
+                                    ? 'Room system does not contain all required zones'
+                                    : 'Tags in zone require a parent zone'
+                            "
                         >
                             <app-icon> brightness_alert </app-icon>
                         </div>
@@ -250,7 +255,19 @@ export class ItemSidebarComponent extends AsyncHandler {
                 (item as any).display_name =
                     item.display_name || item.name || '<Unnamed>';
                 (item as any).zone_issues =
-                    (item.email || item.map_id) && item.zones.length < 3;
+                    (item.email || item.map_id) && item.zones.length < 3
+                        ? 'system'
+                        : '';
+            } else if (item instanceof PlaceZone) {
+                (item as any).display_name =
+                    item.display_name || item.name || '<Unnamed>';
+                (item as any).zone_issues =
+                    (item.tags.includes('level') ||
+                        item.tags.includes('building') ||
+                        item.tags.includes('region')) &&
+                    !item.parent_id
+                        ? 'zone'
+                        : '';
             } else {
                 (item as any).display_name =
                     item.display_name ||
