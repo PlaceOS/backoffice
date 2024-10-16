@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { PlaceSystem, PlaceZone, queryZones } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map, shareReplay, take } from 'rxjs/operators';
 
 import { SystemStateService } from './system-state.service';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
@@ -53,6 +53,12 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                     Save Changes
                 </button>
             </section>
+            <div
+                class="p-2 rounded bg-warning text-warning-content mono text-xs text-center mb-2"
+                *ngIf="zone_issues | async"
+            >
+                {{ zone_issues | async }}
+            </div>
             <section class="w-full flex-1 h-1/2 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
@@ -178,6 +184,27 @@ export class SystemZonesComponent {
             console.log('Changed:', colours, this.changed);
             return colours;
         })
+    );
+
+    public readonly zone_issues = combineLatest([
+        this._service.item as Observable<PlaceSystem>,
+        this._service.zones,
+    ]).pipe(
+        map(([item, zones]) => {
+            if (!item?.email && !item?.map_id) return '';
+            const has_org = zones.find((_) => _.tags.includes('org'));
+            const has_building = zones.find((_) => _.tags.includes('building'));
+            const has_level = zones.find((_) => _.tags.includes('level'));
+            if (has_org && has_building && has_level) return '';
+            const missing = [];
+            if (!has_org) missing.push('org');
+            if (!has_building) missing.push('building');
+            if (!has_level) missing.push('level');
+            return `Zones with tags required for a room system are missing. [${missing.join(
+                ', '
+            )}]`;
+        }),
+        shareReplay(1)
     );
 
     public get has_changes() {

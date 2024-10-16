@@ -5,6 +5,7 @@ import {
     PlaceDriverRole,
     PlaceModule,
     PlaceRepository,
+    PlaceSystem,
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
 import { map, take } from 'rxjs/operators';
@@ -90,6 +91,13 @@ import { ActiveItemService } from '../common/item.service';
                         >
                             new_releases
                         </app-icon>
+                        <div
+                            class="absolute -top-1 -right-1 text-warning-content bg-warning rounded-full h-8 w-8 text-2xl rotate-12 flex items-center justify-center"
+                            *ngIf="item.zone_issues"
+                            matTooltip="Room system does not contain all required zones"
+                        >
+                            <app-icon> brightness_alert </app-icon>
+                        </div>
                     </a>
                     <div
                         class="p-2 text-center opacity-30 text-sm bg-base-200 "
@@ -238,6 +246,11 @@ export class ItemSidebarComponent extends AsyncHandler {
             } else if (item instanceof PlaceRepository) {
                 (item as any).display_name = item.name || '<Unnamed>';
                 (item as any).extra = item.repo_type;
+            } else if (item instanceof PlaceSystem) {
+                (item as any).display_name =
+                    item.display_name || item.name || '<Unnamed>';
+                (item as any).zone_issues =
+                    (item.email || item.map_id) && item.zones.length < 3;
             } else {
                 (item as any).display_name =
                     item.display_name ||

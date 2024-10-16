@@ -18,7 +18,7 @@ import {
     take,
 } from 'rxjs/operators';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { downloadFile, openConfirmModal } from '../common/general';
+import { openConfirmModal } from '../common/general';
 import { MatDialog } from '@angular/material/dialog';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
 import { notifyError } from '../common/notifications';
