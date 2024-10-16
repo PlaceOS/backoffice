@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import {
+    apiKey,
     authority,
     PlaceDomain,
     query,
     queryDomains,
     remove,
+    token,
 } from '@placeos/ts-client';
 import {
     catchError,
@@ -19,6 +21,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { downloadFile, openConfirmModal } from '../common/general';
 import { MatDialog } from '@angular/material/dialog';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
+import { notifyError } from '../common/notifications';
 
 function getMimeType(filename: string): string {
     // Mapping of file extensions to MIME types
@@ -113,7 +116,7 @@ export interface UploadInfo {
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[56rem] block text-sm mb-4"
+                    class="min-w-[64rem] block text-sm mb-4"
                     [data]="uploads_list"
                     [columns]="[
                         {
@@ -157,7 +160,7 @@ export interface UploadInfo {
             </ng-template>
             <ng-template #name_template let-data="data">
                 <div
-                    class="p-4 mono text-xs break-words max-w-[calc(50vw-11rem)]"
+                    class="p-4 mono text-xs break-words max-w-[calc(50vw-16rem)]"
                 >
                     {{ data }}
                 </div>
@@ -261,9 +264,33 @@ export class UploadLibraryComponent {
     public uploadFile() {}
 
     public async downloadUpload(upload: UploadInfo) {
+        const tkn = token();
+        document.cookie = `${
+            tkn === 'x-api-key'
+                ? 'api-key=' + encodeURIComponent(apiKey())
+                : 'bearer_token=' + encodeURIComponent(tkn)
+        };max-age=60;path=/api/engine/v2/uploads;samesite=strict;${
+            location.protocol === 'https:' ? 'secure;' : ''
+        }`;
         const url = `/api/engine/v2/uploads/${upload.id}/url`;
-        const data = await fetch(url).then((r) => r.blob());
-        downloadFile(upload.file_name, data.toString());
+        const result = await fetch(url);
+        if (!result.ok) {
+            return notifyError(
+                `Unable to downloading upload. Error: ${
+                    result.statusText || result.status
+                }`
+            );
+        }
+        const data = await result.blob();
+
+        const file_url = URL.createObjectURL(data);
+        const link = document.createElement('a');
+        link.href = file_url;
+        link.download = upload.file_name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(file_url);
     }
 
     public viewUpload(upload: UploadInfo) {
