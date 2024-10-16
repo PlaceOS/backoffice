@@ -316,5 +316,6 @@ export class UploadLibraryComponent {
             path: 'uploads',
         }).toPromise();
         result.close();
+        this.domain.next(this.domain.getValue());
     }
 }
