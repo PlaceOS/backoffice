@@ -4,11 +4,9 @@ import {
     PlaceDomain,
     queryDomains,
     query,
-    querySystems,
     querySystemsWithEmails,
     addSystem,
 } from '@placeos/ts-client';
-import { id } from 'date-fns/locale';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import {
     catchError,
@@ -187,7 +185,7 @@ export class ResourceImportsComponent {
             switchMap((domain) =>
                 query<any>({
                     path: 'place',
-                    endpoint: '/api/staff/v1/',
+                    endpoint: '/api/staff/v1',
                     query_params: {
                         limit: 1000,
                         authority_id: domain.id,
