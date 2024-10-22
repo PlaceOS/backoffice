@@ -66,7 +66,10 @@ export interface ExternalResource {
                         btn
                         matRipple
                         class="w-40"
-                        [disabled]="!(domain | async)"
+                        [disabled]="
+                            !(domain | async) ||
+                            !(resource_list | async)?.length
+                        "
                         (click)="importMissingResources()"
                     >
                         Import All
