@@ -17,7 +17,7 @@ import {
     switchMap,
     take,
 } from 'rxjs/operators';
-import { notifySuccess } from '../common/notifications';
+import { notifySuccess, notifyWarn } from '../common/notifications';
 import { openConfirmModal } from '../common/general';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -242,7 +242,9 @@ export class ResourceImportsComponent {
         if (!domain) return;
         const list = await this.resource_list.pipe(take(1)).toPromise();
         const missing = list.filter((_) => !_.imported);
-        if (!missing.length) return;
+        if (!missing.length) {
+            return notifyWarn('All resources are already imported');
+        }
         const resp = await openConfirmModal(
             {
                 title: 'Import missing resources?',
