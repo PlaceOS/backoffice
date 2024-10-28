@@ -17,6 +17,7 @@ import { AdminAPIKeysComponent } from './api-keys/api-keys.component';
 import { StorageComponent } from './storage/storage.component';
 import { UploadLibraryComponent } from './upload-library.component';
 import { ResourceImportsComponent } from './resource-imports.component';
+import { EmailTemplatesComponent } from './mailing-lists/email-templates.component';
 
 export const ROUTES: Routes = [
     {
@@ -38,6 +39,7 @@ export const ROUTES: Routes = [
             { path: 'api-keys', component: AdminAPIKeysComponent },
             { path: 'upload-storage', component: StorageComponent },
             { path: 'upload-library', component: UploadLibraryComponent },
+            { path: 'mailing-list', component: EmailTemplatesComponent },
             { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' },
         ],

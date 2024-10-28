@@ -155,6 +155,11 @@ export class PlaceComponent extends AsyncHandler {
                 name: 'Uploads Library',
                 icon: { value: 'photo_album' },
             },
+            // {
+            //     id: 'mailing-list',
+            //     name: 'Email Templates',
+            //     icon: { value: 'email' },
+            // },
         ].concat(this.extensions);
     }
 
