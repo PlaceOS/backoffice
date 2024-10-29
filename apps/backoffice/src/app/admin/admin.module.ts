@@ -32,6 +32,7 @@ import { UploadLibraryComponent } from './upload-library.component';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
 import { ResourceImportsComponent } from './resource-imports.component';
 import { EmailTemplatesComponent } from './mailing-lists/email-templates.component';
+import { EmailTemplateFormComponent } from './mailing-lists/email-template-form.component';
 
 @NgModule({
     declarations: [
@@ -60,6 +61,7 @@ import { EmailTemplatesComponent } from './mailing-lists/email-templates.compone
         ViewUploadModalComponent,
         ResourceImportsComponent,
         EmailTemplatesComponent,
+        EmailTemplateFormComponent,
     ],
     imports: [
         CommonModule,

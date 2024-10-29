@@ -32,6 +32,7 @@ import { ItemSearchFieldComponent } from './custom-fields/item-search-field.comp
 import { ObjectListFieldComponent } from './custom-fields/object-list-field.component';
 import { SettingsFieldComponent } from './custom-fields/settings-field.component';
 import { TimeFieldComponent } from './custom-fields/time-field.component';
+import { RichTextInputComponent } from './custom-fields/rich-text-input.component';
 import { DebugOutputComponent } from './debug-output.component';
 import { ExtensionOutletComponent } from './extension-outlet.component';
 import { ApplicationFormComponent } from './forms/application-form.component';
@@ -120,6 +121,7 @@ const FORM_COMPONENTS: Type<any>[] = [
     FunctionArgumentComponent,
     ItemSidebarComponent,
     NewTerminalComponent,
+    RichTextInputComponent,
 ];
 
 const COMPONENTS: Type<any>[] = [

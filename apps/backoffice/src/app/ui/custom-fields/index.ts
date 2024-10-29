@@ -8,6 +8,7 @@ import { ExecuteMethodFieldComponent } from './system-exec/execute-method-field.
 import { SelectModuleComponent } from './system-exec/select-module.component';
 import { SelectMethodComponent } from './system-exec/select-method.component';
 import { FunctionArgumentComponent } from './system-exec/function-argument.component';
+import { RichTextInputComponent } from './rich-text-input.component';
 
 export const CUSTOM_FIELD_COMPONENTS: any[] = [
     SettingsFieldComponent,
@@ -20,4 +21,5 @@ export const CUSTOM_FIELD_COMPONENTS: any[] = [
     SelectModuleComponent,
     SelectMethodComponent,
     FunctionArgumentComponent,
+    RichTextInputComponent,
 ];

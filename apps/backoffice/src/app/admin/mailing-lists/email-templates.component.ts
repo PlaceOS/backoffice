@@ -28,14 +28,14 @@ import { take } from 'rxjs/operators';
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
-                    <button
+                    <a
                         btn
                         matRipple
                         class="w-40"
-                        [disabled]="!(domain | async)"
+                        [routerLink]="['/admin', 'mailing-list', 'edit']"
                     >
                         Add Template
-                    </button>
+                    </a>
                 </div>
             </div>
             <div class="flex-1 w-full h-1/2 overflow-auto">

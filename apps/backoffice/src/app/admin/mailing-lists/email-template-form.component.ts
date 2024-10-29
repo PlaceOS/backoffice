@@ -16,72 +16,17 @@ export function extractTextFromHTML(html_string: string) {
 @Component({
     selector: 'email-template-form',
     template: `
-        <div class="absolute inset-0 bg-base-100 overflow-auto p-8">
+        <div class="absolute inset-0 bg-base-100 overflow-auto p-4">
             <form
-                class="max-w-full w-[48rem] mx-auto min-h-full"
+                class="max-w-full w-[48rem] mx-auto min-h-full pt-4"
                 [formGroup]="form"
             >
                 <div class="flex items-center space-x-2 mb-8">
-                    <a
-                        icon
-                        matRipple
-                        [routerLink]="['/email-templates']"
-                        class="-ml-8"
-                    >
-                        <app-icon>arrow_back</app-icon>
-                    </a>
                     <h2 class="text-2xl font-medium">
                         {{ template?.id ? 'Edit' : 'New' }} Email Template
                     </h2>
-                    <div class="flex-1"></div>
-                    <button
-                        btn
-                        matRipple
-                        type="button"
-                        class="w-48"
-                        (click)="save()"
-                    >
-                        Save Template
-                    </button>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <div class="flex-1 space-y-2 w-1/4">
-                        <label for="zone">Building</label>
-                        <mat-form-field appearance="outline" class="w-full">
-                            <mat-select
-                                name="zone"
-                                placeholder="Select Building"
-                                formControlName="zone_id"
-                            >
-                                <mat-option value=""> No Building </mat-option>
-                                <mat-option
-                                    *ngFor="let bld of buildings | async"
-                                    [value]="bld.id"
-                                >
-                                    {{ bld.display_name || bld.name }}
-                                </mat-option>
-                            </mat-select>
-                            <mat-error>A building is required</mat-error>
-                        </mat-form-field>
-                    </div>
-                    <div class="flex-1 space-y-2 w-1/4">
-                        <label for="category">Category</label>
-                        <mat-form-field appearance="outline" class="w-full">
-                            <mat-select
-                                name="category"
-                                placeholder="Select Category"
-                                formControlName="category"
-                            >
-                                <mat-option value="internal">
-                                    Internal
-                                </mat-option>
-                                <mat-option value="external">
-                                    External
-                                </mat-option>
-                            </mat-select>
-                            <mat-error>A category is required</mat-error>
-                        </mat-form-field>
-                    </div>
                     <div class="flex-1 space-y-2 w-1/4">
                         <label for="trigger">Trigger</label>
                         <mat-form-field appearance="outline" class="w-full">
@@ -180,6 +125,27 @@ export function extractTextFromHTML(html_string: string) {
                     [images_allowed]="true"
                     class="min-h-[calc(100vh-28rem)] block"
                 ></rich-text-input>
+                <div
+                    class="sticky bottom-0 flex items-center justify-end space-x-2 bg-base-100"
+                >
+                    <a
+                        btn
+                        matRipple
+                        class="inverse w-32"
+                        [routerLink]="['/admin', 'mailing-list']"
+                    >
+                        Cancel
+                    </a>
+                    <button
+                        btn
+                        matRipple
+                        type="button"
+                        class="w-48"
+                        (click)="save()"
+                    >
+                        Save Template
+                    </button>
+                </div>
             </form>
         </div>
         <ng-template #load_state>
@@ -199,7 +165,6 @@ export class EmailTemplateFormComponent extends AsyncHandler {
     public loading = '';
     public template: EmailTemplate;
     public readonly definitions = this._state.template_definitions;
-    public readonly buildings = this._org.building_list;
     public readonly form = new FormGroup({
         id: new FormControl(''),
         reply_to: new FormControl(''),

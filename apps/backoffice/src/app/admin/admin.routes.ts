@@ -18,6 +18,7 @@ import { StorageComponent } from './storage/storage.component';
 import { UploadLibraryComponent } from './upload-library.component';
 import { ResourceImportsComponent } from './resource-imports.component';
 import { EmailTemplatesComponent } from './mailing-lists/email-templates.component';
+import { EmailTemplateFormComponent } from './mailing-lists/email-template-form.component';
 
 export const ROUTES: Routes = [
     {
@@ -39,7 +40,15 @@ export const ROUTES: Routes = [
             { path: 'api-keys', component: AdminAPIKeysComponent },
             { path: 'upload-storage', component: StorageComponent },
             { path: 'upload-library', component: UploadLibraryComponent },
-            { path: 'mailing-list', component: EmailTemplatesComponent },
+            {
+                path: 'mailing-list',
+                children: [
+                    { path: '', component: EmailTemplatesComponent },
+                    { path: 'edit', component: EmailTemplateFormComponent },
+                    { path: 'edit/:id', component: EmailTemplateFormComponent },
+                    { path: '**', redirectTo: '' },
+                ],
+            },
             { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' },
         ],
