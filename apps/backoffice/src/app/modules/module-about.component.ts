@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { PlaceModule } from '@placeos/ts-client';
 
 import { ModuleStateService } from './module-state.service';
+import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'module-about',
@@ -164,6 +166,15 @@ import { ModuleStateService } from './module-state.service';
                         {{ item.updated_at * 1000 | dateFrom }}
                     </span>
                 </div>
+                <button
+                    btn
+                    matRipple
+                    class="flex items-center col-span-2 w-full"
+                    *ngIf="item.has_runtime_error"
+                    (click)="viewErrors()"
+                >
+                    View Runtime Errors
+                </button>
             </div>
             <div
                 class="rounded p-4 border border-base-200 space-y-4 w-1/3 flex-1 flex flex-col"
@@ -253,11 +264,21 @@ export class ModuleAboutComponent {
         return this._service.active_item as any;
     }
 
-    constructor(private _service: ModuleStateService) {}
+    constructor(
+        private _service: ModuleStateService,
+        private _dialog: MatDialog
+    ) {}
 
     public async toggleModuleState() {
         this.stopping = true;
         await this._service.toggleModuleState();
         this.stopping = false;
+    }
+
+    public viewErrors() {
+        this._dialog.open<ModuleRuntimeErrorsModalComponent>(
+            ModuleRuntimeErrorsModalComponent,
+            { data: this.item.id }
+        );
     }
 }

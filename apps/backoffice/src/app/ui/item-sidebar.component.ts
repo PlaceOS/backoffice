@@ -103,6 +103,13 @@ import { ActiveItemService } from '../common/item.service';
                         >
                             <app-icon> brightness_alert </app-icon>
                         </div>
+                        <div
+                            class="absolute -top-1 -right-1 text-error-content bg-error rounded-full h-8 w-8 text-2xl rotate-12 flex items-center justify-center"
+                            *ngIf="item.has_runtime_error"
+                            matTooltip="Runtime error in the module"
+                        >
+                            <app-icon> error </app-icon>
+                        </div>
                     </a>
                     <div
                         class="p-2 text-center opacity-30 text-sm bg-base-200 "
