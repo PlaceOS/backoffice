@@ -13,6 +13,7 @@ export function generateDomainFormFields(domain?: PlaceDomain) {
         config: new FormControl(domain?.config || ''),
         internals: new FormControl(domain?.internals || ''),
         description: new FormControl(domain?.description || ''),
+        email_domains: new FormControl(domain?.email_domains || []),
     };
     return new FormGroup(fields);
 }

@@ -1,5 +1,14 @@
 import { Component, Input } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { UntypedFormGroup, Validators } from '@angular/forms';
+import { addChipItem, removeChipItem } from '../../common/forms';
+import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
+import { validateEmailList } from '../../triggers/triggers.utilities';
+import { notifyWarn } from '../../common/notifications';
+import {
+    isValidDomain,
+    isValidUrl,
+    validateURI,
+} from '../../common/validation';
 
 @Component({
     selector: 'domain-form',
@@ -132,6 +141,41 @@ import { UntypedFormGroup } from '@angular/forms';
                     ></textarea>
                 </mat-form-field>
             </div>
+            <div class="field" *ngIf="form.controls.email_domains">
+                <label
+                    [class.error]="
+                        form.controls.email_domains.invalid &&
+                        form.controls.email_domains.touched
+                    "
+                    i18n="@@tagsLabel"
+                >
+                    Email Domains:
+                </label>
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-chip-grid #chipList aria-label="Image List">
+                        <mat-chip-row
+                            *ngFor="let item of email_domain_list"
+                            (removed)="removeEmailDomain(item)"
+                        >
+                            <div class="truncate max-w-md">{{ item }}</div>
+                            <button
+                                matChipRemove
+                                [attr.aria-label]="'Remove ' + item"
+                            >
+                                <app-icon>cancel</app-icon>
+                            </button>
+                        </mat-chip-row>
+                    </mat-chip-grid>
+                    <input
+                        placeholder="Tags..."
+                        i18n-placeholder
+                        [matChipInputFor]="chipList"
+                        [matChipInputSeparatorKeyCodes]="separators"
+                        [matChipInputAddOnBlur]="true"
+                        (matChipInputTokenEnd)="addEmailDomain($event)"
+                    />
+                </mat-form-field>
+            </div>
         </form>
     `,
     styles: [
@@ -152,4 +196,18 @@ import { UntypedFormGroup } from '@angular/forms';
 export class DomainFormComponent {
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
+    /** List of separator characters for tags */
+    public readonly separators: number[] = [ENTER, COMMA, SPACE];
+
+    public readonly addEmailDomain = (e) => {
+        if (!e?.value) return;
+        if (!isValidDomain(e.value)) return notifyWarn('Invalid email');
+        addChipItem(this.form.controls.email_domains as any, e);
+    };
+    public readonly removeEmailDomain = (i) =>
+        removeChipItem(this.form.controls.email_domains as any, i);
+
+    public get email_domain_list(): string[] {
+        return this.form.controls.email_domains.value;
+    }
 }

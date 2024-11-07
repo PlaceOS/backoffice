@@ -59,7 +59,7 @@ export function extractTextFromHTML(html_string: string) {
                     <button
                         btn
                         matRipple
-                        class="flex-1 mt-2"
+                        class="flex-1 w-1/4 my-4"
                         matTooltip="Values that get replaced in the email template when sent"
                         [disabled]="!form.value.trigger"
                         [matMenuTriggerFor]="tracking_menu"
@@ -90,7 +90,7 @@ export function extractTextFromHTML(html_string: string) {
                         </button>
                     </mat-menu>
                 </div>
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-4">
                     <mat-form-field appearance="outline" class="flex-1">
                         <input
                             matInput

@@ -24,12 +24,22 @@ export const validateURI = (ctrl) => {
 
 export const isValidUrl = (url) => {
     if (!url) return true;
-    try { new URL(url); } 
-    catch (e) { return false; }
+    try {
+        new URL(url);
+    } catch (e) {
+        return false;
+    }
     return true;
 };
 
-export const validateURL = (ctrl: AbstractControl) => isValidUrl(ctrl?.value) ? null : { url: 'invalid' } ;
+export const isValidDomain = (str) => {
+    const domainRegex =
+        /^(?!\-)(?:[a-zA-Z0-9\-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,}$/;
+    return domainRegex.test(str);
+};
+
+export const validateURL = (ctrl: AbstractControl) =>
+    isValidUrl(ctrl?.value) ? null : { url: 'invalid' };
 
 export function validateJSONString(control: AbstractControl) {
     if (!control || !control.value) {
