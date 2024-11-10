@@ -225,7 +225,11 @@ export class ItemSearchFieldComponent<T extends Identity = any>
                 return list.filter((item: any) => {
                     const match =
                         item.name?.toLowerCase().indexOf(search) >= 0 ||
-                        (item.email || '').toLowerCase().indexOf(search) >= 0;
+                        (item.email || '').toLowerCase().indexOf(search) >= 0 ||
+                        (item.notes || '').toLowerCase().indexOf(search) >= 0 ||
+                        (item.description || '')
+                            .toLowerCase()
+                            .indexOf(search) >= 0;
                     return match && (this.exclude ? !this.exclude(item) : true);
                 });
             })
