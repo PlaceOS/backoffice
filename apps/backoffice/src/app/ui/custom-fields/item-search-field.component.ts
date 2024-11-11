@@ -175,11 +175,11 @@ export class ItemSearchFieldComponent<T extends Identity = any>
     @Input() public clear_on_select: boolean = false;
     /** Function for filtering out options */
     @Input() public exclude: (_: T, search: string) => boolean = (v, search) =>
-        (v.name || '').toLowerCase().indexOf(search) >= 0 ||
-        (v.driver?.name || '').toLowerCase().indexOf(search) >= 0 ||
-        (v.email || '').toLowerCase().indexOf(search) >= 0 ||
-        (v.notes || '').toLowerCase().indexOf(search) >= 0 ||
-        (v.description || '').toLowerCase().indexOf(search) >= 0;
+        (v.name || '').toLowerCase().indexOf(search) < 0 &&
+        (v.driver?.name || '').toLowerCase().indexOf(search) < 0 &&
+        (v.email || '').toLowerCase().indexOf(search) < 0 &&
+        (v.notes || '').toLowerCase().indexOf(search) < 0 &&
+        (v.description || '').toLowerCase().indexOf(search) < 0;
     /** Minimum number of characters needed to start a server query */
     @Input('minLength') public min_length = 0;
     /** Whether item list is loading */
