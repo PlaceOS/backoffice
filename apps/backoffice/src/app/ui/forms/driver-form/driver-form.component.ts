@@ -91,7 +91,10 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
     public loading_commits: boolean;
     /** Function to query repositories */
     public readonly query_fn = (_: string) =>
-        queryRepositories({ q: _ }).pipe(map((resp) => resp.data));
+        queryRepositories({ q: _ }).pipe(
+            map((resp) => resp.data),
+            catchError(() => of([]))
+        );
     /** Function to check repo that are excluded from being listed */
     public readonly exclude_fn = (repo: PlaceRepository) =>
         repo.type === PlaceRepositoryType.Interface;
@@ -110,7 +113,9 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                 this.loading_drivers = true;
                 this.driver_list = [];
                 this.commit_list = [];
-                return listRepositoryDrivers(repo_id);
+                return listRepositoryDrivers(repo_id).pipe(
+                    catchError(() => of([]))
+                );
             }),
             catchError((_) => {
                 notifyError(
@@ -138,7 +143,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                 this.commit_list = [];
                 return listRepositoryCommits(this.base_repo.id, {
                     driver: `${driver_id}`,
-                });
+                }).pipe(catchError(() => of([])));
             }),
             catchError((_) => {
                 notifyError(
