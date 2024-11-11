@@ -224,7 +224,10 @@ export class ItemSearchFieldComponent<T extends Identity = any>
                 const search = (this.search_str || '').toLowerCase();
                 return list.filter((item: any) => {
                     const match =
-                        item.name?.toLowerCase().indexOf(search) >= 0 ||
+                        (item.name || '').toLowerCase().indexOf(search) >= 0 ||
+                        (item.driver?.name || '')
+                            .toLowerCase()
+                            .indexOf(search) >= 0 ||
                         (item.email || '').toLowerCase().indexOf(search) >= 0 ||
                         (item.notes || '').toLowerCase().indexOf(search) >= 0 ||
                         (item.description || '')
