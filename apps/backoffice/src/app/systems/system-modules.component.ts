@@ -410,15 +410,13 @@ export class SystemModulesComponent extends AsyncHandler {
     ];
     /** Query method for modules */
     public readonly query_fn = (_: string) =>
-        queryModules({ q: _ }).pipe(
+        queryModules({ q: _, no_logic: true }).pipe(
             map((_) =>
-                _.data
-                    .map((mod) => ({ ...mod, extra: mod.driver?.name }))
-                    .filter((_) => !_.control_system_id)
+                _.data.map((mod) => ({ ...mod, extra: mod.driver?.name }))
             )
         );
     /** Function for excluding modules already within this system */
-    public readonly exclude_fn = (item: PlaceModule) =>
+    public readonly exclude_fn = (item: PlaceModule, _: string) =>
         item.control_system_id === this.item.id ||
         item.role === PlaceDriverRole.Logic;
 

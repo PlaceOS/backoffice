@@ -174,7 +174,12 @@ export class ItemSearchFieldComponent<T extends Identity = any>
     @Input() public display_list: boolean = false;
     @Input() public clear_on_select: boolean = false;
     /** Function for filtering out options */
-    @Input() public exclude: (_: T) => boolean;
+    @Input() public exclude: (_: T, search: string) => boolean = (v, search) =>
+        (v.name || '').toLowerCase().indexOf(search) >= 0 ||
+        (v.driver?.name || '').toLowerCase().indexOf(search) >= 0 ||
+        (v.email || '').toLowerCase().indexOf(search) >= 0 ||
+        (v.notes || '').toLowerCase().indexOf(search) >= 0 ||
+        (v.description || '').toLowerCase().indexOf(search) >= 0;
     /** Minimum number of characters needed to start a server query */
     @Input('minLength') public min_length = 0;
     /** Whether item list is loading */
@@ -221,20 +226,14 @@ export class ItemSearchFieldComponent<T extends Identity = any>
             catchError((_) => of([])),
             map((list: T[]) => {
                 this.loading = false;
-                const search = (this.search_str || '').toLowerCase();
-                return list.filter((item: any) => {
-                    const match =
-                        (item.name || '').toLowerCase().indexOf(search) >= 0 ||
-                        (item.driver?.name || '')
-                            .toLowerCase()
-                            .indexOf(search) >= 0 ||
-                        (item.email || '').toLowerCase().indexOf(search) >= 0 ||
-                        (item.notes || '').toLowerCase().indexOf(search) >= 0 ||
-                        (item.description || '')
-                            .toLowerCase()
-                            .indexOf(search) >= 0;
-                    return match && (this.exclude ? !this.exclude(item) : true);
-                });
+                return list.filter((item: any) =>
+                    this.exclude
+                        ? !this.exclude(
+                              item,
+                              (this.search_str || '').toLowerCase()
+                          )
+                        : true
+                );
             })
         );
         // Process API results

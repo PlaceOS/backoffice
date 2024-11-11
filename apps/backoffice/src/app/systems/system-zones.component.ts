@@ -215,7 +215,7 @@ export class SystemZonesComponent {
     public readonly query_fn = (_) =>
         queryZones({ q: _ }).pipe(map((resp) => resp.data));
 
-    public readonly exclude_fn = (zone: PlaceZone) =>
+    public readonly exclude_fn = (zone: PlaceZone, _: string) =>
         this.item.zones.indexOf(zone.id) >= 0;
 
     public readonly removeZone = (z) =>
