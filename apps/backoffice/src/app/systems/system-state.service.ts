@@ -336,8 +336,19 @@ export class SystemStateService extends AsyncHandler {
         if (!details || !details.reason) return ref.close();
         const system = ref.componentInstance.item;
         if (!system) return;
-        await addSystemModule(system.id, device.id).toPromise();
+        await addSystemModule(system.id, device.id)
+            .toPromise()
+            .catch((e) => {
+                ref.close();
+                notifyError(
+                    `Error adding module to system "${
+                        system.display_name || system.name
+                    }". Error: ${JSON.stringify(e.response || e.message || e)}`
+                );
+                throw e;
+            });
         this._change.next(Date.now());
+        ref.close();
         notifySuccess(
             `Successfully added module to system "${
                 system.display_name || system.name
