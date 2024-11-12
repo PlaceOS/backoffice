@@ -372,6 +372,11 @@ export class SystemModulesComponent extends AsyncHandler {
             icon: { type: 'icon', content: 'error' },
         } as any,
         {
+            id: 'add-to-system',
+            name: 'Add to another System',
+            icon: { type: 'icon', content: 'playlist_add' },
+        },
+        {
             id: 'remove',
             name: 'Remove Module',
             icon: {
@@ -397,6 +402,11 @@ export class SystemModulesComponent extends AsyncHandler {
             id: 'load',
             name: 'Load Module',
             icon: { type: 'icon', content: 'cloud_download' },
+        },
+        {
+            id: 'add-to-system',
+            name: 'Add to another System',
+            icon: { type: 'icon', content: 'playlist_add' },
         },
         {
             id: 'remove',
@@ -426,6 +436,7 @@ export class SystemModulesComponent extends AsyncHandler {
     public readonly joinModule = (id) => this._service.joinModule(id);
     public readonly toggleDebug = (d) => this._service.toggleModuleDebug(d);
     public readonly power = (d) => this._service.toggleModulePower(d);
+    public readonly addToSystem = (d) => this._service.addModuleToSystem(d);
 
     public driver_type(role: PlaceDriverRole): string {
         if (role == null) return '';
@@ -475,6 +486,9 @@ export class SystemModulesComponent extends AsyncHandler {
                     break;
                 case 'edit':
                     this.editModule(device);
+                    break;
+                case 'add-to-system':
+                    this.addToSystem(device);
                     break;
                 case 'view-error':
                     this.viewRuntimeError(device);

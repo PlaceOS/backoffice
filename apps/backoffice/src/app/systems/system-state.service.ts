@@ -25,6 +25,7 @@ import {
     updateTrigger,
     listMetadata,
     showSystem,
+    querySystems,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
@@ -33,6 +34,7 @@ import {
     map,
     shareReplay,
     switchMap,
+    take,
 } from 'rxjs/operators';
 import { calculateModuleIndex } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -305,6 +307,42 @@ export class SystemStateService extends AsyncHandler {
     public async editModule(device: PlaceModule) {
         await this._state.edit(device).catch((_) => null);
         this._change.next(Date.now());
+    }
+
+    public async addModuleToSystem(device: PlaceModule) {
+        if (device.control_system_id)
+            return notifyError(
+                'Logic modules cannot be added to another system'
+            );
+        const item = await this.item.pipe(take(1)).toPromise();
+        const ref = this._dialog.open<
+            SelectItemModalComponent,
+            SelectItemModalData
+        >(SelectItemModalComponent, {
+            data: {
+                service_name: 'module to system',
+                query_fn: (_) =>
+                    querySystems({ q: _ }).pipe(
+                        map((resp) => resp.data.filter((_) => _.id !== item.id))
+                    ),
+            },
+        });
+        const details = await Promise.race([
+            ref.componentInstance.event
+                .pipe(first((_) => _.reason === 'action'))
+                .toPromise(),
+            ref.afterClosed().toPromise(),
+        ]);
+        if (!details || !details.reason) return ref.close();
+        const system = ref.componentInstance.item;
+        if (!system) return;
+        await addSystemModule(system.id, device.id).toPromise();
+        this._change.next(Date.now());
+        notifySuccess(
+            `Successfully added module to system "${
+                system.display_name || system.name
+            }".`
+        );
     }
 
     public async selectTrigger() {
