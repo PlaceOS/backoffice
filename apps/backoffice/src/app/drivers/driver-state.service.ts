@@ -53,7 +53,9 @@ export class DriverStateService {
 
     public readonly is_compiled = this.item.pipe(
         filter((d) => !!d && d instanceof PlaceDriver),
-        switchMap((driver) => isDriverCompiled(driver.id)),
+        switchMap((driver) =>
+            isDriverCompiled(driver.id).pipe(catchError(() => of(false)))
+        ),
         catchError(async (_: Response) => {
             const err = await _?.json();
             this._last_error.next(err?.compilation_output || _);
