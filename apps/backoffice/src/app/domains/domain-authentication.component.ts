@@ -55,7 +55,7 @@ import { DomainStateService } from './domain-state.service';
             </div>
         </ng-template>
         <ng-template #type_template let-row="row">
-            <div class="p-4 uppercase">{{ row.type }}</div>
+            <div class="p-4 uppercase mono text-sm">{{ row.type }}</div>
         </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2 mx-auto">
