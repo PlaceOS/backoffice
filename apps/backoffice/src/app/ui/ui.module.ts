@@ -93,6 +93,7 @@ import { GlobalBannerComponent } from './global-banner.component';
 import { ModuleRuntimeErrorsModalComponent } from './module-runtime-errors.modal';
 import { SimpleTableComponent } from './simple-table.component';
 import { ReorderItemsModalComponent } from './reorder-items-modal.component';
+import { CronFieldComponent } from './forms/trigger-condition-form/cron-field.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -114,6 +115,7 @@ const FORM_COMPONENTS: Type<any>[] = [
     BrokerFormComponent,
     ExtensionOutletComponent,
     ActionFieldComponent,
+    CronFieldComponent,
 
     ExecuteMethodFieldComponent,
     SelectModuleComponent,

@@ -7,13 +7,15 @@
     "tags": [],
     "targets": {
         "build": {
-            "executor": "@angular-devkit/build-angular:browser",
+            "executor": "@angular-devkit/build-angular:application",
             "options": {
-                "baseHref": ".",
+                "baseHref": "./",
                 "outputPath": "dist/apps/backoffice",
                 "index": "apps/backoffice/src/index.html",
-                "main": "apps/backoffice/src/main.ts",
-                "polyfills": "apps/backoffice/src/polyfills.ts",
+                "polyfills": [
+                    "apps/backoffice/src/polyfills.ts",
+                    "@angular/localize/init"
+                ],
                 "tsConfig": "apps/backoffice/tsconfig.app.json",
                 "assets": [
                     "apps/backoffice/src/favicon.ico",
@@ -45,8 +47,8 @@
                     "apps/backoffice/src/styles.css"
                 ],
                 "scripts": [],
-                "serviceWorker": true,
-                "ngswConfigPath": "apps/backoffice/ngsw-config.json"
+                "serviceWorker": "apps/backoffice/ngsw-config.json",
+                "browser": "apps/backoffice/src/main.ts"
             },
             "configurations": {
                 "production": {
@@ -58,8 +60,8 @@
                         },
                         {
                             "type": "anyComponentStyle",
-                            "maximumWarning": "2kb",
-                            "maximumError": "32kb"
+                            "maximumWarning": "8kb",
+                            "maximumError": "64kb"
                         }
                     ],
                     "fileReplacements": [
@@ -81,9 +83,7 @@
                     "outputHashing": "all"
                 },
                 "development": {
-                    "buildOptimizer": false,
                     "optimization": false,
-                    "vendorChunk": true,
                     "extractLicenses": false,
                     "sourceMap": true,
                     "namedChunks": true
@@ -99,7 +99,6 @@
                 },
                 "development": {
                     "proxyConfig": "config/proxy.conf.js",
-                    "host": "0.0.0.0",
                     "buildTarget": "backoffice:build:development"
                 }
             },

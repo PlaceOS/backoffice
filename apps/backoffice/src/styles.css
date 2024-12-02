@@ -1,14 +1,15 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
 @import '@xterm/xterm/css/xterm.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* You can add global styles to this file, and also import other style files */
 
 :root {
-    --placeos-pink: #C52B67;    
-    --primary: #292F5B;
-    --primary-dark: #3A4174;
+    --placeos-pink: #c52b67;
+    --primary: #292f5b;
+    --primary-dark: #3a4174;
     --secondary: #263238;
     --secondary-dark: #212121;
     --font-light: #fff;
@@ -22,7 +23,6 @@
     --heading-font: 'Young', var(--font);
     --mono-font: 'Fira Code', monospace;
 }
-
 
 html,
 body {
@@ -108,12 +108,10 @@ kbd.light,
 }
 
 .tc-33 {
-    
     color: #fbc02d;
 }
 
 .tc-34 {
-    
     color: #1976d2;
 }
 

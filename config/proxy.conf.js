@@ -2,29 +2,30 @@ const domain = 'placeos-dev.aca.im';
 const secure = true;
 const valid_ssl = false;
 
-const PROXY_CONFIG = [
-    {
-        context: [
-            '/control',
-            '/auth',
-            '/api',
-            '/styles',
-            '/scripts',
-            '/login',
-            '/backoffice',
-            '/stylesheets',
-        ],
+const PROXY_CONFIG = {};
+
+const context = [
+    '/control',
+    '/auth',
+    '/api',
+    '/styles',
+    '/scripts',
+    '/login',
+    '/backoffice',
+    '/stylesheets',
+];
+const ws_context = ['/api/engine/v2/systems/control', '/api/mqtt'];
+
+function add(endpoint, extras = {}) {
+    PROXY_CONFIG[`${endpoint}/**`] = {
         target: `http${secure ? 's' : ''}://${domain}`,
         secure: valid_ssl,
         changeOrigin: true,
-    },
-    {
-        context: ['/api/engine/v2/systems/control', '/api/mqtt'],
-        target: `ws${secure ? 's' : ''}://${domain}`,
-        secure: valid_ssl,
-        changeOrigin: true,
-        ws: true,
-    },
-];
+        ...extras,
+    };
+}
+
+context.forEach((e) => add(e));
+ws_context.forEach((e) => add(e, { ws: true }));
 
 module.exports = PROXY_CONFIG;
