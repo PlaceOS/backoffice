@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["apps/backoffice/src/app/styles/utility.scss"],
+  "sourcesContent": [".font-heading {\n    font-family: var(--heading-font);\n}\n\n.font-code {\n    font-family: var(--mono-font);\n}\n\n*:focus-within.\\:focusin\\:w-full {\n    width: 100%;\n}\n"],
+  "mappings": "AAAA,CAAA,aACI,YAAA,IAAA,gBAGJ,CAAA,UACI,YAAA,IAAA,aAGJ,CAAA,aAAA,CAAA,kBACI,MAAA",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["basic-line-graph.component.ts"],
+  "sourcesContent": ["\n            :host {\n                @apply relative block w-full h-full;\n            }\n\n            [y-axis] span,\n            [x-axis] span {\n                @apply flex h-0 w-0;\n                transform: rotate(30deg);\n            }\n\n            [y-axis] span {\n                @apply items-center justify-end;\n            }\n\n            [x-axis] span {\n                @apply items-start justify-start;\n            }\n        "],
+  "mappings": "AAEgB,MAAA,SAAA,SAAA,QAAA,MAAA,OAAA,KAAA,MAAA,IAAmC,CAKnC,CAAA,QAAA,mBAAA,QAAA,KAAA,OAAA,IAAA,MAAA,IACA,UAAA,OAAA,MADmB,CAKnB,CAAA,QAAA,KAAA,YAAA,OAAA,gBAAA,QAA+B,CAI/B,CAAA,QAAA,KAAA,YAAA,WAAA,gBAAA,UAAgC",
+  "names": []
+}

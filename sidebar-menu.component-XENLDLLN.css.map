@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;1b46e5698840cd845100d914ff99b728765eac4fb06abfa1641c25445496bc27;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/sidebar-menu.component.ts"],
+  "sourcesContent": ["\n            .active {\n                background-color: var(--s);\n                color: var(--sc);\n            }\n        "],
+  "mappings": "AACY,CAAC,OACG,iBAAkB,IAAI,KACtB,MAAO,IAAI,KACf",
+  "names": []
+}

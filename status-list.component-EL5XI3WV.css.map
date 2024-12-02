@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["apps/backoffice/src/app/overlays/bulk-item-modal/status-list/status-list.component.scss"],
+  "sourcesContent": [".item {\n    display: flex;\n    align-items: center;\n    min-width: 20em;\n    max-width: 24em;\n    padding: 0.5em 1em;\n    border-radius: 4px;\n    &:nth-child(2) {\n        background-color: rgba(#000, 0.1);\n    }\n\n    .name {\n        flex: 1;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n    }\n}\n\n.status {\n    color: var(--error);\n}\n\n.done {\n    color: var(--success);\n}\n"],
+  "mappings": "AAAA,CAAA,KACI,QAAA,KACA,YAAA,OACA,UAAA,KACA,UAAA,KAJJ,QAKI,KAAA,IALJ,cAMI,IACA,CAPJ,IAOI,cACI,iBAAA,UAGJ,CAXJ,KAWI,CAAA,KACI,KAAA,EACA,YAAA,OACA,SAAA,OACA,cAAA,SAIR,CAAA,OACI,MAAA,IAAA,SAGJ,CAAA,KACI,MAAA,IAAA",
+  "names": []
+}
