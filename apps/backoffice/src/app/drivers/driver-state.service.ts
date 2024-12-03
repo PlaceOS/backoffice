@@ -6,6 +6,8 @@ import {
     PlaceModule,
     queryDrivers,
     queryModules,
+    recompileDriver,
+    reloadDriver,
     removeSystemModule,
     updateDriver,
 } from '@placeos/ts-client';
@@ -123,7 +125,49 @@ export class DriverStateService {
             .toPromise()
             .catch((_) => null);
         if (!success) {
-            notifyError('Failed to recompiled driver.');
+            notifyError('Failed to update driver.');
+        }
+        details.close();
+    }
+
+    public async recompileDriver() {
+        const item = this._state.active_item as PlaceDriver;
+        const details = await openConfirmModal(
+            {
+                title: `Recompile Driver`,
+                content: `<p>Are you sure you want recompile this driver?</p>`,
+                icon: { type: 'icon', content: 'build' },
+            },
+            this._dialog
+        );
+        if (!details || !details.reason) return details.close();
+        details.loading('Recompiling driver...');
+        let success = await recompileDriver(item.id)
+            .toPromise()
+            .catch((_) => false);
+        if (success === false) {
+            notifyError('Failed to recompile driver.');
+        }
+        details.close();
+    }
+
+    public async reloadDriver() {
+        const item = this._state.active_item as PlaceDriver;
+        const details = await openConfirmModal(
+            {
+                title: `Reload Driver`,
+                content: `<p>Are you sure you want reload this driver?</p>`,
+                icon: { type: 'icon', content: 'refresh' },
+            },
+            this._dialog
+        );
+        if (!details || !details.reason) return details.close();
+        details.loading('Reload driver...');
+        let success = await reloadDriver(item.id)
+            .toPromise()
+            .catch((_) => false);
+        if (success !== false) {
+            notifyError('Failed to reload driver.');
         }
         details.close();
     }

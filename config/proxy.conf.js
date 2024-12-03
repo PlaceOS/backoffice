@@ -14,7 +14,7 @@ const context = [
     '/backoffice',
     '/stylesheets',
 ];
-const ws_context = ['/api/engine/v2/systems/control', '/api/mqtt'];
+const ws_context = ['/api'];
 
 function add(endpoint, extras = {}) {
     PROXY_CONFIG[`${endpoint}/**`] = {

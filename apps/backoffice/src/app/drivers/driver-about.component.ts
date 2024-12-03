@@ -161,8 +161,16 @@ import { DriverStateService } from './driver-state.service';
                         item.commit !== item.update_info.commit
                     "
                 >
-                    Update Driver
+                    Update
                 </button>
+                <div class="flex items-center space-x-4 w-full col-span-2">
+                    <button btn matRipple class="flex-1" (click)="recompile()">
+                        Recompile
+                    </button>
+                    <button btn matRipple class="flex-1" (click)="reload()">
+                        Reload
+                    </button>
+                </div>
             </div>
         </section>
         <hr class="my-4" />
@@ -201,6 +209,8 @@ export class DriverAboutComponent {
     public readonly compilation_error = this._service.last_error;
 
     public readonly updateDriver = () => this._service.updateDriver();
+    public readonly recompile = () => this._service.recompileDriver();
+    public readonly reload = () => this._service.reloadDriver();
     public readonly viewErrors = () => this._service.viewError();
 
     public get item(): PlaceDriver {
