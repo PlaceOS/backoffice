@@ -27,7 +27,6 @@ import {
                             form.controls.name.invalid &&
                             form.controls.name.touched
                         "
-                        i18n="@@nameLabel"
                     >
                         Name<span>*</span>:
                     </label>
@@ -40,10 +39,7 @@ import {
                             formControlName="name"
                             required
                         />
-                        <mat-error
-                            *ngIf="form.controls.name.invalid"
-                            i18n="@@domainNameError"
-                        >
+                        <mat-error *ngIf="form.controls.name.invalid">
                             Domain name is required
                         </mat-error>
                     </mat-form-field>
@@ -55,7 +51,6 @@ import {
                             form.controls.domain.invalid &&
                             form.controls.domain.touched
                         "
-                        i18n="@@domainLabel"
                     >
                         Domain:
                     </label>
@@ -64,12 +59,9 @@ import {
                             matInput
                             name="domain"
                             placeholder="Domain e.g localhost"
-                            i18n="@@domainPlaceholder"
                             formControlName="domain"
                         />
-                        <mat-error i18n="@@domainError">
-                            A valid Domain is required
-                        </mat-error>
+                        <mat-error> A valid Domain is required </mat-error>
                     </mat-form-field>
                 </div>
             </div>
@@ -80,7 +72,6 @@ import {
                         form.controls.login_url.invalid &&
                         form.controls.login_url.touched
                     "
-                    i18n="@@loginUrlLabel"
                 >
                     Login URL:
                 </label>
@@ -89,13 +80,9 @@ import {
                         matInput
                         name="login-url"
                         placeholder="Login URL"
-                        i18n="@@loginUrlPlaceholder"
                         formControlName="login_url"
                     />
-                    <mat-error
-                        *ngIf="form.controls.login_url.invalid"
-                        i18n="@@loginUrlError"
-                    >
+                    <mat-error *ngIf="form.controls.login_url.invalid">
                         A valid Login URL is required
                     </mat-error>
                 </mat-form-field>
@@ -107,7 +94,6 @@ import {
                         form.controls.logout_url.invalid &&
                         form.controls.logout_url.touched
                     "
-                    i18n="@@logoutUrlLabel"
                 >
                     Logout URL:
                 </label>
@@ -119,24 +105,18 @@ import {
                         i18n-placeholder="@@logoutUrlPlaceholder"
                         formControlName="logout_url"
                     />
-                    <mat-error
-                        *ngIf="form.controls.logout_url.invalid"
-                        i18n="@@logoutUrlError"
-                    >
+                    <mat-error *ngIf="form.controls.logout_url.invalid">
                         A valid Logout URL is required
                     </mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description" i18n="@@descriptionLabel"
-                    >Description:</label
-                >
+                <label for="description">Description:</label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
                         name="description"
                         placeholder="Description"
-                        i18n="@@descriptionPlaceholder"
                         formControlName="description"
                     ></textarea>
                 </mat-form-field>
@@ -147,7 +127,6 @@ import {
                         form.controls.email_domains.invalid &&
                         form.controls.email_domains.touched
                     "
-                    i18n="@@tagsLabel"
                 >
                     Email Domains:
                 </label>

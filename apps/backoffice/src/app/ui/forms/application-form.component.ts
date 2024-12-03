@@ -22,7 +22,6 @@ import { Md5 } from 'ts-md5';
                             form.controls.name.invalid &&
                             form.controls.name.touched
                         "
-                        i18n="@@nameLabel"
                     >
                         Name<span>*</span>:
                     </label>
@@ -35,13 +34,11 @@ import { Md5 } from 'ts-md5';
                             formControlName="name"
                             required
                         />
-                        <mat-error i18n="@@appNameError">
-                            Application name is required
-                        </mat-error>
+                        <mat-error> Application name is required </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.scopes">
-                    <label for="scopes" i18n="@@scopesLabel">Scopes:</label>
+                    <label for="scopes">Scopes:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -58,15 +55,12 @@ import { Md5 } from 'ts-md5';
                     class="m-1"
                     name="skip-authorization"
                     formControlName="skip_authorization"
-                    i18n="@@skipAuthLabel"
                 >
                     Skip Authorization
                 </mat-checkbox>
             </div>
             <div class="field" *ngIf="form.controls.redirect_uri">
-                <label for="redirect-uri" i18n="@@redirectLabel">
-                    Redirect URL:
-                </label>
+                <label for="redirect-uri"> Redirect URL: </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
@@ -79,9 +73,7 @@ import { Md5 } from 'ts-md5';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.redirect_uri">
-                <label for="client-id" i18n="@@clientIDLabel">
-                    Client ID:
-                </label>
+                <label for="client-id"> Client ID: </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput

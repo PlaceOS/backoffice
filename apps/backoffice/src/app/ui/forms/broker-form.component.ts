@@ -21,7 +21,6 @@ import { unique } from '../../common/general';
                     [class.error]="
                         form.controls.name.invalid && form.controls.name.touched
                     "
-                    i18n="@@nameLabel"
                     >Name<span>*</span>:</label
                 >
                 <mat-form-field appearance="outline">
@@ -33,15 +32,11 @@ import { unique } from '../../common/general';
                         formControlName="name"
                         required
                     />
-                    <mat-error i18n="@@brokerNameError"
-                        >Broker name is required</mat-error
-                    >
+                    <mat-error>Broker name is required</mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description" i18n="@@descriptionLabel"
-                    >Description:</label
-                >
+                <label for="description">Description:</label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
@@ -58,7 +53,6 @@ import { unique } from '../../common/general';
                     [class.error]="
                         form.controls.name.invalid && form.controls.name.touched
                     "
-                    i18n="@@hostLabel"
                     >Host<span>*</span>:</label
                 >
                 <mat-form-field appearance="outline">
@@ -70,7 +64,7 @@ import { unique } from '../../common/general';
                         formControlName="name"
                         required
                     />
-                    <mat-error i18n="@@hostError">Host is required</mat-error>
+                    <mat-error>Host is required</mat-error>
                 </mat-form-field>
             </div>
             <div class="fieldset">
@@ -81,7 +75,6 @@ import { unique } from '../../common/general';
                             form.controls.port.invalid &&
                             form.controls.port.touched
                         "
-                        i18n="@@portLabel"
                     >
                         Port Number<span>*</span>:
                     </label>
@@ -94,16 +87,13 @@ import { unique } from '../../common/general';
                             i18n-placeholder="@@portPlaceholder"
                             formControlName="port"
                         />
-                        <mat-error i18n="@@portError">
+                        <mat-error>
                             A valid port number between 1 - 65535 is required
                         </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field checkbox" *ngIf="form.controls.tls">
-                    <mat-checkbox
-                        name="tls"
-                        formControlName="tls"
-                        i18n="@@tlsLabel"
+                    <mat-checkbox name="tls" formControlName="tls"
                         >TLS</mat-checkbox
                     >
                 </div>
@@ -130,7 +120,6 @@ import { unique } from '../../common/general';
                                 form.controls.name.invalid &&
                                 form.controls.name.touched
                             "
-                            i18n="@@usernameLabel"
                             >Username<span>*</span>:</label
                         >
                         <mat-form-field appearance="outline">
@@ -142,9 +131,7 @@ import { unique } from '../../common/general';
                                 formControlName="name"
                                 required
                             />
-                            <mat-error i18n="@@usernameError"
-                                >Username is required</mat-error
-                            >
+                            <mat-error>Username is required</mat-error>
                         </mat-form-field>
                     </div>
                     <div class="field" *ngIf="form.controls.password">
@@ -154,7 +141,6 @@ import { unique } from '../../common/general';
                                 form.controls.password.invalid &&
                                 form.controls.password.touched
                             "
-                            i18n="@@passwordLabel"
                         >
                             Password:
                         </label>
@@ -177,18 +163,14 @@ import { unique } from '../../common/general';
                             >
                                 visibility
                             </app-icon>
-                            <mat-error i18n="@@passordError"
-                                >A valid password is required</mat-error
-                            >
+                            <mat-error>A valid password is required</mat-error>
                         </mat-form-field>
                     </div>
                 </div>
             </ng-container>
             <ng-container *ngIf="form.controls.auth_type.value === 0">
                 <div class="field" *ngIf="form.controls.certificate">
-                    <label for="cert" i18n="@@certificateLabel"
-                        >Certificate:</label
-                    >
+                    <label for="cert">Certificate:</label>
                     <mat-form-field appearance="outline">
                         <textarea
                             matInput
@@ -197,14 +179,12 @@ import { unique } from '../../common/general';
                             i18n-placeholder="@@certificatePlaceholder"
                             formControlName="certificate"
                         ></textarea>
-                        <mat-error i18n="@@certError"
-                            >A valid certificate is required</mat-error
-                        >
+                        <mat-error>A valid certificate is required</mat-error>
                     </mat-form-field>
                 </div>
             </ng-container>
             <div class="field" *ngIf="form.controls.filters">
-                <label for="filters" i18n="@@filtersLabel"> Filters: </label>
+                <label for="filters"> Filters: </label>
                 <mat-form-field appearance="outline" class="w-full">
                     <mat-chip-grid #chipGrid aria-label="Enter fruits">
                         @for (filter of filters; track filter) {

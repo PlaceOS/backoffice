@@ -21,7 +21,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             form.controls.name.invalid &&
                             form.controls.name.touched
                         "
-                        i18n="@@authSourceNameLabel"
                     >
                         Name<span>*</span>:
                     </label>
@@ -34,10 +33,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             formControlName="name"
                             required
                         />
-                        <mat-error
-                            *ngIf="form.controls.name.invalid"
-                            i18n="@@authSourceNameError"
-                        >
+                        <mat-error *ngIf="form.controls.name.invalid">
                             Auth source name is required
                         </mat-error>
                     </mat-form-field>
@@ -49,7 +45,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             form.controls.issuer.invalid &&
                             form.controls.issuer.touched
                         "
-                        i18n="@@authSourceIssuerLabel"
                     >
                         Issuer<span>*</span>:
                     </label>
@@ -62,10 +57,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             formControlName="issuer"
                             required
                         />
-                        <mat-error
-                            *ngIf="form.controls.issuer.invalid"
-                            i18n="@@authSourceIssuerError"
-                        >
+                        <mat-error *ngIf="form.controls.issuer.invalid">
                             Issuer is required
                         </mat-error>
                     </mat-form-field>
@@ -79,7 +71,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             form.controls.idp_sso_target_url.invalid &&
                             form.controls.idp_sso_target_url.touched
                         "
-                        i18n="@@authSourceIdpTargetLabel"
                     >
                         IdP Target URL<span>*</span>:
                     </label>
@@ -94,7 +85,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                         />
                         <mat-error
                             *ngIf="form.controls.idp_sso_target_url.invalid"
-                            i18n="@@authSourceIdpTargetError"
                         >
                             IdP Target URL is required
                         </mat-error>
@@ -107,7 +97,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             form.controls.name_identifier_format.invalid &&
                             form.controls.name_identifier_format.touched
                         "
-                        i18n="@@authSourceNameIdFormatLabel"
                     >
                         Name Identifier Format:
                     </label>
@@ -123,7 +112,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                         />
                         <mat-error
                             *ngIf="form.controls.name_identifier_format.invalid"
-                            i18n="@@authSourceNameIdFormatError"
                         >
                             Name Identifier Format is required
                         </mat-error>
@@ -137,7 +125,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                         form.controls.request_attributes.invalid &&
                         form.controls.request_attributes.touched
                     "
-                    i18n="@@authSourceRequestAttrLabel"
                 >
                     Request Attributes:
                 </label>
@@ -151,7 +138,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                         form.controls.request_attributes.invalid &&
                         form.controls.request_attributes.touched
                     "
-                    i18n="@@authSourceRequestAttrError"
                 >
                     Request Attributes are required
                 </div>
@@ -168,7 +154,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                                 .invalid &&
                             form.controls.assertion_consumer_service_url.touched
                         "
-                        i18n="@@authSourceAssertionUrlLabel"
                     >
                         Assertion URL<span>*</span>:
                     </label>
@@ -187,16 +172,13 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                                 form.controls.assertion_consumer_service_url
                                     .invalid
                             "
-                            i18n="@@authSourceAssetionUrlError"
                         >
                             Assertion URL is required
                         </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.idp_cert_fingerprint">
-                    <label
-                        for="cert-fingerprint"
-                        i18n="@@authSourceCertPrintLabel"
+                    <label for="cert-fingerprint"
                         >Certificate Fingerprint:</label
                     >
                     <mat-form-field appearance="outline">
@@ -211,9 +193,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                 </div>
             </div>
             <div class="field" *ngIf="form.controls.idp_cert">
-                <label for="cert" i18n="@@authSourceCertLabel"
-                    >Full Certificate:</label
-                >
+                <label for="cert">Full Certificate:</label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
@@ -226,9 +206,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.uid_attribute">
-                    <label for="uid-attribute" i18n="@@authSourceUidAttrLabel"
-                        >UID Attribute:</label
-                    >
+                    <label for="uid-attribute">UID Attribute:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -240,9 +218,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.attribute_service_name">
-                    <label
-                        for="attribute-service-name"
-                        i18n="@@authSourceAttrServiceLabel"
+                    <label for="attribute-service-name"
                         >Attribute Service Name:</label
                     >
                     <mat-form-field appearance="outline">
@@ -258,9 +234,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                 </div>
             </div>
             <div class="field" *ngIf="form.controls.attribute_statements">
-                <label for="client-secret" i18n="@@authSourceAttrStmtLabel"
-                    >Attribute Statements:</label
-                >
+                <label for="client-secret">Attribute Statements:</label>
                 <object-list-field
                     [(ngModel)]="attribute_statement_mappings"
                     (ngModelChange)="updateAttributeStatements($event)"
@@ -272,9 +246,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                 class="field"
                 *ngIf="form.controls.idp_sso_target_url_runtime_params"
             >
-                <label for="client-secret" i18n="@@authSourceIdpSsoRuntimeLabel"
-                    >IdP SSO Runtime Params:</label
-                >
+                <label for="client-secret">IdP SSO Runtime Params:</label>
                 <object-list-field
                     [(ngModel)]="runtime_param_list"
                     (ngModelChange)="updateRuntimeParams($event)"
@@ -284,9 +256,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.idp_slo_target_url">
-                    <label for="slo-target" i18n="@@authSourceIdpSloUriLabel"
-                        >IdP SLO Target URL:</label
-                    >
+                    <label for="slo-target">IdP SLO Target URL:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -301,9 +271,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                     class="field"
                     *ngIf="form.controls.slo_default_relay_state"
                 >
-                    <label for="slo-relay" i18n="@@authSourceSloRelayLabel"
-                        >SLO Default Relay State:</label
-                    >
+                    <label for="slo-relay">SLO Default Relay State:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput

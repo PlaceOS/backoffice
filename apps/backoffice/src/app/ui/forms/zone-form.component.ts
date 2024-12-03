@@ -21,9 +21,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             [formGroup]="form"
         >
             <div class="field" *ngIf="form.controls.parent_zone">
-                <label for="parent-zone" i18n="@@parentZoneLabel"
-                    >Parent Zone:
-                </label>
+                <label for="parent-zone">Parent Zone: </label>
                 <item-search-field
                     name="parent-zone"
                     [query_fn]="query_fn"
@@ -37,7 +35,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     [class.error]="
                         form.controls.name.invalid && form.controls.name.touched
                     "
-                    i18n="@@nameLabel"
                 >
                     Name<span>*</span>:
                 </label>
@@ -50,9 +47,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         formControlName="name"
                         required
                     />
-                    <mat-error i18n="@@zoneNameError"
-                        >Zone name is required</mat-error
-                    >
+                    <mat-error>Zone name is required</mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.display_name">
@@ -80,7 +75,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     [class.error]="
                         form.controls.tags.invalid && form.controls.tags.touched
                     "
-                    i18n="@@tagsLabel"
                 >
                     Tags:
                 </label>
@@ -110,9 +104,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description" i18n="@@descriptionLabel"
-                    >Description:</label
-                >
+                <label for="description">Description:</label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
@@ -124,7 +116,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.location">
-                <label for="location" i18n="@@locationLabel">Location:</label>
+                <label for="location">Location:</label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
@@ -163,7 +155,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.code">
-                    <label for="code" i18n="@@codeLabel">Code:</label>
+                    <label for="code">Code:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -175,7 +167,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.location">
-                    <label for="type" i18n="@@typeLabel">Type:</label>
+                    <label for="type">Type:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -189,7 +181,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.count">
-                    <label for="count" i18n="@@countLabel">Count:</label>
+                    <label for="count">Count:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -202,9 +194,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.capacity">
-                    <label for="capacity" i18n="@@capacityLabel">
-                        Capacity:
-                    </label>
+                    <label for="capacity"> Capacity: </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -218,7 +208,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </div>
             </div>
             <div class="field" *ngIf="form.controls.map_id">
-                <label for="map" i18n="@@mapUrlLabel">Map:</label>
+                <label for="map">Map:</label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
@@ -230,7 +220,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.images">
-                <label for="images" i18n="@@imagesLabel">Images:</label>
+                <label for="images">Images:</label>
                 <image-list-field
                     name="images"
                     formControlName="images"

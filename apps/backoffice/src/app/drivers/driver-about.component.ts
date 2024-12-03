@@ -11,10 +11,7 @@ import { DriverStateService } from './driver-state.service';
                 [style.gridTemplateColumns]="'6rem auto'"
             >
                 <ng-container *ngIf="item.default_uri">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@driverDefaultURILabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Default URI
                     </div>
                     <div class="underline select-all overflow-hidden">
@@ -27,18 +24,12 @@ import { DriverStateService } from './driver-state.service';
                     </div>
                 </ng-container>
                 <ng-container *ngIf="item.default_port">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@driverDefaultPortLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Default Port
                     </div>
                     <div class="mono text-sm">{{ item.default_port }}</div>
                 </ng-container>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@driverDetailsCommit"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Repository
                 </div>
                 <div>
@@ -53,17 +44,11 @@ import { DriverStateService } from './driver-state.service';
                         {{ item.repository_id }}</a
                     >
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@driverDetailsModuleName"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Module Name
                 </div>
                 <div class="mono text-sm truncate">{{ item?.module_name }}</div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoCreatedAtLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Created:
                 </div>
                 <div class=" flex items-center">
@@ -78,10 +63,7 @@ import { DriverStateService } from './driver-state.service';
                         {{ item.created_at * 1000 | dateFrom }}
                     </span>
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoUpdatedAtLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Updated:
                 </div>
                 <div class=" flex items-center">
@@ -101,10 +83,7 @@ import { DriverStateService } from './driver-state.service';
                 class="rounded p-4 border border-base-200 flex-1 w-1/3 inline-grid gap-2"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@driverDetailsCompiled"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Compiled
                 </div>
                 <div class="flex items-center">
@@ -123,12 +102,7 @@ import { DriverStateService } from './driver-state.service';
                         View Errors
                     </button>
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@driverDetailsCommit"
-                >
-                    Commit
-                </div>
+                <div class="text-sm font-medium flex items-center">Commit</div>
                 <div class="flex items-center overflow-hidden">
                     <code
                         class="text-xs truncate inline-block max-w-full"
@@ -137,10 +111,7 @@ import { DriverStateService } from './driver-state.service';
                         {{ item.commit }}
                     </code>
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@driverDetailsFileName"
-                >
+                <div class="text-sm font-medium flex items-center">
                     File Name
                 </div>
                 <div class="flex items-center overflow-hidden">
@@ -154,7 +125,6 @@ import { DriverStateService } from './driver-state.service';
                 <button
                     btn
                     (click)="updateDriver()"
-                    i18n="@@driverReloadAction"
                     class="col-span-2"
                     *ngIf="
                         item.update_available &&
@@ -174,9 +144,7 @@ import { DriverStateService } from './driver-state.service';
             </div>
         </section>
         <hr class="my-4" />
-        <header class="font-medium text-lg" i18n="@@settingsLabel">
-            Settings
-        </header>
+        <header class="font-medium text-lg">Settings</header>
         <section *ngIf="item.settings; else load_state">
             <a-settings-form
                 [merge]="true"
@@ -187,7 +155,7 @@ import { DriverStateService } from './driver-state.service';
         <ng-template #load_state>
             <div class="flex flex-col items-center justify-center">
                 <mat-spinner class="mb-4" diameter="48"></mat-spinner>
-                <p i18n="@@driverLoadingLabel">Loading driver settings...</p>
+                <p>Loading driver settings...</p>
             </div>
         </ng-template>
     `,

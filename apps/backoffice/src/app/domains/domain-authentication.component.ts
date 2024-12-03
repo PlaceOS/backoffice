@@ -13,7 +13,6 @@ import { DomainStateService } from './domain-state.service';
                     btn
                     class="w-full sm:w-40 mb-4"
                     (click)="newAuthSource()"
-                    i18n="@@newAction"
                 >
                     New Auth Source
                 </button>

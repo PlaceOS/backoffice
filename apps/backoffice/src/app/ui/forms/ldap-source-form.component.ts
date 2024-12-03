@@ -17,7 +17,6 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                     [class.error]="
                         form.controls.name.invalid && form.controls.name.touched
                     "
-                    i18n="@@authSourceNameLabel"
                 >
                     Name<span>*</span>:
                 </label>
@@ -30,10 +29,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                         formControlName="name"
                         required
                     />
-                    <mat-error
-                        *ngIf="form.controls.name.invalid"
-                        i18n="@@authSourceNameError"
-                    >
+                    <mat-error *ngIf="form.controls.name.invalid">
                         Auth source name is required
                     </mat-error>
                 </mat-form-field>
@@ -46,7 +42,6 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             form.controls.host.invalid &&
                             form.controls.host.touched
                         "
-                        i18n="@@authSourceHostLabel"
                     >
                         Host<span>*</span>:
                     </label>
@@ -58,23 +53,19 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             formControlName="host"
                             i18n-placeholder="@@authSourceHostPlaceholder"
                         />
-                        <mat-error
-                            *ngIf="form.controls.host.invalid"
-                            i18n="@@authSourceNameError"
-                        >
+                        <mat-error *ngIf="form.controls.host.invalid">
                             Host is required
                         </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.port">
-                    <label for="port" i18n="@@portLabel">Port:</label>
+                    <label for="port">Port:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             type="number"
                             name="port"
                             placeholder="Port number"
-                            i18n="@@portPlaceholder"
                             formControlName="port"
                         />
                     </mat-form-field>
@@ -82,9 +73,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.uid">
-                    <label for="uid" i18n="@@authSourceUidLabel"
-                        >User ID Key:</label
-                    >
+                    <label for="uid">User ID Key:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -96,9 +85,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                     </mat-form-field>
                 </div>
                 <div class="field type" *ngIf="form.controls.auth_method">
-                    <label for="auth-method" i18n="@@authSourceMethodLabel"
-                        >Authentication Method:
-                    </label>
+                    <label for="auth-method">Authentication Method: </label>
                     <mat-form-field appearance="outline">
                         <mat-select
                             name="auth-method"
@@ -107,7 +94,6 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             <mat-option
                                 *ngFor="let type of auth_methods"
                                 [value]="type.id"
-                                i18n="@@authSourceMethodOptions"
                             >
                                 {type.name, select, Plain { Plain } SSL { SSL }
                                 TLS { TLS } other { Other }}
@@ -124,7 +110,6 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             form.controls.base.invalid &&
                             form.controls.base.touched
                         "
-                        i18n="@@authSourceBaseLabel"
                     >
                         Base<span>*</span>:
                     </label>
@@ -136,24 +121,18 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             i18n-placeholder="@@authSourceBasePlaceholder"
                             formControlName="base"
                         />
-                        <mat-error
-                            *ngIf="form.controls.base.invalid"
-                            i18n="@@authSourceBaseError"
-                        >
+                        <mat-error *ngIf="form.controls.base.invalid">
                             Base is required
                         </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.bind_dn">
-                    <label for="bind-dn" i18n="@@authSourceBindDnLabel"
-                        >Bind DN:</label
-                    >
+                    <label for="bind-dn">Bind DN:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="bind-dn"
                             placeholder="Bind DN"
-                            i18n="@@authSourceBindDnPlaceholder"
                             formControlName="bind_dn"
                         />
                     </mat-form-field>
@@ -161,9 +140,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.password">
-                    <label for="password" i18n="@@passwordLabel"
-                        >Password:</label
-                    >
+                    <label for="password">Password:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -175,9 +152,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.filter">
-                    <label for="filter" i18n="@@authSourceFilterLabel"
-                        >Filter:</label
-                    >
+                    <label for="filter">Filter:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput

@@ -4,7 +4,6 @@
             [(ngModel)]="is_cron"
             (ngModelChange)="toggleCRON($event)"
             [ngModelOptions]="{ standalone: true }"
-            i18n="@@recurringLabel"
         >
             Recurring Schedule
         </mat-checkbox>
@@ -31,18 +30,18 @@
     </div>
     <div class="fieldset" *ngIf="!is_cron; else cron_time_form">
         <div class="field" *ngIf="form.controls.time">
-            <label for="type" i18n="@@dateLabel">Date: </label>
+            <label for="type">Date: </label>
             <a-date-field name="date" formControlName="time"></a-date-field>
         </div>
         <div class="field" *ngIf="form.controls.time">
-            <label for="type" i18n="@@timeLabel">Time: </label>
+            <label for="type">Time: </label>
             <a-time-field name="date" formControlName="time"></a-time-field>
         </div>
     </div>
 </div>
 <ng-template #cron_time_form>
     <div class="field">
-        <label for="type" i18n="@@repeatLabel">Repeat every: </label>
+        <label for="type">Repeat every: </label>
         <mat-form-field appearance="outline">
             <mat-select
                 name="type"
@@ -63,7 +62,7 @@
         class="field"
         *ngIf="cron_period === 'month' || cron_period === 'year'"
     >
-        <label for="day" i18n="@@dayLabel">Day of Month: </label>
+        <label for="day">Day of Month: </label>
         <mat-form-field appearance="outline">
             <mat-select
                 name="day"
@@ -81,7 +80,7 @@
         </mat-form-field>
     </div>
     <div class="field" *ngIf="cron_period === 'year'">
-        <label for="month" i18n="@@monthLabel">Month of year: </label>
+        <label for="month">Month of year: </label>
         <mat-button-toggle-group
             name="month"
             [(ngModel)]="cron_month"
@@ -97,7 +96,7 @@
         </mat-button-toggle-group>
     </div>
     <div class="field" *ngIf="cron_period === 'week'">
-        <label for="weekday" i18n="@@weekLabel">Day of week: </label>
+        <label for="weekday">Day of week: </label>
         <mat-button-toggle-group
             name="weekday"
             [(ngModel)]="cron_day"
@@ -116,7 +115,7 @@
         class="field"
         *ngIf="cron_period !== 'minute' && cron_period !== 'hour'"
     >
-        <label for="hour" i18n="@@hourLabel">Hour in the day: </label>
+        <label for="hour">Hour in the day: </label>
         <mat-button-toggle-group
             name="hour"
             [(ngModel)]="cron_hour"
@@ -139,7 +138,7 @@
         </mat-button-toggle-group>
     </div>
     <div class="field" *ngIf="cron_period !== 'minute'">
-        <label for="minute" i18n="@@minuteLabel">Minute past the hour: </label>
+        <label for="minute">Minute past the hour: </label>
         <mat-button-toggle-group
             name="minute"
             [(ngModel)]="cron_minute"

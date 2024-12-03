@@ -7,18 +7,19 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
 @Component({
     selector: 'trigger-condition-form',
     template: `
-        <form trigger-condition
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]" *ngIf="form" [formGroup]="form">
+        <form
+            trigger-condition
+            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
+            *ngIf="form"
+            [formGroup]="form"
+        >
             <div class="field" *ngIf="form.controls.condition_type">
-                <label for="type" i18n="@@conditionTypeLabel"
-                    >Condition Type:
-                </label>
+                <label for="type">Condition Type: </label>
                 <mat-form-field appearance="outline">
                     <mat-select name="type" formControlName="condition_type">
                         <mat-option
                             *ngFor="let type of condition_types"
                             [value]="type.id"
-                            i18n="@@triggerConditionType"
                         >
                             { type.id, select, compare { Compare Values } time {
                             Particular Time } }

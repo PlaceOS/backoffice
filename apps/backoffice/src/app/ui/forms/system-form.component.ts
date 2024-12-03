@@ -24,7 +24,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     [class.error]="
                         form.controls.zone.invalid && form.controls.zone.touched
                     "
-                    i18n="@@zoneLabel"
                 >
                     Zone<span>*</span>:
                 </label>
@@ -38,7 +37,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     *ngIf="
                         form.controls.zone.invalid && form.controls.zone.touched
                     "
-                    i18n="@@zoneError"
                 >
                     Zone is required
                 </div>
@@ -51,7 +49,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.name.invalid &&
                             form.controls.name.touched
                         "
-                        i18n="@@nameLabel"
                     >
                         Name<span>*</span>:
                     </label>
@@ -64,9 +61,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             formControlName="name"
                             required
                         />
-                        <mat-error
-                            *ngIf="form.controls.name.invalid"
-                            i18n="@@systemNameError"
+                        <mat-error *ngIf="form.controls.name.invalid"
                             >System name is required</mat-error
                         >
                     </mat-form-field>
@@ -78,7 +73,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.email.invalid &&
                             form.controls.email.touched
                         "
-                        i18n="@@emailLabel"
                     >
                         Email:
                     </label>
@@ -90,9 +84,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             i18n-placeholder="@@systemEmailPlaceholder"
                             formControlName="email"
                         />
-                        <mat-error
-                            *ngIf="form.controls.email.invalid"
-                            i18n="@@emailError"
+                        <mat-error *ngIf="form.controls.email.invalid"
                             >A valid email is required</mat-error
                         >
                     </mat-form-field>
@@ -100,9 +92,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.display_name">
-                    <label for="display-name" i18n="@@displayNameLabel"
-                        >Display Name:
-                    </label>
+                    <label for="display-name">Display Name: </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -114,7 +104,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.display_name">
-                    <label for="code-name" i18n="@@codeNameLabel">Code: </label>
+                    <label for="code-name">Code: </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -133,7 +123,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         form.controls.support_url.invalid &&
                         form.controls.support_url.touched
                     "
-                    i18n="@@supportUrlLabel"
                 >
                     Support URL:
                 </label>
@@ -145,10 +134,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         i18n-placeholder="@@suportUrlPlaceholder"
                         formControlName="support_url"
                     />
-                    <mat-error
-                        *ngIf="form.controls.support_url.invalid"
-                        i18n="@@urlError"
-                    >
+                    <mat-error *ngIf="form.controls.support_url.invalid">
                         A valid URL is required
                     </mat-error>
                 </mat-form-field>
@@ -161,7 +147,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.installed_ui_devices.invalid &&
                             form.controls.installed_ui_devices.touched
                         "
-                        i18n="@@panelCountLabel"
                     >
                         Touch Panels:
                     </label>
@@ -176,7 +161,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         />
                         <mat-error
                             *ngIf="form.controls.installed_ui_devices.invalid"
-                            i18n="@@panelCountError"
                         >
                             A valid positive number is required
                         </mat-error>
@@ -189,7 +173,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.capacity.invalid &&
                             form.controls.capacity.touched
                         "
-                        i18n="@@capacityLabel"
                     >
                         Capacity:
                     </label>
@@ -202,10 +185,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             i18n-placeholder="@@capacityPlaceholder"
                             formControlName="capacity"
                         />
-                        <mat-error
-                            *ngIf="form.controls.capacity.invalid"
-                            i18n="@@capacityError"
-                        >
+                        <mat-error *ngIf="form.controls.capacity.invalid">
                             A valid positive number is required
                         </mat-error>
                     </mat-form-field>
@@ -215,7 +195,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 <mat-checkbox
                     name="bookable"
                     formControlName="bookable"
-                    i18n="@@bookableLabel"
                     class="m-0 flex-1"
                     *ngIf="form.controls.bookable"
                 >
@@ -224,7 +203,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 <mat-checkbox
                     name="signage"
                     formControlName="signage"
-                    i18n="@@signageLabel"
                     class="m-0 flex-1"
                     *ngIf="form.controls.signage"
                 >
@@ -233,7 +211,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 <mat-checkbox
                     name="public"
                     formControlName="public"
-                    i18n="@@publicLabel"
                     class="m-0 flex-1"
                     *ngIf="form.controls.public"
                 >
@@ -241,15 +218,12 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </mat-checkbox>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description" i18n="@@descriptionLabel"
-                    >Description:</label
-                >
+                <label for="description">Description:</label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
                         name="description"
                         placeholder="Description"
-                        i18n="@@descriptionPlaceholder"
                         formControlName="description"
                     ></textarea>
                 </mat-form-field>
@@ -260,7 +234,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         form.controls.features.invalid &&
                         form.controls.features.touched
                     "
-                    i18n="@@featuresLabel"
                 >
                     Features:
                 </label>
@@ -290,7 +263,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.map_id">
-                <label for="map_id" i18n="@@mapIdLabel">Map ID:</label>
+                <label for="map_id">Map ID:</label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
@@ -328,7 +301,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </mat-autocomplete>
             </div>
             <div class="field" *ngIf="form.controls.images">
-                <label for="images" i18n="@@imagesLabel">Images:</label>
+                <label for="images">Images:</label>
                 <image-list-field
                     name="images"
                     formControlName="images"

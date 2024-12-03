@@ -56,7 +56,6 @@ import {
                             form.controls.first_name.invalid &&
                             form.controls.first_name.touched
                         "
-                        i18n="@@firstNameLabel"
                     >
                         First Name<span>*</span>:
                     </label>
@@ -69,15 +68,11 @@ import {
                             formControlName="first_name"
                             required
                         />
-                        <mat-error i18n="@@userNameError"
-                            >User's name is required</mat-error
-                        >
+                        <mat-error>User's name is required</mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.last_name">
-                    <label for="system-name" i18n="@@lastNameLabel">
-                        Last Name<span>*</span>:
-                    </label>
+                    <label for="system-name"> Last Name<span>*</span>: </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -87,9 +82,7 @@ import {
                             formControlName="last_name"
                             required
                         />
-                        <mat-error i18n="@@userLastNameError"
-                            >User's last name is required</mat-error
-                        >
+                        <mat-error>User's last name is required</mat-error>
                     </mat-form-field>
                 </div>
             </div>
@@ -100,7 +93,6 @@ import {
                         form.controls.email.invalid &&
                         form.controls.email.touched
                     "
-                    i18n="@@emailLabel"
                 >
                     Email<span>*</span>:
                 </label>
@@ -113,13 +105,11 @@ import {
                         formControlName="email"
                         autocomplete="nope"
                     />
-                    <mat-error i18n="@@emailError"
-                        >A valid email is required</mat-error
-                    >
+                    <mat-error>A valid email is required</mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.staff_id">
-                <label for="staff-id" i18n="@@staffIdLabel"> Staff ID: </label>
+                <label for="staff-id"> Staff ID: </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
@@ -131,9 +121,7 @@ import {
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.card_number">
-                <label for="card-number" i18n="@@cardNumberLabel">
-                    Card Number:
-                </label>
+                <label for="card-number"> Card Number: </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
@@ -145,18 +133,12 @@ import {
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.support">
-                <mat-checkbox
-                    name="support"
-                    formControlName="support"
-                    i18n="@@supportLabel"
+                <mat-checkbox name="support" formControlName="support"
                     >Support</mat-checkbox
                 >
             </div>
             <div class="field" *ngIf="form.controls.sys_admin">
-                <mat-checkbox
-                    name="sys_admin"
-                    formControlName="sys_admin"
-                    i18n="@@adminLabel"
+                <mat-checkbox name="sys_admin" formControlName="sys_admin"
                     >System Admin</mat-checkbox
                 >
             </div>
@@ -167,7 +149,6 @@ import {
                         form.controls.password.invalid &&
                         form.controls.password.touched
                     "
-                    i18n="@@passwordLabel"
                 >
                     Password:
                 </label>
@@ -187,9 +168,7 @@ import {
                     >
                         visibility
                     </app-icon>
-                    <mat-error i18n="@@passordError"
-                        >A valid password is required</mat-error
-                    >
+                    <mat-error>A valid password is required</mat-error>
                 </mat-form-field>
             </div>
             <div
@@ -203,7 +182,6 @@ import {
                         form.controls.confirm_password.touched
                     "
                     minlength="1"
-                    i18n="@@checkPasswordLabel"
                 >
                     Confirm Pasword:
                 </label>
@@ -220,9 +198,7 @@ import {
                     <app-icon matSuffix (click)="show_confirm = !show_confirm">
                         visibility
                     </app-icon>
-                    <mat-error i18n="@@checkPasswordError"
-                        >Passwords don't match</mat-error
-                    >
+                    <mat-error>Passwords don't match</mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.groups">
@@ -231,7 +207,6 @@ import {
                         form.controls.groups.invalid &&
                         form.controls.groups.touched
                     "
-                    i18n="@@groupsLabel"
                 >
                     User Groups:
                 </label>

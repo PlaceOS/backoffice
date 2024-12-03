@@ -22,10 +22,7 @@ import { TriggerStateService } from './trigger-state.service';
                 class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-2"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoCreatedAtLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Created:
                 </div>
                 <div class=" flex items-center">
@@ -40,10 +37,7 @@ import { TriggerStateService } from './trigger-state.service';
                         {{ item.created_at * 1000 | dateFrom }}
                     </span>
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoUpdatedAtLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Updated:
                 </div>
                 <div class=" flex items-center">
@@ -65,7 +59,6 @@ import { TriggerStateService } from './trigger-state.service';
             <label
                 for="driver"
                 matTooltip="System to use for available status variables and function calls"
-                i18n="@@triggerTemplateSystemLabel"
                 >Template System:
             </label>
             <item-search-field
@@ -76,12 +69,7 @@ import { TriggerStateService } from './trigger-state.service';
             ></item-search-field>
         </div>
         <header class="flex items-center my-4">
-            <div
-                class="font-medium text-lg flex-1"
-                i18n="@@triggerConditionsHeader"
-            >
-                Conditions
-            </div>
+            <div class="font-medium text-lg flex-1">Conditions</div>
             <button
                 btn
                 matRipple
@@ -166,12 +154,7 @@ import { TriggerStateService } from './trigger-state.service';
             </ng-template>
         </section>
         <header class="flex items-center space-x-2 my-4">
-            <div
-                class="font-medium text-lg flex-1"
-                i18n="@@triggerActionsHeader"
-            >
-                Actions
-            </div>
+            <div class="font-medium text-lg flex-1">Actions</div>
             <button
                 btn
                 matRipple
@@ -236,9 +219,7 @@ import { TriggerStateService } from './trigger-state.service';
             </ng-template>
             <ng-template #email_call_template let-row="row">
                 <div class="flex items-center space-x-2 p-4">
-                    <span
-                        [matTooltip]="row.emails | formatList"
-                        i18n="@@emailCountDisplay"
+                    <span [matTooltip]="row.emails | formatList"
                         >{{ row.emails.length }} { row.emails.length, plural, =1
                         { Address } other { Addresses } }</span
                     >&nbsp; | Body Length: {{ row.content.length }}

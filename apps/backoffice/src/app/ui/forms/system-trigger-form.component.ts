@@ -16,7 +16,6 @@ import { UntypedFormGroup } from '@angular/forms';
                 >
                     <div
                         class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded p-2 text-xs truncation"
-                        i18n="@@nameLabel"
                     >
                         Trigger Name
                     </div>
@@ -28,7 +27,6 @@ import { UntypedFormGroup } from '@angular/forms';
                 >
                     <div
                         class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded p-2 text-xs"
-                        i18n="@@triggeredLabel"
                     >
                         Currently Triggered:
                     </div>

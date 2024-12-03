@@ -15,7 +15,6 @@ import { DomainStateService } from './domain-state.service';
                     btn
                     class="w-full sm:w-40 mb-4"
                     (click)="newApplication()"
-                    i18n="@@newAction"
                 >
                     New Application
                 </button>

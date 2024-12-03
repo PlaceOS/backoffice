@@ -7,9 +7,7 @@
     (dragend)="dragging = false"
 >
     <app-icon>cloud_upload</app-icon>
-    <div class="text" i18n="uploadCSVAction">
-        Select or drop CSV file to begin
-    </div>
+    <div class="text">Select or drop CSV file to begin</div>
     <input type="file" (change)="loadCSVData($event)" />
 </div>
 <div class="template" *ngIf="template">

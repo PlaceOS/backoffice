@@ -41,12 +41,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                 class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-2"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@userCreatedAtLabel"
-                >
-                    Email:
-                </div>
+                <div class="text-sm font-medium flex items-center">Email:</div>
                 <div>
                     <a
                         class="underline mono text-sm truncate"
@@ -56,28 +51,18 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                     </a>
                 </div>
                 <ng-container *ngIf="item?.department">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@userCreatedAtLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Department:
                     </div>
                     <div>{{ item?.department }}</div>
                 </ng-container>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@userUpdatedAtLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Authority ID:
                 </div>
                 <div class="mono text-sm">
                     {{ item?.authority_id }}
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    for="groups"
-                    i18n="@@userGroupsLabel"
-                >
+                <div class="text-sm font-medium flex items-center" for="groups">
                     User Groups:
                 </div>
                 <div
@@ -91,10 +76,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                         {{ group }}
                     </div>
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoCreatedAtLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Created:
                 </div>
                 <div class=" flex items-center">
@@ -110,10 +92,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                     </span>
                 </div>
                 <ng-template *ngIf="item.updated_at">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@repoUpdatedAtLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Updated:
                     </div>
                     <div class=" flex items-center">

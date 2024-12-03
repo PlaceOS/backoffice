@@ -46,7 +46,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                 <button btn type="button" class="w-full" (click)="addRow()">
                     <div class="contents">
                         <app-icon>add</app-icon>
-                        <div class="text" i18n="@@newItem">New Item</div>
+                        <div class="text">New Item</div>
                     </div>
                 </button>
             </div>

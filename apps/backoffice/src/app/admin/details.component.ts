@@ -39,7 +39,7 @@ export interface PlaceServiceDetails {
         <div
             class="flex items-center space-x-2 mb-4 px-4 py-2 bg-base-200 rounded"
         >
-            <h3 class="text-lg font-medium" i18n="@@backoffice">
+            <h3 class="text-lg font-medium">
                 Application Details
                 <span class="mono opacity-60 ml-2">Backoffice</span>
             </h3>
@@ -56,11 +56,7 @@ export interface PlaceServiceDetails {
             class="border border-base-200 rounded p-4 mb-4 inline-grid gap-2"
             [style.gridTemplateColumns]="'6.5rem auto'"
         >
-            <div
-                class="text-sm font-medium flex items-center"
-                for="version"
-                i18n="@@version"
-            >
+            <div class="text-sm font-medium flex items-center" for="version">
                 Version:
             </div>
             <div class="flex items-center space-x-2">
@@ -78,11 +74,7 @@ export interface PlaceServiceDetails {
                     {{ backoffice_tag }}
                 </code>
             </div>
-            <div
-                class="text-sm font-medium flex items-center"
-                for="hash"
-                i18n="@@commitHash"
-            >
+            <div class="text-sm font-medium flex items-center" for="hash">
                 Commit Hash:
             </div>
             <div>
@@ -90,11 +82,7 @@ export interface PlaceServiceDetails {
                     {{ backoffice_hash }}
                 </code>
             </div>
-            <div
-                class="text-sm font-medium flex items-center"
-                for="build-time"
-                i18n="@@buildTime"
-            >
+            <div class="text-sm font-medium flex items-center" for="build-time">
                 Build:
             </div>
             <div
@@ -106,7 +94,7 @@ export interface PlaceServiceDetails {
             </div>
         </section>
         <div class="flex items-center space-x-4 px-4 py-2 bg-base-200 rounded">
-            <div class="text-lg font-medium" i18n="@@apiHeader">
+            <div class="text-lg font-medium">
                 Backend Services <span class="mono opacity-60 ml-2">API</span>
             </div>
             <code class="bg-base-300" *ngIf="backend_version">

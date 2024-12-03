@@ -32,7 +32,7 @@ const task_details = {};
             <button btn icon (click)="close.emit()">
                 <app-icon>arrow_back</app-icon>
             </button>
-            <h3 class="text-lg font-medium" i18n="@@clusterHeader">
+            <h3 class="text-lg font-medium">
                 Cluster - {{ cluster?.hostname }}
             </h3>
             <div class="flex-1"></div>

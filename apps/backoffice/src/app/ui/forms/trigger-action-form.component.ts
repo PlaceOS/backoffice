@@ -37,7 +37,6 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                                 form.controls.emails.touched &&
                                 form.controls.emails.errors
                             "
-                            i18n="@@emailAddressesLabel"
                         >
                             Email Addresses<span>*</span>:
                         </label>
@@ -76,9 +75,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                         </mat-form-field>
                     </div>
                     <div class="field" *ngIf="form.controls.content">
-                        <label for="content" i18n="@@emailBodyLabel">
-                            Email Body:
-                        </label>
+                        <label for="content"> Email Body: </label>
                         <mat-form-field appearance="outline">
                             <textarea
                                 matInput
@@ -92,9 +89,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                 </ng-container>
                 <ng-container *ngSwitchDefault>
                     <div class="field" *ngIf="form.controls.method_call">
-                        <label for="content" i18n="@@selectExecLabel">
-                            Select method to execute:
-                        </label>
+                        <label for="content"> Select method to execute: </label>
                         <execute-method-field
                             formControlName="method_call"
                             [system]="system"

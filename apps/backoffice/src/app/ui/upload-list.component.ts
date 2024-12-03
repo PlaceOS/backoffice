@@ -48,7 +48,6 @@ import { UploadsService } from '../common/uploads.service';
                                 btn
                                 *ngIf="item.progress >= 100 && item.link"
                                 (click)="copyLink(item)"
-                                i18n="@@uploadLink"
                             >
                                 Link
                             </a>
@@ -56,7 +55,6 @@ import { UploadsService } from '../common/uploads.service';
                                 btn
                                 *ngIf="item.error"
                                 (click)="retry(item)"
-                                i18n="@@uploadRetry"
                             >
                                 Retry
                             </button>

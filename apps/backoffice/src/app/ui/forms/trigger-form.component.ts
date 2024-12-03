@@ -16,7 +16,6 @@ import { UntypedFormGroup } from '@angular/forms';
                     [class.error]="
                         form.controls.name.invalid && form.controls.name.touched
                     "
-                    i18n="@@nameLabel"
                     >Name<span>*</span>:</label
                 >
                 <mat-form-field appearance="outline">
@@ -28,15 +27,11 @@ import { UntypedFormGroup } from '@angular/forms';
                         formControlName="name"
                         required
                     />
-                    <mat-error i18n="@@triggerError"
-                        >Trigger name is required</mat-error
-                    >
+                    <mat-error>Trigger name is required</mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description" i18n="@@descriptionLabel"
-                    >Description:</label
-                >
+                <label for="description">Description:</label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
@@ -51,7 +46,6 @@ import { UntypedFormGroup } from '@angular/forms';
                 <mat-checkbox
                     name="enable-webhook"
                     formControlName="enable_webhook"
-                    i18n="@@enableWebhooklabel"
                 >
                     Enable Webhook
                 </mat-checkbox>
@@ -68,7 +62,6 @@ import { UntypedFormGroup } from '@angular/forms';
                     [class.error]="
                         form.controls.name.invalid && form.controls.name.touched
                     "
-                    i18n="@@debounceLabel"
                 >
                     Debounce Period:
                 </label>
@@ -82,9 +75,7 @@ import { UntypedFormGroup } from '@angular/forms';
                         formControlName="debounce_period"
                         required
                     />
-                    <mat-error i18n="@@debounceError"
-                        >Debounce period must be 0 or greater</mat-error
-                    >
+                    <mat-error>Debounce period must be 0 or greater</mat-error>
                 </mat-form-field>
             </div>
             <div
@@ -94,9 +85,7 @@ import { UntypedFormGroup } from '@angular/forms';
                     form.controls.supported_methods
                 "
             >
-                <label for="methods" i18n="@@supportedMethodsLabel">
-                    Supported Methods:
-                </label>
+                <label for="methods"> Supported Methods: </label>
                 <mat-form-field appearance="outline">
                     <mat-select
                         name="methods"

@@ -9,11 +9,9 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
     template: `
         <div role="table" *ngIf="logs?.length; else empty_state">
             <div table-head>
-                <div class="w-1/3" i18n="@@logEventStart">Session Start</div>
-                <div class="w-1/3" i18n="@@logEventEnd">Ended</div>
-                <div class="w-1/3" i18n="@@logEventAction">
-                    Systems Accessed
-                </div>
+                <div class="w-1/3">Session Start</div>
+                <div class="w-1/3">Ended</div>
+                <div class="w-1/3">Systems Accessed</div>
             </div>
             <div table-body>
                 <div table-row *ngFor="let item of logs">
@@ -31,9 +29,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
             </div>
         </div>
         <ng-template #empty_state>
-            <div class="p-8 text-center opacity-30" i18n="@@logTableEmpty">
-                No logs found
-            </div>
+            <div class="p-8 text-center opacity-30">No logs found</div>
         </ng-template>
     `,
     styles: [

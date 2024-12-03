@@ -11,7 +11,7 @@
 >
     <div class="fieldset">
         <div class="field">
-            <label for="type" i18n="@@typeLabel">Type<span>*</span>: </label>
+            <label for="type">Type<span>*</span>: </label>
             <mat-form-field appearance="outline">
                 <mat-select formControlName="type">
                     <mat-option
@@ -24,32 +24,28 @@
             </mat-form-field>
         </div>
         <div class="field">
-            <label for="name" i18n="@@nameLabel">Name<span>*</span>: </label>
+            <label for="name">Name<span>*</span>: </label>
             <mat-form-field appearance="outline">
                 <input
                     matInput
                     name="name"
                     placeholder="Extension Display Name"
-                    i18n-placeholder="@@extensionNamePlaceholder"
                     formControlName="name"
                 />
-                <mat-error i18n="@@nameError"
-                    >A valid name is required</mat-error
-                >
+                <mat-error>A valid name is required</mat-error>
             </mat-form-field>
         </div>
     </div>
     <div class="field">
-        <label for="url" i18n="@@urlLabel">URL<span>*</span>: </label>
+        <label for="url">URL<span>*</span>: </label>
         <mat-form-field appearance="outline">
             <input
                 matInput
                 name="url"
                 placeholder="Extension URL"
-                i18n-placeholder="@@extensionUrlPlaceholder"
                 formControlName="url"
             />
-            <mat-error i18n="@@urlError">A valid URL is required</mat-error>
+            <mat-error>A valid URL is required</mat-error>
         </mat-form-field>
     </div>
     <div class="w-full">
@@ -66,7 +62,6 @@
                         [(ngModel)]="condition[0]"
                         [ngModelOptions]="{ standalone: true }"
                         placeholder="Condition Field"
-                        i18n-placeholder="@@conditionPlaceholder"
                     />
                 </mat-form-field>
             </div>
@@ -98,7 +93,6 @@
                         [(ngModel)]="condition[2]"
                         [ngModelOptions]="{ standalone: true }"
                         placeholder="Condition Value"
-                        i18n-placeholder="@@conditionValuePlaceholder"
                     />
                 </mat-form-field>
             </div>

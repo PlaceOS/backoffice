@@ -9,9 +9,7 @@ import { tap } from 'rxjs/operators';
 @Component({
     selector: 'repository-drivers',
     template: `
-        <h3 class="font-medium text-lg mb-2" i18n="@@repoDriverHeader">
-            Available Drivers
-        </h3>
+        <h3 class="font-medium text-lg mb-2">Available Drivers</h3>
         <mat-progress-bar
             mode="indeterminate"
             class="w-full"

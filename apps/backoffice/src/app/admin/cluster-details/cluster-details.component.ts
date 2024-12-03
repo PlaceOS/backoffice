@@ -48,7 +48,6 @@ import { interval } from 'rxjs';
                                     btn
                                     matRipple
                                     (click)="active_cluster = cluster"
-                                    i18n="@@viewClusterProcesses"
                                     class="mx-2"
                                 >
                                     View Processes
@@ -64,9 +63,7 @@ import { interval } from 'rxjs';
                 class="absolute inset-0 flex flex-col items-center p-8 space-y-2"
             >
                 <app-icon class="text-3xl">close</app-icon>
-                <div class="text opacity-30" i18n="@@clusterListEmpty">
-                    No cluster details available
-                </div>
+                <div class="text opacity-30">No cluster details available</div>
             </div>
         </ng-template>
         <ng-template #process_state>

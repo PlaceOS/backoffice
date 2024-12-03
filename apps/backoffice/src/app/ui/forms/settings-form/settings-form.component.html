@@ -1,11 +1,7 @@
 <form *ngIf="form && used_settings && used_settings.length" [formGroup]="form">
     <div class="actions">
         <button btn *ngIf="edited_count > 0" (click)="clearChanges()">
-            <div
-                class="text"
-                *ngIf="!saving[shown_option.id]; else spinner"
-                i18n="@@clearLabel"
-            >
+            <div class="text" *ngIf="!saving[shown_option.id]; else spinner">
                 Clear Changes [C]
             </div>
         </button>
@@ -15,11 +11,7 @@
             [disabled]="has_errors && !saving[shown_option.id]"
             (click)="save(shown_option.id)"
         >
-            <div
-                class="text"
-                *ngIf="!saving[shown_option.id]; else spinner"
-                i18n="@@saveLabel"
-            >
+            <div class="text" *ngIf="!saving[shown_option.id]; else spinner">
                 Save [S]
             </div>
         </button>
@@ -29,11 +21,7 @@
             [disabled]="has_errors && !saving[shown_option.id]"
             (click)="saveAll()"
         >
-            <div
-                class="text"
-                *ngIf="!saving[shown_option.id]; else spinner"
-                i18n="@@saveAllLabel"
-            >
+            <div class="text" *ngIf="!saving[shown_option.id]; else spinner">
                 Save All [A]
             </div>
         </button>

@@ -29,7 +29,6 @@ import { map } from 'rxjs/operators';
                         form.controls.driver.invalid &&
                         form.controls.driver.touched
                     "
-                    i18n="@@driverLabel"
                 >
                     Driver<span>*</span>:
                 </label>
@@ -44,7 +43,6 @@ import { map } from 'rxjs/operators';
                         form.controls.driver.invalid &&
                         form.controls.driver.touched
                     "
-                    i18n="@@driverError"
                 >
                     Driver is required
                 </div>
@@ -62,7 +60,6 @@ import { map } from 'rxjs/operators';
                             form.controls.system.invalid &&
                             form.controls.system.touched
                         "
-                        i18n="@@systemLabel"
                         >Control System<span *ngIf="role === 'logic'">*</span>:
                     </label>
                     <ng-container *ngIf="!readonly; else readonly_system">
@@ -77,7 +74,6 @@ import { map } from 'rxjs/operators';
                                 form.controls.system.invalid &&
                                 form.controls.system.touched
                             "
-                            i18n="@@systemError"
                         >
                             Control System is required
                         </div>
@@ -102,7 +98,6 @@ import { map } from 'rxjs/operators';
                             form.controls.uri.invalid &&
                             form.controls.uri.touched
                         "
-                        i18n="@@uriLabel"
                     >
                         URI<span>*</span>:
                     </label>
@@ -114,9 +109,7 @@ import { map } from 'rxjs/operators';
                             i18n-placeholder="@@uriPlaceholder"
                             formControlName="uri"
                         />
-                        <mat-error i18n="@@uriError"
-                            >A valid URI is required</mat-error
-                        >
+                        <mat-error>A valid URI is required</mat-error>
                     </mat-form-field>
                 </div>
                 <div class="fieldset">
@@ -133,7 +126,6 @@ import { map } from 'rxjs/operators';
                                 form.controls.ip.invalid &&
                                 form.controls.ip.touched
                             "
-                            i18n="@@ipAddressLabel"
                         >
                             IP Address or FQDN<span
                                 *ngIf="role === 'ssh' || role === 'device'"
@@ -148,10 +140,7 @@ import { map } from 'rxjs/operators';
                                 i18n-placeholder="@@ipAddressPlaceholder"
                                 formControlName="ip"
                             />
-                            <mat-error
-                                *ngIf="form.controls.ip.invalid"
-                                i18n="@@ipAddressError"
-                            >
+                            <mat-error *ngIf="form.controls.ip.invalid">
                                 A valid IP address is required
                             </mat-error>
                         </mat-form-field>
@@ -169,7 +158,6 @@ import { map } from 'rxjs/operators';
                                 form.controls.port.invalid &&
                                 form.controls.port.touched
                             "
-                            i18n="@@portLabel"
                         >
                             Port Number<span
                                 *ngIf="role === 'ssh' || role === 'device'"
@@ -185,10 +173,7 @@ import { map } from 'rxjs/operators';
                                 i18n-placeholder="@@portPlaceholder"
                                 formControlName="port"
                             />
-                            <mat-error
-                                *ngIf="form.controls.port.invalid"
-                                i18n="@@portError"
-                            >
+                            <mat-error *ngIf="form.controls.port.invalid">
                                 A valid port number between 1 - 65535 is
                                 required
                             </mat-error>
@@ -202,10 +187,7 @@ import { map } from 'rxjs/operators';
                         !(role === 'service' || role === 'websocket')
                     "
                 >
-                    <mat-checkbox
-                        name="tls"
-                        formControlName="tls"
-                        i18n="@@tlsLabel"
+                    <mat-checkbox name="tls" formControlName="tls"
                         >TLS</mat-checkbox
                     >
                 </div>
@@ -216,10 +198,7 @@ import { map } from 'rxjs/operators';
                         !(role === 'service' || role === 'websocket')
                     "
                 >
-                    <mat-checkbox
-                        name="udp"
-                        formControlName="udp"
-                        i18n="@@udpLabel"
+                    <mat-checkbox name="udp" formControlName="udp"
                         >UDP</mat-checkbox
                     >
                 </div>
@@ -227,10 +206,7 @@ import { map } from 'rxjs/operators';
                     class="field"
                     *ngIf="form.controls.makebreak && role !== 'logic'"
                 >
-                    <mat-checkbox
-                        name="makebreak"
-                        formControlName="makebreak"
-                        i18n="@@makebreakLabel"
+                    <mat-checkbox name="makebreak" formControlName="makebreak"
                         >Makebreak</mat-checkbox
                     >
                 </div>
@@ -240,14 +216,13 @@ import { map } from 'rxjs/operators';
                 >
                     <mat-checkbox
                         name="ignore-connected"
-                        i18n="@@ignoreConnectedLabel"
                         formControlName="ignore_connected"
                     >
                         Ignore Connected
                     </mat-checkbox>
                 </div>
                 <div class="field" *ngIf="form.controls.notes">
-                    <label for="notes" i18n="@@notesLabel">Notes:</label>
+                    <label for="notes">Notes:</label>
                     <mat-form-field appearance="outline">
                         <textarea
                             matInput
@@ -259,9 +234,7 @@ import { map } from 'rxjs/operators';
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.custom_name">
-                    <label for="custom-name" i18n="@@customNameLabel"
-                        >Custom Name:</label
-                    >
+                    <label for="custom-name">Custom Name:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -276,7 +249,7 @@ import { map } from 'rxjs/operators';
                     class="field"
                     *ngIf="form.controls.edge && !form.controls.id.value"
                 >
-                    <label for="driver" i18n="@@driverLabel"> Edge: </label>
+                    <label for="driver"> Edge: </label>
                     <item-search-field
                         name="edge"
                         [query_fn]="edge_query_fn"

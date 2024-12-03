@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, Optional, ViewEncapsulation } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject } from 'rxjs';
@@ -8,6 +8,7 @@ import {
     invalidateToken,
     isMock,
     isOnline,
+    setAPI_Key,
     token,
 } from '@placeos/ts-client';
 import {
@@ -25,9 +26,12 @@ import { setNotifyOutlet } from './common/notifications';
 import { AsyncHandler } from './common/async-handler.class';
 import { log, detectIE } from './common/general';
 import { BackofficeUsersService } from './users/users.service';
-import { NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { currentUser } from './common/user-state';
 import { addDays, format, getUnixTime } from 'date-fns';
+
+import { TranslateService } from '@ngx-translate/core';
+import { setTranslationService } from './common/translate';
 
 @Component({
     selector: 'placeos-root',
@@ -94,7 +98,9 @@ export class AppComponent extends AsyncHandler implements OnInit {
         private _users: BackofficeUsersService,
         private _cache: SwUpdate,
         private _snackbar: MatSnackBar,
-        private _router: Router
+        private _router: Router,
+        private _route: ActivatedRoute,
+        @Optional() private _translate: TranslateService
     ) {
         super();
     }
@@ -105,7 +111,18 @@ export class AppComponent extends AsyncHandler implements OnInit {
             location.href = `${location.origin}${location.pathname}assets/not-supported.html`;
             return;
         }
+        this._route.queryParamMap.subscribe((params) => {
+            if (params.has('lang')) {
+                const locale = params.get('lang');
+                this._translate?.use(locale);
+                localStorage.setItem('BACKOFFICE.locale', locale);
+            }
+            if (params.has('x-api-key')) {
+                setAPI_Key(params.get('x-api-key'));
+            }
+        });
         setNotifyOutlet(this._snackbar);
+        setTranslationService(this._translate);
         this._loading.next(true);
         /** Wait for settings to initialise */
         await this._settings.initialised.pipe(first((_) => _)).toPromise();
@@ -143,6 +160,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
             }
         });
         this._checkTenants();
+        this._initLocale();
     }
 
     private onInitError() {
@@ -171,5 +189,30 @@ export class AppComponent extends AsyncHandler implements OnInit {
                 });
             }
         }
+    }
+
+    private _initLocale() {
+        try {
+            let locale = localStorage.getItem('PLACEOS.locale');
+            const locales = this._settings.get('app.locales') || [
+                { id: 'en', name: 'English' },
+            ];
+            this._translate?.addLangs(locales.map((_) => _.id));
+            if (locale) {
+                this._translate?.use(locale);
+            } else {
+                const list = navigator.languages;
+                for (const lang of list) {
+                    locale = locales.find((_) => _.id === lang);
+                    if (!locale)
+                        locale = locales.find((_) => lang.includes(_.id));
+                    if (locale) {
+                        this._translate?.use(lang);
+                        localStorage.setItem('PLACEOS.locale', lang);
+                        break;
+                    }
+                }
+            }
+        } catch {}
     }
 }

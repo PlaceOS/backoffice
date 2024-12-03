@@ -12,10 +12,7 @@ import { SystemStateService } from './system-state.service';
                     [style.gridTemplateColumns]="'7.5rem auto'"
                 >
                     <ng-container *ngIf="item?.support_url">
-                        <div
-                            class="text-sm font-medium flex items-center"
-                            i18n="@@systemUrlLabel"
-                        >
+                        <div class="text-sm font-medium flex items-center">
                             Support URL:
                         </div>
                         <a
@@ -27,37 +24,25 @@ import { SystemStateService } from './system-state.service';
                         </a>
                     </ng-container>
                     <ng-container *ngIf="item?.email">
-                        <div
-                            class="text-sm font-medium flex items-center"
-                            i18n="@@systemBookableLabel"
-                        >
+                        <div class="text-sm font-medium flex items-center">
                             Bookable Room:
                         </div>
                         <div>{{ item?.bookable ? 'Yes' : 'No' }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.email">
-                        <div
-                            class="text-sm font-medium flex items-center"
-                            i18n="@@systemPublicLabel"
-                        >
+                        <div class="text-sm font-medium flex items-center">
                             Publicly Available:
                         </div>
                         <div>{{ item?.public ? 'Yes' : 'No' }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.code">
-                        <div
-                            class="text-sm font-medium flex items-center"
-                            i18n="@@codeLabel"
-                        >
+                        <div class="text-sm font-medium flex items-center">
                             Code:
                         </div>
                         <div>{{ item?.code }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.email">
-                        <div
-                            class="text-sm font-medium flex items-center"
-                            i18n="@@emailLabel"
-                        >
+                        <div class="text-sm font-medium flex items-center">
                             Email:
                         </div>
                         <a
@@ -68,45 +53,30 @@ import { SystemStateService } from './system-state.service';
                         >
                     </ng-container>
                     <ng-container *ngIf="item?.capacity">
-                        <div
-                            class="text-sm font-medium flex items-center"
-                            i18n="@@capacityLabel"
-                        >
+                        <div class="text-sm font-medium flex items-center">
                             Capacity:
                         </div>
                         <div>{{ item?.capacity }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.map_id">
-                        <div
-                            class="text-sm font-medium flex items-center"
-                            i18n="@@mapIdLabel"
-                        >
+                        <div class="text-sm font-medium flex items-center">
                             Map ID:
                         </div>
                         <div class="value mono">{{ item?.map_id }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.installed_ui_devices">
-                        <div
-                            class="text-sm font-medium flex items-center"
-                            i18n="@@systemPanelCountLabel"
-                        >
+                        <div class="text-sm font-medium flex items-center">
                             Installed Touch Panels:
                         </div>
                         <div>{{ item?.installed_ui_devices }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.timezone">
-                        <div
-                            class="text-sm font-medium flex items-center"
-                            i18n="@@systemTimezoneLabel"
-                        >
+                        <div class="text-sm font-medium flex items-center">
                             Timezone:
                         </div>
                         <div>{{ item?.timezone }}</div>
                     </ng-container>
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@repoCreatedAtLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Created:
                     </div>
                     <div class=" flex items-center">
@@ -121,10 +91,7 @@ import { SystemStateService } from './system-state.service';
                             {{ item.created_at * 1000 | dateFrom }}
                         </span>
                     </div>
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@repoUpdatedAtLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Updated:
                     </div>
                     <div class=" flex items-center">
@@ -147,30 +114,16 @@ import { SystemStateService } from './system-state.service';
                 <h3 class="w-full text-center font-medium mono uppercase">
                     System Controls
                 </h3>
-                <button
-                    btn
-                    start
-                    class="w-full"
-                    (click)="start()"
-                    i18n="@@systemStartAction"
-                >
+                <button btn start class="w-full" (click)="start()">
                     Start System
                 </button>
-                <button
-                    btn
-                    stop
-                    class="w-full"
-                    (click)="stop()"
-                    i18n="@@systemStopAction"
-                >
+                <button btn stop class="w-full" (click)="stop()">
                     Stop System
                 </button>
             </div>
         </section>
         <hr class="my-4" />
-        <header class="font-medium text-lg" i18n="@@settingsLabel">
-            Settings
-        </header>
+        <header class="font-medium text-lg">Settings</header>
         <section *ngIf="item?.settings && other_settings; else load_state">
             <a-settings-form
                 [id]="item?.id"
@@ -182,7 +135,7 @@ import { SystemStateService } from './system-state.service';
         <ng-template #load_state>
             <div class="flex flex-col p-8 items-center justify-center">
                 <mat-spinner class="mb-4" [diameter]="32"></mat-spinner>
-                <p i18n="@@systemLoadingLabel">Loading system settings...</p>
+                <p>Loading system settings...</p>
             </div>
         </ng-template>
     `,

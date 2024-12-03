@@ -44,9 +44,7 @@ export interface PlaceClusterUsageStamp {
             <div
                 class="flex items-center justify-between space-x-2 p-2 text-left"
             >
-                <label i18n="@@cluserMemoryUsed" class="w-28">
-                    Memory Used
-                </label>
+                <label class="w-28"> Memory Used </label>
                 <div class="value flex-1 text-right flex space-x-2">
                     <code>{{ used_memory }} / {{ total_memory }}</code>
                     <code> {{ memory_percentage.toFixed(2) }}% </code>
@@ -55,7 +53,7 @@ export interface PlaceClusterUsageStamp {
             <div
                 class="flex items-center justify-between space-x-2 bg-base-200 rounded p-2 text-left"
             >
-                <label i18n="@@clusterCpuUsage" class="w-28">CPU Usage</label>
+                <label class="w-28">CPU Usage</label>
                 <code> {{ node?.total_cpu }}% </code>
             </div>
         </div>

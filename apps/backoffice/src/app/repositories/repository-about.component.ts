@@ -11,29 +11,18 @@ import { RepositoriesStateService } from './repositories-state.service';
                 class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-2"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@descriptionLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Description:
                 </div>
                 <div class="select-all">
                     {{ item.description || 'No description' }}
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoTypeLabel"
-                >
-                    Type:
-                </div>
-                <div i18n="@@driverListEmpty">
+                <div class="text-sm font-medium flex items-center">Type:</div>
+                <div>
                     { item.type, select, interface { Interface Repository }
                     driver { Driver Repository }, other { =Unknown=} }
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoFolderNameLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Folder name:
                 </div>
                 <div
@@ -45,10 +34,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                         item.folder_name || 'No folder set'
                     }}</a>
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoCreatedAtLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Created:
                 </div>
                 <div class=" flex items-center">
@@ -63,10 +49,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                         {{ item.created_at * 1000 | dateFrom }}
                     </span>
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoUpdatedAtLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Updated:
                 </div>
                 <div class=" flex items-center">
@@ -86,10 +69,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                 class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-2 overflow-hidden"
                 [style.gridTemplateColumns]="'6.5rem auto'"
             >
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoUriLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Repository URI:
                 </div>
                 <div class="underline select-all overflow-hidden">
@@ -100,12 +80,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                         >{{ repo_uri || 'No URI set' }}</a
                     >
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoBranchLabel"
-                >
-                    Branch:
-                </div>
+                <div class="text-sm font-medium flex items-center">Branch:</div>
                 <div class="flex items-center overflow-hidden">
                     <code
                         class="text-xs truncate inline-block max-w-full"
@@ -114,10 +89,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                         {{ item.branch }}
                     </code>
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoCommitHashLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Commit hash:
                 </div>
                 <div class="flex items-center overflow-hidden">
@@ -144,10 +116,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     [disabled]="pulling"
                     (click)="pullLatestCommit()"
                 >
-                    <ng-container
-                        *ngIf="!pulling; else spinner"
-                        i18n="@@repoPullAction"
-                    >
+                    <ng-container *ngIf="!pulling; else spinner">
                         Pull latest commit
                     </ng-container>
                 </button>

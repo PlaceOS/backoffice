@@ -12,10 +12,7 @@
                 "baseHref": "./",
                 "outputPath": "dist/apps/backoffice",
                 "index": "apps/backoffice/src/index.html",
-                "polyfills": [
-                    "apps/backoffice/src/polyfills.ts",
-                    "@angular/localize/init"
-                ],
+                "polyfills": ["apps/backoffice/src/polyfills.ts"],
                 "tsConfig": "apps/backoffice/tsconfig.app.json",
                 "assets": [
                     "apps/backoffice/src/favicon.ico",

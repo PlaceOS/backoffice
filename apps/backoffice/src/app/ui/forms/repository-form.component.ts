@@ -42,7 +42,6 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                     [class.error]="
                         form.controls.name.invalid && form.controls.name.touched
                     "
-                    i18n="@@nameLabel"
                 >
                     Name<span>*</span>:
                 </label>
@@ -55,9 +54,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         formControlName="name"
                         required
                     />
-                    <mat-error i18n="@@repoNameError"
-                        >Repository name is required</mat-error
-                    >
+                    <mat-error>Repository name is required</mat-error>
                 </mat-form-field>
             </div>
             <div
@@ -68,15 +65,12 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                     form.controls.folder_name
                 "
             >
-                <label for="type" i18n="@@repoTypeLabel">
-                    Repository Type:
-                </label>
+                <label for="type"> Repository Type: </label>
                 <mat-form-field appearance="outline">
                     <mat-select name="type" formControlName="repo_type">
                         <mat-option
                             *ngFor="let type of repo_types"
                             [value]="type.id"
-                            i18n="@@repoType"
                         >
                             { type.name, select, Driver { Driver } Interface {
                             Interface } other { Other } }
@@ -90,7 +84,6 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                     [class.error]="
                         form.controls.uri.invalid && form.controls.uri.touched
                     "
-                    i18n="@@repoUriLabel"
                 >
                     Repository URI<span>*</span>:
                 </label>
@@ -103,13 +96,11 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         formControlName="uri"
                         required
                     />
-                    <mat-error i18n="@@repoUriError">URI is required</mat-error>
+                    <mat-error>URI is required</mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.username">
-                <label for="repo-u" i18n="@@usernameLabel">
-                    Repository Username:
-                </label>
+                <label for="repo-u"> Repository Username: </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
@@ -122,9 +113,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.password">
-                <label for="repo-p" i18n="@@passwordLabel">
-                    Repository Password:
-                </label>
+                <label for="repo-p"> Repository Password: </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
@@ -150,7 +139,6 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         form.controls.branch.invalid &&
                         form.controls.branch.touched
                     "
-                    i18n="@@branchLabel"
                 >
                     Branch<span>*</span>:
                 </label>
@@ -167,15 +155,11 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                             {{ branch }}
                         </mat-option>
                     </mat-select>
-                    <mat-error i18n="@@repoBranchError">
-                        Working Branch name is required
-                    </mat-error>
+                    <mat-error> Working Branch name is required </mat-error>
                 </mat-form-field>
             </div>
             <div class="field commit">
-                <label for="commit" i18n="@@repoCommitLabel">
-                    Repository Commit:
-                </label>
+                <label for="commit"> Repository Commit: </label>
                 <mat-form-field appearance="outline">
                     <mat-select
                         name="type"
@@ -205,9 +189,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                             </div>
                         </mat-option>
                     </mat-select>
-                    <mat-error i18n="@@repoBranchError">
-                        Commit is required
-                    </mat-error>
+                    <mat-error> Commit is required </mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="can_change_commit && is_interface">
@@ -227,7 +209,6 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         form.controls.folder_name.invalid &&
                         form.controls.folder_name.touched
                     "
-                    i18n="@@folderNameLabel"
                 >
                     Folder Name<span>*</span>:
                 </label>
@@ -240,15 +221,11 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         formControlName="folder_name"
                         required
                     />
-                    <mat-error i18n="@@folderNameError">
-                        A valid folder name is required
-                    </mat-error>
+                    <mat-error> A valid folder name is required </mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description" i18n="@@descriptionLabel">
-                    Description:
-                </label>
+                <label for="description"> Description: </label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput

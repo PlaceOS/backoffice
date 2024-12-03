@@ -26,9 +26,7 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
 @Component({
     selector: 'metadata-display',
     template: `
-        <button btn (click)="newMetadata()" i18n="@@addMetadataAction">
-            New Metadata Field
-        </button>
+        <button btn (click)="newMetadata()">New Metadata Field</button>
         <div
             class="mt-4"
             *ngIf="metadata && metadata.length > 0; else empty_state"
@@ -70,7 +68,6 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
                                         "
                                         (click)="$event.stopPropagation()"
                                         (click)="saveMetadata(item)"
-                                        i18n="@@saveAction"
                                     >
                                         Save
                                     </button>
@@ -118,9 +115,7 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
         <ng-template #empty_state>
             <div class="w-full p-16 flex flex-col items-center justify-center">
                 <app-icon class="text-3xl">close</app-icon>
-                <div class="opacity-30" i18n="@@metadataEmpty">
-                    No metadata found
-                </div>
+                <div class="opacity-30">No metadata found</div>
             </div>
         </ng-template>
         <ng-template #load_state>

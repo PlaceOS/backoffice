@@ -19,7 +19,6 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                     [class.error]="
                         form.controls.name.invalid && form.controls.name.touched
                     "
-                    i18n="@@nameLabel"
                 >
                     Name<span>*</span>:
                 </label>
@@ -32,19 +31,14 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                         formControlName="name"
                         required
                     />
-                    <mat-error
-                        *ngIf="form.controls.name.invalid"
-                        i18n="@@authSourceNameError"
-                    >
+                    <mat-error *ngIf="form.controls.name.invalid">
                         Auth source name is required
                     </mat-error>
                 </mat-form-field>
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.client_id">
-                    <label for="client-id" i18n="@@authSourceClientIdLabel"
-                        >Client ID:</label
-                    >
+                    <label for="client-id">Client ID:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -56,12 +50,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.client_secret">
-                    <label
-                        for="client-secret"
-                        i18n="@@authSourceClientSecretLabel"
-                    >
-                        Client Secret:
-                    </label>
+                    <label for="client-secret"> Client Secret: </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -76,7 +65,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.site">
-                    <label for="site" i18n="@@authSourceSiteLabel">Site:</label>
+                    <label for="site">Site:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -88,7 +77,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.scope">
-                    <label for="scope" i18n="@@scopeLabel">Scope:</label>
+                    <label for="scope">Scope:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -102,11 +91,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
             </div>
             <div class="fieldset">
                 <div class="field type" *ngIf="form.controls.token_method">
-                    <label
-                        for="token-method"
-                        i18n="@@authSourceTokenMethodLabel"
-                        >Token Method:
-                    </label>
+                    <label for="token-method">Token Method: </label>
                     <mat-form-field appearance="outline">
                         <mat-select
                             name="token-method"
@@ -122,9 +107,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                     </mat-form-field>
                 </div>
                 <div class="field type" *ngIf="form.controls.auth_scheme">
-                    <label for="auth-scheme" i18n="@@authSourceSchemeLabel">
-                        Authentication Scheme:
-                    </label>
+                    <label for="auth-scheme"> Authentication Scheme: </label>
                     <mat-form-field appearance="outline">
                         <mat-select
                             name="auth-scheme"
@@ -142,9 +125,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                 </div>
             </div>
             <div class="field" *ngIf="form.controls.token_url">
-                <label for="token-url" i18n="@@authSourceTokenUrlLabel"
-                    >Token URL:</label
-                >
+                <label for="token-url">Token URL:</label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
@@ -157,12 +138,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.authorize_url">
-                    <label
-                        for="authorize-url"
-                        i18n="@@authSourceAuthorizeUrlLabel"
-                    >
-                        Authorize URL:
-                    </label>
+                    <label for="authorize-url"> Authorize URL: </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -175,9 +151,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.raw_info_url">
-                    <label for="info-url" i18n="@@authSourceProfileUrlLabel"
-                        >User Profile URL:</label
-                    >
+                    <label for="info-url">User Profile URL:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -190,9 +164,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                 </div>
             </div>
             <div class="field" *ngIf="form.controls.info_mappings">
-                <label for="client-secret" i18n="@@authSourceMappingsLabel"
-                    >Info Mappings:</label
-                >
+                <label for="client-secret">Info Mappings:</label>
                 <object-list-field
                     [(ngModel)]="info_mapping_list"
                     (ngModelChange)="
@@ -203,9 +175,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                 ></object-list-field>
             </div>
             <div class="field" *ngIf="form.controls.authorize_params">
-                <label for="client-secret" i18n="@@authSourceAuthParamsLabel"
-                    >Authorize Params:</label
-                >
+                <label for="client-secret">Authorize Params:</label>
                 <object-list-field
                     [(ngModel)]="auth_params_list"
                     (ngModelChange)="
@@ -221,11 +191,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                 ></object-list-field>
             </div>
             <div class="field" *ngIf="form.controls.ensure_matching">
-                <label
-                    for="client-secret"
-                    i18n="@@authSourceEnsureMatchingLabel"
-                    >Ensure Matching:</label
-                >
+                <label for="client-secret">Ensure Matching:</label>
                 <object-list-field
                     [(ngModel)]="ensure_matching_list"
                     (ngModelChange)="

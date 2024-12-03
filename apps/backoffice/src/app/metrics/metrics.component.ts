@@ -14,9 +14,7 @@ import { SettingsService } from '../common/settings.service';
             <div
                 class="flex items-center w-full bg-base-200 text-base-content py-2 px-4 border-b border-neutral"
             >
-                <div class="text-2xl flex-1 font-medium" i18n="@@metricsHeader">
-                    Metrics
-                </div>
+                <div class="text-2xl flex-1 font-medium">Metrics</div>
                 <div class="flex items-center space-x-2">
                     <clock></clock>
                     <div class="display">

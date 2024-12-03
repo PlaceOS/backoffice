@@ -68,7 +68,6 @@ import { APIKeyService } from './api-keys.service';
                         <input
                             matInput
                             placeholder="Scopes..."
-                            i18n-placeholder="@@apiScopePlaceholder"
                             [matChipInputFor]="chipList"
                             [matChipInputSeparatorKeyCodes]="separators"
                             [matChipInputAddOnBlur]="true"

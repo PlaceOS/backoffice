@@ -32,16 +32,12 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                 *ngIf="item.id && item.modules && !hide_exec"
                 class="mb-4"
             >
-                <h3 class="font-medium text-lg mb-2" i18n="@@execHeader">
-                    Execute command
-                </h3>
+                <h3 class="font-medium text-lg mb-2">Execute command</h3>
                 <execute-method-field
                     [system]="item$ | async"
                 ></execute-method-field>
             </section>
-            <h3 class="font-medium text-lg mb-2" i18n="@@moduleListHeader">
-                Module List
-            </h3>
+            <h3 class="font-medium text-lg mb-2">Module List</h3>
             <section add-module class="flex space-x-2 flex-wrap mb-2">
                 <item-search-field
                     class="flex-grow-1 w-full sm:flex-1 sm:w-auto h-12"
@@ -57,7 +53,6 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                     class="flex-1 w-40 sm:w-32 sm:flex-none h-11"
                     [disabled]="!new_module"
                     (click)="addModule()"
-                    i18n="@@addExistingAction"
                 >
                     Add existing
                 </button>
@@ -65,7 +60,6 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                     btn
                     class="flex-1 w-40 sm:w-32 sm:flex-none h-11"
                     (click)="newModule()"
-                    i18n="@@newAction"
                 >
                     Add new
                 </button>

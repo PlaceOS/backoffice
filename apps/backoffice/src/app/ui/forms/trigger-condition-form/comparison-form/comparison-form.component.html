@@ -5,12 +5,11 @@
     <div
         *ngIf="form.controls.left.touched && form.controls.left.errors"
         class="error"
-        i18n="@@statusVarError"
     >
         A module status variable is required
     </div>
     <div class="field" *ngIf="form.controls.operator">
-        <label for="operator" hidden i18n="@@operationLabel">Operation:</label>
+        <label for="operator" hidden>Operation:</label>
         <mat-form-field appearance="outline">
             <mat-select
                 name="operator"
@@ -27,9 +26,7 @@
         </mat-form-field>
     </div>
     <div class="field" *ngIf="form.controls.operator">
-        <label for="compared-to" hidden i18n="@@comparedLabel"
-            >Compared to:</label
-        >
+        <label for="compared-to" hidden>Compared to:</label>
         <mat-form-field appearance="outline">
             <mat-select
                 name="compared-to"
@@ -53,7 +50,7 @@
             else rhs_status_var
         "
     >
-        <label for="constant" hidden i18n="@@comparedLabel">Compared to:</label>
+        <label for="constant" hidden>Compared to:</label>
         <mat-form-field appearance="outline">
             <input
                 matInput
@@ -62,9 +59,7 @@
                 placeholder="true/false, 'string', 123.456"
                 i18n-placeholder="@@comparedValue"
             />
-            <mat-error i18n="@@statusValueError"
-                >Valid JSON is required</mat-error
-            >
+            <mat-error>Valid JSON is required</mat-error>
         </mat-form-field>
     </div>
 </div>
@@ -76,7 +71,7 @@
 <ng-template #status_variable_form let-side="side">
     <div class="fieldset">
         <div class="field" *ngIf="this[side + '_side']">
-            <label for="type" i18n="@@moduleLabel">Module:</label>
+            <label for="type">Module:</label>
             <mat-form-field appearance="outline">
                 <mat-select
                     name="type"
@@ -95,9 +90,7 @@
             </mat-form-field>
         </div>
         <div class="field" *ngIf="this[side + '_status_variables']?.length">
-            <label [for]="side + '-status-var'" i18n="@@statusVarLabel"
-                >Status Variable:</label
-            >
+            <label [for]="side + '-status-var'">Status Variable:</label>
             <mat-form-field appearance="outline">
                 <mat-select
                     [name]="side + '-status-var'"
@@ -124,7 +117,7 @@
             this[side + '_status_variables'].length
         "
     >
-        <label [for]="side + '-subkeys'" i18n="@@subkeysLabel">Subkeys:</label>
+        <label [for]="side + '-subkeys'">Subkeys:</label>
         <mat-form-field appearance="outline">
             <input
                 matInput

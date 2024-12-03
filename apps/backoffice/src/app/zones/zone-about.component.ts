@@ -22,7 +22,6 @@ import { marked } from 'marked';
                 <header
                     class="font-medium text-lg"
                     *ngIf="(systems | async)?.length"
-                    i18n="@@execHeader"
                 >
                     Execute Command
                 </header>
@@ -50,10 +49,7 @@ import { marked } from 'marked';
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
                 <ng-container *ngIf="item?.parent_id">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@zoneParentLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Parent ID:
                     </div>
                     <div>
@@ -65,64 +61,43 @@ import { marked } from 'marked';
                     </div>
                 </ng-container>
                 <ng-container *ngIf="item?.location">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@zoneLocationLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Location:
                     </div>
                     <div>{{ item?.location }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.code">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@zoneCodeLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Code:
                     </div>
                     <div>{{ item?.code }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.type">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@zoneTypeLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Type:&nbsp;
                     </div>
                     <div>{{ item?.type }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.count">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@zoneCountLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Count:
                     </div>
                     <div>{{ item?.count }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.capacity">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@zoneCapacityLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Capacity:
                     </div>
                     <div>{{ item?.capacity }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.timezone">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@zoneTimezoneLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Timezone:
                     </div>
                     <div class="mono text-sm">{{ item?.timezone }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.map_id">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@@zoneMapLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Map:
                     </div>
                     <a class="underline truncate" [href]="item?.map_id">{{
@@ -133,7 +108,6 @@ import { marked } from 'marked';
                     <div
                         class="text-sm font-medium flex items-center"
                         for="tags"
-                        i18n="@@zoneTagsLabel"
                     >
                         Tags:
                     </div>
@@ -149,10 +123,7 @@ import { marked } from 'marked';
                         </span>
                     </div>
                 </ng-container>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoCreatedAtLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Created:
                 </div>
                 <div class=" flex items-center">
@@ -167,10 +138,7 @@ import { marked } from 'marked';
                         {{ item.created_at * 1000 | dateFrom }}
                     </span>
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoUpdatedAtLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Updated:
                 </div>
                 <div class=" flex items-center">
@@ -187,11 +155,7 @@ import { marked } from 'marked';
                 </div>
             </div>
         </section>
-        <header
-            class="font-medium text-lg"
-            *ngIf="item?.description"
-            i18n="@@descriptionLabel"
-        >
+        <header class="font-medium text-lg" *ngIf="item?.description">
             Description
         </header>
         <section
@@ -200,9 +164,7 @@ import { marked } from 'marked';
             [innerHTML]="parsed_description"
         ></section>
         <hr class="my-4" />
-        <header class="font-medium text-lg" i18n="@@settingsLabel">
-            Settings
-        </header>
+        <header class="font-medium text-lg">Settings</header>
         <section *ngIf="item?.settings; else load_state">
             <a-settings-form
                 [merge]="true"
@@ -213,7 +175,7 @@ import { marked } from 'marked';
         <ng-template #load_state>
             <div class="flex flex-col items-center p-8">
                 <mat-spinner class="mb-4" diameter="48"></mat-spinner>
-                <p i18n="@@zoneLoadingLabel">Loading zone settings...</p>
+                <p>Loading zone settings...</p>
             </div>
         </ng-template>
     `,

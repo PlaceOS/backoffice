@@ -14,37 +14,23 @@ import { MatDialog } from '@angular/material/dialog';
                 [style.gridTemplateColumns]="'4.5rem auto'"
             >
                 <ng-container *ngIf="item.notes">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@moduleNotesLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Notes:
                     </div>
                     <div>{{ item.notes }}</div>
                 </ng-container>
                 <ng-container *ngIf="item.ip">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@moduleIPLabel"
-                    >
-                        IP:
-                    </div>
+                    <div class="text-sm font-medium flex items-center">IP:</div>
                     <div class="mono">{{ item.ip }}</div>
                 </ng-container>
                 <ng-container *ngIf="item.port > 1">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@modulePortLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Port:
                     </div>
                     <div class="mono">{{ item.port }}</div>
                 </ng-container>
                 <ng-container *ngIf="item.tls || item.udp">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@moduleTLSLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Protocol:
                     </div>
                     <div class="flex items-center">
@@ -57,10 +43,7 @@ import { MatDialog } from '@angular/material/dialog';
                     </div>
                 </ng-container>
                 <ng-container *ngIf="driver | async">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@moduleUpdatedAtLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Driver:
                     </div>
                     <a
@@ -71,10 +54,7 @@ import { MatDialog } from '@angular/material/dialog';
                     </a>
                 </ng-container>
                 <ng-container *ngIf="system | async">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@moduleUpdatedAtLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         System:
                     </div>
                     <a
@@ -89,10 +69,7 @@ import { MatDialog } from '@angular/material/dialog';
                     </a>
                 </ng-container>
                 <ng-container *ngIf="edge | async">
-                    <div
-                        class="text-sm font-medium flex items-center"
-                        i18n="@moduleUpdatedAtLabel"
-                    >
+                    <div class="text-sm font-medium flex items-center">
                         Edge:
                     </div>
                     <div class="flex items-center">
@@ -130,10 +107,7 @@ import { MatDialog } from '@angular/material/dialog';
                         </div>
                     </ng-template>
                 </ng-container>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoCreatedAtLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Created:
                 </div>
                 <div class=" flex items-center">
@@ -148,10 +122,7 @@ import { MatDialog } from '@angular/material/dialog';
                         {{ item.created_at * 1000 | dateFrom }}
                     </span>
                 </div>
-                <div
-                    class="text-sm font-medium flex items-center"
-                    i18n="@@repoUpdatedAtLabel"
-                >
+                <div class="text-sm font-medium flex items-center">
                     Updated:
                 </div>
                 <div class=" flex items-center">
@@ -188,13 +159,7 @@ import { MatDialog } from '@angular/material/dialog';
                     [disabled]="item.running || stopping"
                     (click)="toggleModuleState()"
                 >
-                    <div
-                        class="text"
-                        *ngIf="!stopping"
-                        i18n="@@moduleStartStateToggle"
-                    >
-                        Start Module
-                    </div>
+                    <div class="text" *ngIf="!stopping">Start Module</div>
                     <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
                 </button>
                 <button
@@ -203,21 +168,13 @@ import { MatDialog } from '@angular/material/dialog';
                     [disabled]="!item.running || stopping"
                     (click)="toggleModuleState()"
                 >
-                    <div
-                        class="text"
-                        *ngIf="!stopping"
-                        i18n="@@moduleStopStateToggle"
-                    >
-                        Stop Module
-                    </div>
+                    <div class="text" *ngIf="!stopping">Stop Module</div>
                     <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
                 </button>
             </div>
         </section>
         <hr class="my-4" />
-        <header class="font-medium text-lg" i18n="@@settingsLabel">
-            Settings
-        </header>
+        <header class="font-medium text-lg">Settings</header>
         <section
             *ngIf="item.settings && (other_settings | async); else load_state"
         >
@@ -231,7 +188,7 @@ import { MatDialog } from '@angular/material/dialog';
         <ng-template #load_state>
             <div class="p-8 flex flex-col items-center justify-center m-auto">
                 <mat-spinner class="mb-4" diameter="48"></mat-spinner>
-                <p i18n="@@moduleDetailsLoading">Loading module settings...</p>
+                <p>Loading module settings...</p>
             </div>
         </ng-template>
     `,

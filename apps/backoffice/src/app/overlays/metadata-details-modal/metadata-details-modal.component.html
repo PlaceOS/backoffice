@@ -33,7 +33,7 @@
             formControlName="description"
         ></textarea>
     </mat-form-field>
-    <label for="system-email" i18n="@@editorssLabel">Editors:</label>
+    <label for="system-email">Editors:</label>
     <mat-form-field appearance="outline" class="w-full">
         <mat-chip-grid #chipList aria-label="Image List">
             <mat-chip-row
@@ -48,7 +48,6 @@
         </mat-chip-grid>
         <input
             placeholder="Editors..."
-            i18n-placeholder
             [matChipInputFor]="chipList"
             [matChipInputSeparatorKeyCodes]="separators"
             [matChipInputAddOnBlur]="true"

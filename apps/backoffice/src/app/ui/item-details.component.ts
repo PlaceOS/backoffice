@@ -38,7 +38,6 @@ export interface DisplayItem {
                     <div
                         class="px-2 py-1 rounded-xl text-xs bg-info text-info-content"
                         *ngIf="driver_type"
-                        i18n="@@driverType"
                     >
                         { driver_type, select, Device { Device } Logic { Logic }
                         SSH { SSH } Websocket { Websocket } Service { Service }
@@ -47,7 +46,6 @@ export interface DisplayItem {
                     <div
                         class="px-2 py-1 rounded-xl text-xs mono bg-info text-info-content"
                         *ngIf="domain"
-                        i18n="@@domain"
                     >
                         {{ domain }}
                     </div>
@@ -65,7 +63,6 @@ export interface DisplayItem {
                         "
                         [class.!bg-success]="item?.running"
                         [class.!text-success-content]="item?.running"
-                        i18n="@@onlineState"
                     >
                         { item?.running, select, true { Online } false { Offline
                         } other { Other } }
@@ -74,7 +71,6 @@ export interface DisplayItem {
                         class="px-2 py-1 rounded-xl text-xs bg-info text-info-content"
                         *ngIf="item?.edge_id"
                         [matTooltip]="item?.edge_id"
-                        i18n="@@edgeState"
                     >
                         Edge
                     </div>
@@ -83,7 +79,7 @@ export interface DisplayItem {
                         *ngIf="item?.tls"
                     >
                         <app-icon>lock</app-icon>
-                        <div class="text" i18n="@@secure">Secure</div>
+                        <div class="text">Secure</div>
                     </div>
                 </div>
             </div>
@@ -99,7 +95,7 @@ export interface DisplayItem {
                 (click)="edit.emit(); editItem()"
             >
                 <app-icon class="text-2xl">edit</app-icon>
-                <div class="flex-1" i18n="@@editAction">Edit {{ type }}</div>
+                <div class="flex-1">Edit {{ type }}</div>
                 <span class="keycap">E</span>
             </button>
             <button
@@ -109,9 +105,7 @@ export interface DisplayItem {
                 (click)="create.emit(false); newFromItem()"
             >
                 <app-icon class="text-2xl">add</app-icon>
-                <div i18n="@@copyItemAction">
-                    Create new from this {{ type }}
-                </div>
+                <div>Create new from this {{ type }}</div>
             </button>
             <button
                 mat-menu-item
@@ -120,7 +114,7 @@ export interface DisplayItem {
                 (click)="create.emit(true); duplicateItem()"
             >
                 <app-icon class="text-2xl">call_split</app-icon>
-                <div i18n="@@duplicateAction">Duplicate {{ type }}</div>
+                <div>Duplicate {{ type }}</div>
             </button>
             <button
                 mat-menu-item
@@ -128,9 +122,7 @@ export interface DisplayItem {
                 (click)="exportAsTSV()"
             >
                 <app-icon class="text-2xl">download</app-icon>
-                <div i18n="@@exportAction">
-                    Export {{ type }} as TSV template
-                </div>
+                <div>Export {{ type }} as TSV template</div>
             </button>
             <button
                 *ngIf="can_edit"
@@ -139,9 +131,7 @@ export interface DisplayItem {
                 (click)="delete.emit(); deleteItem()"
             >
                 <app-icon class="text-error text-2xl">delete</app-icon>
-                <div class="flex-1" i18n="@@deleteAction">
-                    Delete {{ type }}
-                </div>
+                <div class="flex-1">Delete {{ type }}</div>
                 <span class="keycap">⌦</span>
             </button>
         </mat-menu>
