@@ -29,6 +29,7 @@ import {
     CreateEditModalData,
     ItemCreateUpdateModalComponent,
 } from '../overlays/item-modal/item-modal.component';
+import { i18n } from '../common/translate';
 
 @Injectable({
     providedIn: 'root',
@@ -81,9 +82,13 @@ export class RepositoriesStateService {
             .toPromise()
             .catch((err) => {
                 notifyError(
-                    `Error pulling latest commit. Error: ${JSON.stringify(
-                        err.response || err.message || 'Pull timed out'
-                    )}`
+                    i18n('REPOS.GIT_PULL_ERROR', {
+                        error: JSON.stringify(
+                            err.response ||
+                                err.message ||
+                                i18n('REPOS.GIT_PULL_TIMEOUT')
+                        ),
+                    })
                 );
             });
         if (!commit) return;

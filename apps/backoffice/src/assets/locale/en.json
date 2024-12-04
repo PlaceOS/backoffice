@@ -107,7 +107,10 @@
         "FIELD_DESCRIPTION": "Description",
         "VERSION": "Version",
         "VERSION_CURRENT": "Current Version",
-        "VERSION_LATEST": "Latest Version"
+        "VERSION_LATEST": "Latest Version",
+        "GIT_BRANCH": "Branch",
+        "GIT_COMMIT": "Commit hash",
+        "GIT_PULL_LATEST": "Pull latest commit"
     },
     "SYSTEMS": {
         "SINGULAR": "System",
@@ -270,7 +273,25 @@
     },
     "REPOS": {
         "SINGULAR": "Repository",
-        "PLURAL": "Repositories"
+        "PLURAL": "Repositories",
+        "SEARCH": "Search for repositories...",
+        "ADD": "Add repository",
+        "DELETE": "Delete repository",
+        "REMOVE": "Remove repository",
+        "NEW": "New repository",
+        "LOADING": "Loading repositories...",
+        "TAB_ABOUT": "About",
+        "TAB_DRIVERS": "Drivers",
+        "INTERFACE_REPO": "Interface Repository",
+        "DRIVER_REPO": "Driver Repository",
+        "FIELD_TYPE": "Type",
+        "FOLDER_NAME": "Folder name",
+        "FOLDER_NAME_EMPTY": "No folder set",
+        "URI": "Repository URI",
+        "AVAILABLE_DRIVERS": "Available Drivers",
+        "DRIVER_LIST_EMPTY": "No available drivers in repository",
+        "GIT_PULL_ERROR": "Error pulling latest commit. Error: {{ error }}",
+        "GIT_PULL_TIMEOUT": "Pull timed out"
     },
     "TRIGGERS": {
         "SINGULAR": "Trigger",

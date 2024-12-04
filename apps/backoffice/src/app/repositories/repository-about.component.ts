@@ -12,30 +12,39 @@ import { RepositoriesStateService } from './repositories-state.service';
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
                 <div class="text-sm font-medium flex items-center">
-                    Description:
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}:
                 </div>
                 <div class="select-all">
                     {{ item.description || 'No description' }}
                 </div>
-                <div class="text-sm font-medium flex items-center">Type:</div>
+                <div class="text-sm font-medium flex items-center">
+                    {{ 'REPOS.FIELD_TYPE' | translate }}:
+                </div>
                 <div>
-                    { item.type, select, interface { Interface Repository }
-                    driver { Driver Repository }, other { =Unknown=} }
+                    {{
+                        (item.type === 'interface'
+                            ? 'REPOS.INTERFACE_REPO'
+                            : 'REPOS.DRIVER_REPO'
+                        ) | translate
+                    }}
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    Folder name:
+                    {{ 'REPOS.FOLDER_NAME' | translate }}:
                 </div>
                 <div
                     class="select-all"
                     [class.underline]="item.type === 'interface'"
                     [class.pointer-events-none]="item.type !== 'interface'"
                 >
-                    <a [href]="local_url" target="_blank">{{
-                        item.folder_name || 'No folder set'
-                    }}</a>
+                    <a [href]="local_url" target="_blank">
+                        {{ item.folder_name }}
+                        <span class="opacity-30" *ngIf="!item.folder_name">
+                            {{ 'REPOS.FOLDER_NAME_EMPTY' | translate }}
+                        </span>
+                    </a>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    Created:
+                    {{ 'COMMON.CREATED_AT' | translate }}:
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -50,7 +59,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </span>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    Updated:
+                    {{ 'COMMON.UPDATED_AT' | translate }}:
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -70,7 +79,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                 [style.gridTemplateColumns]="'6.5rem auto'"
             >
                 <div class="text-sm font-medium flex items-center">
-                    Repository URI:
+                    {{ 'REPOS.URI' | translate }}:
                 </div>
                 <div class="underline select-all overflow-hidden">
                     <a
@@ -80,7 +89,9 @@ import { RepositoriesStateService } from './repositories-state.service';
                         >{{ repo_uri || 'No URI set' }}</a
                     >
                 </div>
-                <div class="text-sm font-medium flex items-center">Branch:</div>
+                <div class="text-sm font-medium flex items-center">
+                    {{ 'COMMON.GIT_BRANCH' | translate }}:
+                </div>
                 <div class="flex items-center overflow-hidden">
                     <code
                         class="text-xs truncate inline-block max-w-full"
@@ -90,7 +101,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </code>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    Commit hash:
+                    {{ 'COMMON.GIT_COMMIT' | translate }}:
                 </div>
                 <div class="flex items-center overflow-hidden">
                     <code
@@ -101,7 +112,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                                 : item.commit_hash
                         "
                     >
-                        {{ item.commit_hash || 'No Commit hash set' }}
+                        {{ item.commit_hash || 'HEAD' }}
                         <span
                             class="select-text mono  break-words"
                             *ngIf="commit && commit !== item.commit_hash"
@@ -117,7 +128,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     (click)="pullLatestCommit()"
                 >
                     <ng-container *ngIf="!pulling; else spinner">
-                        Pull latest commit
+                        {{ 'COMMON.GIT_PULL_LATEST' | translate }}
                     </ng-container>
                 </button>
             </div>

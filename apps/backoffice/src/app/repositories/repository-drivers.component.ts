@@ -4,12 +4,13 @@ import { PlaceRepository } from '@placeos/ts-client';
 import { RepositoriesStateService } from './repositories-state.service';
 import { Router } from '@angular/router';
 import { AsyncHandler } from '../common/async-handler.class';
-import { tap } from 'rxjs/operators';
 
 @Component({
     selector: 'repository-drivers',
     template: `
-        <h3 class="font-medium text-lg mb-2">Available Drivers</h3>
+        <h3 class="font-medium text-lg mb-2">
+            {{ 'REPOS.AVAILABLE_DRIVERS' | translate }}
+        </h3>
         <mat-progress-bar
             mode="indeterminate"
             class="w-full"
@@ -21,13 +22,13 @@ import { tap } from 'rxjs/operators';
             [columns]="[
                 {
                     key: 'name',
-                    name: 'Name',
+                    name: 'COMMON.FIELD_NAME' | translate,
                     content: name_template,
                 },
                 { key: 'actions', name: ' ', size: '3.25rem', sortable: false, content: actions_template }
             ]"
             [sortable]="true"
-            empty_message="No drivers for repository"
+            [empty_message]="'REPOS.DRIVER_LIST_EMPTY' | translate"
         ></simple-table>
         <div class="w-full h-8"></div>
         <ng-template #name_template let-row="row">
@@ -41,7 +42,7 @@ import { tap } from 'rxjs/operators';
                 <button
                     icon
                     matRipple
-                    matTooltip="New Driver"
+                    [matTooltip]="'DRIVERS.NEW' | translate"
                     matTooltipPosition="left"
                     (click)="newDriver(item)"
                 >
