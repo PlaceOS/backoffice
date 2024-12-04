@@ -33,7 +33,9 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
                 class="absolute inset-0 flex flex-col items-center justify-center text-base select-none"
                 *ngIf="!(output_lines | async)?.length"
             >
-                <p class="opacity-60">No debug messages to display</p>
+                <p class="opacity-60">
+                    {{ 'COMMON.DEBUG_NO_MESSAGE' | translate }}
+                </p>
             </div>
             <div
                 class="absolute -top-11 right-0 p-2 flex items-center space-x-2"

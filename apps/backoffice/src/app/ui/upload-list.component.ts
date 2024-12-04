@@ -17,13 +17,15 @@ import { UploadsService } from '../common/uploads.service';
         >
             <div class="flex items-center bg-base-200 text-base-content">
                 <div class="flex-1 px-4">
-                    Uploads({{ (uploads | async)?.length || '0' }})
+                    {{ 'COMMON.UPLOADS' | translate }}({{
+                        (uploads | async)?.length || '0'
+                    }})
                 </div>
                 <button
                     btn
                     icon
                     (click)="clearList()"
-                    matTooltip="Clear completed uploads"
+                    [matTooltip]="'COMMON.CLEAR_UPLOADS' | translate"
                 >
                     <app-icon>clear_all</app-icon>
                 </button>
@@ -49,14 +51,14 @@ import { UploadsService } from '../common/uploads.service';
                                 *ngIf="item.progress >= 100 && item.link"
                                 (click)="copyLink(item)"
                             >
-                                Link
+                                {{ 'COMMON.LINK' | translate }}
                             </a>
                             <button
                                 btn
                                 *ngIf="item.error"
                                 (click)="retry(item)"
                             >
-                                Retry
+                                {{ 'COMMON.RETRY' | translate }}
                             </button>
                             <div class="size mr-2">
                                 {{ item.formatted_size }}
@@ -111,7 +113,7 @@ import { UploadsService } from '../common/uploads.service';
                     cloud_upload
                 </app-icon>
                 <div class="bg-base-100 rounded p-4 text-base-content shadow">
-                    Drop files to upload them to the cloud
+                    {{ 'COMMON.DROP_UPLOAD_MSG' | translate }}
                 </div>
             </div>
             <input
@@ -122,9 +124,11 @@ import { UploadsService } from '../common/uploads.service';
             />
         </div>
         <ng-template #no_uploads>
-            <div class="w-full flex flex-col items-center m-auto p-8">
-                <app-icon>close</app-icon>
-                <p>No uploads to show</p>
+            <div
+                class="w-full flex flex-col items-center m-auto p-8 space-y-4 opacity-30"
+            >
+                <app-icon class="text-4xl">cloud_off</app-icon>
+                <p>{{ 'COMMON.NO_UPLOADS' | translate }}</p>
             </div>
         </ng-template>
     `,

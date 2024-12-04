@@ -77,7 +77,7 @@ import { SettingsHistoryViewComponent } from './settings-history-view.component'
 import { SettingsFormatPipe } from './pipes/settings-format.pipe';
 import { UserPipe } from './pipes/user.pipe';
 import { MetadataDisplayComponent } from './metadata-display.component';
-import { SidebarMenuComponent } from './sidebar-menu.component';
+import { SidebarLink, SidebarMenuComponent } from './sidebar-menu.component';
 import { ItemSelectionComponent } from './item-selection.component';
 import { MatRippleModule } from '@angular/material/core';
 import { CustomTooltipComponent } from './custom-tooltip.component';
@@ -94,6 +94,7 @@ import { ModuleRuntimeErrorsModalComponent } from './module-runtime-errors.modal
 import { SimpleTableComponent } from './simple-table.component';
 import { ReorderItemsModalComponent } from './reorder-items-modal.component';
 import { CronFieldComponent } from './forms/trigger-condition-form/cron-field.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -143,6 +144,7 @@ const COMPONENTS: Type<any>[] = [
     MetadataDisplayComponent,
 
     SidebarMenuComponent,
+    SidebarLink,
     ItemSelectionComponent,
     CustomTooltipComponent,
     UserMenuTooltipComponent,
@@ -218,6 +220,7 @@ const MATERIAL_MODULES: any[] = [
         ScrollingModule,
         ...MATERIAL_MODULES,
         RouterModule.forChild([]),
+        TranslateModule.forChild(),
     ],
     exports: [...COMPONENTS, ...PIPES, ...ENTRY_COMPONENT, ...MATERIAL_MODULES],
 })

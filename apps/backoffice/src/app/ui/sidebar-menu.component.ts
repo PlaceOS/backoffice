@@ -15,6 +15,38 @@ import { ApplicationIcon, ApplicationLinkInternal } from '../common/types';
 import { BackofficeUsersService } from '../users/users.service';
 import { CustomTooltipData } from './custom-tooltip.component';
 import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
+import { i18n } from '../common/translate';
+
+@Component({
+    selector: 'sidebar-link',
+    template: `
+        <a
+            btn
+            matRipple
+            class="clear hover:bg-base-100 text-left w-[calc(100%-1rem)] mx-auto"
+            [routerLink]="[route]"
+            routerLinkActive="!bg-secondary text-secondary-content"
+        >
+            <div class="flex items-center space-x-2 w-full">
+                <app-icon class="text-xl">{{ icon }}</app-icon>
+                <p>{{ name }}</p>
+            </div>
+        </a>
+    `,
+    styles: [
+        `
+            :host {
+                display: block;
+                width: 100%;
+            }
+        `,
+    ],
+})
+export class SidebarLink {
+    @Input() public name: string;
+    @Input() public icon: string;
+    @Input() public route: string;
+}
 
 @Component({
     selector: 'sidebar-menu',
@@ -32,19 +64,60 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 >
                     Place<span class="text-primary font-heading">OS</span>
                 </a>
-                <a
-                    btn
-                    matRipple
-                    class="clear hover:bg-base-100 text-left w-[calc(100%-1rem)]"
-                    *ngFor="let item of items"
-                    [routerLink]="[item.route]"
-                    routerLinkActive="!bg-secondary text-secondary-content"
-                >
-                    <div class="flex items-center space-x-2 w-full">
-                        <app-icon class="text-xl" [icon]="item.icon"></app-icon>
-                        <p>{{ item?.name }}</p>
-                    </div>
-                </a>
+                <sidebar-link
+                    [name]="'COMMON.SYSTEMS' | translate"
+                    route="/systems"
+                    icon="meeting_room"
+                ></sidebar-link>
+                <sidebar-link
+                    [name]="'COMMON.MODULES' | translate"
+                    route="/modules"
+                    icon="tablet"
+                ></sidebar-link>
+                <sidebar-link
+                    [name]="'COMMON.ZONES' | translate"
+                    route="/zones"
+                    icon="layers"
+                ></sidebar-link>
+                <sidebar-link
+                    [name]="'COMMON.DRIVERS' | translate"
+                    route="/drivers"
+                    icon="construction"
+                ></sidebar-link>
+                <sidebar-link
+                    *ngIf="is_admin"
+                    [name]="'COMMON.REPOS' | translate"
+                    route="/repositories"
+                    icon="inventory_2"
+                ></sidebar-link>
+                <sidebar-link
+                    [name]="'COMMON.TRIGGERS' | translate"
+                    route="/triggers"
+                    icon="timer"
+                ></sidebar-link>
+                <sidebar-link
+                    [name]="'COMMON.METRICS' | translate"
+                    route="/metrics"
+                    icon="monitoring"
+                ></sidebar-link>
+                <sidebar-link
+                    *ngIf="is_support || is_admin"
+                    [name]="'COMMON.USERS' | translate"
+                    route="/users"
+                    icon="group"
+                ></sidebar-link>
+                <sidebar-link
+                    *ngIf="is_admin"
+                    [name]="'COMMON.DOMAINS' | translate"
+                    route="/domains"
+                    icon="domain"
+                ></sidebar-link>
+                <sidebar-link
+                    *ngIf="is_admin"
+                    [name]="'COMMON.MANAGE' | translate"
+                    route="/admin"
+                    icon="settings"
+                ></sidebar-link>
                 <button
                     class="absolute top-1 left-1 sm:hidden"
                     btn
@@ -62,11 +135,17 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 <div
                     class="rounded-xl text-xs mono bg-info text-info-content text-center p-1"
                 >
-                    Debugging Enabled
+                    {{ 'COMMON.DEBUG_ENABLED' | translate }}
                 </div>
                 <p class="text-xs p-1 text-center">
-                    Listening to {{ debug_module_count }} module(s)<br />
-                    {{ debug_message_count }} module messages
+                    {{
+                        'COMMON.DEBUG_LISTENING_MSG'
+                            | translate: { modules: debug_module_count }
+                    }}<br />
+                    {{
+                        'COMMON.DEBUG_MSG_COUNT_MSG'
+                            | translate: { count: debug_message_count }
+                    }}
                 </p>
                 <div actions class="flex items-center justify-center space-x-2">
                     <button
@@ -132,11 +211,12 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     <div class="truncate w-full">{{ user?.name }}</div>
                     <div class="truncate text-xs opacity-30 w-full">
                         {{
-                            user?.sys_admin
-                                ? 'Admin'
+                            (user?.sys_admin
+                                ? 'COMMON.USER_ADMIN'
                                 : user?.support
-                                ? 'Support'
-                                : 'Basic'
+                                ? 'COMMON.USER_SUPPORT'
+                                : 'COMMON.USER_BASIC'
+                            ) | translate
                         }}
                     </div>
                 </div>
@@ -162,10 +242,6 @@ export class SidebarMenuComponent extends AsyncHandler {
         return this._settings.get('app.logo_light');
     }
     /** List of available menu items for the application */
-    public get menu_items() {
-        return this._getMenuItems();
-    }
-    /** List of available menu items for the application */
     public get user() {
         return this._users.current();
     }
@@ -184,6 +260,14 @@ export class SidebarMenuComponent extends AsyncHandler {
 
     public get debug_message_count() {
         return this._debug.event_list.length;
+    }
+
+    public get is_admin() {
+        return this._users.current().sys_admin;
+    }
+
+    public get is_support() {
+        return this._users.current().support;
     }
 
     public readonly close = () => this._tooltip?.close();
@@ -212,7 +296,6 @@ export class SidebarMenuComponent extends AsyncHandler {
                 this.changeSelected(1)
             )
         );
-        this.items = this.menu_items;
     }
 
     public toggleDebugPosition() {
@@ -234,30 +317,13 @@ export class SidebarMenuComponent extends AsyncHandler {
         this._debug.unbindAll();
     }
 
-    private _getMenuItems(): ApplicationLinkInternal[] {
-        let items = this._settings.get('app.general.menu') || [];
-        const auth = authority();
-        /** Only allow metrics if a URL has be set */
-        if (!auth?.metrics && !auth?.config?.metrics) {
-            items = items.filter((item) => item.route?.indexOf('metrics') < 0);
-            if (this._router.url?.indexOf('metrics') >= 0)
-                this._router.navigate([]);
-        }
-        /** Filter out items with insufficient permissions */
-        const user = this._users.current();
-        items = items.filter(
-            ({ needs_role }) => !needs_role || !!(user as any)[needs_role]
-        );
-        return items;
-    }
-
     private changeSelected(offset: number = 1) {
-        const index = this.menu_items.findIndex(
-            (item) => this._router.url.indexOf(item.route) >= 0
-        );
-        const new_index = index + offset;
-        if (this.menu_items[new_index]) {
-            this._router.navigate([this.menu_items[new_index].route]);
-        }
+        // const index = this.menu_items.findIndex(
+        //     (item) => this._router.url.indexOf(item.route) >= 0
+        // );
+        // const new_index = index + offset;
+        // if (this.menu_items[new_index]) {
+        //     this._router.navigate([this.menu_items[new_index].route]);
+        // }
     }
 }

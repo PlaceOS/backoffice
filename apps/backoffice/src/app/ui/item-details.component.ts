@@ -5,6 +5,7 @@ import { downloadFile, jsonToCsv } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyInfo } from '../common/notifications';
 import { BackofficeUsersService } from '../users/users.service';
+import { i18n } from '../common/translate';
 
 export interface DisplayItem {
     id: string;
@@ -39,9 +40,7 @@ export interface DisplayItem {
                         class="px-2 py-1 rounded-xl text-xs bg-info text-info-content"
                         *ngIf="driver_type"
                     >
-                        { driver_type, select, Device { Device } Logic { Logic }
-                        SSH { SSH } Websocket { Websocket } Service { Service }
-                        other { Other } }
+                        {{ driver_type }}
                     </div>
                     <div
                         class="px-2 py-1 rounded-xl text-xs mono bg-info text-info-content"
@@ -64,22 +63,26 @@ export interface DisplayItem {
                         [class.!bg-success]="item?.running"
                         [class.!text-success-content]="item?.running"
                     >
-                        { item?.running, select, true { Online } false { Offline
-                        } other { Other } }
+                        {{
+                            (item?.running ? 'COMMON.ONLINE' : 'COMMON.OFFLINE')
+                                | translate
+                        }}
                     </div>
                     <div
                         class="px-2 py-1 rounded-xl text-xs bg-info text-info-content"
                         *ngIf="item?.edge_id"
                         [matTooltip]="item?.edge_id"
                     >
-                        Edge
+                        {{ 'COMMON.EDGE' | translate }}
                     </div>
                     <div
                         class="px-2 py-1 rounded-xl text-xs bg-success flex items-center space-x-2 text-success-content"
                         *ngIf="item?.tls"
                     >
                         <app-icon>lock</app-icon>
-                        <div class="text">Secure</div>
+                        <div class="text">
+                            {{ 'COMMON.SECURE' | translate }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -95,7 +98,9 @@ export interface DisplayItem {
                 (click)="edit.emit(); editItem()"
             >
                 <app-icon class="text-2xl">edit</app-icon>
-                <div class="flex-1">Edit {{ type }}</div>
+                <div class="flex-1">
+                    {{ 'COMMON.EDIT_TYPE' | translate: { name: type } }}
+                </div>
                 <span class="keycap">E</span>
             </button>
             <button
@@ -105,7 +110,9 @@ export interface DisplayItem {
                 (click)="create.emit(false); newFromItem()"
             >
                 <app-icon class="text-2xl">add</app-icon>
-                <div>Create new from this {{ type }}</div>
+                <div>
+                    {{ 'COMMON.CREATE_FROM_TYPE' | translate: { name: type } }}
+                </div>
             </button>
             <button
                 mat-menu-item
@@ -114,7 +121,9 @@ export interface DisplayItem {
                 (click)="create.emit(true); duplicateItem()"
             >
                 <app-icon class="text-2xl">call_split</app-icon>
-                <div>Duplicate {{ type }}</div>
+                <div>
+                    {{ 'COMMON.DUPLICATE_TYPE' | translate: { name: type } }}
+                </div>
             </button>
             <button
                 mat-menu-item
@@ -122,7 +131,11 @@ export interface DisplayItem {
                 (click)="exportAsTSV()"
             >
                 <app-icon class="text-2xl">download</app-icon>
-                <div>Export {{ type }} as TSV template</div>
+                <div>
+                    {{
+                        'COMMON.EXPORT_TYPE_AS_TSV' | translate: { name: type }
+                    }}
+                </div>
             </button>
             <button
                 *ngIf="can_edit"
@@ -131,7 +144,9 @@ export interface DisplayItem {
                 (click)="delete.emit(); deleteItem()"
             >
                 <app-icon class="text-error text-2xl">delete</app-icon>
-                <div class="flex-1">Delete {{ type }}</div>
+                <div class="flex-1">
+                    {{ 'COMMON.DELETE_TYPE' | translate: { name: type } }}
+                </div>
                 <span class="keycap">⌦</span>
             </button>
         </mat-menu>
@@ -148,7 +163,7 @@ export class ItemDetailsComponent {
 
     public readonly copyID = () => {
         this._clipboard.copy(this.item?.id || '');
-        notifyInfo('ID copied to clipboard');
+        notifyInfo(i18n('COMMON.COPIED_ID'));
     };
 
     /** Open modal to edit the active item */
@@ -182,15 +197,15 @@ export class ItemDetailsComponent {
         if (typeof this.item?.role !== 'number') return '';
         switch (this.item?.role) {
             case PlaceDriverRole.Device:
-                return 'Device';
+                return i18n('DRIVERS.DEVICE');
             case PlaceDriverRole.SSH:
-                return 'SSH';
+                return i18n('DRIVERS.SSH');
             case PlaceDriverRole.Service:
-                return 'Service';
+                return i18n('DRIVERS.SERVICE');
             case PlaceDriverRole.Websocket:
-                return 'Websocket';
+                return i18n('DRIVERS.WEBSOCKET');
         }
-        return 'Logic';
+        return i18n('DRIVERS.LOGIC');
     }
 
     /**

@@ -4,7 +4,6 @@ import { format } from 'date-fns';
 import { VERSION } from '../../environments/version';
 import { issueDescription } from '../common/general';
 import { SettingsService } from '../common/settings.service';
-import { BackofficeUsersService } from '../users/users.service';
 
 @Component({
     selector: 'user-menu-tooltip',
@@ -18,11 +17,13 @@ import { BackofficeUsersService } from '../users/users.service';
                 class="space-x-2"
             >
                 <app-icon>person</app-icon>
-                Profile
+                {{ 'COMMON.PROFILE' | translate }}
             </a>
             <div dark-mode class="flex items-center p-4 w-[16rem]">
                 <app-icon>dark_mode</app-icon>
-                <p class="flex-1 w-1/2">Dark Mode</p>
+                <p class="flex-1 w-1/2">
+                    {{ 'COMMON.DARK_MODE' | translate }}
+                </p>
                 <mat-slide-toggle [(ngModel)]="dark_mode"></mat-slide-toggle>
             </div>
             <button
@@ -33,7 +34,7 @@ import { BackofficeUsersService } from '../users/users.service';
                 (click)="logout()"
             >
                 <app-icon>logout</app-icon>
-                Logout
+                {{ 'COMMON.LOGOUT' | translate }}
             </button>
             <button
                 matRipple
@@ -43,8 +44,17 @@ import { BackofficeUsersService } from '../users/users.service';
                 (click)="showUploadHistory()"
             >
                 <app-icon>schedule</app-icon>
-                Upload History
+                {{ 'COMMON.UPLOAD_HISTORY' | translate }}
             </button>
+            <!-- <button
+                matRipple
+                type="button"
+                class="space-x-2"
+            >
+                <app-icon>language</app-icon>
+                
+                {{ 'COMMON.LANGUAGE' | translate }}: {{lang.name}}
+            </button> -->
             <a
                 matRipple
                 type="button"
@@ -55,7 +65,7 @@ import { BackofficeUsersService } from '../users/users.service';
                 class="space-x-2"
             >
                 <app-icon [className]="'backoffice-github'"></app-icon>
-                Report an Issue
+                {{ 'COMMON.REPORT_ISSUE' | translate }}
             </a>
         </div>
     `,

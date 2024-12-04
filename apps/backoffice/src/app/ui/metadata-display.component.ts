@@ -26,7 +26,9 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
 @Component({
     selector: 'metadata-display',
     template: `
-        <button btn (click)="newMetadata()">New Metadata Field</button>
+        <button btn (click)="newMetadata()">
+            {{ 'COMMON.METADATA_NEW' | translate }}
+        </button>
         <div
             class="mt-4"
             *ngIf="metadata && metadata.length > 0; else empty_state"
@@ -76,7 +78,9 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
                                     btn
                                     icon
                                     class="no-underline"
-                                    matTooltip="Edit Metadata Settings"
+                                    [matTooltip]="
+                                        'COMMON.METADATA_EDIT' | translate
+                                    "
                                     (click)="
                                         editMetadataDetails(item);
                                         $event.stopPropagation()
@@ -92,7 +96,9 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
                                         btn
                                         icon
                                         class="no-underline"
-                                        matTooltip="Remove Metadata"
+                                        [matTooltip]="
+                                            'COMMON.METADATA_REMOVE' | translate
+                                        "
                                         (click)="deleteMetadata(item.name)"
                                     >
                                         <app-icon>delete</app-icon>
@@ -113,9 +119,11 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
             </mat-accordion>
         </div>
         <ng-template #empty_state>
-            <div class="w-full p-16 flex flex-col items-center justify-center">
-                <app-icon class="text-3xl">close</app-icon>
-                <div class="opacity-30">No metadata found</div>
+            <div
+                class="w-full p-16 flex flex-col items-center justify-center opacity-30 space-y-8"
+            >
+                <app-icon class="text-8xl">settings_alert</app-icon>
+                <div>{{ 'COMMON.METADATA_EMPTY' | translate }}</div>
             </div>
         </ng-template>
         <ng-template #load_state>

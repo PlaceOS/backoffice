@@ -20,7 +20,7 @@ import { ActiveItemService } from '../common/item.service';
                     [disabled]="
                         !(active_setting | async) || !(history$ | async)?.length
                     "
-                    placeholder="Select old settings"
+                    [placeholder]="'COMMON.SELECT_OLD_SETTING' | translate"
                 >
                     <mat-option
                         *ngFor="let option of history$ | async"
@@ -35,7 +35,7 @@ import { ActiveItemService } from '../common/item.service';
                 <mat-select
                     ngModel
                     (ngModelChange)="active_setting.next($event)"
-                    placeholder="Select current settings"
+                    [placeholder]="'COMMON.SELECT_NEW_SETTING' | translate"
                 >
                     <mat-option
                         *ngFor="let option of settings$ | async"
@@ -63,12 +63,12 @@ import { ActiveItemService } from '../common/item.service';
                 class="w-full p-16 opacity-30 text-center"
                 *ngIf="(history$ | async).length; else no_history_state"
             >
-                Select an current setting and old setting to compare them.
+                {{ 'COMMON.SETTINGS_COMPARE_SELECT_MSG' | translate }}
             </div>
         </ng-template>
         <ng-template #no_history_state>
             <div class="w-full p-16 opacity-30 text-center">
-                Selected setting is the first version
+                {{ 'COMMON.SELECTED_FIRST_VERSION' | translate }}
             </div>
         </ng-template>
     `,

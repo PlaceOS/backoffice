@@ -10,7 +10,7 @@ import { AsyncHandler } from '../common/async-handler.class';
     template: `
         <header class="h-14">
             <h3 class="px-2">
-                View Runtime Errors -
+                {{ 'MODULES.RUNTIME_ERRORS_VIEW' | translate }} -
                 {{ (module | async)?.custom_name || (module | async)?.name }}
             </h3>
             <button icon matRipple mat-dialog-close *ngIf="!loading">
@@ -29,7 +29,7 @@ import { AsyncHandler } from '../common/async-handler.class';
                 <div
                     class="flex flex-col items-center justify-center w-[24rem] h-64 space-y-2 opacity-30"
                 >
-                    No runtime errors found
+                    {{ 'MODULES.RUNTIME_ERRORS_NO' | translate }}
                 </div>
             </ng-template>
         </main>
@@ -38,7 +38,9 @@ import { AsyncHandler } from '../common/async-handler.class';
                 class="flex flex-col items-center justify-center w-[24rem] h-64 space-y-2"
             >
                 <mat-spinner diameter="32"></mat-spinner>
-                <div class="opacity-30">Loading details...</div>
+                <div class="opacity-30">
+                    {{ 'MODULES.RUNTIME_ERRORS_LOADING' | translate }}
+                </div>
             </main>
         </ng-template>
     `,

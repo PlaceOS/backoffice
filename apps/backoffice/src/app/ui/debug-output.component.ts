@@ -36,7 +36,12 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                         debug_position === 'below' ? '100%' : width + 'px'
                     "
                 >
-                    <div class="p-3 text-sm">{{ event_count }} messages</div>
+                    <div class="p-3 text-sm">
+                        {{
+                            'COMMON.MESSAGE_COUNT'
+                                | translate: { count: event_count }
+                        }}
+                    </div>
                     <new-terminal
                         [lines]="logs"
                         [resize]="resize"
@@ -70,7 +75,11 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                             class="bg-neutral-focus text-neutral-content shadow rounded-full"
                             (click)="downloadLogs()"
                         >
-                            <app-icon matTooltip="Download Messages">
+                            <app-icon
+                                [matTooltip]="
+                                    'COMMON.DEBUG_DOWNLOAD_MESSAGES' | translate
+                                "
+                            >
                                 download
                             </app-icon>
                         </button>
@@ -80,11 +89,16 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                             class="bg-neutral-focus text-neutral-content shadow rounded-full"
                             (click)="toggleDebugPosition()"
                         >
-                            <app-icon matTooltip="Toggle Position">{{
-                                debug_position === 'side'
-                                    ? 'border_bottom'
-                                    : 'border_right'
-                            }}</app-icon>
+                            <app-icon
+                                [matTooltip]="
+                                    'COMMON.DEBUG_TOGGLE_POSITION' | translate
+                                "
+                                >{{
+                                    debug_position === 'side'
+                                        ? 'border_bottom'
+                                        : 'border_right'
+                                }}</app-icon
+                            >
                         </button>
                         <button
                             btn
@@ -92,7 +106,11 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                             class="bg-neutral-focus text-neutral-content shadow rounded-full"
                             (click)="clearDebugMessages()"
                         >
-                            <app-icon matTooltip="Clear Messages">
+                            <app-icon
+                                [matTooltip]="
+                                    'COMMON.DEBUG_CLEAR_MESSAGES' | translate
+                                "
+                            >
                                 clear_all
                             </app-icon>
                         </button>
@@ -101,7 +119,9 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                             icon
                             (click)="clearBindings()"
                             class="bg-neutral-focus text-neutral-content shadow rounded-full"
-                            matTooltip="Unbind Modules"
+                            [matTooltip]="
+                                'COMMON.DEBUG_UNBIND_MODULES' | translate
+                            "
                         >
                             <app-icon>cancel_presentation</app-icon>
                         </button>
@@ -110,7 +130,9 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                             icon
                             (click)="close()"
                             class="bg-neutral-focus text-neutral-content shadow rounded-full"
-                            matTooltip="Close Console"
+                            [matTooltip]="
+                                'COMMON.DEBUG_CLOSE_CONSOLE' | translate
+                            "
                         >
                             <app-icon>close</app-icon>
                         </button>

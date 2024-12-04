@@ -33,7 +33,7 @@ import { BackofficeUsersService } from '../users/users.service';
             >
                 <app-icon class="text-2xl ml-2 ">search</app-icon>
                 <p class="p-2 text-lg opacity-30  flex-1 w-1/2 text-left">
-                    View {{ title }}
+                    {{ 'COMMON.VIEW_TYPE' | translate: { name: title } }}
                 </p>
                 <span class="keycap mr-2 text-xs">K</span>
             </button>
@@ -55,7 +55,9 @@ import { BackofficeUsersService } from '../users/users.service';
                         class="border-none flex-1 py-3 px-2 text-lg bg-transparent "
                         [(ngModel)]="search"
                         (ngModelChange)="updateSearch($event)"
-                        [placeholder]="'Search for ' + title"
+                        [placeholder]="
+                            'COMMON.SEARCH_FOR' | translate: { name: title }
+                        "
                     />
                     <mat-spinner
                         *ngIf="loading | async"
@@ -64,7 +66,10 @@ import { BackofficeUsersService } from '../users/users.service';
                     ></mat-spinner>
                 </div>
                 <p class="text-sm  opacity-60 w-full px-4">
-                    {{ total | async }} item(s)
+                    {{
+                        'COMMON.TOTAL_ITEMS'
+                            | translate: { count: (total | async) }
+                    }}
                 </p>
                 <div class="flex flex-col flex-1 h-1/2">
                     <cdk-virtual-scroll-viewport
@@ -105,7 +110,7 @@ import { BackofficeUsersService } from '../users/users.service';
                         <div
                             class="p-2 text-center opacity-30 text-sm bg-base-200 "
                         >
-                            End of the list
+                            {{ 'COMMON.END_OF_LIST' | translate }}
                         </div>
                     </cdk-virtual-scroll-viewport>
                 </div>
@@ -117,9 +122,8 @@ import { BackofficeUsersService } from '../users/users.service';
             >
                 <p>
                     {{
-                        search
-                            ? 'No matching ' + title + ' found'
-                            : 'No ' + title + ' available'
+                        (search ? 'COMMON.SEARCH_EMPTY' : 'COMMON.LIST_EMPTY')
+                            | translate: { name: title }
                     }}
                 </p>
             </div>
