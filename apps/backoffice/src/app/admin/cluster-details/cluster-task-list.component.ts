@@ -121,7 +121,7 @@ const task_details = {};
                     icon
                     matRipple
                     class="text-error"
-                    [matTooltip]="'ADMIN.CLUSTER_PRORESS_KILL' | translate"
+                    [matTooltip]="'ADMIN.CLUSTER_PROCESS_KILL' | translate"
                     (click)="confirmKillProcess(row)"
                 >
                     <app-icon>delete</app-icon>
@@ -223,7 +223,9 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
             ...CONFIRM_METADATA,
             data: {
                 title: i18n('ADMIN.CLUSTER_PROCESS_KILL'),
-                content: i18n('CLUSTER_PROCESS_KILL_MSG', { id: process.id }),
+                content: i18n('ADMIN.CLUSTER_PROCESS_KILL_MSG', {
+                    id: process.id,
+                }),
                 icon: { type: 'icon', content: 'delete' },
             },
         });

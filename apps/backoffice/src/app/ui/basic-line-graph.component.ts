@@ -16,8 +16,8 @@ function scale(domain, range) {
 }
 
 const COLORS: [string, string][] = [
-    ['hsla(217, 91%, 60%, 1)', 'hsla(217, 91%, 60%, 0.2)'],
-    ['hsla(118, 50%, 43%, 1)', 'hsla(118, 50%, 43%, 0.2)'],
+    ['hsla(217, 91%, 60%, 1)', 'hsla(217, 91%, 60%, 0.4)'],
+    ['hsla(118, 50%, 43%, 1)', 'hsla(118, 50%, 43%, 0.4)'],
 ];
 
 @Component({
@@ -71,7 +71,7 @@ export class BasicLineGraphComponent
         ctx.translate(padding, padding);
         width -= padding * 2;
         height -= padding * 2;
-        const axis_start = { x: 40, y: 24 };
+        const axis_start = { x: 40, y: 16 };
         const subdivisions = 4;
         ctx.strokeStyle = 'currentColor';
         ctx.lineWidth = 1;
@@ -89,11 +89,12 @@ export class BasicLineGraphComponent
         ctx.setLineDash([]);
         // Draw Y-Axis Labels
         ctx.font = '20px Fira Code';
+        ctx.fillStyle = 'currentColor';
         ctx.fillText('50%', -4, (height - axis_start.y) / 2 + 8);
         ctx.fillText('100%', -12, 8);
         // Draw X-Axis Labels
-        ctx.fillText('0', width - 12, height - 4);
-        ctx.fillText('60s', axis_start.x, height - 4);
+        ctx.fillText('0', width - 12, height + 4);
+        ctx.fillText('60s', axis_start.x, height + 4);
 
         // Draw Lines
         for (const line of this.lines) {
