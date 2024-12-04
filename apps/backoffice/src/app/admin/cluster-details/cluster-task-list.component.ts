@@ -22,6 +22,7 @@ import {
     switchMap,
     tap,
 } from 'rxjs/operators';
+import { i18n } from '../../common/translate';
 
 const task_details = {};
 
@@ -33,7 +34,7 @@ const task_details = {};
                 <app-icon>arrow_back</app-icon>
             </button>
             <h3 class="text-lg font-medium">
-                Cluster - {{ cluster?.hostname }}
+                {{ 'ADMIN.CLUSTER' | translate }} - {{ cluster?.hostname }}
             </h3>
             <div class="flex-1"></div>
             <mat-form-field appearance="outline" class="h-12">
@@ -46,7 +47,9 @@ const task_details = {};
                     matInput
                     [ngModel]="filter.getValue()"
                     (ngModelChange)="filter.next($event)"
-                    placeholder="Filter processes..."
+                    [placeholder]="
+                        'ADMIN.CLUSTERS_SEARCH_PROCESSES' | translate
+                    "
                 />
             </mat-form-field>
         </div>
@@ -59,15 +62,27 @@ const task_details = {};
             class="min-w-[40rem] block text-sm"
             [data]="filtered_list"
             [columns]="[
-                { key: 'id', name: 'Name', content: name_template },
+                {
+                    key: 'id',
+                    name: 'COMMON.FIELD_NAME' | translate,
+                    content: name_template
+                },
                 {
                     key: 'cpu_usage',
-                    name: 'CPU %',
+                    name: 'ADMIN.CLUSTERS_FIELD_CPU_USAGE' | translate,
                     content: cpu_template,
                     size: '6rem'
                 },
-                { key: 'used_memory', name: 'Memory', size: '7rem' },
-                { key: 'module_instances', name: 'Instances', size: '6rem' },
+                {
+                    key: 'used_memory',
+                    name: 'ADMIN.CLUSTERS_FIELD_MEMORY_USAGE' | translate,
+                    size: '7rem'
+                },
+                {
+                    key: 'module_instances',
+                    name: 'ADMIN.CLUSTERS_FIELD_INSTANCES' | translate,
+                    size: '6rem'
+                },
                 {
                     key: 'actions',
                     name: ' ',
@@ -77,7 +92,7 @@ const task_details = {};
                 }
             ]"
             [sortable]="true"
-            empty_message="No tasks running on cluster"
+            [empty_message]="'ADMIN.CLUSTER_PROCESSES_EMPTY' | translate"
         ></simple-table>
         <ng-template #name_template let-row="row">
             <div class="flex flex-col px-4 py-2 font-mono">
@@ -106,6 +121,7 @@ const task_details = {};
                     icon
                     matRipple
                     class="text-error"
+                    [matTooltip]="'ADMIN.CLUSTER_PRORESS_KILL' | translate"
                     (click)="confirmKillProcess(row)"
                 >
                     <app-icon>delete</app-icon>
@@ -206,12 +222,8 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
         const ref = this._dialog.open(ConfirmModalComponent, {
             ...CONFIRM_METADATA,
             data: {
-                title: `Kill process`,
-                content: `
-                    <p>Are you sure you want kill the process for "${process.id}"?</p>
-                    <p>The process will be terminated <strong>immediately</strong>.
-                    The process may be restarted after a short while.</p>
-                `,
+                title: i18n('ADMIN.CLUSTER_PROCESS_KILL'),
+                content: i18n('CLUSTER_PROCESS_KILL_MSG', { id: process.id }),
                 icon: { type: 'icon', content: 'delete' },
             },
         });
@@ -220,7 +232,9 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
             ref.componentInstance.event.subscribe((event) => {
                 if (event.reason === 'done') {
                     this.killing = process.id;
-                    ref.componentInstance.loading = 'Processing request...';
+                    ref.componentInstance.loading = i18n(
+                        'ADMIN.CLUSTER_PROCESS_KILL_LOADING'
+                    );
                     this.killProcess(process).then(
                         () => {
                             this.killing = null;
@@ -230,9 +244,11 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
                             ref.componentInstance.loading = null;
                             this.killing = null;
                             notifyError(
-                                `Error killing process. Error: ${JSON.stringify(
-                                    err.response || err.message || err
-                                )}`
+                                i18n('ADMIN.CLUSTER_PROCESS_KILL_ERROR', {
+                                    error: JSON.stringify(
+                                        err.response || err.message || err
+                                    ),
+                                })
                             );
                             ref.close();
                         }

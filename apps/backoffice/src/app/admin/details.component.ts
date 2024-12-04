@@ -16,6 +16,7 @@ import {
 
 import { copyToClipboard } from '../common/general';
 import { format } from 'date-fns';
+import { i18n } from '../common/translate';
 
 export interface PlaceServiceDetails {
     /** Name of the service */
@@ -40,7 +41,7 @@ export interface PlaceServiceDetails {
             class="flex items-center space-x-2 mb-4 px-4 py-2 bg-base-200 rounded"
         >
             <h3 class="text-lg font-medium">
-                Application Details
+                {{ 'ADMIN.APPLICATION_DETAILS' | translate }}
                 <span class="mono opacity-60 ml-2">Backoffice</span>
             </h3>
             <div class="flex-1"></div>
@@ -49,7 +50,7 @@ export interface PlaceServiceDetails {
                 class="p-2 text-xs underline"
                 (click)="changelog(backoffice_logs)"
             >
-                View Changelog
+                {{ 'ADMIN.VIEW_CHANGELOG' | translate }}
             </button>
         </div>
         <section
@@ -57,7 +58,7 @@ export interface PlaceServiceDetails {
             [style.gridTemplateColumns]="'6.5rem auto'"
         >
             <div class="text-sm font-medium flex items-center" for="version">
-                Version:
+                {{ 'COMMON.VERSION' | translate }}:
             </div>
             <div class="flex items-center space-x-2">
                 <code
@@ -75,7 +76,7 @@ export interface PlaceServiceDetails {
                 </code>
             </div>
             <div class="text-sm font-medium flex items-center" for="hash">
-                Commit Hash:
+                {{ 'COMMON.GIT_COMMIT' | translate }}:
             </div>
             <div>
                 <code name="hash" (click)="copy('hash', backoffice_hash)">
@@ -83,7 +84,7 @@ export interface PlaceServiceDetails {
                 </code>
             </div>
             <div class="text-sm font-medium flex items-center" for="build-time">
-                Build:
+                {{ 'ADMIN.BUILD' | translate }}:
             </div>
             <div
                 name="build-time"
@@ -95,7 +96,8 @@ export interface PlaceServiceDetails {
         </section>
         <div class="flex items-center space-x-4 px-4 py-2 bg-base-200 rounded">
             <div class="text-lg font-medium">
-                Backend Services <span class="mono opacity-60 ml-2">API</span>
+                {{ 'ADMIN.BACKEND_SERVICES' | translate }}
+                <span class="mono opacity-60 ml-2">API</span>
             </div>
             <code class="bg-base-300" *ngIf="backend_version">
                 {{ backend_version }}
@@ -106,7 +108,7 @@ export interface PlaceServiceDetails {
                 class="p-2 text-xs underline"
                 (click)="changelog(changelog_data)"
             >
-                View Changelog
+                {{ 'ADMIN.VIEW_CHANGELOG' | translate }}
             </button>
         </div>
         <section class="flex flex-wrap py-2 -mx-2">
@@ -123,25 +125,25 @@ export interface PlaceServiceDetails {
                         [style.gridTemplateColumns]="'6.5rem auto'"
                     >
                         <div class="text-sm font-medium flex items-center">
-                            Commit Hash:
+                            {{ 'COMMON.GIT_COMMIT' | translate }}:
                         </div>
                         <div>
                             <code>{{ api.commit | slice: 0:8 }}</code>
                         </div>
                         <div class="text-sm font-medium flex items-center">
-                            Version:
+                            {{ 'COMMON.VERSION' | translate }}:
                         </div>
                         <div>
                             <code>{{ api.version }}</code>
                         </div>
                         <div class="text-sm font-medium flex items-center">
-                            Platform:
+                            {{ 'ADMIN.PLATFORM' | translate }}:
                         </div>
                         <div>
                             <code>{{ api.platform_version }}</code>
                         </div>
                         <div class="text-sm font-medium flex items-center">
-                            Build time:
+                            {{ 'ADMIN.BUILT_AT' | translate }}:
                         </div>
                         <div class="text-sm">
                             {{ api.build_time | date: 'MMM d, y, h:mm a' }}
@@ -155,7 +157,7 @@ export interface PlaceServiceDetails {
                 <div
                     class="p-4 border border-base-300 rounded-lg bg-base-200 opacity-30"
                 >
-                    No API service details available.
+                    {{ 'ADMIN.BACKEND_SERVICES_EMPTY' | translate }}
                 </div>
             </div>
         </ng-template>
@@ -228,7 +230,7 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
 
     public copy(name: string, content: string) {
         copyToClipboard(content);
-        notifyInfo(`Copied ${name} to clipboard`);
+        notifyInfo(i18n('ADMIN.COPIED', { name }));
     }
 
     public async loadApiDetails() {
@@ -236,9 +238,11 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
             .toPromise()
             .catch((err) =>
                 notifyError(
-                    `Error loading API details. Error: ${JSON.stringify(
-                        err.response || err.message || err
-                    )}`
+                    i18n('ADMIN.BACKEND_SERVICES_ERROR', {
+                        error: JSON.stringify(
+                            err.response || err.message || err
+                        ),
+                    })
                 )
             );
         this.api_details = (details as any) || [];
@@ -250,9 +254,11 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
             .toPromise()
             .catch((err) => {
                 notifyError(
-                    `Error loading API details. Error: ${JSON.stringify(
-                        err.response || err.message || err
-                    )}`
+                    i18n('ADMIN.BACKEND_SERVICES_ERROR', {
+                        error: JSON.stringify(
+                            err.response || err.message || err
+                        ),
+                    })
                 );
                 throw err;
             });

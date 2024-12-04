@@ -18,7 +18,6 @@ import {
 } from 'apps/backoffice/src/app/common/notifications';
 import { openConfirmModal } from 'apps/backoffice/src/app/common/general';
 import { BehaviorSubject } from 'rxjs';
-import { ta } from 'date-fns/locale';
 
 @Component({
     selector: 'app-brokers',

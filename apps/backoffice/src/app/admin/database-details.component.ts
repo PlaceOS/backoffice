@@ -13,9 +13,8 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
             <div
                 class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
             >
-                <p class="text-center p-2">
-                    Re-index elasticsearch for the<br />current state of the
-                    database
+                <p class="text-center p-2 max-w-64 mx-auto">
+                    {{ 'ADMIN.DATABASE_REINDEX_MSG' | translate }}
                 </p>
                 <button
                     btn
@@ -24,16 +23,15 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
                     (click)="reindex()"
                 >
                     <ng-container *ngIf="!reindexing; else spinner">
-                        Re-index
+                        {{ 'ADMIN.DATABASE_REINDEX' | translate }}
                     </ng-container>
                 </button>
             </div>
             <div
                 class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
             >
-                <p class="text-center p-2">
-                    Backfill elasticsearch with the<br />current state of the
-                    database
+                <p class="text-center p-2 max-w-64 mx-auto">
+                    {{ 'ADMIN.DATABASE_BACKFILL_MSG' | translate }}
                 </p>
                 <button
                     btn
@@ -42,7 +40,7 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
                     (click)="backfill()"
                 >
                     <ng-container *ngIf="!backfilling; else spinner">
-                        Backfill
+                        {{ 'ADMIN.DATABASE_BACKFILL' | translate }}
                     </ng-container>
                 </button>
             </div>

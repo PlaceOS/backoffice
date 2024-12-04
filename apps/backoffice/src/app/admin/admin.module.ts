@@ -11,7 +11,6 @@ import { PlaceComponent } from './admin.component';
 import { PlaceDatabaseDetailsComponent } from './database-details.component';
 import { PlaceDetailsComponent } from './details.component';
 import { PlaceClusterDetailsComponent } from './cluster-details/cluster-details.component';
-import { PlaceClusterItemComponent } from './cluster-details/cluster-item.component';
 import { PlaceClusterTaskListComponent } from './cluster-details/cluster-task-list.component';
 import { AdminInterfacesComponent } from './interfaces.component';
 import { AdminBrokersComponent } from './brokers.component';
@@ -41,7 +40,6 @@ import { EmailTemplateFormComponent } from './mailing-lists/email-template-form.
         PlaceDatabaseDetailsComponent,
         PlaceDetailsComponent,
         PlaceClusterDetailsComponent,
-        PlaceClusterItemComponent,
         PlaceClusterTaskListComponent,
         PlaceExtensionsComponent,
         AdminInterfacesComponent,

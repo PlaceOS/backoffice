@@ -6,6 +6,8 @@ import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { SettingsService } from '../common/settings.service';
 import { BackofficeUsersService } from '../users/users.service';
+import { i18n } from '../common/translate';
+import { timer } from 'rxjs';
 
 @Component({
     selector: 'app-engine',
@@ -98,61 +100,65 @@ export class PlaceComponent extends AsyncHandler {
 
     public updateTabList() {
         this.tab_list = [
-            { id: 'about', name: 'About', icon: { value: 'info' } },
+            {
+                id: 'about',
+                name: i18n('ADMIN.TAB_ABOUT'),
+                icon: { value: 'info' },
+            },
             {
                 id: 'database',
-                name: 'Database',
+                name: i18n('ADMIN.TAB_DATABASE'),
                 icon: { value: 'database' },
             },
             {
                 id: 'clusters',
-                name: 'Clusters',
+                name: i18n('ADMIN.TAB_CLUSTERS'),
                 icon: { value: 'dns' },
             },
             { id: 'edge', name: 'Edges', icon: { value: 'network_node' } },
             {
                 id: 'interfaces',
-                name: 'Interfaces',
+                name: i18n('ADMIN.TAB_INTERFACES'),
                 icon: { value: 'web' },
             },
             {
                 id: 'brokers',
-                name: 'MQTT Brokers',
+                name: i18n('ADMIN.TAB_MQTT_BROKERS'),
                 icon: { value: 'sensors' },
             },
             {
                 id: 'staff-api',
-                name: 'Staff API',
+                name: i18n('ADMIN.TAB_TENANT_CONFIG'),
                 icon: { value: 'api' },
             },
             {
                 id: 'resource-imports',
-                name: 'Resource Imports',
+                name: i18n('ADMIN.TAB_RESOURCE_IMPORTS'),
                 icon: { value: 'publish' },
             },
             {
                 id: 'extensions',
-                name: 'Extensions',
+                name: i18n('ADMIN.TAB_EXTENSIONS'),
                 icon: { value: 'webhook' },
             },
             {
                 id: 'api-keys',
-                name: 'API Keys',
+                name: i18n('ADMIN.TAB_API_KEYS'),
                 icon: { value: 'key' },
             },
             {
                 id: 'schemas',
-                name: 'Custom Schemas',
+                name: i18n('ADMIN.TAB_CUSTOM_SCHEMAS'),
                 icon: { value: 'list' },
             },
             {
                 id: 'upload-storage',
-                name: 'Upload Storage',
+                name: i18n('ADMIN.TAB_UPLOAD_STORAGE'),
                 icon: { value: 'cloud_upload' },
             },
             {
                 id: 'upload-library',
-                name: 'Uploads Library',
+                name: i18n('ADMIN.TAB_UPLOADS_LIBRARY'),
                 icon: { value: 'photo_album' },
             },
             // {
@@ -172,8 +178,9 @@ export class PlaceComponent extends AsyncHandler {
         super();
     }
 
-    public ngOnInit(): void {
-        this._settings.title = 'Admin';
+    public async ngOnInit() {
         this.updateTabList();
+        await timer(1000).toPromise();
+        this._settings.title = i18n('ADMIN.TITLE');
     }
 }

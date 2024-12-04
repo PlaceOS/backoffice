@@ -30,37 +30,51 @@ export interface PlaceClusterNode {
 
 export interface PlaceClusterUsageStamp {
     id: number;
-    value: number;
+    cpu: number;
+    memory: number;
 }
 
 @Component({
     selector: 'admin-cluster-node',
     template: `
-        <h4>{{ node?.hostname }}</h4>
-        <div class="mb-2 h-40 w-64">
-            <div basic-line-graph [points]="points"></div>
+        <h4 *ngIf="show_name">{{ node?.hostname }}</h4>
+        <div class="mb-2 w-full h-36 p-2 border border-base-300 rounded">
+            <div basic-line-graph [lines]="lines" class="h-full w-full"></div>
         </div>
         <div class="memory-utilisation">
-            <div
-                class="flex items-center justify-between space-x-2 p-2 text-left"
-            >
-                <label class="w-28"> Memory Used </label>
-                <div class="value flex-1 text-right flex space-x-2">
-                    <code>{{ used_memory }} / {{ total_memory }}</code>
-                    <code> {{ memory_percentage.toFixed(2) }}% </code>
+            <div class="flex space-x-2">
+                <div
+                    class="flex flex-col items-center justify-center flex-1 border border-base-300 rounded p-1 space-y-1"
+                >
+                    <div>{{ 'ADMIN.CLUSTERS_CPU_USAGE' | translate }}</div>
+                    <div class="text-4xl mono font-medium">
+                        {{ node?.total_cpu.toFixed(0) }}%
+                    </div>
+                    <div class="mono text-xs w-36 text-center">
+                        {{
+                            'ADMIN.CLUSTERS_CPU_CORES'
+                                | translate: { count: node?.cpu_count || 0 }
+                        }}
+                    </div>
                 </div>
-            </div>
-            <div
-                class="flex items-center justify-between space-x-2 bg-base-200 rounded p-2 text-left"
-            >
-                <label class="w-28">CPU Usage</label>
-                <code> {{ node?.total_cpu }}% </code>
+                <div
+                    class="flex flex-col items-center justify-center flex-1 border border-base-300 rounded p-1 space-y-1"
+                >
+                    <div>{{ 'ADMIN.CLUSTERS_MEMORY_USAGE' | translate }}</div>
+                    <div class="text-4xl mono font-medium">
+                        {{ memory_percentage.toFixed(0) }}%
+                    </div>
+                    <div class="mono text-xs w-36 text-center">
+                        {{ used_memory }}/{{ total_memory }}
+                    </div>
+                </div>
             </div>
         </div>
     `,
     styles: [],
 })
 export class AdminClusterNodeComponent implements OnChanges, OnInit {
+    @Input() public show_name = true;
     /** Node to display on the view */
     @Input() public node: PlaceClusterNode;
     /** Historical data for node */
@@ -68,10 +82,13 @@ export class AdminClusterNodeComponent implements OnChanges, OnInit {
     /** Store for the chart data object */
     // private _chart: Chart;
     /**  */
-    public points: Point[] = [];
+    public lines: Point[][] = [];
 
     public get used_memory() {
-        return humanReadableByteCount((this.node?.memory_usage || 0) * 1024);
+        return humanReadableByteCount((this.node?.memory_usage || 0) * 1024)
+            .replace('GB', '')
+            .replace('MB', '')
+            .trim();
     }
 
     public get total_memory() {
@@ -99,16 +116,9 @@ export class AdminClusterNodeComponent implements OnChanges, OnInit {
     }
 
     public generateCharts(): void {
-        const list = [...this.history] || [];
-        while (list.length < 12) {
-            list.unshift({} as any);
-        }
-        const data = list
-            .slice(Math.max(0, list.length - 12))
-            .map((event, idx) => ({
-                x: idx,
-                y: event.value || 0,
-            }));
-        this.points = [...data];
+        this.lines = [
+            this.history.map(({ cpu }, idx) => ({ x: idx, y: cpu })),
+            this.history.map(({ memory }, idx) => ({ x: idx, y: memory })),
+        ];
     }
 }

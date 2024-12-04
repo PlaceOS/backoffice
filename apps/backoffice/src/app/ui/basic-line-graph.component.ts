@@ -1,112 +1,156 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    Input,
+    OnChanges,
+    SimpleChanges,
+    ViewChild,
+} from '@angular/core';
 import { Point } from '../common/types';
+import { AsyncHandler } from '../common/async-handler.class';
 
 function scale(domain, range) {
     const m = (range[1] - range[0]) / (domain[1] - domain[0]);
     return (num) => range[0] + m * (num - domain[0]);
 }
 
+const COLORS: [string, string][] = [
+    ['hsla(217, 91%, 60%, 1)', 'hsla(217, 91%, 60%, 0.2)'],
+    ['hsla(118, 50%, 43%, 1)', 'hsla(118, 50%, 43%, 0.2)'],
+];
+
 @Component({
     selector: '[basic-line-graph]',
-    template: `
-        <div
-            graph
-            class="relative left-12 w-[calc(100%-3rem)] h-[calc(100%-2rem)] overflow-hidden"
-        >
-            <svg
-                class="w-full h-full"
-                viewBox="0 0 100 100"
-                preserveAspectRatio="none"
-            >
-                <polyline
-                    [attr.points]="line_points"
-                    style="stroke: #C92366; stroke-width: 2; fill: none"
-                ></polyline>
-            </svg>
-            <div points class="h-0 w-0">
-                <div
-                    dot
-                    class="absolute h-2 w-2 rounded-full transform -translate-x-1/2 -translate-y-1/2 bg-secondary"
-                    *ngFor="let point of dot_points; let i = index"
-                    [style.top]="point.y + '%'"
-                    [style.left]="point.x + '%'"
-                    [matTooltip]="points[i].y + '%'"
-                ></div>
-            </div>
-        </div>
-        <div>
-            <div
-                x-axis
-                class="absolute left-12 bottom-0 right-0 h-8 flex justify-between border-t border-base-content "
-            >
-                <span>10s</span>
-                <span>8s</span>
-                <span>6s</span>
-                <span>4s</span>
-                <span>2s</span>
-                <span>Now</span>
-            </div>
-            <div
-                y-axis
-                class="absolute top-0 bottom-8 left-0 flex flex-col w-12 justify-between items-end border-r border-base-content  pr-1"
-            >
-                <span>100%</span>
-                <span>75%</span>
-                <span>50%</span>
-                <span>25%</span>
-                <span>0%</span>
-            </div>
-        </div>
-    `,
+    template: ` <canvas #canvas class="h-full w-full"></canvas> `,
     styles: [
         `
             :host {
-                @apply relative block w-full h-full;
-            }
-
-            [y-axis] span,
-            [x-axis] span {
-                @apply flex h-0 w-0;
-                transform: rotate(30deg);
-            }
-
-            [y-axis] span {
-                @apply items-center justify-end;
-            }
-
-            [x-axis] span {
-                @apply items-start justify-start;
+                display: block;
             }
         `,
     ],
 })
-export class BasicLineGraphComponent implements OnChanges {
-    @Input() public points: Point[] = [];
-    @Input() public labels: { x_axis: string[]; y_axis: string[] } = {
-        x_axis: [],
-        y_axis: [],
-    };
-    public dot_points: Point[] = [];
-    public line_points: string;
+export class BasicLineGraphComponent
+    extends AsyncHandler
+    implements AfterViewInit
+{
+    @Input() public lines: Point[][] = [];
 
-    public ngOnChanges(changes: SimpleChanges) {
-        if (changes.points) {
-            this.processPoints();
-        }
+    @ViewChild('canvas', { static: true })
+    private _canvas_el: ElementRef<HTMLCanvasElement>;
+
+    constructor(private _element: ElementRef<HTMLElement>) {
+        super();
     }
 
-    public processPoints() {
-        const x = scale(
-            [0, Math.max(...this.points.map((d) => d.x))],
-            [1, 100]
+    public ngAfterViewInit() {
+        this._setupCanvas();
+        requestAnimationFrame(() => this._drawGraph());
+    }
+
+    private _setupCanvas() {
+        if (!this._canvas_el?.nativeElement) {
+            return this.timeout('setup', () => this._setupCanvas());
+        }
+        const canvas_el = this._canvas_el?.nativeElement!;
+        const container_box =
+            this._element.nativeElement.getBoundingClientRect();
+        canvas_el.width = container_box.width * 2;
+        canvas_el.height = container_box.height * 2;
+    }
+
+    private _drawGraph() {
+        if (!this._canvas_el?.nativeElement) return;
+        const ctx = this._canvas_el.nativeElement.getContext('2d');
+        if (!ctx) return;
+        let { width, height } = this._canvas_el.nativeElement;
+        ctx.clearRect(0, 0, width, height);
+        ctx.save();
+        const padding = 12;
+        ctx.translate(padding, padding);
+        width -= padding * 2;
+        height -= padding * 2;
+        const axis_start = { x: 40, y: 24 };
+        const subdivisions = 4;
+        ctx.strokeStyle = 'currentColor';
+        ctx.lineWidth = 1;
+        // Y-Axis Lines
+        ctx.setLineDash([6, 4]);
+        for (let i = 0; i < subdivisions; i++) {
+            ctx.beginPath();
+            ctx.moveTo(
+                axis_start.x,
+                (height - axis_start.y) * (i / subdivisions)
+            );
+            ctx.lineTo(width - 2, (height - axis_start.y) * (i / subdivisions));
+            ctx.stroke();
+        }
+        ctx.setLineDash([]);
+        // Draw Y-Axis Labels
+        ctx.font = '20px Fira Code';
+        ctx.fillText('50%', -4, (height - axis_start.y) / 2 + 8);
+        ctx.fillText('100%', -12, 8);
+        // Draw X-Axis Labels
+        ctx.fillText('0', width - 12, height - 4);
+        ctx.fillText('60s', axis_start.x, height - 4);
+
+        // Draw Lines
+        for (const line of this.lines) {
+            this._drawLine(
+                ctx,
+                [axis_start.x, 0, width - axis_start.x, height - axis_start.y],
+                line,
+                COLORS[this.lines.indexOf(line) % COLORS.length]
+            );
+        }
+
+        ctx.strokeStyle = 'currentColor';
+        ctx.lineWidth = 2;
+
+        // X-Axis
+        ctx.beginPath();
+        ctx.moveTo(axis_start.x, 0);
+        ctx.lineTo(axis_start.x, height - axis_start.y);
+        ctx.stroke();
+        // Y-Axis
+        ctx.beginPath();
+        ctx.moveTo(axis_start.x, height - axis_start.y);
+        ctx.lineTo(width, height - axis_start.y);
+        ctx.stroke();
+
+        ctx.restore();
+        this.timeout('draw', () =>
+            requestAnimationFrame(() => this._drawGraph())
         );
-        const y = scale(
-            [0, Math.max(...this.points.map((d) => d.y), 100)],
-            [100, 1]
-        );
-        const coordinates = this.points.map((d) => ({ x: x(d.x), y: y(d.y) }));
-        const points = this.points.map((d) => `${x(d.x)},${y(d.y)}`).join(' ');
-        this.dot_points = coordinates;
-        this.line_points = points;
+    }
+
+    private _drawLine(
+        ctx: CanvasRenderingContext2D,
+        [box_x, box_y, box_w, box_h],
+        points: Point[],
+        [stroke, fill]: [string, string]
+    ) {
+        let count = 0;
+        ctx.strokeStyle = stroke;
+        ctx.fillStyle = fill;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(box_w + box_x, box_h + box_y);
+        for (const { x, y } of points) {
+            if (count > 60) break;
+            ctx.lineTo(
+                box_w * ((60 - x) / 60) + box_x,
+                box_h * ((100 - y) / 100) - 1 + box_y
+            );
+            count += 1;
+        }
+        while (count < 60) {
+            count += 1;
+            ctx.lineTo(box_w * ((60 - count) / 60) + box_x, box_h - 1 + box_y);
+        }
+        ctx.lineTo(box_x, box_h - 1 + box_y);
+        ctx.stroke();
+        ctx.fill();
     }
 }
