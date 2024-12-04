@@ -3,6 +3,8 @@ import { authority } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { SettingsService } from '../common/settings.service';
+import { i18n } from '../common/translate';
+import { timer } from 'rxjs';
 
 @Component({
     selector: 'app-metrics',
@@ -14,7 +16,9 @@ import { SettingsService } from '../common/settings.service';
             <div
                 class="flex items-center w-full bg-base-200 text-base-content py-2 px-4 border-b border-neutral"
             >
-                <div class="text-2xl flex-1 font-medium">Metrics</div>
+                <div class="text-2xl flex-1 font-medium">
+                    {{ 'COMMON.METRICS' | translate }}
+                </div>
                 <div class="flex items-center space-x-2">
                     <clock></clock>
                     <div class="display">
@@ -66,10 +70,11 @@ export class MetricsComponent extends AsyncHandler implements OnInit {
         super();
     }
 
-    public ngOnInit() {
+    public async ngOnInit() {
         this.updateTime();
         this.interval('time', () => this.updateTime(), 1000);
-        this._settings.title = 'Metrics';
+        await timer(1000).toPromise();
+        this._settings.title = i18n('COMMON.METRICS');
     }
 
     public updateTime() {

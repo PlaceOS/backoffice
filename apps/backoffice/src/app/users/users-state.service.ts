@@ -1,8 +1,18 @@
 import { Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { PlaceMetadata, PlaceUser, PlaceZone, listMetadata } from '@placeos/ts-client';
+import {
+    PlaceMetadata,
+    PlaceUser,
+    PlaceZone,
+    listMetadata,
+} from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { catchError, debounceTime, map, shareReplay, switchMap } from 'rxjs/operators';
+import {
+    catchError,
+    debounceTime,
+    map,
+    shareReplay,
+    switchMap,
+} from 'rxjs/operators';
 import { ActiveItemService } from '../common/item.service';
 
 @Injectable({
@@ -16,7 +26,10 @@ export class UsersStateService {
 
     public readonly item = this._service.item;
 
-    public readonly counts = combineLatest([this._service.active_item$, this._change]).pipe(
+    public readonly counts = combineLatest([
+        this._service.active_item$,
+        this._change,
+    ]).pipe(
         debounceTime(300),
         switchMap(async (d) => {
             const [item] = d;
@@ -49,7 +62,7 @@ export class UsersStateService {
         return this._service.active_item as any;
     }
 
-    constructor(private _service: ActiveItemService, private _dialog: MatDialog) {
+    constructor(private _service: ActiveItemService) {
         setTimeout(() => this._change.next(!this._change.getValue()), 1000);
     }
 }

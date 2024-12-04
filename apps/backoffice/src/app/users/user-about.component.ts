@@ -10,7 +10,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
             <div
                 class="flex items-center space-x-2 border border-base-300 p-2 rounded-3xl"
             >
-                <div class="px-2">Tech Support</div>
+                <div class="px-2">{{ 'USERS.ROLE_SUPPORT' | translate }}</div>
                 <div
                     class="rounded-2xl px-2 py-1 text-xs"
                     [class.bg-success]="item?.support === true"
@@ -18,13 +18,18 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                     [class.bg-error]="item?.support !== true"
                     [class.text-error-content]="item?.support !== true"
                 >
-                    {{ item?.support === true ? 'Yes' : 'No' }}
+                    {{
+                        (item?.support === true
+                            ? 'COMMON.TRUE'
+                            : 'COMMON.FALSE'
+                        ) | translate
+                    }}
                 </div>
             </div>
             <div
                 class="flex items-center space-x-2 border border-base-300 p-2 rounded-3xl"
             >
-                <div class="px-2">System Admin</div>
+                <div class="px-2">{{ 'USERS.ROLE_ADMIN' | translate }}</div>
                 <div
                     class="rounded-2xl px-2 py-1 text-xs"
                     [class.bg-success]="item?.sys_admin === true"
@@ -32,7 +37,12 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                     [class.bg-error]="item?.sys_admin !== true"
                     [class.text-error-content]="item?.sys_admin !== true"
                 >
-                    {{ item?.sys_admin === true ? 'Yes' : 'No' }}
+                    {{
+                        (item?.sys_admin === true
+                            ? 'COMMON.TRUE'
+                            : 'COMMON.FALSE'
+                        ) | translate
+                    }}
                 </div>
             </div>
         </section>
@@ -41,7 +51,9 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                 class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-2"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div class="text-sm font-medium flex items-center">Email:</div>
+                <div class="text-sm font-medium flex items-center">
+                    {{ 'COMMON.FIELD_EMAIL' | translate }}:
+                </div>
                 <div>
                     <a
                         class="underline mono text-sm truncate"
@@ -52,18 +64,18 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                 </div>
                 <ng-container *ngIf="item?.department">
                     <div class="text-sm font-medium flex items-center">
-                        Department:
+                        {{ 'USERS.FIELD_DEPARTMENT' | translate }}:
                     </div>
                     <div>{{ item?.department }}</div>
                 </ng-container>
                 <div class="text-sm font-medium flex items-center">
-                    Authority ID:
+                    {{ 'USERS.AUTHORITY_ID' | translate }}:
                 </div>
                 <div class="mono text-sm">
                     {{ item?.authority_id }}
                 </div>
                 <div class="text-sm font-medium flex items-center" for="groups">
-                    User Groups:
+                    {{ 'USERS.FIELD_GROUPS' | translate }}:
                 </div>
                 <div
                     *ngIf="item.groups?.length; else empty_group_state"
@@ -77,7 +89,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                     </div>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    Created:
+                    {{ 'COMMON.CREATED_AT' | translate }}:
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -93,7 +105,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                 </div>
                 <ng-template *ngIf="item.updated_at">
                     <div class="text-sm font-medium flex items-center">
-                        Updated:
+                        {{ 'COMMON.UPDATED_AT' | translate }}:
                     </div>
                     <div class=" flex items-center">
                         <span
@@ -111,7 +123,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
             </div>
         </section>
         <ng-template #empty_group_state>
-            <div class="opacity-30">No Access Groups</div>
+            <div class="opacity-30">{{ 'USERS.NO_GROUPS' | translate }}</div>
         </ng-template>
     `,
     styles: [
