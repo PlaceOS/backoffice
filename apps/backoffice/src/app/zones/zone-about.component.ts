@@ -12,7 +12,7 @@ import { marked } from 'marked';
             class="p-2 rounded bg-warning text-warning-content mono text-xs text-center mb-2 w-full"
             *ngIf="requires_parent"
         >
-            Tags set in this zone require a parent zone to work correctly.
+            {{ 'ZONES.TAG_WARNING' | translate }}
         </div>
         <section class="mb-4 flex space-x-2">
             <div
@@ -23,12 +23,12 @@ import { marked } from 'marked';
                     class="font-medium text-lg"
                     *ngIf="(systems | async)?.length"
                 >
-                    Execute Command
+                    {{ 'COMMON.EXECUTE_COMMAND' | translate }}
                 </header>
                 <mat-form-field appearance="outline" class="h-12">
                     <mat-select
                         [(ngModel)]="active_system"
-                        placeholder="Select system"
+                        [placeholder]="'ZONES.SELECT_SYSTEM' | translate"
                     >
                         <mat-option
                             *ngFor="let system of systems | async"
@@ -50,7 +50,7 @@ import { marked } from 'marked';
             >
                 <ng-container *ngIf="item?.parent_id">
                     <div class="text-sm font-medium flex items-center">
-                        Parent ID:
+                        {{ 'ZONES.PARENT_ID' | translate }}:
                     </div>
                     <div>
                         <a
@@ -62,43 +62,43 @@ import { marked } from 'marked';
                 </ng-container>
                 <ng-container *ngIf="item?.location">
                     <div class="text-sm font-medium flex items-center">
-                        Location:
+                        {{ 'ZONES.LOCATION' | translate }}:
                     </div>
                     <div>{{ item?.location }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.code">
                     <div class="text-sm font-medium flex items-center">
-                        Code:
+                        {{ 'ZONES.CODE' | translate }}:
                     </div>
                     <div>{{ item?.code }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.type">
                     <div class="text-sm font-medium flex items-center">
-                        Type:&nbsp;
+                        {{ 'ZONES.TYPE' | translate }}:&nbsp;
                     </div>
                     <div>{{ item?.type }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.count">
                     <div class="text-sm font-medium flex items-center">
-                        Count:
+                        {{ 'ZONES.COUNT' | translate }}:
                     </div>
                     <div>{{ item?.count }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.capacity">
                     <div class="text-sm font-medium flex items-center">
-                        Capacity:
+                        {{ 'ZONES.CAPACITY' | translate }}:
                     </div>
                     <div>{{ item?.capacity }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.timezone">
                     <div class="text-sm font-medium flex items-center">
-                        Timezone:
+                        {{ 'COMMON.TIMEZONE' | translate }}:
                     </div>
                     <div class="mono text-sm">{{ item?.timezone }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.map_id">
                     <div class="text-sm font-medium flex items-center">
-                        Map:
+                        {{ 'ZONES.MAP_URL' | translate }}:
                     </div>
                     <a class="underline truncate" [href]="item?.map_id">{{
                         item?.map_id
@@ -109,7 +109,7 @@ import { marked } from 'marked';
                         class="text-sm font-medium flex items-center"
                         for="tags"
                     >
-                        Tags:
+                        {{ 'ZONES.TAGS' | translate }}:
                     </div>
                     <div class="flex flex-wrap flex-1 -mx-1">
                         <div
@@ -119,12 +119,12 @@ import { marked } from 'marked';
                             {{ tag }}
                         </div>
                         <span *ngIf="!tag_list?.length" class="opacity-30">
-                            No tags
+                            {{ 'ZONES.TAGS_EMPTY' | translate }}
                         </span>
                     </div>
                 </ng-container>
                 <div class="text-sm font-medium flex items-center">
-                    Created:
+                    {{ 'COMMON.CREATED_AT' | translate }}:
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -139,7 +139,7 @@ import { marked } from 'marked';
                     </span>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    Updated:
+                    {{ 'COMMON.UPDATED_AT' | translate }}:
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -156,7 +156,7 @@ import { marked } from 'marked';
             </div>
         </section>
         <header class="font-medium text-lg" *ngIf="item?.description">
-            Description
+            {{ 'ZONES.DESCRIPTION' | translate }}
         </header>
         <section
             class="description"
@@ -164,7 +164,9 @@ import { marked } from 'marked';
             [innerHTML]="parsed_description"
         ></section>
         <hr class="my-4" />
-        <header class="font-medium text-lg">Settings</header>
+        <header class="font-medium text-lg">
+            {{ 'COMMON.SETTINGS' | translate }}
+        </header>
         <section *ngIf="item?.settings; else load_state">
             <a-settings-form
                 [merge]="true"
@@ -175,7 +177,7 @@ import { marked } from 'marked';
         <ng-template #load_state>
             <div class="flex flex-col items-center p-8">
                 <mat-spinner class="mb-4" diameter="48"></mat-spinner>
-                <p>Loading zone settings...</p>
+                <p>{{ 'ZONES.LOADING_SETTINGS' | translate }}</p>
             </div>
         </ng-template>
     `,

@@ -20,7 +20,7 @@ import { ZonesStateService } from './zones-state.service';
                     [ngModel]="''"
                     (ngModelChange)="filter$.next($event)"
                     name="search-filter"
-                    placeholder="Filter Zones"
+                    [placeholder]="'ZONES.SEARCH' | translate"
                     i18n-placeholder="@@zoneChildrenTableFilter"
                 />
             </mat-form-field>
@@ -34,15 +34,19 @@ import { ZonesStateService } from './zones-state.service';
             class="min-w-[32rem] block text-sm"
             [data]="children"
             [columns]="[
-                { key: 'name', name: 'Name', content: name_template },
+                {
+                    key: 'name',
+                    name: 'COMMON.FIELD_NAME' | translate,
+                    content: name_template
+                },
                 {
                     key: 'description',
-                    name: 'Description',
+                    name: 'COMMON.FIELD_DESCRIPTION' | translate,
                     content: description_template
                 }
             ]"
             [sortable]="true"
-            empty_message="No children zones for selected zone"
+            [empty_message]="'ZONES.CHILDREN_EMPTY' | translate"
         ></simple-table>
         <ng-template #name_template let-row="row">
             <div class="flex flex-col items-start px-4 py-2 leading-snug">
@@ -57,7 +61,9 @@ import { ZonesStateService } from './zones-state.service';
         <ng-template #description_template let-data="data">
             <div class="px-4 py-2 select-text overflow-hidden w-full text-xs">
                 {{ data }}
-                <span class="opacity-30" *ngIf="!data">No description</span>
+                <span class="opacity-30" *ngIf="!data">
+                    {{ 'ZONES.DESCRIPTION_EMPTY' | translate }}
+                </span>
             </div>
         </ng-template>
     `,

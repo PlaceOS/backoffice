@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ROUTES } from './admin.routes';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
@@ -69,6 +70,7 @@ import { EmailTemplateFormComponent } from './mailing-lists/email-template-form.
         ReactiveFormsModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule,
+        TranslateModule.forChild(),
     ],
     providers: [APIKeyService],
 })

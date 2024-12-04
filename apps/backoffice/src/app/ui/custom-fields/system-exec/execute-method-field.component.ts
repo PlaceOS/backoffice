@@ -44,7 +44,7 @@ import { ModuleLike } from './select-module.component';
                     *ngIf="can_execute"
                 >
                     <button class="inverse flex-1" btn (click)="clear()">
-                        Clear Selection
+                        {{ 'COMMON.EXECUTE_CLEAR' | translate }}
                     </button>
                     <button
                         class="flex-1"
@@ -52,7 +52,7 @@ import { ModuleLike } from './select-module.component';
                         btn
                         (click)="execute()"
                     >
-                        Execute
+                        {{ 'COMMON.EXECUTE_PERFORM' | translate }}
                     </button>
                 </div>
             </div>
@@ -61,7 +61,7 @@ import { ModuleLike } from './select-module.component';
                 *ngIf="loading"
             >
                 <mat-spinner diameter="32"></mat-spinner>
-                <p>Executing method...</p>
+                <p>{{ 'COMMON.EXECUTE_LOADING' | translate }}</p>
             </div>
         </div>
     `,

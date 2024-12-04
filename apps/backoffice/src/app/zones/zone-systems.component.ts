@@ -19,7 +19,7 @@ import { ZonesStateService } from './zones-state.service';
                     [ngModel]="''"
                     (ngModelChange)="filter$.next($event)"
                     name="search-filter"
-                    placeholder="Filter Systems"
+                    [placeholder]="'SYSTEMS.SEARCH' | translate"
                 />
             </mat-form-field>
         </div>
@@ -32,21 +32,25 @@ import { ZonesStateService } from './zones-state.service';
             class="min-w-[32rem] block text-sm"
             [data]="systems"
             [columns]="[
-                { key: 'name', name: 'Name', content: name_template },
+                {
+                    key: 'name',
+                    name: 'COMMON.FIELD_NAME' | translate,
+                    content: name_template
+                },
                 {
                     key: 'installed_ui_devices',
-                    name: 'No. Modules',
+                    name: 'ZONES.SYSTEMS_FIELD_MODULE_COUNT' | translate,
                     size: '10rem'
                 },
                 {
                     key: 'created_at',
-                    name: 'Created',
+                    name: 'COMMON.CREATED_AT' | translate,
                     content: added_template,
                     size: '10rem'
                 }
             ]"
             [sortable]="true"
-            empty_message="No systems under selected zone"
+            [empty_message]="'ZONES.SYSTEMS_EMPTY' | translate"
         ></simple-table>
         <ng-template #name_template let-row="row">
             <div class="flex flex-col items-start px-4 py-2 leading-snug">

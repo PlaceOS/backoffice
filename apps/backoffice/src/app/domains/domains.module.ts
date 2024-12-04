@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ROUTES } from './domains.routes';
 
@@ -19,7 +20,7 @@ import { DomainsComponent } from './domains.component';
         DomainAuthenticationComponent,
         DomainUsersComponent,
         DomainAboutComponent,
-        DomainsComponent
+        DomainsComponent,
     ],
     imports: [
         CommonModule,
@@ -27,6 +28,7 @@ import { DomainsComponent } from './domains.component';
         ReactiveFormsModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule,
+        TranslateModule.forChild(),
     ],
 })
 export class AppDomainsModule {}

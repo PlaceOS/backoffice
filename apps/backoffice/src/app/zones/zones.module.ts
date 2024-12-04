@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ROUTES } from './zones.routes';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
@@ -20,7 +21,7 @@ import { ZonesComponent } from './zones.component';
         ZoneTriggersComponent,
         ZoneChildrenComponent,
         ZoneMetadataComponent,
-        ZonesComponent
+        ZonesComponent,
     ],
     imports: [
         CommonModule,
@@ -28,6 +29,7 @@ import { ZonesComponent } from './zones.component';
         ReactiveFormsModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule,
+        TranslateModule.forChild(),
     ],
 })
 export class AppZonesModule {}

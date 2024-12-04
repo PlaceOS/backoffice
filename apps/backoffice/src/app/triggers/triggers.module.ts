@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ROUTES } from './triggers.routes';
 
@@ -15,7 +16,7 @@ import { TriggersComponent } from './triggers.component';
     declarations: [
         TriggerAboutComponent,
         TriggerInstancesComponent,
-        TriggersComponent
+        TriggersComponent,
     ],
     imports: [
         CommonModule,
@@ -23,6 +24,7 @@ import { TriggersComponent } from './triggers.component';
         RouterModule.forChild(ROUTES),
         SharedContentModule,
         DragDropModule,
+        TranslateModule.forChild(),
     ],
 })
 export class AppTriggersModule {}

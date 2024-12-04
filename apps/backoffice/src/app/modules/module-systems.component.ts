@@ -18,7 +18,7 @@ import { ModuleStateService } from './module-state.service';
                     [ngModel]="''"
                     (ngModelChange)="filter$.next($event)"
                     matInput
-                    [placeholder]="'MODULES.SEARCH_SYSTEMS' | translate"
+                    [placeholder]="'SYSTEMS.SEARCH' | translate"
                     class="rounded-none"
                 />
             </mat-form-field>
@@ -35,7 +35,7 @@ import { ModuleStateService } from './module-state.service';
                 [columns]="[
                     {
                         key: 'name',
-                        name: 'MODULES.SYSTEMS_FIELD_NAME' | translate,
+                        name: 'COMMON.FIELD_NAME' | translate,
                         content: name_template
                     },
                     {
@@ -51,7 +51,7 @@ import { ModuleStateService } from './module-state.service';
                     }
                 ]"
                 [sortable]="true"
-                empty_message="No systems with the selected module"
+                [empty_message]="'MODULES.SYSTEMS_EMPTY' | translate"
             ></simple-table>
             <ng-template #name_template let-row="row">
                 <div class="flex flex-col items-start px-4 py-2 leading-snug">

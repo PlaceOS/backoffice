@@ -34,7 +34,7 @@ import { ModuleLike } from './select-module.component';
                 *ngIf="(method_list | async)?.length; else empty_state"
             >
                 <mat-select
-                    placeholder="Select method"
+                    [placeholder]="'COMMON.EXECUTE_METHOD_SELECT' | translate"
                     [(ngModel)]="method"
                     (ngModelChange)="setValue($event)"
                 >
@@ -50,12 +50,14 @@ import { ModuleLike } from './select-module.component';
         <ng-template #load_state>
             <div class="p-4 flex space-x-2 items-center justify-center">
                 <mat-spinner diameter="32"></mat-spinner>
-                <p>Loading method list...</p>
+                <p>{{ 'COMMON.EXECUTE_METHOD_LOADING' | translate }}</p>
             </div>
         </ng-template>
         <ng-template #empty_state>
             <div class="p-4 flex space-x-2 items-center justify-center">
-                <p class="opacity-30">No available methods for module</p>
+                <p class="opacity-30">
+                    {{ 'COMMON.EXECUTE_METHOD_EMPTY' | translate }}
+                </p>
             </div>
         </ng-template>
     `,

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ROUTES } from './users.routes';
 
@@ -16,7 +17,7 @@ import { UsersComponent } from './users.component';
         UserAboutComponent,
         UserHistoryComponent,
         UserMetadataComponent,
-        UsersComponent
+        UsersComponent,
     ],
     imports: [
         CommonModule,
@@ -24,6 +25,7 @@ import { UsersComponent } from './users.component';
         ReactiveFormsModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule,
+        TranslateModule.forChild(),
     ],
 })
 export class AppUsersModule {}

@@ -9,9 +9,6 @@ import { ZonesStateService } from './zones-state.service';
     selector: 'zone-triggers',
     template: `
         <section class="flex items-center mb-4 space-x-2">
-            <button btn style="min-width: 8rem" (click)="selectTrigger()">
-                Add Trigger
-            </button>
             <mat-form-field appearance="outline" class="h-12 flex-1">
                 <div class="prefix" matPrefix>
                     <app-icon class="text-2xl relative -left-0.5">
@@ -22,10 +19,13 @@ import { ZonesStateService } from './zones-state.service';
                     [ngModel]="''"
                     (ngModelChange)="filter$.next($event)"
                     matInput
-                    placeholder="Filter triggers..."
+                    [placeholder]="'TRIGGERS.SEARCH' | translate"
                     class="rounded-none"
                 />
             </mat-form-field>
+            <button btn matRipple class="w-32" (click)="selectTrigger()">
+                {{ 'TRIGGERS.ADD' | translate }}
+            </button>
         </section>
         <section>
             <mat-progress-bar
@@ -37,10 +37,14 @@ import { ZonesStateService } from './zones-state.service';
                 class="min-w-[32rem] block text-sm"
                 [data]="triggers"
                 [columns]="[
-                    { key: 'name', name: 'Name', content: name_template },
+                    {
+                        key: 'name',
+                        name: 'COMMON.FIELD_NAME' | translate,
+                        content: name_template
+                    },
                     {
                         key: 'added',
-                        name: 'Added',
+                        name: 'TRIGGERS.FIELD_ADDED',
                         content: added_template
                     },
                     {
@@ -51,7 +55,7 @@ import { ZonesStateService } from './zones-state.service';
                         sortable: false
                     }
                 ]"
-                empty_message="No triggers for selected zone"
+                [empty_message]="'ZONES.TRIGGERS_EMPTY' | translate"
             ></simple-table>
             <ng-template #name_template let-row="row">
                 <div class="flex flex-col items-start px-4 py-2 leading-snug">
@@ -73,7 +77,12 @@ import { ZonesStateService } from './zones-state.service';
             </ng-template>
             <ng-template #actions_template let-row="row">
                 <div class="flex items-center space-x-2 p-2">
-                    <button icon matRipple (click)="deleteTrigger(row)">
+                    <button
+                        icon
+                        matRipple
+                        [matTooltip]="'TRIGGERS.REMOVE'"
+                        (click)="deleteTrigger(row)"
+                    >
                         <app-icon class="text-error">delete</app-icon>
                     </button>
                 </div>

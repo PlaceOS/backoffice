@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ROUTES } from './metrics.routes';
 
@@ -16,6 +17,7 @@ import { ClockComponent } from './clock.component';
         FormsModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule,
+        TranslateModule.forChild(),
     ],
 })
 export class AppMetricsModule {}

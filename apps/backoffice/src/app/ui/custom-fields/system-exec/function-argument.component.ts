@@ -74,13 +74,20 @@ const validateType = (type) => (control: AbstractControl) => {
                     [class.bg-base-200]="!required[key]"
                     [class.text-base-content]="!required[key]"
                 >
-                    {{ required[key] ? 'Required' : 'Optional' }}
+                    {{
+                        (required[key]
+                            ? 'COMMON.EXECUTE_REQUIRED'
+                            : 'COMMON.EXECUTE_OPTIONAL'
+                        ) | translate
+                    }}
                 </div>
             </div>
         </form>
         <ng-template #empty_state>
             <div class="p-4 flex space-x-2 items-center justify-center">
-                <p class="opacity-30">No arguments for selected method</p>
+                <p class="opacity-30">
+                    {{ 'COMMON.EXECUTE_NO_ARGS' | translate }}
+                </p>
             </div>
         </ng-template>
     `,

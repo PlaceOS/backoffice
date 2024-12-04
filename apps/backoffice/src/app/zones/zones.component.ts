@@ -5,6 +5,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { ZonesStateService } from './zones-state.service';
+import { i18n } from '../common/translate';
 
 @Component({
     selector: 'new-zones-view',
@@ -18,13 +19,13 @@ import { ZonesStateService } from './zones-state.service';
                     <item-sidebar
                         class="hidden sm:block"
                         [route]="name"
-                        title="Zones"
+                        [title]="'ZONES.PLURAL' | translate"
                     ></item-sidebar>
                     <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
                         <item-selection
                             class="z-20 sm:hidden"
                             [route]="name"
-                            title="Zones"
+                            [title]="'ZONES.PLURAL' | translate"
                         >
                             <button
                                 btn
@@ -40,7 +41,7 @@ import { ZonesStateService } from './zones-state.service';
                                 <item-details
                                     [can_edit]="true"
                                     [item]="item"
-                                    type="Zone"
+                                    [type]="'ZONES.SINGULAR' | translate"
                                 ></item-details>
                                 <item-tablist
                                     [base]="name"
@@ -59,7 +60,7 @@ import { ZonesStateService } from './zones-state.service';
                         </div>
                         <button
                             class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content border border-base-200"
-                            matTooltip="New zone"
+                            [matTooltip]="'ZONES.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple
                             (click)="newItem()"
@@ -68,7 +69,7 @@ import { ZonesStateService } from './zones-state.service';
                         </button>
                         <button
                             class="absolute bottom-16 left-2 sm:-left-8 w-10 h-10 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content border border-base-200"
-                            matTooltip="Bulk add zones"
+                            [matTooltip]="'ZONES.BULK' | translate"
                             matTooltipPosition="right"
                             matRipple
                             (click)="bulkAdd()"
@@ -116,36 +117,36 @@ export class ZonesComponent extends AsyncHandler {
         this.tab_list = [
             {
                 id: 'about',
-                name: 'About',
+                name: i18n('ZONES.TAB_ABOUT'),
                 icon: { content: 'info' },
             },
             {
                 id: 'systems',
-                name: 'Systems',
+                name: i18n('ZONES.TAB_SYSTEMS'),
                 count: details.systems ?? '?',
                 icon: { content: 'meeting_room' },
             },
             {
                 id: 'triggers',
-                name: 'Triggers',
+                name: i18n('ZONES.TAB_TRIGGERS'),
                 count: details.triggers ?? '?',
                 icon: { content: 'timer' },
             },
             {
                 id: 'metadata',
-                name: 'Metadata',
+                name: i18n('ZONES.TAB_METADATA'),
                 count: details.metadata ?? '?',
                 icon: { content: 'code_blocks' },
             },
             {
                 id: 'children',
-                name: 'Children',
+                name: i18n('ZONES.TAB_CHILDREN'),
                 count: details.children ?? '?',
                 icon: { content: 'account_tree' },
             },
             {
                 id: 'history',
-                name: 'Settings History',
+                name: i18n('ZONES.TAB_SETTINGS_HISTORY'),
                 icon: { content: 'schedule' },
             },
         ].concat(this.extensions);
