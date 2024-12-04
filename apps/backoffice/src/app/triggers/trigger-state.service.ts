@@ -27,6 +27,7 @@ import {
     TriggerConditionData,
     TriggerConditionModalComponent,
 } from '../overlays/trigger-condition-modal/trigger-condition-modal.component';
+import { i18n } from '../common/translate';
 
 @Injectable({
     providedIn: 'root',
@@ -133,8 +134,8 @@ export class TriggerStateService {
     ): Promise<void> {
         const details = await openConfirmModal(
             {
-                title: `Reoreder trigger ${type} action`,
-                content: `Are you sure you want remove this trigger condition?<br>All systems using this trigger will be updated <strong>immediately</strong>.`,
+                title: i18n('TRIGGERS.REORDER_CONFIRM_TITLE', { type }),
+                content: i18n('TRIGGERS.REORDER_CONFIRM_MSG'),
                 icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
@@ -152,7 +153,7 @@ export class TriggerStateService {
             mailers:
                 type === 'function' ? this.active_item.actions.mailers : list,
         };
-        details.loading('Re-ordering triggger actions...');
+        details.loading(i18n('TRIGGERS.REORDER_CONFIRM_LOADING'));
         const resp = await updateTrigger(this.active_item.id, {
             ...this.active_item.toJSON(),
             actions,
@@ -161,12 +162,14 @@ export class TriggerStateService {
             .catch((_) => _);
         if (!(resp instanceof PlaceTrigger))
             return notifyError(
-                `Error re-ordered trigger ${type} action. Error: ${JSON.stringify(
-                    resp.response || resp.message || resp
-                )}`
+                i18n('TRIGGERS.REORDER_CONFIRM_ERROR', {
+                    error: JSON.stringify(
+                        resp.response || resp.message || resp
+                    ),
+                })
             );
         this._service.replaceItem(resp);
-        notifySuccess(`Successfully re-ordered trigger ${type} action.`);
+        notifySuccess(i18n('TRIGGERS.REORDER_CONFIRM_SUCCESS'));
     }
 
     public async removeCondition(
@@ -174,14 +177,14 @@ export class TriggerStateService {
     ) {
         const details = await openConfirmModal(
             {
-                title: `Remove trigger condition`,
-                content: `Are you sure you want remove this trigger condition?<br>All systems using this trigger will be updated <strong>immediately</strong>.`,
+                title: i18n('TRIGGERS.REMOVE_CONDITION_TITLE'),
+                content: i18n('TRIGGERS.REMOVE_CONDITION_MSG'),
                 icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
         );
         if (!details?.reason) return;
-        details.loading('Removing trigger condition...');
+        details.loading(i18n('TRIGGERS.REMOVE_CONDITION_LOADING'));
         const item = this.active_item;
         const conditions = {
             comparisons: [...item.conditions.comparisons],
@@ -194,7 +197,6 @@ export class TriggerStateService {
             (i) => JSON.stringify(i) === JSON.stringify(condition)
         );
         list.splice(index, 1);
-        console.log('Conditions:', list, conditions);
         const resp = await updateTrigger(item.id, {
             ...item.toJSON(),
             conditions,
@@ -204,26 +206,28 @@ export class TriggerStateService {
         details.close();
         if (!(resp instanceof PlaceTrigger)) {
             return notifyError(
-                `Error removing trigger condition. Error: ${JSON.stringify(
-                    resp.response || resp.message || resp
-                )}`
+                i18n('TRIGGERS.REMOVE_CONDITION_ERROR', {
+                    error: JSON.stringify(
+                        resp.response || resp.message || resp
+                    ),
+                })
             );
         }
         this._service.replaceItem(resp);
-        notifySuccess('Successfully removed trigger condition.');
+        notifySuccess(i18n('TRIGGERS.REMOVE_CONDITION_SUCCESS'));
     }
 
     public async removeAction(action: TriggerFunction | TriggerMailer) {
         const details = await openConfirmModal(
             {
-                title: `Remove trigger action`,
-                content: `Are you sure you want remove this trigger action?<br>All systems using this trigger will be updated <strong>immediately</strong>.`,
+                title: i18n('TRIGGERS.REMOVE_ACTION_TITLE'),
+                content: i18n('TRIGGERS.REMOVE_ACTION_MSG'),
                 icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
         );
         if (!details?.reason) return;
-        details.loading('Removing trigger action...');
+        details.loading(i18n('TRIGGERS.REMOVE_ACTION_LOADING'));
         const item = this.active_item;
         const actions = {
             functions: [...item.actions.functions],
@@ -244,27 +248,34 @@ export class TriggerStateService {
         details.close();
         if (!(resp instanceof PlaceTrigger)) {
             return notifyError(
-                `Error removing trigger action. Error: ${JSON.stringify(
-                    resp.response || resp.message || resp
-                )}`
+                i18n('TRIGGERS.REMOVE_ACTION_ERROR', {
+                    error: JSON.stringify(
+                        resp.response || resp.message || resp
+                    ),
+                })
             );
         }
         this._service.replaceItem(resp);
-        notifySuccess('Successfully removed trigger action.');
+        notifySuccess(i18n('TRIGGERS.REMOVE_ACTION_SUCCESS'));
     }
 
     public async removeTriggerFromParent(instance: PlaceTrigger) {
-        const type = instance.zone_id ? 'zone' : 'system';
+        const type = (
+            instance.zone_id ? i18n('ZONES.SINGULAR') : i18n('SYSTEMS.SINGULAR')
+        ).toLowerCase();
         const details = await openConfirmModal(
             {
-                title: `Remove trigger from ${type}`,
-                content: `Are you sure you want remove this trigger from ${instance.name}?<br>The ${type} will be updated <strong>immediately</strong>.`,
+                title: i18n('TRIGGERS.REMOVE_INSTANCE_TITLE', { type }),
+                content: i18n('TRIGGERS.REMOVE_INSTANCE_MSG', {
+                    type,
+                    name: instance.name,
+                }),
                 icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
         );
         if (!details?.reason) return;
-        details.loading(`Removing trigger from ${type}...`);
+        details.loading(i18n('TRIGGERS.REMOVE_INSTANCE_LOADING', { type }));
         const method =
             type === 'zone' ? removeSystemTrigger : removeSystemTrigger;
         let err: any = await method(
@@ -277,12 +288,13 @@ export class TriggerStateService {
         if (err?.error) {
             err = err.error;
             return notifyError(
-                `Error removing trigger from ${type}. Error: ${
-                    err.responseText || err.message || err
-                }`
+                i18n('TRIGGERS.REMOVE_INSTANCE_ERROR', {
+                    type,
+                    error: err.responseText || err.message || err,
+                })
             );
         }
         this._change.next(Date.now());
-        notifySuccess(`Successfully removed trigger from ${type}.`);
+        notifySuccess(i18n('TRIGGERS.REMOVE_INSTANCE_SUCCESS', { type }));
     }
 }

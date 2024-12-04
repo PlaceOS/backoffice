@@ -23,7 +23,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
                 <div class="text-sm font-medium flex items-center">
-                    Created:
+                    {{ 'COMMON.CREATED_AT' | translate }}:
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -38,7 +38,7 @@ import { TriggerStateService } from './trigger-state.service';
                     </span>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    Updated:
+                    {{ 'COMMON.UPDATED_AT' | translate }}:
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -59,17 +59,19 @@ import { TriggerStateService } from './trigger-state.service';
             <label
                 for="driver"
                 matTooltip="System to use for available status variables and function calls"
-                >Template System:
+                >{{ 'TRIGGERS.REFERENCE_SYSTEM' | translate }}:
             </label>
             <item-search-field
-                name="system"
+                [placeholder]="'SYSTEMS.SEARCH' | translate"
                 class="w-full"
                 [query_fn]="query_fn"
                 [(ngModel)]="template_system"
             ></item-search-field>
         </div>
         <header class="flex items-center my-4">
-            <div class="font-medium text-lg flex-1">Conditions</div>
+            <div class="font-medium text-lg flex-1">
+                {{ 'TRIGGERS.CONDITIONS' | translate }}
+            </div>
             <button
                 btn
                 matRipple
@@ -78,7 +80,9 @@ import { TriggerStateService } from './trigger-state.service';
                 (click)="editCondition()"
             >
                 <app-icon class="text-2xl">add</app-icon>
-                <div class="mr-4 ml-2">Add Condition</div>
+                <div class="mr-4 ml-2">
+                    {{ 'TRIGGERS.CONDITION_ADD' | translate }}
+                </div>
             </button>
         </header>
         <section>
@@ -88,7 +92,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [columns]="[
                     {
                         key: 'operator',
-                        name: 'Variable Comparison Condtion',
+                        name: 'TRIGGERS.FIELD_VAR_COMPARE' | translate,
                         content: comparison_template
                     },
                     {
@@ -100,7 +104,7 @@ import { TriggerStateService } from './trigger-state.service';
                     }
                 ]"
                 [sortable]="true"
-                empty_message="No variable comparison conditions for trigger"
+                [empty_message]="'TRIGGERS.CONDITION_COMPARE_EMPTY' | translate"
             ></simple-table>
             <simple-table
                 class="w-full min-w-[32rem] block text-sm"
@@ -108,7 +112,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [columns]="[
                     {
                         key: 'time',
-                        name: 'Time Dependent Condition',
+                        name: 'TRIGGERS.FIELD_TIME_DEPS' | translate,
                         content: time_dep_template
                     },
                     {
@@ -120,7 +124,7 @@ import { TriggerStateService } from './trigger-state.service';
                     }
                 ]"
                 [sortable]="true"
-                empty_message="No time dependent conditions for trigger"
+                [empty_message]="'TRIGGERS.CONDITION_TIME_EMPTY' | translate"
             ></simple-table>
             <ng-template #time_dep_template let-row="row">
                 <div class="flex items-center space-x-2 p-4 mono text-sm">
@@ -154,7 +158,9 @@ import { TriggerStateService } from './trigger-state.service';
             </ng-template>
         </section>
         <header class="flex items-center space-x-2 my-4">
-            <div class="font-medium text-lg flex-1">Actions</div>
+            <div class="font-medium text-lg flex-1">
+                {{ 'TRIGGERS.ACTIONS' | translate }}
+            </div>
             <button
                 btn
                 matRipple
@@ -163,7 +169,9 @@ import { TriggerStateService } from './trigger-state.service';
                 (click)="editAction()"
             >
                 <app-icon class="text-2xl">add</app-icon>
-                <div class="mr-4 ml-2">Add Action</div>
+                <div class="mr-4 ml-2">
+                    {{ 'TRIGGERS.ACTION_ADD' | translate }}
+                </div>
             </button>
         </header>
         <section>
@@ -173,7 +181,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [columns]="[
                     {
                         key: 'time',
-                        name: 'Function Call Action',
+                        name: 'TRIGGERS.FIELD_ACTION_FN_CALL' | translate,
                         content: function_call_template
                     },
                     {
@@ -186,7 +194,7 @@ import { TriggerStateService } from './trigger-state.service';
                 ]"
                 [can_reorder]="true"
                 (ondrop)="confirmReorder('function', $event)"
-                empty_message="No function call actions for trigger"
+                [empty_message]="'TRIGGERS.ACTION_FN_EMPTY' | translate"
             ></simple-table>
             <simple-table
                 class="w-full min-w-[32rem] block text-sm mb-4"
@@ -194,7 +202,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [columns]="[
                     {
                         key: 'time',
-                        name: 'Email Action',
+                        name: 'TRIGGERS.FIELD_ACTION_EMAIL' | translate,
                         content: email_call_template
                     },
                     {
@@ -207,7 +215,7 @@ import { TriggerStateService } from './trigger-state.service';
                 ]"
                 [can_reorder]="true"
                 (ondrop)="confirmReorder('function', $event)"
-                empty_message="No email actions for trigger"
+                [empty_message]="'TRIGGERS.ACTION_EMAIL_EMPTY' | translate"
             ></simple-table>
             <ng-template #function_call_template let-row="row">
                 <div class="flex space-x-2 p-4 mono text-xs">

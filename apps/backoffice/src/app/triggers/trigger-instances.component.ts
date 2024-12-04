@@ -19,14 +19,14 @@ import { TriggerStateService } from './trigger-state.service';
             [columns]="[
                 {
                     key: 'state',
-                    name: 'State',
+                    name: 'TRIGGERS.FIELD_STATE' | translate,
                     content: state_template,
                     size: '4rem',
                     sortable: false
                 },
                 {
                     key: 'name',
-                    name: 'Instance Name',
+                    name: 'TRIGGERS.FIELD_INSTANCE_NAME' | translate,
                     content: name_template
                 },
                 {
@@ -38,7 +38,7 @@ import { TriggerStateService } from './trigger-state.service';
                 }
             ]"
             [sortable]="true"
-            empty_message="No instances of trigger"
+            [empty_message]="'TRIGGERS.INSTANCES_EMPTY' | translate"
         ></simple-table>
         <ng-template #state_template let-row="row">
             <div
@@ -67,7 +67,12 @@ import { TriggerStateService } from './trigger-state.service';
         </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2 mx-auto">
-                <button icon matRipple (click)="deleteTrigger(item)">
+                <button
+                    icon
+                    matRipple
+                    [matTooltip]="'TRIGGERS.DELETE_INSTANCE' | translate"
+                    (click)="deleteTrigger(item)"
+                >
                     <app-icon class="text-error">delete</app-icon>
                 </button>
             </div>
