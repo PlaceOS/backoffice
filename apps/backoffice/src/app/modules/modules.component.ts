@@ -4,6 +4,7 @@ import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
+import { i18n } from '../common/translate';
 
 @Component({
     selector: 'new-modules-view',
@@ -17,13 +18,13 @@ import { ActiveItemService } from '../common/item.service';
                     <item-sidebar
                         class="hidden sm:block"
                         [route]="name"
-                        title="Modules"
+                        [title]="'MODULES.PLURAL' | translate"
                     ></item-sidebar>
                     <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
                         <item-selection
                             class="z-20 sm:hidden"
                             [route]="name"
-                            title="Modules"
+                            [title]="'MODULES.PLURAL' | translate"
                         >
                             <button
                                 icon
@@ -39,7 +40,7 @@ import { ActiveItemService } from '../common/item.service';
                                 <item-details
                                     [can_edit]="true"
                                     [item]="item"
-                                    type="Module"
+                                    [type]="'MODULES.SINGULAR' | translate"
                                 ></item-details>
                                 <item-tablist
                                     [base]="name"
@@ -58,7 +59,7 @@ import { ActiveItemService } from '../common/item.service';
                         </div>
                         <button
                             class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content border border-base-200"
-                            matTooltip="New module"
+                            [matTooltip]="'MODULES.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple
                             (click)="newItem()"
@@ -107,18 +108,18 @@ export class ModulesComponent extends AsyncHandler {
         this.tab_list = [
             {
                 id: 'about',
-                name: 'About',
+                name: i18n('MODULES.TAB_ABOUT'),
                 icon: { content: 'info' },
             },
             {
                 id: 'systems',
-                name: 'Systems',
+                name: i18n('MODULES.TAB_SYSTEMS'),
                 count: this.system_count,
                 icon: { content: 'meeting_room' },
             },
             {
                 id: 'history',
-                name: 'Settings History',
+                name: i18n('MODULES.TAB_SETTINGS_HISTORY'),
                 icon: { content: 'schedule' },
             },
         ].concat(this.extensions);

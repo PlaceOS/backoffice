@@ -18,7 +18,7 @@ import { ModuleStateService } from './module-state.service';
                     [ngModel]="''"
                     (ngModelChange)="filter$.next($event)"
                     matInput
-                    placeholder="Filter systems..."
+                    [placeholder]="'MODULES.SEARCH_SYSTEMS' | translate"
                     class="rounded-none"
                 />
             </mat-form-field>
@@ -33,15 +33,19 @@ import { ModuleStateService } from './module-state.service';
                 class="min-w-[32rem] block text-sm"
                 [data]="system_list"
                 [columns]="[
-                    { key: 'name', name: 'Name', content: name_template },
+                    {
+                        key: 'name',
+                        name: 'MODULES.SYSTEMS_FIELD_NAME' | translate,
+                        content: name_template
+                    },
                     {
                         key: 'installed_ui_devices',
-                        name: 'No. Modules',
+                        name: 'MODULES.SYSTEMS_FIELD_MODULE_COUNT' | translate,
                         size: '10rem'
                     },
                     {
                         key: 'created_at',
-                        name: 'Created',
+                        name: 'COMMON.CREATED_AT' | translate,
                         content: added_template,
                         size: '10rem'
                     }

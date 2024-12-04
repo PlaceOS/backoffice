@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ROUTES } from './systems.routes';
 
@@ -13,7 +14,6 @@ import { SystemZonesComponent } from './system-zones.component';
 import { SystemMetadataComponent } from './system-metadata.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
 import { SystemsComponent } from './systems.component';
-import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
     declarations: [

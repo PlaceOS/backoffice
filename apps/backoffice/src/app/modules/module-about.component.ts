@@ -15,23 +15,25 @@ import { MatDialog } from '@angular/material/dialog';
             >
                 <ng-container *ngIf="item.notes">
                     <div class="text-sm font-medium flex items-center">
-                        Notes:
+                        {{ 'MODULES.NOTES' | translate }}:
                     </div>
                     <div>{{ item.notes }}</div>
                 </ng-container>
                 <ng-container *ngIf="item.ip">
-                    <div class="text-sm font-medium flex items-center">IP:</div>
+                    <div class="text-sm font-medium flex items-center">
+                        {{ 'MODULES.IP_ADDRESS' | translate }}:
+                    </div>
                     <div class="mono">{{ item.ip }}</div>
                 </ng-container>
                 <ng-container *ngIf="item.port > 1">
                     <div class="text-sm font-medium flex items-center">
-                        Port:
+                        {{ 'MODULES.PORT_NUMBER' | translate }}:
                     </div>
                     <div class="mono">{{ item.port }}</div>
                 </ng-container>
                 <ng-container *ngIf="item.tls || item.udp">
                     <div class="text-sm font-medium flex items-center">
-                        Protocol:
+                        {{ 'MODULES.Protocol' | translate }}:
                     </div>
                     <div class="flex items-center">
                         <code *ngIf="item.tls" class="bg-success text-base-100">
@@ -44,18 +46,23 @@ import { MatDialog } from '@angular/material/dialog';
                 </ng-container>
                 <ng-container *ngIf="driver | async">
                     <div class="text-sm font-medium flex items-center">
-                        Driver:
+                        {{ 'DRIVERS.SINGULAR' | translate }}:
                     </div>
                     <a
                         class="underline truncate"
                         [routerLink]="['/drivers', item.driver_id]"
                     >
-                        {{ (driver | async).name || '&lt;Unnamed&gt;' }}
+                        {{
+                            (driver | async).name ||
+                                '&lt;' +
+                                    ('COMMON.BLANK_NAME' | translate) +
+                                    '&gt;'
+                        }}
                     </a>
                 </ng-container>
                 <ng-container *ngIf="system | async">
                     <div class="text-sm font-medium flex items-center">
-                        System:
+                        {{ 'SYSTEMS.SINGULAR' | translate }}:
                     </div>
                     <a
                         class="underline truncate"
@@ -70,7 +77,7 @@ import { MatDialog } from '@angular/material/dialog';
                 </ng-container>
                 <ng-container *ngIf="edge | async">
                     <div class="text-sm font-medium flex items-center">
-                        Edge:
+                        {{ 'COMMON.EDGE' | translate }}:
                     </div>
                     <div class="flex items-center">
                         <a
@@ -108,7 +115,7 @@ import { MatDialog } from '@angular/material/dialog';
                     </ng-template>
                 </ng-container>
                 <div class="text-sm font-medium flex items-center">
-                    Created:
+                    {{ 'COMMON.CREATED_AT' | translate }}:
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -123,7 +130,7 @@ import { MatDialog } from '@angular/material/dialog';
                     </span>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    Updated:
+                    {{ 'COMMON.UPDATED_AT' | translate }}:
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -144,7 +151,7 @@ import { MatDialog } from '@angular/material/dialog';
                     *ngIf="item.has_runtime_error"
                     (click)="viewErrors()"
                 >
-                    View Runtime Errors
+                    {{ 'MODULES.RUNTIME_ERRORS_VIEW' | translate }}
                 </button>
             </div>
             <div
@@ -153,28 +160,42 @@ import { MatDialog } from '@angular/material/dialog';
                 <h3 class="w-full text-center mono uppercase">
                     Module Controls
                 </h3>
-                <button
-                    btn
-                    class="w-full"
-                    [disabled]="item.running || stopping"
-                    (click)="toggleModuleState()"
-                >
-                    <div class="text" *ngIf="!stopping">Start Module</div>
-                    <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
-                </button>
-                <button
-                    btn
-                    class="w-full"
-                    [disabled]="!item.running || stopping"
-                    (click)="toggleModuleState()"
-                >
-                    <div class="text" *ngIf="!stopping">Stop Module</div>
-                    <mat-spinner diameter="32" *ngIf="stopping"></mat-spinner>
-                </button>
+                <div class="flex items-center space-x-4">
+                    <button
+                        btn
+                        class="flex-1"
+                        [disabled]="item.running || stopping"
+                        (click)="toggleModuleState()"
+                    >
+                        <div class="text" *ngIf="!stopping">
+                            {{ 'MODULES.START' | translate }}
+                        </div>
+                        <mat-spinner
+                            diameter="32"
+                            *ngIf="stopping"
+                        ></mat-spinner>
+                    </button>
+                    <button
+                        btn
+                        class="flex-1 inverse error"
+                        [disabled]="!item.running || stopping"
+                        (click)="toggleModuleState()"
+                    >
+                        <div class="text" *ngIf="!stopping">
+                            {{ 'MODULES.STOP' | translate }}
+                        </div>
+                        <mat-spinner
+                            diameter="32"
+                            *ngIf="stopping"
+                        ></mat-spinner>
+                    </button>
+                </div>
             </div>
         </section>
         <hr class="my-4" />
-        <header class="font-medium text-lg">Settings</header>
+        <header class="font-medium text-lg">
+            {{ 'COMMON.SETTINGS' | translate }}
+        </header>
         <section
             *ngIf="item.settings && (other_settings | async); else load_state"
         >
@@ -188,7 +209,7 @@ import { MatDialog } from '@angular/material/dialog';
         <ng-template #load_state>
             <div class="p-8 flex flex-col items-center justify-center m-auto">
                 <mat-spinner class="mb-4" diameter="48"></mat-spinner>
-                <p>Loading module settings...</p>
+                <p>{{ 'MODULES.LOADING_SETTINGS' | translate }}</p>
             </div>
         </ng-template>
     `,
