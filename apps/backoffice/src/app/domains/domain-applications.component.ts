@@ -5,6 +5,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { copyToClipboard } from 'apps/backoffice/src/app/common/general';
 import { notifyInfo } from 'apps/backoffice/src/app/common/notifications';
 import { DomainStateService } from './domain-state.service';
+import { i18n } from '../common/translate';
 
 @Component({
     selector: 'domain-applications',
@@ -16,7 +17,7 @@ import { DomainStateService } from './domain-state.service';
                     class="w-full sm:w-40 mb-4"
                     (click)="newApplication()"
                 >
-                    New Application
+                    {{ 'DOMAINS.APPLICATION_NEW' | translate }}
                 </button>
             </div>
             <div class="flex-1 w-full h-1/2 overflow-auto">
@@ -32,19 +33,19 @@ import { DomainStateService } from './domain-state.service';
                         { key: 'name', name: 'Name', content: name_template },
                         {
                             key: 'redirect_uri',
-                            name: 'Redirect URI',
+                            name: 'DOMAINS.FIELD_REDIRECT_URI' | translate,
                             content: redirect_template,
                             size: '20rem'
                         },
                         {
                             key: 'uid',
-                            name: 'Client ID',
+                            name: 'DOMAINS.FIELD_CLIENT_ID' | translate,
                             content: client_id_template,
                             size: '17rem'
                         },
                         {
                             key: 'secret',
-                            name: 'Client Secret',
+                            name: 'DOMAINS.FIELD_CLIENT_SECRET' | translate,
                             content: secret_template
                         },
                         { key: 'scopes', name: 'Scopes' },
@@ -57,7 +58,7 @@ import { DomainStateService } from './domain-state.service';
                         }
                     ]"
                     [sortable]="true"
-                    empty_message="No applications for domain"
+                    [empty_message]="'DOMAINS.APPLICATIONS_EMPTY' | translate"
                 ></simple-table>
             </div>
         </div>
@@ -84,7 +85,7 @@ import { DomainStateService } from './domain-state.service';
                     icon
                     matRipple
                     (click)="copySecret(row)"
-                    matTooltip="Copy Secret to Clipboard"
+                    [matTooltip]="'DOMAINS.COPY_SECRET' | translate"
                 >
                     <app-icon>content_copy</app-icon>
                 </button>
@@ -95,7 +96,7 @@ import { DomainStateService } from './domain-state.service';
                     (touchstart)="show_secret[row.id] = true"
                     (window:mouseup)="show_secret[row.id] = false"
                     (window:touchend)="show_secret[row.id] = false"
-                    matTooltip="View Secret"
+                    [matTooltip]="'DOMAINS.VIEW_SECRET' | translate"
                 >
                     <app-icon>visibility</app-icon>
                 </button>
@@ -103,7 +104,7 @@ import { DomainStateService } from './domain-state.service';
                     <span
                         *ngIf="!show_secret[row.id]"
                         class="p-2 bg-base-200 rounded"
-                        >Hidden</span
+                        >{{ 'DOMAINS.SECRET_HIDDEN' | translate }}</span
                     >
                     <span *ngIf="show_secret[row.id]">{{ row.secret }}</span>
                 </div>
@@ -111,13 +112,19 @@ import { DomainStateService } from './domain-state.service';
         </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2 mx-auto">
-                <button icon matRipple (click)="editApplication(row)">
+                <button
+                    icon
+                    matRipple
+                    [matTooltip]="'DOMAINS.APPLICATION_EDIT' | translate"
+                    (click)="editApplication(row)"
+                >
                     <app-icon>edit</app-icon>
                 </button>
                 <button
                     icon
                     matRipple
                     class="text-error"
+                    [matTooltip]="'DOMAINS.APPLICATION_REMOVE' | translate"
                     (click)="removeApplication(row)"
                 >
                     <app-icon>delete</app-icon>
@@ -160,6 +167,6 @@ export class DomainApplicationsComponent {
     public copySecret(item: PlaceApplication) {
         this.show_secret[item.id] = false;
         copyToClipboard(item.secret);
-        notifyInfo('Copied client secret to clipboard');
+        notifyInfo(i18n('DOMAINS.COPIED_SECRET'));
     }
 }

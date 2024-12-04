@@ -16,16 +16,20 @@ import { DomainStateService } from './domain-state.service';
                 class="min-w-[32rem] block text-sm"
                 [data]="users"
                 [columns]="[
-                    { key: 'name', name: 'User', content: name_template },
+                    {
+                        key: 'name',
+                        name: 'DOMAINS.FIELD_USER' | translate,
+                        content: name_template
+                    },
                     {
                         key: 'role',
-                        name: 'Role',
+                        name: 'DOMAINS.FIELD_ROLE' | translate,
                         content: role_template,
                         size: '6rem'
                     }
                 ]"
                 [sortable]="true"
-                empty_message="No users associated with domain"
+                [empty_message]="'DOMAINS.USER_LIST_EMPTY' | translate"
             ></simple-table>
         </div>
         <ng-template #name_template let-row="row">
@@ -37,15 +41,16 @@ import { DomainStateService } from './domain-state.service';
         <ng-template #role_template let-row="row">
             <div class="p-4">
                 <code
-                    [class.text-opacity-20]="!item.sys_admin && !item.support"
+                    [class.opacity-20]="!row.sys_admin && !row.support"
                     class="px-2 py-1"
                 >
                     {{
-                        item.sys_admin
-                            ? 'Admin'
-                            : item.support
-                            ? 'Support'
-                            : 'None'
+                        (row.sys_admin
+                            ? 'COMMON.USER_ADMIN'
+                            : row.support
+                            ? 'COMMON.USER_SUPPORT'
+                            : 'COMMON.USER_BASIC'
+                        ) | translate
                     }}
                 </code>
             </div>

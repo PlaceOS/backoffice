@@ -11,10 +11,10 @@ import { DomainStateService } from './domain-state.service';
             <div header class="">
                 <button
                     btn
-                    class="w-full sm:w-40 mb-4"
+                    class="w-full sm:w-48 mb-4"
                     (click)="newAuthSource()"
                 >
-                    New Auth Source
+                    {{ 'DOMAINS.AUTHENTICATION_NEW' | translate }}
                 </button>
             </div>
             <div class="flex-1 w-full h-1/2 overflow-auto">
@@ -27,10 +27,14 @@ import { DomainStateService } from './domain-state.service';
                     class="min-w-[40rem] block text-sm"
                     [data]="auth_sources"
                     [columns]="[
-                        { key: 'name', name: 'Name', content: name_template },
+                        {
+                            key: 'name',
+                            name: 'COMMON.FIELD_NAME' | translate,
+                            content: name_template
+                        },
                         {
                             key: 'type',
-                            name: 'Type',
+                            name: 'DOMAINS.FIELD_TYPE' | translate,
                             size: '6rem',
                             content: type_template
                         },
@@ -43,7 +47,7 @@ import { DomainStateService } from './domain-state.service';
                         }
                     ]"
                     [sortable]="true"
-                    empty_message="No authentication sources for domain"
+                    [empty_message]="'DOMAINS.AUTHENTICATION_EMPTY' | translate"
                 ></simple-table>
             </div>
         </div>
@@ -58,13 +62,19 @@ import { DomainStateService } from './domain-state.service';
         </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2 mx-auto">
-                <button icon matRipple (click)="editAuthSource(row)">
+                <button
+                    icon
+                    matRipple
+                    [matTooltip]="'DOMAINS.AUTHENTICATION_EDIT' | translate"
+                    (click)="editAuthSource(row)"
+                >
                     <app-icon>edit</app-icon>
                 </button>
                 <button
                     icon
                     matRipple
                     class="text-error"
+                    [matTooltip]="'DOMAINS.AUTHENTICATION_REMOVE' | translate"
                     (click)="removeAuthSource(row)"
                 >
                     <app-icon>delete</app-icon>

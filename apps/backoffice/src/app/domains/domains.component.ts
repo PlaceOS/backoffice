@@ -3,6 +3,7 @@ import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { DomainStateService } from './domain-state.service';
+import { i18n } from '../common/translate';
 
 @Component({
     selector: 'new-domains-view',
@@ -14,13 +15,13 @@ import { DomainStateService } from './domain-state.service';
             <item-sidebar
                 class="hidden sm:block"
                 [route]="name"
-                title="Domains"
+                [title]="'DOMAINS.PLURAL' | translate"
             ></item-sidebar>
             <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
                 <item-selection
                     class="z-20 sm:hidden"
                     [route]="name"
-                    title="Domains"
+                    [title]="'DOMAINS.PLURAL' | translate"
                 >
                     <button
                         btn
@@ -36,7 +37,7 @@ import { DomainStateService } from './domain-state.service';
                         <item-details
                             [can_edit]="true"
                             [item]="item"
-                            type="Domain"
+                            [type]="'DOMAINS.SINGULAR' | translate"
                         ></item-details>
                         <item-tablist
                             [base]="name"
@@ -55,7 +56,7 @@ import { DomainStateService } from './domain-state.service';
                 </div>
                 <button
                     class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content border border-base-200"
-                    matTooltip="New domain"
+                    [matTooltip]="'DOMAINS.NEW' | translate"
                     matTooltipPosition="right"
                     matRipple
                     (click)="newItem()"
@@ -94,24 +95,24 @@ export class DomainsComponent extends AsyncHandler {
         this.tab_list = [
             {
                 id: 'about',
-                name: 'About',
+                name: i18n('DOMAINS.TAB_ABOUT'),
                 icon: { content: 'info' },
             },
             {
                 id: 'applications',
-                name: 'Applications',
+                name: i18n('DOMAINS.TAB_APPLICATIONS'),
                 count: count.applications || 0,
                 icon: { content: 'login' },
             },
             {
                 id: 'authentication',
-                name: 'Authentication',
+                name: i18n('DOMAINS.TAB_AUTHENTICATION'),
                 count: count.auth_sources || 0,
                 icon: { content: 'lock_open' },
             },
             {
                 id: 'users',
-                name: 'Users',
+                name: i18n('DOMAINS.TAB_USERS'),
                 count: count.users || 0,
                 icon: { content: 'group' },
             },

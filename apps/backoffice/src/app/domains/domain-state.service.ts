@@ -58,8 +58,10 @@ export class DomainStateService {
         this.item,
     ]).pipe(
         filter(([_, item]) => item instanceof PlaceDomain),
-        switchMap(([_, item]) => queryUsers({ authority_id: item.id } as any)),
-        map((_) => _.data),
+        switchMap(([_, item]) =>
+            queryUsers({ authority_id: item.id, limit: 1000 } as any)
+        ),
+        map((_) => _.data.sort((a, b) => a.name.localeCompare(b.name))),
         catchError((_) => []),
         shareReplay(1)
     );

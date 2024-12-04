@@ -8,6 +8,7 @@ import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
 import { DomainStateService } from './domain-state.service';
 import { notifySuccess } from '../common/notifications';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { i18n } from '../common/translate';
 
 @Component({
     selector: 'app-domain-about',
@@ -19,7 +20,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
             <div
                 class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded text-sm font-medium p-2"
             >
-                Email Domains
+                {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}
             </div>
             <button
                 matRipple
@@ -31,13 +32,19 @@ import { Clipboard } from '@angular/cdk/clipboard';
             </button>
         </div>
         <div class="flex items-center justify-between space-x-2 my-2">
-            <h3 class="text-lg font-medium">Settings</h3>
-            <button btn matRipple (click)="saveChanges()">Save Changes</button>
+            <h3 class="text-lg font-medium">
+                {{ 'COMMON.SETTINGS' | translate }}
+            </h3>
+            <button btn matRipple (click)="saveChanges()">
+                {{ 'COMMON.SAVE_CHANGES' | translate }}
+            </button>
         </div>
         <section *ngIf="form" [formGroup]="form">
             <mat-tab-group [(selectedIndex)]="index">
-                <mat-tab label="Config"> </mat-tab>
-                <mat-tab label="Internals"> </mat-tab>
+                <mat-tab [label]="'DOMAINS.SETTINGS_CONFIG' | translate">
+                </mat-tab>
+                <mat-tab [label]="'DOMAINS.SETTINGS_INTERNALS' | translate">
+                </mat-tab>
             </mat-tab-group>
             <settings-form-field
                 *ngIf="index !== 1"
@@ -91,7 +98,7 @@ export class DomainAboutComponent extends AsyncHandler implements OnInit {
 
     public copyEmailDomain(domain: string) {
         this._clipboard.copy(domain);
-        notifySuccess(`Copied email domain to clipboard.`);
+        notifySuccess(i18n('DOMAINS.COPIED_EMAIL_DOMAIN'));
     }
 
     /** Save changes to the form fields */
@@ -103,7 +110,7 @@ export class DomainAboutComponent extends AsyncHandler implements OnInit {
             internals: JSON.parse(this.form.value.internals),
         });
         await this._service.update(domain);
-        notifySuccess('Successfully updated domain settings.');
+        notifySuccess(i18n('DOMAINS.SETTINGS_SAVED'));
     }
 
     /** Load form fields for active item */
