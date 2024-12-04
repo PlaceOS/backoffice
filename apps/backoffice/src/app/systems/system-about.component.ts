@@ -13,7 +13,7 @@ import { SystemStateService } from './system-state.service';
                 >
                     <ng-container *ngIf="item?.support_url">
                         <div class="text-sm font-medium flex items-center">
-                            Support URL:
+                            {{ 'SYSTEMS.SUPPORT_URL' | translate }}:
                         </div>
                         <a
                             class="underline select-all truncate"
@@ -25,25 +25,25 @@ import { SystemStateService } from './system-state.service';
                     </ng-container>
                     <ng-container *ngIf="item?.email">
                         <div class="text-sm font-medium flex items-center">
-                            Bookable Room:
+                            {{ 'SYSTEMS.BOOKABLE' | translate }}:
                         </div>
                         <div>{{ item?.bookable ? 'Yes' : 'No' }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.email">
                         <div class="text-sm font-medium flex items-center">
-                            Publicly Available:
+                            {{ 'SYSTEMS.PUBLIC' | translate }}:
                         </div>
                         <div>{{ item?.public ? 'Yes' : 'No' }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.code">
                         <div class="text-sm font-medium flex items-center">
-                            Code:
+                            {{ 'SYSTEMS.CODE' | translate }}:
                         </div>
                         <div>{{ item?.code }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.email">
                         <div class="text-sm font-medium flex items-center">
-                            Email:
+                            {{ 'SYSTEMS.EMAIL' | translate }}:
                         </div>
                         <a
                             class="underline select-all truncate"
@@ -54,30 +54,30 @@ import { SystemStateService } from './system-state.service';
                     </ng-container>
                     <ng-container *ngIf="item?.capacity">
                         <div class="text-sm font-medium flex items-center">
-                            Capacity:
+                            {{ 'SYSTEMS.CAPACITY' | translate }}:
                         </div>
                         <div>{{ item?.capacity }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.map_id">
                         <div class="text-sm font-medium flex items-center">
-                            Map ID:
+                            {{ 'SYSTEMS.MAP_ID' | translate }}:
                         </div>
                         <div class="value mono">{{ item?.map_id }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.installed_ui_devices">
                         <div class="text-sm font-medium flex items-center">
-                            Installed Touch Panels:
+                            {{ 'SYSTEMS.PANEL_COUNT' | translate }}:
                         </div>
                         <div>{{ item?.installed_ui_devices }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.timezone">
                         <div class="text-sm font-medium flex items-center">
-                            Timezone:
+                            {{ 'COMMON.TIMEZONE' | translate }}:
                         </div>
                         <div>{{ item?.timezone }}</div>
                     </ng-container>
                     <div class="text-sm font-medium flex items-center">
-                        Created:
+                        {{ 'COMMON.CREATED_AT' | translate }}:
                     </div>
                     <div class=" flex items-center">
                         <span
@@ -92,7 +92,7 @@ import { SystemStateService } from './system-state.service';
                         </span>
                     </div>
                     <div class="text-sm font-medium flex items-center">
-                        Updated:
+                        {{ 'COMMON.UPDATED_AT' | translate }}:
                     </div>
                     <div class=" flex items-center">
                         <span
@@ -112,18 +112,34 @@ import { SystemStateService } from './system-state.service';
                 class="rounded p-4 border border-base-200  space-y-4 w-1/3 flex-1 inline-flex flex-col"
             >
                 <h3 class="w-full text-center font-medium mono uppercase">
-                    System Controls
+                    {{ 'SYSTEMS.CONTROLS' | translate }}
                 </h3>
-                <button btn start class="w-full" (click)="start()">
-                    Start System
-                </button>
-                <button btn stop class="w-full" (click)="stop()">
-                    Stop System
-                </button>
+                <div class="flex items-center space-x-4">
+                    <button
+                        btn
+                        matRipple
+                        start
+                        class="flex-1"
+                        (click)="start()"
+                    >
+                        {{ 'SYSTEMS.START' | translate }}
+                    </button>
+                    <button
+                        btn
+                        matRipple
+                        stop
+                        class="flex-1 inverse error"
+                        (click)="stop()"
+                    >
+                        {{ 'SYSTEMS.STOP' | translate }}
+                    </button>
+                </div>
             </div>
         </section>
         <hr class="my-4" />
-        <header class="font-medium text-lg">Settings</header>
+        <header class="font-medium text-lg">
+            {{ 'COMMON.SETTINGS' | translate }}
+        </header>
         <section *ngIf="item?.settings && other_settings; else load_state">
             <a-settings-form
                 [id]="item?.id"
@@ -135,7 +151,7 @@ import { SystemStateService } from './system-state.service';
         <ng-template #load_state>
             <div class="flex flex-col p-8 items-center justify-center">
                 <mat-spinner class="mb-4" [diameter]="32"></mat-spinner>
-                <p>Loading system settings...</p>
+                <p>{{ 'SYSTEMS.LOADING_SETTINGS' | translate }}</p>
             </div>
         </ng-template>
     `,

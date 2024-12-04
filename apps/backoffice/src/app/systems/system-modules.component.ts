@@ -22,6 +22,7 @@ import {
 } from 'apps/backoffice/src/app/overlays/view-module-state.component';
 import { SystemStateService } from './system-state.service';
 import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
+import { i18n } from '../common/translate';
 
 @Component({
     selector: 'system-modules',
@@ -32,17 +33,21 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                 *ngIf="item.id && item.modules && !hide_exec"
                 class="mb-4"
             >
-                <h3 class="font-medium text-lg mb-2">Execute command</h3>
+                <h3 class="font-medium text-lg mb-2">
+                    {{ 'COMMON.EXECUTE_COMMAND' | translate }}
+                </h3>
                 <execute-method-field
                     [system]="item$ | async"
                 ></execute-method-field>
             </section>
-            <h3 class="font-medium text-lg mb-2">Module List</h3>
+            <h3 class="font-medium text-lg mb-2">
+                {{ 'SYSTEMS.MODULE_LIST' | translate }}
+            </h3>
             <section add-module class="flex space-x-2 flex-wrap mb-2">
                 <item-search-field
                     class="flex-grow-1 w-full sm:flex-1 sm:w-auto h-12"
                     name="module"
-                    placeholder="Add existing module"
+                    [placeholder]="'SYSTEMS.FIND_MODULE' | translate"
                     [query_fn]="query_fn"
                     [exclude]="exclude_fn"
                     [ngModel]="null"
@@ -50,18 +55,20 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                 ></item-search-field>
                 <button
                     btn
+                    matRipple
                     class="flex-1 w-40 sm:w-32 sm:flex-none h-11"
                     [disabled]="!new_module"
                     (click)="addModule()"
                 >
-                    Add existing
+                    {{ 'COMMON.ADD_EXISTING' | translate }}
                 </button>
                 <button
                     btn
+                    matRipple
                     class="flex-1 w-40 sm:w-32 sm:flex-none h-11"
                     (click)="newModule()"
                 >
-                    Add new
+                    {{ 'COMMON.ADD_NEW' | translate }}
                 </button>
             </section>
             <section device-list class="flex-1 h-1/2 overflow-auto w-full">
@@ -76,36 +83,36 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                     [columns]="[
                         {
                             key: 'state',
-                            name: 'State',
+                            name: 'SYSTEMS.MODULE_FIELD_STATE' | translate,
                             content: state_template,
                             size: '4rem'
                         },
                         {
                             key: 'name',
-                            name: 'Name',
+                            name: 'SYSTEMS.MODULE_FIELD_NAME' | translate,
                             content: name_template,
                             size: '16rem'
                         },
                         {
                             key: 'type',
-                            name: 'Type',
+                            name: 'SYSTEMS.MODULE_FIELD_TYPE' | translate,
                             content: type_template,
                             size: '7rem'
                         },
                         {
                             key: 'class',
-                            name: 'Class',
+                            name: 'SYSTEMS.MODULE_FIELD_CLASS' | translate,
                             content: class_template,
                             size: '16rem'
                         },
                         {
                             key: 'url',
-                            name: 'Address',
+                            name: 'SYSTEMS.MODULE_FIELD_ADDRESS' | translate,
                             content: url_template,
                         },
                         {
                             key: 'debug',
-                            name: 'Debug',
+                            name: 'SYSTEMS.MODULE_FIELD_DEBUG' | translate,
                             content: debug_template,
                             size: '4.5rem'
                         },
@@ -119,7 +126,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                     [can_reorder]="true"
                     [color]="colors | async"
                     (ondrop)="drop($event)"
-                    empty_message="No modules for selected system"
+                    [empty_message]="'SYSTEMS.MODULE_LIST_EMPTY' | translate"
                 ></simple-table>
                 <div class="w-full h-12"></div>
                 <ng-template #state_template let-row="row" let-index="index">
@@ -160,7 +167,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                                     [icon]="m_item.icon"
                                 ></app-icon>
                                 <div class="text">
-                                    {{ m_item.name }}
+                                    {{ m_item.name | translate }}
                                 </div>
                             </div>
                         </button>
@@ -236,8 +243,9 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                             [checked]="(debugging | async)[row.id]"
                             [matTooltip]="
                                 ((debugging | async)[row.id]
-                                    ? 'Disable'
-                                    : 'Enable') + ' Debugging'
+                                    ? 'SYSTEMS.DEBUG_DISABLE'
+                                    : 'SYSTEMS.DEBUG_ENABLE'
+                                ) | translate
                             "
                             matTooltipPosition="left"
                             (change)="toggleDebug(row)"
@@ -272,7 +280,7 @@ import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.m
                                         [icon]="m_item.icon"
                                     ></app-icon>
                                     <div class="text">
-                                        {{ m_item.name }}
+                                        {{ m_item.name | translate }}
                                     </div>
                                 </div>
                             </button>
@@ -341,38 +349,38 @@ export class SystemModulesComponent extends AsyncHandler {
     public menu_options: AppLink[] = [
         {
             id: 'power',
-            name: 'Toggle Power',
+            name: 'MODULES.TOGGLE_POWER',
             icon: { type: 'icon', content: 'power' },
         },
         {
             id: 'state',
-            name: 'View State',
+            name: 'MODULES.VIEW_STATE',
             icon: { type: 'icon', content: 'visibility' },
         },
         {
             id: 'edit',
-            name: 'Edit Module',
+            name: 'MODULES.EDIT',
             icon: { type: 'icon', content: 'edit' },
         },
         {
             id: 'load',
-            name: 'Load Module',
+            name: 'MODULES.LOAD',
             icon: { type: 'icon', content: 'cloud_download' },
         },
         {
             id: 'view-error',
-            name: 'View Runtime Errors',
+            name: 'MODULES.VIEW_ERRORS',
             enable_on: 'has_runtime_error',
             icon: { type: 'icon', content: 'error' },
         } as any,
         {
             id: 'add-to-system',
-            name: 'Add to another System',
+            name: 'MODULES.ADD_TO_SYSTEM',
             icon: { type: 'icon', content: 'playlist_add' },
         },
         {
             id: 'remove',
-            name: 'Remove Module',
+            name: 'MODULES.REMOVE',
             icon: {
                 type: 'icon',
                 class: 'material-symbols-rounded text-error',
@@ -384,27 +392,27 @@ export class SystemModulesComponent extends AsyncHandler {
     public offline_options: AppLink[] = [
         {
             id: 'power',
-            name: 'Toggle Power',
+            name: 'MODULES.TOGGLE_POWER',
             icon: { type: 'icon', content: 'power' },
         },
         {
             id: 'edit',
-            name: 'Edit Module',
+            name: 'MODULES.EDIT',
             icon: { type: 'icon', content: 'edit' },
         },
         {
             id: 'load',
-            name: 'Load Module',
+            name: 'MODULES.LOAD',
             icon: { type: 'icon', content: 'cloud_download' },
         },
         {
             id: 'add-to-system',
-            name: 'Add to another System',
+            name: 'MODULES.ADD_TO_SYSTEM',
             icon: { type: 'icon', content: 'playlist_add' },
         },
         {
             id: 'remove',
-            name: 'Remove Module',
+            name: 'MODULES.REMOVE',
             icon: {
                 type: 'icon',
                 class: 'material-symbols-rounded text-error',
@@ -436,15 +444,15 @@ export class SystemModulesComponent extends AsyncHandler {
         if (role == null) return '';
         switch (role) {
             case PlaceDriverRole.Device:
-                return 'Device';
+                return i18n('DRIVERS.DEVICE');
             case PlaceDriverRole.SSH:
-                return 'SSH';
+                return i18n('DRIVERS.SSH');
             case PlaceDriverRole.Service:
-                return 'Service';
+                return i18n('DRIVERS.SERVICE');
             case PlaceDriverRole.Websocket:
-                return 'Websocket';
+                return i18n('DRIVERS.WEBSOCKET');
         }
-        return 'Logic';
+        return i18n('DRIVERS.LOGIC');
     }
 
     public get item(): PlaceSystem {

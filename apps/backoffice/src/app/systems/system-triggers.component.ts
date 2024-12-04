@@ -7,6 +7,7 @@ import { notifyInfo } from '../common/notifications';
 
 import { HashMap } from '../common/types';
 import { SystemStateService } from './system-state.service';
+import { i18n } from '../common/translate';
 
 export interface TriggerInstanceState {
     triggered: boolean;
@@ -20,9 +21,6 @@ export interface TriggerInstanceState {
     selector: 'system-triggers',
     template: `
         <section class="flex items-center mb-4 space-x-2">
-            <button btn style="min-width: 8rem" (click)="selectTrigger()">
-                Add Trigger
-            </button>
             <mat-form-field appearance="outline" class="h-12 flex-1">
                 <div class="prefix" matPrefix>
                     <app-icon class="text-2xl relative -left-0.5">
@@ -33,10 +31,13 @@ export interface TriggerInstanceState {
                     [ngModel]="''"
                     (ngModelChange)="filter$.next($event)"
                     matInput
-                    placeholder="Filter triggers..."
+                    [placeholder]="'SYSTEMS.TRIGGER_SEARCH' | translate"
                     class="rounded-none"
                 />
             </mat-form-field>
+            <button btn matRipple class="w-32" (click)="selectTrigger()">
+                {{ 'SYSTEMS.TRIGGER_ADD' | translate }}
+            </button>
         </section>
         <section class="max-w-full overflow-auto">
             <mat-progress-bar
@@ -54,20 +55,24 @@ export interface TriggerInstanceState {
                         size: '3rem',
                         content: status_template
                     },
-                    { key: 'name', name: 'Name', content: name_template },
+                    {
+                        key: 'name',
+                        name: 'SYSTEMS.TRIGGER_FIELD_NAME' | translate,
+                        content: name_template
+                    },
                     {
                         key: 'count',
-                        name: 'Count',
+                        name: 'SYSTEMS.TRIGGER_FIELD_COUNT' | translate,
                         content: count_template
                     },
                     {
                         key: 'errors',
-                        name: 'Errors',
+                        name: 'SYSTEMS.TRIGGER_FIELD_ERRORS' | translate,
                         content: errors_template
                     },
                     {
                         key: 'added',
-                        name: 'Added',
+                        name: 'SYSTEMS.TRIGGER_FIELD_ADDED' | translate,
                         content: added_template
                     },
                     {
@@ -78,7 +83,7 @@ export interface TriggerInstanceState {
                         sortable: false
                     }
                 ]"
-                empty_message="No triggers for selected system"
+                [empty_message]="'SYSTEMS.TRIGGERS_EMPTY' | translate"
             ></simple-table>
             <ng-template #status_template let-row="row">
                 <i
@@ -129,13 +134,28 @@ export interface TriggerInstanceState {
             </ng-template>
             <ng-template #actions_template let-row="row">
                 <div class="flex items-center space-x-2 p-2">
-                    <button icon matRipple (click)="copyWebhookURL(row)">
+                    <button
+                        icon
+                        matRipple
+                        [matTooltip]="'SYSTEMS.COPY_WEBHOOK' | translate"
+                        (click)="copyWebhookURL(row)"
+                    >
                         <app-icon>link</app-icon>
                     </button>
-                    <button icon matRipple (click)="editTrigger(row)">
+                    <button
+                        icon
+                        matRipple
+                        [matTooltip]="'SYSTEMS.TRIGGER_EDIT' | translate"
+                        (click)="editTrigger(row)"
+                    >
                         <app-icon>edit</app-icon>
                     </button>
-                    <button icon matRipple (click)="deleteTrigger(row)">
+                    <button
+                        icon
+                        matRipple
+                        [matTooltip]="'SYSTEMS.TRIGGER_REMOVE' | translate"
+                        (click)="deleteTrigger(row)"
+                    >
                         <app-icon class="text-error">delete</app-icon>
                     </button>
                 </div>
@@ -189,7 +209,7 @@ export class SystemTriggersComponent {
         copyToClipboard(
             `${location.origin}/api/engine/v2/webhook/${t.id}/notify?secret=${t.webhook_secret}`
         );
-        notifyInfo('Webhook link copied to clipboard');
+        notifyInfo(i18n('SYSTEMS.COPIED_WEBHOOK'));
     };
     public readonly editTrigger = async (t) =>
         this.temp_trigger.next((await this._service.editTrigger(t)) as any);

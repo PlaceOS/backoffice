@@ -4,6 +4,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { SystemStateService } from './system-state.service';
+import { i18n } from '../common/translate';
 
 @Component({
     selector: 'new-systems-view',
@@ -31,7 +32,7 @@ import { SystemStateService } from './system-state.service';
                                 <item-details
                                     [can_edit]="true"
                                     [item]="item"
-                                    type="System"
+                                    [type]="'SYSTEMS.SINGULAR' | translate"
                                 ></item-details>
                                 <item-tablist
                                     [base]="name"
@@ -50,7 +51,7 @@ import { SystemStateService } from './system-state.service';
                         </div>
                         <button
                             class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content border border-base-200"
-                            matTooltip="New system"
+                            [matTooltip]="'SYSTEMS.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple
                             (click)="newItem()"
@@ -59,7 +60,7 @@ import { SystemStateService } from './system-state.service';
                         </button>
                         <button
                             class="absolute bottom-16 left-2 sm:-left-8 w-10 h-10 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content border border-base-200"
-                            matTooltip="Bulk add systems"
+                            [matTooltip]="'SYSTEMS.BULK' | translate"
                             matTooltipPosition="right"
                             matRipple
                             (click)="bulkAdd()"
@@ -108,36 +109,36 @@ export class SystemsComponent extends AsyncHandler {
         this.tab_list = [
             {
                 id: 'about',
-                name: 'About',
+                name: i18n('SYSTEMS.TAB_ABOUT'),
                 icon: { content: 'info' },
             },
             {
                 id: 'modules',
-                name: 'Modules',
+                name: i18n('SYSTEMS.TAB_MODULES'),
                 count: counts?.devices ?? '?',
                 icon: { content: 'tablet' },
             },
             {
                 id: 'zones',
-                name: 'Zones',
+                name: i18n('SYSTEMS.TAB_ZONES'),
                 count: counts?.zones ?? '?',
                 icon: { content: 'layers' },
             },
             {
                 id: 'triggers',
-                name: 'Triggers',
+                name: i18n('SYSTEMS.TAB_TRIGGERS'),
                 count: counts?.triggers ?? '?',
                 icon: { content: 'timer' },
             },
             {
                 id: 'metadata',
-                name: 'Metadata',
+                name: i18n('SYSTEMS.TAB_METADATA'),
                 count: counts?.metadata ?? '?',
                 icon: { content: 'code_blocks' },
             },
             {
                 id: 'history',
-                name: 'Settings History',
+                name: i18n('SYSTEMS.TAB_SETTINGS_HISTORY'),
                 icon: { content: 'schedule' },
             },
         ].concat(this.extensions);

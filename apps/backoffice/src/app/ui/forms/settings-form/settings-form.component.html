@@ -1,18 +1,27 @@
 <form *ngIf="form && used_settings && used_settings.length" [formGroup]="form">
     <div class="actions">
         <button btn *ngIf="edited_count > 0" (click)="clearChanges()">
-            <div class="text" *ngIf="!saving[shown_option.id]; else spinner">
-                Clear Changes [C]
+            <div
+                class="flex space-x-4"
+                *ngIf="!saving[shown_option.id]; else spinner"
+            >
+                <div class="pl-2">{{ 'COMMON.CLEAR' | translate }}</div>
+                <kbd>C</kbd>
             </div>
         </button>
         <button
             btn
             *ngIf="active_edited"
+            class="w-32"
             [disabled]="has_errors && !saving[shown_option.id]"
             (click)="save(shown_option.id)"
         >
-            <div class="text" *ngIf="!saving[shown_option.id]; else spinner">
-                Save [S]
+            <div
+                class="flex space-x-4"
+                *ngIf="!saving[shown_option.id]; else spinner"
+            >
+                <div class="pl-2">{{ 'COMMON.SAVE' | translate }}</div>
+                <kbd>S</kbd>
             </div>
         </button>
         <button
@@ -21,8 +30,12 @@
             [disabled]="has_errors && !saving[shown_option.id]"
             (click)="saveAll()"
         >
-            <div class="text" *ngIf="!saving[shown_option.id]; else spinner">
-                Save All [A]
+            <div
+                class="flex space-x-4"
+                *ngIf="!saving[shown_option.id]; else spinner"
+            >
+                <div class="pl-2">{{ 'COMMON.SAVE_ALL' | translate }}</div>
+                <kbd>A</kbd>
             </div>
         </button>
     </div>
@@ -79,7 +92,7 @@
                         settings[i - 1]?.updated_at * 1000 || 0 | date: 'medium'
                     "
                 >
-                    Last edited:
+                    {{ 'COMMON.LAST_EDIT' | translate }}:
                     {{ settings[i - 1]?.updated_at * 1000 | dateFrom }}
                 </code>
             </div>

@@ -26,7 +26,7 @@ import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
 
 import * as yaml from 'js-yaml';
-import * as merge from 'deepmerge';
+import { i18n } from '../../../common/translate';
 
 @Component({
     selector: 'a-settings-form',
@@ -130,23 +130,27 @@ export class SettingsFormComponent
     /** Displayable encryption levels for settings */
     public get levels(): any[] {
         const levels: Identity[] = [
-            { id: EncryptionLevel.None, name: 'Unencrypted', active: true },
+            {
+                id: EncryptionLevel.None,
+                name: i18n('COMMON.SETTINGS_PLAINTEXT'),
+                active: true,
+            },
             {
                 id: EncryptionLevel.Support,
-                name: 'Support',
+                name: i18n('COMMON.SETTINGS_SUPPORT'),
                 active: this.is_support,
             },
             { id: EncryptionLevel.Admin, name: 'Admin', active: this.is_admin },
             {
                 id: EncryptionLevel.NeverDisplay,
-                name: 'Encrypted',
+                name: i18n('COMMON.SETTINGS_ENCRYPTED'),
                 active: this.is_admin,
             },
         ];
         if (this.merge) {
             levels.unshift({
                 id: EncryptionLevel.NeverDisplay + 1,
-                name: 'Merged',
+                name: i18n('COMMON.SETTINGS_MERGED'),
             });
         }
         return levels;

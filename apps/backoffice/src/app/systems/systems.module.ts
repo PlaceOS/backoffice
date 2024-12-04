@@ -13,6 +13,7 @@ import { SystemZonesComponent } from './system-zones.component';
 import { SystemMetadataComponent } from './system-metadata.component';
 import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
 import { SystemsComponent } from './systems.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
     declarations: [
@@ -30,6 +31,7 @@ import { SystemsComponent } from './systems.component';
         RouterModule.forChild(ROUTES),
         SharedContentModule,
         DragDropModule,
+        TranslateModule.forChild(),
     ],
 })
 export class AppSystemsModule {}

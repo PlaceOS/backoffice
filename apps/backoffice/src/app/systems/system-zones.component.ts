@@ -12,7 +12,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
         <div class="flex flex-col h-full w-full">
             <section class="flex items-center space-x-2 mb-2">
                 <item-search-field
-                    name="zone"
+                    [placeholder]="'SYSTEMS.ZONE_SEARCH' | translate"
                     class="flex-1 h-12"
                     [query_fn]="query_fn"
                     [exclude]="exclude_fn"
@@ -29,7 +29,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                     class="flex-1 inverse"
                     (click)="clearChanges()"
                 >
-                    Clear Changes
+                    {{ 'COMMON.CLEAR' | translate }}
                 </button>
                 <button
                     btn
@@ -41,7 +41,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                     (window:mouseup)="show_original = false"
                     (window:touchend)="show_original = false"
                 >
-                    View Orginal
+                    {{ 'SYSTEMS.VIEW_ORIGINAL' | translate }}
                 </button>
                 <button
                     btn
@@ -50,7 +50,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                     [disabled]="!this.has_changes"
                     (click)="saveChanges()"
                 >
-                    Save Changes
+                    {{ 'COMMON.SAVE_CHANGES' | translate }}
                 </button>
             </section>
             <div
@@ -71,13 +71,13 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                     [columns]="[
                         {
                             key: 'name',
-                            name: 'Name',
+                            name: 'SYSTEMS.ZONE_FIELD_NAME' | translate,
                             content: name_template,
                             size: '14rem'
                         },
                         {
                             key: 'description',
-                            name: 'Description',
+                            name: 'SYSTEMS.ZONE_FIELD_DESCRIPTION' | translate,
                             content: description_template
                         },
                         {
@@ -115,13 +115,18 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                     >
                         {{ data }}
                         <span class="opacity-30" *ngIf="!data">
-                            No description
+                            {{ 'SYSTEMS.ZONE_DESCRIPTION_EMPTY' | translate }}
                         </span>
                     </div>
                 </ng-template>
                 <ng-template #actions_template let-row="row">
                     <div class="flex items-center space-x-2 p-2 mx-auto">
-                        <button icon matRipple (click)="removeZone(row)">
+                        <button
+                            icon
+                            matRipple
+                            [matTooltip]="'SYSTEMS.ZONE_REMOVE' | translate"
+                            (click)="removeZone(row)"
+                        >
                             <app-icon class="text-error">delete</app-icon>
                         </button>
                     </div>
