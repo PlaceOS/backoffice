@@ -21,7 +21,7 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                     [ngModel]="''"
                     (ngModelChange)="filter$.next($event)"
                     matInput
-                    placeholder="Filter Devices..."
+                    [placeholder]="'MODULES.SEARCH' | translate"
                     class="rounded-none"
                 />
             </mat-form-field>
@@ -38,14 +38,14 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                 [columns]="[
                     {
                         key: 'state',
-                        name: 'State',
+                        name: 'MODULES.FIELD_STATE' | translate,
                         content: state_template,
                         size: '4rem',
                         sortable: false
                     },
                     {
                         key: 'name',
-                        name: 'Module Name',
+                        name: 'DRIVERS.MODULE_NAME' | translate,
                         content: name_template
                     },
                     {
@@ -57,7 +57,7 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                     }
                 ]"
                 [sortable]="true"
-                empty_message="No modules created for driver"
+                [empty_message]="'DRIVERS.MODULES_EMPTY' | translate"
             ></simple-table>
             <ng-template #state_template let-row="row">
                 <i
@@ -93,27 +93,38 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                     <button
                         icon
                         matRipple
-                        matTooltip="View Systems"
+                        [matTooltip]="'DRIVERS.VIEW_SYSTEMS' | translate"
                         [matMenuTriggerFor]="menu"
                         (click)="loadSystems(row)"
                     >
                         <app-icon>visibility</app-icon>
                     </button>
-                    <button icon matRipple (click)="removeModule(row)">
+                    <button
+                        icon
+                        matRipple
+                        [matTooltip]="'MODULES.DELETE' | translate"
+                        (click)="removeModule(row)"
+                    >
                         <app-icon class="text-error">delete</app-icon>
                     </button>
                     <mat-menu #menu="matMenu">
                         <div
                             class="flex items-center justify-center px-2 pb-2 opacity-70 border-b border-base-200 text-sm"
                         >
-                            {{ systems[row.id]?.length }} System(s)
+                            {{
+                                'DRIVERS.SYSTEM_COUNT'
+                                    | translate
+                                        : { count: systems[row.id]?.length }
+                            }}
                         </div>
                         <div
                             *ngIf="loading_systems"
                             class="flex items-center space-x-2 p-2 text-sm"
                         >
                             <mat-spinner [diameter]="32"></mat-spinner>
-                            <span>Loading systems...</span>
+                            <span>{{
+                                'DRIVERS.LOADING_SYSTEMS' | translate
+                            }}</span>
                         </div>
                         <a
                             mat-menu-item

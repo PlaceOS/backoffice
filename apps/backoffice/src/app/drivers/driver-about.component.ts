@@ -12,7 +12,7 @@ import { DriverStateService } from './driver-state.service';
             >
                 <ng-container *ngIf="item.default_uri">
                     <div class="text-sm font-medium flex items-center">
-                        Default URI
+                        {{ 'DRIVERS.DEFAULT_URI' | translate }}
                     </div>
                     <div class="underline select-all overflow-hidden">
                         <a
@@ -25,12 +25,12 @@ import { DriverStateService } from './driver-state.service';
                 </ng-container>
                 <ng-container *ngIf="item.default_port">
                     <div class="text-sm font-medium flex items-center">
-                        Default Port
+                        {{ 'DRIVERS.DEFAULT_PORT' | translate }}
                     </div>
                     <div class="mono text-sm">{{ item.default_port }}</div>
                 </ng-container>
                 <div class="text-sm font-medium flex items-center">
-                    Repository
+                    {{ 'REPOS.SINGULAR' | translate }}
                 </div>
                 <div>
                     <a
@@ -45,11 +45,11 @@ import { DriverStateService } from './driver-state.service';
                     >
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    Module Name
+                    {{ 'DRIVERS.MODULE_NAME' | translate }}
                 </div>
                 <div class="mono text-sm truncate">{{ item?.module_name }}</div>
                 <div class="text-sm font-medium flex items-center">
-                    Created:
+                    {{ 'COMMON.CREATED_AT' | translate }}:
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -64,7 +64,7 @@ import { DriverStateService } from './driver-state.service';
                     </span>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    Updated:
+                    {{ 'COMMON.UPDATED_AT' | translate }}:
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -84,7 +84,7 @@ import { DriverStateService } from './driver-state.service';
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
                 <div class="text-sm font-medium flex items-center">
-                    Compiled
+                    {{ 'DRIVERS.COMPILED' | translate }}
                 </div>
                 <div class="flex items-center">
                     <div>
@@ -99,7 +99,7 @@ import { DriverStateService } from './driver-state.service';
                         *ngIf="compilation_error | async"
                         (click)="viewErrors()"
                     >
-                        View Errors
+                        {{ 'DRIVERS.VIEW_ERRORS' | translate }}
                     </button>
                 </div>
                 <div class="text-sm font-medium flex items-center">Commit</div>
@@ -112,7 +112,7 @@ import { DriverStateService } from './driver-state.service';
                     </code>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    File Name
+                    {{ 'DRIVERS.FILENAME' | translate }}
                 </div>
                 <div class="flex items-center overflow-hidden">
                     <div
@@ -131,20 +131,22 @@ import { DriverStateService } from './driver-state.service';
                         item.commit !== item.update_info.commit
                     "
                 >
-                    Update
+                    {{ 'COMMON.UPDATE' | translate }}
                 </button>
                 <div class="flex items-center space-x-4 w-full col-span-2">
                     <button btn matRipple class="flex-1" (click)="recompile()">
-                        Recompile
+                        {{ 'DRIVERS.RECOMPILE' | translate }}
                     </button>
                     <button btn matRipple class="flex-1" (click)="reload()">
-                        Reload
+                        {{ 'DRIVERS.RELOAD' | translate }}
                     </button>
                 </div>
             </div>
         </section>
         <hr class="my-4" />
-        <header class="font-medium text-lg">Settings</header>
+        <header class="font-medium text-lg">
+            {{ 'COMMON.SETTINGS' | translate }}
+        </header>
         <section *ngIf="item.settings; else load_state">
             <a-settings-form
                 [merge]="true"
@@ -155,7 +157,7 @@ import { DriverStateService } from './driver-state.service';
         <ng-template #load_state>
             <div class="flex flex-col items-center justify-center">
                 <mat-spinner class="mb-4" diameter="48"></mat-spinner>
-                <p>Loading driver settings...</p>
+                <p>{{ 'DRIVERS.LOADING_SETTINGS' | translate }}</p>
             </div>
         </ng-template>
     `,

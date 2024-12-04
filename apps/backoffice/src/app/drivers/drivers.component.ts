@@ -6,6 +6,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { DriverStateService } from './driver-state.service';
+import { i18n } from '../common/translate';
 
 @Component({
     selector: 'new-drivers-view',
@@ -19,13 +20,13 @@ import { DriverStateService } from './driver-state.service';
                     <item-sidebar
                         class="hidden sm:block"
                         [route]="name"
-                        title="Drivers"
+                        [title]="'DRIVERS.PLURAL' | translate"
                     ></item-sidebar>
                     <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
                         <item-selection
                             class="z-20 sm:hidden"
                             [route]="name"
-                            title="Drivers"
+                            [title]="'DRIVERS.PLURAL' | translate"
                         >
                             <button
                                 btn
@@ -41,7 +42,7 @@ import { DriverStateService } from './driver-state.service';
                                 <item-details
                                     [can_edit]="true"
                                     [item]="item"
-                                    type="Driver"
+                                    [type]="'DRIVERS.SINGULAR' | translate"
                                 ></item-details>
                                 <item-tablist
                                     [base]="name"
@@ -60,7 +61,7 @@ import { DriverStateService } from './driver-state.service';
                         </div>
                         <button
                             class="absolute bottom-16 left-1 sm:-left-8 w-10 h-10 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content border border-base-200"
-                            matTooltip="Update Drivers"
+                            [matTooltip]="'DRIVERS.UPDATE' | translate"
                             matTooltipPosition="right"
                             matRipple
                             *ngIf="updates_available | async"
@@ -70,7 +71,7 @@ import { DriverStateService } from './driver-state.service';
                         </button>
                         <button
                             class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content border border-base-200"
-                            matTooltip="New driver"
+                            [matTooltip]="'DRIVERS.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple
                             (click)="newItem()"
@@ -121,18 +122,18 @@ export class DriversComponent extends AsyncHandler {
         this.tab_list = [
             {
                 id: 'about',
-                name: 'About',
+                name: i18n('DRIVERS.TAB_ABOUT'),
                 icon: { content: 'info' },
             },
             {
                 id: 'modules',
-                name: 'Modules',
+                name: i18n('DRIVERS.TAB_MODULES'),
                 count: this.device_count ?? '?',
                 icon: { content: 'tablet' },
             },
             {
                 id: 'history',
-                name: 'Settings History',
+                name: i18n('DRIVERS.TAB_SETTINGS_HISTORY'),
                 icon: { content: 'schedule' },
             },
         ].concat(this.extensions);

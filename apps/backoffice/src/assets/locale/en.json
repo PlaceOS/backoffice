@@ -36,6 +36,7 @@
         "CLEAR": "Clear Changes",
         "SAVE_CHANGES": "Save Changes",
         "BACK": "Back",
+        "UPDATE": "Update",
         "UPLOAD": "Upload",
         "UPLOADS": "Uploads",
         "LINK": "Link",
@@ -103,7 +104,10 @@
         "EXECUTE_METHOD_EMPTY": "No available methods for module",
         "BLANK_NAME": "BLANK",
         "FIELD_NAME": "Name",
-        "FIELD_DESCRIPTION": "Description"
+        "FIELD_DESCRIPTION": "Description",
+        "VERSION": "Version",
+        "VERSION_CURRENT": "Current Version",
+        "VERSION_LATEST": "Latest Version"
     },
     "SYSTEMS": {
         "SINGULAR": "System",
@@ -192,7 +196,8 @@
         "NEW": "New module",
         "SYSTEMS_FIELD_NAME": "Name",
         "SYSTEMS_FIELD_MODULE_COUNT": "No. Modules",
-        "SYSTEMS_EMPTY": "No systems with the selected module"
+        "SYSTEMS_EMPTY": "No systems with the selected module",
+        "FIELD_STATE": "State"
     },
     "ZONES": {
         "SINGULAR": "Zone",
@@ -235,7 +240,33 @@
         "SSH": "SSH",
         "SERVICE": "Service",
         "WEBSOCKET": "Websocket",
-        "LOGIC": "Logic"
+        "LOGIC": "Logic",
+        "SEARCH": "Search for drivers...",
+        "ADD": "Add driver",
+        "DELETE": "Delete driver",
+        "REMOVE": "Remove driver",
+        "NEW": "New driver",
+        "LOADING": "Loading drivers...",
+        "UPDATE": "Update Drivers",
+        "UPDATE_COUNT": "{{ count }} updates available",
+        "UPDATE_SELECTED": "Update selected drivers",
+        "NO_UPDATES": "No drivers require updating.",
+        "TAB_ABOUT": "About",
+        "TAB_MODULES": "Modules",
+        "TAB_SETTINGS_HISTORY": "Settings History",
+        "DEFAULT_URI": "Default URI",
+        "DEFAULT_PORT": "Default Port",
+        "MODULE_NAME": "Module Name",
+        "COMPILED": "Compiled",
+        "VIEW_ERRORS": "View errors",
+        "FILENAME": "Filename",
+        "RECOMPILE": "Recompile",
+        "RELOAD": "Reload",
+        "LOADING_SETTINGS": "Loading driver settings...",
+        "MODULES_EMPTY": "No modules created for driver",
+        "VIEW_SYSTEMS": "View module's systems",
+        "SYSTEM_COUNT": "{{ count }} system(s)",
+        "LOADING_SYSTEMS": "Loading module systems..."
     },
     "REPOS": {
         "SINGULAR": "Repository",

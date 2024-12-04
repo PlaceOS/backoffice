@@ -1,14 +1,7 @@
 import { Component } from '@angular/core';
 import { queryDrivers, updateDriver } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
-import {
-    catchError,
-    map,
-    shareReplay,
-    switchMap,
-    take,
-    tap,
-} from 'rxjs/operators';
+import { catchError, map, shareReplay, switchMap, take } from 'rxjs/operators';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { MatDialogRef } from '@angular/material/dialog';
 
@@ -17,10 +10,18 @@ import { MatDialogRef } from '@angular/material/dialog';
     template: `
         <header class="border-b border-base-200">
             <h2>
-                Update Drivers
+                {{ 'DRIVERS.UPDATE' | translate }}
                 <span *ngIf="!loading">
-                    - {{ (drivers_with_updates | async)?.total || 0 }}
-                    updates available
+                    -
+                    {{
+                        'DRIVERS.UPDATE_COUNT'
+                            | translate
+                                : {
+                                      count:
+                                          (drivers_with_updates | async)
+                                              ?.total || 0
+                                  }
+                    }}
                 </span>
             </h2>
             <button btn icon matRipple mat-dialog-close *ngIf="!loading">
@@ -41,9 +42,9 @@ import { MatDialogRef } from '@angular/material/dialog';
                                 (change)="toggleAll($event.checked)"
                             ></mat-checkbox>
                         </th>
-                        <th>Name</th>
-                        <th>Current Version</th>
-                        <th>Latest Version</th>
+                        <th>{{ 'COMMON.FIELD_NAME' | translate }}</th>
+                        <th>{{ 'COMMON.VERSION_CURRENT' | translate }}</th>
+                        <th>{{ 'COMMON.VERSION_LATEST' | translate }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -81,7 +82,7 @@ import { MatDialogRef } from '@angular/material/dialog';
                     <ng-template #empty_state>
                         <tr>
                             <td colspan="4" class="opacity-30">
-                                No drivers require updating.
+                                {{ 'DRIVERS.NO_UPDATES' | translate }}
                             </td>
                         </tr>
                     </ng-template>
@@ -98,7 +99,9 @@ import { MatDialogRef } from '@angular/material/dialog';
                 [disabled]="selected_drivers.length <= 0"
                 (click)="updateDrivers()"
             >
-                Update Selected Drivers ({{ selected_drivers.length }})
+                {{ 'DRIVERS.UPDATE_SELECTED' | translate }} ({{
+                    selected_drivers.length
+                }})
             </button>
         </footer>
         <ng-template #load_state>
@@ -106,7 +109,7 @@ import { MatDialogRef } from '@angular/material/dialog';
                 class="w-[20rem] h-48 flex flex-col space-y-2 items-center justify-center"
             >
                 <mat-spinner [diameter]="32"></mat-spinner>
-                <p>{{ loading || 'Loading drivers...' }}</p>
+                <p>{{ 'DRIVERS.LOADING' | translate }}</p>
             </div>
         </ng-template>
     `,
