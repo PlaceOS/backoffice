@@ -91,7 +91,8 @@
         "SETTINGS_MERGED": "Merged",
         "ADD_EXISTING": "Add existing",
         "ADD_NEW": "Add new",
-        "EXECUTE_COMMAND": "Execute command"
+        "EXECUTE_COMMAND": "Execute command",
+        "BLANK_NAME": "BLANK"
     },
     "SYSTEMS": {
         "SINGULAR": "System",
@@ -146,6 +147,8 @@
         "TRIGGER_SEARCH": "Search triggers..."
     },
     "MODULES": {
+        "SINGULAR": "Module",
+        "PLURAL": "Modules",
         "RUNTIME_ERRORS_VIEW": "View Runtime Errors",
         "RUNTIME_ERRORS_NO": "No runtime errors found",
         "RUNTIME_ERRORS_LOADING": "Loading runtime errors details...",
@@ -156,19 +159,51 @@
         "RELOAD": "Reload Module",
         "VIEW_ERRORS": "View runtime errors",
         "ADD_TO_SYSTEM": "Add to another system",
-        "REMOVE": "Remove Module"
+        "REMOVE": "Remove Module",
+        "NOTES": "Notes",
+        "IP_ADDRESS": "IP",
+        "PORT_NUMBER": "Port",
+        "PROTOCOL": "Protocol",
+        "CONTROLS": "Module Controls",
+        "START": "START",
+        "STOP": "STOP",
+        "LOADING_SETTINGS": "Loading module settings...",
+        "TAB_ABOUT": "About",
+        "TAB_SYSTEMS": "Systems",
+        "TAB_SETTINGS_HISTORY": "Settings History",
+        "NEW": "New module",
+        "SEARCH_SYSTEMS": "Search for system...",
+        "SYSTEMS_FIELD_NAME": "Name",
+        "SYSTEMS_FIELD_MODULE_COUNT": "No. Modules"
     },
-    "ZONES": {},
+    "ZONES": {
+        "SINGULAR": "Zone",
+        "PLURAL": "Zones"
+    },
     "DRIVERS": {
+        "SINGULAR": "Driver",
+        "PLURAL": "Drivers",
         "DEVICE": "Device",
         "SSH": "SSH",
         "SERVICE": "Service",
         "WEBSOCKET": "Websocket",
         "LOGIC": "Logic"
     },
-    "REPOS": {},
-    "TRIGGERS": {},
-    "USERS": {},
-    "DOMAINS": {},
+    "REPOS": {
+        "SINGULAR": "Repository",
+        "PLURAL": "Repositories"
+    },
+    "TRIGGERS": {
+        "SINGULAR": "Trigger",
+        "PLURAL": "Triggers"
+    },
+    "USERS": {
+        "SINGULAR": "User",
+        "PLURAL": "Users"
+    },
+    "DOMAINS": {
+        "SINGULAR": "Domain",
+        "PLURAL": "Domains"
+    },
     "ADMIN": {}
 }
