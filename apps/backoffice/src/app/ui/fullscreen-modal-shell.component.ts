@@ -25,7 +25,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
                 *ngIf="!loading"
             >
                 <button btn matRipple class="w-32" (click)="save.emit()">
-                    {{ 'COMMON.SAVE' | translate }}
+                    <div class="flex space-x-2 items-center">
+                        <div>{{ 'COMMON.SAVE' | translate }}</div>
+                        <div class="relative top-0.5 mono text-sm">[S]</div>
+                    </div>
                 </button>
             </footer>
         </div>
