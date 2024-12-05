@@ -10,7 +10,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
         <form
             oauth-source
             *ngIf="form"
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
+            class="flex flex-col"
             [formGroup]="form"
         >
             <div class="field" *ngIf="form.controls.name">
@@ -20,42 +20,44 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                         form.controls.name.invalid && form.controls.name.touched
                     "
                 >
-                    Name<span>*</span>:
+                    {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
                 </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="auth-source-name"
-                        placeholder="Auth Source Name"
+                        [placeholder]="'COMMON.FIELD_NAME' | translate"
                         formControlName="name"
                         required
                     />
                     <mat-error *ngIf="form.controls.name.invalid">
-                        Auth source name is required
+                        {{ 'DOMAINS.AUTHENTICATION_NAME_REQUIRE' | translate }}
                     </mat-error>
                 </mat-form-field>
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.client_id">
-                    <label for="client-id">Client ID:</label>
+                    <label for="client-id"
+                        >{{ 'DOMAINS.CLIENT_ID' | translate }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="client-id"
-                            placeholder="Client ID"
+                            [placeholder]="'DOMAINS.CLIENT_ID' | translate"
                             formControlName="client_id"
                         />
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.client_secret">
-                    <label for="client-secret"> Client Secret: </label>
+                    <label for="client-secret"
+                        >{{ 'DOMAINS.CLIENT_SECRET' | translate }}:
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="client-secret"
-                            placeholder="Client Secret"
-                            i18n-placeholder="
-                                @@authSourceClientSecretPlaceholder"
+                            [placeholder]="'DOMAINS.CLIENT_SECRET' | translate"
                             formControlName="client_secret"
                         />
                     </mat-form-field>
@@ -63,23 +65,29 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.site">
-                    <label for="site">Site:</label>
+                    <label for="site"
+                        >{{ 'DOMAINS.OAUTH_SITE' | translate }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="site"
-                            placeholder="URL of the SSO provider"
+                            [placeholder]="
+                                'DOMAINS.OAUTH_SITE_PLACEHOLDER' | translate
+                            "
                             formControlName="site"
                         />
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.scope">
-                    <label for="scope">Scope:</label>
+                    <label for="scope"
+                        >{{ 'DOMAINS.OAUTH_SCOPES' | translate }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="scope"
-                            placeholder="Scope"
+                            [placeholder]="'DOMAINS.OAUTH_SCOPES' | translate"
                             formControlName="scope"
                         />
                     </mat-form-field>
@@ -87,7 +95,9 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
             </div>
             <div class="fieldset">
                 <div class="field type" *ngIf="form.controls.token_method">
-                    <label for="token-method">Token Method: </label>
+                    <label for="token-method"
+                        >{{ 'DOMAINS.OAUTH_TOKEN_METHOD' | translate }}:
+                    </label>
                     <mat-form-field appearance="outline">
                         <mat-select
                             name="token-method"
@@ -113,52 +123,66 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                                 *ngFor="let type of auth_schemes"
                                 [value]="type.id"
                             >
-                                { type.id, select, request_body { Request Body }
-                                basic_auth { Basic Auth } }
+                                {{
+                                    (type.id === 'request_body'
+                                        ? 'DOMAINS.OAUTH_SCHEME_BODY'
+                                        : 'DOMAINS.OAUTH_SCHEME_BASIC'
+                                    ) | translate
+                                }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
             </div>
             <div class="field" *ngIf="form.controls.token_url">
-                <label for="token-url">Token URL:</label>
+                <label for="token-url"
+                    >{{ 'DOMAINS.OAUTH_TOKEN_URL' | translate }}:</label
+                >
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="token-url"
-                        placeholder="Token URL"
+                        [placeholder]="'DOMAINS.OAUTH_TOKEN_URL' | translate"
                         formControlName="token_url"
                     />
                 </mat-form-field>
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.authorize_url">
-                    <label for="authorize-url"> Authorize URL: </label>
+                    <label for="authorize-url"
+                        >{{ 'DOMAINS.OAUTH_AUTHORISE_URL' | translate }}:
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="authorize-url"
-                            placeholder="Authorize URL"
-                            i18n-placeholder="
-                                @@authSourceAuthorizeUrlPlaceholder"
+                            [placeholder]="
+                                'DOMAINS.OAUTH_AUTHORISE_URL' | translate
+                            "
                             formControlName="authorize_url"
                         />
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.raw_info_url">
-                    <label for="info-url">User Profile URL:</label>
+                    <label for="info-url"
+                        >{{ 'DOMAINS.OAUTH_PROFILE_URL' | translate }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="raw_info_url"
-                            placeholder="User Profile URL"
+                            [placeholder]="
+                                'DOMAINS.OAUTH_PROFILE_URL' | translate
+                            "
                             formControlName="raw_info_url"
                         />
                     </mat-form-field>
                 </div>
             </div>
-            <div class="field" *ngIf="form.controls.info_mappings">
-                <label for="client-secret">Info Mappings:</label>
+            <div class="field mb-4" *ngIf="form.controls.info_mappings">
+                <label for="client-secret"
+                    >{{ 'DOMAINS.OAUTH_INFO_MAPPINGS' | translate }}:</label
+                >
                 <object-list-field
                     [(ngModel)]="info_mapping_list"
                     (ngModelChange)="
@@ -168,8 +192,10 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                     [fields]="['PlaceOS', 'Remote']"
                 ></object-list-field>
             </div>
-            <div class="field" *ngIf="form.controls.authorize_params">
-                <label for="client-secret">Authorize Params:</label>
+            <div class="field mb-4" *ngIf="form.controls.authorize_params">
+                <label for="client-secret"
+                    >{{ 'DOMAINS.OAUTH_AUTHORISE_PARAMS' | translate }}:</label
+                >
                 <object-list-field
                     [(ngModel)]="auth_params_list"
                     (ngModelChange)="
@@ -184,8 +210,10 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                     [fields]="['Parameter', 'Value']"
                 ></object-list-field>
             </div>
-            <div class="field" *ngIf="form.controls.ensure_matching">
-                <label for="client-secret">Ensure Matching:</label>
+            <div class="field mb-4" *ngIf="form.controls.ensure_matching">
+                <label for="client-secret"
+                    >{{ 'DOMAINS.OAUTH_ENSURE_MATCHING' | translate }}:</label
+                >
                 <object-list-field
                     [(ngModel)]="ensure_matching_list"
                     (ngModelChange)="

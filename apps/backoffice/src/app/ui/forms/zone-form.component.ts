@@ -16,9 +16,11 @@ import { TIMEZONES_IANA } from '../../common/timezones';
     template: `
         <form zone *ngIf="form" class="flex flex-col" [formGroup]="form">
             <div class="field" *ngIf="form.controls.parent_zone">
-                <label for="parent-zone">Parent Zone: </label>
+                <label for="parent-zone">
+                    {{ 'COMMON.EDGE' | translate }}:
+                </label>
                 <item-search-field
-                    name="parent-zone"
+                    [name]="'ZONE.SEARCH' | translate"
                     [query_fn]="query_fn"
                     [exclude]="exclude"
                     formControlName="parent_zone"
@@ -33,17 +35,19 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.name.touched
                         "
                     >
-                        Name<span>*</span>:
+                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="zone-name"
-                            placeholder="Zone Name"
+                            [placeholder]="'COMMON.FIELD_NAME' | translate"
                             formControlName="name"
                             required
                         />
-                        <mat-error>Zone name is required</mat-error>
+                        <mat-error>{{
+                            'ZONES.NAME_REQUIRED' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.display_name">
@@ -54,13 +58,13 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.display_name.touched
                         "
                     >
-                        Display Name:
+                        {{ 'ZONES.DISPLAY_NAME' | translate }}:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="zone-display"
-                            placeholder="Zone display name"
+                            [placeholder]="'ZONES.DISPLAY_NAME' | translate"
                             formControlName="display_name"
                         />
                     </mat-form-field>
@@ -72,10 +76,10 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         form.controls.tags.invalid && form.controls.tags.touched
                     "
                 >
-                    Tags:
+                    {{ 'ZONES.TAGS' | translate }}:
                 </label>
                 <mat-form-field appearance="outline" class="w-full">
-                    <mat-chip-grid #chipList aria-label="Image List">
+                    <mat-chip-grid #chipList aria-label="Tag List">
                         <mat-chip-row
                             *ngFor="let item of tag_list"
                             (removed)="removeTag(item)"
@@ -83,15 +87,17 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             <div class="truncate max-w-md">{{ item }}</div>
                             <button
                                 matChipRemove
-                                [attr.aria-label]="'Remove ' + item"
+                                [attr.aria-label]="
+                                    'COMMON.ITEM_REMOVE'
+                                        | translate: { item: item }
+                                "
                             >
                                 <app-icon>cancel</app-icon>
                             </button>
                         </mat-chip-row>
                     </mat-chip-grid>
                     <input
-                        placeholder="Tags..."
-                        i18n-placeholder
+                        [placeholder]="'ZONES.TAGS' | translate"
                         [matChipInputFor]="chipList"
                         [matChipInputSeparatorKeyCodes]="separators"
                         [matChipInputAddOnBlur]="true"
@@ -100,30 +106,38 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description">Description:</label>
+                <label for="description"
+                    >{{ 'COMMON.FIELD_DESCRIPTION' | translate }}:</label
+                >
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
                         name="description"
-                        placeholder="Description"
+                        [placeholder]="'COMMON.FIELD_DESCRIPTION' | translate"
                         formControlName="description"
                     ></textarea>
                 </mat-form-field>
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.location">
-                    <label for="location">Location:</label>
+                    <label for="location"
+                        >{{ 'ZONES.LOCATION' | translate }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="location"
-                            placeholder="Geo-location details for zone. <lat, long>"
+                            [placeholder]="
+                                'ZONES.LOCATION_PLACEHOLDER' | translate
+                            "
                             formControlName="location"
                         />
                     </mat-form-field>
                 </div>
                 <div class="field">
-                    <label for="timezone">Timezone</label>
+                    <label for="timezone">{{
+                        'COMMON.TIMEZONE' | translate
+                    }}</label>
                     <mat-form-field appearance="outline">
                         <div class="prefix" matPrefix>
                             <app-icon class="text-2xl relative -left-0.5">
@@ -133,7 +147,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         <input
                             matInput
                             formControlName="timezone"
-                            placeholder="System timezone"
+                            [placeholder]="'COMMON.TIMEZONE' | translate"
                             [matAutocomplete]="auto"
                         />
                     </mat-form-field>
@@ -144,30 +158,30 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             >{{ tz }}</mat-option
                         >
                         <mat-option *ngIf="!timezones.length" [disabled]="true">
-                            No matching timezones
+                            {{ 'COMMON.TIMEZONE_EMPTY' | translate }}
                         </mat-option>
                     </mat-autocomplete>
                 </div>
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.code">
-                    <label for="code">Code:</label>
+                    <label for="code">{{ 'ZONES.CODE' | translate }}:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="code"
-                            placeholder="Organisation Code"
+                            [placeholder]="'ZONES.CODE_PLACEHOLDER' | translate"
                             formControlName="code"
                         />
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.location">
-                    <label for="type">Type:</label>
+                    <label for="type">{{ 'ZONES.TYPE' | translate }}:</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="type"
-                            placeholder="Organisational Categorisation"
+                            [placeholder]="'ZONES.TYPE_PLACEHOLDER' | translate"
                             formControlName="type"
                         />
                     </mat-form-field>
@@ -175,7 +189,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             </div>
             <div class="fieldset mb-4">
                 <div class="field" *ngIf="form.controls.count">
-                    <label for="count">Count:</label>
+                    <label for="count">{{ 'ZONES.COUNT' | translatec }}:</label>
                     <a-counter
                         formControlName="count"
                         [min]="0"
@@ -183,7 +197,9 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     ></a-counter>
                 </div>
                 <div class="field" *ngIf="form.controls.capacity">
-                    <label for="capacity"> Capacity: </label>
+                    <label for="capacity">
+                        {{ 'ZONES.CAPACITY' | translate }}:
+                    </label>
                     <a-counter
                         formControlName="capacity"
                         [min]="0"
@@ -192,18 +208,18 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </div>
             </div>
             <div class="field" *ngIf="form.controls.map_id">
-                <label for="map">Map:</label>
+                <label for="map">{{ 'ZONES.MAP_URL' | translate }}:</label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="map"
-                        placeholder="Map ID or URL"
+                        [placeholder]="'ZONES.MAP_URL' | translate"
                         formControlName="map_id"
                     />
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.images">
-                <label for="images">Images:</label>
+                <label for="images">{{ 'COMMON.IMAGES' | translate }}:</label>
                 <image-list-field
                     name="images"
                     formControlName="images"

@@ -8,12 +8,7 @@ import { Md5 } from 'ts-md5';
 @Component({
     selector: 'application-form',
     template: `
-        <form
-            application
-            *ngIf="form"
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
-            [formGroup]="form"
-        >
+        <form application *ngIf="form" class="flex flex-col" [formGroup]="form">
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.name">
                     <label
@@ -23,7 +18,7 @@ import { Md5 } from 'ts-md5';
                             form.controls.name.touched
                         "
                     >
-                        Name<span>*</span>:
+                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -33,32 +28,29 @@ import { Md5 } from 'ts-md5';
                             formControlName="name"
                             required
                         />
-                        <mat-error> Application name is required </mat-error>
+                        <mat-error>{{
+                            'DOMAINS.APP_NAME_REQUIRED' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.scopes">
-                    <label for="scopes">Scopes:</label>
+                    <label for="scopes"
+                        >{{ 'DOMAINS.APP_SCOPES' | translate }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="scopes"
-                            placeholder="Access Scopes"
+                            [placeholder]="'DOMAINS.APP_SCOPES' | translate"
                             formControlName="scopes"
                         />
                     </mat-form-field>
                 </div>
             </div>
-            <div class="field" *ngIf="form.controls.skip_authorization">
-                <mat-checkbox
-                    class="m-1"
-                    name="skip-authorization"
-                    formControlName="skip_authorization"
-                >
-                    Skip Authorization
-                </mat-checkbox>
-            </div>
             <div class="field" *ngIf="form.controls.redirect_uri">
-                <label for="redirect-uri"> Redirect URL: </label>
+                <label for="redirect-uri"
+                    >{{ 'DOMAINS.APP_REDIRECT_URL' | translate }}:
+                </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
@@ -66,26 +58,39 @@ import { Md5 } from 'ts-md5';
                         placeholder="Redirect URI e.g. http://localhost:4200/oauth-resp.html"
                         formControlName="redirect_uri"
                     />
-                    <mat-error>A valid URL is required</mat-error>
+                    <mat-error>{{
+                        'DOMAINS.APP_REDIRECT_URL_REQUIRED' | translate
+                    }}</mat-error>
                 </mat-form-field>
             </div>
+            <div class="fieldset mb-4">
+                <settings-toggle
+                    class="flex-1"
+                    [name]="'DOMAINS.APP_SKIP' | translate"
+                    formControlName="skip_authorization"
+                ></settings-toggle>
+                <settings-toggle
+                    class="flex-1"
+                    [name]="'DOMAINS.APP_PRESERVE_ID' | translate"
+                    formControlName="preserve_client_id"
+                ></settings-toggle>
+            </div>
             <div class="field" *ngIf="form.controls.redirect_uri">
-                <label for="client-id"> Client ID: </label>
+                <label for="client-id"
+                    >{{ 'DOMAINS.APP_CLIENT_ID' | translate }}:
+                </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="client-id"
-                        placeholder="MD5 Hash of the Redirect URI"
+                        [placeholder]="
+                            'DOMAINS.APP_CLIENT_PLACEHOLDER' | translate
+                        "
                         [disabled]="true"
                         [ngModel]="client_id | async"
                         [ngModelOptions]="{ standalone: true }"
                     />
                 </mat-form-field>
-            </div>
-            <div class="field">
-                <mat-checkbox formControlName="preserve_client_id">
-                    Preserve Client ID
-                </mat-checkbox>
             </div>
         </form>
     `,

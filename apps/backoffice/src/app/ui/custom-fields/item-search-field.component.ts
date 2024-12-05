@@ -40,7 +40,6 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                             ? placeholder
                             : 'Search' + (name ? ' for ' + name : '') + '...'
                     "
-                    i18n-placeholder
                     [matAutocomplete]="auto"
                     [matAutocompleteDisabled]="display_list"
                     (focus)="search_str = ''; search$.next(' ')"

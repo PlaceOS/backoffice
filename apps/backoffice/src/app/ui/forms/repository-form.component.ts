@@ -26,6 +26,7 @@ import {
 import { AsyncHandler } from '../../common/async-handler.class';
 import { isValidUrl } from '../../common/validation';
 import { DateFromPipe } from '../pipes/date-from.pipe';
+import { i18n } from '../../common/translate';
 
 @Component({
     selector: 'repository-form',
@@ -38,17 +39,19 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         form.controls.name.invalid && form.controls.name.touched
                     "
                 >
-                    Name<span>*</span>:
+                    {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
                 </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="repository-name"
-                        placeholder="Repository Name"
+                        [placeholder]="'COMMON.FIELD_NAME' | translate"
                         formControlName="name"
                         required
                     />
-                    <mat-error>Repository name is required</mat-error>
+                    <mat-error>{{
+                        'REPOS.NAME_REQUIRED' | translate
+                    }}</mat-error>
                 </mat-form-field>
             </div>
             <div class="fieldset">
@@ -60,15 +63,16 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         form.controls.folder_name
                     "
                 >
-                    <label for="type"> Repository Type: </label>
+                    <label for="type">{{
+                        'REPOS.FOLDER_NAME' | translate
+                    }}</label>
                     <mat-form-field appearance="outline">
                         <mat-select name="type" formControlName="repo_type">
                             <mat-option
                                 *ngFor="let type of repo_types"
                                 [value]="type.id"
                             >
-                                { type.name, select, Driver { Driver } Interface
-                                { Interface } other { Other } }
+                                {{ type.name }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -81,17 +85,19 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                             form.controls.folder_name.touched
                         "
                     >
-                        Folder Name<span>*</span>:
+                        {{ 'REPOS.FOLDER_NAME' | translate }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="folder-name"
-                            placeholder="Folder Name"
+                            [placeholder]="'REPOS.FOLDER_NAME' | translate"
                             formControlName="folder_name"
                             required
                         />
-                        <mat-error> A valid folder name is required </mat-error>
+                        <mat-error>{{
+                            'REPOS.FOLDER_NAME_REQUIRED' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
             </div>
@@ -102,41 +108,47 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         form.controls.uri.invalid && form.controls.uri.touched
                     "
                 >
-                    Repository URI<span>*</span>:
+                    {{ 'REPOS.URI' | translate }}<span>*</span>:
                 </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="uri"
-                        placeholder="Repository URI"
+                        [placeholder]="'REPOS.URI' | translate"
                         formControlName="uri"
                         required
                     />
-                    <mat-error>URI is required</mat-error>
+                    <mat-error>{{
+                        'REPOS.URI_REQUIRED' | translate
+                    }}</mat-error>
                 </mat-form-field>
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.username">
-                    <label for="repo-u"> Repository Username: </label>
+                    <label for="repo-u"
+                        >{{ 'REPOS.USERNAME' | translate }}:
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="repo-u"
                             autocomplete="off"
-                            placeholder="Username"
+                            [placeholder]="'REPOS.USERNAME' | translate"
                             formControlName="username"
                         />
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.password">
-                    <label for="repo-p"> Repository Password: </label>
+                    <label for="repo-p">
+                        {{ 'REPOS.PASSWORD' | translate }}:
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="repo-pwd"
                             autocomplete="new-password"
                             [type]="show_password ? 'text' : 'password'"
-                            placeholder="Password"
+                            [placeholder]="'COMMON.PASSWORD' | translate"
                             formControlName="password"
                         />
                         <app-icon
@@ -156,7 +168,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         form.controls.branch.touched
                     "
                 >
-                    Branch<span>*</span>:
+                    {{ 'REPOS.BRANCH' | translate }}<span>*</span>:
                 </label>
                 <mat-form-field appearance="outline">
                     <mat-select
@@ -172,11 +184,13 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                             {{ branch }}
                         </mat-option>
                     </mat-select>
-                    <mat-error> Working Branch name is required </mat-error>
+                    <mat-error>{{
+                        'REPOS.BRANCH_REQUIRED' | translate
+                    }}</mat-error>
                 </mat-form-field>
             </div>
             <div class="field commit">
-                <label for="commit"> Repository Commit: </label>
+                <label for="commit"> {{ 'REPOS.COMMIT' | translate }}: </label>
                 <mat-form-field appearance="outline">
                     <mat-select
                         name="type"
@@ -207,7 +221,9 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                             </div>
                         </mat-option>
                     </mat-select>
-                    <mat-error> Commit is required </mat-error>
+                    <mat-error>{{
+                        'REPOS.COMMIT_REQUIRED' | translate
+                    }}</mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="can_change_commit && is_interface">
@@ -219,12 +235,14 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                 ></settings-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description"> Description: </label>
+                <label for="description">
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}:
+                </label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
                         name="description"
-                        placeholder="Description"
+                        [placeholder]="'COMMON.FIELD_DESCRIPTION' | translate"
                         formControlName="description"
                     ></textarea>
                 </mat-form-field>
@@ -247,10 +265,7 @@ export class RepositoryFormComponent extends AsyncHandler {
     /** Whether to follow the latest branch commits(Auto-update) */
     public follow_latest: boolean;
     /** List of available types of repositories */
-    public repo_types: Identity[] = [
-        { id: PlaceRepositoryType.Driver, name: 'Driver' },
-        { id: PlaceRepositoryType.Interface, name: 'Interface' },
-    ];
+    public repo_types: Identity[] = [];
     public show_password: boolean = false;
     public date_pipe = new DateFromPipe();
 
@@ -269,6 +284,16 @@ export class RepositoryFormComponent extends AsyncHandler {
             'repo_type' in value &&
             value.repo_type !== PlaceRepositoryType.Interface
         );
+    }
+
+    public ngOnInit() {
+        this.repo_types = [
+            { id: PlaceRepositoryType.Driver, name: i18n('REPOS.TYPE_DRIVER') },
+            {
+                id: PlaceRepositoryType.Interface,
+                name: i18n('REPOS.TYPE_INTERFACE'),
+            },
+        ];
     }
 
     public ngOnChanges(changes: SimpleChanges) {

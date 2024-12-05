@@ -115,6 +115,7 @@ export class DomainAboutComponent extends AsyncHandler implements OnInit {
 
     /** Load form fields for active item */
     private loadForm(): void {
+        if (!this.item) return;
         this.form.patchValue({
             internals: JSON.stringify(this.item.internals, undefined, 4),
             config: JSON.stringify(this.item.config, undefined, 4),

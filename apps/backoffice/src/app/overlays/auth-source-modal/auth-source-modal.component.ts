@@ -26,6 +26,7 @@ import {
     notifySuccess,
     notifyError,
 } from 'apps/backoffice/src/app/common/notifications';
+import { i18n } from '../../common/translate';
 
 export interface AuthSourceModalData {
     /** Domain the auth source is associated with */
@@ -38,8 +39,55 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
 
 @Component({
     selector: 'app-auth-source-modal',
-    templateUrl: './auth-source-modal.component.html',
-    styleUrls: ['./auth-source-modal.component.scss'],
+    template: `
+        <fullscreen-modal-shell
+            [heading]="
+                (is_new
+                    ? 'DOMAINS.AUTHENTICATION_NEW'
+                    : 'DOMAINS.AUTHENTICATION_EDIT'
+                ) | translate
+            "
+            [loading]="loading"
+            (save)="save()"
+        >
+            <div class="flex flex-col" *ngIf="is_new">
+                <label for="type"
+                    >{{ 'DOMAINS.AUTHENTICATION_SOURCE_TYPE' | translate }}:
+                </label>
+                <mat-form-field appearance="outline">
+                    <mat-select
+                        name="type"
+                        [(ngModel)]="active_type"
+                        (ngModelChange)="setType($event)"
+                        [placeholder]="
+                            'DOMAINS.AUTHENTICATION_SOURCE_SELECT' | translate
+                        "
+                    >
+                        <mat-option
+                            *ngFor="let type of source_types"
+                            [value]="type.id"
+                        >
+                            {{ type.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <ng-container *ngIf="item">
+                <ng-container [ngSwitch]="type">
+                    <ng-container *ngSwitchCase="'saml'">
+                        <saml-source-form [form]="form"></saml-source-form>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'ldap'">
+                        <ldap-source-form [form]="form"></ldap-source-form>
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>
+                        <oauth-source-form [form]="form"></oauth-source-form>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+        </fullscreen-modal-shell>
+    `,
+    styles: [``],
 })
 export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
     /** Emitter for events on the modal */
@@ -139,21 +187,17 @@ export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
         method.toPromise().then(
             (item) => {
                 this.event.emit({ reason: 'done', metadata: { source: item } });
-                notifySuccess(
-                    `Successfully ${
-                        this.is_new ? 'added' : 'updated'
-                    } auth source`
-                );
+                notifySuccess(i18n('DOMAINS.AUTHENTICATION_SAVE_SUCCESS'));
                 this._dialog.close();
             },
             (err) => {
                 this.loading = false;
                 notifyError(
-                    `Error ${
-                        this.is_new ? 'adding' : 'updating'
-                    } auth source. Error: ${JSON.stringify(
-                        err.response || err.message || err
-                    )}`
+                    i18n('DOMAINS.AUTHENTICATION_SAVE_ERROR', {
+                        error: JSON.stringify(
+                            err.response || err.message || err
+                        ),
+                    })
                 );
             }
         );

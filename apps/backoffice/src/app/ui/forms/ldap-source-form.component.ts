@@ -5,12 +5,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
 @Component({
     selector: 'ldap-source-form',
     template: `
-        <form
-            ldap-source
-            *ngIf="form"
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
-            [formGroup]="form"
-        >
+        <form ldap-source *ngIf="form" class="flex flex-col" [formGroup]="form">
             <div class="field" *ngIf="form.controls.name">
                 <label
                     for="auth-source-name"

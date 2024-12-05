@@ -7,12 +7,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
 @Component({
     selector: 'saml-source-form',
     template: `
-        <form
-            saml-source
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
-            *ngIf="form"
-            [formGroup]="form"
-        >
+        <form saml-source class="flex flex-col" *ngIf="form" [formGroup]="form">
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.name">
                     <label
@@ -102,8 +97,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="name-identifier-format"
                             placeholder="Name Identifier Format"
-                            i18n-placeholder="
-                                @@authSourceNameIdFormatPlaceholder"
                             formControlName="name_identifier_format"
                             required
                         />
@@ -159,8 +152,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="assertion-url"
                             placeholder="Assertion URL"
-                            i18n-placeholder="
-                                @@authSourceAssetionUrlPlaceholder"
                             formControlName="assertion_consumer_service_url"
                             required
                         />
@@ -220,8 +211,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="attribute-service-name"
                             placeholder="Attribute Service Name"
-                            i18n-placeholder="
-                                @@authSourceAttrServicePlaceholder"
                             formControlName="attribute_service_name"
                         />
                     </mat-form-field>

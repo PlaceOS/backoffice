@@ -207,10 +207,6 @@ export class DomainStateService {
      */
     public async editAuthSource(item?: PlaceAuthSource) {
         const ref = this._dialog.open(AuthSourceModalComponent, {
-            height: 'auto',
-            width: 'auto',
-            maxHeight: 'calc(100vh - 2em)',
-            maxWidth: 'calc(100vw - 2em)',
             data: {
                 auth_source: item,
                 domain: this.active_item,

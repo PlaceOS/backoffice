@@ -18,18 +18,18 @@ import { isValidDomain } from '../../common/validation';
                             form.controls.name.touched
                         "
                     >
-                        Name<span>*</span>:
+                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="domain-name"
-                            placeholder="Domain Name"
+                            [placeholder]="'COMMON.FIELD_NAME' | translate"
                             formControlName="name"
                             required
                         />
                         <mat-error *ngIf="form.controls.name.invalid">
-                            Domain name is required
+                            {{ 'DOMAINS.NAME_REQUIRED' | translate }}
                         </mat-error>
                     </mat-form-field>
                 </div>
@@ -41,16 +41,20 @@ import { isValidDomain } from '../../common/validation';
                             form.controls.domain.touched
                         "
                     >
-                        Domain:
+                        {{ 'DOMAINS.NAME' | translate }}:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="domain"
-                            placeholder="Domain e.g localhost"
+                            [placeholder]="
+                                'DOMAINS.NAME_PLACEHOLDER' | translate
+                            "
                             formControlName="domain"
                         />
-                        <mat-error> A valid Domain is required </mat-error>
+                        <mat-error>{{
+                            'DOMAINS.DOMAIN_REQUIRED' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
             </div>
@@ -62,17 +66,17 @@ import { isValidDomain } from '../../common/validation';
                         form.controls.login_url.touched
                     "
                 >
-                    Login URL:
+                    {{ 'DOMAINS.LOGIN_URL' | translate }}:
                 </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="login-url"
-                        placeholder="Login URL"
+                        [placeholder]="'DOMAINS.LOGIN_URL' | translate"
                         formControlName="login_url"
                     />
                     <mat-error *ngIf="form.controls.login_url.invalid">
-                        A valid Login URL is required
+                        {{ 'DOMAINS.LOGIN_URL_REQUIRED' | translate }}
                     </mat-error>
                 </mat-form-field>
             </div>
@@ -84,27 +88,29 @@ import { isValidDomain } from '../../common/validation';
                         form.controls.logout_url.touched
                     "
                 >
-                    Logout URL:
+                    {{ 'DOMAINS.LOGOUT_URL' | translate }}:
                 </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="logout-url"
-                        placeholder="Logout URL"
+                        [placeholder]="'DOMAINS.LOGOUT_URL' | translate"
                         formControlName="logout_url"
                     />
                     <mat-error *ngIf="form.controls.logout_url.invalid">
-                        A valid Logout URL is required
+                        {{ 'DOMAINS.LOGOUT_URL_REQUIRED' | translate }}
                     </mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description">Description:</label>
+                <label for="description"
+                    >{{ 'COMMON.FIELD_DESCRIPTION' | translate }}:</label
+                >
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
                         name="description"
-                        placeholder="Description"
+                        [placeholder]="'COMMON.FIELD_DESCRIPTION' | translate"
                         formControlName="description"
                     ></textarea>
                 </mat-form-field>
@@ -116,7 +122,7 @@ import { isValidDomain } from '../../common/validation';
                         form.controls.email_domains.touched
                     "
                 >
-                    Email Domains:
+                    {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}:
                 </label>
                 <mat-form-field appearance="outline" class="w-full">
                     <mat-chip-grid #chipList aria-label="Image List">
@@ -127,15 +133,17 @@ import { isValidDomain } from '../../common/validation';
                             <div class="truncate max-w-md">{{ item }}</div>
                             <button
                                 matChipRemove
-                                [attr.aria-label]="'Remove ' + item"
+                                [attr.aria-label]="
+                                    'COMMON.ITEM_REMOVE'
+                                        | translate: { item: item }
+                                "
                             >
                                 <app-icon>cancel</app-icon>
                             </button>
                         </mat-chip-row>
                     </mat-chip-grid>
                     <input
-                        placeholder="Tags..."
-                        i18n-placeholder
+                        [placeholder]="'DOMAINS.EMAIL_DOMAINS' | translate"
                         [matChipInputFor]="chipList"
                         [matChipInputSeparatorKeyCodes]="separators"
                         [matChipInputAddOnBlur]="true"

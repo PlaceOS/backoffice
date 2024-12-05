@@ -32,13 +32,17 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             matInput
                             [name]="field"
                             [placeholder]="field"
-                            i18n-placeholder
                             [(ngModel)]="item[field]"
                             (ngModelChange)="setValue(active_list)"
                         />
                     </mat-form-field>
                 </div>
-                <button btn icon class="!mt-2" (click)="removeRow(item)">
+                <button
+                    btn
+                    icon
+                    class="h-12 w-12 rounded border border-error text-error"
+                    (click)="removeRow(item)"
+                >
                     <app-icon>delete</app-icon>
                 </button>
             </div>

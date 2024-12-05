@@ -8,6 +8,7 @@ import {
     addChipItem,
     removeChipItem,
 } from 'apps/backoffice/src/app/common/forms';
+import { i18n } from '../../common/translate';
 
 @Component({
     selector: 'user-form',
@@ -32,12 +33,12 @@ import {
                 name="fakepasswordremembered"
             />
             <div class="field">
-                <label for="domain">Domain</label>
+                <label for="domain">{{ 'DOMAINS.SINGULAR' | translate }}</label>
                 <mat-form-field appearance="outline" class="h-12">
                     <mat-select
                         name="type"
                         formControlName="authority_id"
-                        placeholder="Select Domain..."
+                        [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                     >
                         <mat-option
                             *ngFor="let domain of domain_list | async"
@@ -57,30 +58,36 @@ import {
                             form.controls.first_name.touched
                         "
                     >
-                        First Name<span>*</span>:
+                        {{ 'USERS.FIRST_NAME' | translate }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="first-name"
-                            placeholder="First name"
+                            [placeholder]="'USERS.FIRST_NAME' | translate"
                             formControlName="first_name"
                             required
                         />
-                        <mat-error>User's name is required</mat-error>
+                        <mat-error>{{
+                            'USERS.FIRST_NAME_REQUIRED' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.last_name">
-                    <label for="system-name"> Last Name<span>*</span>: </label>
+                    <label for="system-name"
+                        >{{ 'USERS.LAST_NAME' | translate }}<span>*</span>:
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="last-name"
-                            placeholder="Last name"
+                            [placeholder]="'USERS.LAST_NAME' | translate"
                             formControlName="last_name"
                             required
                         />
-                        <mat-error>User's last name is required</mat-error>
+                        <mat-error>{{
+                            'USERS.LAST_NAME_REQUIRED' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
             </div>
@@ -92,38 +99,44 @@ import {
                         form.controls.email.touched
                     "
                 >
-                    Email<span>*</span>:
+                    {{ 'COMMON.FIELD_EMAIL' | translate }}<span>*</span>:
                 </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="useremail"
-                        placeholder="Email"
+                        [placeholder]="'COMMON.FIELD_EMAIL' | translate"
                         formControlName="email"
                         autocomplete="nope"
                     />
-                    <mat-error>A valid email is required</mat-error>
+                    <mat-error>{{
+                        'USERS.EMAIL_REQUIRED' | translate
+                    }}</mat-error>
                 </mat-form-field>
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.staff_id">
-                    <label for="staff-id"> Staff ID: </label>
+                    <label for="staff-id"
+                        >{{ 'USERS.STAFF_ID' | translate }}:
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="staff-id"
-                            placeholder="Staff ID"
+                            [placeholder]="'USERS.STAFF_ID' | translate"
                             formControlName="staff_id"
                         />
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.card_number">
-                    <label for="card-number"> Card Number: </label>
+                    <label for="card-number"
+                        >{{ 'USERS.STAFF_CARD' | translate }}:
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="card-number"
-                            placeholder="Card Number"
+                            [placeholder]="'USERS.STAFF_CARD' | translate"
                             formControlName="card_number"
                         />
                     </mat-form-field>
@@ -133,13 +146,13 @@ import {
                 <settings-toggle
                     *ngIf="form.controls.support"
                     class="flex-1 max-w-1/2"
-                    name="Support"
+                    [name]="'USERS.ROLE_SUPPORT' | translate"
                     formControlName="support"
                 ></settings-toggle>
                 <settings-toggle
                     *ngIf="form.controls.sys_admin"
                     class="flex-1 max-w-1/2"
-                    name="System Admin"
+                    [name]="'USERS.ROLE_ADMIN' | translate"
                     formControlName="sys_admin"
                 ></settings-toggle>
             </div>
@@ -155,7 +168,7 @@ import {
                             form.controls.password.touched
                         "
                     >
-                        Password:
+                        {{ 'COMMON.PASSWORD' | translate }}:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -163,7 +176,7 @@ import {
                             name="new-password"
                             autocomplete="new-password"
                             [type]="show_password ? 'text' : 'password'"
-                            placeholder="Password"
+                            [placeholder]="'COMMON.PASSWORD' | translate"
                             formControlName="password"
                         />
                         <app-icon
@@ -172,7 +185,9 @@ import {
                         >
                             visibility
                         </app-icon>
-                        <mat-error>A valid password is required</mat-error>
+                        <mat-error>{{
+                            'USERS.PASSWORD_REQUIRED' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
                 <div
@@ -187,14 +202,14 @@ import {
                         "
                         minlength="1"
                     >
-                        Confirm Pasword:
+                        {{ 'USERS.PASSWORD_CONFIRM' | translate }}:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             [type]="show_confirm ? 'text' : 'password'"
                             name="confirm-password"
-                            placeholder="Confirm Password"
+                            [placeholder]="'USERS.PASSWORD_CONFIRM' | translate"
                             formControlName="confirm_password"
                             minlength="1"
                         />
@@ -204,7 +219,9 @@ import {
                         >
                             visibility
                         </app-icon>
-                        <mat-error>Passwords don't match</mat-error>
+                        <mat-error>{{
+                            'USERS.PASSWORDS_MATCH' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
             </div>
@@ -215,7 +232,7 @@ import {
                         form.controls.groups.touched
                     "
                 >
-                    User Groups:
+                    {{ 'USERS.FIELD_GROUPS' | translate }}:
                 </label>
                 <mat-form-field appearance="outline" class="w-full">
                     <mat-chip-grid #chipList aria-label="Image List">
@@ -226,15 +243,17 @@ import {
                             <div class="truncate max-w-md">{{ item }}</div>
                             <button
                                 matChipRemove
-                                [attr.aria-label]="'Remove ' + item"
+                                [attr.aria-label]="
+                                    'COMMON.ITEM_REMOVE'
+                                        | translate: { item: item }
+                                "
                             >
                                 <app-icon>cancel</app-icon>
                             </button>
                         </mat-chip-row>
                     </mat-chip-grid>
                     <input
-                        placeholder="User Groups..."
-                        i18n-placeholder
+                        [placeholder]="'USERS.FIELD_GROUPS' | translate"
                         [matChipInputFor]="chipList"
                         [matChipInputSeparatorKeyCodes]="separators"
                         [matChipInputAddOnBlur]="true"
@@ -276,7 +295,7 @@ export class UserFormComponent {
         removeChipItem(this.form.controls.groups as any, i);
 
     public async ngOnInit() {
-        this.loading = 'Loading domains...';
+        this.loading = i18n('DOMAINS.LOADING');
         if (!this.form.controls.authority_id.value) {
             this.form.controls.authority_id.setValue(this.domain_list[0]?.id);
         }

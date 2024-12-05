@@ -4,9 +4,9 @@
             class="field discovery"
             *ngIf="form.controls.repository_id && !editing"
         >
-            <label for="repo">Repository: </label>
+            <label for="repo">{{ 'REPOS.SINGULAR' | translate }}: </label>
             <item-search-field
-                name="repository"
+                [placeholder]="'REPOS.SEARCH' | translate"
                 [query_fn]="query_fn"
                 [ngModel]="base_repo"
                 [exclude]="exclude_fn"
@@ -22,9 +22,9 @@
                 !editing
             "
         >
-            <label for="driver">Driver Base: </label>
+            <label for="driver">{{ 'DRIVERS.BASE' | translate }}: </label>
             <item-search-field
-                name="driver"
+                [placeholder]="'DRIVERS.SEARCH' | translate"
                 [options]="driver_list"
                 [loading]="loading_drivers"
                 [ngModel]="base_driver"
@@ -35,9 +35,9 @@
             class="field discovery"
             *ngIf="form.controls.commit && commit_list && commit_list.length"
         >
-            <label for="commit">Driver Commit: </label>
+            <label for="commit">{{ 'DRIVERS.COMMIT' | translate }}: </label>
             <item-search-field
-                name="commit"
+                [placeholder]="'DRIVERS.COMMIT_SEARCH' | translate"
                 [options]="commit_list"
                 [loading]="loading_commits"
                 [ngModel]="base_commit"
@@ -62,23 +62,25 @@
                                 form.controls.name.touched
                             "
                         >
-                            Name<span>*</span>:
+                            {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
                         </label>
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
                                 name="driver-name"
-                                placeholder="Driver Name"
+                                [placeholder]="'COMMON.FIELD_NAME' | translate"
                                 formControlName="name"
                                 required
                             />
                             <mat-error *ngIf="form.controls.name.invalid">
-                                Driver name is required
+                                {{ 'DRIVERS.NAME_REQUIRED' | translate }}
                             </mat-error>
                         </mat-form-field>
                     </div>
                     <div class="field" *ngIf="form.controls.role">
-                        <label for="role">Role: </label>
+                        <label for="role"
+                            >{{ 'DRIVERS.ROLE' | translate }}:
+                        </label>
                         <mat-form-field appearance="outline">
                             <mat-select name="role" formControlName="role">
                                 <mat-option
@@ -91,12 +93,18 @@
                         </mat-form-field>
                     </div>
                     <div class="field" *ngIf="form.controls.description">
-                        <label for="description">Description:</label>
+                        <label for="description"
+                            >{{
+                                'COMMON.FIELD_DESCRIPTION' | translate
+                            }}:</label
+                        >
                         <mat-form-field appearance="outline">
                             <textarea
                                 matInput
                                 name="description"
-                                placeholder="Description"
+                                [placeholder]="
+                                    'COMMON.FIELD_DESCRIPTION' | translate
+                                "
                                 formControlName="description"
                             ></textarea>
                         </mat-form-field>
@@ -109,30 +117,37 @@
                                 form.controls.module_name.touched
                             "
                         >
-                            Module Name<span>*</span>:
+                            {{ 'DRIVERS.MODULE_NAME' | translate
+                            }}<span>*</span>:
                         </label>
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
                                 name="module-name"
-                                placeholder="Module Name"
+                                [placeholder]="
+                                    'DRIVERS.MODULE_NAME' | translate
+                                "
                                 formControlName="module_name"
                                 required
                             />
                             <mat-error
                                 *ngIf="form.controls.module_name.invalid"
                             >
-                                Module name is required
+                                {{ 'DRIVERS.MODULE_NAME_REQUIRED' | translate }}
                             </mat-error>
                         </mat-form-field>
                     </div>
                     <div class="field" *ngIf="form.controls.default_uri">
-                        <label for="default-uri">Default URI:</label>
+                        <label for="default-uri"
+                            >{{ 'DRIVERS.DEFAULT_URI' | translate }}:</label
+                        >
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
                                 name="default-uri"
-                                placeholder="Default URI"
+                                [placeholder]="
+                                    'DRIVERS.DEFAULT_URI' | translate
+                                "
                                 formControlName="default_uri"
                             />
                         </mat-form-field>
@@ -146,21 +161,22 @@
                                     form.controls.default_port.touched
                                 "
                             >
-                                Default Port Number:
+                                {{ 'DRIVERS.DEFAULT_PORT' | translate }}:
                             </label>
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
                                     name="default-port"
                                     type="number"
-                                    placeholder="Port Number"
+                                    [placeholder]="
+                                        'DRIVERS.DEFAULT_PORT' | translate
+                                    "
                                     formControlName="default_port"
                                 />
                                 <mat-error
                                     *ngIf="form.controls.default_port.invalid"
                                 >
-                                    A valid port number between 1 - 65535 is
-                                    required
+                                    {{ 'MODULES.PORT_REQUIRED' | translate }}
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -171,7 +187,7 @@
                             <div class="h-8 w-full"></div>
                             <settings-toggle
                                 class="w-full"
-                                name="Ignore Connected"
+                                [name]="'MODULES.IGNORE_CONNECTED' | translate"
                                 formControlName="ignore_connected"
                             ></settings-toggle>
                         </div>
@@ -182,18 +198,16 @@
     </ng-container>
 </div>
 <ng-template #load_state>
-    <div class="info-block">
-        <div class="icon">
-            <mat-spinner diameter="32"></mat-spinner>
-        </div>
-        <div class="text">Loading driver details for commit...</div>
+    <div class="flex flex-col items-center justify-center p-8 space-y-4">
+        <mat-spinner diameter="32"></mat-spinner>
+        <div class="text">{{ 'DRIVERS.DETAILS_LOADING' | translate }}</div>
     </div>
 </ng-template>
 <ng-template #fail_state>
     <div class="info-block">
         <div class="text text-error text-center">
-            Failed to load driver details for commit.<br />
-            Please check that the driver compiles correctly and try again.
+            {{ 'DRIVERS.DETAILS_ERROR_1' | translate }}<br />
+            {{ 'DRIVERS.DETAILS_ERROR_2' | translate }}
         </div>
     </div>
 </ng-template>

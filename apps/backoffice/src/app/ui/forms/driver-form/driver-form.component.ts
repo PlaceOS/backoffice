@@ -34,6 +34,7 @@ import { of, Subject, Observable } from 'rxjs';
 import * as yaml from 'js-yaml';
 import { DateFromPipe } from '../../pipes/date-from.pipe';
 import { format, isAfter, subMinutes } from 'date-fns';
+import { i18n } from '../../../common/translate';
 
 @Component({
     selector: 'driver-form',
@@ -57,13 +58,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
 
     @Output() public waiting = new EventEmitter<boolean>();
     /** List of driver roles */
-    public role_types: Identity[] = [
-        { id: PlaceDriverRole.SSH, name: 'SSH' },
-        { id: PlaceDriverRole.Device, name: 'Device' },
-        { id: PlaceDriverRole.Service, name: 'Service' },
-        { id: PlaceDriverRole.Websocket, name: 'Websocket' },
-        { id: PlaceDriverRole.Logic, name: 'Logic' },
-    ];
+    public role_types: Identity[] = [];
 
     /** Driver used as a template for the new driver being created */
     public base_repo: PlaceRepository;
@@ -119,7 +114,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
             }),
             catchError((_) => {
                 notifyError(
-                    `Error loading driver list. Error: ${_.message || _}`
+                    i18n('DRIVERS.LISTING_ERROR', { error: _.message || _ })
                 );
                 return of([]);
             }),
@@ -147,9 +142,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
             }),
             catchError((_) => {
                 notifyError(
-                    `Error loading driver's commit list. Error: ${
-                        _.message || _
-                    }`
+                    i18n('DRIVERS.COMMIT_LIST_ERROR', { error: _.message || _ })
                 );
                 return of([]);
             }),
@@ -177,6 +170,13 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
             'commit_list',
             this.commit_list$.subscribe((list) => (this.commit_list = list))
         );
+        this.role_types = [
+            { id: PlaceDriverRole.SSH, name: i18n('DRIVERS.SSH') },
+            { id: PlaceDriverRole.Device, name: i18n('DRIVERS.DEVICE') },
+            { id: PlaceDriverRole.Service, name: i18n('DRIVERS.SERVICE') },
+            { id: PlaceDriverRole.Websocket, name: i18n('DRIVERS.WEBSOCKET') },
+            { id: PlaceDriverRole.Logic, name: i18n('DRIVERS.LOGIC') },
+        ];
     }
 
     public ngOnChanges(changes: SimpleChanges): void {

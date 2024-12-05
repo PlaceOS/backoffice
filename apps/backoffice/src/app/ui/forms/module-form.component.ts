@@ -13,12 +13,7 @@ import { map } from 'rxjs/operators';
 @Component({
     selector: 'module-form',
     template: `
-        <form
-            module
-            *ngIf="form"
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
-            [formGroup]="form"
-        >
+        <form module *ngIf="form" class="flex flex-col" [formGroup]="form">
             <div
                 class="field"
                 *ngIf="form.controls.driver && !form.controls.id.value"
@@ -30,7 +25,7 @@ import { map } from 'rxjs/operators';
                         form.controls.driver.touched
                     "
                 >
-                    Driver<span>*</span>:
+                    {{ 'DRIVERS.SINGULAR' | translate }}<span>*</span>:
                 </label>
                 <item-search-field
                     name="driver"
@@ -44,7 +39,7 @@ import { map } from 'rxjs/operators';
                         form.controls.driver.touched
                     "
                 >
-                    Driver is required
+                    {{ 'MODULES.DRIVER_REQUIRED' | translate }}
                 </div>
             </div>
             <ng-container
@@ -60,7 +55,9 @@ import { map } from 'rxjs/operators';
                             form.controls.system.invalid &&
                             form.controls.system.touched
                         "
-                        >Control System<span *ngIf="role === 'logic'">*</span>:
+                    >
+                        {{ 'MODULES.CONTROL_SYSTEM' | translate }}
+                        <span *ngIf="role === 'logic'">*</span>:
                     </label>
                     <ng-container *ngIf="!readonly; else readonly_system">
                         <item-search-field
@@ -75,7 +72,7 @@ import { map } from 'rxjs/operators';
                                 form.controls.system.touched
                             "
                         >
-                            Control System is required
+                            {{ 'MODULES.SYSTEM_REQUIRED' | translate }}
                         </div>
                     </ng-container>
                     <ng-template #readonly_system>
@@ -99,16 +96,18 @@ import { map } from 'rxjs/operators';
                             form.controls.uri.touched
                         "
                     >
-                        URI<span>*</span>:
+                        {{ 'MODULES.URI' | translate }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="uri"
-                            placeholder="Module URI"
+                            [placeholder]="'MODULES.URI' | translate"
                             formControlName="uri"
                         />
-                        <mat-error>A valid URI is required</mat-error>
+                        <mat-error>{{
+                            'MODULES.URI_REQUIRED' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
                 <div class="fieldset">
@@ -126,8 +125,8 @@ import { map } from 'rxjs/operators';
                                 form.controls.ip.touched
                             "
                         >
-                            IP Address or FQDN<span
-                                *ngIf="role === 'ssh' || role === 'device'"
+                            {{ 'MODULES.FIELD_IP' | translate }}
+                            <span *ngIf="role === 'ssh' || role === 'device'"
                                 >*</span
                             >:
                         </label>
@@ -139,7 +138,7 @@ import { map } from 'rxjs/operators';
                                 formControlName="ip"
                             />
                             <mat-error *ngIf="form.controls.ip.invalid">
-                                A valid IP address is required
+                                {{ 'MODULES.IP_REQUIRED' | translate }}
                             </mat-error>
                         </mat-form-field>
                     </div>
@@ -157,8 +156,8 @@ import { map } from 'rxjs/operators';
                                 form.controls.port.touched
                             "
                         >
-                            Port Number<span
-                                *ngIf="role === 'ssh' || role === 'device'"
+                            {{ 'MODULES.PORT_NUMBER' | translate
+                            }}<span *ngIf="role === 'ssh' || role === 'device'"
                                 >*</span
                             >:
                         </label>
@@ -167,12 +166,13 @@ import { map } from 'rxjs/operators';
                                 matInput
                                 name="port-number"
                                 type="number"
-                                placeholder="Port Number"
+                                [placeholder]="
+                                    'MODULES.PORT_NUMBER' | translate
+                                "
                                 formControlName="port"
                             />
                             <mat-error *ngIf="form.controls.port.invalid">
-                                A valid port number between 1 - 65535 is
-                                required
+                                {{ 'MODULES.PORT_REQUIRED' | translate }}
                             </mat-error>
                         </mat-form-field>
                     </div>
@@ -184,7 +184,7 @@ import { map } from 'rxjs/operators';
                             !(role === 'service' || role === 'websocket')
                         "
                         class="min-w-[40%] flex-1 max-w-1/2 m-2"
-                        name="TLS"
+                        [name]="'COMMON.TLS' | translate"
                         formControlName="tls"
                     ></settings-toggle>
                     <settings-toggle
@@ -193,13 +193,13 @@ import { map } from 'rxjs/operators';
                             !(role === 'service' || role === 'websocket')
                         "
                         class="min-w-[40%] flex-1 max-w-1/2 m-2"
-                        name="UDP"
+                        [name]="'COMMON.UDP' | translate"
                         formControlName="udp"
                     ></settings-toggle>
                     <settings-toggle
                         *ngIf="form.controls.makebreak && role !== 'logic'"
                         class="min-w-[40%] flex-1 max-w-1/2 m-2"
-                        name="Makebreak"
+                        [name]="'MODULES.MAKEBREAK' | translate"
                         formControlName="makebreak"
                     ></settings-toggle>
                     <settings-toggle
@@ -207,30 +207,30 @@ import { map } from 'rxjs/operators';
                             form.controls.ignore_connected && role !== 'logic'
                         "
                         class="min-w-[40%] flex-1 max-w-1/2 m-2"
-                        name="Ignore Connected"
+                        [name]="'MODULES.IGNORE_CONNECTED' | translate"
                         formControlName="ignore_connected"
                     ></settings-toggle>
                 </div>
                 <div class="field" *ngIf="form.controls.notes">
-                    <label for="notes">Notes:</label>
+                    <label for="notes">{{ 'COMMON.NOTES' | translate }}:</label>
                     <mat-form-field appearance="outline">
                         <textarea
                             matInput
                             name="notes"
-                            placeholder="Module Notes"
-                            i18n-placholder="@@notePlaceholder"
+                            [placeholder]="'COMMON.NOTES' | translate"
                             formControlName="notes"
                         ></textarea>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.custom_name">
-                    <label for="custom-name">Custom Name:</label>
+                    <label for="custom-name">
+                        {{ 'MODULES.CUSTOM_NAME' | translate }}:
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="custom-name"
-                            placeholder="Custom Name"
-                            i18n-placholder="@@customNamePlaceholder"
+                            [placeholder]="'MODULES.CUSTOM_NAME' | translate"
                             formControlName="custom_name"
                         />
                     </mat-form-field>
@@ -239,9 +239,11 @@ import { map } from 'rxjs/operators';
                     class="field"
                     *ngIf="form.controls.edge && !form.controls.id.value"
                 >
-                    <label for="driver"> Edge: </label>
+                    <label for="driver">
+                        {{ 'COMMON.EDGE' | translate }}:
+                    </label>
                     <item-search-field
-                        name="edge"
+                        [placeholder]="'COMMON.EDGE_SEARCH' | translate"
                         [query_fn]="edge_query_fn"
                         formControlName="edge"
                     ></item-search-field>

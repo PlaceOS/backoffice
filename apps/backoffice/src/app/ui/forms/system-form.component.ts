@@ -25,7 +25,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         form.controls.zone.invalid && form.controls.zone.touched
                     "
                 >
-                    Zone<span>*</span>:
+                    {{ 'ZONES.SINGULAR' | translate }}<span>*</span>:
                 </label>
                 <item-search-field
                     name="zone"
@@ -38,7 +38,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         form.controls.zone.invalid && form.controls.zone.touched
                     "
                 >
-                    Zone is required
+                    {{ 'SYSTEMS.ZONE_REQUIRED' | translate }}
                 </div>
             </div>
             <div class="fieldset">
@@ -50,7 +50,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.name.touched
                         "
                     >
-                        Name<span>*</span>:
+                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -60,9 +60,9 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             formControlName="name"
                             required
                         />
-                        <mat-error *ngIf="form.controls.name.invalid"
-                            >System name is required</mat-error
-                        >
+                        <mat-error *ngIf="form.controls.name.invalid">{{
+                            'SYSTEMS.NAME_REQUIRED' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.email">
@@ -73,40 +73,44 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.email.touched
                         "
                     >
-                        Email:
+                        {{ 'COMMON.FIELD_EMAIL' | translate }}:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="system-email"
-                            placeholder="System Email"
+                            [placeholder]="'COMMON.FIELD_EMAIL' | translate"
                             formControlName="email"
                         />
-                        <mat-error *ngIf="form.controls.email.invalid"
-                            >A valid email is required</mat-error
-                        >
+                        <mat-error *ngIf="form.controls.email.invalid">{{
+                            'SYSTEMS.EMAIL_REQUIRED' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.display_name">
-                    <label for="display-name">Display Name: </label>
+                    <label for="display-name">
+                        {{ 'SYSTEMS.DISPLAY_NAME' | translate }}:
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="display-name"
-                            placeholder="Display Name"
+                            [placeholder]="'SYSTEMS.DISPLAY_NAME' | translate"
                             formControlName="display_name"
                         />
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.display_name">
-                    <label for="code-name">Code: </label>
+                    <label for="code-name"
+                        >{{ 'SYSTEMS.CODE' | translate }}:
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="code-name"
-                            placeholder="Code"
+                            [placeholder]="'SYSTEMS.CODE' | translate"
                             formControlName="code"
                         />
                     </mat-form-field>
@@ -120,17 +124,17 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         form.controls.support_url.touched
                     "
                 >
-                    Support URL:
+                    {{ 'SYSTEMS.SUPPORT_URL' | translate }}:
                 </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="support-url"
-                        placeholder="Support URL"
+                        [placeholder]="'SYSTEMS.SUPPORT_URL' | translate"
                         formControlName="support_url"
                     />
                     <mat-error *ngIf="form.controls.support_url.invalid">
-                        A valid URL is required
+                        {{ 'SYSTEMS.URL_VALID' | translate }}
                     </mat-error>
                 </mat-form-field>
             </div>
@@ -143,7 +147,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.installed_ui_devices.touched
                         "
                     >
-                        Touch Panels:
+                        {{ 'SYSTEMS.PANEL_COUNT' | translate }}:
                     </label>
                     <a-counter
                         formControlName="installed_ui_devices"
@@ -159,7 +163,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.capacity.touched
                         "
                     >
-                        Capacity:
+                        {{ 'SYSTEMS.CAPACITY' | translate }}:
                     </label>
                     <a-counter
                         formControlName="capacity"
@@ -170,28 +174,30 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             </div>
             <div class="flex items-center space-x-4 mb-4">
                 <settings-toggle
-                    name="Bookable"
+                    [name]="'SYSTEMS.BOOKABLE' | translate"
                     class="flex-1"
                     formControlName="bookable"
                 ></settings-toggle>
                 <settings-toggle
-                    name="Signage"
+                    [name]="'SYSTEMS.SIGNAGE' | translate"
                     class="flex-1"
                     formControlName="signage"
                 ></settings-toggle>
                 <settings-toggle
-                    name="Public"
+                    [name]="'SYSTEMS.PUBLIC' | translate"
                     class="flex-1"
                     formControlName="public"
                 ></settings-toggle>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description">Description:</label>
+                <label for="description"
+                    >{{ 'COMMON.FIELD_DESCRIPTION' | translate }}:</label
+                >
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
                         name="description"
-                        placeholder="Description"
+                        [placeholder]="'COMMON.FIELD_DESCRIPTION' | translate"
                         formControlName="description"
                     ></textarea>
                 </mat-form-field>
@@ -203,7 +209,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         form.controls.features.touched
                     "
                 >
-                    Features:
+                    {{ 'SYSTEMS.FEATURES' | translate }}:
                 </label>
                 <mat-form-field appearance="outline" class="w-full">
                     <mat-chip-grid #chipList aria-label="Image List">
@@ -214,15 +220,17 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             <div class="truncate max-w-md">{{ item }}</div>
                             <button
                                 matChipRemove
-                                [attr.aria-label]="'Remove ' + item"
+                                [attr.aria-label]="
+                                    'SYSTEMS.REMOVE_ITEM'
+                                        | translate: { item: item }
+                                "
                             >
                                 <app-icon>cancel</app-icon>
                             </button>
                         </mat-chip-row>
                     </mat-chip-grid>
                     <input
-                        placeholder="Features..."
-                        i18n-placeholder
+                        [placeholder]="'SYSTEMS.FEATURES' | translate"
                         [matChipInputFor]="chipList"
                         [matChipInputSeparatorKeyCodes]="separators"
                         [matChipInputAddOnBlur]="true"
@@ -231,7 +239,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.map_id">
-                <label for="map_id">Map ID:</label>
+                <label for="map_id">{{ 'SYSTEMS.MAP_ID' | translate }}:</label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
@@ -242,7 +250,9 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </mat-form-field>
             </div>
             <div class="field">
-                <label for="timezone">Timezone</label>
+                <label for="timezone">{{
+                    'COMMON.TIMEZONE' | translate
+                }}</label>
                 <mat-form-field appearance="outline">
                     <div class="prefix" matPrefix>
                         <app-icon class="text-2xl relative -left-0.5">
@@ -252,7 +262,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     <input
                         matInput
                         formControlName="timezone"
-                        placeholder="System timezone"
+                        [placeholder]="'COMMON.TIMEZONE' | translate"
                         [matAutocomplete]="auto"
                     />
                 </mat-form-field>
@@ -260,15 +270,16 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     <mat-option
                         *ngFor="let tz of filtered_timezones"
                         [value]="tz"
-                        >{{ tz }}</mat-option
                     >
+                        {{ tz }}
+                    </mat-option>
                     <mat-option *ngIf="!timezones.length" [disabled]="true">
-                        No matching timezones
+                        {{ 'COMMON.TIMEZONE_EMPTY' | translate }}
                     </mat-option>
                 </mat-autocomplete>
             </div>
             <div class="field" *ngIf="form.controls.images">
-                <label for="images">Images:</label>
+                <label for="images">{{ 'COMMON.IMAGES' | translate }}:</label>
                 <image-list-field
                     name="images"
                     formControlName="images"
@@ -296,13 +307,6 @@ export class SystemFormComponent extends AsyncHandler {
     public filtered_timezones: string[] = [];
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
-    /** Levels of encyption available for the system's settings */
-    public encryption_levels: Identity[] = [
-        { id: EncryptionLevel.None, name: 'None' },
-        { id: EncryptionLevel.Support, name: 'Support' },
-        { id: EncryptionLevel.Admin, name: 'Admin' },
-        { id: EncryptionLevel.NeverDisplay, name: 'Never Display' },
-    ];
     /** Function for querying zones */
     public readonly query_fn = (_: string) =>
         queryZones({ q: _ }).pipe(map((resp) => resp.data));
