@@ -8,7 +8,9 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
     template: `
         <div class="flex flex-col h-full w-full">
             <div class="flex items-center justify-between space-x-2 my-4">
-                <div class="text-2xl">Custom Schemas</div>
+                <div class="text-2xl">
+                    {{ 'ADMIN.SCHEMA_HEADER' | translate }}
+                </div>
                 <div class="flex items-center space-x-2">
                     <mat-form-field
                         class="no-subscript w-56"
@@ -18,7 +20,7 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
                             name="type"
                             [(ngModel)]="active_schema"
                             (ngModelChange)="copySchema()"
-                            placeholder="Select Schema..."
+                            [placeholder]="'ADMIN.SCHEMA_SELECT' | translate"
                         >
                             <mat-option
                                 *ngFor="let schema of schema_list | async"
@@ -29,7 +31,9 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
                             <mat-option
                                 (click)="newSchema(); $event.preventDefault()"
                             >
-                                <span class="italic font-sans">New Schema</span>
+                                <span class="italic font-sans">{{
+                                    'ADMIN.SCHEMA_NEW' | translate
+                                }}</span>
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -39,22 +43,24 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
                         class="w-40 h-12"
                         (click)="newSchema()"
                     >
-                        Add Schema
+                        {{ 'ADMIN.SCHEMA_ADD' | translate }}
                     </button>
                 </div>
             </div>
             <div class="flex items-center space-x-2 mb-4" *ngIf="schema_copy">
-                <div class="flex flex-col">
-                    <label for="type">Schema Name: </label>
+                <div class="flex flex-col flex-1 w-1/2">
+                    <label for="type"
+                        >{{ 'ADMIN.SCHEMA_NAME' | translate }}:
+                    </label>
                     <mat-form-field
-                        class="no-subscript w-56"
+                        class="no-subscript w-full"
                         appearance="outline"
                     >
                         <input matInput [(ngModel)]="schema_copy.name" />
                     </mat-form-field>
                 </div>
                 <button btn class="mt-6 w-40 h-12" (click)="saveSchema()">
-                    Save Schema
+                    {{ 'COMMON.SAVE' | translate }}
                 </button>
             </div>
             <div class="relative flex-1 h-1/2">
@@ -68,7 +74,9 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
             </div>
             <ng-template #empty_state>
                 <div class="absolute inset-0 flex items-center justify-center">
-                    <p class="p-8 opacity-30">Select a schema to edit</p>
+                    <p class="p-8 opacity-30">
+                        {{ 'ADMIN.SCHEMA_SELECT_MSG' | translate }}
+                    </p>
                 </div>
             </ng-template>
         </div>

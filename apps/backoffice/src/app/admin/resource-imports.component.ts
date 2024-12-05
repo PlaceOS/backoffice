@@ -20,6 +20,7 @@ import {
 import { notifySuccess, notifyWarn } from '../common/notifications';
 import { openConfirmModal } from '../common/general';
 import { MatDialog } from '@angular/material/dialog';
+import { i18n } from '../common/translate';
 
 export interface ExternalResource {
     id: string;
@@ -40,7 +41,9 @@ export interface ExternalResource {
     template: `
         <div class="flex flex-col h-full w-full">
             <div class="flex items-center justify-between space-x-2 my-4">
-                <div class="text-2xl">Resource Imports</div>
+                <div class="text-2xl">
+                    {{ 'ADMIN.RESOURCE_IMPORTS_HEADER' | translate }}
+                </div>
                 <div class="flex items-center space-x-2">
                     <mat-form-field
                         class="no-subscript w-56"
@@ -50,7 +53,7 @@ export interface ExternalResource {
                             name="type"
                             [ngModel]="domain | async"
                             (ngModelChange)="domain.next($event)"
-                            placeholder="Select Domain..."
+                            [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
                             <mat-option
                                 *ngFor="let domain of domain_list | async"
@@ -70,7 +73,7 @@ export interface ExternalResource {
                         "
                         (click)="importMissingResources()"
                     >
-                        Import All
+                        {{ 'ADMIN.RESOURCE_IMPORTS_ALL' | translate }}
                     </button>
                 </div>
             </div>
@@ -81,22 +84,22 @@ export interface ExternalResource {
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[56rem] block text-sm mb-4"
+                    class="min-w-[48rem] block text-sm mb-4"
                     [data]="resource_list"
                     [columns]="[
                         {
                             key: 'display_name',
-                            name: 'Name',
+                            name: 'COMMON.FIELD_NAME' | translate,
                             content: name_template,
                         },
                         {
                             key: 'email',
-                            name: 'Email',
+                            name: 'COMMON.FIELD_EMAIL' | translate,
                             content: email_template
                         },
                         {
                             key: 'imported',
-                            name: 'Imported',
+                            name: 'ADMIN.RESOURCE_IMPORTS_IMPORTED' | translate,
                             content: bool_template,
                             size: '5.5rem'
                         },
@@ -109,7 +112,7 @@ export interface ExternalResource {
                         }
                     ]"
                     [sortable]="true"
-                    empty_message="No uploads for selected domain"
+                    [empty_message]="'ADMIN.RESOURCE_IMPORTS_EMPTY' | translate"
                 ></simple-table>
                 <ng-template #email_template let-data="data">
                     <div class="p-4 mono text-xs">{{ data }}</div>
@@ -150,14 +153,18 @@ export interface ExternalResource {
                             matRipple
                             (click)="importResource(row)"
                             [disabled]="row.imported"
-                            matTooltip="Import Resource"
+                            [matTooltip]="
+                                'ADMIN.RESOURCE_IMPORTS_IMPORT' | translate
+                            "
                         >
                             <app-icon>publish</app-icon>
                         </button>
                         <a
                             icon
                             matRipple
-                            matTooltip="View System"
+                            [matTooltip]="
+                                'ADMIN.RESOURCE_IMPORTS_VIEW' | translate
+                            "
                             [attr.disabled]="row.system_id === ''"
                             [routerLink]="['/systems', row.system_id, 'about']"
                         >
@@ -243,15 +250,15 @@ export class ResourceImportsComponent {
         const list = await this.resource_list.pipe(take(1)).toPromise();
         const missing = list.filter((_) => !_.imported);
         if (!missing.length) {
-            return notifyWarn('All resources are already imported');
+            return notifyWarn(i18n('ADMIN.RESOURCE_IMPORTS_ALL_WARNING'));
         }
         const resp = await openConfirmModal(
             {
                 title: 'Import missing resources?',
                 content: `
-                <p class="mb-4">Are you sure you want to import the following ${
-                    missing.length
-                } resources?</p>
+                <p class="mb-4">${i18n('ADMIN.RESOURCE_IMPORTS_ALL_MSG', {
+                    count: missing.length,
+                })}</p>
                 <ul class="list-disc ml-4 text-left px-8 text-sm">${missing
                     .map((_) => `<li>${_.display_name}</li>`)
                     .join('')}</ul>
@@ -263,10 +270,14 @@ export class ResourceImportsComponent {
         );
 
         if (resp?.reason !== 'done') return;
-        resp.loading('Importing resources...');
+        resp.loading(i18n('ADMIN.RESOURCE_IMPORTS_ALL_LOADING'));
         await Promise.all(missing.map((_) => this.importResource(_, false)));
         resp.close();
-        notifySuccess(`Successfully imported ${missing.length} resources.`);
+        notifySuccess(
+            i18n('ADMIN.RESOURCE_IMPORTS_ALL_SUCCESS', {
+                count: missing.length,
+            })
+        );
     }
 
     public async importResource(
@@ -286,7 +297,9 @@ export class ResourceImportsComponent {
         resource.imported = true;
         if (!notify) return;
         notifySuccess(
-            `Successfully imported resource "${resource.display_name}".`
+            i18n('ADMIN.RESOURCE_IMPORTS_SUCCESS', {
+                name: resource.display_name,
+            })
         );
     }
 }

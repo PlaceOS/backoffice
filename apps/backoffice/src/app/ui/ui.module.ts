@@ -95,6 +95,8 @@ import { SimpleTableComponent } from './simple-table.component';
 import { ReorderItemsModalComponent } from './reorder-items-modal.component';
 import { CronFieldComponent } from './forms/trigger-condition-form/cron-field.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { SettingsToggleComponent } from './settings-toggle.component';
+import { FullscreenModalShellComponent } from './fullscreen-modal-shell.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -125,6 +127,7 @@ const FORM_COMPONENTS: Type<any>[] = [
     ItemSidebarComponent,
     NewTerminalComponent,
     RichTextInputComponent,
+    SettingsToggleComponent,
 ];
 
 const COMPONENTS: Type<any>[] = [
@@ -156,6 +159,7 @@ const COMPONENTS: Type<any>[] = [
 
     SimpleTableComponent,
     ReorderItemsModalComponent,
+    FullscreenModalShellComponent,
 ];
 
 const PIPES: Type<any>[] = [

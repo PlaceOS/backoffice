@@ -3,18 +3,21 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { PlaceStorage, saveStorage } from './storage.fn';
 import { notifyError, notifySuccess } from '../../common/notifications';
+import { i18n } from '../../common/translate';
 
 @Component({
     selector: 'storage-provider-modal',
     template: `
-        <header>
-            <h2>{{ storage?.id ? 'Edit' : 'New' }} Storage Provider</h2>
-            <button btn icon matRipple mat-dialog-close>
-                <app-icon>close</app-icon>
-            </button>
-        </header>
-        <form [formGroup]="form" class="max-h-[65vh] overflow-auto px-4 py-2">
-            <!-- <div class="flex flex-col ">
+        <fullscreen-modal-shell
+            [heading]="
+                (storage?.id ? 'ADMIN.STORAGE_EDIT' : 'ADMIN.STORAGE_NEW')
+                    | translate
+            "
+            [loading]="loading"
+            (save)="save()"
+        >
+            <form [formGroup]="form" class="w-full">
+                <!-- <div class="flex flex-col ">
                 <label for="storage-type">Storage Type</label>
                 <mat-form-field appearance="outline">
                     <mat-select
@@ -26,115 +29,144 @@ import { notifyError, notifySuccess } from '../../common/notifications';
                     </mat-select>
                 </mat-form-field>
             </div> -->
-            <div class="flex space-x-2">
-                <div class="flex-1 flex flex-col ">
-                    <label for="bucket-name">Bucket Name</label>
+                <div class="flex space-x-2">
+                    <div class="flex-1 flex flex-col ">
+                        <label for="bucket-name">{{
+                            'ADMIN.STORAGE_BUCKET_NAME_LABEL' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="bucket-name"
+                                formControlName="bucket_name"
+                                [placeholder]="
+                                    'ADMIN.STORAGE_BUCKET_NAME_LABEL'
+                                        | translate
+                                "
+                            />
+                            <mat-error>{{
+                                'ADMIN.STORAGE_BUCKET_NAME_REQUIRED' | translate
+                            }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex-1 flex flex-col ">
+                        <label for="region">{{
+                            'ADMIN.STORAGE_REGION_LABEL' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="region"
+                                formControlName="region"
+                                [placeholder]="
+                                    'ADMIN.STORAGE_REGION_LABEL' | translate
+                                "
+                            />
+                            <mat-error>{{
+                                'ADMIN.STORAGE_REGION_REQUIRED' | translate
+                            }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <div class="flex-1 flex flex-col">
+                        <label for="access-key">{{
+                            'ADMIN.STORAGE_ACCESS_KEY_LABEL' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="access-key"
+                                formControlName="access_key"
+                                [placeholder]="
+                                    'ADMIN.STORAGE_ACCESS_KEY_LABEL' | translate
+                                "
+                            />
+                            <mat-error>{{
+                                'ADMIN.STORAGE_ACCESS_KEY_REQUIRED' | translate
+                            }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex-1 flex flex-col">
+                        <label for="access-secret">{{
+                            'ADMIN.STORAGE_SECRET_LABEL' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="access-secret"
+                                formControlName="access_secret"
+                                [placeholder]="
+                                    'ADMIN.STORAGE_SECRET_LABEL' | translate
+                                "
+                            />
+                            <mat-error>{{
+                                'ADMIN.STORAGE_ACCESS_KEY_REQUIRED' | translate
+                            }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <label for="endpoint">{{
+                        'ADMIN.STORAGE_ENDPOINT_LABEL' | translate
+                    }}</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
-                            name="bucket-name"
-                            formControlName="bucket_name"
-                            placeholder="Bucket Name"
+                            name="endpoint"
+                            formControlName="endpoint"
+                            [placeholder]="
+                                'ADMIN.STORAGE_ENDPOINT_LABEL' | translate
+                            "
                         />
-                        <mat-error>Bucket Name is required</mat-error>
                     </mat-form-field>
                 </div>
-                <div class="flex-1 flex flex-col ">
-                    <label for="region">Region</label>
+                <div class="flex flex-col">
+                    <label for="extensions">{{
+                        'ADMIN.STORAGE_ALLOWED_EXTENSIONS_LABEL' | translate
+                    }}</label>
                     <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="region"
-                            formControlName="region"
-                            placeholder="Region"
-                        />
-                        <mat-error>Region is required</mat-error>
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="flex space-x-2">
-                <div class="flex-1 flex flex-col">
-                    <label for="access-key">Access Key</label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="access-key"
-                            formControlName="access_key"
-                            placeholder="Access Key"
-                        />
-                        <mat-error>Access Key is required</mat-error>
-                    </mat-form-field>
-                </div>
-                <div class="flex-1 flex flex-col">
-                    <label for="access-secret">Access Secret</label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="access-secret"
-                            formControlName="access_secret"
-                            placeholder="Access Secret"
-                        />
-                        <mat-error>Access Secret is required</mat-error>
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="flex flex-col">
-                <label for="endpoint">Endpoint</label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="endpoint"
-                        formControlName="endpoint"
-                        placeholder="Endpoint"
-                    />
-                </mat-form-field>
-            </div>
-            <div class="flex flex-col">
-                <label for="extensions">Allowed File Extensions</label>
-                <mat-form-field appearance="outline">
-                    <mat-select
-                        name="extensions"
-                        formControlName="ext_filter"
-                        placeholder="Allow all File Extensions"
-                        [multiple]="true"
-                    >
-                        <mat-option
-                            *ngFor="let ext of ALLOWED_FILE_EXTENSIONS"
-                            [value]="ext"
+                        <mat-select
+                            name="extensions"
+                            formControlName="ext_filter"
+                            [placeholder]="
+                                'ADMIN.STORAGE_ALLOW_ALL_EXTENSIONS' | translate
+                            "
+                            [multiple]="true"
                         >
-                            {{ ext }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div class="flex flex-col ">
-                <label for="mime-types">Allowed File MIME types</label>
-                <mat-form-field appearance="outline">
-                    <mat-select
-                        name="mime-types"
-                        formControlName="mime_filter"
-                        placeholder="Allow all MIME Types"
-                        [multiple]="true"
-                    >
-                        <mat-option
-                            *ngFor="let mime of ALLOWED_MIME_TYPES"
-                            [value]="mime"
+                            <mat-option
+                                *ngFor="let ext of ALLOWED_FILE_EXTENSIONS"
+                                [value]="ext"
+                            >
+                                {{ ext }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="flex flex-col ">
+                    <label for="mime-types">{{
+                        'ADMIN.STORAGE_ALLOWED_MIME_LABEL' | translate
+                    }}</label>
+                    <mat-form-field appearance="outline">
+                        <mat-select
+                            name="mime-types"
+                            formControlName="mime_filter"
+                            [placeholder]="
+                                'ADMIN.STORAGE_ALLOW_ALL_MIME' | translate
+                            "
+                            [multiple]="true"
                         >
-                            {{ mime }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-        </form>
-        <footer
-            class="flex items-center justify-end space-x-2 px-4 py-2 border-t border-base-200"
-            *ngIf="!loading"
-        >
-            <button btn matRipple mat-dialog-close class="inverse w-32">
-                Cancel
-            </button>
-            <button btn matRipple class="w-32" (click)="save()">Save</button>
-        </footer>
+                            <mat-option
+                                *ngFor="let mime of ALLOWED_MIME_TYPES"
+                                [value]="mime"
+                            >
+                                {{ mime }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </form>
+        </fullscreen-modal-shell>
     `,
     styles: [``],
 })
@@ -217,14 +249,14 @@ export class StorageProviderModalComponent {
         await saveStorage(this.form.value as PlaceStorage)
             .toPromise()
             .catch((e) => {
-                notifyError('Failed to save Storage Provider.');
+                notifyError(i18n('ADMIN.STORAGE_SAVE_ERROR'));
                 this.loading = false;
                 this._dialog_ref.disableClose = false;
                 throw e;
             });
         this.loading = false;
         this._dialog_ref.disableClose = false;
-        notifySuccess('Successfully saved Storage Provider.');
+        notifySuccess(i18n('ADMIN.STORAGE_SAVE_SUCCESS'));
         this._dialog_ref.close();
     }
 }

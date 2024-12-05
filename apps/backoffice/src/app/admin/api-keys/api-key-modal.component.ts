@@ -14,158 +14,173 @@ import { getInvalidFields } from '../../common/general';
 import { notifyError } from '../../common/notifications';
 import { DialogEvent } from '../../common/types';
 import { APIKeyService } from './api-keys.service';
+import { i18n } from '../../common/translate';
 
 @Component({
     selector: 'api-key-modal',
     template: `
-        <header class="h-12 flex items-center justify-between p-4">
-            <h2>New API Key</h2>
-            <button btn icon mat-dialog-close *ngIf="!loading">
-                <app-icon>close</app-icon>
-            </button>
-        </header>
-        <main
-            class="w-[32rem] max-w-[calc(100vw-2rem)] p-4"
-            *ngIf="!loading && form; else load_state"
-            [formGroup]="form"
+        <fullscreen-modal-shell
+            [heading]="'ADMIN.APP_KEYS_NEW' | translate"
+            [loading]="loading"
+            (save)="save()"
         >
-            <div class="flex flex-col">
-                <label for="name">Name<span>*</span></label>
-                <mat-form-field appearance="outline">
-                    <input
-                        name="name"
-                        formControlName="name"
-                        placeholder="Name"
-                        matInput
-                    />
-                    <mat-error>Name is required</mat-error>
-                </mat-form-field>
-            </div>
-            <div class="flex flex-col">
-                <label for="name">Description</label>
-                <mat-form-field appearance="outline">
-                    <textarea
-                        name="description"
-                        formControlName="description"
-                        placeholder="Description"
-                        matInput
-                    ></textarea>
-                </mat-form-field>
-            </div>
-            <div class="flex flex-col">
-                <label for="scope">Scopes<span>*</span></label>
-                <mat-form-field appearance="outline">
-                    <mat-chip-grid #chipList aria-label="Scopes">
-                        <mat-chip
-                            *ngFor="let scope of scope_list"
-                            [selectable]="true"
-                            [removable]="true"
-                            (removed)="removeScope(scope)"
-                        >
-                            {{ scope }}
-                            <app-icon matChipRemove>close</app-icon>
-                        </mat-chip>
-                        <input
-                            matInput
-                            placeholder="Scopes..."
-                            [matChipInputFor]="chipList"
-                            [matChipInputSeparatorKeyCodes]="separators"
-                            [matChipInputAddOnBlur]="true"
-                            (matChipInputTokenEnd)="addScope($event)"
-                            [matAutocomplete]="auto"
-                        />
-                    </mat-chip-grid>
-                    <mat-error>At least one scope is required</mat-error>
-                    <mat-autocomplete #auto="matAutocomplete">
-                        <mat-option
-                            *ngFor="let option of scopes | async"
-                            (click)="addScope({ input: {}, value: option })"
-                        >
-                            {{ option }}
-                        </mat-option>
-                    </mat-autocomplete>
-                </mat-form-field>
-            </div>
-            <div class="flex flex-col">
-                <label for="user">User<span>*</span></label>
-                <an-action-field
-                    [matMenuTriggerFor]="menu"
-                    yPosition="below"
-                    class="mb-8"
-                    (click)="focusInput()"
-                >
-                    <div [class.opacity-30]="!form.value.user?.id">
-                        {{ form.value.user?.name || 'Select user' }}
-                    </div>
-                </an-action-field>
-                <mat-menu #menu="matMenu">
-                    <mat-form-field
-                        appearance="outline"
-                        class="px-2 no-subtext"
-                        (click)="
-                            $event.preventDefault(); $event.stopPropagation()
-                        "
+            <form class="w-full" [formGroup]="form">
+                <div class="flex flex-col">
+                    <label for="name"
+                        >{{ 'COMMON.FIELD_NAME' | translate
+                        }}<span>*</span></label
                     >
+                    <mat-form-field appearance="outline">
                         <input
+                            name="name"
+                            formControlName="name"
+                            [placeholder]="'COMMON.FIELD_NAME' | translate"
                             matInput
-                            #input
-                            ngModel
-                            (ngModelChange)="setSearch($event)"
-                            [ngModelOptions]="{ standalone: true }"
-                            placeholder="Search users..."
                         />
+                        <mat-error>{{
+                            'ADMIN.APP_KEYS_NAME_REQUIRED' | translate
+                        }}</mat-error>
                     </mat-form-field>
-                    <button
-                        mat-menu-item
-                        *ngFor="let item of users | async | slice: 0:10"
-                        (click)="
-                            form.patchValue({ user: item, user_id: item.id });
-                            setSearch('')
-                        "
-                        [class.text-secondary]="form.value.user?.id === item.id"
+                </div>
+                <div class="flex flex-col">
+                    <label for="name">{{
+                        'COMMON.FIELD_DESCRIPTION' | translate
+                    }}</label>
+                    <mat-form-field appearance="outline">
+                        <textarea
+                            name="description"
+                            formControlName="description"
+                            [placeholder]="
+                                'COMMON.FIELD_DESCRIPTION' | translate
+                            "
+                            matInput
+                        ></textarea>
+                    </mat-form-field>
+                </div>
+                <div class="flex flex-col">
+                    <label for="scope"
+                        >{{ 'ADMIN.APP_KEYS_FIELD_SCOPES' | translate
+                        }}<span>*</span></label
                     >
-                        {{ item.name }}
-                    </button>
-                    <button
-                        mat-menu-item
-                        [disabled]="true"
-                        *ngIf="!(users | async)?.length"
-                        class="text-center"
+                    <mat-form-field appearance="outline">
+                        <mat-chip-grid #chipList aria-label="Scopes">
+                            <mat-chip
+                                *ngFor="let scope of scope_list"
+                                [selectable]="true"
+                                [removable]="true"
+                                (removed)="removeScope(scope)"
+                            >
+                                {{ scope }}
+                                <app-icon matChipRemove>close</app-icon>
+                            </mat-chip>
+                            <input
+                                matInput
+                                placeholder="Scopes..."
+                                [matChipInputFor]="chipList"
+                                [matChipInputSeparatorKeyCodes]="separators"
+                                [matChipInputAddOnBlur]="true"
+                                (matChipInputTokenEnd)="addScope($event)"
+                                [matAutocomplete]="auto"
+                            />
+                        </mat-chip-grid>
+                        <mat-error>{{
+                            'ADMIN.APP_KEYS_SCOPES_REQUIRED' | translate
+                        }}</mat-error>
+                        <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option
+                                *ngFor="let option of scopes | async"
+                                (click)="addScope({ input: {}, value: option })"
+                            >
+                                {{ option }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="flex flex-col">
+                    <label for="user">
+                        {{ 'USERS.SINGULAR' | translate }}<span>*</span>
+                    </label>
+                    <an-action-field
+                        [matMenuTriggerFor]="menu"
+                        yPosition="below"
+                        class="mb-8"
+                        (click)="focusInput()"
                     >
-                        No results
-                    </button>
-                </mat-menu>
-            </div>
-            <div class="flex flex-col">
-                <label for="permissions">Permissions</label>
-                <mat-form-field appearance="outline">
-                    <mat-select
-                        name="permissions"
-                        formControlName="permissions"
-                        placeholder="None"
-                    >
-                        <mat-option [value]="null">None</mat-option>
-                        <mat-option value="user">User</mat-option>
-                        <mat-option value="support">Support</mat-option>
-                        <mat-option value="admin">Admin</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-        </main>
-        <footer
-            *ngIf="!loading"
-            class="p-2 flex items-center justify-end border-t border-base-200"
-        >
-            <button btn class="w-32" (click)="save()">Save</button>
-        </footer>
-        <ng-template #load_state>
-            <main
-                class="flex flex-col items-center justify-center space-y-2 p-8 w-[24rem] h-64"
-            >
-                <mat-spinner [diameter]="32"></mat-spinner>
-                <p>{{ loading }}</p>
-            </main>
-        </ng-template>
+                        <div [class.opacity-30]="!form.value.user?.id">
+                            {{ form.value.user?.name || 'Select user' }}
+                        </div>
+                    </an-action-field>
+                    <mat-menu #menu="matMenu">
+                        <mat-form-field
+                            appearance="outline"
+                            class="px-2 no-subtext"
+                            (click)="
+                                $event.preventDefault();
+                                $event.stopPropagation()
+                            "
+                        >
+                            <input
+                                matInput
+                                #input
+                                ngModel
+                                (ngModelChange)="setSearch($event)"
+                                [ngModelOptions]="{ standalone: true }"
+                                [placeholder]="'USERS.SEARCH' | translate"
+                            />
+                        </mat-form-field>
+                        <button
+                            mat-menu-item
+                            *ngFor="let item of users | async | slice: 0:10"
+                            (click)="
+                                form.patchValue({
+                                    user: item,
+                                    user_id: item.id
+                                });
+                                setSearch('')
+                            "
+                            [class.text-secondary]="
+                                form.value.user?.id === item.id
+                            "
+                        >
+                            {{ item.name }}
+                        </button>
+                        <button
+                            mat-menu-item
+                            [disabled]="true"
+                            *ngIf="!(users | async)?.length"
+                            class="text-center"
+                        >
+                            No results
+                        </button>
+                    </mat-menu>
+                </div>
+                <div class="flex flex-col">
+                    <label for="permissions">{{
+                        'ADMIN.PERMISSIONS' | translate
+                    }}</label>
+                    <mat-form-field appearance="outline">
+                        <mat-select
+                            name="permissions"
+                            formControlName="permissions"
+                            placeholder="None"
+                        >
+                            <mat-option [value]="null">{{
+                                'ADMIN.PERMISSIONS_NONE' | translate
+                            }}</mat-option>
+                            <mat-option value="user">{{
+                                'ADMIN.PERMISSIONS_USER' | translate
+                            }}</mat-option>
+                            <mat-option value="support">{{
+                                'ADMIN.PERMISSIONS_SUPPORT' | translate
+                            }}</mat-option>
+                            <mat-option value="admin">{{
+                                'ADMIN.PERMISSIONS_ADMIN' | translate
+                            }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </form>
+        </fullscreen-modal-shell>
     `,
     styles: [``],
 })
@@ -225,9 +240,9 @@ export class APIKeyModalComponent {
         this.form.markAllAsTouched();
         if (!this.form.valid) {
             return notifyError(
-                `Some form fields are invalid. [${getInvalidFields(
-                    this.form
-                ).join(', ')}]`
+                i18n('COMMON.INVALID_FIELDS', {
+                    field_list: getInvalidFields(this.form).join(', '),
+                })
             );
         }
         const data = { ...this.form.value };

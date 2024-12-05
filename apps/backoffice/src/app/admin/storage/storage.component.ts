@@ -13,22 +13,27 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
 import { MatDialog } from '@angular/material/dialog';
 import { StorageProviderModalComponent } from './storage-provider-modal.component';
 import { openConfirmModal } from '../../common/general';
+import { i18n } from '../../common/translate';
 
 @Component({
     selector: 'app-storage',
     template: `
         <div class="flex flex-col h-full w-full">
             <div class="flex items-center justify-between space-x-2 my-4">
-                <div class="text-2xl">PlaceOS Upload Storage</div>
+                <div class="text-2xl">
+                    {{ 'ADMIN.STORAGE_HEADER' | translate }}
+                </div>
                 <div class="flex items-center space-x-2">
                     <mat-form-field class="h-12" appearance="outline">
                         <mat-select
                             name="type"
                             [ngModel]="domain | async"
                             (ngModelChange)="domain.next($event)"
-                            placeholder="All Domains"
+                            [placeholder]="'ADMIN.ALL_DOMAINS' | translate"
                         >
-                            <mat-option [value]="{}">All Domains</mat-option>
+                            <mat-option [value]="{}">{{
+                                'ADMIN.ALL_DOMAINS' | translate
+                            }}</mat-option>
                             <mat-option
                                 *ngFor="let domain of domain_list | async"
                                 [value]="domain"
@@ -38,7 +43,7 @@ import { openConfirmModal } from '../../common/general';
                         </mat-select>
                     </mat-form-field>
                     <button btn matRipple class="w-40" (click)="edit()">
-                        Add Provider
+                        {{ 'ADMIN.STORAGE_ADD' | translate }}
                     </button>
                 </div>
             </div>
@@ -52,21 +57,21 @@ import { openConfirmModal } from '../../common/general';
                     class="min-w-[40rem] block text-sm"
                     [data]="storage_list"
                     [columns]="[
-                        { key: 'name', name: 'Domain', content: name_template },
+                        { key: 'name', name: 'DOMAINS.SINGULAR' | translate, content: name_template },
                         {
                             key: 'storage_type',
-                            name: 'Type',
+                            name: 'ADMIN.STORAGE_FIELD_TYPE' | translate,
                             content: code_template,
                             size: '6rem'
                         },
                         {
                             key: 'region',
-                            name: 'Region',
+                            name: 'ADMIN.STORAGE_FIELD_REGION' | translate,
                             content: code_template
                         },
                         {
                             key: 'updated_at',
-                            name: 'Updated',
+                            name: 'COMMON.UPDATED_AT' | translate,
                             content: date_from_template,
                             size: '10rem'
                         },
@@ -80,9 +85,13 @@ import { openConfirmModal } from '../../common/general';
                     ]"
                     [sortable]="true"
                     [empty_message]="
-                        'No storage providers for' +
-                        (domain.getValue() ? 'selected' : 'any') +
-                        'domain'
+                        'ADMIN.STORAGE_LIST_EMPTY'
+                            | translate
+                                : {
+                                      item: domain.getValue()
+                                          ? 'selected'
+                                          : 'any'
+                                  }
                     "
                 ></simple-table>
             </div>
@@ -107,10 +116,20 @@ import { openConfirmModal } from '../../common/general';
         </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2 mx-auto">
-                <button icon matRipple (click)="edit(row)">
+                <button
+                    icon
+                    matRipple
+                    [matTooltip]="'ADMIN.STORAGE_EDIT' | translate"
+                    (click)="edit(row)"
+                >
                     <app-icon>edit</app-icon>
                 </button>
-                <button icon matRipple (click)="remove(row)">
+                <button
+                    icon
+                    matRipple
+                    [matTooltip]="'ADMIN.STORAGE_REMOVE' | translate"
+                    (click)="remove(row)"
+                >
                     <app-icon class="text-error">delete</app-icon>
                 </button>
             </div>
@@ -133,7 +152,7 @@ export class StorageComponent {
     public readonly storage_data = this.domain.pipe(
         debounceTime(300),
         switchMap((_) => {
-            this.loading = 'Loading Storage Providers...';
+            this.loading = i18n('ADMIN.STORAGE_LOADING');
             return queryStorage({ auth_id: _?.id });
         }),
         map(({ data }) => data),
@@ -169,14 +188,17 @@ export class StorageComponent {
     public async remove(item: PlaceStorage) {
         const resp = await openConfirmModal(
             {
-                title: 'Remove Storage Provider',
-                content: `Are you sure you want to remove the storage provider for ${item.storage_type} ${item.bucket_name}?`,
+                title: i18n('ADMIN.STORAGE_REMOVE_TITLE'),
+                content: i18n('ADMIN.STORAGE_REMOVE_MSG', {
+                    type: item.storage_type,
+                    name: item.bucket_name,
+                }),
                 icon: { content: 'delete_forever' },
             },
             this._dialog
         );
         if (resp.reason !== 'done') return;
-        resp.loading('Removing Storage Provider');
+        resp.loading(i18n('ADMIN.STORAGE_REMOVE_LOADING'));
         await removeStorage(item.id).toPromise();
         this.domain.next(this.domain.getValue());
         resp.close();

@@ -50,14 +50,16 @@ export interface BackofficeExtension {
     template: `
         <div class="flex flex-col h-full w-full">
             <div class="flex items-center justify-between space-x-2 my-4">
-                <div class="text-2xl">Extensions</div>
+                <div class="text-2xl">
+                    {{ 'ADMIN.EXTENSIONS_HEADER' | translate }}
+                </div>
                 <div class="flex items-center space-x-2">
                     <mat-form-field appearance="outline" class="h-12">
                         <mat-select
                             name="type"
                             [ngModel]="domain.getValue()"
                             (ngModelChange)="setDomain($event)"
-                            placeholder="Select Domain..."
+                            [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
                             <mat-option
                                 *ngFor="let domain of domain_list"
@@ -68,17 +70,14 @@ export interface BackofficeExtension {
                         </mat-select>
                     </mat-form-field>
                     <button btn matRipple (click)="editExtension()">
-                        Add Extension
+                        {{ 'ADMIN.EXTENSIONS_ADD' | translate }}
                     </button>
                 </div>
             </div>
             <div
                 class="bg-info mb-4 p-4 flex items-center rounded shadow space-x-4 text-sm text-info-content"
             >
-                <p>
-                    <strong>Note:</strong> Backoffice requires a full page
-                    refresh for extension changes and additions to apply
-                </p>
+                <p>{{ 'ADMIN.EXTENSIONS_NOTICE' | translate }}</p>
             </div>
             <div class="flex-1 w-full h-1/2 overflow-auto">
                 <mat-progress-bar
@@ -87,20 +86,28 @@ export interface BackofficeExtension {
                     [class.opacity-0]="!loading"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[40rem] block text-sm"
+                    class="min-w-[56rem] block text-sm"
                     [data]="extensions"
                     [columns]="[
                         {
                             key: 'type',
-                            name: 'Type',
+                            name: 'ADMIN.EXTENSIONS_FIELD_TYPE' | translate,
                             content: type_template,
                             size: '5rem'
                         },
-                        { key: 'name', name: 'Tab Name', size: '10rem' },
-                        { key: 'url', name: 'URL', content: url_template },
+                        {
+                            key: 'name',
+                            name: 'ADMIN.EXTENSIONS_FIELD_TAB' | translate,
+                            size: '10rem'
+                        },
+                        {
+                            key: 'url',
+                            name: 'ADMIN.EXTENSIONS_FIELD_URL' | translate,
+                            content: url_template
+                        },
                         {
                             key: 'conditions',
-                            name: 'Checks',
+                            name: 'ADMIN.EXTENSIONS_FIELD_CHECKS' | translate,
                             content: conditions_template,
                             size: '6rem'
                         },
@@ -113,7 +120,7 @@ export interface BackofficeExtension {
                         }
                     ]"
                     [sortable]="true"
-                    empty_message="No extensions configured for this domain"
+                    [empty_message]="'ADMIN.EXTENSIONS_LIST_EMPTY' | translate"
                 ></simple-table>
                 <ng-template #type_template let-row="row">
                     <div class="p-4 uppercase font-mono text-xs">
@@ -135,10 +142,20 @@ export interface BackofficeExtension {
                 </ng-template>
                 <ng-template #actions_template let-row="row">
                     <div class="flex items-center space-x-2 p-2">
-                        <button icon matRipple (click)="editExtension(row)">
+                        <button
+                            icon
+                            matRipple
+                            [matTooltip]="'ADMIN.EXTENSIONS_EDIT' | translate"
+                            (click)="editExtension(row)"
+                        >
                             <app-icon>edit</app-icon>
                         </button>
-                        <button icon matRipple (click)="removeExtension(row)">
+                        <button
+                            icon
+                            matRipple
+                            [matTooltip]="'ADMIN.EXTENSIONS_REMOVE' | translate"
+                            (click)="removeExtension(row)"
+                        >
                             <app-icon class="text-error">delete</app-icon>
                         </button>
                     </div>

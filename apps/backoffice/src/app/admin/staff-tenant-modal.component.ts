@@ -28,7 +28,12 @@ export interface StaffTenantModalData {
     selector: 'staff-tenant-modal',
     template: `
         <header>
-            <h3>{{ tenant ? 'Edit' : 'New' }} Tenant</h3>
+            <h3>
+                {{
+                    (tenant ? 'ADMIN.TENANT_EDIT' : 'ADMIN.TENANT_NEW')
+                        | translate
+                }}
+            </h3>
             <div class="flex-1"></div>
             <button *ngIf="!loading" btn icon mat-dialog-close>
                 <app-icon>close</app-icon>
@@ -41,18 +46,28 @@ export interface StaffTenantModalData {
         >
             <div class="flex items-center flex-wrap space-x-0 sm:space-x-2">
                 <div class="flex flex-col flex-1">
-                    <label>Name<span>*</span>:</label>
+                    <label
+                        >{{ 'COMMON.FIELD_NAME' | translate
+                        }}<span>*</span>:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             formControlName="name"
-                            placeholder="Tenant Name"
+                            [placeholder]="
+                                'ADMIN.TENANT_FIELD_NAME' | translate
+                            "
                         />
-                        <mat-error>A tenant name is required</mat-error>
+                        <mat-error>{{
+                            'ADMIN.TENANT_NAME_ERROR' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
                 <div class="flex flex-col flex-1">
-                    <label>Platform<span>*</span>:</label>
+                    <label
+                        >{{ 'ADMIN.TENANTS_PLATFORM' | translate
+                        }}<span>*</span>:</label
+                    >
                     <mat-form-field appearance="outline">
                         <mat-select formControlName="platform">
                             <mat-option value="google">Google</mat-option>
@@ -62,18 +77,22 @@ export interface StaffTenantModalData {
                 </div>
             </div>
             <div class="flex flex-col flex-1">
-                <label>Email Domain:</label>
+                <label>{{ 'ADMIN.TENANTS_EMAIL_DOMAIN' | translate }}:</label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         formControlName="email_domain"
-                        placeholder="Domain of user's email for this tenant"
+                        [placeholder]="
+                            'ADMIN.TENANTS_EMAIL_PLACEHOLDER' | translate
+                        "
                     />
-                    <mat-error>A domain is required</mat-error>
+                    <mat-error>{{
+                        'ADMIN.TENANTS_EMAIL_ERROR' | translate
+                    }}</mat-error>
                 </mat-form-field>
             </div>
             <div class="flex flex-col space-y-2">
-                <label>Early Check-in before Meeting</label>
+                <label>{{ 'ADMIN.TENANTS_EARLY_CHECKIN' | translate }}</label>
                 <mat-form-field appearance="outline">
                     <mat-select
                         name="early_checkin"
@@ -106,23 +125,34 @@ export interface StaffTenantModalData {
                 "
             >
                 <div class="flex flex-col flex-1">
-                    <label>Service Account:</label>
+                    <label
+                        >{{
+                            'ADMIN.TENANTS_SERVICE_ACCOUNT' | translate
+                        }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             formControlName="service_account"
-                            placeholder="Service Account"
+                            [placeholder]="
+                                'ADMIN.TENANTS_SERVICE_ACCOUNT' | translate
+                            "
                         />
                         <mat-error>
-                            Service account should be a valid email address
+                            {{
+                                'ADMIN.TENANTS_SERVICE_ACCOUNT_ERROR'
+                                    | translate
+                            }}
                         </mat-error>
                     </mat-form-field>
                 </div>
             </div>
             <div class="flex items-center mb-4">
-                <mat-checkbox formControlName="delegated">
-                    Delegated
-                </mat-checkbox>
+                <settings-toggle
+                    [name]="'ADMIN.TENANTS_DELEGATED' | translate"
+                    formControlName="delegated"
+                >
+                </settings-toggle>
             </div>
             <form *ngIf="credentials" [formGroup]="credentials">
                 <ng-container
@@ -161,7 +191,12 @@ export interface StaffTenantModalData {
                                     "
                                 ></textarea>
                             </ng-container>
-                            <mat-error>A {{ item.key }} is required</mat-error>
+                            <mat-error>
+                                {{
+                                    'ADMIN.TENANT_ITEM_REQUIRED'
+                                        | translate: { name: item.key }
+                                }}
+                            </mat-error>
                         </mat-form-field>
                     </div>
                 </ng-container>
@@ -174,7 +209,7 @@ export interface StaffTenantModalData {
                     [(ngModel)]="show_outlook"
                     [ngModelOptions]="{ standalone: true }"
                 >
-                    Configure Outlook Plugin
+                    {{ 'ADMIN.TENANTS_CONFIG_OUTLOOK' | translate }}
                 </mat-checkbox>
             </div>
             <form
@@ -190,7 +225,9 @@ export interface StaffTenantModalData {
                                 formControlName="app_id"
                                 placeholder="Application ID"
                             />
-                            <mat-error>An application ID is required</mat-error>
+                            <mat-error>{{
+                                'ADMIN.TENANTS_APP_ID_REQUIRED' | translate
+                            }}</mat-error>
                         </mat-form-field>
                     </div>
                     <div class="flex flex-col flex-1">

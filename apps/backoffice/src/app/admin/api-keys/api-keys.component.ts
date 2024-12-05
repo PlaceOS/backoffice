@@ -4,20 +4,23 @@ import { take } from 'rxjs/operators';
 import { APIKeyService } from './api-keys.service';
 import { notifyInfo } from '../../common/notifications';
 import { authority } from '@placeos/ts-client';
+import { i18n } from '../../common/translate';
 
 @Component({
     selector: 'admin-api-keys',
     template: `
         <div class="flex flex-col h-full w-full">
             <div class="flex items-center justify-between space-x-2 my-4">
-                <div class="text-2xl">PlaceOS API Keys</div>
+                <div class="text-2xl">
+                    {{ 'ADMIN.APP_KEYS_HEADER' | translate }}
+                </div>
                 <div class="flex items-center space-x-2">
                     <mat-form-field appearance="outline" class="h-12">
                         <mat-select
                             name="type"
                             [ngModel]="domain | async"
                             (ngModelChange)="setDomain($event)"
-                            placeholder="Select Domain..."
+                            [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
                             <mat-option
                                 *ngFor="let domain of domain_list | async"
@@ -34,7 +37,7 @@ import { authority } from '@placeos/ts-client';
                         [disabled]="!(domain | async)"
                         (click)="newKey()"
                     >
-                        Add API Key
+                        {{ 'ADMIN.APP_KEYS_ADD' | translate }}
                     </button>
                 </div>
             </div>
@@ -47,7 +50,7 @@ import { authority } from '@placeos/ts-client';
                 >
                     <div class="border-b px-2 pb-1 bg-base-200 !w-full">
                         <label class="p-0 m-0">
-                            Last API Key Details ({{
+                            {{ 'ADMIN.APP_KEYS_LAST_DETAILS' | translate }} ({{
                                 (last_key | async)?.name || 'Unanamed API Key'
                             }})
                         </label>
@@ -72,26 +75,27 @@ import { authority } from '@placeos/ts-client';
                     class="min-w-[64rem] block text-sm"
                     [data]="key_list"
                     [columns]="[
-                        { key: 'name', name: 'Name' },
+                        { key: 'name', name: 'COMMON.FIELD_NAME' | translate },
                         {
                             key: 'description',
-                            name: 'Description',
+                            name: 'COMMON.FIELD_DESCRIPTION' | translate,
                             content: description_template
                         },
                         {
                             key: 'scopes',
-                            name: 'Scopes',
+                            name: 'ADMIN.APP_KEYS_FIELD_SCOPES' | translate,
                             content: scopes_template
                         },
                         {
                             key: 'permissions',
-                            name: 'Access',
+                            name:
+                                'ADMIN.APP_KEYS_FIELD_PERMISSIONS' | translate,
                             content: access_template,
                             size: '6rem'
                         },
                         {
                             key: 'created_at',
-                            name: 'Created',
+                            name: 'COMMON.CREATED_AT' | translate,
                             content: data_from_template,
                             size: '8rem'
                         },
@@ -104,7 +108,7 @@ import { authority } from '@placeos/ts-client';
                         }
                     ]"
                     [sortable]="true"
-                    empty_message="No API keys configured for this domain"
+                    [empty_message]="'ADMIN.APP_KEYS_LIST_EMPTY' | translate"
                 ></simple-table>
                 <div class="w-full h-12"></div>
             </div>
@@ -119,13 +123,17 @@ import { authority } from '@placeos/ts-client';
         <ng-template #description_template let-data="data">
             <div class="p-4 text-xs">
                 {{ data }}
-                <span class="opacity-30" *ngIf="!data">No description</span>
+                <span class="opacity-30" *ngIf="!data">{{
+                    'COMMON.DESCRIPTION_EMPTY' | translate
+                }}</span>
             </div>
         </ng-template>
         <ng-template #access_template let-data="data">
             <div class="p-4 font-mono text-xs uppercase">
                 {{ data }}
-                <span class="opacity-30" *ngIf="!data">No permissions</span>
+                <span class="opacity-30" *ngIf="!data">{{
+                    'ADMIN.APP_KEYS_PERMISSIONS_EMPTY' | translate
+                }}</span>
             </div>
         </ng-template>
         <ng-template #data_from_template let-data="data">
@@ -135,7 +143,12 @@ import { authority } from '@placeos/ts-client';
         </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2 mx-auto">
-                <button icon matRipple (click)="deleteKey(row)">
+                <button
+                    icon
+                    matRipple
+                    [matTooltip]="'ADMIN.APP_KEYS_REMOVE' | translate"
+                    (click)="deleteKey(row)"
+                >
                     <app-icon class="text-error">delete</app-icon>
                 </button>
             </div>
@@ -172,6 +185,6 @@ export class AdminAPIKeysComponent {
         const key = await this.last_key.pipe(take(1)).toPromise();
         if (!key?.x_api_key) return;
         this._clipboard.copy(key.x_api_key);
-        notifyInfo('Copied API key to clipboard.');
+        notifyInfo(i18n('ADMIN.APP_KEYS_COPIED'));
     }
 }

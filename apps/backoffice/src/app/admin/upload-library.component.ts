@@ -22,6 +22,7 @@ import { openConfirmModal } from '../common/general';
 import { MatDialog } from '@angular/material/dialog';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
 import { notifyError } from '../common/notifications';
+import { i18n } from '../common/translate';
 
 function getMimeType(filename: string): string {
     // Mapping of file extensions to MIME types
@@ -78,7 +79,9 @@ export interface UploadInfo {
     template: `
         <div class="flex flex-col h-full w-full">
             <div class="flex items-center justify-between space-x-2 my-4">
-                <div class="text-2xl">Uploads Library</div>
+                <div class="text-2xl">
+                    {{ 'ADMIN.UPLOADS_LIB_HEADER' | translate }}
+                </div>
                 <div class="flex items-center space-x-2">
                     <mat-form-field
                         class="no-subscript w-56"
@@ -88,7 +91,7 @@ export interface UploadInfo {
                             name="type"
                             [ngModel]="domain | async"
                             (ngModelChange)="domain.next($event)"
-                            placeholder="Select Domain..."
+                            [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
                             <mat-option
                                 *ngFor="let domain of domain_list | async"
@@ -105,7 +108,7 @@ export interface UploadInfo {
                         [disabled]="true"
                         (click)="uploadFile()"
                     >
-                        Upload File
+                        {{ 'COMMON.UPLOAD_FILE' | translate }}
                     </button>
                 </div>
             </div>
@@ -121,23 +124,23 @@ export interface UploadInfo {
                     [columns]="[
                         {
                             key: 'file_name',
-                            name: 'Name',
+                            name: 'COMMON.FIELD_NAME' | translate,
                             content: name_template
                         },
                         {
                             key: 'mime_type',
-                            name: 'File Type',
+                            name: 'ADMIN.UPLOADS_LIB_FIELD_TYPE' | translate,
                             content: type_template
                         },
                         {
                             key: 'file_size',
-                            name: 'Size',
+                            name: 'ADMIN.UPLOADS_LIB_FIELD_SIZE' | translate,
                             content: size_template,
                             size: '7rem'
                         },
                         {
                             key: 'created_at',
-                            name: 'Created',
+                            name: 'COMMON.CREATED_AT' | translate,
                             content: from_template,
                             size: '8rem'
                         },
@@ -150,7 +153,7 @@ export interface UploadInfo {
                         }
                     ]"
                     [sortable]="true"
-                    empty_message="No uploads for selected domain"
+                    [empty_message]="'ADMIN.UPLOADS_LIB_LIST_EMPTY' | translate"
                 ></simple-table>
             </div>
             <ng-template #from_template let-data="data">
@@ -183,7 +186,7 @@ export interface UploadInfo {
                         icon
                         matRipple
                         (click)="downloadUpload(row)"
-                        matTooltip="Download Upload"
+                        [matTooltip]="'ADMIN.UPLOADS_LIB_DOWNLOAD' | translate"
                     >
                         <app-icon>download</app-icon>
                     </button>
@@ -195,7 +198,7 @@ export interface UploadInfo {
                             !row.mime_type.includes('image') &&
                             !row.mime_type.includes('video')
                         "
-                        matTooltip="View Upload"
+                        [matTooltip]="'ADMIN.UPLOADS_LIB_VIEW' | translate"
                     >
                         <app-icon>visibility</app-icon>
                     </button>
@@ -203,7 +206,7 @@ export interface UploadInfo {
                         icon
                         matRipple
                         (click)="removeUpload(row)"
-                        matTooltip="Remove Upload"
+                        [matTooltip]="'ADMIN.UPLOADS_LIB_REMOVE' | translate"
                         class="text-error"
                     >
                         <app-icon>delete</app-icon>
@@ -276,9 +279,9 @@ export class UploadLibraryComponent {
         const result = await fetch(url);
         if (!result.ok) {
             return notifyError(
-                `Unable to downloading upload. Error: ${
-                    result.statusText || result.status
-                }`
+                i18n('ADMIN.UPLOADS_LIB_DOWNLOAD_ERROR', {
+                    error: result.statusText || result.status,
+                })
             );
         }
         const data = await result.blob();
@@ -302,14 +305,16 @@ export class UploadLibraryComponent {
     public async removeUpload(upload: UploadInfo) {
         const result = await openConfirmModal(
             {
-                title: 'Remove upload',
-                content: `<p>Are you sure you want remove the upload "${upload.file_name}"?</p><p>The upload will be deleted <strong>immediately</strong>.</p>`,
+                title: i18n('ADMIN.UPLOADS_LIB_REMOVE'),
+                content: i18n('ADMIN.UPLOADS_LIB_REMOVE_MSG', {
+                    filename: upload.file_name,
+                }),
                 icon: { type: 'icon', content: 'delete' },
             },
             this._dialog
         );
         if (result?.reason !== 'done') return;
-        result.loading('Removing upload...');
+        result.loading(i18n('ADMIN.UPLOADS_LIB_REMOVE_LOADING'));
         await remove({
             id: upload.id,
             query_params: {},

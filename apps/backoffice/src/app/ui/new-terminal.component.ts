@@ -34,7 +34,7 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
                 *ngIf="!(output_lines | async)?.length"
             >
                 <p class="opacity-60">
-                    {{ 'COMMON.DEBUG_NO_MESSAGE' | translate }}
+                    {{ 'COMMON.DEBUG_NO_MESSAGES' | translate }}
                 </p>
             </div>
             <div
