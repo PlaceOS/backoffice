@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { addEdge, PlaceEdge, updateEdge } from '@placeos/ts-client';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent } from '../common/types';
+import { i18n } from '../common/translate';
 
 export interface EdgeModalData {
     edge: PlaceEdge;
@@ -13,7 +14,9 @@ export interface EdgeModalData {
     selector: 'edge-modal',
     template: `
         <header>
-            <h3>{{ edge ? 'Edit' : 'New' }} Edge</h3>
+            <h3>
+                {{ (edge ? 'ADMIN.EDGE_EDIT' : 'ADMIN.EDGE_NEW') | translate }}
+            </h3>
             <div class="flex-1"></div>
             <button *ngIf="!loading" btn icon mat-dialog-close>
                 <app-icon>close</app-icon>
@@ -25,23 +28,31 @@ export interface EdgeModalData {
             class="overflow-auto p-4"
         >
             <div class="flex flex-col flex-1">
-                <label>Name<span>*</span>:</label>
+                <label
+                    >{{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:</label
+                >
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         formControlName="name"
-                        placeholder="Edge Name"
+                        [placeholder]="
+                            'ADMIN.EDGE_NAME_PLACEHOLDER' | translate
+                        "
                     />
-                    <mat-error>A edge name is required</mat-error>
+                    <mat-error>{{
+                        'ADMIN.EDGE_NAME_REQUIRED' | translate
+                    }}</mat-error>
                 </mat-form-field>
             </div>
             <div class="flex flex-col flex-1">
-                <label>Description:</label>
+                <label>{{ 'COMMON.FIELD_DESCRIPTION' | translate }}:</label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
                         formControlName="description"
-                        placeholder="Edge description..."
+                        [placeholder]="
+                            'ADMIN.EDGE_DESCRIPTION_PLACEHOLDER' | translate
+                        "
                     ></textarea>
                 </mat-form-field>
             </div>
@@ -50,12 +61,14 @@ export interface EdgeModalData {
             *ngIf="!loading"
             class="p-2 border-t border-base-200 flex justify-center"
         >
-            <button btn class="w-32" (click)="save()">Save</button>
+            <button btn class="w-32" (click)="save()">
+                {{ 'COMMON.SAVE' | translate }}
+            </button>
         </footer>
         <ng-template #load_state>
             <main class="flex flex-col p-8 items-center justify-center">
                 <mat-spinner class="mb-4" [diameter]="48"></mat-spinner>
-                <p>Saving edge...</p>
+                <p>{{ 'ADMIN.EDGE_SAVING' | translate }}</p>
             </main>
         </ng-template>
     `,
@@ -100,12 +113,10 @@ export class EdgeModalComponent {
         const new_edge = await method.toPromise().catch((_) => null);
         this.loading = false;
         this._dialog_ref.disableClose = false;
-        if (!new_edge) return notifyError('Error adding new edge.');
+        if (!new_edge) return notifyError(i18n('ADMIN.EDGE_ERROR'));
         edge.id
-            ? notifySuccess('Successfully updated edge.')
-            : notifySuccess(
-                  'Successfully added new edge. Please make sure to save the API key as you will not be able to view it again in the future.'
-              );
+            ? notifySuccess(i18n('ADMIN.EDGE_NEW_SUCCESS'))
+            : notifySuccess(i18n('ADMIN.EDGE_EDIT_SUCCESS'));
         this._dialog_ref.close(new_edge);
     }
 }

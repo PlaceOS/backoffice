@@ -24,12 +24,16 @@ import { BehaviorSubject } from 'rxjs';
     template: `
         <div class="flex flex-col h-full w-full">
             <div class="flex items-center justify-between space-x-2 my-4">
-                <div class="text-2xl">MQTT Brokers</div>
+                <div class="text-2xl">
+                    {{ 'ADMIN.BROKERS_HEADER' | translate }}
+                </div>
                 <div class="flex items-center space-x-2">
                     <button btn matRipple (click)="newBroker()">
                         <div class="flex items-center">
-                            <app-icon>add</app-icon>
-                            <div class="text">Add Broker</div>
+                            <app-icon class="text-2xl">add</app-icon>
+                            <div class="text">
+                                {{ 'ADMIN.BROKERS_ADD' | translate }}
+                            </div>
                         </div>
                     </button>
                 </div>
@@ -44,29 +48,36 @@ import { BehaviorSubject } from 'rxjs';
                     class="min-w-[64rem] block text-sm"
                     [data]="brokers"
                     [columns]="[
-                        { key: 'name', name: 'Name' },
+                        { key: 'name', name: 'COMMON.FIELD_NAME' | translate },
                         {
                             key: 'auth_type',
-                            name: 'Auth Type',
+                            name: 'ADMIN.BROKERS_FIELD_AUTH_TYPE' | translate,
                             content: auth_type_template
                         },
-                        { key: 'description', name: 'Description' },
-                        { key: 'host', name: 'Host', content: mono_template },
+                        {
+                            key: 'description',
+                            name: 'COMMON.FIELD_DESCRIPTION' | translate
+                        },
+                        {
+                            key: 'host',
+                            name: 'ADMIN.BROKERS_FIELD_HOST' | translate,
+                            content: mono_template
+                        },
                         {
                             key: 'port',
-                            name: 'Port',
+                            name: 'ADMIN.BROKERS_FIELD_PORT' | translate,
                             content: mono_template,
                             size: '6rem'
                         },
                         {
                             key: 'tls',
-                            name: 'TLS',
+                            name: 'ADMIN.BROKERS_FIELD_TLS' | translate,
                             content: tls_template,
                             size: '4rem'
                         },
                         {
                             key: 'filters',
-                            name: 'Filters',
+                            name: 'ADMIN.BROKERS_FIELD_FILTERS' | translate,
                             content: filters_template
                         },
                         {
@@ -78,7 +89,7 @@ import { BehaviorSubject } from 'rxjs';
                         }
                     ]"
                     [sortable]="true"
-                    empty_message="No MQTT Brokers"
+                    [empty_message]="'ADMIN.BROKER_LIST_EMPTY' | translate"
                 ></simple-table>
             </div>
         </div>
@@ -88,9 +99,15 @@ import { BehaviorSubject } from 'rxjs';
 
         <ng-template #auth_type_template let-data="data">
             <div class="p-4" [ngSwitch]="data">
-                <span *ngSwitchCase="0">Certificate</span>
-                <span *ngSwitchCase="2">User Password</span>
-                <span *ngSwitchDefault>No Auth</span>
+                <span *ngSwitchCase="0">{{
+                    'ADMIN.BROKERS_AUTH_TYPE_CERT' | translate
+                }}</span>
+                <span *ngSwitchCase="2">{{
+                    'ADMIN.BROKERS_AUTH_TYPE_PASS' | translate
+                }}</span>
+                <span *ngSwitchDefault>{{
+                    'ADMIN.BROKERS_AUTH_TYPE_NONE' | translate
+                }}</span>
             </div>
         </ng-template>
         <ng-template #tls_template let-data="data">
@@ -113,18 +130,24 @@ import { BehaviorSubject } from 'rxjs';
             <div class="p-4">
                 <code *ngIf="data">{{ data | json }}</code>
                 <span class="text-xs opacity-30" *ngIf="!data">
-                    No Filters
+                    {{ 'ADMIN.BROKERS_FILTERS_EMPTY' | translate }}
                 </span>
             </div>
         </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2">
-                <button icon matRipple (click)="editBroker(row)">
+                <button
+                    icon
+                    matRipple
+                    [matTooltip]="'ADMIN.BROKERS_EDIT' | translate"
+                    (click)="editBroker(row)"
+                >
                     <app-icon>edit</app-icon>
                 </button>
                 <button
                     icon
                     matRipple
+                    [matTooltip]="'ADMIN.BROKERS_REMOVE' | translate"
                     class="text-error"
                     (click)="deleteBroker(row)"
                 >

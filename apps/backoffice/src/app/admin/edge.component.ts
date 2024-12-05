@@ -45,10 +45,12 @@ import { EdgeModalComponent } from './edge-modal.component';
         </div>
         <div class="flex flex-col h-full w-full">
             <div class="flex items-center justify-between space-x-2 my-4">
-                <div class="text-2xl">PlaceOS Edge Nodes</div>
+                <div class="text-2xl">
+                    {{ 'ADMIN.EDGE_HEADER' | translate }}
+                </div>
                 <div class="flex items-center space-x-2">
                     <button btn class="w-40" (click)="edit()">
-                        Add New Edge
+                        {{ 'ADMIN.EDGE_ADD' | translate }}
                     </button>
                 </div>
             </div>
@@ -64,12 +66,12 @@ import { EdgeModalComponent } from './edge-modal.component';
                     [columns]="[
                         {
                             key: 'id',
-                            name: 'Name',
+                            name: 'COMMON.FIELD_NAME' | translate,
                             content: name_template,
                         },
                         {
                             key: 'description',
-                            name: 'Description',
+                            name: 'COMMON.FIELD_DESCRIPTION' | translate,
                             size: '40rem',
                             content: description_template
                         },
@@ -82,7 +84,7 @@ import { EdgeModalComponent } from './edge-modal.component';
                         }
                     ]"
                     [sortable]="true"
-                    empty_message="No available edges on cluster"
+                    [empty_message]="'ADMIN.EDGE_LIST_EMPTY' | translate"
                 ></simple-table>
             </div>
         </div>
@@ -95,15 +97,28 @@ import { EdgeModalComponent } from './edge-modal.component';
         <ng-template #description_template let-data="data">
             <div class="px-4 py-2 select-text overflow-hidden w-full text-xs">
                 {{ data }}
-                <span class="opacity-30" *ngIf="!data">No description</span>
+                <span class="opacity-30" *ngIf="!data">
+                    {{ 'COMMON.DESCRIPTION_EMPTY' | translate }}
+                </span>
             </div>
         </ng-template>
         <ng-template #actions_template let-row="row">
             <div class="flex items-center space-x-2 p-2">
-                <button icon matRipple (click)="edit(row)">
+                <button
+                    icon
+                    matRipple
+                    [matTooltip]="'ADMIN.EDGE_EDIT' | translate"
+                    (click)="edit(row)"
+                >
                     <app-icon>edit</app-icon>
                 </button>
-                <button icon matRipple class="text-error" (click)="remove(row)">
+                <button
+                    icon
+                    matRipple
+                    class="text-error"
+                    [matTooltip]="'ADMIN.EDGE_REMOVE' | translate"
+                    (click)="remove(row)"
+                >
                     <app-icon>delete</app-icon>
                 </button>
             </div>

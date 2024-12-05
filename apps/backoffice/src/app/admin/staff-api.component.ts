@@ -35,7 +35,9 @@ export interface PlaceTenant {
     template: `
         <div class="flex flex-col h-full w-full">
             <div class="flex items-center justify-between space-x-2 my-4">
-                <div class="text-2xl">Staff API Tenants</div>
+                <div class="text-2xl">
+                    {{ 'ADMIN.TENANTS_HEADER' | translate }}
+                </div>
                 <div class="flex items-center space-x-2">
                     <mat-form-field
                         class="no-subscript w-56"
@@ -45,7 +47,9 @@ export interface PlaceTenant {
                             name="type"
                             [ngModel]="domain | async"
                             (ngModelChange)="domain.next($event)"
-                            placeholder="Select Domain..."
+                            [placeholder]="
+                                'ADMIN.TENANTS_SELECT_DOMAIN' | translate
+                            "
                         >
                             <mat-option
                                 *ngFor="let domain of domain_list"
@@ -61,7 +65,7 @@ export interface PlaceTenant {
                         class="h-12 w-32"
                         (click)="editTenant()"
                     >
-                        Add Tenant
+                        {{ 'ADMIN.TENANTS_ADD' | translate }}
                     </button>
                 </div>
             </div>
@@ -75,11 +79,14 @@ export interface PlaceTenant {
                     class="min-w-[48rem] block text-sm"
                     [data]="tenants"
                     [columns]="[
-                        { key: 'name', name: 'Name' },
-                        { key: 'platform', name: 'Platform' },
+                        { key: 'name', name: 'COMMON.FIELD_NAME' | translate },
+                        {
+                            key: 'platform',
+                            name: 'ADMIN.TENANTS_PLATFORM' | translate
+                        },
                         {
                             key: 'secret_expiry',
-                            name: 'Expires',
+                            name: 'ADMIN.TENANTS_SECRET_EXPIRY' | translate,
                             content: expires_template,
                             size: '10rem'
                         },
@@ -92,7 +99,7 @@ export interface PlaceTenant {
                         }
                     ]"
                     [sortable]="true"
-                    empty_message="No tenants for selected domain"
+                    [empty_message]="'ADMIN.TENANTS_EMPTY' | translate"
                 ></simple-table>
             </div>
         </div>
@@ -126,7 +133,9 @@ export interface PlaceTenant {
                 <button
                     icon
                     matRipple
-                    matTooltip="Edit Tenant Booking Limits"
+                    [matTooltip]="
+                        'ADMIN.TENANTS_EDIT_BOOKING_LIMITS' | translate
+                    "
                     (click)="editLimits(row)"
                 >
                     <app-icon>app_registration</app-icon>
@@ -134,7 +143,7 @@ export interface PlaceTenant {
                 <button
                     icon
                     matRipple
-                    matTooltip="Edit Tenant"
+                    [matTooltip]="'ADMIN.TENANTS_EDIT' | translate"
                     (click)="editTenant(row)"
                 >
                     <app-icon>edit</app-icon>
@@ -143,7 +152,7 @@ export interface PlaceTenant {
                     icon
                     matRipple
                     class="text-error"
-                    matTooltip="Remove Tenant"
+                    [matTooltip]="'ADMIN.TENANTS_REMOVE' | translate"
                     (click)="removeTenant(row)"
                 >
                     <app-icon>delete</app-icon>

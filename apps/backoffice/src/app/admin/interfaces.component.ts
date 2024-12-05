@@ -19,10 +19,10 @@ import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
             class="min-w-[36rem] block text-sm"
             [data]="interfaces"
             [columns]="[
-                { key: 'id', name: 'Repository' },
+                { key: 'id', name: 'REPOS.SINGULAR' | translate },
                 {
                     key: 'name',
-                    name: 'Commit Hash',
+                    name: 'COMMON.GIT_COMMIT' | translate,
                     content: name_template,
                     size: '24rem'
                 }
@@ -35,7 +35,7 @@ import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
             <div class="p-4">
                 <div class="font-mono" *ngIf="row.name">{{ row.name }}</div>
                 <span class="text-xs opacity-30" *ngIf="!row.name">
-                    No Commit Hash
+                    {{ 'ADMIN.INTERFACES_COMMIT_EMPTY' | translate }}
                 </span>
             </div>
         </ng-template>
