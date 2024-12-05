@@ -10,7 +10,7 @@ import {
 } from '@placeos/ts-client';
 import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 
-import { ItemCreateUpdateModalComponent } from 'apps/backoffice/src/app/overlays/item-modal/item-modal.component';
+import { ItemCreateUpdateModalComponent } from 'apps/backoffice/src/app/overlays/item-modal.component';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import {
     notifySuccess,
@@ -188,10 +188,6 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
 
     public newBroker(): void {
         const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
-            height: 'auto',
-            width: 'auto',
-            maxHeight: 'calc(100vh - 2em)',
-            maxWidth: 'calc(100vw - 2em)',
             data: {
                 item: new PlaceMQTTBroker(),
                 name: 'Broker',
@@ -209,10 +205,6 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
 
     public editBroker(item: PlaceMQTTBroker): void {
         const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
-            height: 'auto',
-            width: 'auto',
-            maxHeight: 'calc(100vh - 2em)',
-            maxWidth: 'calc(100vw - 2em)',
             data: {
                 item,
                 name: 'Broker',

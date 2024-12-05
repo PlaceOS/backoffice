@@ -34,7 +34,7 @@ import { openConfirmModal } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { AuthSourceModalComponent } from '../overlays/auth-source-modal/auth-source-modal.component';
-import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
+import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
 
 export type PlaceAuthSource =
     | PlaceOAuthSource
@@ -152,10 +152,6 @@ export class DomainStateService {
     public async editApplication(item?: PlaceApplication) {
         item = item || new PlaceApplication({ owner_id: this.active_item.id });
         const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
-            height: 'auto',
-            width: 'auto',
-            maxHeight: 'calc(100vh - 2em)',
-            maxWidth: 'calc(100vw - 2em)',
             data: {
                 item,
                 name: 'Application',

@@ -29,7 +29,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="auth-source-name"
                             placeholder="Auth Source Name"
-                            i18n-placeholder="@@authSourceNamePlaceholder"
                             formControlName="name"
                             required
                         />
@@ -53,7 +52,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="issuer"
                             placeholder="Issuer"
-                            i18n-placeholder="@@authSourceIssuerPlaceholder"
                             formControlName="issuer"
                             required
                         />
@@ -79,7 +77,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="idp-target"
                             placeholder="IdP Target URL"
-                            i18n-placeholder="@@authSourceIdpTargetPlaceholder"
                             formControlName="idp_sso_target_url"
                             required
                         />
@@ -186,7 +183,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="cert-fingerprint"
                             placeholder="Certificate Fingerprint"
-                            i18n-placeholder="@@authSourceCertPrintPlaceholder"
                             formControlName="idp_cert_fingerprint"
                         />
                     </mat-form-field>
@@ -199,7 +195,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                         matInput
                         name="cert"
                         placeholder="Full Certificate"
-                        i18n-placeholder="@@authSourceCertPlaceholder"
                         formControlName="idp_cert"
                     ></textarea>
                 </mat-form-field>
@@ -212,7 +207,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="uid-attribute"
                             placeholder="UID Attribute"
-                            i18n-placeholder="@@authSourceUidAttrPlaceholder"
                             formControlName="uid_attribute"
                         />
                     </mat-form-field>
@@ -262,7 +256,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="slo-target"
                             placeholder="IdP SLO Target URL"
-                            i18n-placeholder="@@authSourceIdpSloUriPlaceholder"
                             formControlName="idp_slo_target_url"
                         />
                     </mat-form-field>
@@ -277,7 +270,6 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="slo-relay"
                             placeholder="SLO Default Relay State"
-                            i18n-placeholder="@@authSourceSloRelayPlaceholder"
                             formControlName="slo_default_relay_state"
                         />
                     </mat-form-field>

@@ -43,7 +43,7 @@ import {
     notifySuccess,
 } from 'apps/backoffice/src/app/common/notifications';
 import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
-import { getInvalidFields } from '../../common/general';
+import { getInvalidFields } from '../common/general';
 
 export interface CreateEditModalData<T extends Identity = any> {
     /** Service associated with the item being created/edited */
@@ -62,8 +62,65 @@ export interface CreateEditModalData<T extends Identity = any> {
 
 @Component({
     selector: 'item-modal',
-    templateUrl: './item-modal.component.html',
-    styleUrls: ['./item-modal.component.scss'],
+    template: `
+        <fullscreen-modal-shell
+            [heading]="
+                (item && edit ? 'Edit' : 'New') +
+                ' ' +
+                (name === 'Repositorie' ? 'Repository' : name)
+            "
+            [loading]="loading"
+            (save)="submit()"
+        >
+            <ng-container [ngSwitch]="item_type">
+                <repository-form
+                    *ngSwitchCase="'repository'"
+                    [form]="form"
+                ></repository-form>
+                <trigger-form
+                    *ngSwitchCase="'trigger'"
+                    [form]="form"
+                ></trigger-form>
+                <system-trigger-form
+                    *ngSwitchCase="'system-trigger'"
+                    [form]="form"
+                ></system-trigger-form>
+
+                <application-form
+                    *ngSwitchCase="'application'"
+                    [form]="form"
+                ></application-form>
+
+                <domain-form
+                    *ngSwitchCase="'domain'"
+                    [form]="form"
+                ></domain-form>
+
+                <user-form *ngSwitchCase="'user'" [form]="form"></user-form>
+
+                <driver-form
+                    *ngSwitchCase="'driver'"
+                    [form]="form"
+                    (waiting)="can_submit = !$event"
+                ></driver-form>
+                <zone-form *ngSwitchCase="'zone'" [form]="form"></zone-form>
+
+                <module-form
+                    *ngSwitchCase="'module'"
+                    [form]="form"
+                    [readonly]="readonly"
+                ></module-form>
+
+                <broker-form
+                    *ngSwitchCase="'broker'"
+                    [form]="form"
+                ></broker-form>
+
+                <system-form *ngSwitchDefault [form]="form"></system-form>
+            </ng-container>
+        </fullscreen-modal-shell>
+    `,
+    styles: [''],
 })
 export class ItemCreateUpdateModalComponent
     extends AsyncHandler

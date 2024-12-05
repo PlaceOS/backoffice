@@ -61,7 +61,6 @@ import { FormatListPipe } from './pipes/format-list.pipe';
 import { SafePipe } from './pipes/safe.pipe';
 import { SanitizePipe } from './pipes/sanitise.pipe';
 import { SearchbarComponent } from './searchbar.component';
-import { SidebarComponent } from './sidebar/sidebar.component';
 import { TerminalComponent } from './terminal.component';
 import { UnauthorisedComponent } from './unauthorised.component';
 import { UploadListComponent } from './upload-list.component';
@@ -97,6 +96,7 @@ import { CronFieldComponent } from './forms/trigger-condition-form/cron-field.co
 import { TranslateModule } from '@ngx-translate/core';
 import { SettingsToggleComponent } from './settings-toggle.component';
 import { FullscreenModalShellComponent } from './fullscreen-modal-shell.component';
+import { CounterComponent } from './counter.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -132,7 +132,6 @@ const FORM_COMPONENTS: Type<any>[] = [
 
 const COMPONENTS: Type<any>[] = [
     SearchbarComponent,
-    SidebarComponent,
     IconComponent,
     ...FORM_COMPONENTS,
     TerminalComponent,
@@ -160,6 +159,7 @@ const COMPONENTS: Type<any>[] = [
     SimpleTableComponent,
     ReorderItemsModalComponent,
     FullscreenModalShellComponent,
+    CounterComponent,
 ];
 
 const PIPES: Type<any>[] = [

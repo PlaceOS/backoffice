@@ -27,7 +27,6 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                         matInput
                         name="auth-source-name"
                         placeholder="Auth Source Name"
-                        i18n-placeholder="@@authSourceNamePlaceholder"
                         formControlName="name"
                         required
                     />
@@ -44,7 +43,6 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                             matInput
                             name="client-id"
                             placeholder="Client ID"
-                            i18n-placeholder="@@authSourceClientIdPlaceholder"
                             formControlName="client_id"
                         />
                     </mat-form-field>
@@ -71,7 +69,6 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                             matInput
                             name="site"
                             placeholder="URL of the SSO provider"
-                            i18n-placeholder="@@authSourceSitePlaceholder"
                             formControlName="site"
                         />
                     </mat-form-field>
@@ -83,7 +80,6 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                             matInput
                             name="scope"
                             placeholder="Scope"
-                            i18n-placeholder="@@scopePlaceholder"
                             formControlName="scope"
                         />
                     </mat-form-field>
@@ -131,7 +127,6 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                         matInput
                         name="token-url"
                         placeholder="Token URL"
-                        i18n-placeholder="@@authSourceTokenUrlPlaceholder"
                         formControlName="token_url"
                     />
                 </mat-form-field>
@@ -157,7 +152,6 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
                             matInput
                             name="raw_info_url"
                             placeholder="User Profile URL"
-                            i18n-placeholder="@@authSourceProfileUrlPlaceholder"
                             formControlName="raw_info_url"
                         />
                     </mat-form-field>

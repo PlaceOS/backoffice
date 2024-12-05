@@ -106,7 +106,6 @@ import { map } from 'rxjs/operators';
                             matInput
                             name="uri"
                             placeholder="Module URI"
-                            i18n-placeholder="@@uriPlaceholder"
                             formControlName="uri"
                         />
                         <mat-error>A valid URI is required</mat-error>
@@ -137,7 +136,6 @@ import { map } from 'rxjs/operators';
                                 matInput
                                 name="ip"
                                 placeholder="IP Address"
-                                i18n-placeholder="@@ipAddressPlaceholder"
                                 formControlName="ip"
                             />
                             <mat-error *ngIf="form.controls.ip.invalid">
@@ -170,7 +168,6 @@ import { map } from 'rxjs/operators';
                                 name="port-number"
                                 type="number"
                                 placeholder="Port Number"
-                                i18n-placeholder="@@portPlaceholder"
                                 formControlName="port"
                             />
                             <mat-error *ngIf="form.controls.port.invalid">
@@ -180,46 +177,39 @@ import { map } from 'rxjs/operators';
                         </mat-form-field>
                     </div>
                 </div>
-                <div
-                    class="field"
-                    *ngIf="
-                        form.controls.tls &&
-                        !(role === 'service' || role === 'websocket')
-                    "
-                >
-                    <mat-checkbox name="tls" formControlName="tls"
-                        >TLS</mat-checkbox
-                    >
-                </div>
-                <div
-                    class="field"
-                    *ngIf="
-                        form.controls.udp &&
-                        !(role === 'service' || role === 'websocket')
-                    "
-                >
-                    <mat-checkbox name="udp" formControlName="udp"
-                        >UDP</mat-checkbox
-                    >
-                </div>
-                <div
-                    class="field"
-                    *ngIf="form.controls.makebreak && role !== 'logic'"
-                >
-                    <mat-checkbox name="makebreak" formControlName="makebreak"
-                        >Makebreak</mat-checkbox
-                    >
-                </div>
-                <div
-                    class="field"
-                    *ngIf="form.controls.ignore_connected && role !== 'logic'"
-                >
-                    <mat-checkbox
-                        name="ignore-connected"
+                <div class="flex items-center flex-wrap mb-4 -mx-2">
+                    <settings-toggle
+                        *ngIf="
+                            form.controls.tls &&
+                            !(role === 'service' || role === 'websocket')
+                        "
+                        class="min-w-[40%] flex-1 max-w-1/2 m-2"
+                        name="TLS"
+                        formControlName="tls"
+                    ></settings-toggle>
+                    <settings-toggle
+                        *ngIf="
+                            form.controls.udp &&
+                            !(role === 'service' || role === 'websocket')
+                        "
+                        class="min-w-[40%] flex-1 max-w-1/2 m-2"
+                        name="UDP"
+                        formControlName="udp"
+                    ></settings-toggle>
+                    <settings-toggle
+                        *ngIf="form.controls.makebreak && role !== 'logic'"
+                        class="min-w-[40%] flex-1 max-w-1/2 m-2"
+                        name="Makebreak"
+                        formControlName="makebreak"
+                    ></settings-toggle>
+                    <settings-toggle
+                        *ngIf="
+                            form.controls.ignore_connected && role !== 'logic'
+                        "
+                        class="min-w-[40%] flex-1 max-w-1/2 m-2"
+                        name="Ignore Connected"
                         formControlName="ignore_connected"
-                    >
-                        Ignore Connected
-                    </mat-checkbox>
+                    ></settings-toggle>
                 </div>
                 <div class="field" *ngIf="form.controls.notes">
                     <label for="notes">Notes:</label>

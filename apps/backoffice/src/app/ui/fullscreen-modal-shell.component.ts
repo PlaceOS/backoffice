@@ -15,9 +15,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
                 </button>
             </header>
             <main
-                class="h-1/2 flex-1 p-4 space-y-8 z-0 max-w-[640px] w-full mx-auto"
+                class="h-1/2 flex-1 px-4 py-2 space-y-8 z-0 max-w-[640px] w-full mx-auto"
             >
                 <ng-content></ng-content>
+                <div class="w-full h-10"></div>
             </main>
             <footer
                 class="fixed bottom-0 left-1/2 -translate-x-1/2 px-4 py-2 mx-auto my-2 max-w-[640px] w-full border-none z-10 bg-base-200 rounded flex items-center justify-end"

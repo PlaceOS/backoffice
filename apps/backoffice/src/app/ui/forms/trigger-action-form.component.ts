@@ -81,7 +81,6 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                                 matInput
                                 name="content"
                                 placeholder="Email body contents..."
-                                i18n-placeholder="@@emailBodyPlacholder"
                                 formControlName="content"
                             ></textarea>
                         </mat-form-field>

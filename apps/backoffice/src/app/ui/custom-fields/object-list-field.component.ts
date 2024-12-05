@@ -46,7 +46,9 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                 <button btn type="button" class="w-full" (click)="addRow()">
                     <div class="contents">
                         <app-icon>add</app-icon>
-                        <div class="text">New Item</div>
+                        <div class="text">
+                            {{ 'COMMON.NEW_ITEM' | translate }}
+                        </div>
                     </div>
                 </button>
             </div>

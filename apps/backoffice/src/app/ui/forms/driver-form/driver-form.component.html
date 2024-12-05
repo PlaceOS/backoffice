@@ -47,10 +47,7 @@
     </div>
     <ng-container *ngIf="!loading; else load_state">
         <ng-container *ngIf="!failed; else fail_state">
-            <form
-                [formGroup]="form"
-                class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
-            >
+            <form [formGroup]="form" class="flex flex-col">
                 <ng-container
                     *ngIf="
                         (form.controls.commit && form.controls.commit.value) ||
@@ -72,7 +69,6 @@
                                 matInput
                                 name="driver-name"
                                 placeholder="Driver Name"
-                                i18n-placeholder="@@driverNamePlaceholder"
                                 formControlName="name"
                                 required
                             />
@@ -101,7 +97,6 @@
                                 matInput
                                 name="description"
                                 placeholder="Description"
-                                i18n-placeholder="@@descriptionPlaceholder"
                                 formControlName="description"
                             ></textarea>
                         </mat-form-field>
@@ -173,12 +168,12 @@
                             class="field"
                             *ngIf="form.controls.ignore_connected"
                         >
-                            <mat-checkbox
-                                name="ignore-connected"
+                            <div class="h-8 w-full"></div>
+                            <settings-toggle
+                                class="w-full"
+                                name="Ignore Connected"
                                 formControlName="ignore_connected"
-                            >
-                                Ignore Connected
-                            </mat-checkbox>
+                            ></settings-toggle>
                         </div>
                     </div>
                 </ng-container>

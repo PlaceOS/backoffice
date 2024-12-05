@@ -28,7 +28,6 @@ import { unique } from '../../common/general';
                         matInput
                         name="broker-name"
                         placeholder="Broker Name"
-                        i18n-placeholder="@@brokerNamePlaceholder"
                         formControlName="name"
                         required
                     />
@@ -42,7 +41,6 @@ import { unique } from '../../common/general';
                         matInput
                         name="description"
                         placeholder="Description"
-                        i18n-placeholder="@@descriptionPlaceholder"
                         formControlName="description"
                     ></textarea>
                 </mat-form-field>
@@ -60,7 +58,6 @@ import { unique } from '../../common/general';
                         matInput
                         name="host"
                         placeholder="Host"
-                        i18n-placeholder="@@hostPlaceholder"
                         formControlName="name"
                         required
                     />
@@ -84,7 +81,6 @@ import { unique } from '../../common/general';
                             name="port-number"
                             type="number"
                             placeholder="Port Number"
-                            i18n-placeholder="@@portPlaceholder"
                             formControlName="port"
                         />
                         <mat-error>
@@ -127,7 +123,6 @@ import { unique } from '../../common/general';
                                 matInput
                                 name="username"
                                 placeholder="Username"
-                                i18n-placeholder="@@usernamePlaceholder"
                                 formControlName="name"
                                 required
                             />
@@ -151,7 +146,6 @@ import { unique } from '../../common/general';
                                 autocomplete="new-password"
                                 [type]="show_password ? 'text' : 'password'"
                                 placeholder="Password"
-                                i18n-placeholder="@@passwordPlaceholder"
                                 formControlName="password"
                             />
                             <app-icon
@@ -176,7 +170,6 @@ import { unique } from '../../common/general';
                             matInput
                             name="cert"
                             placeholder="Certificate"
-                            i18n-placeholder="@@certificatePlaceholder"
                             formControlName="certificate"
                         ></textarea>
                         <mat-error>A valid certificate is required</mat-error>

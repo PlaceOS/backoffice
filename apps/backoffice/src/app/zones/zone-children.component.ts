@@ -21,7 +21,6 @@ import { ZonesStateService } from './zones-state.service';
                     (ngModelChange)="filter$.next($event)"
                     name="search-filter"
                     [placeholder]="'ZONES.SEARCH' | translate"
-                    i18n-placeholder="@@zoneChildrenTableFilter"
                 />
             </mat-form-field>
         </div>

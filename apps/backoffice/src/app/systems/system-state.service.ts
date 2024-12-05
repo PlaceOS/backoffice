@@ -45,7 +45,7 @@ import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { ConfirmModalData } from '../overlays/confirm-modal.component';
-import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
+import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
 import {
     SelectItemModalComponent,
     SelectItemModalData,
@@ -394,10 +394,6 @@ export class SystemStateService extends AsyncHandler {
     public async editTrigger(trigger: PlaceTrigger) {
         if (this.item && trigger) {
             const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
-                height: 'auto',
-                width: 'auto',
-                maxHeight: 'calc(100vh - 2em)',
-                maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item: trigger,
                     name: 'Trigger',

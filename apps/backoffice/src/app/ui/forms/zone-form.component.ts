@@ -14,12 +14,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
 @Component({
     selector: 'zone-form',
     template: `
-        <form
-            zone
-            *ngIf="form"
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
-            [formGroup]="form"
-        >
+        <form zone *ngIf="form" class="flex flex-col" [formGroup]="form">
             <div class="field" *ngIf="form.controls.parent_zone">
                 <label for="parent-zone">Parent Zone: </label>
                 <item-search-field
@@ -29,46 +24,47 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     formControlName="parent_zone"
                 ></item-search-field>
             </div>
-            <div class="field" *ngIf="form.controls.name">
-                <label
-                    for="zone-name"
-                    [class.error]="
-                        form.controls.name.invalid && form.controls.name.touched
-                    "
-                >
-                    Name<span>*</span>:
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="zone-name"
-                        placeholder="Zone Name"
-                        i18n-placeholder="@@zoneNamePlaceholder"
-                        formControlName="name"
-                        required
-                    />
-                    <mat-error>Zone name is required</mat-error>
-                </mat-form-field>
-            </div>
-            <div class="field" *ngIf="form.controls.display_name">
-                <label
-                    for="zone-display"
-                    [class.error]="
-                        form.controls.display_name.invalid &&
-                        form.controls.display_name.touched
-                    "
-                >
-                    Display Name:
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="zone-display"
-                        placeholder="Zone display name"
-                        i18n-placeholder="@@zoneDisplayNamePlaceholder"
-                        formControlName="display_name"
-                    />
-                </mat-form-field>
+            <div class="fieldset">
+                <div class="field" *ngIf="form.controls.name">
+                    <label
+                        for="zone-name"
+                        [class.error]="
+                            form.controls.name.invalid &&
+                            form.controls.name.touched
+                        "
+                    >
+                        Name<span>*</span>:
+                    </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="zone-name"
+                            placeholder="Zone Name"
+                            formControlName="name"
+                            required
+                        />
+                        <mat-error>Zone name is required</mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="field" *ngIf="form.controls.display_name">
+                    <label
+                        for="zone-display"
+                        [class.error]="
+                            form.controls.display_name.invalid &&
+                            form.controls.display_name.touched
+                        "
+                    >
+                        Display Name:
+                    </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="zone-display"
+                            placeholder="Zone display name"
+                            formControlName="display_name"
+                        />
+                    </mat-form-field>
+                </div>
             </div>
             <div class="field" *ngIf="form.controls.tags">
                 <label
@@ -110,48 +106,48 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         matInput
                         name="description"
                         placeholder="Description"
-                        i18n-placeholder="@@descriptionPlaceholder"
                         formControlName="description"
                     ></textarea>
                 </mat-form-field>
             </div>
-            <div class="field" *ngIf="form.controls.location">
-                <label for="location">Location:</label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="location"
-                        placeholder="Geo-location details for zone. <lat, long>"
-                        i18n-placeholder="@@locationPlaceholder"
-                        formControlName="location"
-                    />
-                </mat-form-field>
-            </div>
-            <div class="field">
-                <label for="timezone">Timezone</label>
-                <mat-form-field appearance="outline">
-                    <div class="prefix" matPrefix>
-                        <app-icon class="text-2xl relative -left-0.5">
-                            search
-                        </app-icon>
-                    </div>
-                    <input
-                        matInput
-                        formControlName="timezone"
-                        placeholder="System timezone"
-                        [matAutocomplete]="auto"
-                    />
-                </mat-form-field>
-                <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option
-                        *ngFor="let tz of filtered_timezones"
-                        [value]="tz"
-                        >{{ tz }}</mat-option
-                    >
-                    <mat-option *ngIf="!timezones.length" [disabled]="true">
-                        No matching timezones
-                    </mat-option>
-                </mat-autocomplete>
+            <div class="fieldset">
+                <div class="field" *ngIf="form.controls.location">
+                    <label for="location">Location:</label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="location"
+                            placeholder="Geo-location details for zone. <lat, long>"
+                            formControlName="location"
+                        />
+                    </mat-form-field>
+                </div>
+                <div class="field">
+                    <label for="timezone">Timezone</label>
+                    <mat-form-field appearance="outline">
+                        <div class="prefix" matPrefix>
+                            <app-icon class="text-2xl relative -left-0.5">
+                                search
+                            </app-icon>
+                        </div>
+                        <input
+                            matInput
+                            formControlName="timezone"
+                            placeholder="System timezone"
+                            [matAutocomplete]="auto"
+                        />
+                    </mat-form-field>
+                    <mat-autocomplete #auto="matAutocomplete">
+                        <mat-option
+                            *ngFor="let tz of filtered_timezones"
+                            [value]="tz"
+                            >{{ tz }}</mat-option
+                        >
+                        <mat-option *ngIf="!timezones.length" [disabled]="true">
+                            No matching timezones
+                        </mat-option>
+                    </mat-autocomplete>
+                </div>
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.code">
@@ -161,7 +157,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             matInput
                             name="code"
                             placeholder="Organisation Code"
-                            i18n-placeholder="@@codePlaceholder"
                             formControlName="code"
                         />
                     </mat-form-field>
@@ -173,38 +168,27 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             matInput
                             name="type"
                             placeholder="Organisational Categorisation"
-                            i18n-placeholder="@@zoneTypePlaceholder"
                             formControlName="type"
                         />
                     </mat-form-field>
                 </div>
             </div>
-            <div class="fieldset">
+            <div class="fieldset mb-4">
                 <div class="field" *ngIf="form.controls.count">
                     <label for="count">Count:</label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="count"
-                            type="number"
-                            placeholder="Resource count. Desks, Hardware, etc."
-                            i18n-placeholder="@@zoneTagCountPlaceholder"
-                            formControlName="count"
-                        />
-                    </mat-form-field>
+                    <a-counter
+                        formControlName="count"
+                        [min]="0"
+                        [max]="999"
+                    ></a-counter>
                 </div>
                 <div class="field" *ngIf="form.controls.capacity">
                     <label for="capacity"> Capacity: </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="capacity"
-                            type="number"
-                            placeholder="Physical capacity of the zone"
-                            i18n-placeholder="@@zoneCapacityPlaceholder"
-                            formControlName="capacity"
-                        />
-                    </mat-form-field>
+                    <a-counter
+                        formControlName="capacity"
+                        [min]="0"
+                        [max]="999"
+                    ></a-counter>
                 </div>
             </div>
             <div class="field" *ngIf="form.controls.map_id">
@@ -214,7 +198,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         matInput
                         name="map"
                         placeholder="Map ID or URL"
-                        i18n-placeholder="@@mapUrlPlaceholder"
                         formControlName="map_id"
                     />
                 </mat-form-field>

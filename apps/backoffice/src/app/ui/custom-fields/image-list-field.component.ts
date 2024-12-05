@@ -47,7 +47,9 @@ export interface UploadDetails {
                 [style.transform]="'translate(-' + offset + '00%)'"
             >
                 <app-icon class="text-4xl opacity-60">add</app-icon>
-                <p class="opacity-60" i18n>Upload Image(s)</p>
+                <p class="opacity-60" i18n>
+                    {{ 'COMMON.IMAGE_UPLOADS' | translate }}
+                </p>
                 <input
                     type="file"
                     class="absolute inset-0 opacity-0 h-32 w-32 cursor-pointer"
@@ -142,8 +144,7 @@ export interface UploadDetails {
                 </mat-chip-row>
             </mat-chip-grid>
             <input
-                placeholder="Add image via URL"
-                i18n-placeholder
+                [placeholder]="'COMMON.IMAGE_ADD_URL' | translate"
                 [matChipInputFor]="chipList"
                 [matChipInputSeparatorKeyCodes]="separators"
                 [matChipInputAddOnBlur]="true"

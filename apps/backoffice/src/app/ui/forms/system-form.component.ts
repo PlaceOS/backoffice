@@ -14,7 +14,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
     template: `
         <form
             system
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
+            class="flex flex-col w-full"
             *ngIf="form"
             [formGroup]="form"
         >
@@ -57,7 +57,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             matInput
                             name="system-name"
                             placeholder="System Name"
-                            i18n-placeholder="@@systemNamePlaceholder"
                             formControlName="name"
                             required
                         />
@@ -81,7 +80,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             matInput
                             name="system-email"
                             placeholder="System Email"
-                            i18n-placeholder="@@systemEmailPlaceholder"
                             formControlName="email"
                         />
                         <mat-error *ngIf="form.controls.email.invalid"
@@ -98,7 +96,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             matInput
                             name="display-name"
                             placeholder="Display Name"
-                            i18n-placeholder="@@displayNamePlaceholder"
                             formControlName="display_name"
                         />
                     </mat-form-field>
@@ -110,7 +107,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             matInput
                             name="code-name"
                             placeholder="Code"
-                            i18n-placeholder="@@codeNamePlaceholder"
                             formControlName="code"
                         />
                     </mat-form-field>
@@ -131,7 +127,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         matInput
                         name="support-url"
                         placeholder="Support URL"
-                        i18n-placeholder="@@suportUrlPlaceholder"
                         formControlName="support_url"
                     />
                     <mat-error *ngIf="form.controls.support_url.invalid">
@@ -139,7 +134,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     </mat-error>
                 </mat-form-field>
             </div>
-            <div class="fieldset">
+            <div class="fieldset mb-4">
                 <div class="field" *ngIf="form.controls.installed_ui_devices">
                     <label
                         for="ui-devices"
@@ -150,21 +145,11 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     >
                         Touch Panels:
                     </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="ui-devices"
-                            type="number"
-                            placeholder="Number of Touch Panels"
-                            i18n-placeholder="@@panelCountPlaceholder"
-                            formControlName="installed_ui_devices"
-                        />
-                        <mat-error
-                            *ngIf="form.controls.installed_ui_devices.invalid"
-                        >
-                            A valid positive number is required
-                        </mat-error>
-                    </mat-form-field>
+                    <a-counter
+                        formControlName="installed_ui_devices"
+                        [min]="0"
+                        [max]="999"
+                    ></a-counter>
                 </div>
                 <div class="field" *ngIf="form.controls.capacity">
                     <label
@@ -176,46 +161,29 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     >
                         Capacity:
                     </label>
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            name="capacity"
-                            type="number"
-                            placeholder="Capacity"
-                            i18n-placeholder="@@capacityPlaceholder"
-                            formControlName="capacity"
-                        />
-                        <mat-error *ngIf="form.controls.capacity.invalid">
-                            A valid positive number is required
-                        </mat-error>
-                    </mat-form-field>
+                    <a-counter
+                        formControlName="capacity"
+                        [min]="0"
+                        [max]="999"
+                    ></a-counter>
                 </div>
             </div>
             <div class="flex items-center space-x-4 mb-4">
-                <mat-checkbox
-                    name="bookable"
+                <settings-toggle
+                    name="Bookable"
+                    class="flex-1"
                     formControlName="bookable"
-                    class="m-0 flex-1"
-                    *ngIf="form.controls.bookable"
-                >
-                    Bookable
-                </mat-checkbox>
-                <mat-checkbox
-                    name="signage"
+                ></settings-toggle>
+                <settings-toggle
+                    name="Signage"
+                    class="flex-1"
                     formControlName="signage"
-                    class="m-0 flex-1"
-                    *ngIf="form.controls.signage"
-                >
-                    Signage
-                </mat-checkbox>
-                <mat-checkbox
-                    name="public"
+                ></settings-toggle>
+                <settings-toggle
+                    name="Public"
+                    class="flex-1"
                     formControlName="public"
-                    class="m-0 flex-1"
-                    *ngIf="form.controls.public"
-                >
-                    Public
-                </mat-checkbox>
+                ></settings-toggle>
             </div>
             <div class="field" *ngIf="form.controls.description">
                 <label for="description">Description:</label>
@@ -268,7 +236,6 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     <input
                         matInput
                         name="map_id"
-                        i18n-placeholder="@@mapIdPlaceholder"
                         placeholder="Map SVG ID selector e.g. area-01.10-status"
                         formControlName="map_id"
                     />

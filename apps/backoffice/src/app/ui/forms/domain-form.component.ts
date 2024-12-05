@@ -1,24 +1,14 @@
 import { Component, Input } from '@angular/core';
-import { UntypedFormGroup, Validators } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { addChipItem, removeChipItem } from '../../common/forms';
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { validateEmailList } from '../../triggers/triggers.utilities';
 import { notifyWarn } from '../../common/notifications';
-import {
-    isValidDomain,
-    isValidUrl,
-    validateURI,
-} from '../../common/validation';
+import { isValidDomain } from '../../common/validation';
 
 @Component({
     selector: 'domain-form',
     template: `
-        <form
-            domain
-            *ngIf="form"
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
-            [formGroup]="form"
-        >
+        <form domain *ngIf="form" class="flex flex-col" [formGroup]="form">
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.name">
                     <label
@@ -35,7 +25,6 @@ import {
                             matInput
                             name="domain-name"
                             placeholder="Domain Name"
-                            i18n-placeholder="@@domainNamePlaceholder"
                             formControlName="name"
                             required
                         />
@@ -102,7 +91,6 @@ import {
                         matInput
                         name="logout-url"
                         placeholder="Logout URL"
-                        i18n-placeholder="@@logoutUrlPlaceholder"
                         formControlName="logout_url"
                     />
                     <mat-error *ngIf="form.controls.logout_url.invalid">

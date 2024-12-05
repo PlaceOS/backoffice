@@ -30,7 +30,6 @@ import { Md5 } from 'ts-md5';
                             matInput
                             name="application-name"
                             placeholder="Application Name"
-                            i18n-placeholder="@@appNamePlaceholder"
                             formControlName="name"
                             required
                         />
@@ -44,7 +43,6 @@ import { Md5 } from 'ts-md5';
                             matInput
                             name="scopes"
                             placeholder="Access Scopes"
-                            i18n-placeholder="@@scopePlaceholder"
                             formControlName="scopes"
                         />
                     </mat-form-field>
@@ -66,7 +64,6 @@ import { Md5 } from 'ts-md5';
                         matInput
                         name="redirect-uri"
                         placeholder="Redirect URI e.g. http://localhost:4200/oauth-resp.html"
-                        i18n-placeholder="@@redirectPlaceholder"
                         formControlName="redirect_uri"
                     />
                     <mat-error>A valid URL is required</mat-error>
@@ -79,7 +76,6 @@ import { Md5 } from 'ts-md5';
                         matInput
                         name="client-id"
                         placeholder="MD5 Hash of the Redirect URI"
-                        i18n-placeholder="@@clientIDPlaceholder"
                         [disabled]="true"
                         [ngModel]="client_id | async"
                         [ngModelOptions]="{ standalone: true }"

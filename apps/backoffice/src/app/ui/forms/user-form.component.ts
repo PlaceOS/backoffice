@@ -31,7 +31,7 @@ import {
                 type="password"
                 name="fakepasswordremembered"
             />
-            <div class="field mb-4">
+            <div class="field">
                 <label for="domain">Domain</label>
                 <mat-form-field appearance="outline" class="h-12">
                     <mat-select
@@ -64,7 +64,6 @@ import {
                             matInput
                             name="first-name"
                             placeholder="First name"
-                            i18n-placeholder="@@firstNamePlaceholder"
                             formControlName="first_name"
                             required
                         />
@@ -78,7 +77,6 @@ import {
                             matInput
                             name="last-name"
                             placeholder="Last name"
-                            i18n-placeholder="@@lastNamePlaceholder"
                             formControlName="last_name"
                             required
                         />
@@ -101,105 +99,114 @@ import {
                         matInput
                         name="useremail"
                         placeholder="Email"
-                        i18n-placeholder="@@emailPlaceholder"
                         formControlName="email"
                         autocomplete="nope"
                     />
                     <mat-error>A valid email is required</mat-error>
                 </mat-form-field>
             </div>
-            <div class="field" *ngIf="form.controls.staff_id">
-                <label for="staff-id"> Staff ID: </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="staff-id"
-                        placeholder="Staff ID"
-                        i18n-placeholder="@@staffIdPlaceholder"
-                        formControlName="staff_id"
-                    />
-                </mat-form-field>
+            <div class="fieldset">
+                <div class="field" *ngIf="form.controls.staff_id">
+                    <label for="staff-id"> Staff ID: </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="staff-id"
+                            placeholder="Staff ID"
+                            formControlName="staff_id"
+                        />
+                    </mat-form-field>
+                </div>
+                <div class="field" *ngIf="form.controls.card_number">
+                    <label for="card-number"> Card Number: </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="card-number"
+                            placeholder="Card Number"
+                            formControlName="card_number"
+                        />
+                    </mat-form-field>
+                </div>
             </div>
-            <div class="field" *ngIf="form.controls.card_number">
-                <label for="card-number"> Card Number: </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="card-number"
-                        placeholder="Card Number"
-                        i18n-placeholder="@@cardNumberPlaceholder"
-                        formControlName="card_number"
-                    />
-                </mat-form-field>
+            <div class="flex items-center space-x-4 mb-4">
+                <settings-toggle
+                    *ngIf="form.controls.support"
+                    class="flex-1 max-w-1/2"
+                    name="Support"
+                    formControlName="support"
+                ></settings-toggle>
+                <settings-toggle
+                    *ngIf="form.controls.sys_admin"
+                    class="flex-1 max-w-1/2"
+                    name="System Admin"
+                    formControlName="sys_admin"
+                ></settings-toggle>
             </div>
-            <div class="field" *ngIf="form.controls.support">
-                <mat-checkbox name="support" formControlName="support"
-                    >Support</mat-checkbox
+            <div class="fieldset">
+                <div
+                    class="field"
+                    *ngIf="form.controls.staff_id && !hide_password"
                 >
-            </div>
-            <div class="field" *ngIf="form.controls.sys_admin">
-                <mat-checkbox name="sys_admin" formControlName="sys_admin"
-                    >System Admin</mat-checkbox
-                >
-            </div>
-            <div class="field" *ngIf="form.controls.staff_id && !hide_password">
-                <label
-                    for="new-password"
-                    [class.error]="
-                        form.controls.password.invalid &&
-                        form.controls.password.touched
-                    "
-                >
-                    Password:
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="new-password"
-                        autocomplete="new-password"
-                        [type]="show_password ? 'text' : 'password'"
-                        placeholder="Password"
-                        i18n-placeholder="@@passwordPlaceholder"
-                        formControlName="password"
-                    />
-                    <app-icon
-                        matSuffix
-                        (click)="show_password = !show_password"
+                    <label
+                        for="new-password"
+                        [class.error]="
+                            form.controls.password.invalid &&
+                            form.controls.password.touched
+                        "
                     >
-                        visibility
-                    </app-icon>
-                    <mat-error>A valid password is required</mat-error>
-                </mat-form-field>
-            </div>
-            <div
-                class="field"
-                *ngIf="form.controls.confirm_password && !hide_password"
-            >
-                <label
-                    for="confirm-password"
-                    [class.error]="
-                        form.controls.confirm_password.invalid &&
-                        form.controls.confirm_password.touched
-                    "
-                    minlength="1"
+                        Password:
+                    </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="new-password"
+                            autocomplete="new-password"
+                            [type]="show_password ? 'text' : 'password'"
+                            placeholder="Password"
+                            formControlName="password"
+                        />
+                        <app-icon
+                            matSuffix
+                            (click)="show_password = !show_password"
+                        >
+                            visibility
+                        </app-icon>
+                        <mat-error>A valid password is required</mat-error>
+                    </mat-form-field>
+                </div>
+                <div
+                    class="field"
+                    *ngIf="form.controls.confirm_password && !hide_password"
                 >
-                    Confirm Pasword:
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        [type]="show_confirm ? 'text' : 'password'"
-                        name="confirm-password"
-                        placeholder="Confirm Password"
-                        i18n-placeholder="@@checkPasswordPlaceholder"
-                        formControlName="confirm_password"
+                    <label
+                        for="confirm-password"
+                        [class.error]="
+                            form.controls.confirm_password.invalid &&
+                            form.controls.confirm_password.touched
+                        "
                         minlength="1"
-                    />
-                    <app-icon matSuffix (click)="show_confirm = !show_confirm">
-                        visibility
-                    </app-icon>
-                    <mat-error>Passwords don't match</mat-error>
-                </mat-form-field>
+                    >
+                        Confirm Pasword:
+                    </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            [type]="show_confirm ? 'text' : 'password'"
+                            name="confirm-password"
+                            placeholder="Confirm Password"
+                            formControlName="confirm_password"
+                            minlength="1"
+                        />
+                        <app-icon
+                            matSuffix
+                            (click)="show_confirm = !show_confirm"
+                        >
+                            visibility
+                        </app-icon>
+                        <mat-error>Passwords don't match</mat-error>
+                    </mat-form-field>
+                </div>
             </div>
             <div class="field" *ngIf="form.controls.groups">
                 <label

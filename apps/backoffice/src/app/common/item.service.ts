@@ -13,7 +13,7 @@ import {
 import { ItemActions, ACTIONS } from './actions';
 import { SettingsService } from '../common/settings.service';
 import { HotkeysService } from '../common/hotkeys.service';
-import { ItemCreateUpdateModalComponent } from '../overlays/item-modal/item-modal.component';
+import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
 import { notifySuccess, notifyError } from './notifications';
 import {
     DialogEvent,
@@ -228,10 +228,6 @@ export class ActiveItemService extends AsyncHandler {
                     item = await actions.show(item.id).toPromise();
                 }
                 const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
-                    height: 'auto',
-                    width: 'auto',
-                    maxHeight: 'calc(100vh - 2em)',
-                    maxWidth: 'calc(100vw - 2em)',
                     data: {
                         item: new actions.itemConstructor({ ...item }),
                         name: actions.singular,

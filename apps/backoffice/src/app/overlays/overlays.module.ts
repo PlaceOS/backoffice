@@ -6,7 +6,7 @@ import { SharedContentModule } from '../ui/ui.module';
 
 import { ConfirmModalComponent } from './confirm-modal.component';
 import { ChangelogModalComponent } from './changelog-modal/changelog-modal.component';
-import { ItemCreateUpdateModalComponent } from './item-modal/item-modal.component';
+import { ItemCreateUpdateModalComponent } from './item-modal.component';
 import { SelectItemModalComponent } from './select-item-modal.component';
 import { SystemLogModalComponent } from './system-log-modal/system-log-modal.component';
 import { TriggerActionModalComponent } from './trigger-action-modal/trigger-action-modal.component';

@@ -25,7 +25,6 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                         matInput
                         name="auth-source-name"
                         placeholder="Auth Source Name"
-                        i18n-placeholder="@@authSourceNamePlaceholder"
                         formControlName="name"
                         required
                     />
@@ -51,7 +50,6 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             name="host"
                             placeholder="Host"
                             formControlName="host"
-                            i18n-placeholder="@@authSourceHostPlaceholder"
                         />
                         <mat-error *ngIf="form.controls.host.invalid">
                             Host is required
@@ -79,7 +77,6 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="uid"
                             placeholder="User ID Key"
-                            i18n-placeholder="@@authSourceUidPlaceholder"
                             formControlName="uid"
                         />
                     </mat-form-field>
@@ -118,7 +115,6 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="base"
                             placeholder="Base"
-                            i18n-placeholder="@@authSourceBasePlaceholder"
                             formControlName="base"
                         />
                         <mat-error *ngIf="form.controls.base.invalid">
@@ -146,7 +142,6 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="password"
                             placeholder="Password"
-                            i18n-placeholder="@@passwordPlaceholder"
                             formControlName="password"
                         />
                     </mat-form-field>
@@ -158,7 +153,6 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             matInput
                             name="filter"
                             placeholder="Filter"
-                            i18n-placeholder="@@authSourceFilterPlaceholder"
                             formControlName="filter"
                         />
                     </mat-form-field>

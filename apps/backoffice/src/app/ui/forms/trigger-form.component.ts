@@ -23,7 +23,6 @@ import { UntypedFormGroup } from '@angular/forms';
                         matInput
                         name="trigger-name"
                         placeholder="Trigger Name"
-                        i18n-placeholder="@@triggerNamePlaceholder"
                         formControlName="name"
                         required
                     />
@@ -37,7 +36,6 @@ import { UntypedFormGroup } from '@angular/forms';
                         matInput
                         name="description"
                         placeholder="Description"
-                        i18n-placeholder="@@descriptionPlaceholder"
                         formControlName="description"
                     ></textarea>
                 </mat-form-field>
@@ -71,7 +69,6 @@ import { UntypedFormGroup } from '@angular/forms';
                         name="debounce-period"
                         type="number"
                         placeholder="Debounce Period"
-                        i18n-placeholder="@@debouncePlaceholder"
                         formControlName="debounce_period"
                         required
                     />

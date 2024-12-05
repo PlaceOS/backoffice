@@ -28,7 +28,7 @@ import { notifyError } from '../common/notifications';
 import {
     CreateEditModalData,
     ItemCreateUpdateModalComponent,
-} from '../overlays/item-modal/item-modal.component';
+} from '../overlays/item-modal.component';
 import { i18n } from '../common/translate';
 
 @Injectable({
@@ -100,10 +100,6 @@ export class RepositoriesStateService {
         this._dialog.open<ItemCreateUpdateModalComponent, CreateEditModalData>(
             ItemCreateUpdateModalComponent,
             {
-                height: 'auto',
-                width: 'auto',
-                maxHeight: 'calc(100vh - 2em)',
-                maxWidth: 'calc(100vw - 2em)',
                 data: {
                     item: new PlaceDriver({
                         name: '',

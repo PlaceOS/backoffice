@@ -30,12 +30,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
 @Component({
     selector: 'repository-form',
     template: `
-        <form
-            repository
-            *ngIf="form"
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
-            [formGroup]="form"
-        >
+        <form repository *ngIf="form" class="flex flex-col" [formGroup]="form">
             <div class="field" *ngIf="form.controls.name">
                 <label
                     for="repository-name"
@@ -50,33 +45,55 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         matInput
                         name="repository-name"
                         placeholder="Repository Name"
-                        i18n-placeholder="@@repositoryNamePlaceholder"
                         formControlName="name"
                         required
                     />
                     <mat-error>Repository name is required</mat-error>
                 </mat-form-field>
             </div>
-            <div
-                class="field"
-                *ngIf="
-                    !is_edit &&
-                    form.controls.repo_type &&
-                    form.controls.folder_name
-                "
-            >
-                <label for="type"> Repository Type: </label>
-                <mat-form-field appearance="outline">
-                    <mat-select name="type" formControlName="repo_type">
-                        <mat-option
-                            *ngFor="let type of repo_types"
-                            [value]="type.id"
-                        >
-                            { type.name, select, Driver { Driver } Interface {
-                            Interface } other { Other } }
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
+            <div class="fieldset">
+                <div
+                    class="field"
+                    *ngIf="
+                        !is_edit &&
+                        form.controls.repo_type &&
+                        form.controls.folder_name
+                    "
+                >
+                    <label for="type"> Repository Type: </label>
+                    <mat-form-field appearance="outline">
+                        <mat-select name="type" formControlName="repo_type">
+                            <mat-option
+                                *ngFor="let type of repo_types"
+                                [value]="type.id"
+                            >
+                                { type.name, select, Driver { Driver } Interface
+                                { Interface } other { Other } }
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="field" *ngIf="form.controls.folder_name">
+                    <label
+                        for="folder-name"
+                        [class.error]="
+                            form.controls.folder_name.invalid &&
+                            form.controls.folder_name.touched
+                        "
+                    >
+                        Folder Name<span>*</span>:
+                    </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="folder-name"
+                            placeholder="Folder Name"
+                            formControlName="folder_name"
+                            required
+                        />
+                        <mat-error> A valid folder name is required </mat-error>
+                    </mat-form-field>
+                </div>
             </div>
             <div class="field" *ngIf="form.controls.uri && !hide_uri">
                 <label
@@ -92,45 +109,44 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         matInput
                         name="uri"
                         placeholder="Repository URI"
-                        i18n-placeholder="@@repoUriPlaceholder"
                         formControlName="uri"
                         required
                     />
                     <mat-error>URI is required</mat-error>
                 </mat-form-field>
             </div>
-            <div class="field" *ngIf="form.controls.username">
-                <label for="repo-u"> Repository Username: </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="repo-u"
-                        autocomplete="off"
-                        placeholder="Username"
-                        i18n-placeholder="@@usernamePlaceholder"
-                        formControlName="username"
-                    />
-                </mat-form-field>
-            </div>
-            <div class="field" *ngIf="form.controls.password">
-                <label for="repo-p"> Repository Password: </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="repo-p"
-                        autocomplete="new-password"
-                        [type]="show_password ? 'text' : 'password'"
-                        placeholder="Password"
-                        i18n-placeholder="@@passwordPlaceholder"
-                        formControlName="password"
-                    />
-                    <app-icon
-                        matSuffix
-                        (click)="show_password = !show_password"
-                    >
-                        visibility
-                    </app-icon>
-                </mat-form-field>
+            <div class="fieldset">
+                <div class="field" *ngIf="form.controls.username">
+                    <label for="repo-u"> Repository Username: </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="repo-u"
+                            autocomplete="off"
+                            placeholder="Username"
+                            formControlName="username"
+                        />
+                    </mat-form-field>
+                </div>
+                <div class="field" *ngIf="form.controls.password">
+                    <label for="repo-p"> Repository Password: </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="repo-pwd"
+                            autocomplete="new-password"
+                            [type]="show_password ? 'text' : 'password'"
+                            placeholder="Password"
+                            formControlName="password"
+                        />
+                        <app-icon
+                            matSuffix
+                            (click)="show_password = !show_password"
+                        >
+                            visibility
+                        </app-icon>
+                    </mat-form-field>
+                </div>
             </div>
             <div class="field" *ngIf="form.controls.branch">
                 <label
@@ -147,6 +163,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         name="type"
                         formControlName="branch"
                         [placeholder]="'Select Branch'"
+                        [disabled]="!(branch_list | async)?.length"
                     >
                         <mat-option
                             *ngFor="let branch of branch_list | async"
@@ -165,6 +182,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         name="type"
                         formControlName="commit_hash"
                         placeholder="Select commit"
+                        [disabled]="!(commit_list | async)?.length"
                     >
                         <mat-option
                             *ngFor="let commit of commit_list | async"
@@ -193,36 +211,12 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="can_change_commit && is_interface">
-                <mat-checkbox
-                    class="-mt-4"
+                <settings-form-field
+                    name="Follow latest commit"
                     [ngModel]="follow_latest"
                     [ngModelOptions]="{ standalone: true }"
                     (ngModelChange)="setFollow($event)"
-                >
-                    Follow latest commit
-                </mat-checkbox>
-            </div>
-            <div class="field" *ngIf="form.controls.folder_name">
-                <label
-                    for="folder-name"
-                    [class.error]="
-                        form.controls.folder_name.invalid &&
-                        form.controls.folder_name.touched
-                    "
-                >
-                    Folder Name<span>*</span>:
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="folder-name"
-                        placeholder="Folder Name"
-                        i18n-placeholder="@@folderNamePlaceholder"
-                        formControlName="folder_name"
-                        required
-                    />
-                    <mat-error> A valid folder name is required </mat-error>
-                </mat-form-field>
+                ></settings-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
                 <label for="description"> Description: </label>
@@ -231,7 +225,6 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                         matInput
                         name="description"
                         placeholder="Description"
-                        i18n-placeholder="@@descriptionPlaceholder"
                         formControlName="description"
                     ></textarea>
                 </mat-form-field>

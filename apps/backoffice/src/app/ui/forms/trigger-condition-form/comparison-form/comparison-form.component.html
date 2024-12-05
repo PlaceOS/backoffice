@@ -57,7 +57,6 @@
                 name="constant"
                 formControlName="right"
                 placeholder="true/false, 'string', 123.456"
-                i18n-placeholder="@@comparedValue"
             />
             <mat-error>Valid JSON is required</mat-error>
         </mat-form-field>
@@ -98,7 +97,6 @@
                     (ngModelChange)="updateFormForSide(side)"
                     [ngModelOptions]="{ standalone: true }"
                     placeholder="Select status variable"
-                    i18n-placeholder="@@statusVarPlaceholder"
                 >
                     <mat-option
                         *ngFor="let mod of this[side + '_status_variables']"
@@ -128,7 +126,6 @@
                 "
                 [name]="side + '-subkeys'"
                 placeholder="Status variable subkeys..."
-                i18n-placeholder="@@subkeysPlaceholder"
             />
         </mat-form-field>
     </div>
