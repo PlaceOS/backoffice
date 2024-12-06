@@ -135,7 +135,9 @@
         "BULK_DOWNLOAD": "Download Template",
         "BULK_DROP_MSG": "Select or drop CSV file to begin",
         "BULK_DROP_LOADING": "Processing CSV data...",
-        "BULK_UPLOADING": "Uploading items..."
+        "BULK_UPLOADING": "Uploading items...",
+        "LANG_ENGLISH": "English",
+        "LANG_JAPANESE": "Japanese"
     },
     "SYSTEMS": {
         "SINGULAR": "System",

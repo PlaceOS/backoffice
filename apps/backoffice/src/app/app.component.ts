@@ -193,7 +193,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
 
     private _initLocale() {
         try {
-            let locale = localStorage.getItem('PLACEOS.locale');
+            let locale = localStorage.getItem('BACKOFFICE.locale');
             const locales = this._settings.get('app.locales') || [
                 { id: 'en', name: 'English' },
             ];
@@ -208,7 +208,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
                         locale = locales.find((_) => lang.includes(_.id));
                     if (locale) {
                         this._translate?.use(lang);
-                        localStorage.setItem('PLACEOS.locale', lang);
+                        localStorage.setItem('BACKOFFICE.locale', lang);
                         break;
                     }
                 }
