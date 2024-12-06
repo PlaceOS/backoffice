@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;221479f217a430c6054772daa76f2e470640328b4bb4a4b361e3c3897ab8456f;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/forms/broker-form.component.ts"],
-  "sourcesContent": ["\n            settings-form-field {\n                margin-bottom: 1.5em;\n            }\n\n            .checkbox {\n                align-items: center;\n                flex-direction: row;\n            }\n\n            mat-checkbox {\n                margin: 0.25em;\n            }\n        "],
-  "mappings": "AACY,oBACI,cAAe,KACnB,CAEA,CAAC,SACG,YAAa,OACb,eAAgB,GACpB,CAEA,aAVZ,OAWwB,KACZ",
-  "names": []
-}
