@@ -9,8 +9,149 @@ import { BackofficeExtension } from '../extensions.component';
 
 @Component({
     selector: 'extension-modal',
-    templateUrl: './extension-modal.component.html',
-    styleUrls: ['./extension-modal.component.scss'],
+    template: `
+        <fullscreen-modal-shell
+            [heading]="
+                (item ? 'ADMIN.EXTENSIONS_EDIT' : 'ADMIN.EXTENSIONS_NEW')
+                    | translate
+            "
+            [loading]="loading"
+        >
+            <form [formGroup]="form">
+                <div class="fieldset">
+                    <div class="field">
+                        <label for="type"
+                            >{{ 'ADMIN.EXTENSIONS_FIELD_TYPE' | translate
+                            }}<span>*</span>:
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <mat-select formControlName="type">
+                                <mat-option
+                                    *ngFor="let type of available_types"
+                                    [value]="type"
+                                >
+                                    <span class="capitalize">{{ type }}</span>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="field">
+                        <label for="name"
+                            >{{ 'COMMON.FIELD_NAME' | translate
+                            }}<span>*</span>:
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                name="name"
+                                [placeholder]="
+                                    'ADMIN.EXTENSIONS_FIELD_NAME' | translate
+                                "
+                                formControlName="name"
+                            />
+                            <mat-error>{{
+                                'ADMIN.EXTENSIONS_NAME_REQUIRED' | translate
+                            }}</mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="url"
+                        >{{ 'ADMIN.EXTENSIONS_FIELD_URL' | translate
+                        }}<span>*</span>:
+                    </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="url"
+                            [placeholder]="
+                                'ADMIN.EXTENSIONS_FIELD_URL' | translate
+                            "
+                            formControlName="url"
+                        />
+                        <mat-error>{{
+                            'ADMIN.EXTENSIONS_URL_REQUIRED' | translate
+                        }}</mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="w-full">
+                    <label *ngIf="form.controls.conditions.value?.length">{{
+                        'ADMIN.EXTENSIONS_FIELD_CONDITIONS' | translate
+                    }}</label>
+                    <div
+                        class="fieldset"
+                        *ngFor="let condition of form.controls.conditions.value"
+                    >
+                        <div class="field">
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="condition-field"
+                                    [(ngModel)]="condition[0]"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [placeholder]="
+                                        'ADMIN.EXTENSIONS_CONDITION_FIELD'
+                                            | translate
+                                    "
+                                />
+                            </mat-form-field>
+                        </div>
+                        <div class="field">
+                            <mat-form-field appearance="outline">
+                                <mat-select
+                                    [(ngModel)]="condition[1]"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [placeholder]="
+                                        'ADMIN.EXTENSIONS_CONDITION_OP'
+                                            | translate
+                                    "
+                                >
+                                    <mat-option
+                                        *ngFor="let type of condition_ops"
+                                        [value]="type"
+                                    >
+                                        <span class="capitalize">{{
+                                            type
+                                        }}</span>
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="field">
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    name="value"
+                                    [disabled]="
+                                        condition[1] === 'truthy' ||
+                                        condition[1] === 'falsy'
+                                    "
+                                    [(ngModel)]="condition[2]"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [placeholder]="
+                                        'ADMIN.EXTENSIONS_CONDITION_VALUE'
+                                            | translate
+                                    "
+                                />
+                            </mat-form-field>
+                        </div>
+                        <button
+                            icon
+                            matRipple
+                            class="h-12 w-12 rounded text-error border border-error"
+                            (click)="removeCondition(condition)"
+                        >
+                            <app-icon>delete</app-icon>
+                        </button>
+                    </div>
+                    <button btn class="w-full" (click)="addCondition()">
+                        {{ 'ADMIN.EXTENSIONS_CONDITION_ADD' | translate }}
+                    </button>
+                </div>
+            </form>
+        </fullscreen-modal-shell>
+    `,
+    styles: [``],
 })
 export class ExtensionModalComponent extends AsyncHandler implements OnInit {
     /** Emitter for user action on the modal */

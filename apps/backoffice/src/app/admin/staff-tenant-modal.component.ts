@@ -39,10 +39,9 @@ export interface StaffTenantModalData {
             <form [formGroup]="form" class="mb-16">
                 <div class="flex items-center flex-wrap space-x-0 sm:space-x-2">
                     <div class="flex flex-col flex-1">
-                        <label
-                            >{{ 'COMMON.FIELD_NAME' | translate
-                            }}<span>*</span>:</label
-                        >
+                        <label>
+                            {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
+                        </label>
                         <mat-form-field appearance="outline">
                             <input
                                 matInput

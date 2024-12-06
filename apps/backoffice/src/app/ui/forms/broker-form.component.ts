@@ -5,6 +5,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 
 import { AuthType } from '@placeos/ts-client';
 import { unique } from '../../common/general';
+import { i18n } from '../../common/translate';
 
 @Component({
     selector: 'broker-form',
@@ -21,26 +22,31 @@ import { unique } from '../../common/general';
                     [class.error]="
                         form.controls.name.invalid && form.controls.name.touched
                     "
-                    >Name<span>*</span>:</label
                 >
+                    {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
+                </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="broker-name"
-                        placeholder="Broker Name"
+                        [placeholder]="'COMMON.FIELD_NAME' | translate"
                         formControlName="name"
                         required
                     />
-                    <mat-error>Broker name is required</mat-error>
+                    <mat-error>{{
+                        'ADMIN.BROKERS_NAME_REQUIRED' | translate
+                    }}</mat-error>
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description">Description:</label>
+                <label for="description"
+                    >{{ 'COMMON.FIELD_DESCRIPTION' | translate }}:</label
+                >
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
                         name="description"
-                        placeholder="Description"
+                        [placeholder]="'COMMON.FIELD_DESCRIPTION' | translate"
                         formControlName="description"
                     ></textarea>
                 </mat-form-field>
@@ -51,17 +57,20 @@ import { unique } from '../../common/general';
                     [class.error]="
                         form.controls.name.invalid && form.controls.name.touched
                     "
-                    >Host<span>*</span>:</label
                 >
+                    {{ 'ADMIN.BROKERS_FIELD_HOST' | translate }}<span>*</span>:
+                </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="host"
-                        placeholder="Host"
+                        [placeholder]="'ADMIN.BROKERS_FIELD_HOST' | translate"
                         formControlName="name"
                         required
                     />
-                    <mat-error>Host is required</mat-error>
+                    <mat-error>{{
+                        'ADMIN.BROKERS_HOST_REQUIRED' | translate
+                    }}</mat-error>
                 </mat-form-field>
             </div>
             <div class="fieldset">
@@ -73,29 +82,36 @@ import { unique } from '../../common/general';
                             form.controls.port.touched
                         "
                     >
-                        Port Number<span>*</span>:
+                        {{ 'ADMIN.BROKERS_FIELD_PORT' | translate
+                        }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="port-number"
                             type="number"
-                            placeholder="Port Number"
+                            [placeholder]="
+                                'ADMIN.BROKERS_FIELD_PORT' | translate
+                            "
                             formControlName="port"
                         />
                         <mat-error>
-                            A valid port number between 1 - 65535 is required
+                            {{ 'ADMIN.BROKERS_PORT_REQUIRED' | translate }}
                         </mat-error>
                     </mat-form-field>
                 </div>
-                <div class="field checkbox" *ngIf="form.controls.tls">
-                    <mat-checkbox name="tls" formControlName="tls"
-                        >TLS</mat-checkbox
-                    >
+                <div class="field" *ngIf="form.controls.tls">
+                    <settings-toggle
+                        class="w-full mt-8"
+                        [name]="'COMMON.TLS' | translate"
+                        formControlName="tls"
+                    ></settings-toggle>
                 </div>
             </div>
             <div class="field" *ngIf="form.controls.auth_type">
-                <label for="type">Auth Type: </label>
+                <label for="type"
+                    >{{ 'ADMIN.BROKERS_FIELD_AUTH_TYPE' | translate }}:
+                </label>
                 <mat-form-field appearance="outline">
                     <mat-select name="type" formControlName="auth_type">
                         <mat-option
@@ -116,17 +132,23 @@ import { unique } from '../../common/general';
                                 form.controls.name.invalid &&
                                 form.controls.name.touched
                             "
-                            >Username<span>*</span>:</label
                         >
+                            {{ 'ADMIN.BROKERS_USERNAME' | translate
+                            }}<span>*</span>:
+                        </label>
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
                                 name="username"
-                                placeholder="Username"
+                                [placeholder]="
+                                    'ADMIN.BROKERS_USERNAME' | translate
+                                "
                                 formControlName="name"
                                 required
                             />
-                            <mat-error>Username is required</mat-error>
+                            <mat-error>{{
+                                'ADMIN.BROKERS_USERNAME_REQUIRED' | translate
+                            }}</mat-error>
                         </mat-form-field>
                     </div>
                     <div class="field" *ngIf="form.controls.password">
@@ -137,7 +159,7 @@ import { unique } from '../../common/general';
                                 form.controls.password.touched
                             "
                         >
-                            Password:
+                            {{ 'ADMIN.BROKERS_PASSWORD' | translate }}:
                         </label>
                         <mat-form-field appearance="outline">
                             <input
@@ -145,7 +167,9 @@ import { unique } from '../../common/general';
                                 name="new-password"
                                 autocomplete="new-password"
                                 [type]="show_password ? 'text' : 'password'"
-                                placeholder="Password"
+                                [placeholder]="
+                                    'ADMIN.BROKERS_PASSWORD' | translate
+                                "
                                 formControlName="password"
                             />
                             <app-icon
@@ -157,27 +181,35 @@ import { unique } from '../../common/general';
                             >
                                 visibility
                             </app-icon>
-                            <mat-error>A valid password is required</mat-error>
+                            <mat-error>{{
+                                'ADMIN.BROKERS_PASSWORD_REQUIRED' | translate
+                            }}</mat-error>
                         </mat-form-field>
                     </div>
                 </div>
             </ng-container>
             <ng-container *ngIf="form.controls.auth_type.value === 0">
                 <div class="field" *ngIf="form.controls.certificate">
-                    <label for="cert">Certificate:</label>
+                    <label for="cert"
+                        >{{ 'ADMIN.BROKERS_CERT' | translate }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <textarea
                             matInput
                             name="cert"
-                            placeholder="Certificate"
+                            [placeholder]="'ADMIN.BROKERS_CERT' | translate"
                             formControlName="certificate"
                         ></textarea>
-                        <mat-error>A valid certificate is required</mat-error>
+                        <mat-error>{{
+                            'ADMIN.BROKERS_CERT_REQUIRED' | translate
+                        }}</mat-error>
                     </mat-form-field>
                 </div>
             </ng-container>
             <div class="field" *ngIf="form.controls.filters">
-                <label for="filters"> Filters: </label>
+                <label for="filters">
+                    {{ 'ADMIN.BROKERS_FIELD_FILTERS' | translate }}:
+                </label>
                 <mat-form-field appearance="outline" class="w-full">
                     <mat-chip-grid #chipGrid aria-label="Enter fruits">
                         @for (filter of filters; track filter) {
@@ -188,14 +220,19 @@ import { unique } from '../../common/general';
                             {{ filter }}
                             <button
                                 matChipRemove
-                                [attr.aria-label]="'Remove ' + filter"
+                                [attr.aria-label]="
+                                    'COMMON.REMOVE_ITEM'
+                                        | translate: { item: filter }
+                                "
                             >
                                 <app-icon>cancel</app-icon>
                             </button>
                         </mat-chip-row>
                         }
                         <input
-                            placeholder="Broker filters..."
+                            [placeholder]="
+                                'ADMIN.BROKERS_FIELD_FILTERS' | translate
+                            "
                             [matChipInputFor]="chipGrid"
                             [matChipInputSeparatorKeyCodes]="separators"
                             [matChipInputAddOnBlur]="true"
@@ -211,15 +248,6 @@ import { unique } from '../../common/general';
             settings-form-field {
                 margin-bottom: 1.5em;
             }
-
-            .checkbox {
-                align-items: center;
-                flex-direction: row;
-            }
-
-            mat-checkbox {
-                margin: 0.25em;
-            }
         `,
     ],
 })
@@ -227,11 +255,7 @@ export class BrokerFormComponent {
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
     /** List of available authentication types */
-    public auth_types = [
-        { id: AuthType.Certificate, name: 'Certificate' },
-        { id: AuthType.NoAuth, name: 'No Authentication' },
-        { id: AuthType.UserPassword, name: 'Password' },
-    ];
+    public auth_types = [];
     /** List of separator characters for filters */
     public readonly separators = [ENTER, COMMA] as const;
     /** Whether to show password field value */
@@ -239,6 +263,20 @@ export class BrokerFormComponent {
 
     public get filters(): string[] {
         return this.form.controls.filters.value;
+    }
+
+    public ngOnInit() {
+        this.auth_types = [
+            {
+                id: AuthType.Certificate,
+                name: i18n('ADMIN.BROKERS_AUTH_TYPE_CERT'),
+            },
+            { id: AuthType.NoAuth, name: i18n('ADMIN.BROKERS_AUTH_TYPE_NONE') },
+            {
+                id: AuthType.UserPassword,
+                name: i18n('ADMIN.BROKERS_AUTH_TYPE_PASS'),
+            },
+        ];
     }
 
     /**

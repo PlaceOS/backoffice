@@ -13,64 +13,45 @@ export interface EdgeModalData {
 @Component({
     selector: 'edge-modal',
     template: `
-        <header>
-            <h3>
-                {{ (edge ? 'ADMIN.EDGE_EDIT' : 'ADMIN.EDGE_NEW') | translate }}
-            </h3>
-            <div class="flex-1"></div>
-            <button *ngIf="!loading" btn icon mat-dialog-close>
-                <app-icon>close</app-icon>
-            </button>
-        </header>
-        <main
-            [formGroup]="form"
-            *ngIf="!loading && form; else load_state"
-            class="overflow-auto p-4"
+        <fullscreen-modal-shell
+            [heading]="
+                (edge ? 'ADMIN.EDGE_EDIT' : 'ADMIN.EDGE_NEW') | translate
+            "
+            [loading]="loading"
+            (save)="save()"
         >
-            <div class="flex flex-col flex-1">
-                <label
-                    >{{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:</label
-                >
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        formControlName="name"
-                        [placeholder]="
-                            'ADMIN.EDGE_NAME_PLACEHOLDER' | translate
-                        "
-                    />
-                    <mat-error>{{
-                        'ADMIN.EDGE_NAME_REQUIRED' | translate
-                    }}</mat-error>
-                </mat-form-field>
-            </div>
-            <div class="flex flex-col flex-1">
-                <label>{{ 'COMMON.FIELD_DESCRIPTION' | translate }}:</label>
-                <mat-form-field appearance="outline">
-                    <textarea
-                        matInput
-                        formControlName="description"
-                        [placeholder]="
-                            'ADMIN.EDGE_DESCRIPTION_PLACEHOLDER' | translate
-                        "
-                    ></textarea>
-                </mat-form-field>
-            </div>
-        </main>
-        <footer
-            *ngIf="!loading"
-            class="p-2 border-t border-base-200 flex justify-center"
-        >
-            <button btn class="w-32" (click)="save()">
-                {{ 'COMMON.SAVE' | translate }}
-            </button>
-        </footer>
-        <ng-template #load_state>
-            <main class="flex flex-col p-8 items-center justify-center">
-                <mat-spinner class="mb-4" [diameter]="48"></mat-spinner>
-                <p>{{ 'ADMIN.EDGE_SAVING' | translate }}</p>
-            </main>
-        </ng-template>
+            <form [formGroup]="form" class="overflow-auto p-4">
+                <div class="flex flex-col flex-1">
+                    <label>
+                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
+                    </label>
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            formControlName="name"
+                            [placeholder]="
+                                'ADMIN.EDGE_NAME_PLACEHOLDER' | translate
+                            "
+                        />
+                        <mat-error>{{
+                            'ADMIN.EDGE_NAME_REQUIRED' | translate
+                        }}</mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="flex flex-col flex-1">
+                    <label>{{ 'COMMON.FIELD_DESCRIPTION' | translate }}:</label>
+                    <mat-form-field appearance="outline">
+                        <textarea
+                            matInput
+                            formControlName="description"
+                            [placeholder]="
+                                'ADMIN.EDGE_DESCRIPTION_PLACEHOLDER' | translate
+                            "
+                        ></textarea>
+                    </mat-form-field>
+                </div>
+            </form>
+        </fullscreen-modal-shell>
     `,
     styles: [
         `

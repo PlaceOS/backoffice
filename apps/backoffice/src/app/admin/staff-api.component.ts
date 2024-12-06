@@ -47,9 +47,7 @@ export interface PlaceTenant {
                             name="type"
                             [ngModel]="domain | async"
                             (ngModelChange)="domain.next($event)"
-                            [placeholder]="
-                                'ADMIN.TENANTS_SELECT_DOMAIN' | translate
-                            "
+                            [placeholder]="'ADMIN.SELECT_DOMAIN' | translate"
                         >
                             <mat-option
                                 *ngFor="let domain of domain_list"
