@@ -17,18 +17,21 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             form.controls.name.touched
                         "
                     >
-                        Name<span>*</span>:
+                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="auth-source-name"
-                            placeholder="Auth Source Name"
+                            [placeholder]="'COMMON.FIELD_NAME' | translate"
                             formControlName="name"
                             required
                         />
                         <mat-error *ngIf="form.controls.name.invalid">
-                            Auth source name is required
+                            {{
+                                'DOMAINS.AUTHENTICATION_NAME_REQUIRE'
+                                    | translate
+                            }}
                         </mat-error>
                     </mat-form-field>
                 </div>
@@ -40,18 +43,18 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             form.controls.issuer.touched
                         "
                     >
-                        Issuer<span>*</span>:
+                        {{ 'DOMAINS.SAML_ISSUER' | translate }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="issuer"
-                            placeholder="Issuer"
+                            [placeholder]="'DOMAINS.SAML_ISSUER' | translate"
                             formControlName="issuer"
                             required
                         />
                         <mat-error *ngIf="form.controls.issuer.invalid">
-                            Issuer is required
+                            {{ 'DOMAINS.SAML_ISSUER_REQUIRED' | translate }}
                         </mat-error>
                     </mat-form-field>
                 </div>
@@ -65,20 +68,26 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             form.controls.idp_sso_target_url.touched
                         "
                     >
-                        IdP Target URL<span>*</span>:
+                        {{ 'DOMAINS.SAML_IDP_TARGET_URL' | translate
+                        }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="idp-target"
-                            placeholder="IdP Target URL"
+                            [placeholder]="
+                                'DOMAINS.SAML_IDP_TARGET_URL' | translate
+                            "
                             formControlName="idp_sso_target_url"
                             required
                         />
                         <mat-error
                             *ngIf="form.controls.idp_sso_target_url.invalid"
                         >
-                            IdP Target URL is required
+                            {{
+                                'DOMAINS.SAML_IDP_TARGET_URL_REQUIRED'
+                                    | translate
+                            }}
                         </mat-error>
                     </mat-form-field>
                 </div>
@@ -90,25 +99,30 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             form.controls.name_identifier_format.touched
                         "
                     >
-                        Name Identifier Format:
+                        {{ 'DOMAINS.SAML_NAME_ID_FORMAT' | translate }}:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="name-identifier-format"
-                            placeholder="Name Identifier Format"
+                            [placeholder]="
+                                'DOMAINS.SAML_NAME_ID_FORMAT' | translate
+                            "
                             formControlName="name_identifier_format"
                             required
                         />
                         <mat-error
                             *ngIf="form.controls.name_identifier_format.invalid"
                         >
-                            Name Identifier Format is required
+                            {{
+                                'DOMAINS.SAML_NAME_ID_FORMAT_REQUIRED'
+                                    | translate
+                            }}
                         </mat-error>
                     </mat-form-field>
                 </div>
             </div>
-            <div class="field" *ngIf="form.controls.request_attributes">
+            <div class="field mb-4" *ngIf="form.controls.request_attributes">
                 <label
                     for="request-attributes"
                     [class.error]="
@@ -116,7 +130,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                         form.controls.request_attributes.touched
                     "
                 >
-                    Request Attributes:
+                    {{ 'DOMAINS.SAML_REQUEST_ATTRIBUTES' | translate }}:
                 </label>
                 <object-list-field
                     formControlName="request_attributes"
@@ -129,7 +143,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                         form.controls.request_attributes.touched
                     "
                 >
-                    Request Attributes are required
+                    {{ 'DOMAINS.SAML_REQUEST_ATTRIBUTES_REQUIRED' | translate }}
                 </div>
             </div>
             <div class="fieldset">
@@ -145,13 +159,16 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                             form.controls.assertion_consumer_service_url.touched
                         "
                     >
-                        Assertion URL<span>*</span>:
+                        {{ 'DOMAINS.SAML_ASSERTION_URL' | translate
+                        }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="assertion-url"
-                            placeholder="Assertion URL"
+                            [placeholder]="
+                                'DOMAINS.SAML_ASSERTION_URL' | translate
+                            "
                             formControlName="assertion_consumer_service_url"
                             required
                         />
@@ -161,63 +178,85 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                                     .invalid
                             "
                         >
-                            Assertion URL is required
+                            {{
+                                'DOMAINS.SAML_ASSERTION_URL_REQUIRED'
+                                    | translate
+                            }}
                         </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.idp_cert_fingerprint">
                     <label for="cert-fingerprint"
-                        >Certificate Fingerprint:</label
+                        >{{
+                            'DOMAINS.SAML_CERT_FINGERPRINT' | translate
+                        }}:</label
                     >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="cert-fingerprint"
-                            placeholder="Certificate Fingerprint"
+                            [placeholder]="
+                                'DOMAINS.SAML_CERT_FINGERPRINT' | translate
+                            "
                             formControlName="idp_cert_fingerprint"
                         />
                     </mat-form-field>
                 </div>
             </div>
             <div class="field" *ngIf="form.controls.idp_cert">
-                <label for="cert">Full Certificate:</label>
+                <label for="cert"
+                    >{{ 'DOMAINS.SAML_CERT_FULL' | translate }}:</label
+                >
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
                         name="cert"
-                        placeholder="Full Certificate"
+                        [placeholder]="'DOMAINS.SAML_CERT_FULL' | translate"
                         formControlName="idp_cert"
                     ></textarea>
                 </mat-form-field>
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.uid_attribute">
-                    <label for="uid-attribute">UID Attribute:</label>
+                    <label for="uid-attribute"
+                        >{{ 'DOMAINS.SAML_UID_ATTRIBUTE' | translate }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="uid-attribute"
-                            placeholder="UID Attribute"
+                            [placeholder]="
+                                'DOMAINS.SAML_UID_ATTRIBUTE' | translate
+                            "
                             formControlName="uid_attribute"
                         />
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.attribute_service_name">
                     <label for="attribute-service-name"
-                        >Attribute Service Name:</label
+                        >{{
+                            'DOMAINS.SAML_ATTRIBUTE_SERVICE_NAME' | translate
+                        }}:</label
                     >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="attribute-service-name"
-                            placeholder="Attribute Service Name"
+                            [placeholder]="
+                                'DOMAINS.SAML_ATTRIBUTE_SERVICE_NAME'
+                                    | translate
+                            "
                             formControlName="attribute_service_name"
                         />
                     </mat-form-field>
                 </div>
             </div>
-            <div class="field" *ngIf="form.controls.attribute_statements">
-                <label for="client-secret">Attribute Statements:</label>
+            <div class="field mb-4" *ngIf="form.controls.attribute_statements">
+                <label for="client-secret"
+                    >{{
+                        'DOMAINS.SAML_ATTRIBUTE_STATEMENTS' | translate
+                    }}:</label
+                >
                 <object-list-field
                     [(ngModel)]="attribute_statement_mappings"
                     (ngModelChange)="updateAttributeStatements($event)"
@@ -226,10 +265,14 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                 ></object-list-field>
             </div>
             <div
-                class="field"
+                class="field mb-4"
                 *ngIf="form.controls.idp_sso_target_url_runtime_params"
             >
-                <label for="client-secret">IdP SSO Runtime Params:</label>
+                <label for="client-secret"
+                    >{{
+                        'DOMAINS.SAML_IDP_SSO_RUNTIME_PARAMS' | translate
+                    }}:</label
+                >
                 <object-list-field
                     [(ngModel)]="runtime_param_list"
                     (ngModelChange)="updateRuntimeParams($event)"
@@ -239,12 +282,18 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.idp_slo_target_url">
-                    <label for="slo-target">IdP SLO Target URL:</label>
+                    <label for="slo-target"
+                        >{{
+                            'DOMAINS.SAML_IDP_SLO_TARGET_URL' | translate
+                        }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="slo-target"
-                            placeholder="IdP SLO Target URL"
+                            [placeholder]="
+                                'DOMAINS.SAML_IDP_SLO_TARGET_URL' | translate
+                            "
                             formControlName="idp_slo_target_url"
                         />
                     </mat-form-field>
@@ -253,12 +302,19 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                     class="field"
                     *ngIf="form.controls.slo_default_relay_state"
                 >
-                    <label for="slo-relay">SLO Default Relay State:</label>
+                    <label for="slo-relay"
+                        >{{
+                            'DOMAINS.SAML_SLO_DEFAULT_RELAY_STATE' | translate
+                        }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="slo-relay"
-                            placeholder="SLO Default Relay State"
+                            [placeholder]="
+                                'DOMAINS.SAML_SLO_DEFAULT_RELAY_STATE'
+                                    | translate
+                            "
                             formControlName="slo_default_relay_state"
                         />
                     </mat-form-field>

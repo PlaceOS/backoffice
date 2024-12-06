@@ -6,6 +6,7 @@ import { getInvalidFields } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { DialogEvent, HashMap } from '../common/types';
 import { PlaceTenant } from './staff-api.component';
+import { i18n } from '../common/translate';
 
 const FIELD_NAME_MAPPING: HashMap<string> = {
     issuer: 'Service Account Email',
@@ -98,32 +99,64 @@ export interface StaffTenantModalData {
                             placeholder="Select time"
                         >
                             <mat-option [value]="15 * 60">
-                                15 minutes
+                                {{
+                                    'ADMIN.TENANTS_MINUTES'
+                                        | translate: { minute: 15 }
+                                }}
                             </mat-option>
                             <mat-option [value]="30 * 60">
-                                30 minutes
+                                {{
+                                    'ADMIN.TENANTS_MINUTES'
+                                        | translate: { minute: 30 }
+                                }}
                             </mat-option>
                             <mat-option [value]="45 * 60">
-                                45 minutes
+                                {{
+                                    'ADMIN.TENANTS_MINUTES'
+                                        | translate: { minute: 45 }
+                                }}
                             </mat-option>
-                            <mat-option [value]="60 * 60"> 1 hour </mat-option>
+                            <mat-option [value]="60 * 60">
+                                {{
+                                    'ADMIN.TENANTS_HOURS'
+                                        | translate: { hour: 1 }
+                                }}
+                            </mat-option>
                             <mat-option [value]="1.5 * 60 * 60">
-                                1 hour 30 minutes
+                                {{
+                                    'ADMIN.TENANTS_MINUTES_HOURS'
+                                        | translate: { minute: 30, hour: 1 }
+                                }}
                             </mat-option>
                             <mat-option [value]="2 * 60 * 60">
-                                2 hours
+                                {{
+                                    'ADMIN.TENANTS_HOURS'
+                                        | translate: { hour: 2 }
+                                }}
                             </mat-option>
                             <mat-option [value]="2.5 * 60 * 60">
-                                2 hours 30 minutes
+                                {{
+                                    'ADMIN.TENANTS_MINUTES_HOURS'
+                                        | translate: { minute: 30, hour: 2 }
+                                }}
                             </mat-option>
                             <mat-option [value]="3 * 60 * 60">
-                                3 hours
+                                {{
+                                    'ADMIN.TENANTS_HOURS'
+                                        | translate: { hour: 3 }
+                                }}
                             </mat-option>
                             <mat-option [value]="3.5 * 60 * 60">
-                                3 hours 30 minutes
+                                {{
+                                    'ADMIN.TENANTS_MINUTES_HOURS'
+                                        | translate: { minute: 30, hour: 3 }
+                                }}
                             </mat-option>
                             <mat-option [value]="4 * 60 * 60">
-                                4 hours
+                                {{
+                                    'ADMIN.TENANTS_HOURS'
+                                        | translate: { hour: 4 }
+                                }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -233,12 +266,17 @@ export interface StaffTenantModalData {
                         class="flex items-center flex-wrap space-x-0 sm:space-x-2"
                     >
                         <div class="flex flex-col flex-1">
-                            <label>Outlook App ID<span>*</span>:</label>
+                            <label
+                                >{{ 'ADMIN.TENANTS_APP_ID' | translate
+                                }}<span>*</span>:</label
+                            >
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
                                     formControlName="app_id"
-                                    placeholder="Application ID"
+                                    [placeholder]="
+                                        'ADMIN.TENANTS_APP_ID' | translate
+                                    "
                                 />
                                 <mat-error>{{
                                     'ADMIN.TENANTS_APP_ID_REQUIRED' | translate
@@ -246,15 +284,24 @@ export interface StaffTenantModalData {
                             </mat-form-field>
                         </div>
                         <div class="flex flex-col flex-1">
-                            <label>Outlook App Domain:</label>
+                            <label
+                                >{{
+                                    'ADMIN.TENANTS_APP_DOMAIN' | translate
+                                }}:</label
+                            >
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
                                     formControlName="app_domain"
-                                    placeholder="Application Domain"
+                                    [placeholder]="
+                                        'ADMIN.TENANTS_APP_DOMAIN' | translate
+                                    "
                                 />
                                 <mat-error>
-                                    An application domain is required
+                                    {{
+                                        'ADMIN.TENANTS_APP_DOMAIN_REQUIRED'
+                                            | translate
+                                    }}
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -263,29 +310,48 @@ export interface StaffTenantModalData {
                         class="flex items-center flex-wrap space-x-0 sm:space-x-2"
                     >
                         <div class="flex flex-col flex-1">
-                            <label>Outlook App Resource:</label>
+                            <label
+                                >{{
+                                    'ADMIN.TENANTS_APP_RESOURCE' | translate
+                                }}:</label
+                            >
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
                                     formControlName="app_resource"
-                                    placeholder="Application ID"
+                                    [placeholder]="
+                                        'ADMIN.TENANTS_APP_RESOURCE' | translate
+                                    "
                                 />
                                 <mat-error>
-                                    An application resource is required
+                                    {{
+                                        'ADMIN.TENANTS_APP_RESOURCE_REQUIRED'
+                                            | translate
+                                    }}
                                 </mat-error>
                             </mat-form-field>
                         </div>
                         <div class="flex flex-col flex-1">
-                            <label>Outlook Source Location:</label>
+                            <label
+                                >{{
+                                    'ADMIN.TENANTS_SOURCE_LOCATION' | translate
+                                }}:</label
+                            >
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
                                     formControlName="source_location"
-                                    placeholder="Source Location"
+                                    [placeholder]="
+                                        'ADMIN.TENANTS_SOURCE_LOCATION'
+                                            | translate
+                                    "
                                 />
-                                <mat-error
-                                    >A source location is required</mat-error
-                                >
+                                <mat-error>
+                                    {{
+                                        'ADMIN.TENANTS_SOURCE_LOCATION_REQUIRED'
+                                            | translate
+                                    }}
+                                </mat-error>
                             </mat-form-field>
                         </div>
                     </div>
@@ -293,23 +359,33 @@ export interface StaffTenantModalData {
                         class="flex items-center flex-wrap space-x-0 sm:space-x-4"
                     >
                         <div class="flex flex-col flex-1">
-                            <label>Outlook Base Path:</label>
+                            <label
+                                >{{
+                                    'ADMIN.TENANTS_BASE_PATH' | translate
+                                }}:</label
+                            >
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
                                     formControlName="base_path"
-                                    placeholder="outlook"
+                                    [placeholder]="
+                                        'ADMIN.TENANTS_BASE_PATH' | translate
+                                    "
                                 />
                                 <mat-error>
-                                    Base path to the application root folder is
-                                    required
+                                    {{
+                                        'ADMIN.TENANTS_BASE_PATH_REQUIRED'
+                                            | translate
+                                    }}
                                 </mat-error>
                             </mat-form-field>
                         </div>
                     </div>
                 </form>
                 <div class="flex flex-col space-y-2">
-                    <label>Booking Limits</label>
+                    <label>{{
+                        'ADMIN.TENANTS_BOOKING_LIMITS' | translate
+                    }}</label>
                     <object-list-field
                         formControlName="booking_limits"
                         [fields]="['type', 'amount']"
@@ -463,7 +539,9 @@ export class StaffTenantModalComponent implements OnInit {
         this.form.markAllAsTouched();
         if (!this.form.valid) {
             return notifyError(
-                `Some fields are invalid. [${getInvalidFields(this.form)}]`
+                i18n('COMMON.INVALID_FIELDS', {
+                    field_list: getInvalidFields(this.form).join(', '),
+                })
             );
         }
         this._dialog_ref.disableClose = true;
@@ -508,8 +586,8 @@ export class StaffTenantModalComponent implements OnInit {
         const tenant = await call.toPromise().catch((_) => null);
         this.loading = false;
         this._dialog_ref.disableClose = false;
-        if (!tenant) return notifyError('Error adding new tenant.');
-        notifySuccess('Successfully added new tenant.');
+        if (!tenant) return notifyError(i18n('ADMIN.TENANATS_SAVE_ERROR'));
+        notifySuccess(i18n('ADMIN.TENANATS_SAVE_SUCCESS'));
         this._dialog_ref.close();
     }
 }

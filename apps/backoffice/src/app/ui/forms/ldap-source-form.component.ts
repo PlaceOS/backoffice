@@ -13,18 +13,18 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                         form.controls.name.invalid && form.controls.name.touched
                     "
                 >
-                    Name<span>*</span>:
+                    {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
                 </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="auth-source-name"
-                        placeholder="Auth Source Name"
+                        [placeholder]="'COMMON.FIELD_NAME' | translate"
                         formControlName="name"
                         required
                     />
                     <mat-error *ngIf="form.controls.name.invalid">
-                        Auth source name is required
+                        {{ 'DOMAINS.AUTHENTICATION_NAME_REQUIRE' | translate }}
                     </mat-error>
                 </mat-form-field>
             </div>
@@ -37,28 +37,30 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             form.controls.host.touched
                         "
                     >
-                        Host<span>*</span>:
+                        {{ 'DOMAINS.LDAP_HOST' | translate }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="host"
-                            placeholder="Host"
+                            [placeholder]="'DOMAINS.LDAP_HOST' | translate"
                             formControlName="host"
                         />
                         <mat-error *ngIf="form.controls.host.invalid">
-                            Host is required
+                            {{ 'DOMAINS.LDAP_HOST_REQUIRED' | translate }}
                         </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.port">
-                    <label for="port">Port:</label>
+                    <label for="port"
+                        >{{ 'DOMAINS.LDAP_PORT' | translate }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             type="number"
                             name="port"
-                            placeholder="Port number"
+                            [placeholder]="'DOMAINS.LDAP_PORT' | translate"
                             formControlName="port"
                         />
                     </mat-form-field>
@@ -66,18 +68,22 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.uid">
-                    <label for="uid">User ID Key:</label>
+                    <label for="uid"
+                        >{{ 'DOMAINS.LDAP_USER_ID' | translate }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="uid"
-                            placeholder="User ID Key"
+                            [placeholder]="'DOMAINS.LDAP_USER_ID' | translate"
                             formControlName="uid"
                         />
                     </mat-form-field>
                 </div>
                 <div class="field type" *ngIf="form.controls.auth_method">
-                    <label for="auth-method">Authentication Method: </label>
+                    <label for="auth-method">
+                        {{ 'DOMAINS.LDAP_AUTH_METHOD' | translate }}:
+                    </label>
                     <mat-form-field appearance="outline">
                         <mat-select
                             name="auth-method"
@@ -103,27 +109,29 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                             form.controls.base.touched
                         "
                     >
-                        Base<span>*</span>:
+                        {{ 'DOMAINS.LDAP_BASE' | translate }}<span>*</span>:
                     </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="base"
-                            placeholder="Base"
+                            [placeholder]="'DOMAINS.LDAP_BASE' | translate"
                             formControlName="base"
                         />
                         <mat-error *ngIf="form.controls.base.invalid">
-                            Base is required
+                            {{ 'DOMAINS.LDAP_BASE_REQUIRED' | translate }}
                         </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.bind_dn">
-                    <label for="bind-dn">Bind DN:</label>
+                    <label for="bind-dn"
+                        >{{ 'DOMAINS.LDAP_BIND_DN' | translate }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="bind-dn"
-                            placeholder="Bind DN"
+                            [placeholder]="'DOMAINS.LDAP_BIND_DN' | translate"
                             formControlName="bind_dn"
                         />
                     </mat-form-field>
@@ -131,23 +139,27 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.password">
-                    <label for="password">Password:</label>
+                    <label for="password"
+                        >{{ 'COMMON.PASSWORD' | translate }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="password"
-                            placeholder="Password"
+                            [placeholder]="'COMMON.PASSWORD' | translate"
                             formControlName="password"
                         />
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.filter">
-                    <label for="filter">Filter:</label>
+                    <label for="filter"
+                        >{{ 'DOMAINS.LDAP_FILTER' | translate }}:</label
+                    >
                     <mat-form-field appearance="outline">
                         <input
                             matInput
                             name="filter"
-                            placeholder="Filter"
+                            [placeholder]="'DOMAINS.LDAP_FILTER' | translate"
                             formControlName="filter"
                         />
                     </mat-form-field>
