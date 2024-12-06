@@ -137,7 +137,10 @@
         "BULK_DROP_LOADING": "Processing CSV data...",
         "BULK_UPLOADING": "Uploading items...",
         "LANG_ENGLISH": "English",
-        "LANG_JAPANESE": "Japanese"
+        "LANG_JAPANESE": "Japanese",
+        "CHANGELOG": "Changelog",
+        "CHANGELOG_EMPTY": "No Changelog",
+        "VIEW_RESPONSE": "Exec Request Results"
     },
     "SYSTEMS": {
         "SINGULAR": "System",
@@ -392,12 +395,14 @@
         "REFERENCE_SYSTEM": "Reference System",
         "CONDITIONS": "Conditions",
         "CONDITION_ADD": "Add Condition",
+        "CONDITION_NEW": "New Condition",
         "CONDITION_COMPARE_EMPTY": "No variable comparision conditions for this trigger",
         "CONDITION_TIME_EMPTY": "No time dependant conditions for this trigger",
         "FIELD_VAR_COMPARE": "Variable Comparison Condition",
         "FIELD_TIME_DEPS": "Time dependant Condition",
         "ACTIONS": "Actions",
         "ACTION_ADD": "Add Action",
+        "ACTION_NEW": "New Action",
         "ACTION_EMAIL_EMPTY": "No email actions for this trigger",
         "ACTION_FN_EMPTY": "No function call actions for this trigger",
         "FIELD_ACTION_FN_CALL": "Function call Action",

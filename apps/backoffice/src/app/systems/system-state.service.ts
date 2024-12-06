@@ -50,7 +50,7 @@ import {
     SelectItemModalComponent,
     SelectItemModalData,
 } from '../overlays/select-item-modal.component';
-import { ViewResponseModalComponent } from '../overlays/view-response-modal/view-response-modal.component';
+import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
 
 @Injectable({
     providedIn: 'root',

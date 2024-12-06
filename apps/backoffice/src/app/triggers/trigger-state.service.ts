@@ -22,11 +22,11 @@ import { DialogEvent } from '../common/types';
 import {
     TriggerActionModalComponent,
     TriggerActionModalData,
-} from '../overlays/trigger-action-modal/trigger-action-modal.component';
+} from '../ui/forms/trigger-action-modal.component';
 import {
     TriggerConditionData,
     TriggerConditionModalComponent,
-} from '../overlays/trigger-condition-modal/trigger-condition-modal.component';
+} from '../ui/forms/trigger-condition-modal.component';
 import { i18n } from '../common/translate';
 
 @Injectable({

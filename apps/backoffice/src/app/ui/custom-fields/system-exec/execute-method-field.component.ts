@@ -10,7 +10,7 @@ import {
 } from '@placeos/ts-client';
 import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 import { notifyError, notifySuccess } from '../../../common/notifications';
-import { ViewResponseModalComponent } from '../../../overlays/view-response-modal/view-response-modal.component';
+import { ViewResponseModalComponent } from '../../../overlays/view-response-modal.component';
 import { ModuleLike } from './select-module.component';
 
 @Component({

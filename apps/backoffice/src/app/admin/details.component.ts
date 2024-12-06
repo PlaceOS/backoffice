@@ -7,7 +7,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
 import {
     ChangelogModalComponent,
     ChangelogModalData,
-} from 'apps/backoffice/src/app/overlays/changelog-modal/changelog-modal.component';
+} from 'apps/backoffice/src/app/overlays/changelog-modal.component';
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
 import {
     notifyError,

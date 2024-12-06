@@ -26,7 +26,7 @@ import {
     notifySuccess,
     notifyError,
 } from 'apps/backoffice/src/app/common/notifications';
-import { i18n } from '../../common/translate';
+import { i18n } from '../common/translate';
 
 export interface AuthSourceModalData {
     /** Domain the auth source is associated with */

@@ -26,7 +26,7 @@ import { openConfirmModal } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
-import { ViewResponseModalComponent } from '../overlays/view-response-modal/view-response-modal.component';
+import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
 import { DriverUpdateListModalComponent } from './driver-update-list-modal.component';
 
 @Injectable({

@@ -47,10 +47,8 @@ import { SamlSourceFormComponent } from './forms/saml-source-form.component';
 import { SettingsFormComponent } from './forms/settings-form/settings-form.component';
 import { SystemFormComponent } from './forms/system-form.component';
 import { SystemTriggerFormComponent } from './forms/system-trigger-form.component';
-import { TriggerActionFormComponent } from './forms/trigger-action-form.component';
 import { TriggerConditionComparisonFormComponent } from './forms/trigger-condition-form/comparison-form/comparison-form.component';
 import { TriggerConditionTimeFormComponent } from './forms/trigger-condition-form/time-form/time-form.component';
-import { TriggerConditionFormComponent } from './forms/trigger-condition-form/trigger-condition-form.component';
 import { TriggerFormComponent } from './forms/trigger-form.component';
 import { UserFormComponent } from './forms/user-form.component';
 import { ZoneFormComponent } from './forms/zone-form.component';
@@ -97,6 +95,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { SettingsToggleComponent } from './settings-toggle.component';
 import { FullscreenModalShellComponent } from './fullscreen-modal-shell.component';
 import { CounterComponent } from './counter.component';
+import { TriggerConditionModalComponent } from './forms/trigger-condition-modal.component';
+import { TriggerActionModalComponent } from './forms/trigger-action-modal.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -108,8 +108,6 @@ const FORM_COMPONENTS: Type<any>[] = [
     ApplicationFormComponent,
     TriggerFormComponent,
     RepositoryFormComponent,
-    TriggerConditionFormComponent,
-    TriggerActionFormComponent,
     SystemTriggerFormComponent,
     OauthSourceFormComponent,
     LdapSourceFormComponent,
@@ -144,6 +142,8 @@ const COMPONENTS: Type<any>[] = [
     DiffViewerComponent,
     SettingsHistoryViewComponent,
     MetadataDisplayComponent,
+    TriggerConditionModalComponent,
+    TriggerActionModalComponent,
 
     SidebarMenuComponent,
     SidebarLink,

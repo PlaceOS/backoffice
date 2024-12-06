@@ -13,7 +13,7 @@ import {
     notifyError,
     notifySuccess,
 } from 'apps/backoffice/src/app/common/notifications';
-import { DialogEvent } from 'apps/backoffice/src/app/common/types';
+import { DialogEvent, Identity } from 'apps/backoffice/src/app/common/types';
 import { generateTriggerConditionForm } from 'apps/backoffice/src/app/triggers/triggers.utilities';
 
 export interface TriggerConditionData {
@@ -28,42 +28,57 @@ export interface TriggerConditionData {
 @Component({
     selector: 'trigger-condition-modal',
     template: `
-        <header>
-            <h3>{{ is_new ? 'Edit' : 'New' }} Trigger Condition</h3>
-            <button btn icon mat-dialog-close>
-                <app-icon>close</app-icon>
-            </button>
-        </header>
-        <main
-            class="max-h-[65vh] overflow-auto p-4"
-            *ngIf="!loading; else load_state"
+        <fullscreen-modal-shell
+            [heading]="
+                (is_new ? 'TRIGGERS.CONDITION_NEW' : 'TRIGGERS.CONDITION_EDIT')
+                    | translate
+            "
+            [loading]="loading"
+            (save)="save()"
         >
-            <trigger-condition-form
-                [form]="form"
-                [system]="system"
-            ></trigger-condition-form>
-        </main>
-        <footer
-            class="border-t border-base-200 flex items-center justify-end space-x-2 p-4"
-            *ngIf="!loading"
-        >
-            <button btn class="w-32 inverse" mat-dialog-close>Cancel</button>
-            <button btn class="w-32" type="submit" (click)="save()">
-                {{ is_new ? 'Save' : 'Add' }}
-            </button>
-        </footer>
-        <ng-template #load_state>
-            <main>
-                <div class="info-block">
-                    <div class="icon">
-                        <mat-spinner diameter="32"></mat-spinner>
-                    </div>
-                    <div class="text">Processing request...</div>
+            <form
+                trigger-condition
+                class="flex flex-col"
+                *ngIf="form"
+                [formGroup]="form"
+            >
+                <div class="field" *ngIf="form.controls.condition_type">
+                    <label for="type">Condition Type: </label>
+                    <mat-form-field appearance="outline">
+                        <mat-select
+                            name="type"
+                            formControlName="condition_type"
+                        >
+                            <mat-option
+                                *ngFor="let type of condition_types"
+                                [value]="type.id"
+                            >
+                                { type.id, select, compare { Compare Values }
+                                time { Particular Time } }
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
                 </div>
-            </main>
-        </ng-template>
+                <ng-container
+                    *ngIf="
+                        form.controls.condition_type.value === 'compare';
+                        else time_form
+                    "
+                >
+                    <trigger-condition-comparison-form
+                        [form]="form"
+                        [system]="system"
+                    ></trigger-condition-comparison-form>
+                </ng-container>
+            </form>
+            <ng-template #time_form>
+                <trigger-condition-time-form
+                    [form]="form"
+                ></trigger-condition-time-form>
+            </ng-template>
+        </fullscreen-modal-shell>
     `,
-    styleUrls: ['./trigger-condition-modal.styles.scss'],
+    styles: [``],
 })
 export class TriggerConditionModalComponent extends AsyncHandler {
     /** Emitter for events on the modal */
@@ -75,9 +90,15 @@ export class TriggerConditionModalComponent extends AsyncHandler {
     /** Store for updated conditions */
     public conditions: any;
 
+    /** Types of trigger conditions */
+    public condition_types: Identity[] = [
+        { id: 'compare', name: 'Compare values' },
+        { id: 'time', name: 'Particular time' },
+    ];
+
     /** Whether the triggers is new or not */
     public get is_new(): boolean {
-        return !!this._data.condition;
+        return !this._data.condition;
     }
 
     /** Template system to use for status variable bindings */

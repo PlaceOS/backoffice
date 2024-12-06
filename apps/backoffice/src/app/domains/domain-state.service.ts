@@ -33,7 +33,7 @@ import {
 import { openConfirmModal } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { AuthSourceModalComponent } from '../overlays/auth-source-modal/auth-source-modal.component';
+import { AuthSourceModalComponent } from '../overlays/auth-source-modal.component';
 import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
 
 export type PlaceAuthSource =

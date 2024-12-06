@@ -22,12 +22,19 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
             </main>
             <footer
                 class="fixed bottom-0 left-1/2 -translate-x-1/2 px-4 py-2 mx-auto my-2 max-w-[640px] w-full border-none z-10 bg-base-200 rounded flex items-center justify-end"
-                *ngIf="!loading"
+                *ngIf="!loading && !hide_confirm"
             >
                 <button btn matRipple class="w-32" (click)="save.emit()">
                     <div class="flex space-x-2 items-center">
-                        <div>{{ 'COMMON.SAVE' | translate }}</div>
-                        <div class="relative top-0.5 mono text-sm">[S]</div>
+                        <div>
+                            {{ confirm_text || ('COMMON.SAVE' | translate) }}
+                        </div>
+                        <div
+                            class="relative top-0.5 mono text-sm"
+                            *ngIf="!confirm_text"
+                        >
+                            [S]
+                        </div>
                     </div>
                 </button>
             </footer>
@@ -45,5 +52,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class FullscreenModalShellComponent {
     @Input() public loading: string = '';
     @Input() public heading: string = 'Fullscreen Modal';
+    @Input() public confirm_text = '';
+    @Input() public hide_confirm = false;
     @Output() public save = new EventEmitter();
 }

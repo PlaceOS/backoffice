@@ -22,7 +22,7 @@ import {
 } from 'rxjs/operators';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { ViewResponseModalComponent } from '../overlays/view-response-modal/view-response-modal.component';
+import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
 
 @Injectable({
     providedIn: 'root',
