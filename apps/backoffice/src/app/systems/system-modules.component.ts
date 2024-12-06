@@ -1,4 +1,3 @@
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -71,7 +70,7 @@ import { i18n } from '../common/translate';
                     {{ 'COMMON.ADD_NEW' | translate }}
                 </button>
             </section>
-            <section device-list class="flex-1 h-1/2 overflow-auto w-full">
+            <section device-list class="overflow-auto min-h-[50vh]">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
