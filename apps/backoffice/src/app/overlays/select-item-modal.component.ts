@@ -16,14 +16,16 @@ export interface SelectItemModalData<T = any> {
         <div
             class="flex items-center justify-between px-4 border-b border-base-200"
         >
-            <h3 class="text-lg font-medium py-4">Add {{ name }}</h3>
+            <h3 class="text-lg font-medium py-4">
+                {{ 'COMMON.ITEM_ADD' | translate: { item: name } }}
+            </h3>
             <button btn icon mat-dialog-close>
                 <app-icon>close</app-icon>
             </button>
         </div>
         <main
             *ngIf="!loading; else load_state"
-            class="p-4 w-[32rem] max-w-[calc(100vw-2rem)]"
+            class="p-4 w-[32rem] h-[65vh] max-w-[calc(100vw-2rem)]"
         >
             <item-search-field
                 [query_fn]="query_fn"
@@ -42,7 +44,7 @@ export interface SelectItemModalData<T = any> {
                 (click)="submit()"
                 [disabled]="!item"
             >
-                Add Selected
+                {{ 'COMMON.ITEM_ADD_SELECTED' | translate }}
             </button>
         </footer>
         <ng-template #load_state>
@@ -50,7 +52,9 @@ export interface SelectItemModalData<T = any> {
                 <div class="icon">
                     <mat-spinner diameter="32"></mat-spinner>
                 </div>
-                <div class="text">Processing request...</div>
+                <div class="text">
+                    {{ 'COMMON.PROCESSING_REQUEST' | translate }}
+                </div>
             </main>
         </ng-template>
     `,

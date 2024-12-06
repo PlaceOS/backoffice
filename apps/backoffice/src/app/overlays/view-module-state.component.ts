@@ -22,21 +22,28 @@ export interface ModuleStateModalData {
 @Component({
     selector: 'view-module-state-modal',
     template: `
-        <header class="flex items-center justify-between space-x-2">
-            <h3 class="text-xl">Module State</h3>
-            <button icon mat-dialog-close>
+        <div
+            class="flex items-center justify-between m-4 rounded bg-base-200 px-4 py-2"
+        >
+            <h3 class="text-xl font-medium">
+                {{ 'MODULES.STATE' | translate }}
+            </h3>
+            <button icon matRipple mat-dialog-close>
                 <app-icon>close</app-icon>
             </button>
-        </header>
-        <main class="w-[80vw] p-4 space-y-2" *ngIf="!loading; else load_state">
-            <div class="flex items-center space-x-2 mb-4">
+        </div>
+        <main
+            class="w-[80vw] h-[70vh] px-4 pb-4 space-y-2 flex flex-col"
+            *ngIf="!loading; else load_state"
+        >
+            <div class="flex items-center space-x-2 mb-2">
                 <div
                     class="relative px-4 py-2 rounded border border-base-300 min-w-48"
                 >
                     <div
                         class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded text-xs px-2 py-1"
                     >
-                        System
+                        {{ 'SYSTEMS.SINGULAR' | translate }}
                     </div>
                     <div class="truncate">
                         {{ system?.display_name || system?.name }}
@@ -49,7 +56,7 @@ export interface ModuleStateModalData {
                     <div
                         class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded text-xs px-2 py-1"
                     >
-                        Module
+                        {{ 'MODULES.SINGULAR' | translate }}
                     </div>
                     <div class="truncate">
                         {{ module?.custom_name || module?.name }}
@@ -61,25 +68,11 @@ export interface ModuleStateModalData {
                 <div class="flex-1 w-px"></div>
                 <div>
                     <button btn matRipple class="w-40" (click)="updateState()">
-                        Update state
+                        {{ 'MODULES.STATE_UPDATE' | translate }}
                     </button>
                 </div>
             </div>
-            <!-- <div
-                class="flex items-center space-x-2 hover:bg-base-200 p-2 rounded"
-            >
-                <label class="w-16 m-0">System:</label>
-                <div class="mono">
-                    {{ system?.display_name || system?.name }}
-                </div>
-            </div>
-            <div
-                class="flex items-center space-x-2 hover:bg-base-200 p-2 rounded"
-            >
-                <label class="w-16 m-0">Module:</label>
-                <div class="mono">{{ device_classes[module?.id] }}</div>
-            </div> -->
-            <div class="settings">
+            <div class="flex-1 overflow-hidden">
                 <settings-form-field
                     [ngModel]="state"
                     [readonly]="true"
@@ -87,12 +80,13 @@ export interface ModuleStateModalData {
             </div>
         </main>
         <ng-template #load_state>
-            <main class="">
-                <div class="info-block">
-                    <div class="icon">
-                        <mat-spinner diameter="32"></mat-spinner>
-                    </div>
-                    <div class="text">Loading state...</div>
+            <main
+                class="flex flex-col items-center justify-center w-[80vw] h-[70vh]"
+            >
+                <mat-spinner diameter="32"></mat-spinner>
+
+                <div>
+                    {{ 'MODULES.STATE_LOADING' | translate }}
                 </div>
             </main>
         </ng-template>
