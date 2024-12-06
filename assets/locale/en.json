@@ -49,6 +49,9 @@
         "RETRY": "Retry",
         "IMAGES": "Images",
         "NEW_ITEM": "New item",
+        "ITEM_ADD": "Add {{ item }}",
+        "ITEM_ADD_SELECTED": "Add selected",
+        "PROCESSING_REQUEST": "Processing request...",
         "PASSWORD": "Password",
         "IMAGE_ADD_URL": "Add image via URL",
         "IMAGE_UPLOADS": "Upload Image(s)",
@@ -241,7 +244,10 @@
         "PORT_REQUIRED": "A valid port number from 1 to 65535 is required",
         "MAKEBREAK": "Makebreak",
         "IGNORE_CONNECTED": "Ignore connected",
-        "CUSTOM_NAME": "Custom Name"
+        "CUSTOM_NAME": "Custom Name",
+        "STATE": "Module State",
+        "STATE_UPDATE": "Update state",
+        "STATE_LOADING": "Loading module's state..."
     },
     "ZONES": {
         "SINGULAR": "Zone",
