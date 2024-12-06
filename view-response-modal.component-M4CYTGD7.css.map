@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["apps/backoffice/src/app/overlays/view-response-modal/view-response-modal.component.scss"],
-  "sourcesContent": ["\n\n.text {\n    flex: 1;\n}\n\nmat-dialog-content {\n    width: 48em;\n    max-width: 95vw;\n}\n"],
-  "mappings": "AAEA,CAAA,KACI,KAAA,EAGJ,mBACI,MAAA,KACA,UAAA",
-  "names": []
-}

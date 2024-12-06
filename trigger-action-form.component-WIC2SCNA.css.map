@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;a7de8c3ecbcd89c3f1331152a37c7d042790352749363904d1c463003bc6b7d8;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/forms/trigger-action-form.component.ts"],
-  "sourcesContent": ["\n            :host {\n                max-width: 100%;\n            }\n        "],
-  "mappings": "AACY,MACI,UAAW,IACf",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["apps/backoffice/src/app/overlays/trigger-condition-modal/trigger-condition-modal.styles.scss"],
-  "sourcesContent": [".body {\n    display: flex;\n    align-items: center;\n    flex-direction: column;\n    padding: 1em;\n}\n\n.icon {\n    height: 1.2em;\n    width: 1.2em;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    font-size: 2em;\n}\n\n.content {\n    width: 16rem;\n    text-align: center;\n    font-size: 0.8em;\n}\n\n.info-block {\n    width: 16em;\n    height: 12em;\n}\n\nmat-dialog-actions button {\n    min-width: 8em;\n}\n"],
-  "mappings": "AAAA,CAAA,KACI,QAAA,KACA,YAAA,OACA,eAAA,OAHJ,QAII,IAGJ,CAAA,KACI,OAAA,MACA,MAAA,MACA,QAAA,KACA,YAAA,OACA,gBAAA,OACA,UAAA,IAGJ,CAAA,QACI,MAAA,MACA,WAAA,OACA,UAAA,KAGJ,CAAA,WACI,MAAA,KACA,OAAA,KAGJ,mBAAA,OACI,UAAA",
-  "names": []
-}
