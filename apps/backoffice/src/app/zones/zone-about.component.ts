@@ -50,7 +50,7 @@ import { marked } from 'marked';
             >
                 <ng-container *ngIf="item?.parent_id">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'ZONES.PARENT_ID' | translate }}:
+                        {{ 'ZONES.PARENT_ID' | translate }}
                     </div>
                     <div>
                         <a
@@ -62,43 +62,43 @@ import { marked } from 'marked';
                 </ng-container>
                 <ng-container *ngIf="item?.location">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'ZONES.LOCATION' | translate }}:
+                        {{ 'ZONES.LOCATION' | translate }}
                     </div>
                     <div>{{ item?.location }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.code">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'ZONES.CODE' | translate }}:
+                        {{ 'ZONES.CODE' | translate }}
                     </div>
                     <div>{{ item?.code }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.type">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'ZONES.TYPE' | translate }}:&nbsp;
+                        {{ 'ZONES.TYPE' | translate }}&nbsp;
                     </div>
                     <div>{{ item?.type }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.count">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'ZONES.COUNT' | translate }}:
+                        {{ 'ZONES.COUNT' | translate }}
                     </div>
                     <div>{{ item?.count }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.capacity">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'ZONES.CAPACITY' | translate }}:
+                        {{ 'ZONES.CAPACITY' | translate }}
                     </div>
                     <div>{{ item?.capacity }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.timezone">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'COMMON.TIMEZONE' | translate }}:
+                        {{ 'COMMON.TIMEZONE' | translate }}
                     </div>
                     <div class="mono text-sm">{{ item?.timezone }}</div>
                 </ng-container>
                 <ng-container *ngIf="item?.map_id">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'ZONES.MAP_URL' | translate }}:
+                        {{ 'ZONES.MAP_URL' | translate }}
                     </div>
                     <a class="underline truncate" [href]="item?.map_id">{{
                         item?.map_id
@@ -109,7 +109,7 @@ import { marked } from 'marked';
                         class="text-sm font-medium flex items-center"
                         for="tags"
                     >
-                        {{ 'ZONES.TAGS' | translate }}:
+                        {{ 'ZONES.TAGS' | translate }}
                     </div>
                     <div class="flex flex-wrap flex-1 -mx-1">
                         <div
@@ -124,7 +124,7 @@ import { marked } from 'marked';
                     </div>
                 </ng-container>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.CREATED_AT' | translate }}:
+                    {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -139,7 +139,7 @@ import { marked } from 'marked';
                     </span>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.UPDATED_AT' | translate }}:
+                    {{ 'COMMON.UPDATED_AT' | translate }}
                 </div>
                 <div class=" flex items-center">
                     <span

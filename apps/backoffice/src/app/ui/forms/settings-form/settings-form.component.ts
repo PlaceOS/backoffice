@@ -140,7 +140,11 @@ export class SettingsFormComponent
                 name: i18n('COMMON.SETTINGS_SUPPORT'),
                 active: this.is_support,
             },
-            { id: EncryptionLevel.Admin, name: 'Admin', active: this.is_admin },
+            {
+                id: EncryptionLevel.Admin,
+                name: i18n('COMMON.SETTINGS_ADMIN'),
+                active: this.is_admin,
+            },
             {
                 id: EncryptionLevel.NeverDisplay,
                 name: i18n('COMMON.SETTINGS_ENCRYPTED'),

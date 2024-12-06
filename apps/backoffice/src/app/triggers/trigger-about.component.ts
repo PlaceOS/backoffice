@@ -23,7 +23,7 @@ import { TriggerStateService } from './trigger-state.service';
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.CREATED_AT' | translate }}:
+                    {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -38,7 +38,7 @@ import { TriggerStateService } from './trigger-state.service';
                     </span>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.UPDATED_AT' | translate }}:
+                    {{ 'COMMON.UPDATED_AT' | translate }}
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -59,7 +59,7 @@ import { TriggerStateService } from './trigger-state.service';
             <label
                 for="driver"
                 matTooltip="System to use for available status variables and function calls"
-                >{{ 'TRIGGERS.REFERENCE_SYSTEM' | translate }}:
+                >{{ 'TRIGGERS.REFERENCE_SYSTEM' | translate }}
             </label>
             <item-search-field
                 [placeholder]="'SYSTEMS.SEARCH' | translate"

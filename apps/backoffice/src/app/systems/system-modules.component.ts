@@ -70,7 +70,7 @@ import { i18n } from '../common/translate';
                     {{ 'COMMON.ADD_NEW' | translate }}
                 </button>
             </section>
-            <section device-list class="overflow-auto min-h-[50vh]">
+            <section device-list class="overflow-auto min-h-[50vh] flex-1">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"

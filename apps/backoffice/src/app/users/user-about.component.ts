@@ -52,7 +52,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.FIELD_EMAIL' | translate }}:
+                    {{ 'COMMON.FIELD_EMAIL' | translate }}
                 </div>
                 <div>
                     <a
@@ -64,18 +64,18 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                 </div>
                 <ng-container *ngIf="item?.department">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'USERS.FIELD_DEPARTMENT' | translate }}:
+                        {{ 'USERS.FIELD_DEPARTMENT' | translate }}
                     </div>
                     <div>{{ item?.department }}</div>
                 </ng-container>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'USERS.AUTHORITY_ID' | translate }}:
+                    {{ 'USERS.AUTHORITY_ID' | translate }}
                 </div>
                 <div class="mono text-sm">
                     {{ item?.authority_id }}
                 </div>
                 <div class="text-sm font-medium flex items-center" for="groups">
-                    {{ 'USERS.FIELD_GROUPS' | translate }}:
+                    {{ 'USERS.FIELD_GROUPS' | translate }}
                 </div>
                 <div
                     *ngIf="item.groups?.length; else empty_group_state"
@@ -89,7 +89,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                     </div>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.CREATED_AT' | translate }}:
+                    {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -105,7 +105,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                 </div>
                 <ng-template *ngIf="item.updated_at">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'COMMON.UPDATED_AT' | translate }}:
+                        {{ 'COMMON.UPDATED_AT' | translate }}
                     </div>
                     <div class=" flex items-center">
                         <span

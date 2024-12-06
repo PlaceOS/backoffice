@@ -13,7 +13,7 @@ import { SystemStateService } from './system-state.service';
                 >
                     <ng-container *ngIf="item?.support_url">
                         <div class="text-sm font-medium flex items-center">
-                            {{ 'SYSTEMS.SUPPORT_URL' | translate }}:
+                            {{ 'SYSTEMS.SUPPORT_URL' | translate }}
                         </div>
                         <a
                             class="underline select-all truncate"
@@ -25,25 +25,25 @@ import { SystemStateService } from './system-state.service';
                     </ng-container>
                     <ng-container *ngIf="item?.email">
                         <div class="text-sm font-medium flex items-center">
-                            {{ 'SYSTEMS.BOOKABLE' | translate }}:
+                            {{ 'SYSTEMS.BOOKABLE' | translate }}
                         </div>
                         <div>{{ item?.bookable ? 'Yes' : 'No' }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.email">
                         <div class="text-sm font-medium flex items-center">
-                            {{ 'SYSTEMS.PUBLIC' | translate }}:
+                            {{ 'SYSTEMS.PUBLIC' | translate }}
                         </div>
                         <div>{{ item?.public ? 'Yes' : 'No' }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.code">
                         <div class="text-sm font-medium flex items-center">
-                            {{ 'SYSTEMS.CODE' | translate }}:
+                            {{ 'SYSTEMS.CODE' | translate }}
                         </div>
                         <div>{{ item?.code }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.email">
                         <div class="text-sm font-medium flex items-center">
-                            {{ 'SYSTEMS.EMAIL' | translate }}:
+                            {{ 'SYSTEMS.EMAIL' | translate }}
                         </div>
                         <a
                             class="underline select-all truncate"
@@ -54,30 +54,30 @@ import { SystemStateService } from './system-state.service';
                     </ng-container>
                     <ng-container *ngIf="item?.capacity">
                         <div class="text-sm font-medium flex items-center">
-                            {{ 'SYSTEMS.CAPACITY' | translate }}:
+                            {{ 'SYSTEMS.CAPACITY' | translate }}
                         </div>
                         <div>{{ item?.capacity }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.map_id">
                         <div class="text-sm font-medium flex items-center">
-                            {{ 'SYSTEMS.MAP_ID' | translate }}:
+                            {{ 'SYSTEMS.MAP_ID' | translate }}
                         </div>
                         <div class="value mono">{{ item?.map_id }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.installed_ui_devices">
                         <div class="text-sm font-medium flex items-center">
-                            {{ 'SYSTEMS.PANEL_COUNT' | translate }}:
+                            {{ 'SYSTEMS.PANEL_COUNT' | translate }}
                         </div>
                         <div>{{ item?.installed_ui_devices }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.timezone">
                         <div class="text-sm font-medium flex items-center">
-                            {{ 'COMMON.TIMEZONE' | translate }}:
+                            {{ 'COMMON.TIMEZONE' | translate }}
                         </div>
                         <div>{{ item?.timezone }}</div>
                     </ng-container>
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'COMMON.CREATED_AT' | translate }}:
+                        {{ 'COMMON.CREATED_AT' | translate }}
                     </div>
                     <div class=" flex items-center">
                         <span
@@ -92,7 +92,7 @@ import { SystemStateService } from './system-state.service';
                         </span>
                     </div>
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'COMMON.UPDATED_AT' | translate }}:
+                        {{ 'COMMON.UPDATED_AT' | translate }}
                     </div>
                     <div class=" flex items-center">
                         <span

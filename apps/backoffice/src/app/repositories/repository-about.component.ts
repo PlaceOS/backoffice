@@ -12,13 +12,13 @@ import { RepositoriesStateService } from './repositories-state.service';
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}:
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                 </div>
                 <div class="select-all">
                     {{ item.description || 'No description' }}
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'REPOS.FIELD_TYPE' | translate }}:
+                    {{ 'REPOS.FIELD_TYPE' | translate }}
                 </div>
                 <div>
                     {{
@@ -29,7 +29,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     }}
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'REPOS.FOLDER_NAME' | translate }}:
+                    {{ 'REPOS.FOLDER_NAME' | translate }}
                 </div>
                 <div
                     class="select-all"
@@ -44,7 +44,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </a>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.CREATED_AT' | translate }}:
+                    {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -59,7 +59,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </span>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.UPDATED_AT' | translate }}:
+                    {{ 'COMMON.UPDATED_AT' | translate }}
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -79,7 +79,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                 [style.gridTemplateColumns]="'6.5rem auto'"
             >
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'REPOS.URI' | translate }}:
+                    {{ 'REPOS.URI' | translate }}
                 </div>
                 <div class="underline select-all overflow-hidden">
                     <a
@@ -90,7 +90,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     >
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.GIT_BRANCH' | translate }}:
+                    {{ 'COMMON.GIT_BRANCH' | translate }}
                 </div>
                 <div class="flex items-center overflow-hidden">
                     <code
@@ -101,7 +101,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     </code>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.GIT_COMMIT' | translate }}:
+                    {{ 'COMMON.GIT_COMMIT' | translate }}
                 </div>
                 <div class="flex items-center overflow-hidden">
                     <code

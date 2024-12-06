@@ -15,7 +15,10 @@ import { i18n } from '../common/translate';
             <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
             <div class="flex flex-col h-full flex-1 overflow-hidden w-px">
                 <div class="flex flex-1 h-px">
-                    <item-sidebar class="hidden sm:block"></item-sidebar>
+                    <item-sidebar
+                        class="hidden sm:block"
+                        [title]="'SYSTEMS.PLURAL' | translate"
+                    ></item-sidebar>
                     <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
                         <item-selection class="z-20 sm:hidden">
                             <button

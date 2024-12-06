@@ -15,25 +15,25 @@ import { MatDialog } from '@angular/material/dialog';
             >
                 <ng-container *ngIf="item.notes">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'MODULES.NOTES' | translate }}:
+                        {{ 'MODULES.NOTES' | translate }}
                     </div>
                     <div>{{ item.notes }}</div>
                 </ng-container>
                 <ng-container *ngIf="item.ip">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'MODULES.IP_ADDRESS' | translate }}:
+                        {{ 'MODULES.IP_ADDRESS' | translate }}
                     </div>
                     <div class="mono">{{ item.ip }}</div>
                 </ng-container>
                 <ng-container *ngIf="item.port > 1">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'MODULES.PORT_NUMBER' | translate }}:
+                        {{ 'MODULES.PORT_NUMBER' | translate }}
                     </div>
                     <div class="mono">{{ item.port }}</div>
                 </ng-container>
                 <ng-container *ngIf="item.tls || item.udp">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'MODULES.Protocol' | translate }}:
+                        {{ 'MODULES.Protocol' | translate }}
                     </div>
                     <div class="flex items-center">
                         <code *ngIf="item.tls" class="bg-success text-base-100">
@@ -46,7 +46,7 @@ import { MatDialog } from '@angular/material/dialog';
                 </ng-container>
                 <ng-container *ngIf="driver | async">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'DRIVERS.SINGULAR' | translate }}:
+                        {{ 'DRIVERS.SINGULAR' | translate }}
                     </div>
                     <a
                         class="underline truncate"
@@ -62,7 +62,7 @@ import { MatDialog } from '@angular/material/dialog';
                 </ng-container>
                 <ng-container *ngIf="system | async">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'SYSTEMS.SINGULAR' | translate }}:
+                        {{ 'SYSTEMS.SINGULAR' | translate }}
                     </div>
                     <a
                         class="underline truncate"
@@ -77,7 +77,7 @@ import { MatDialog } from '@angular/material/dialog';
                 </ng-container>
                 <ng-container *ngIf="edge | async">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'COMMON.EDGE' | translate }}:
+                        {{ 'COMMON.EDGE' | translate }}
                     </div>
                     <div class="flex items-center">
                         <a
@@ -115,7 +115,7 @@ import { MatDialog } from '@angular/material/dialog';
                     </ng-template>
                 </ng-container>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.CREATED_AT' | translate }}:
+                    {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -130,7 +130,7 @@ import { MatDialog } from '@angular/material/dialog';
                     </span>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.UPDATED_AT' | translate }}:
+                    {{ 'COMMON.UPDATED_AT' | translate }}
                 </div>
                 <div class=" flex items-center">
                     <span

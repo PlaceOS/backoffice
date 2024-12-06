@@ -58,7 +58,7 @@ export interface PlaceServiceDetails {
             [style.gridTemplateColumns]="'6.5rem auto'"
         >
             <div class="text-sm font-medium flex items-center" for="version">
-                {{ 'COMMON.VERSION' | translate }}:
+                {{ 'COMMON.VERSION' | translate }}
             </div>
             <div class="flex items-center space-x-2">
                 <code
@@ -76,7 +76,7 @@ export interface PlaceServiceDetails {
                 </code>
             </div>
             <div class="text-sm font-medium flex items-center" for="hash">
-                {{ 'COMMON.GIT_COMMIT' | translate }}:
+                {{ 'COMMON.GIT_COMMIT' | translate }}
             </div>
             <div>
                 <code name="hash" (click)="copy('hash', backoffice_hash)">
@@ -84,7 +84,7 @@ export interface PlaceServiceDetails {
                 </code>
             </div>
             <div class="text-sm font-medium flex items-center" for="build-time">
-                {{ 'ADMIN.BUILD' | translate }}:
+                {{ 'ADMIN.BUILD' | translate }}
             </div>
             <div
                 name="build-time"
@@ -122,28 +122,28 @@ export interface PlaceServiceDetails {
                     </h3>
                     <div
                         class="p-4 inline-grid gap-2"
-                        [style.gridTemplateColumns]="'6.5rem auto'"
+                        [style.gridTemplateColumns]="'7.5rem auto'"
                     >
                         <div class="text-sm font-medium flex items-center">
-                            {{ 'COMMON.GIT_COMMIT' | translate }}:
+                            {{ 'COMMON.GIT_COMMIT' | translate }}
                         </div>
                         <div>
                             <code>{{ api.commit | slice: 0:8 }}</code>
                         </div>
                         <div class="text-sm font-medium flex items-center">
-                            {{ 'COMMON.VERSION' | translate }}:
+                            {{ 'COMMON.VERSION' | translate }}
                         </div>
                         <div>
                             <code>{{ api.version }}</code>
                         </div>
                         <div class="text-sm font-medium flex items-center">
-                            {{ 'ADMIN.PLATFORM' | translate }}:
+                            {{ 'ADMIN.PLATFORM' | translate }}
                         </div>
                         <div>
                             <code>{{ api.platform_version }}</code>
                         </div>
                         <div class="text-sm font-medium flex items-center">
-                            {{ 'ADMIN.BUILT_AT' | translate }}:
+                            {{ 'ADMIN.BUILT_AT' | translate }}
                         </div>
                         <div class="text-sm">
                             {{ api.build_time | date: 'MMM d, y, h:mm a' }}

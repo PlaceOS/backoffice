@@ -49,7 +49,7 @@ import { DriverStateService } from './driver-state.service';
                 </div>
                 <div class="mono text-sm truncate">{{ item?.module_name }}</div>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.CREATED_AT' | translate }}:
+                    {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
                 <div class=" flex items-center">
                     <span
@@ -64,7 +64,7 @@ import { DriverStateService } from './driver-state.service';
                     </span>
                 </div>
                 <div class="text-sm font-medium flex items-center">
-                    {{ 'COMMON.UPDATED_AT' | translate }}:
+                    {{ 'COMMON.UPDATED_AT' | translate }}
                 </div>
                 <div class=" flex items-center">
                     <span
