@@ -333,6 +333,8 @@
         "COMMIT_SEARCH": "Search for commit...",
         "NAME_REQUIRED": "A driver name is required",
         "ROLE": "Role",
+        "COMMITS_LOADING": "Loading commits for the selected driver...",
+        "DRIVERS_LOADING": "Loading driver list from selected repository...",
         "DETAILS_LOADING": "Loading driver details for selected commit...",
         "DETAILS_ERROR_1": "Failed to load driver details for commit.",
         "DETAILS_ERROR_2": "Please check that the driver compiles correctly and try again."

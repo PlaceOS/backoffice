@@ -15,34 +15,33 @@
         </div>
         <div
             class="field discovery"
-            *ngIf="
-                form.controls.file_name &&
-                driver_list &&
-                driver_list.length &&
-                !editing
-            "
+            *ngIf="form.controls.file_name && base_repo && !editing"
         >
-            <label for="driver">{{ 'DRIVERS.BASE' | translate }}: </label>
-            <item-search-field
-                [placeholder]="'DRIVERS.SEARCH' | translate"
-                [options]="driver_list"
-                [loading]="loading_drivers"
-                [ngModel]="base_driver"
-                (ngModelChange)="updateCommitList($event)"
-            ></item-search-field>
+            <ng-container *ngIf="!loading_drivers; else load_driver_state">
+                <label for="driver">{{ 'DRIVERS.BASE' | translate }}: </label>
+                <item-search-field
+                    [placeholder]="'DRIVERS.SEARCH' | translate"
+                    [options]="driver_list"
+                    [loading]="loading_drivers"
+                    [ngModel]="base_driver"
+                    (ngModelChange)="updateCommitList($event)"
+                ></item-search-field>
+            </ng-container>
         </div>
         <div
             class="field discovery"
-            *ngIf="form.controls.commit && commit_list && commit_list.length"
+            *ngIf="form.controls.commit && base_driver"
         >
-            <label for="commit">{{ 'DRIVERS.COMMIT' | translate }}: </label>
-            <item-search-field
-                [placeholder]="'DRIVERS.COMMIT_SEARCH' | translate"
-                [options]="commit_list"
-                [loading]="loading_commits"
-                [ngModel]="base_commit"
-                (ngModelChange)="setDriverBase($event)"
-            ></item-search-field>
+            <ng-container *ngIf="!loading_commits; else load_commit_state">
+                <label for="commit">{{ 'DRIVERS.COMMIT' | translate }}: </label>
+                <item-search-field
+                    [placeholder]="'DRIVERS.COMMIT_SEARCH' | translate"
+                    [options]="commit_list"
+                    [loading]="loading_commits"
+                    [ngModel]="base_commit"
+                    (ngModelChange)="setDriverBase($event)"
+                ></item-search-field
+            ></ng-container>
         </div>
     </div>
     <ng-container *ngIf="!loading; else load_state">
@@ -201,6 +200,18 @@
     <div class="flex flex-col items-center justify-center p-8 space-y-4">
         <mat-spinner diameter="32"></mat-spinner>
         <div class="text">{{ 'DRIVERS.DETAILS_LOADING' | translate }}</div>
+    </div>
+</ng-template>
+<ng-template #load_commit_state>
+    <div class="flex flex-col items-center justify-center p-8 space-y-4">
+        <mat-spinner diameter="32"></mat-spinner>
+        <div class="text">{{ 'DRIVERS.COMMITS_LOADING' | translate }}</div>
+    </div>
+</ng-template>
+<ng-template #load_driver_state>
+    <div class="flex flex-col items-center justify-center p-8 space-y-4">
+        <mat-spinner diameter="32"></mat-spinner>
+        <div class="text">{{ 'DRIVERS.DRIVERS_LOADING' | translate }}</div>
     </div>
 </ng-template>
 <ng-template #fail_state>

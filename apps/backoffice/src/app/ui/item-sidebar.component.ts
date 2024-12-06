@@ -20,11 +20,15 @@ import { ActiveItemService } from '../common/item.service';
             class="flex flex-col w-[24rem] min-w-64 max-w-[25vw] space-y-2 bg-base-100  shadow rounded overflow-hidden h-full sm:border-r border-base-200 "
             (click)="$event.stopPropagation()"
         >
-            <div class="flex items-center border-b border-base-200 ">
-                <app-icon class="text-2xl ml-2 ">search</app-icon>
+            <div class="relative flex items-center border-b border-base-200 ">
+                <app-icon
+                    class="absolute top-1/2 left-2 -translate-y-1/2 text-2xl pointer-events-none"
+                >
+                    search
+                </app-icon>
                 <input
                     #search_input
-                    class="border-none flex-1 py-3 px-2 text-lg bg-transparent "
+                    class="border-none flex-1 pl-10 pr-4 py-4 bg-transparent"
                     [(ngModel)]="search"
                     (ngModelChange)="updateSearch($event)"
                     [placeholder]="
