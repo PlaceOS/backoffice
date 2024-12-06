@@ -16,10 +16,10 @@ import { AuthSourceModalComponent } from './auth-source-modal/auth-source-modal.
 import { ViewResponseModalComponent } from './view-response-modal/view-response-modal.component';
 import { MetadataDetailsModalComponent } from './metadata-details-modal/metadata-details-modal.component';
 import { BulkItemModalComponent } from './bulk-item-modal/bulk-item-modal.component';
-import { CsvUploadComponent } from './bulk-item-modal/csv-upload/csv-upload.component';
-import { MatchFieldsComponent } from './bulk-item-modal/match-fields/match-fields.component';
-import { ListComponent } from './bulk-item-modal/list/list.component';
-import { StatusListComponent } from './bulk-item-modal/status-list/status-list.component';
+import { CsvUploadComponent } from './bulk-item-modal/csv-upload.component';
+import { MatchFieldsComponent } from './bulk-item-modal/match-fields.component';
+import { ListComponent } from './bulk-item-modal/list.component';
+import { StatusListComponent } from './bulk-item-modal/status-list.component';
 import { DuplicateModalComponent } from './duplicate-modal/duplicate-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
 

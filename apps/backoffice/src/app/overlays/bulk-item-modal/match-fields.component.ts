@@ -10,8 +10,46 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
 
 @Component({
     selector: 'bulk-item-match-fields',
-    templateUrl: './match-fields.component.html',
-    styleUrls: ['./match-fields.component.scss'],
+    template: `
+        <div
+            class="flex flex-wrap px-2 -mt-2 max-w-[80vw] max-h-[65vh] overflow-auto"
+        >
+            <div
+                class="flex-1 min-w-[40%] flex flex-col m-2"
+                *ngFor="let field of field_list"
+            >
+                <label class="uppercase" [for]="field.id">{{ field.id }}</label>
+                <mat-form-field appearance="outline" class="no-subscript">
+                    <mat-select
+                        [name]="field.id"
+                        [(ngModel)]="field_mapping[field.id]"
+                        placeholder="Select field"
+                    >
+                        <mat-option
+                            *ngFor="let type of source_fields"
+                            [value]="type.id"
+                        >
+                            {{ type.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="flex items-center justify-end space-x-4 p-4">
+            <button
+                btn
+                matRipple
+                class="inverse w-36"
+                (click)="previous.emit()"
+            >
+                {{ 'COMMON.BACK' | translate }}
+            </button>
+            <button btn matRipple class="w-36" (click)="saveMapping()">
+                {{ 'COMMON.CONTINUE' | translate }}
+            </button>
+        </div>
+    `,
+    styles: [``],
 })
 export class MatchFieldsComponent {
     /** List of bulk items to add */
@@ -29,6 +67,7 @@ export class MatchFieldsComponent {
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.list && this.list && this.list.length) {
+            console.log('List:', this.list);
             this.source_fields = Object.keys(this.list[0]).map((i) => ({
                 id: i.toLowerCase().split(' ').join('_'),
                 name: i.split('_').join(' '),

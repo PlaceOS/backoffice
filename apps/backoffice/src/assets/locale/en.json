@@ -38,7 +38,10 @@
         "SAVE_ALL": "Save All",
         "CLEAR": "Clear Changes",
         "SAVE_CHANGES": "Save Changes",
+        "SAVE_ITEMS": "Save items",
         "BACK": "Back",
+        "NEXT": "Next",
+        "CONTINUE": "Continue",
         "UPDATE": "Update",
         "UPLOAD": "Upload",
         "UPLOADS": "Uploads",
@@ -124,7 +127,12 @@
         "GIT_COMMIT": "Commit hash",
         "GIT_PULL_LATEST": "Pull latest commit",
         "DESCRIPTION_EMPTY": "No description",
-        "INVALID_FIELDS": "Some fields are invalid. [{{ field_list }}]"
+        "INVALID_FIELDS": "Some fields are invalid. [{{ field_list }}]",
+        "BULK_ADD": "Bulk add {{ type }}",
+        "BULK_DOWNLOAD": "Download Template",
+        "BULK_DROP_MSG": "Select or drop CSV file to begin",
+        "BULK_DROP_LOADING": "Processing CSV data...",
+        "BULK_UPLOADING": "Uploading items..."
     },
     "SYSTEMS": {
         "SINGULAR": "System",

@@ -187,41 +187,75 @@ export function numberToPosition(num: number): string {
     return `${num}th`;
 }
 
+export const csvToJson = parseCSV;
 /**
  * Parse raw CSV data into a JSON object
  * @param csv CSV data to parse
  */
-export function csvToJson(csv: string, delimiter: string = ','): HashMap[] {
-    const objPattern = new RegExp(
-        '(\\,|\\r?\\n|\\r|^)(?:"([^"]*(?:""[^"]*)*)"|([^\\,\\r\\n]*))',
-        'gi'
-    );
-    let arrMatches = null;
-    const arrData = [[]];
-    while ((arrMatches = objPattern.exec(csv))) {
-        if (arrMatches[1].length && arrMatches[1] !== ',') arrData.push([]);
-        arrData[arrData.length - 1].push(
-            arrMatches[2]
-                ? arrMatches[2].replace(new RegExp('""', 'g'), '"')
-                : arrMatches[3]
-        );
-    }
-    const headers: string[] = arrData.splice(0, 1)[0];
-    const elements = arrData.map((row) => {
-        const element = {};
-        for (let i = 0; i < row.length; i++) {
-            const key = (headers[i] || '').split(' ').join('_').toLowerCase();
-            try {
-                element[key] = JSON.parse(row[i]);
-            } catch (e) {
-                element[key] = row[i] || '';
-            }
-            if (element[key] === 'TRUE' || element[key] === 'FALSE')
-                element[key] = element[key] === 'TRUE';
-        }
-        return element;
+function parseCSV(csv_string: string, delimiter = ',') {
+    const lines = csv_string.trim().split('\n');
+    const headers = parseCSVLine(lines.shift(), delimiter);
+
+    return lines.map((line) => {
+        const values = parseCSVLine(line, delimiter);
+        const obj = {};
+        headers.forEach((header, i) => {
+            obj[header] = convertValueType(values[i] || '');
+        });
+        return obj;
     });
-    return elements;
+}
+
+function parseCSVLine(line: string, delimiter: string) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+
+        if (char === '"') {
+            // If we're in quotes and the next char is also a quote, it's an escaped quote.
+            if (inQuotes && line[i + 1] === '"') {
+                current += '"';
+                i++; // Skip the next quote
+            } else {
+                // Toggle inQuotes status
+                inQuotes = !inQuotes;
+            }
+        } else if (char === delimiter && !inQuotes) {
+            // We've hit a delimiter that's not inside quotes, so this field is done
+            result.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+
+    // Add the last field
+    result.push(current);
+
+    return result;
+}
+
+function convertValueType(value: string) {
+    const trimmed = value.trim();
+
+    // Check for boolean
+    if (trimmed.toLowerCase() === 'true') return true;
+    if (trimmed.toLowerCase() === 'false') return false;
+
+    // Check for number
+    const num = Number(trimmed);
+    if (!isNaN(num) && trimmed !== '') {
+        // Additionally, verify that trimmed is a valid number format without extra chars
+        if (/^-?\d+(\.\d+)?$/.test(trimmed)) {
+            return num;
+        }
+    }
+
+    // Return the trimmed string if not boolean or number
+    return trimmed;
 }
 
 /**

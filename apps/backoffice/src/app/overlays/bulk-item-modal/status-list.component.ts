@@ -6,15 +6,29 @@ import {
     SimpleChanges,
     OnChanges,
 } from '@angular/core';
-
-import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
 import { Observable } from 'rxjs';
 
+import { HashMap } from 'apps/backoffice/src/app/common/types';
+
 @Component({
     selector: 'bulk-item-status-list',
-    templateUrl: './status-list.component.html',
-    styleUrls: ['./status-list.component.scss'],
+    template: `
+        <div class="info" *ngIf="!done">{{ 'COMMON.BULK_UPLOADING' }}</div>
+        <div *ngFor="let item of list; let i = index" class="item">
+            <div class="name">{{ item.name }}</div>
+            <div class="status">
+                <app-icon *ngIf="status[i] !== 'loading'" [class]="status[i]">
+                    {{ status[i] === 'done' ? 'done' : 'close' }}
+                </app-icon>
+                <mat-spinner
+                    *ngIf="status[i] === 'loading'"
+                    diameter="24"
+                ></mat-spinner>
+            </div>
+        </div>
+    `,
+    styles: [``],
 })
 export class StatusListComponent implements OnChanges {
     /** List of bulk items to add */

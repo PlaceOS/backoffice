@@ -10,8 +10,46 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 
 @Component({
     selector: 'bulk-item-csv-upload',
-    templateUrl: './csv-upload.component.html',
-    styleUrls: ['./csv-upload.component.scss'],
+    template: `
+        <button
+            matRipple
+            class="relative flex flex-col items-center justify-center space-y-4 h-[24rem] w-[24rem] border-4 border-dashed border-base-300 rounded-xl mx-4 hover:bg-base-200"
+            *ngIf="!loading; else load_state"
+            [class.hover]="dragging"
+            (dragenter)="dragging = true"
+            (dragleave)="dragging = false"
+            (dragend)="dragging = false"
+        >
+            <app-icon class="text-6xl">cloud_upload</app-icon>
+            <div class="text">{{ 'COMMON.BULK_DROP_MSG' | translate }}</div>
+            <input
+                class="absolute inset-0 opacity-0"
+                type="file"
+                (change)="loadCSVData($event)"
+            />
+        </button>
+        <div class="p-4" *ngIf="template">
+            <button
+                btn
+                matRipple
+                class="w-full"
+                (click)="downloadTemplateCSV()"
+            >
+                {{ 'COMMON.BULK_DOWNLOAD' | translate }}
+            </button>
+        </div>
+        <ng-template #load_state>
+            <div
+                class="flex flex-col items-center justify-center space-y-4 h-[24rem] w-[24rem] "
+            >
+                <mat-spinner diameter="32"></mat-spinner>
+                <div class="text">
+                    {{ 'COMMON.BULK_DROP_LOADING' | translate }}
+                </div>
+            </div>
+        </ng-template>
+    `,
+    styles: [``],
 })
 export class CsvUploadComponent {
     /** Data for the template CSV */
