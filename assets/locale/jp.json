@@ -135,7 +135,9 @@
         "BULK_DOWNLOAD": "テンプレートをダウンロード",
         "BULK_DROP_MSG": "CSVファイルを選択またはドロップして開始",
         "BULK_DROP_LOADING": "CSVデータを処理中...",
-        "BULK_UPLOADING": "アイテムをアップロード中..."
+        "BULK_UPLOADING": "アイテムをアップロード中...",
+        "LANG_ENGLISH": "英語",
+        "LANG_JAPANESE": "日本語"
     },
     "SYSTEMS": {
         "SINGULAR": "システム",
