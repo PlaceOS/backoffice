@@ -2,11 +2,10 @@ import { Component, Input, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { SPACE, ENTER, COMMA } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { EncryptionLevel, queryZones } from '@placeos/ts-client';
+import { queryZones } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
-import { Identity } from 'apps/backoffice/src/app/common/types';
 import { TIMEZONES_IANA } from '../../common/timezones';
 
 @Component({
@@ -25,7 +24,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         form.controls.zone.invalid && form.controls.zone.touched
                     "
                 >
-                    {{ 'ZONES.SINGULAR' | translate }}<span>*</span>:
+                    {{ 'ZONES.SINGULAR' | translate }}<span>*</span>
                 </label>
                 <item-search-field
                     name="zone"
@@ -50,7 +49,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.name.touched
                         "
                     >
-                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
+                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -73,7 +72,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.email.touched
                         "
                     >
-                        {{ 'COMMON.FIELD_EMAIL' | translate }}:
+                        {{ 'COMMON.FIELD_EMAIL' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -91,7 +90,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.display_name">
                     <label for="display-name">
-                        {{ 'SYSTEMS.DISPLAY_NAME' | translate }}:
+                        {{ 'SYSTEMS.DISPLAY_NAME' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -104,7 +103,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </div>
                 <div class="field" *ngIf="form.controls.display_name">
                     <label for="code-name"
-                        >{{ 'SYSTEMS.CODE' | translate }}:
+                        >{{ 'SYSTEMS.CODE' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -124,7 +123,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         form.controls.support_url.touched
                     "
                 >
-                    {{ 'SYSTEMS.SUPPORT_URL' | translate }}:
+                    {{ 'SYSTEMS.SUPPORT_URL' | translate }}
                 </label>
                 <mat-form-field appearance="outline">
                     <input
@@ -147,7 +146,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.installed_ui_devices.touched
                         "
                     >
-                        {{ 'SYSTEMS.PANEL_COUNT' | translate }}:
+                        {{ 'SYSTEMS.PANEL_COUNT' | translate }}
                     </label>
                     <a-counter
                         formControlName="installed_ui_devices"
@@ -163,7 +162,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.capacity.touched
                         "
                     >
-                        {{ 'SYSTEMS.CAPACITY' | translate }}:
+                        {{ 'SYSTEMS.CAPACITY' | translate }}
                     </label>
                     <a-counter
                         formControlName="capacity"
@@ -190,9 +189,9 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 ></settings-toggle>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description"
-                    >{{ 'COMMON.FIELD_DESCRIPTION' | translate }}:</label
-                >
+                <label for="description">
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                </label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
@@ -209,7 +208,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         form.controls.features.touched
                     "
                 >
-                    {{ 'SYSTEMS.FEATURES' | translate }}:
+                    {{ 'SYSTEMS.FEATURES' | translate }}
                 </label>
                 <mat-form-field appearance="outline" class="w-full">
                     <mat-chip-grid #chipList aria-label="Image List">
@@ -239,7 +238,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.map_id">
-                <label for="map_id">{{ 'SYSTEMS.MAP_ID' | translate }}:</label>
+                <label for="map_id">{{ 'SYSTEMS.MAP_ID' | translate }}</label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
@@ -279,7 +278,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </mat-autocomplete>
             </div>
             <div class="field" *ngIf="form.controls.images">
-                <label for="images">{{ 'COMMON.IMAGES' | translate }}:</label>
+                <label for="images">{{ 'COMMON.IMAGES' | translate }}</label>
                 <image-list-field
                     name="images"
                     formControlName="images"

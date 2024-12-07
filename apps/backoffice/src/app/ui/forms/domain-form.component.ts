@@ -18,7 +18,7 @@ import { isValidDomain } from '../../common/validation';
                             form.controls.name.touched
                         "
                     >
-                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
+                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -41,7 +41,7 @@ import { isValidDomain } from '../../common/validation';
                             form.controls.domain.touched
                         "
                     >
-                        {{ 'DOMAINS.NAME' | translate }}:
+                        {{ 'DOMAINS.NAME' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -66,7 +66,7 @@ import { isValidDomain } from '../../common/validation';
                         form.controls.login_url.touched
                     "
                 >
-                    {{ 'DOMAINS.LOGIN_URL' | translate }}:
+                    {{ 'DOMAINS.LOGIN_URL' | translate }}
                 </label>
                 <mat-form-field appearance="outline">
                     <input
@@ -88,7 +88,7 @@ import { isValidDomain } from '../../common/validation';
                         form.controls.logout_url.touched
                     "
                 >
-                    {{ 'DOMAINS.LOGOUT_URL' | translate }}:
+                    {{ 'DOMAINS.LOGOUT_URL' | translate }}
                 </label>
                 <mat-form-field appearance="outline">
                     <input
@@ -103,9 +103,9 @@ import { isValidDomain } from '../../common/validation';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description"
-                    >{{ 'COMMON.FIELD_DESCRIPTION' | translate }}:</label
-                >
+                <label for="description">{{
+                    'COMMON.FIELD_DESCRIPTION' | translate
+                }}</label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
@@ -122,7 +122,7 @@ import { isValidDomain } from '../../common/validation';
                         form.controls.email_domains.touched
                     "
                 >
-                    {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}:
+                    {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}
                 </label>
                 <mat-form-field appearance="outline" class="w-full">
                     <mat-chip-grid #chipList aria-label="Image List">

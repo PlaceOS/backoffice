@@ -25,7 +25,7 @@ import { map } from 'rxjs/operators';
                         form.controls.driver.touched
                     "
                 >
-                    {{ 'DRIVERS.SINGULAR' | translate }}<span>*</span>:
+                    {{ 'DRIVERS.SINGULAR' | translate }}<span>*</span>
                 </label>
                 <item-search-field
                     name="driver"
@@ -57,7 +57,7 @@ import { map } from 'rxjs/operators';
                         "
                     >
                         {{ 'MODULES.CONTROL_SYSTEM' | translate }}
-                        <span *ngIf="role === 'logic'">*</span>:
+                        <span *ngIf="role === 'logic'">*</span>
                     </label>
                     <ng-container *ngIf="!readonly; else readonly_system">
                         <item-search-field
@@ -96,7 +96,7 @@ import { map } from 'rxjs/operators';
                             form.controls.uri.touched
                         "
                     >
-                        {{ 'MODULES.URI' | translate }}<span>*</span>:
+                        {{ 'MODULES.URI' | translate }}<span>*</span>
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -126,9 +126,9 @@ import { map } from 'rxjs/operators';
                             "
                         >
                             {{ 'MODULES.FIELD_IP' | translate }}
-                            <span *ngIf="role === 'ssh' || role === 'device'"
-                                >*</span
-                            >:
+                            <span *ngIf="role === 'ssh' || role === 'device'">
+                                *
+                            </span>
                         </label>
                         <mat-form-field appearance="outline">
                             <input
@@ -156,10 +156,10 @@ import { map } from 'rxjs/operators';
                                 form.controls.port.touched
                             "
                         >
-                            {{ 'MODULES.PORT_NUMBER' | translate
-                            }}<span *ngIf="role === 'ssh' || role === 'device'"
-                                >*</span
-                            >:
+                            {{ 'MODULES.PORT_NUMBER' | translate }}
+                            <span *ngIf="role === 'ssh' || role === 'device'">
+                                *
+                            </span>
                         </label>
                         <mat-form-field appearance="outline">
                             <input
@@ -212,7 +212,7 @@ import { map } from 'rxjs/operators';
                     ></settings-toggle>
                 </div>
                 <div class="field" *ngIf="form.controls.notes">
-                    <label for="notes">{{ 'COMMON.NOTES' | translate }}:</label>
+                    <label for="notes">{{ 'COMMON.NOTES' | translate }}</label>
                     <mat-form-field appearance="outline">
                         <textarea
                             matInput
@@ -224,7 +224,7 @@ import { map } from 'rxjs/operators';
                 </div>
                 <div class="field" *ngIf="form.controls.custom_name">
                     <label for="custom-name">
-                        {{ 'MODULES.CUSTOM_NAME' | translate }}:
+                        {{ 'MODULES.CUSTOM_NAME' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -240,7 +240,7 @@ import { map } from 'rxjs/operators';
                     *ngIf="form.controls.edge && !form.controls.id.value"
                 >
                     <label for="driver">
-                        {{ 'COMMON.EDGE' | translate }}:
+                        {{ 'COMMON.EDGE' | translate }}
                     </label>
                     <item-search-field
                         [placeholder]="'COMMON.EDGE_SEARCH' | translate"

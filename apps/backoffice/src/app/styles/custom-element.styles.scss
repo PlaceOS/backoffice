@@ -68,6 +68,14 @@ form {
     }
 }
 
+#placeos {
+    [confirm-modal] {
+        p {
+            margin-bottom: 0.5rem;
+        }
+    }
+}
+
 .panel {
     .mdc-icon-button {
         display: flex;

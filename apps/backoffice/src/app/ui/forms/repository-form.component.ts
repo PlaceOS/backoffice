@@ -39,7 +39,7 @@ import { i18n } from '../../common/translate';
                         form.controls.name.invalid && form.controls.name.touched
                     "
                 >
-                    {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
+                    {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                 </label>
                 <mat-form-field appearance="outline">
                     <input
@@ -63,9 +63,9 @@ import { i18n } from '../../common/translate';
                         form.controls.folder_name
                     "
                 >
-                    <label for="type">{{
-                        'REPOS.FOLDER_NAME' | translate
-                    }}</label>
+                    <label for="type">
+                        {{ 'REPOS.FOLDER_NAME' | translate }}
+                    </label>
                     <mat-form-field appearance="outline">
                         <mat-select name="type" formControlName="repo_type">
                             <mat-option
@@ -85,7 +85,7 @@ import { i18n } from '../../common/translate';
                             form.controls.folder_name.touched
                         "
                     >
-                        {{ 'REPOS.FOLDER_NAME' | translate }}<span>*</span>:
+                        {{ 'REPOS.FOLDER_NAME' | translate }}<span>*</span>
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -108,7 +108,7 @@ import { i18n } from '../../common/translate';
                         form.controls.uri.invalid && form.controls.uri.touched
                     "
                 >
-                    {{ 'REPOS.URI' | translate }}<span>*</span>:
+                    {{ 'REPOS.URI' | translate }}<span>*</span>
                 </label>
                 <mat-form-field appearance="outline">
                     <input
@@ -126,7 +126,7 @@ import { i18n } from '../../common/translate';
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.username">
                     <label for="repo-u"
-                        >{{ 'REPOS.USERNAME' | translate }}:
+                        >{{ 'REPOS.USERNAME' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -140,7 +140,7 @@ import { i18n } from '../../common/translate';
                 </div>
                 <div class="field" *ngIf="form.controls.password">
                     <label for="repo-p">
-                        {{ 'REPOS.PASSWORD' | translate }}:
+                        {{ 'REPOS.PASSWORD' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -168,7 +168,7 @@ import { i18n } from '../../common/translate';
                         form.controls.branch.touched
                     "
                 >
-                    {{ 'REPOS.BRANCH' | translate }}<span>*</span>:
+                    {{ 'REPOS.BRANCH' | translate }}<span>*</span>
                 </label>
                 <mat-form-field appearance="outline">
                     <mat-select
@@ -190,7 +190,7 @@ import { i18n } from '../../common/translate';
                 </mat-form-field>
             </div>
             <div class="field commit">
-                <label for="commit"> {{ 'REPOS.COMMIT' | translate }}: </label>
+                <label for="commit"> {{ 'REPOS.COMMIT' | translate }}</label>
                 <mat-form-field appearance="outline">
                     <mat-select
                         name="type"
@@ -236,7 +236,7 @@ import { i18n } from '../../common/translate';
             </div>
             <div class="field" *ngIf="form.controls.description">
                 <label for="description">
-                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}:
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                 </label>
                 <mat-form-field appearance="outline">
                     <textarea

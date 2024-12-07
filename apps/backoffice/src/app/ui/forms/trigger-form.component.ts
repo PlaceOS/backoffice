@@ -16,13 +16,14 @@ import { UntypedFormGroup } from '@angular/forms';
                     [class.error]="
                         form.controls.name.invalid && form.controls.name.touched
                     "
-                    >Name<span>*</span>:</label
                 >
+                    {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
+                </label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
                         name="trigger-name"
-                        placeholder="Trigger Name"
+                        [placeholder]="'COMMON.FIELD_NAME' | translate"
                         formControlName="name"
                         required
                     />
@@ -30,72 +31,76 @@ import { UntypedFormGroup } from '@angular/forms';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description">Description:</label>
+                <label for="description">{{
+                    'COMMON.FIELD_DESCRIPTION' | translate
+                }}</label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
                         name="description"
-                        placeholder="Description"
+                        [placeholder]="'COMMON.FIELD_DESCRIPTION' | translate"
                         formControlName="description"
                     ></textarea>
                 </mat-form-field>
             </div>
-            <div class="field" *ngIf="form.controls.enable_webhook">
-                <mat-checkbox
-                    name="enable-webhook"
-                    formControlName="enable_webhook"
-                >
-                    Enable Webhook
-                </mat-checkbox>
-            </div>
             <div
-                class="field"
-                *ngIf="
-                    form.controls.enable_webhook.value &&
-                    form.controls.debounce_period
-                "
+                class="field w-[calc(50%-0.75rem)] mb-4"
+                *ngIf="form.controls.enable_webhook"
             >
-                <label
-                    for="debounce-period"
-                    [class.error]="
-                        form.controls.name.invalid && form.controls.name.touched
+                <settings-toggle
+                    [name]="'TRIGGERS.ENABLE_WEBHOOK' | translate"
+                    formControlName="enable_webhook"
+                ></settings-toggle>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div
+                    class="field"
+                    *ngIf="
+                        form.controls.enable_webhook.value &&
+                        form.controls.debounce_period
                     "
                 >
-                    Debounce Period:
-                </label>
-                <mat-form-field appearance="outline">
-                    <input
-                        matInput
-                        name="debounce-period"
-                        type="number"
-                        placeholder="Debounce Period"
-                        formControlName="debounce_period"
-                        required
-                    />
-                    <mat-error>Debounce period must be 0 or greater</mat-error>
-                </mat-form-field>
-            </div>
-            <div
-                class="field"
-                *ngIf="
-                    form.controls.enable_webhook.value &&
-                    form.controls.supported_methods
-                "
-            >
-                <label for="methods"> Supported Methods: </label>
-                <mat-form-field appearance="outline">
-                    <mat-select
-                        name="methods"
-                        multiple
-                        formControlName="supported_methods"
+                    <label
+                        for="debounce-period"
+                        [class.error]="
+                            form.controls.name.invalid &&
+                            form.controls.name.touched
+                        "
                     >
-                        <mat-option value="GET">GET</mat-option>
-                        <mat-option value="POST">POST</mat-option>
-                        <mat-option value="PUT">PUT</mat-option>
-                        <mat-option value="PATCH">PATCH</mat-option>
-                        <mat-option value="DELETE">DELETE</mat-option>
-                    </mat-select>
-                </mat-form-field>
+                        {{ 'TRIGGERS.DEBOUNCE_PERIOD' | translate }}
+                    </label>
+                    <a-counter
+                        formControlName="debounce_period"
+                        [min]="0"
+                        [step]="100"
+                        [max]="24 * 60 * 60"
+                        [render_fn]="render_debounce"
+                    ></a-counter>
+                </div>
+                <div
+                    class="field"
+                    *ngIf="
+                        form.controls.enable_webhook.value &&
+                        form.controls.supported_methods
+                    "
+                >
+                    <label for="methods">
+                        {{ 'TRIGGERS.SUPPORTED_METHODS' | translate }}
+                    </label>
+                    <mat-form-field appearance="outline" class="no-subscript">
+                        <mat-select
+                            name="methods"
+                            multiple
+                            formControlName="supported_methods"
+                        >
+                            <mat-option value="GET">GET</mat-option>
+                            <mat-option value="POST">POST</mat-option>
+                            <mat-option value="PUT">PUT</mat-option>
+                            <mat-option value="PATCH">PATCH</mat-option>
+                            <mat-option value="DELETE">DELETE</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
             </div>
         </form>
     `,
@@ -104,4 +109,6 @@ import { UntypedFormGroup } from '@angular/forms';
 export class TriggerFormComponent {
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
+
+    public readonly render_debounce = (v) => `${v} ms`;
 }

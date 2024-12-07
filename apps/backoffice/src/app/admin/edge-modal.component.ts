@@ -23,7 +23,7 @@ export interface EdgeModalData {
             <form [formGroup]="form" class="overflow-auto p-4">
                 <div class="flex flex-col flex-1">
                     <label>
-                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
+                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -39,7 +39,7 @@ export interface EdgeModalData {
                     </mat-form-field>
                 </div>
                 <div class="flex flex-col flex-1">
-                    <label>{{ 'COMMON.FIELD_DESCRIPTION' | translate }}:</label>
+                    <label>{{ 'COMMON.FIELD_DESCRIPTION' | translate }}</label>
                     <mat-form-field appearance="outline">
                         <textarea
                             matInput

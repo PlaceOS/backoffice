@@ -40,7 +40,7 @@ export interface StaffTenantModalData {
                 <div class="flex items-center flex-wrap space-x-0 sm:space-x-2">
                     <div class="flex flex-col flex-1">
                         <label>
-                            {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
+                            {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                         </label>
                         <mat-form-field appearance="outline">
                             <input
@@ -56,24 +56,24 @@ export interface StaffTenantModalData {
                         </mat-form-field>
                     </div>
                     <div class="flex flex-col flex-1">
-                        <label
-                            >{{ 'ADMIN.TENANTS_PLATFORM' | translate
-                            }}<span>*</span>:</label
-                        >
+                        <label>
+                            {{ 'ADMIN.TENANTS_PLATFORM' | translate }}
+                            <span>*</span>
+                        </label>
                         <mat-form-field appearance="outline">
                             <mat-select formControlName="platform">
                                 <mat-option value="google">Google</mat-option>
-                                <mat-option value="office365"
-                                    >Office365</mat-option
-                                >
+                                <mat-option value="office365">
+                                    Office365
+                                </mat-option>
                             </mat-select>
                         </mat-form-field>
                     </div>
                 </div>
                 <div class="flex flex-col flex-1">
-                    <label
-                        >{{ 'ADMIN.TENANTS_EMAIL_DOMAIN' | translate }}:</label
-                    >
+                    <label>
+                        {{ 'ADMIN.TENANTS_EMAIL_DOMAIN' | translate }}
+                    </label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -168,11 +168,9 @@ export interface StaffTenantModalData {
                     "
                 >
                     <div class="flex flex-col flex-1">
-                        <label
-                            >{{
-                                'ADMIN.TENANTS_SERVICE_ACCOUNT' | translate
-                            }}:</label
-                        >
+                        <label>
+                            {{ 'ADMIN.TENANTS_SERVICE_ACCOUNT' | translate }}
+                        </label>
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
@@ -214,7 +212,7 @@ export interface StaffTenantModalData {
                                         !form.value.id
                                     "
                                     >*</span
-                                >:
+                                >
                             </label>
                             <mat-form-field appearance="outline">
                                 <ng-container [ngSwitch]="item.key">
@@ -265,10 +263,10 @@ export interface StaffTenantModalData {
                         class="flex items-center flex-wrap space-x-0 sm:space-x-2"
                     >
                         <div class="flex flex-col flex-1">
-                            <label
-                                >{{ 'ADMIN.TENANTS_APP_ID' | translate
-                                }}<span>*</span>:</label
-                            >
+                            <label>
+                                {{ 'ADMIN.TENANTS_APP_ID' | translate }}
+                                <span>*</span>
+                            </label>
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
@@ -283,11 +281,9 @@ export interface StaffTenantModalData {
                             </mat-form-field>
                         </div>
                         <div class="flex flex-col flex-1">
-                            <label
-                                >{{
-                                    'ADMIN.TENANTS_APP_DOMAIN' | translate
-                                }}:</label
-                            >
+                            <label>{{
+                                'ADMIN.TENANTS_APP_DOMAIN' | translate
+                            }}</label>
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
@@ -309,11 +305,9 @@ export interface StaffTenantModalData {
                         class="flex items-center flex-wrap space-x-0 sm:space-x-2"
                     >
                         <div class="flex flex-col flex-1">
-                            <label
-                                >{{
-                                    'ADMIN.TENANTS_APP_RESOURCE' | translate
-                                }}:</label
-                            >
+                            <label>
+                                {{ 'ADMIN.TENANTS_APP_RESOURCE' | translate }}
+                            </label>
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
@@ -331,11 +325,11 @@ export interface StaffTenantModalData {
                             </mat-form-field>
                         </div>
                         <div class="flex flex-col flex-1">
-                            <label
-                                >{{
+                            <label>
+                                {{
                                     'ADMIN.TENANTS_SOURCE_LOCATION' | translate
-                                }}:</label
-                            >
+                                }}
+                            </label>
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput
@@ -358,11 +352,9 @@ export interface StaffTenantModalData {
                         class="flex items-center flex-wrap space-x-0 sm:space-x-4"
                     >
                         <div class="flex flex-col flex-1">
-                            <label
-                                >{{
-                                    'ADMIN.TENANTS_BASE_PATH' | translate
-                                }}:</label
-                            >
+                            <label>
+                                {{ 'ADMIN.TENANTS_BASE_PATH' | translate }}
+                            </label>
                             <mat-form-field appearance="outline">
                                 <input
                                     matInput

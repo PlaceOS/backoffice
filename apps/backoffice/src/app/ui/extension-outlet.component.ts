@@ -13,6 +13,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
+import { i18n } from '../common/translate';
 
 const RESOURCE_STORE = new Map<string, string>();
 
@@ -27,12 +28,14 @@ export interface FrameMessage {
 
 @Component({
     selector: 'app-extension-outlet',
-    template: `<iframe
-        *ngIf="url && app_loaded"
-        #frame
-        class="absolute inset-0 w-full h-full border-none"
-        [src]="url | safe: 'resource'"
-    ></iframe>`,
+    template: `
+        <iframe
+            *ngIf="url && app_loaded"
+            #frame
+            class="absolute inset-0 w-full h-full border-none"
+            [src]="url | safe: 'resource'"
+        ></iframe>
+    `,
 })
 export class ExtensionOutletComponent extends AsyncHandler {
     public url = '';
@@ -103,21 +106,11 @@ export class ExtensionOutletComponent extends AsyncHandler {
         const updated_item = await this._service.actions
             .save({ ...item, ...message.content })
             .toPromise()
-            .catch((e) =>
-                notifyError(
-                    `Error updating ${
-                        this._service.actions.singular || 'item'
-                    }.`
-                )
-            );
+            .catch((e) => notifyError(i18n('COMMON.ITEM_ERROR')));
 
         if (this._frame_el?.nativeElement) {
             if (updated_item) {
-                notifySuccess(
-                    `Successfully updated ${
-                        this._service.actions.singular || 'item'
-                    }`
-                );
+                notifySuccess(i18n('COMMON.ITEM_SAVE'));
             }
             this._postMessage({
                 id: message.id,
@@ -135,11 +128,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
             description: `Metadata from ${this.url}`,
             details: message.content || {},
         }).toPromise();
-        notifySuccess(
-            `Successfully updated ${
-                this._service.actions.singular || 'item'
-            } metadata`
-        );
+        notifySuccess(i18n('COMMON.METADTA_SAVE'));
         this._postMessage({
             id: message.id,
             type: 'backoffice',

@@ -47,7 +47,7 @@ export interface UploadDetails {
                 [style.transform]="'translate(-' + offset + '00%)'"
             >
                 <app-icon class="text-4xl opacity-60">add</app-icon>
-                <p class="opacity-60" i18n>
+                <p class="opacity-60 w-4/5 text-center" i18n>
                     {{ 'COMMON.IMAGE_UPLOADS' | translate }}
                 </p>
                 <input

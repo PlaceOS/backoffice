@@ -190,7 +190,7 @@ export class AdminBrokersComponent extends AsyncHandler implements OnInit {
         const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             data: {
                 item: new PlaceMQTTBroker(),
-                name: 'Broker',
+                name: 'ADMIN.BROKERS',
                 save: (item) => addBroker(item),
             },
         });

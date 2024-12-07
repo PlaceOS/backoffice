@@ -17,7 +17,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
         <form zone *ngIf="form" class="flex flex-col" [formGroup]="form">
             <div class="field" *ngIf="form.controls.parent_zone">
                 <label for="parent-zone">
-                    {{ 'COMMON.EDGE' | translate }}:
+                    {{ 'COMMON.EDGE' | translate }}
                 </label>
                 <item-search-field
                     [name]="'ZONE.SEARCH' | translate"
@@ -35,7 +35,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.name.touched
                         "
                     >
-                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
+                        {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -58,7 +58,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             form.controls.display_name.touched
                         "
                     >
-                        {{ 'ZONES.DISPLAY_NAME' | translate }}:
+                        {{ 'ZONES.DISPLAY_NAME' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -76,7 +76,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                         form.controls.tags.invalid && form.controls.tags.touched
                     "
                 >
-                    {{ 'ZONES.TAGS' | translate }}:
+                    {{ 'ZONES.TAGS' | translate }}
                 </label>
                 <mat-form-field appearance="outline" class="w-full">
                     <mat-chip-grid #chipList aria-label="Tag List">
@@ -106,9 +106,9 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description"
-                    >{{ 'COMMON.FIELD_DESCRIPTION' | translate }}:</label
-                >
+                <label for="description">
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                </label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
@@ -120,9 +120,9 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.location">
-                    <label for="location"
-                        >{{ 'ZONES.LOCATION' | translate }}:</label
-                    >
+                    <label for="location">{{
+                        'ZONES.LOCATION' | translate
+                    }}</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -135,9 +135,9 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     </mat-form-field>
                 </div>
                 <div class="field">
-                    <label for="timezone">{{
-                        'COMMON.TIMEZONE' | translate
-                    }}</label>
+                    <label for="timezone">
+                        {{ 'COMMON.TIMEZONE' | translate }}
+                    </label>
                     <mat-form-field appearance="outline">
                         <div class="prefix" matPrefix>
                             <app-icon class="text-2xl relative -left-0.5">
@@ -165,7 +165,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             </div>
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.code">
-                    <label for="code">{{ 'ZONES.CODE' | translate }}:</label>
+                    <label for="code">{{ 'ZONES.CODE' | translate }}</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -176,7 +176,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     </mat-form-field>
                 </div>
                 <div class="field" *ngIf="form.controls.location">
-                    <label for="type">{{ 'ZONES.TYPE' | translate }}:</label>
+                    <label for="type">{{ 'ZONES.TYPE' | translate }}</label>
                     <mat-form-field appearance="outline">
                         <input
                             matInput
@@ -189,7 +189,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             </div>
             <div class="fieldset mb-4">
                 <div class="field" *ngIf="form.controls.count">
-                    <label for="count">{{ 'ZONES.COUNT' | translatec }}:</label>
+                    <label for="count">{{ 'ZONES.COUNT' | translatec }}</label>
                     <a-counter
                         formControlName="count"
                         [min]="0"
@@ -198,7 +198,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </div>
                 <div class="field" *ngIf="form.controls.capacity">
                     <label for="capacity">
-                        {{ 'ZONES.CAPACITY' | translate }}:
+                        {{ 'ZONES.CAPACITY' | translate }}
                     </label>
                     <a-counter
                         formControlName="capacity"
@@ -208,7 +208,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </div>
             </div>
             <div class="field" *ngIf="form.controls.map_id">
-                <label for="map">{{ 'ZONES.MAP_URL' | translate }}:</label>
+                <label for="map">{{ 'ZONES.MAP_URL' | translate }}</label>
                 <mat-form-field appearance="outline">
                     <input
                         matInput
@@ -219,7 +219,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.images">
-                <label for="images">{{ 'COMMON.IMAGES' | translate }}:</label>
+                <label for="images">{{ 'COMMON.IMAGES' | translate }}</label>
                 <image-list-field
                     name="images"
                     formControlName="images"

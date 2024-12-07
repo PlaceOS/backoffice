@@ -44,6 +44,7 @@ import {
 } from 'apps/backoffice/src/app/common/notifications';
 import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
 import { getInvalidFields } from '../common/general';
+import { i18n } from '../common/translate';
 
 export interface CreateEditModalData<T extends Identity = any> {
     /** Service associated with the item being created/edited */
@@ -52,7 +53,7 @@ export interface CreateEditModalData<T extends Identity = any> {
     item: T;
     /** Form fields for item */
     form?: any[];
-    /** Name of the type of item being worked on */
+    /** Translation key for new item */
     name?: string;
     /** Whether parts of the form are readonly */
     readonly?: string;
@@ -65,9 +66,9 @@ export interface CreateEditModalData<T extends Identity = any> {
     template: `
         <fullscreen-modal-shell
             [heading]="
-                (item && edit ? 'Edit' : 'New') +
-                ' ' +
-                (name === 'Repositorie' ? 'Repository' : name)
+                name +
+                    ((name.includes('ADMIN') ? '_' : '.') +
+                        (item && edit ? 'EDIT' : 'NEW')) | translate
             "
             [loading]="loading"
             (save)="submit()"
@@ -236,14 +237,12 @@ export class ItemCreateUpdateModalComponent
         this.form.markAllAsTouched();
         if (!this.item || !this.form.valid) {
             return notifyError(
-                `Some form fields are invalid. [${getInvalidFields(
-                    this.form
-                ).join(', ')}]`
+                i18n('COMMON.INVALID_FIELDS', {
+                    field_list: getInvalidFields(this.form).join(', '),
+                })
             );
         }
-        this.loading = `${this.item.id ? 'Updating' : 'Creating'} ${
-            this.name
-        }...`;
+        this.loading = i18n(`${this.name}.SAVING`);
         this._dialog_ref.disableClose = true;
         const item = this.item.id
             ? cleanObject(
@@ -262,11 +261,7 @@ export class ItemCreateUpdateModalComponent
                 this.result = item;
                 this._dialog_ref.disableClose = false;
                 this.event.emit({ reason: 'done', metadata: { item } });
-                notifySuccess(
-                    `Successfully ${this.item.id ? 'updated' : 'added'} ${
-                        this.name
-                    }`
-                );
+                notifySuccess(i18n(`${this.name}.SAVE_SUCCESS`));
                 if (!this.form.value.id && this.form.controls.settings) {
                     this.newSettings(
                         item,
@@ -280,11 +275,11 @@ export class ItemCreateUpdateModalComponent
                 this.loading = null;
                 this._dialog_ref.disableClose = false;
                 notifyError(
-                    `Error ${this.item.id ? 'editing' : 'adding new'} ${
-                        this.name
-                    }. Error: ${JSON.stringify(
-                        (await err.text()) || err.message || err
-                    )}`
+                    i18n(`${this.name}.SAVE_ERROR`, {
+                        error: JSON.stringify(
+                            (await err.text()) || err.message || err
+                        ),
+                    })
                 );
             }
         );

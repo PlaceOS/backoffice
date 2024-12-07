@@ -107,7 +107,7 @@ export class RepositoriesStateService {
                         repository_id: this.active_item.id,
                         file_name: driver,
                     }),
-                    name: 'Driver',
+                    name: 'DRIVERS.NEW',
                     save: (item) => addDriver(item),
                 },
             }

@@ -4,7 +4,7 @@
             class="field discovery"
             *ngIf="form.controls.repository_id && !editing"
         >
-            <label for="repo">{{ 'REPOS.SINGULAR' | translate }}: </label>
+            <label for="repo">{{ 'REPOS.SINGULAR' | translate }} </label>
             <item-search-field
                 [placeholder]="'REPOS.SEARCH' | translate"
                 [query_fn]="query_fn"
@@ -18,7 +18,7 @@
             *ngIf="form.controls.file_name && base_repo && !editing"
         >
             <ng-container *ngIf="!loading_drivers; else load_driver_state">
-                <label for="driver">{{ 'DRIVERS.BASE' | translate }}: </label>
+                <label for="driver">{{ 'DRIVERS.BASE' | translate }} </label>
                 <item-search-field
                     [placeholder]="'DRIVERS.SEARCH' | translate"
                     [options]="driver_list"
@@ -33,7 +33,7 @@
             *ngIf="form.controls.commit && base_driver"
         >
             <ng-container *ngIf="!loading_commits; else load_commit_state">
-                <label for="commit">{{ 'DRIVERS.COMMIT' | translate }}: </label>
+                <label for="commit">{{ 'DRIVERS.COMMIT' | translate }} </label>
                 <item-search-field
                     [placeholder]="'DRIVERS.COMMIT_SEARCH' | translate"
                     [options]="commit_list"
@@ -61,7 +61,7 @@
                                 form.controls.name.touched
                             "
                         >
-                            {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
+                            {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                         </label>
                         <mat-form-field appearance="outline">
                             <input
@@ -77,8 +77,8 @@
                         </mat-form-field>
                     </div>
                     <div class="field" *ngIf="form.controls.role">
-                        <label for="role"
-                            >{{ 'DRIVERS.ROLE' | translate }}:
+                        <label for="role">
+                            {{ 'DRIVERS.ROLE' | translate }}
                         </label>
                         <mat-form-field appearance="outline">
                             <mat-select name="role" formControlName="role">
@@ -92,11 +92,9 @@
                         </mat-form-field>
                     </div>
                     <div class="field" *ngIf="form.controls.description">
-                        <label for="description"
-                            >{{
-                                'COMMON.FIELD_DESCRIPTION' | translate
-                            }}:</label
-                        >
+                        <label for="description">
+                            {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                        </label>
                         <mat-form-field appearance="outline">
                             <textarea
                                 matInput
@@ -116,8 +114,8 @@
                                 form.controls.module_name.touched
                             "
                         >
-                            {{ 'DRIVERS.MODULE_NAME' | translate
-                            }}<span>*</span>:
+                            {{ 'DRIVERS.MODULE_NAME' | translate }}
+                            <span>*</span>
                         </label>
                         <mat-form-field appearance="outline">
                             <input
@@ -137,9 +135,9 @@
                         </mat-form-field>
                     </div>
                     <div class="field" *ngIf="form.controls.default_uri">
-                        <label for="default-uri"
-                            >{{ 'DRIVERS.DEFAULT_URI' | translate }}:</label
-                        >
+                        <label for="default-uri">{{
+                            'DRIVERS.DEFAULT_URI' | translate
+                        }}</label>
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
@@ -160,7 +158,7 @@
                                     form.controls.default_port.touched
                                 "
                             >
-                                {{ 'DRIVERS.DEFAULT_PORT' | translate }}:
+                                {{ 'DRIVERS.DEFAULT_PORT' | translate }}
                             </label>
                             <mat-form-field appearance="outline">
                                 <input

@@ -34,6 +34,7 @@ import {
 } from '@placeos/ts-client';
 import { BackofficeUsersService } from '../users/users.service';
 import { BulkItemModalComponent } from '../overlays/bulk-item-modal/bulk-item-modal.component';
+import { i18n } from './translate';
 
 export type ResourceType =
     | 'domains'
@@ -230,7 +231,7 @@ export class ActiveItemService extends AsyncHandler {
                 const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
                     data: {
                         item: new actions.itemConstructor({ ...item }),
-                        name: actions.singular,
+                        name: actions.name,
                         save: actions.save,
                         ...options,
                     },
@@ -265,11 +266,10 @@ export class ActiveItemService extends AsyncHandler {
             >(ConfirmModalComponent, {
                 ...CONFIRM_METADATA,
                 data: {
-                    title: `Delete ${this.actions.singular}`,
-                    content: this.actions.delete_message.replace(
-                        '{{ name }}',
-                        (item as any).display_name || item.name
-                    ),
+                    title: i18n(`${this.actions.name}.DELETE`),
+                    content: i18n(`${this.actions.name}.DELETE_MSG`, {
+                        name: (item as any).display_name || item.name,
+                    }),
                     extra: this.actions.delete_extra
                         ? await this.actions.delete_extra(item)
                         : null,
@@ -279,11 +279,15 @@ export class ActiveItemService extends AsyncHandler {
             ref.componentInstance.event
                 .pipe(filter((e) => e.reason === 'done'))
                 .subscribe((event: DialogEvent) => {
-                    ref.componentInstance.loading = `Deleting ${this.actions.singular}...`;
+                    ref.componentInstance.loading = i18n(
+                        `${this.actions.name}.DELETE_LOADING`
+                    );
                     this.actions.remove(item).subscribe(
                         () => {
                             notifySuccess(
-                                `Successfully deleted ${this.actions.singular} "${item.name}".`
+                                i18n(`${this.actions.name}.DELETE_SUCCESS`, {
+                                    name: item.name,
+                                })
                             );
                             this._active_item.next(null);
                             this.removeItem(item);
@@ -297,11 +301,11 @@ export class ActiveItemService extends AsyncHandler {
                         (err) => {
                             ref.componentInstance.loading = null;
                             notifyError(
-                                `Error deleting ${
-                                    this.actions.singular
-                                }. Error: ${JSON.stringify(
-                                    err.response || err.message || err
-                                )}`
+                                i18n(`${this.actions.name}.DELETE_ERROR`, {
+                                    error: JSON.stringify(
+                                        err.response || err.message || err
+                                    ),
+                                })
                             );
                         }
                     );

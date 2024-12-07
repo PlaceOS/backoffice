@@ -19,53 +19,58 @@ export interface ConfirmModalData {
     icon: ApplicationIcon;
 }
 
-export const CONFIRM_METADATA = {
-    height: 'auto',
-    width: '24em',
-    maxHeight: 'calc(100vh - 2em)',
-    maxWidth: 'calc(100vw - 2em)',
-};
+export const CONFIRM_METADATA = {};
 
 @Component({
     selector: 'confirm-modal',
     template: `
-        <header class="p-4">
-            <h3>{{ title || 'Confirm' }}</h3>
+        <header
+            class="sticky top-0 p-2 m-2 w-[calc(100%-1rem)] border-none z-10 bg-base-200 rounded"
+        >
+            <h2 class="text-xl font-medium px-2">
+                {{ title || 'Confirm' }}
+            </h2>
+            <button icon matRipple mat-dialog-close *ngIf="!loading">
+                <app-icon>close</app-icon>
+            </button>
         </header>
-        <main>
+        <main confirm-modal>
             <div
-                class="flex items-center justify-center flex-col p-4 space-y-2 text-center min-w-[16rem]"
+                class="flex flex-col items-center p-4 space-x-4 min-w-[24rem] max-w-[28rem]"
                 *ngIf="!loading; else load_state"
             >
-                <app-icon class="text-3xl" [icon]="icon"></app-icon>
-                <p [innerHTML]="content || 'Are you sure?' | safe: 'html'"></p>
-                <div
-                    *ngIf="extra"
-                    [class.bg-info]="extra[0] === 'info'"
-                    [class.bg-warning]="extra[0] === 'warning'"
-                    [class.bg-error]="extra[0] === 'error'"
-                    [class.text-info-content]="extra[0] === 'info'"
-                    [class.text-warning-content]="extra[0] === 'warning'"
-                    [class.text-error-content]="extra[0] === 'error'"
-                    class="p-2 rounded shadow text-xs"
-                    [innerHTML]="extra[1]"
-                ></div>
+                <div class="h-full flex items-center mb-4">
+                    <app-icon class="text-5xl" [icon]="icon"></app-icon>
+                </div>
+                <div class="flex flex-col space-y-4 text-center">
+                    <p
+                        [innerHTML]="content || 'Are you sure?' | safe: 'html'"
+                    ></p>
+                    <div
+                        *ngIf="extra"
+                        [class.bg-info]="extra[0] === 'info'"
+                        [class.bg-warning]="extra[0] === 'warning'"
+                        [class.bg-error]="extra[0] === 'error'"
+                        [class.text-info-content]="extra[0] === 'info'"
+                        [class.text-warning-content]="extra[0] === 'warning'"
+                        [class.text-error-content]="extra[0] === 'error'"
+                        class="p-2 rounded shadow text-xs"
+                        [innerHTML]="extra[1]"
+                    ></div>
+                </div>
             </div>
         </main>
         <footer
             *ngIf="!loading"
             class="flex items-center justify-end space-x-2 p-2 border-t border-base-200"
         >
-            <button btn class="inverse min-w-[8rem]" mat-dialog-close>
-                Cancel
-            </button>
             <button
                 btn
                 name="accept"
-                class="min-w-[8rem]"
+                class="w-1/2"
                 (click)="event.emit({ reason: 'done' })"
             >
-                {{ action || 'Ok' }}
+                {{ action || 'COMMON.CONFIRM' | translate }}
             </button>
         </footer>
         <ng-template #load_state>
@@ -98,7 +103,7 @@ export class ConfirmModalComponent extends AsyncHandler {
     /** Body of the confirm modal */
     public readonly content = this._data.content || 'Confirm';
     /** Display text on the confirm button */
-    public readonly action = this._data.action || 'Ok';
+    public readonly action = this._data.action;
     /** Extra information to display on the confirm modal */
     public readonly extra = this._data.extra;
     /** Display icon properties */

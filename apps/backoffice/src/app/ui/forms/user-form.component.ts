@@ -13,12 +13,7 @@ import { i18n } from '../../common/translate';
 @Component({
     selector: 'user-form',
     template: `
-        <form
-            user
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
-            *ngIf="form"
-            [formGroup]="form"
-        >
+        <form user class="flex flex-col" *ngIf="form" [formGroup]="form">
             <!--  fake fields are a workaround for chrome/opera autofill getting the wrong fields -->
             <input
                 id="email"
@@ -58,7 +53,7 @@ import { i18n } from '../../common/translate';
                             form.controls.first_name.touched
                         "
                     >
-                        {{ 'USERS.FIRST_NAME' | translate }}<span>*</span>:
+                        {{ 'USERS.FIRST_NAME' | translate }}<span>*</span>
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -75,7 +70,7 @@ import { i18n } from '../../common/translate';
                 </div>
                 <div class="field" *ngIf="form.controls.last_name">
                     <label for="system-name"
-                        >{{ 'USERS.LAST_NAME' | translate }}<span>*</span>:
+                        >{{ 'USERS.LAST_NAME' | translate }}<span>*</span>
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -99,7 +94,7 @@ import { i18n } from '../../common/translate';
                         form.controls.email.touched
                     "
                 >
-                    {{ 'COMMON.FIELD_EMAIL' | translate }}<span>*</span>:
+                    {{ 'COMMON.FIELD_EMAIL' | translate }}<span>*</span>
                 </label>
                 <mat-form-field appearance="outline">
                     <input
@@ -117,7 +112,7 @@ import { i18n } from '../../common/translate';
             <div class="fieldset">
                 <div class="field" *ngIf="form.controls.staff_id">
                     <label for="staff-id"
-                        >{{ 'USERS.STAFF_ID' | translate }}:
+                        >{{ 'USERS.STAFF_ID' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -130,7 +125,7 @@ import { i18n } from '../../common/translate';
                 </div>
                 <div class="field" *ngIf="form.controls.card_number">
                     <label for="card-number"
-                        >{{ 'USERS.STAFF_CARD' | translate }}:
+                        >{{ 'USERS.STAFF_CARD' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -168,7 +163,7 @@ import { i18n } from '../../common/translate';
                             form.controls.password.touched
                         "
                     >
-                        {{ 'COMMON.PASSWORD' | translate }}:
+                        {{ 'COMMON.PASSWORD' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -202,7 +197,7 @@ import { i18n } from '../../common/translate';
                         "
                         minlength="1"
                     >
-                        {{ 'USERS.PASSWORD_CONFIRM' | translate }}:
+                        {{ 'USERS.PASSWORD_CONFIRM' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -232,7 +227,7 @@ import { i18n } from '../../common/translate';
                         form.controls.groups.touched
                     "
                 >
-                    {{ 'USERS.FIELD_GROUPS' | translate }}:
+                    {{ 'USERS.FIELD_GROUPS' | translate }}
                 </label>
                 <mat-form-field appearance="outline" class="w-full">
                     <mat-chip-grid #chipList aria-label="Image List">

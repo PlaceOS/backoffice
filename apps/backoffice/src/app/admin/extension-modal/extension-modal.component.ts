@@ -20,9 +20,9 @@ import { BackofficeExtension } from '../extensions.component';
             <form [formGroup]="form">
                 <div class="fieldset">
                     <div class="field">
-                        <label for="type"
-                            >{{ 'ADMIN.EXTENSIONS_FIELD_TYPE' | translate
-                            }}<span>*</span>:
+                        <label for="type">
+                            {{ 'ADMIN.EXTENSIONS_FIELD_TYPE' | translate }}
+                            <span>*</span>
                         </label>
                         <mat-form-field appearance="outline">
                             <mat-select formControlName="type">
@@ -36,9 +36,9 @@ import { BackofficeExtension } from '../extensions.component';
                         </mat-form-field>
                     </div>
                     <div class="field">
-                        <label for="name"
-                            >{{ 'COMMON.FIELD_NAME' | translate
-                            }}<span>*</span>:
+                        <label for="name">
+                            {{ 'COMMON.FIELD_NAME' | translate }}
+                            <span>*</span>
                         </label>
                         <mat-form-field appearance="outline">
                             <input
@@ -56,9 +56,9 @@ import { BackofficeExtension } from '../extensions.component';
                     </div>
                 </div>
                 <div class="field">
-                    <label for="url"
-                        >{{ 'ADMIN.EXTENSIONS_FIELD_URL' | translate
-                        }}<span>*</span>:
+                    <label for="url">
+                        {{ 'ADMIN.EXTENSIONS_FIELD_URL' | translate }}
+                        <span>*</span>
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -75,9 +75,9 @@ import { BackofficeExtension } from '../extensions.component';
                     </mat-form-field>
                 </div>
                 <div class="w-full">
-                    <label *ngIf="form.controls.conditions.value?.length">{{
-                        'ADMIN.EXTENSIONS_FIELD_CONDITIONS' | translate
-                    }}</label>
+                    <label *ngIf="form.controls.conditions.value?.length">
+                        {{ 'ADMIN.EXTENSIONS_FIELD_CONDITIONS' | translate }}
+                    </label>
                     <div
                         class="fieldset"
                         *ngFor="let condition of form.controls.conditions.value"

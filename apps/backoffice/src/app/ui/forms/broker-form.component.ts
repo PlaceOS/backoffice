@@ -10,12 +10,7 @@ import { i18n } from '../../common/translate';
 @Component({
     selector: 'broker-form',
     template: `
-        <form
-            broker
-            *ngIf="form"
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
-            [formGroup]="form"
-        >
+        <form broker *ngIf="form" class="flex flex-col" [formGroup]="form">
             <div class="field" *ngIf="form.controls.name">
                 <label
                     for="broker-name"
@@ -23,7 +18,7 @@ import { i18n } from '../../common/translate';
                         form.controls.name.invalid && form.controls.name.touched
                     "
                 >
-                    {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>:
+                    {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                 </label>
                 <mat-form-field appearance="outline">
                     <input
@@ -39,9 +34,9 @@ import { i18n } from '../../common/translate';
                 </mat-form-field>
             </div>
             <div class="field" *ngIf="form.controls.description">
-                <label for="description"
-                    >{{ 'COMMON.FIELD_DESCRIPTION' | translate }}:</label
-                >
+                <label for="description">
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                </label>
                 <mat-form-field appearance="outline">
                     <textarea
                         matInput
@@ -58,7 +53,7 @@ import { i18n } from '../../common/translate';
                         form.controls.name.invalid && form.controls.name.touched
                     "
                 >
-                    {{ 'ADMIN.BROKERS_FIELD_HOST' | translate }}<span>*</span>:
+                    {{ 'ADMIN.BROKERS_FIELD_HOST' | translate }}<span>*</span>
                 </label>
                 <mat-form-field appearance="outline">
                     <input
@@ -82,8 +77,8 @@ import { i18n } from '../../common/translate';
                             form.controls.port.touched
                         "
                     >
-                        {{ 'ADMIN.BROKERS_FIELD_PORT' | translate
-                        }}<span>*</span>:
+                        {{ 'ADMIN.BROKERS_FIELD_PORT' | translate }}
+                        <span>*</span>
                     </label>
                     <mat-form-field appearance="outline">
                         <input
@@ -110,7 +105,7 @@ import { i18n } from '../../common/translate';
             </div>
             <div class="field" *ngIf="form.controls.auth_type">
                 <label for="type"
-                    >{{ 'ADMIN.BROKERS_FIELD_AUTH_TYPE' | translate }}:
+                    >{{ 'ADMIN.BROKERS_FIELD_AUTH_TYPE' | translate }}
                 </label>
                 <mat-form-field appearance="outline">
                     <mat-select name="type" formControlName="auth_type">
@@ -133,8 +128,8 @@ import { i18n } from '../../common/translate';
                                 form.controls.name.touched
                             "
                         >
-                            {{ 'ADMIN.BROKERS_USERNAME' | translate
-                            }}<span>*</span>:
+                            {{ 'ADMIN.BROKERS_USERNAME' | translate }}
+                            <span>*</span>
                         </label>
                         <mat-form-field appearance="outline">
                             <input
@@ -159,7 +154,7 @@ import { i18n } from '../../common/translate';
                                 form.controls.password.touched
                             "
                         >
-                            {{ 'ADMIN.BROKERS_PASSWORD' | translate }}:
+                            {{ 'ADMIN.BROKERS_PASSWORD' | translate }}
                         </label>
                         <mat-form-field appearance="outline">
                             <input
@@ -190,9 +185,9 @@ import { i18n } from '../../common/translate';
             </ng-container>
             <ng-container *ngIf="form.controls.auth_type.value === 0">
                 <div class="field" *ngIf="form.controls.certificate">
-                    <label for="cert"
-                        >{{ 'ADMIN.BROKERS_CERT' | translate }}:</label
-                    >
+                    <label for="cert">
+                        {{ 'ADMIN.BROKERS_CERT' | translate }}
+                    </label>
                     <mat-form-field appearance="outline">
                         <textarea
                             matInput
@@ -208,7 +203,7 @@ import { i18n } from '../../common/translate';
             </ng-container>
             <div class="field" *ngIf="form.controls.filters">
                 <label for="filters">
-                    {{ 'ADMIN.BROKERS_FIELD_FILTERS' | translate }}:
+                    {{ 'ADMIN.BROKERS_FIELD_FILTERS' | translate }}
                 </label>
                 <mat-form-field appearance="outline" class="w-full">
                     <mat-chip-grid #chipGrid aria-label="Enter fruits">
