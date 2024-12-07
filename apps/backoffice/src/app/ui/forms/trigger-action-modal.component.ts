@@ -23,6 +23,7 @@ import {
 } from 'apps/backoffice/src/app/common/notifications';
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { MatChipGrid } from '@angular/material/chips';
+import { i18n } from '../../common/translate';
 
 export interface TriggerActionModalData {
     /** Item to add/update the trigger on */
@@ -51,7 +52,9 @@ export interface TriggerActionModalData {
                 [formGroup]="form"
             >
                 <div class="field" *ngIf="form.controls.action_type">
-                    <label for="type">Action Type: </label>
+                    <label for="type">
+                        {{ 'TRIGGERS.ACTION_FIELD_TYPE' | translate }}:
+                    </label>
                     <mat-form-field appearance="outline">
                         <mat-select name="type" formControlName="action_type">
                             <mat-option
@@ -73,12 +76,18 @@ export interface TriggerActionModalData {
                                     form.controls.emails.errors
                                 "
                             >
-                                Email Addresses<span>*</span>:
+                                {{
+                                    'TRIGGERS.ACTION_EMAIL_ADDRESS' | translate
+                                }}
+                                <span>*</span>
                             </label>
                             <mat-form-field appearance="outline" class="w-full">
                                 <mat-chip-grid
                                     #chipList
-                                    aria-label="Email Addresses"
+                                    [aria-label]="
+                                        'TRIGGERS.ACTION_EMAIL_ADDRESS'
+                                            | translate
+                                    "
                                 >
                                     <mat-chip-row
                                         *ngFor="let item of email_list"
@@ -89,7 +98,10 @@ export interface TriggerActionModalData {
                                         </div>
                                         <button
                                             matChipRemove
-                                            [attr.aria-label]="'Remove ' + item"
+                                            [attr.aria-label]="
+                                                'COMMON.REMOVE_ITEM'
+                                                    | translate: { item: item }
+                                            "
                                         >
                                             <app-icon>cancel</app-icon>
                                         </button>
@@ -98,7 +110,10 @@ export interface TriggerActionModalData {
                                 <input
                                     [(ngModel)]="new_email"
                                     [ngModelOptions]="{ standalone: true }"
-                                    placeholder="List of email addresses"
+                                    [placeholder]="
+                                        'TRIGGERS.ACTION_EMAIL_ADDRESS_LIST'
+                                            | translate
+                                    "
                                     [matChipInputFor]="chipList"
                                     [matChipInputSeparatorKeyCodes]="separators"
                                     [matChipInputAddOnBlur]="true"
@@ -109,7 +124,9 @@ export interface TriggerActionModalData {
                             </mat-form-field>
                         </div>
                         <div class="field" *ngIf="form.controls.content">
-                            <label for="content"> Email Body: </label>
+                            <label for="content">{{
+                                'TRIGGERS.ACTION_EMAIL_BODY' | translate
+                            }}</label>
                             <mat-form-field appearance="outline">
                                 <textarea
                                     matInput
@@ -123,7 +140,9 @@ export interface TriggerActionModalData {
                     <ng-container *ngSwitchDefault>
                         <div class="field" *ngIf="form.controls.method_call">
                             <label for="content">
-                                Select method to execute:
+                                {{
+                                    'TRIGGERS.ACTION_EXECUTE_SELECT' | translate
+                                }}
                             </label>
                             <execute-method-field
                                 formControlName="method_call"
@@ -155,10 +174,7 @@ export class TriggerActionModalComponent extends AsyncHandler {
     @ViewChild('chipList') private chip_list: MatChipGrid;
 
     /** List of available trigger action types */
-    public action_types: Identity[] = [
-        { id: 'function', name: 'Execute Method' },
-        { id: 'emails', name: 'Send Email' },
-    ];
+    public action_types: Identity[] = [];
 
     /** Whether the triggers is new or not */
     public get is_new(): boolean {
@@ -188,6 +204,13 @@ export class TriggerActionModalComponent extends AsyncHandler {
                 ? this.form.controls.emails.value
                 : null) || []
         );
+    }
+
+    public ngOnInit() {
+        this.action_types = [
+            { id: 'function', name: i18n('TRIGGERS.ACTION_EXECUTE') },
+            { id: 'emails', name: i18n('TRIGGERS.ACTION_EMAIL') },
+        ];
     }
 
     /**

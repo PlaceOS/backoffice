@@ -158,7 +158,7 @@ import { MatDialog } from '@angular/material/dialog';
                 class="rounded p-4 border border-base-200 space-y-4 w-1/3 flex-1 flex flex-col"
             >
                 <h3 class="w-full text-center mono uppercase">
-                    Module Controls
+                    {{ 'MODULES.CONTROLS' | translate }}
                 </h3>
                 <div class="flex items-center space-x-4">
                     <button

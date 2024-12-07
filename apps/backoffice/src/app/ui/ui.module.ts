@@ -47,8 +47,8 @@ import { SamlSourceFormComponent } from './forms/saml-source-form.component';
 import { SettingsFormComponent } from './forms/settings-form/settings-form.component';
 import { SystemFormComponent } from './forms/system-form.component';
 import { SystemTriggerFormComponent } from './forms/system-trigger-form.component';
-import { TriggerConditionComparisonFormComponent } from './forms/trigger-condition-form/comparison-form/comparison-form.component';
-import { TriggerConditionTimeFormComponent } from './forms/trigger-condition-form/time-form/time-form.component';
+import { TriggerConditionComparisonFormComponent } from './forms/trigger-condition-form/comparison-form.component';
+import { TriggerConditionTimeFormComponent } from './forms/trigger-condition-form/time-form.component';
 import { TriggerFormComponent } from './forms/trigger-form.component';
 import { UserFormComponent } from './forms/user-form.component';
 import { ZoneFormComponent } from './forms/zone-form.component';
@@ -90,7 +90,6 @@ import { GlobalBannerComponent } from './global-banner.component';
 import { ModuleRuntimeErrorsModalComponent } from './module-runtime-errors.modal';
 import { SimpleTableComponent } from './simple-table.component';
 import { ReorderItemsModalComponent } from './reorder-items-modal.component';
-import { CronFieldComponent } from './forms/trigger-condition-form/cron-field.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { SettingsToggleComponent } from './settings-toggle.component';
 import { FullscreenModalShellComponent } from './fullscreen-modal-shell.component';
@@ -116,7 +115,6 @@ const FORM_COMPONENTS: Type<any>[] = [
     BrokerFormComponent,
     ExtensionOutletComponent,
     ActionFieldComponent,
-    CronFieldComponent,
 
     ExecuteMethodFieldComponent,
     SelectModuleComponent,

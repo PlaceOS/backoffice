@@ -115,7 +115,11 @@ export class PlaceComponent extends AsyncHandler {
                 name: i18n('ADMIN.TAB_CLUSTERS'),
                 icon: { value: 'dns' },
             },
-            { id: 'edge', name: 'Edges', icon: { value: 'network_node' } },
+            {
+                id: 'edge',
+                name: i18n('ADMIN.TAB_EDGES'),
+                icon: { value: 'network_node' },
+            },
             {
                 id: 'interfaces',
                 name: i18n('ADMIN.TAB_INTERFACES'),

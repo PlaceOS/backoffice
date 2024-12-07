@@ -163,13 +163,13 @@ export class SettingsFormComponent
     public type(level: EncryptionLevel) {
         switch (level) {
             case EncryptionLevel.None:
-                return 'Unencrypted';
+                return i18n('COMMON.SETTINGS_PLAINTEXT');
             case EncryptionLevel.Support:
-                return 'Support';
+                return i18n('COMMON.SETTINGS_SUPPORT');
             case EncryptionLevel.Admin:
-                return 'Admin';
+                return i18n('COMMON.SETTINGS_ADMIN');
         }
-        return 'Never Display';
+        return i18n('COMMON.SETTINGS_ENCRYPTED');
     }
 
     constructor(
@@ -234,7 +234,9 @@ export class SettingsFormComponent
                         this.saving[level] = false;
                         this.settings[level] = new_settings;
                         notifySuccess(
-                            `Successfully saved ${this.type(level)} settings.`
+                            i18n('COMMON.SETTINGS_SAVE_SUCCESS', {
+                                type: this.type(level),
+                            })
                         );
                         this.used_settings = this.processSettings(
                             this.settings || []
@@ -244,9 +246,11 @@ export class SettingsFormComponent
                     (err) => {
                         this.saving[level] = false;
                         notifyError(
-                            `Error updating settings. Error: ${JSON.stringify(
-                                err.response || err.message || err
-                            )}`
+                            i18n('COMMON.SETTINGS_SAVE_ERROR', {
+                                error: JSON.stringify(
+                                    err.response || err.message || err
+                                ),
+                            })
                         );
                     }
                 );
@@ -280,7 +284,7 @@ export class SettingsFormComponent
                         this.saving[result.encryption_level] = false;
                         this.settings[result.encryption_level] = result;
                     }
-                    notifySuccess('Successfully saved all settings.');
+                    notifySuccess(i18n('COMMON.SETTINGS_SAVE_SUCCESS_ALL'));
                     this.used_settings = this.processSettings(
                         this.settings || []
                     );
@@ -291,9 +295,11 @@ export class SettingsFormComponent
                         this.saving[i] = false;
                     }
                     notifyError(
-                        `Error updating settings. Error: ${JSON.stringify(
-                            err.response || err.message || err
-                        )}`
+                        i18n('COMMON.SETTINGS_SAVE_ERROR', {
+                            error: JSON.stringify(
+                                err.response || err.message || err
+                            ),
+                        })
                     );
                 }
             );
@@ -356,7 +362,7 @@ export class SettingsFormComponent
         ) {
             const obj = {};
             for (const key of setting.keys) {
-                obj[key] = '<MASKED>';
+                obj[key] = `<${i18n('COMMON.SETTINGS_MASKED')}>`;
             }
             const settings_string = (setting.keys || []).length
                 ? yaml.dump(obj)
@@ -383,7 +389,7 @@ export class SettingsFormComponent
                 obj = yaml.load(item.settings_string) || {};
             } catch (err) {
                 for (const key of item.keys) {
-                    obj[key] = '<MASKED>';
+                    obj[key] = `<${i18n('COMMON.SETTINGS_MASKED')}>`;
                 }
             }
             return obj;
@@ -394,7 +400,7 @@ export class SettingsFormComponent
                 obj = yaml.load(item.settings_string) || {};
             } catch (err) {
                 for (const key of item.keys) {
-                    obj[key] = '<MASKED>';
+                    obj[key] = `<${i18n('COMMON.SETTINGS_MASKED')}>`;
                 }
             }
             return obj;
@@ -483,13 +489,15 @@ export class SettingsFormComponent
 
     private generateHoverMessage(type: number, settings: PlaceSettings) {
         if (type === -1) {
-            return `Setting inherited from [${settings.parent_id}](${itemUrl(
-                settings.parent_id
-            )})(${ENCRYPTION_STRINGS[settings.encryption_level]})`;
+            return i18n('COMMON.SETTINGS_INHERITED', {
+                parent: settings.parent_id,
+                path: itemUrl(settings.parent_id),
+                type: this.type(settings.encryption_level),
+            });
         } else {
-            return `Local setting from ${
-                ENCRYPTION_STRINGS[settings.encryption_level]
-            }`;
+            return i18n('COMMON.SETTINGS_LOCAL', {
+                type: this.type(settings.encryption_level),
+            });
         }
     }
 }
@@ -501,7 +509,6 @@ const MAPPING_CLASS = [
     'encryption-admin',
     'encryption-hide',
 ];
-const ENCRYPTION_STRINGS = ['Unencrypted', 'Support', 'Admin', 'Encrypted'];
 
 function whiteSpace(char_len: number) {
     return new Array(char_len).fill(' ').join('');

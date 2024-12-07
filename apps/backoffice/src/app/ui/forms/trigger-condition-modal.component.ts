@@ -15,6 +15,7 @@ import {
 } from 'apps/backoffice/src/app/common/notifications';
 import { DialogEvent, Identity } from 'apps/backoffice/src/app/common/types';
 import { generateTriggerConditionForm } from 'apps/backoffice/src/app/triggers/triggers.utilities';
+import { i18n } from '../../common/translate';
 
 export interface TriggerConditionData {
     /** Item to add/update the trigger on */
@@ -43,7 +44,9 @@ export interface TriggerConditionData {
                 [formGroup]="form"
             >
                 <div class="field" *ngIf="form.controls.condition_type">
-                    <label for="type">Condition Type: </label>
+                    <label for="type">
+                        {{ 'TRIGGERS.CONDITION_FIELD_TYPE' | translate }}
+                    </label>
                     <mat-form-field appearance="outline">
                         <mat-select
                             name="type"
@@ -53,8 +56,12 @@ export interface TriggerConditionData {
                                 *ngFor="let type of condition_types"
                                 [value]="type.id"
                             >
-                                { type.id, select, compare { Compare Values }
-                                time { Particular Time } }
+                                {{
+                                    (type.id === 'compare'
+                                        ? 'TRIGGERS.CONDITION_COMPARE'
+                                        : 'TRIGGERS.CONDITION_TIME'
+                                    ) | translate
+                                }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -118,44 +125,37 @@ export class TriggerConditionModalComponent extends AsyncHandler {
         super();
     }
 
-    public save() {
+    public async save() {
         this.form.markAllAsTouched();
-        if (!this.form.valid) {
-            return;
-        }
+        if (!this.form.valid) return;
         this.loading = true;
-        if (this.form.controls.condition_type.value === 'compare') {
-            this.updateComparisons();
-        } else {
-            this.updateTimeDependents();
-        }
-        updateTrigger(this.trigger.id, {
+        this.form.controls.condition_type.value === 'compare'
+            ? this.updateComparisons()
+            : this.updateTimeDependents();
+
+        const item = await updateTrigger(this.trigger.id, {
             ...this.trigger,
             conditions: this.conditions,
-        }).subscribe(
-            (item) => {
-                this.event.emit({
-                    reason: 'done',
-                    metadata: { trigger: item },
-                });
-                notifySuccess(
-                    `Successfully ${
-                        this.is_new ? 'added' : 'updated'
-                    } condition to trigger`
-                );
-                this._dialog.close();
-            },
-            (err) => {
-                this.loading = false;
+        })
+            .toPromise()
+            .catch((err) =>
                 notifyError(
-                    `Error ${
-                        this.is_new ? 'adding' : 'updating'
-                    } condition to trigger. Error: ${JSON.stringify(
-                        err.response || err.message || err
-                    )}`
-                );
-            }
-        );
+                    i18n('TRIGGERS.CONDITION_SAVE_ERROR', {
+                        error: JSON.stringify(
+                            err.response || err.message || err
+                        ),
+                    })
+                )
+            );
+        if (item) {
+            this.event.emit({
+                reason: 'done',
+                metadata: { trigger: item },
+            });
+            notifySuccess(i18n('TRIGGERS.CONDITION_SAVE_SUCCESS'));
+            this._dialog.close();
+        }
+        this.loading = false;
     }
 
     /**
@@ -196,7 +196,7 @@ export class TriggerConditionModalComponent extends AsyncHandler {
      * Update the time dependent list by replace an exisiting item or add a new item
      */
     private updateTimeDependents() {
-        const old_values = [...this.trigger.conditions.time_dependents] || [];
+        const old_values = [...(this.trigger.conditions.time_dependents || [])];
         const new_value = {
             type: this.form.controls.time_type.value,
             time: +(this.form.controls.time.value / 1000).toFixed(0),
