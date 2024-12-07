@@ -33,7 +33,7 @@ import { MatDialog } from '@angular/material/dialog';
                 </ng-container>
                 <ng-container *ngIf="item.tls || item.udp">
                     <div class="text-sm font-medium flex items-center">
-                        {{ 'MODULES.Protocol' | translate }}
+                        {{ 'MODULES.PROTOCOL' | translate }}
                     </div>
                     <div class="flex items-center">
                         <code *ngIf="item.tls" class="bg-success text-base-100">
