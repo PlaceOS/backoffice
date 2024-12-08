@@ -74,7 +74,7 @@ import { SettingsHistoryViewComponent } from './settings-history-view.component'
 import { SettingsFormatPipe } from './pipes/settings-format.pipe';
 import { UserPipe } from './pipes/user.pipe';
 import { MetadataDisplayComponent } from './metadata-display.component';
-import { SidebarLink, SidebarMenuComponent } from './sidebar-menu.component';
+import { SidebarMenuComponent } from './sidebar-menu.component';
 import { ItemSelectionComponent } from './item-selection.component';
 import { MatRippleModule } from '@angular/material/core';
 import { CustomTooltipComponent } from './custom-tooltip.component';
@@ -146,7 +146,6 @@ const COMPONENTS: Type<any>[] = [
     TriggerActionModalComponent,
 
     SidebarMenuComponent,
-    SidebarLink,
     ItemSelectionComponent,
     CustomTooltipComponent,
     UserMenuTooltipComponent,

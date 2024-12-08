@@ -20,7 +20,10 @@ import { i18n } from '../common/translate';
                         [title]="'SYSTEMS.PLURAL' | translate"
                     ></item-sidebar>
                     <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
-                        <item-selection class="z-20 sm:hidden">
+                        <item-selection
+                            [title]="'SYSTEMS.PLURAL' | translate"
+                            class="z-20 sm:hidden"
+                        >
                             <button
                                 btn
                                 icon

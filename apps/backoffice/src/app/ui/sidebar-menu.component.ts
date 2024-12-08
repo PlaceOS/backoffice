@@ -17,42 +17,12 @@ import { CustomTooltipData } from './custom-tooltip.component';
 import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
 
 @Component({
-    selector: 'sidebar-link',
-    template: `
-        <a
-            btn
-            matRipple
-            class="clear hover:bg-base-100 text-left w-[calc(100%-1rem)] mx-auto"
-            [routerLink]="[route]"
-            routerLinkActive="!bg-secondary text-secondary-content"
-        >
-            <div class="flex items-center space-x-2 w-full">
-                <app-icon class="text-xl">{{ icon }}</app-icon>
-                <p>{{ name }}</p>
-            </div>
-        </a>
-    `,
-    styles: [
-        `
-            :host {
-                display: block;
-                width: 100%;
-            }
-        `,
-    ],
-})
-export class SidebarLink {
-    @Input() public name: string;
-    @Input() public icon: string;
-    @Input() public route: string;
-}
-
-@Component({
     selector: 'sidebar-menu',
     template: `
         <div
+            sidebar-menu
             class="absolute pointer-events-none sm:pointer-events-auto inset-0 sm:relative sm:inset-auto hidden sm:flex flex-col justify-between h-full bg-base-200 z-40 sm:z-10"
-            [style.width]="compact ? '4.5rem' : ''"
+            [class.compact]="compact"
             [class.sm:w-52]="!compact"
             [class.!flex]="open"
             [class.!pointer-events-auto]="open"
@@ -211,9 +181,19 @@ export class SidebarLink {
     `,
     styles: [
         `
+            [sidebar-menu] {
+                transition: width 200ms;
+            }
+
             .active {
                 background-color: var(--s);
                 color: var(--sc);
+            }
+
+            @media screen and (min-width: 512px) {
+                .compact {
+                    width: 4.5rem;
+                }
             }
         `,
     ],

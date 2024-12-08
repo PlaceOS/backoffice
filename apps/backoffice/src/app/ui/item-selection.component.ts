@@ -48,11 +48,17 @@ import { BackofficeUsersService } from '../users/users.service';
                 class=" absolute left-1/2 top-2 -translate-x-1/2 flex flex-col w-[512px] max-w-[calc(100vw-1rem)] space-y-2 bg-base-100  shadow rounded overflow-hidden"
                 (click)="$event.stopPropagation()"
             >
-                <div class="flex items-center border-b border-base-200 ">
-                    <app-icon class="text-2xl ml-2 ">search</app-icon>
+                <div
+                    class="relative flex items-center border-b border-base-200 "
+                >
+                    <app-icon
+                        class="absolute top-1/2 left-2 -translate-y-1/2 text-2xl pointer-events-none"
+                    >
+                        search
+                    </app-icon>
                     <input
                         #search_input
-                        class="border-none flex-1 py-3 px-2 text-lg bg-transparent "
+                        class="border-none flex-1 pl-10 pr-4 py-4 bg-transparent"
                         [(ngModel)]="search"
                         (ngModelChange)="updateSearch($event)"
                         [placeholder]="
@@ -61,8 +67,8 @@ import { BackofficeUsersService } from '../users/users.service';
                     />
                     <mat-spinner
                         *ngIf="loading | async"
-                        diameter="32"
-                        class="mr-2"
+                        diameter="24"
+                        class="absolute top-1/2 right-2 -translate-y-1/2 mr-2"
                     ></mat-spinner>
                 </div>
                 <p class="text-sm  opacity-60 w-full px-4">
@@ -77,7 +83,7 @@ import { BackofficeUsersService } from '../users/users.service';
                         (scroll)="(is_scrolled)"
                         (scrolledIndexChange)="atBottom()"
                         *ngIf="(items | async)?.length; else empty_state"
-                        class="max-h-[65vh] h-[768px] "
+                        class="max-h-[75vh] h-[768px] "
                     >
                         <a
                             *cdkVirtualFor="
@@ -94,18 +100,23 @@ import { BackofficeUsersService } from '../users/users.service';
                                 exact: false,
                                 __change_detection_hack__: item.id + subroute
                             }"
-                            class="flex items-center px-4 py-2 m-2 rounded space-x-2"
+                            class="block p-2 m-2 rounded max-w-[calc(100vw-2rem)]"
                             (click)="show = false"
                         >
                             <p class="truncate flex-1">
                                 {{ item.name }}
                             </p>
-                            <code
-                                class="text-xs opacity-60 truncate"
+                            <div
+                                class="w-full inline-block overflow-hidden"
                                 *ngIf="item.extra"
                             >
-                                {{ item.extra }}
-                            </code>
+                                <span
+                                    extra
+                                    class="text-xs mono opacity-60 truncate max-w-full px-2 py-1 bg-base-content/10 /5 rounded mt-1"
+                                >
+                                    {{ item.extra }}
+                                </span>
+                            </div>
                         </a>
                         <div
                             class="p-2 text-center opacity-30 text-sm bg-base-200 "
@@ -146,7 +157,7 @@ import { BackofficeUsersService } from '../users/users.service';
 })
 export class ItemSelectionComponent extends AsyncHandler {
     @Input() public show = true;
-    @Input() public title = 'Systems';
+    @Input() public title;
     @Input() public route = 'systems';
 
     public last_total = 0;
