@@ -96,6 +96,7 @@ import { FullscreenModalShellComponent } from './fullscreen-modal-shell.componen
 import { CounterComponent } from './counter.component';
 import { TriggerConditionModalComponent } from './forms/trigger-condition-modal.component';
 import { TriggerActionModalComponent } from './forms/trigger-action-modal.component';
+import { UserAvatarComponent } from './user-avatar.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -129,6 +130,7 @@ const FORM_COMPONENTS: Type<any>[] = [
 const COMPONENTS: Type<any>[] = [
     SearchbarComponent,
     IconComponent,
+    UserAvatarComponent,
     ...FORM_COMPONENTS,
     TerminalComponent,
     DebugOutputComponent,

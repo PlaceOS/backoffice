@@ -51,7 +51,9 @@ export class SidebarLink {
     selector: 'sidebar-menu',
     template: `
         <div
-            class="absolute pointer-events-none sm:pointer-events-auto inset-0 sm:relative sm:inset-auto hidden sm:flex flex-col sm:w-52 justify-between h-full overflow-hidden bg-base-200 z-40 sm:z-0"
+            class="absolute pointer-events-none sm:pointer-events-auto inset-0 sm:relative sm:inset-auto hidden sm:flex flex-col justify-between h-full bg-base-200 z-40 sm:z-10"
+            [style.width]="compact ? '4.5rem' : ''"
+            [class.sm:w-52]="!compact"
             [class.!flex]="open"
             [class.!pointer-events-auto]="open"
             (click)="close()"
@@ -61,67 +63,36 @@ export class SidebarLink {
                     [routerLink]="['/']"
                     class="font-heading text-4xl mt-4 w-[calc(100%-2rem)]  ml-16 sm:ml-0"
                 >
-                    Place<span class="text-primary font-heading">OS</span>
+                    <span [class.sm:hidden]="compact">Place</span
+                    ><span class="text-primary font-heading">OS</span>
                 </a>
                 <div class="flex-1 overflow-auto space-y-2 w-full pb-2">
-                    <sidebar-link
-                        [name]="'COMMON.SYSTEMS' | translate"
-                        route="/systems"
-                        icon="meeting_room"
-                    ></sidebar-link>
-                    <sidebar-link
-                        [name]="'COMMON.MODULES' | translate"
-                        route="/modules"
-                        icon="tablet"
-                    ></sidebar-link>
-                    <sidebar-link
-                        [name]="'COMMON.ZONES' | translate"
-                        route="/zones"
-                        icon="layers"
-                    ></sidebar-link>
-                    <sidebar-link
-                        [name]="'COMMON.DRIVERS' | translate"
-                        route="/drivers"
-                        icon="construction"
-                    ></sidebar-link>
-                    <sidebar-link
-                        *ngIf="is_admin"
-                        [name]="'COMMON.REPOS' | translate"
-                        route="/repositories"
-                        icon="inventory_2"
-                    ></sidebar-link>
-                    <sidebar-link
-                        [name]="'COMMON.TRIGGERS' | translate"
-                        route="/triggers"
-                        icon="timer"
-                    ></sidebar-link>
-                    <sidebar-link
-                        [name]="'COMMON.METRICS' | translate"
-                        route="/metrics"
-                        icon="monitoring"
-                    ></sidebar-link>
-                    <sidebar-link
-                        *ngIf="is_support || is_admin"
-                        [name]="'COMMON.USERS' | translate"
-                        route="/users"
-                        icon="group"
-                    ></sidebar-link>
-                    <sidebar-link
-                        *ngIf="is_admin"
-                        [name]="'COMMON.DOMAINS' | translate"
-                        route="/domains"
-                        icon="domain"
-                    ></sidebar-link>
-                    <sidebar-link
-                        *ngIf="is_admin"
-                        [name]="'COMMON.MANAGE' | translate"
-                        route="/admin"
-                        icon="settings"
-                    ></sidebar-link>
+                    @for(link of links; track link.name) {
+                    <a
+                        btn
+                        matRipple
+                        class="clear hover:bg-base-100 text-left w-[calc(100%-1rem)] mx-auto"
+                        [routerLink]="[link.route]"
+                        routerLinkActive="!bg-secondary text-secondary-content"
+                        [matTooltip]="compact ? (link.name | translate) : ''"
+                        matTooltipPosition="right"
+                        *ngIf="!link.show_on || link.show_on()"
+                    >
+                        <div
+                            class="flex items-center space-x-2 w-full"
+                            [class.sm:justify-center]="compact"
+                        >
+                            <app-icon class="text-xl">{{ link.icon }}</app-icon>
+                            <p [class.sm:hidden]="compact">
+                                {{ link.name | translate }}
+                            </p>
+                        </div>
+                    </a>
+                    }
                     <button
                         class="absolute top-1 left-1 sm:hidden"
-                        btn
                         icon
+                        matRipple
                         (click)="open = false; openChange.emit(false)"
                     >
                         <app-icon>close</app-icon>
@@ -203,11 +174,16 @@ export class SidebarLink {
                 yPosition="bottom"
                 xPosition="start"
             >
+                <a-user-avatar
+                    [user]="user"
+                    [class.sm:pl-2]="compact"
+                    [matTooltip]="compact ? user?.name : ''"
+                    matTooltipPosition="right"
+                ></a-user-avatar>
                 <div
-                    class="rounded-full h-10 w-10 bg-base-300 bg-cover bg-center"
-                    [style.background-image]="'url(' + user?.image + ')'"
-                ></div>
-                <div class="flex flex-col flex-1 w-1/2 leading-tight">
+                    class="flex flex-col flex-1 w-1/2 leading-tight"
+                    [class.sm:hidden]="compact"
+                >
                     <div class="truncate w-full">{{ user?.name }}</div>
                     <div class="truncate text-xs opacity-30 w-full">
                         {{
@@ -220,6 +196,16 @@ export class SidebarLink {
                         }}
                     </div>
                 </div>
+            </button>
+            <button
+                icon
+                matRipple
+                class="absolute hidden sm:flex bottom-12 right-0 h-6 w-6 min-w-6 translate-x-1/2 bg-base-100 rounded-full shadow border border-base-200 hover:bg-base-200"
+                (click)="toggleCompactMode()"
+            >
+                <app-icon>
+                    {{ compact ? 'chevron_right' : 'chevron_left' }}
+                </app-icon>
             </button>
         </div>
     `,
@@ -236,7 +222,35 @@ export class SidebarMenuComponent extends AsyncHandler {
     @Input() public open = true;
     @Output() public openChange = new EventEmitter();
     public items: any[] = [];
+    public compact: boolean = false;
     public readonly user_controls = UserMenuTooltipComponent;
+    public readonly links = [
+        { name: 'COMMON.SYSTEMS', route: '/systems', icon: 'meeting_room' },
+        { name: 'COMMON.MODULES', route: '/modules', icon: 'tablet' },
+        { name: 'COMMON.ZONES', route: '/zones', icon: 'meeting_room' },
+        { name: 'COMMON.DRIVERS', route: '/drivers', icon: 'construction' },
+        { name: 'COMMON.REPOS', route: '/repositories', icon: 'inventory_2' },
+        { name: 'COMMON.TRIGGERS', route: '/triggers', icon: 'timer' },
+        { name: 'COMMON.METRICS', route: '/metrics', icon: 'monitoring' },
+        {
+            name: 'COMMON.USERS',
+            route: '/users',
+            icon: 'group',
+            show_on: () => this.is_support || this.is_admin,
+        },
+        {
+            name: 'COMMON.DOMAINS',
+            route: '/domains',
+            icon: 'domain',
+            show_on: () => this.is_admin,
+        },
+        {
+            name: 'COMMON.MANAGE',
+            route: '/admin',
+            icon: 'settings',
+            show_on: () => this.is_admin,
+        },
+    ];
     /** Application logo */
     public get logo(): ApplicationIcon {
         return this._settings.get('app.logo_light');
@@ -272,6 +286,11 @@ export class SidebarMenuComponent extends AsyncHandler {
 
     public readonly close = () => this._tooltip?.close();
 
+    public toggleCompactMode() {
+        this.compact = !this.compact;
+        localStorage.setItem('BACKOFFICE.SIDEBAR_COMPACT', `${this.compact}`);
+    }
+
     constructor(
         @Optional() private _tooltip: CustomTooltipData,
         private _debug: PlaceDebugService,
@@ -296,6 +315,8 @@ export class SidebarMenuComponent extends AsyncHandler {
                 this.changeSelected(1)
             )
         );
+        this.compact =
+            localStorage.getItem('BACKOFFICE.SIDEBAR_COMPACT') === 'true';
     }
 
     public toggleDebugPosition() {
