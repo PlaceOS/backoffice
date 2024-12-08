@@ -27,13 +27,25 @@ import { SystemStateService } from './system-state.service';
                         <div class="text-sm font-medium flex items-center">
                             {{ 'SYSTEMS.BOOKABLE' | translate }}
                         </div>
-                        <div>{{ item?.bookable ? 'Yes' : 'No' }}</div>
+                        <div>
+                            {{
+                                (item?.bookable
+                                    ? 'COMMON.TRUE'
+                                    : 'COMMON.FALSE'
+                                ) | translate
+                            }}
+                        </div>
                     </ng-container>
                     <ng-container *ngIf="item?.email">
                         <div class="text-sm font-medium flex items-center">
                             {{ 'SYSTEMS.PUBLIC' | translate }}
                         </div>
-                        <div>{{ item?.public ? 'Yes' : 'No' }}</div>
+                        <div>
+                            {{
+                                (item?.public ? 'COMMON.TRUE' : 'COMMON.FALSE')
+                                    | translate
+                            }}
+                        </div>
                     </ng-container>
                     <ng-container *ngIf="item?.code">
                         <div class="text-sm font-medium flex items-center">
@@ -109,17 +121,16 @@ import { SystemStateService } from './system-state.service';
                 </div>
             </div>
             <div
-                class="rounded p-4 border border-base-200  space-y-4 w-1/3 flex-1 inline-flex flex-col"
+                class="rounded p-2 border border-base-200 w-1/3 flex-1 inline-flex flex-col"
             >
-                <h3 class="w-full text-center font-medium mono uppercase">
+                <h3 class="w-full text-center font-medium mono uppercase p-2">
                     {{ 'SYSTEMS.CONTROLS' | translate }}
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center flex-wrap">
                     <button
                         btn
                         matRipple
-                        start
-                        class="flex-1"
+                        class="flex-1 min-w-36 m-2"
                         (click)="start()"
                     >
                         {{ 'SYSTEMS.START' | translate }}
@@ -127,8 +138,7 @@ import { SystemStateService } from './system-state.service';
                     <button
                         btn
                         matRipple
-                        stop
-                        class="flex-1 inverse error"
+                        class="flex-1 inverse error min-w-36 m-2"
                         (click)="stop()"
                     >
                         {{ 'SYSTEMS.STOP' | translate }}

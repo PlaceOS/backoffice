@@ -68,7 +68,7 @@ const validateType = (type) => (control: AbstractControl) => {
                     />
                 </mat-form-field>
                 <div
-                    class="text-xs rounded px-2 py-1 w-16"
+                    class="text-xs rounded px-2 py-1 w-16 text-center"
                     [class.bg-success]="required[key]"
                     [class.text-success-content]="required[key]"
                     [class.bg-base-200]="!required[key]"

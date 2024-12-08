@@ -58,8 +58,10 @@ import { TriggerStateService } from './trigger-state.service';
         <div class="flex flex-col">
             <label
                 for="driver"
-                matTooltip="System to use for available status variables and function calls"
-                >{{ 'TRIGGERS.REFERENCE_SYSTEM' | translate }}
+                class="max-w-[50%]"
+                [matTooltip]="'TRIGGERS.REFERENCE_SYSTEM_MSG' | translate"
+            >
+                {{ 'TRIGGERS.REFERENCE_SYSTEM' | translate }}
             </label>
             <item-search-field
                 [placeholder]="'SYSTEMS.SEARCH' | translate"

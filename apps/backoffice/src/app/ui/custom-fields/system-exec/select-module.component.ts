@@ -36,7 +36,7 @@ export interface ModuleLike {
             *ngIf="!loading; else load_state"
         >
             <mat-select
-                placeholder="Select module"
+                [placeholder]="'COMMON.EXECUTE_MODULE_SELECT' | translate"
                 [(ngModel)]="module"
                 (ngModelChange)="setValue($event)"
             >
@@ -52,7 +52,7 @@ export interface ModuleLike {
         <ng-template #load_state>
             <div class="p-4 flex space-x-2 items-center justify-center">
                 <mat-spinner diameter="32"></mat-spinner>
-                <p>Loading module list...</p>
+                <p>{{ 'COMMON.EXECUTE_MODULE_LOADING' | translate }}</p>
             </div>
         </ng-template>
     `,
