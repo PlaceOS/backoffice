@@ -122,6 +122,7 @@
         "EXECUTE_CLEAR": "Clear selection",
         "EXECUTE_PERFORM": "Execute",
         "EXECUTE_LOADING": "Executing method...",
+        "EXECUTE_MODULE_SELECT": "Select module",
         "EXECUTE_MODULE_LOADING": "Loading module list...",
         "EXECUTE_REQUIRED": "Required",
         "EXECUTE_OPTIONAL": "Optional",

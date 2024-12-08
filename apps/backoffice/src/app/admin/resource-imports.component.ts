@@ -254,7 +254,7 @@ export class ResourceImportsComponent {
         }
         const resp = await openConfirmModal(
             {
-                title: 'Import missing resources?',
+                title: i18n('ADMIN.RESOURCE_IMPORTS_ALL_TITLE'),
                 content: `
                 <p class="mb-4">${i18n('ADMIN.RESOURCE_IMPORTS_ALL_MSG', {
                     count: missing.length,

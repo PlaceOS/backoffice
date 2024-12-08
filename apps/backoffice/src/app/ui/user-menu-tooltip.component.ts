@@ -160,6 +160,7 @@ export class UserMenuTooltipComponent {
             { id: 'en', name: i18n('COMMON.LANG_ENGLISH'), flag: '🇬🇧' },
             { id: 'jp', name: i18n('COMMON.LANG_JAPANESE'), flag: '🇯🇵' },
         ];
+        setTimeout(() => location.reload(), 100);
     }
 
     public logout() {
