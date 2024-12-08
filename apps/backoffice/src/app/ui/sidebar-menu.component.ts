@@ -6,16 +6,15 @@ import {
     Output,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { authority } from '@placeos/ts-client';
+
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';
-import { ApplicationIcon, ApplicationLinkInternal } from '../common/types';
+import { ApplicationIcon } from '../common/types';
 import { BackofficeUsersService } from '../users/users.service';
 import { CustomTooltipData } from './custom-tooltip.component';
 import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
-import { i18n } from '../common/translate';
 
 @Component({
     selector: 'sidebar-link',
@@ -57,77 +56,78 @@ export class SidebarLink {
             [class.!pointer-events-auto]="open"
             (click)="close()"
         >
-            <div class="flex flex-col items-center space-y-2">
+            <div class="flex flex-col items-center space-y-2 flex-1 h-1/2">
                 <a
                     [routerLink]="['/']"
                     class="font-heading text-4xl mt-4 w-[calc(100%-2rem)]  ml-16 sm:ml-0"
                 >
                     Place<span class="text-primary font-heading">OS</span>
                 </a>
-                <sidebar-link
-                    [name]="'COMMON.SYSTEMS' | translate"
-                    route="/systems"
-                    icon="meeting_room"
-                ></sidebar-link>
-                <sidebar-link
-                    [name]="'COMMON.MODULES' | translate"
-                    route="/modules"
-                    icon="tablet"
-                ></sidebar-link>
-                <sidebar-link
-                    [name]="'COMMON.ZONES' | translate"
-                    route="/zones"
-                    icon="layers"
-                ></sidebar-link>
-                <sidebar-link
-                    [name]="'COMMON.DRIVERS' | translate"
-                    route="/drivers"
-                    icon="construction"
-                ></sidebar-link>
-                <sidebar-link
-                    *ngIf="is_admin"
-                    [name]="'COMMON.REPOS' | translate"
-                    route="/repositories"
-                    icon="inventory_2"
-                ></sidebar-link>
-                <sidebar-link
-                    [name]="'COMMON.TRIGGERS' | translate"
-                    route="/triggers"
-                    icon="timer"
-                ></sidebar-link>
-                <sidebar-link
-                    [name]="'COMMON.METRICS' | translate"
-                    route="/metrics"
-                    icon="monitoring"
-                ></sidebar-link>
-                <sidebar-link
-                    *ngIf="is_support || is_admin"
-                    [name]="'COMMON.USERS' | translate"
-                    route="/users"
-                    icon="group"
-                ></sidebar-link>
-                <sidebar-link
-                    *ngIf="is_admin"
-                    [name]="'COMMON.DOMAINS' | translate"
-                    route="/domains"
-                    icon="domain"
-                ></sidebar-link>
-                <sidebar-link
-                    *ngIf="is_admin"
-                    [name]="'COMMON.MANAGE' | translate"
-                    route="/admin"
-                    icon="settings"
-                ></sidebar-link>
-                <button
-                    class="absolute top-1 left-1 sm:hidden"
-                    btn
-                    icon
-                    (click)="open = false; openChange.emit(false)"
-                >
-                    <app-icon>close</app-icon>
-                </button>
+                <div class="flex-1 overflow-auto space-y-2 w-full pb-2">
+                    <sidebar-link
+                        [name]="'COMMON.SYSTEMS' | translate"
+                        route="/systems"
+                        icon="meeting_room"
+                    ></sidebar-link>
+                    <sidebar-link
+                        [name]="'COMMON.MODULES' | translate"
+                        route="/modules"
+                        icon="tablet"
+                    ></sidebar-link>
+                    <sidebar-link
+                        [name]="'COMMON.ZONES' | translate"
+                        route="/zones"
+                        icon="layers"
+                    ></sidebar-link>
+                    <sidebar-link
+                        [name]="'COMMON.DRIVERS' | translate"
+                        route="/drivers"
+                        icon="construction"
+                    ></sidebar-link>
+                    <sidebar-link
+                        *ngIf="is_admin"
+                        [name]="'COMMON.REPOS' | translate"
+                        route="/repositories"
+                        icon="inventory_2"
+                    ></sidebar-link>
+                    <sidebar-link
+                        [name]="'COMMON.TRIGGERS' | translate"
+                        route="/triggers"
+                        icon="timer"
+                    ></sidebar-link>
+                    <sidebar-link
+                        [name]="'COMMON.METRICS' | translate"
+                        route="/metrics"
+                        icon="monitoring"
+                    ></sidebar-link>
+                    <sidebar-link
+                        *ngIf="is_support || is_admin"
+                        [name]="'COMMON.USERS' | translate"
+                        route="/users"
+                        icon="group"
+                    ></sidebar-link>
+                    <sidebar-link
+                        *ngIf="is_admin"
+                        [name]="'COMMON.DOMAINS' | translate"
+                        route="/domains"
+                        icon="domain"
+                    ></sidebar-link>
+                    <sidebar-link
+                        *ngIf="is_admin"
+                        [name]="'COMMON.MANAGE' | translate"
+                        route="/admin"
+                        icon="settings"
+                    ></sidebar-link>
+                    <button
+                        class="absolute top-1 left-1 sm:hidden"
+                        btn
+                        icon
+                        (click)="open = false; openChange.emit(false)"
+                    >
+                        <app-icon>close</app-icon>
+                    </button>
+                </div>
             </div>
-            <div class="flex-1 h-px"></div>
             <div
                 class="m-2 p-2 rounded-xl border border-base-300  flex flex-col space-y-2"
                 *ngIf="debug_enabled"
@@ -196,7 +196,7 @@ export class SidebarLink {
             </div>
             <button
                 matRipple
-                class="flex items-center space-x-2 p-2 border-t border-base-300  text-left "
+                class="flex items-center space-x-2 p-2 border-t border-base-300 min-h-16 text-left "
                 customTooltip
                 user
                 [content]="user_controls"

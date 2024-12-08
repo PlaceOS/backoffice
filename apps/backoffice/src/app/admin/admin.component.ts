@@ -19,7 +19,7 @@ import { timer } from 'rxjs';
             <div class="flex flex-col h-full flex-1 overflow-hidden w-px">
                 <div class="flex flex-1 z-0 h-1/2  ">
                     <div
-                        class="h-full relative sm:w-56 px-2 border-r border-base-200 z-10 pt-10 sm:py-4 space-y-2"
+                        class="h-full relative sm:w-56 px-2 border-r border-base-200 z-10 pt-10 sm:py-4 space-y-2 overflow-auto"
                     >
                         <a
                             btn
