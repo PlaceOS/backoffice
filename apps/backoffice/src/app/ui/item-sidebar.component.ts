@@ -37,8 +37,8 @@ import { ActiveItemService } from '../common/item.service';
                 />
                 <mat-spinner
                     *ngIf="loading | async"
-                    diameter="32"
-                    class="mr-2"
+                    diameter="24"
+                    class="absolute top-1/2 right-2 -translate-y-1/2 mr-2"
                 ></mat-spinner>
             </div>
             <p class="text-sm  opacity-60 w-full px-2">
