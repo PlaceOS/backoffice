@@ -1,4 +1,3 @@
-import { fakeAsync } from '@angular/core/testing';
 import { createRoutingFactory, SpectatorRouting } from '@ngneat/spectator/jest';
 import { MockComponent } from 'ng-mocks';
 
@@ -11,6 +10,7 @@ import {
 import { IconComponent } from '../../app/ui/icon.component';
 import { SidebarMenuComponent } from '../../app/ui/sidebar-menu.component';
 import { BackofficeUsersService } from '../../app/users/users.service';
+import { fakeAsync } from '@angular/core/testing';
 
 describe('SidebarMenuComponent', () => {
     let spectator: SpectatorRouting<SidebarMenuComponent>;

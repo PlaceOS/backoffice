@@ -4,7 +4,6 @@ import {
 } from '@ngneat/spectator/jest';
 import { BehaviorSubject, of } from 'rxjs';
 
-
 jest.mock('@placeos/ts-client');
 
 import * as ts_client from '@placeos/ts-client';
@@ -35,7 +34,7 @@ describe('BindingDirective', () => {
                 listen: () => value.asObservable(),
             })),
         }));
-        spectator.setInput({
+        spectator.setHostInput({
             sys: 'system-1',
             mod: 'System',
             index: 2,
@@ -61,10 +60,14 @@ describe('BindingDirective', () => {
         (ts_client as any).getModule = jest.fn(() => ({
             execute,
         }));
-        spectator.setInput({ sys: 'system-1', mod: 'System', exec: 'power' });
+        spectator.setHostInput({
+            sys: 'system-1',
+            mod: 'System',
+            exec: 'power',
+        });
         spectator.detectChanges();
         expect(execute).not.toHaveBeenCalled();
-        spectator.setInput({ model: true });
+        spectator.setHostInput({ model: true });
         spectator.detectChanges();
         expect(ts_client.getModule).toHaveBeenCalledWith(
             'system-1',
@@ -72,7 +75,7 @@ describe('BindingDirective', () => {
             1
         );
         expect(execute).toHaveBeenCalledWith('power', []);
-        spectator.setInput({ params: [false], model: 2 });
+        spectator.setHostInput({ params: [false], model: 2 });
         spectator.detectChanges();
         expect(execute).toHaveBeenCalledWith('power', [false]);
     });
@@ -82,7 +85,7 @@ describe('BindingDirective', () => {
         (ts_client as any).getModule = jest.fn(() => ({
             execute,
         }));
-        spectator.setInput({
+        spectator.setHostInput({
             sys: 'system-1',
             mod: 'System',
             exec: 'power',
@@ -92,7 +95,7 @@ describe('BindingDirective', () => {
         expect(execute).not.toHaveBeenCalled();
         spectator.click('[binding]');
         expect(execute).toHaveBeenCalledWith('power', []);
-        spectator.setInput({ on_event: 'random_event', params: ['Jim'] });
+        spectator.setHostInput({ on_event: 'random_event', params: ['Jim'] });
         spectator.triggerEventHandler('[binding]', 'random_event', {});
         expect(execute).toHaveBeenCalledWith('power', ['Jim']);
     });
