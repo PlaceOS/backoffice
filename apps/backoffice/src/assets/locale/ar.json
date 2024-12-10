@@ -151,6 +151,7 @@
         "LANG_JAPANESE": "اليابانية",
         "LANG_FRENCH": "الفرنسية",
         "LANG_SPANISH": "الإسبانية",
+        "LANG_ARABIC": "العربية",
         "CHANGELOG": "سجل التغييرات",
         "CHANGELOG_EMPTY": "لا يوجد سجل تغييرات",
         "VIEW_RESPONSE": "نتائج طلب التنفيذ",

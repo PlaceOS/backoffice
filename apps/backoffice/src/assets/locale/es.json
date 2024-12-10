@@ -151,6 +151,7 @@
         "LANG_JAPANESE": "Japonés",
         "LANG_FRENCH": "Francés",
         "LANG_SPANISH": "Español",
+        "LANG_ARABIC": "Árabe",
         "CHANGELOG": "Registro de cambios",
         "CHANGELOG_EMPTY": "Sin registro de cambios",
         "VIEW_RESPONSE": "Resultados de la solicitud de ejecución",
