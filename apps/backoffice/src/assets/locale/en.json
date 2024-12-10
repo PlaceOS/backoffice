@@ -149,6 +149,8 @@
         "BULK_UPLOADING": "Uploading items...",
         "LANG_ENGLISH": "English",
         "LANG_JAPANESE": "Japanese",
+        "LANG_FRENCH": "French",
+        "LANG_SPANISH": "Spanish",
         "CHANGELOG": "Changelog",
         "CHANGELOG_EMPTY": "No Changelog",
         "VIEW_RESPONSE": "Exec Request Results",

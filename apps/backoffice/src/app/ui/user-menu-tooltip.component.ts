@@ -150,6 +150,9 @@ export class UserMenuTooltipComponent {
         this.languages = [
             { id: 'en', name: i18n('COMMON.LANG_ENGLISH'), flag: '🇬🇧' },
             { id: 'jp', name: i18n('COMMON.LANG_JAPANESE'), flag: '🇯🇵' },
+            { id: 'fr', name: i18n('COMMON.LANG_FRENCH'), flag: '🇫🇷' },
+            { id: 'es', name: i18n('COMMON.LANG_SPANISH'), flag: '🇪🇸' },
+            { id: 'ar', name: i18n('COMMON.LANG_ARABIC'), flag: '🇪' },
         ];
     }
 
@@ -159,6 +162,9 @@ export class UserMenuTooltipComponent {
         this.languages = [
             { id: 'en', name: i18n('COMMON.LANG_ENGLISH'), flag: '🇬🇧' },
             { id: 'jp', name: i18n('COMMON.LANG_JAPANESE'), flag: '🇯🇵' },
+            { id: 'fr', name: i18n('COMMON.LANG_FRENCH'), flag: '🇫🇷' },
+            { id: 'es', name: i18n('COMMON.LANG_SPANISH'), flag: '🇪🇸' },
+            { id: 'ar', name: i18n('COMMON.LANG_ARABIC'), flag: '🇪' },
         ];
         setTimeout(() => location.reload(), 100);
     }

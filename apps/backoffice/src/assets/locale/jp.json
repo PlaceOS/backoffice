@@ -149,6 +149,8 @@
         "BULK_UPLOADING": "アイテムをアップロード中...",
         "LANG_ENGLISH": "英語",
         "LANG_JAPANESE": "日本語",
+        "LANG_FRENCH": "フランス語",
+        "LANG_SPANISH": "スペイン語",
         "CHANGELOG": "変更履歴",
         "CHANGELOG_EMPTY": "変更履歴なし",
         "VIEW_RESPONSE": "実行リクエスト結果",
