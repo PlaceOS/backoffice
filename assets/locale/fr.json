@@ -151,6 +151,7 @@
         "LANG_JAPANESE": "Japonais",
         "LANG_FRENCH": "Français",
         "LANG_SPANISH": "Espagnol",
+        "LANG_ARABIC": "Arabe",
         "CHANGELOG": "Journal des modifications",
         "CHANGELOG_EMPTY": "Aucun journal des modifications",
         "VIEW_RESPONSE": "Résultats de la demande d'exécution",
