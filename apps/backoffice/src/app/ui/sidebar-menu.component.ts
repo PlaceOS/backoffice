@@ -31,10 +31,17 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             <div class="flex flex-col items-center space-y-2 flex-1 h-1/2">
                 <a
                     [routerLink]="['/']"
-                    class="font-heading text-4xl mt-4 w-[calc(100%-2rem)]  ml-16 sm:ml-0"
+                    class="font-heading text-4xl mt-4 ml-16 sm:ml-0 sm:mb-2"
+                    [style.width]="compact ? 'auto' : 'calc(100%-2rem)'"
                 >
-                    <span [class.sm:hidden]="compact">Place</span
-                    ><span class="text-primary font-heading">OS</span>
+                    <div [class.sm:hidden]="compact">
+                        Place<span class="text-primary font-heading">OS</span>
+                    </div>
+                    <img
+                        src="assets/icon/mstile-310x310.png"
+                        class="hidden w-12 h-12"
+                        [class.sm:block]="compact"
+                    />
                 </a>
                 <div class="flex-1 overflow-auto space-y-2 w-full pb-2">
                     @for(link of links; track link.name) {
