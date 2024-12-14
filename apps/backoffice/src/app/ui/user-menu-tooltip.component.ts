@@ -51,13 +51,19 @@ import { i18n } from '../common/translate';
             <button
                 matRipple
                 type="button"
-                class="space-x-2"
                 *ngIf="languages.length > 1"
                 [matMenuTriggerFor]="lang_menu"
             >
                 <app-icon>language</app-icon>
 
-                {{ 'COMMON.LANGUAGE' | translate }}: {{ active_lang.name }}
+                <div class="flex-1 text-left">
+                    {{ 'COMMON.LANGUAGE' | translate }}
+                </div>
+                <div
+                    class="px-2 py-1 text-sm bg-base-200 truncate max-w-24 rounded"
+                >
+                    {{ active_lang.name }}
+                </div>
             </button>
             <mat-menu #lang_menu="matMenu" xPosition="after" yPosition="above">
                 <button
