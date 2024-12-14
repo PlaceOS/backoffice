@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import {
     PlaceTrigger,
     PlaceSystem,
@@ -230,8 +229,7 @@ import { TriggerStateService } from './trigger-state.service';
             <ng-template #email_call_template let-row="row">
                 <div class="flex items-center space-x-2 p-4">
                     <span [matTooltip]="row.emails | formatList"
-                        >{{ row.emails.length }} { row.emails.length, plural, =1
-                        { Address } other { Addresses } }</span
+                        >{{ row.emails.length }} Address(es)</span
                     >&nbsp; | Body Length: {{ row.content.length }}
                 </div>
             </ng-template>
