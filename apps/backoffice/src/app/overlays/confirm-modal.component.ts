@@ -75,7 +75,7 @@ export const CONFIRM_METADATA = {};
         </footer>
         <ng-template #load_state>
             <div
-                class="flex items-center justify-center flex-col p-4 space-y-4 h-32 w-64"
+                class="flex items-center justify-center flex-col p-4 space-y-4 min-w-[24rem] max-w-[28rem]"
             >
                 <mat-spinner diameter="32"></mat-spinner>
                 <p>{{ loading }}</p>
