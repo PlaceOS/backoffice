@@ -141,8 +141,8 @@ export class DriverStateService {
             this._dialog
         );
         if (!details || !details.reason) return details.close();
-        details.loading('Recompiling driver...');
-        let success = await recompileDriver(item.id)
+        details.loading('Recompiling driver... This may take a while.');
+        const success = await recompileDriver(item.id)
             .toPromise()
             .catch((_) => false);
         if (success === false) {
@@ -162,8 +162,8 @@ export class DriverStateService {
             this._dialog
         );
         if (!details || !details.reason) return details.close();
-        details.loading('Reload driver...');
-        let success = await reloadDriver(item.id)
+        details.loading('Reload driver... This may take a while.');
+        const success = await reloadDriver(item.id)
             .toPromise()
             .catch((_) => false);
         if (success !== false) {
