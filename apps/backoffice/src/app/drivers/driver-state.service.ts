@@ -165,10 +165,10 @@ export class DriverStateService {
         details.loading('Reload driver... This may take a while.');
         const success = await reloadDriver(item.id)
             .toPromise()
-            .catch((_) => false);
-        if (success !== false) {
-            notifyError('Failed to reload driver.');
-        }
+            .catch(() => false);
+        success === false
+            ? notifyError('Failed to reload driver.')
+            : notifySuccess('Successfully reloaded driver.');
         details.close();
     }
 
