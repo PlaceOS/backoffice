@@ -10,7 +10,7 @@ interface LocaleStore {
     mappings: Record<string, string>;
 }
 
-function removeNesting(value: any, path = ''): Record<string, string> {
+function removeNesting(value: object, path = ''): Record<string, string> {
     let out_object: Record<string, string> = {};
     for (const key in value) {
         const out_key = path ? [path, key].join('.') : key;
