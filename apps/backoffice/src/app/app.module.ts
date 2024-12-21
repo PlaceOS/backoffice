@@ -1,11 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, ErrorHandler } from '@angular/core';
-import {
-    HttpClient,
-    provideHttpClient,
-    withInterceptorsFromDi,
-} from '@angular/common/http';
+import { NgModule, ErrorHandler, LOCALE_ID } from '@angular/core';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { FormsModule } from '@angular/forms';
 
@@ -21,13 +16,7 @@ import { AuthorisedUserGuard } from './ui/guards/authorised-user.guard';
 import { AuthorisedAdminGuard } from './ui/guards/authorised-admin.guard';
 
 import './mocks';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-
-// AoT requires an exported function for factories
-export function HttpLoaderFactory(http: HttpClient) {
-    return new TranslateHttpLoader(http, './assets/locale/', '.json');
-}
+import { LocaleService } from './common/locale.service';
 
 @NgModule({
     declarations: [AppComponent],
@@ -48,20 +37,16 @@ export function HttpLoaderFactory(http: HttpClient) {
             // or after 30 seconds (whichever comes first).
             registrationStrategy: 'registerWhenStable:30000',
         }),
-        TranslateModule.forRoot({
-            defaultLanguage: 'en',
-            loader: {
-                provide: TranslateLoader,
-                useFactory: HttpLoaderFactory,
-                deps: [HttpClient],
-            },
-        }),
     ],
     providers: [
         { provide: ErrorHandler, useClass: SentryService },
         AuthorisedUserGuard,
         AuthorisedAdminGuard,
-        provideHttpClient(withInterceptorsFromDi()),
+        {
+            provide: LOCALE_ID,
+            deps: [LocaleService],
+            useFactory: (localeService: LocaleService) => localeService.locale,
+        },
     ],
 })
 export class AppModule {}

@@ -90,13 +90,13 @@ import { GlobalBannerComponent } from './global-banner.component';
 import { ModuleRuntimeErrorsModalComponent } from './module-runtime-errors.modal';
 import { SimpleTableComponent } from './simple-table.component';
 import { ReorderItemsModalComponent } from './reorder-items-modal.component';
-import { TranslateModule } from '@ngx-translate/core';
 import { SettingsToggleComponent } from './settings-toggle.component';
 import { FullscreenModalShellComponent } from './fullscreen-modal-shell.component';
 import { CounterComponent } from './counter.component';
 import { TriggerConditionModalComponent } from './forms/trigger-condition-modal.component';
 import { TriggerActionModalComponent } from './forms/trigger-action-modal.component';
 import { UserAvatarComponent } from './user-avatar.component';
+import { TranslatePipe } from './translate.pipe';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -169,6 +169,7 @@ const PIPES: Type<any>[] = [
     SanitizePipe,
     SettingsFormatPipe,
     UserPipe,
+    TranslatePipe,
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [
@@ -223,7 +224,6 @@ const MATERIAL_MODULES: any[] = [
         ScrollingModule,
         ...MATERIAL_MODULES,
         RouterModule.forChild([]),
-        TranslateModule.forChild(),
     ],
     exports: [...COMPONENTS, ...PIPES, ...ENTRY_COMPONENT, ...MATERIAL_MODULES],
 })

@@ -2,15 +2,15 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { ROUTES } from './users.routes';
 
 import { UserAboutComponent } from './user-about.component';
 import { UserHistoryComponent } from './user-history.component';
-import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
+
 import { UserMetadataComponent } from './user-metadata.component';
 import { UsersComponent } from './users.component';
+import { SharedContentModule } from '../ui/ui.module';
 
 @NgModule({
     declarations: [
@@ -25,7 +25,6 @@ import { UsersComponent } from './users.component';
         ReactiveFormsModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule,
-        TranslateModule.forChild(),
     ],
 })
 export class AppUsersModule {}

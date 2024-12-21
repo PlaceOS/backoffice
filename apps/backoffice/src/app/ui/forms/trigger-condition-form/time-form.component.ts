@@ -1,14 +1,12 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { TriggerTimeConditionType } from '@placeos/ts-client';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
-import { numberToPosition } from 'apps/backoffice/src/app/common/general';
-import { TIMEZONES_IANA } from 'apps/backoffice/src/app/common/timezones';
-import { Identity } from 'apps/backoffice/src/app/common/types';
+import { AsyncHandler } from '../../../common/async-handler.class';
+import { numberToPosition } from '../../../common/general';
+import { TIMEZONES_IANA } from '../../../common/timezones';
+import { Identity } from '../../../common/types';
 import { format, setDay, setMonth } from 'date-fns';
 import { i18n } from '../../../common/translate';
-import { TranslateService } from '@ngx-translate/core';
-import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'trigger-condition-time-form',
@@ -268,7 +266,7 @@ export class TriggerConditionTimeFormComponent
 
     public timezones: string[] = [];
 
-    public pad(str: any, digits: number = 2) {
+    public pad(str: any, digits = 2) {
         return `${str}`.padStart(digits, '0');
     }
 

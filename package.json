@@ -58,8 +58,6 @@
         "@angular/language-service": "18.2.3",
         "@ngneat/spectator": "^18.0.2",
         "@ngneat/tailwind": "^7.0.3",
-        "@ngx-translate/core": "^16.0.3",
-        "@ngx-translate/http-loader": "^16.0.0",
         "@nrwl/tao": "19.6.5",
         "@nx/cypress": "20.1.4",
         "@nx/eslint": "20.1.4",

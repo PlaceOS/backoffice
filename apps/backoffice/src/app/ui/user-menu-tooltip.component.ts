@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { logout } from '@placeos/ts-client';
 import { format } from 'date-fns';
 import { VERSION } from '../../environments/version';
 import { issueDescription } from '../common/general';
 import { SettingsService } from '../common/settings.service';
-import { TranslateService } from '@ngx-translate/core';
 import { i18n } from '../common/translate';
+import { LocaleService } from '../common/locale.service';
 
 @Component({
     selector: 'user-menu-tooltip',
@@ -113,7 +113,7 @@ import { i18n } from '../common/translate';
         `,
     ],
 })
-export class UserMenuTooltipComponent {
+export class UserMenuTooltipComponent implements OnInit {
     /** Whether dark mode is enabled */
     public get dark_mode(): boolean {
         return this._settings.get('theme') === 'dark';
@@ -147,12 +147,11 @@ export class UserMenuTooltipComponent {
 
     constructor(
         private _settings: SettingsService,
-        private _translate_service: TranslateService
+        private _locale: LocaleService
     ) {}
 
     public ngOnInit() {
-        this.lang = this._translate_service.currentLang;
-        console.log('Lang:', this.lang);
+        this.lang = this._locale.locale;
         this.languages = [
             { id: 'en', name: i18n('COMMON.LANG_ENGLISH'), flag: '🇬🇧' },
             { id: 'jp', name: i18n('COMMON.LANG_JAPANESE'), flag: '🇯🇵' },
@@ -163,7 +162,7 @@ export class UserMenuTooltipComponent {
     }
 
     public setLanguage(lang: string) {
-        this._translate_service.use(lang);
+        this._locale.setLocale(lang);
         localStorage.setItem('BACKOFFICE.locale', lang);
         this.languages = [
             { id: 'en', name: i18n('COMMON.LANG_ENGLISH'), flag: '🇬🇧' },

@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { ROUTES } from './domains.routes';
 
@@ -11,8 +10,8 @@ import { DomainAuthenticationComponent } from './domain-authentication.component
 import { DomainUsersComponent } from './domain-users.component';
 import { DomainAboutComponent } from './domain-about.component';
 
-import { SharedContentModule } from 'apps/backoffice/src/app/ui/ui.module';
 import { DomainsComponent } from './domains.component';
+import { SharedContentModule } from '../ui/ui.module';
 
 @NgModule({
     declarations: [
@@ -28,7 +27,6 @@ import { DomainsComponent } from './domains.component';
         ReactiveFormsModule,
         RouterModule.forChild(ROUTES),
         SharedContentModule,
-        TranslateModule.forChild(),
     ],
 })
 export class AppDomainsModule {}

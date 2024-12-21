@@ -5,7 +5,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { Route, RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { SharedContentModule } from '../ui/ui.module';
 
@@ -27,7 +26,6 @@ const ROUTES: Route[] = [
         MatSelectModule,
         FormsModule,
         SharedContentModule,
-        TranslateModule.forChild(),
     ],
 })
 export class MqttDashboardModule {}

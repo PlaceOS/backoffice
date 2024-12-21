@@ -19,7 +19,6 @@ import { MatchFieldsComponent } from './bulk-item-modal/match-fields.component';
 import { ListComponent } from './bulk-item-modal/list.component';
 import { StatusListComponent } from './bulk-item-modal/status-list.component';
 import { DuplicateModalComponent } from './duplicate-modal/duplicate-modal.component';
-import { TranslateModule } from '@ngx-translate/core';
 
 const OVERLAYS: Type<any>[] = [
     ConfirmModalComponent,
@@ -48,7 +47,6 @@ const OVERLAYS: Type<any>[] = [
         FormsModule,
         ReactiveFormsModule,
         SharedContentModule,
-        TranslateModule.forChild(),
     ],
     exports: [...OVERLAYS],
 })

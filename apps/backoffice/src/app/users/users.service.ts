@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {
     PlaceUser,
     PlaceUserQueryOptions,
     logout,
-    authorise,
     currentUser,
     queryUsers,
     onlineState,
@@ -13,9 +11,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
 import { first, map } from 'rxjs/operators';
 
-import { FilterFn } from 'apps/backoffice/src/app/common/types';
-import { toQueryString } from 'apps/backoffice/src/app/common/api';
-import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
+import { FilterFn } from '../common/types';
+import { AsyncHandler } from '../common/async-handler.class';
 import { SettingsService } from '../common/settings.service';
 
 import * as Sentry from '@sentry/browser';
@@ -66,10 +63,7 @@ export class BackofficeUsersService extends AsyncHandler {
     /** Default method for filtering the available list */
     private _filter_fn: FilterFn<ServiceItem> = (_) => true;
 
-    constructor(
-        private _settings: SettingsService,
-        private http_unauth: HttpClient
-    ) {
+    constructor(private _settings: SettingsService) {
         super();
         onlineState()
             .pipe(first((_) => _))
@@ -147,43 +141,7 @@ export class BackofficeUsersService extends AsyncHandler {
      * Login with given credentials
      * @param fields Key value pairs of post parameters
      */
-    public login(fields: any = {}) {
-        return new Promise<void>((resolve, reject) => {
-            this.state.next('loading');
-            const query = toQueryString(fields);
-            let headers = new HttpHeaders();
-            headers = headers.append(
-                'Content-Type',
-                'application/x-www-form-urlencoded'
-            );
-            this.http_unauth.post('/auth/signin', query, { headers }).subscribe(
-                (res: any) => {
-                    if (sessionStorage) {
-                        const clientId = Md5.hashStr(
-                            `${location.origin}/oauth-resp.html`
-                        );
-                        sessionStorage.setItem(`${clientId}_login`, 'true');
-                    }
-                    authorise().then((_) => resolve());
-                },
-                (err) => {
-                    if (err.status >= 400) {
-                        this.state.next('error');
-                    } else {
-                        if (sessionStorage) {
-                            const clientId = Md5.hashStr(
-                                `${location.origin}/oauth-resp.html`
-                            );
-                            sessionStorage.setItem(`${clientId}_login`, 'true');
-                        }
-                        authorise();
-                    }
-                    reject();
-                },
-                () => this.load()
-            );
-        });
-    }
+    public login(fields: any = {}) {}
 
     /**
      * Logout from the application

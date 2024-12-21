@@ -30,8 +30,8 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { currentUser } from './common/user-state';
 import { addDays, format, getUnixTime } from 'date-fns';
 
-import { TranslateService } from '@ngx-translate/core';
 import { setTranslationService } from './common/translate';
+import { LocaleService } from './common/locale.service';
 
 @Component({
     selector: 'placeos-root',
@@ -100,7 +100,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
         private _snackbar: MatSnackBar,
         private _router: Router,
         private _route: ActivatedRoute,
-        @Optional() private _translate: TranslateService
+        @Optional() private _locale: LocaleService
     ) {
         super();
     }
@@ -114,7 +114,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
         this._route.queryParamMap.subscribe((params) => {
             if (params.has('lang')) {
                 const locale = params.get('lang');
-                this._translate?.use(locale);
+                this._locale?.setLocale(locale);
                 localStorage.setItem('BACKOFFICE.locale', locale);
             }
             if (params.has('x-api-key')) {
@@ -122,7 +122,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
             }
         });
         setNotifyOutlet(this._snackbar);
-        setTranslationService(this._translate);
+        setTranslationService(this._locale);
         this._loading.next(true);
         /** Wait for settings to initialise */
         await this._settings.initialised.pipe(first((_) => _)).toPromise();
@@ -197,9 +197,8 @@ export class AppComponent extends AsyncHandler implements OnInit {
             const locales = this._settings.get('app.locales') || [
                 { id: 'en', name: 'English' },
             ];
-            this._translate?.addLangs(locales.map((_) => _.id));
             if (locale) {
-                this._translate?.use(locale);
+                this._locale?.setLocale(locale);
             } else {
                 const list = navigator.languages;
                 for (const lang of list) {
@@ -207,7 +206,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
                     if (!locale)
                         locale = locales.find((_) => lang.includes(_.id));
                     if (locale) {
-                        this._translate?.use(lang);
+                        this._locale?.setLocale(lang);
                         localStorage.setItem('BACKOFFICE.locale', lang);
                         break;
                     }
