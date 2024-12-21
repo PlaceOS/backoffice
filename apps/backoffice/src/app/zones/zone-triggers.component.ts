@@ -44,7 +44,7 @@ import { ZonesStateService } from './zones-state.service';
                     },
                     {
                         key: 'added',
-                        name: 'TRIGGERS.FIELD_ADDED',
+                        name: 'TRIGGERS.FIELD_ADDED' | translate,
                         content: added_template
                     },
                     {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import * as DEFAULT_LOCALE from 'apps/backoffice/src/assets/locale/en.json';
+import * as DEFAULT_LOCALE from '../../assets/locale/en.json';
 
 import { log } from './general';
 
