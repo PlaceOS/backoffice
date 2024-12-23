@@ -104,9 +104,10 @@ import { ActiveItemService } from '../common/item.service';
                             class="absolute -top-1 -right-1 text-warning-content bg-warning rounded-full h-8 w-8 text-2xl rotate-12 flex items-center justify-center"
                             *ngIf="item.zone_issues"
                             [matTooltip]="
-                                item.zone_issues === 'system'
-                                    ? 'Room system does not contain all required zones'
-                                    : 'Tags in zone require a parent zone'
+                                (item.zone_issues === 'system'
+                                    ? 'SYSTEMS.MISCONFIGURED'
+                                    : 'ZONES.MISCONFIGURED'
+                                ) | translate
                             "
                         >
                             <app-icon> brightness_alert </app-icon>
@@ -114,7 +115,7 @@ import { ActiveItemService } from '../common/item.service';
                         <div
                             class="absolute -top-1 -right-1 text-error-content bg-error rounded-full h-8 w-8 text-2xl rotate-12 flex items-center justify-center"
                             *ngIf="item.has_runtime_error"
-                            matTooltip="Runtime error in the module"
+                            [matTooltip]="'MODULES.ERROR' | translate"
                         >
                             <app-icon> error </app-icon>
                         </div>

@@ -270,7 +270,8 @@
         "TRIGGER_ACTIVE": "Trigger Active",
         "TRIGGER_ENABLED": "Enabled",
         "TRIGGER_EXECUTE_ENABLED": "Execute Enabled",
-        "TRIGGER_IMPORTANT": "Important"
+        "TRIGGER_IMPORTANT": "Important",
+        "MISCONFIGURED": "Room system does not contain all required zones"
     },
     "MODULES": {
         "SINGULAR": "Module",
@@ -325,7 +326,8 @@
         "CUSTOM_NAME": "Custom Name",
         "STATE": "Module State",
         "STATE_UPDATE": "Update state",
-        "STATE_LOADING": "Loading module's state..."
+        "STATE_LOADING": "Loading module's state...",
+        "ERROR": "Runtime error in the module"
     },
     "ZONES": {
         "SINGULAR": "Zone",
@@ -373,7 +375,8 @@
         "TRIGGERS_EMPTY": "No triggers for selected zone",
         "PARENT_ZONE": "Parent Zone",
         "NAME_REQUIRED": "A unique zone name is required",
-        "DISPLAY_NAME": "Display name"
+        "DISPLAY_NAME": "Display name",
+        "MISCONFIGURED": "Tags in zone require a parent zone"
     },
     "DRIVERS": {
         "SINGULAR": "Driver",
