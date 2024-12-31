@@ -165,6 +165,11 @@ export class PlaceComponent extends AsyncHandler {
                 name: i18n('ADMIN.TAB_UPLOADS_LIBRARY'),
                 icon: { value: 'photo_album' },
             },
+            {
+                id: 'build-jobs',
+                name: i18n('ADMIN.TAB_BUILD_JOBS'),
+                icon: { value: 'laps' },
+            },
             // {
             //     id: 'mailing-list',
             //     name: 'Email Templates',

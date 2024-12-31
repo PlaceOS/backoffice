@@ -18,6 +18,14 @@ import { AuthorisedAdminGuard } from './ui/guards/authorised-admin.guard';
 import './mocks';
 import { LocaleService } from './common/locale.service';
 
+import localeFr from '@angular/common/locales/fr';
+import localeJa from '@angular/common/locales/ja';
+import localeAr from '@angular/common/locales/ar';
+import localeZh from '@angular/common/locales/zh';
+import localeEs from '@angular/common/locales/es';
+import localeIt from '@angular/common/locales/it';
+import { registerLocaleData } from '@angular/common';
+
 @NgModule({
     declarations: [AppComponent],
     bootstrap: [AppComponent],
@@ -49,4 +57,13 @@ import { LocaleService } from './common/locale.service';
         },
     ],
 })
-export class AppModule {}
+export class AppModule {
+    constructor() {
+        registerLocaleData(localeFr);
+        registerLocaleData(localeAr);
+        registerLocaleData(localeJa);
+        registerLocaleData(localeZh);
+        registerLocaleData(localeEs);
+        registerLocaleData(localeIt);
+    }
+}

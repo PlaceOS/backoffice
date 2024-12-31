@@ -32,6 +32,7 @@ import { ResourceImportsComponent } from './resource-imports.component';
 import { EmailTemplatesComponent } from './mailing-lists/email-templates.component';
 import { EmailTemplateFormComponent } from './mailing-lists/email-template-form.component';
 import { SharedContentModule } from '../ui/ui.module';
+import { PlaceBuildListComponent } from './build-list.component';
 
 @NgModule({
     declarations: [
@@ -60,6 +61,7 @@ import { SharedContentModule } from '../ui/ui.module';
         ResourceImportsComponent,
         EmailTemplatesComponent,
         EmailTemplateFormComponent,
+        PlaceBuildListComponent,
     ],
     imports: [
         CommonModule,

@@ -19,6 +19,7 @@ import { UploadLibraryComponent } from './upload-library.component';
 import { ResourceImportsComponent } from './resource-imports.component';
 import { EmailTemplatesComponent } from './mailing-lists/email-templates.component';
 import { EmailTemplateFormComponent } from './mailing-lists/email-template-form.component';
+import { PlaceBuildListComponent } from './build-list.component';
 
 export const ROUTES: Routes = [
     {
@@ -49,6 +50,7 @@ export const ROUTES: Routes = [
                     { path: '**', redirectTo: '' },
                 ],
             },
+            { path: 'build-jobs', component: PlaceBuildListComponent },
             { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' },
         ],

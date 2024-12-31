@@ -14,7 +14,7 @@ const context = [
     '/backoffice',
     '/stylesheets',
 ];
-const ws_context = ['/api'];
+const ws_context = ['/api', '/control'];
 
 function add(endpoint, extras = {}) {
     PROXY_CONFIG[`${endpoint}/**`] = {
