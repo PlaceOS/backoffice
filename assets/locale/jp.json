@@ -270,7 +270,8 @@
         "TRIGGER_ACTIVE": "トリガー有効",
         "TRIGGER_ENABLED": "有効",
         "TRIGGER_EXECUTE_ENABLED": "実行有効",
-        "TRIGGER_IMPORTANT": "重要"
+        "TRIGGER_IMPORTANT": "重要",
+        "MISCONFIGURED": "ルームシステムに必要なすべてのゾーンが含まれていません"
     },
     "MODULES": {
         "SINGULAR": "モジュール",
@@ -325,7 +326,8 @@
         "CUSTOM_NAME": "カスタム名",
         "STATE": "モジュール状態",
         "STATE_UPDATE": "状態を更新",
-        "STATE_LOADING": "モジュール状態を読み込み中..."
+        "STATE_LOADING": "モジュール状態を読み込み中...",
+        "ERROR": "モジュールでランタイムエラーが発生しました"
     },
     "ZONES": {
         "SINGULAR": "ゾーン",
@@ -373,7 +375,8 @@
         "TRIGGERS_EMPTY": "選択されたゾーンにはトリガーがありません",
         "PARENT_ZONE": "親ゾーン",
         "NAME_REQUIRED": "一意のゾーン名が必要です",
-        "DISPLAY_NAME": "表示名"
+        "DISPLAY_NAME": "表示名",
+        "MISCONFIGURED": "ゾーン内のタグには親ゾーンが必要です"
     },
     "DRIVERS": {
         "SINGULAR": "ドライバー",

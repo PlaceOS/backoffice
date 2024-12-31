@@ -756,6 +756,7 @@
         "TAB_CUSTOM_SCHEMAS": "Custom Schemas",
         "TAB_UPLOAD_STORAGE": "Data Stores",
         "TAB_UPLOADS_LIBRARY": "Uploads Library",
+        "TAB_BUILD_JOBS": "Build Jobs",
         "APPLICATION_DETAILS": "Application Details",
         "VIEW_CHANGELOG": "View Changelog",
         "BUILD": "Build",
@@ -964,6 +965,14 @@
         "UPLOADS_LIB_REMOVE_LOADING": "Removing upload...",
         "UPLOADS_LIB_FIELD_TYPE": "File Type",
         "UPLOADS_LIB_FIELD_SIZE": "Size",
-        "UPLOADS_LIB_LIST_EMPTY": "No uploads for the selected domain"
+        "UPLOADS_LIB_LIST_EMPTY": "No uploads for the selected domain",
+
+        "BUILD_LIST_HEADER": "Build Service Jobs",
+        "BUILD_LIST_EMPTY": "No build jobs available to monitor",
+        "BUILD_LIST_REMOVE": "Cancel Build Job",
+        "BUILD_LIST_REMOVE_MSG": "Are you sure you wish to cancel the build job for {{ driver }} from {{ repo }}?",
+        "BUILD_LIST_REMOVE_LOADING": "Cancelling build job...",
+        "BUILD_LIST_REMOVE_ERROR": "Failed to cancel build job. Error: {{ error }}",
+        "BUILD_LIST_REMOVE_SUCCESS": "Successfully cancelled build job."
     }
 }
