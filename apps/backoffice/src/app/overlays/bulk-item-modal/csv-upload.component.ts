@@ -74,7 +74,10 @@ export class CsvUploadComponent {
                 const reader = new FileReader();
                 reader.readAsText(file, 'UTF-8');
                 reader.addEventListener('load', (evt) => {
-                    this.processCSVData((evt.srcElement as any).result);
+                    this.processCSVData(
+                        (evt.srcElement as any).result,
+                        file.name.endsWith('.csv') ? ',' : '\t'
+                    );
                     element.value = '';
                 });
                 reader.addEventListener('error', (_) => {
@@ -97,9 +100,9 @@ export class CsvUploadComponent {
         downloadFile('bulk-upload.tsv', csv_data);
     }
 
-    private processCSVData(data: string) {
+    private processCSVData(data: string, seperator: '\t' | ',' | '  ' = '\t') {
         try {
-            const list = csvToJson(data, '\t') || [];
+            const list = csvToJson(data, seperator) || [];
             this.loading = false;
             this.list.emit(list);
         } catch (e) {

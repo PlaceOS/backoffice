@@ -50,8 +50,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     `,
 })
 export class FullscreenModalShellComponent {
-    @Input() public loading: string = '';
-    @Input() public heading: string = 'Fullscreen Modal';
+    @Input() public loading = '';
+    @Input() public heading = 'Fullscreen Modal';
     @Input() public confirm_text = '';
     @Input() public hide_confirm = false;
     @Output() public save = new EventEmitter();

@@ -19,7 +19,7 @@ import { TableColumn } from '../../ui/simple-table.component';
             class="flex flex-wrap px-4 max-w-[80vw] max-h-[65vh] overflow-auto text-sm"
         >
             <simple-table
-                [style.min-width]="10 * fields.length + 'rem'"
+                [style.min-width]="12 * fields.length + 'rem'"
                 [data]="list"
                 [columns]="columns"
             ></simple-table>
