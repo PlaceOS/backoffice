@@ -189,107 +189,132 @@ export function numberToPosition(num: number): string {
 
 export const csvToJson = parseCSV;
 /**
- * Parse raw CSV data into a JSON object
- * @param csv CSV data to parse
+ * Parses a CSV string back into an array of JavaScript objects.
+ * - It assumes the first line is the header row.
+ * - Attempts JSON.parse on each cell. If parsing fails, keeps the raw string.
+ * - Handles basic quote escaping ("" -> ").
+ *
+ * @param csv - The CSV string.
+ * @param separator - The delimiter (comma by default).
+ * @returns An array of objects.
  */
-function parseCSV(csv_string: string, delimiter = ',') {
-    const lines = csv_string.trim().split('\n');
-    const headers = parseCSVLine(lines.shift(), delimiter);
+export function parseCSV(csv: string, separator = ','): any[] {
+    // Split on newlines, remove any empty lines
+    const lines = csv.split('\n').filter((line) => line.trim() !== '');
+    if (!lines.length) return [];
 
-    return lines.map((line) => {
-        const values = parseCSVLine(line, delimiter);
-        const obj = {};
-        headers.forEach((header, i) => {
-            obj[header] = convertValueType(values[i] || '');
+    const [headerLine, ...dataLines] = lines;
+    const headers = splitCsvLine(headerLine, separator);
+
+    return dataLines.map((line) => {
+        const cells = splitCsvLine(line, separator);
+
+        const record: Record<string, any> = {};
+
+        headers.forEach((header, idx) => {
+            const cell = cells[idx] ?? '';
+
+            try {
+                record[header] = cell !== '' ? JSON.parse(cell) : '';
+            } catch {
+                record[header] = cell;
+            }
         });
-        return obj;
+
+        return record;
     });
 }
 
-function parseCSVLine(line: string, delimiter: string) {
-    const result = [];
+/**
+ * Splits a CSV line into cells, handling:
+ * - quoted strings
+ * - escaped quotes
+ *
+ * This is a simplified parser that expects CSV in the format produced by `jsonToCSV`.
+ * For more robust parsing (multiline fields, etc.), consider a specialized library.
+ */
+function splitCsvLine(line: string, separator: string): string[] {
+    const cells: string[] = [];
     let current = '';
     let inQuotes = false;
 
     for (let i = 0; i < line.length; i++) {
         const char = line[i];
+        const nextChar = line[i + 1];
 
         if (char === '"') {
-            // If we're in quotes and the next char is also a quote, it's an escaped quote.
-            if (inQuotes && line[i + 1] === '"') {
+            if (inQuotes && nextChar === '"') {
+                // Escaped quote ("")
                 current += '"';
                 i++; // Skip the next quote
             } else {
-                // Toggle inQuotes status
+                // Toggle quote mode
                 inQuotes = !inQuotes;
             }
-        } else if (char === delimiter && !inQuotes) {
-            // We've hit a delimiter that's not inside quotes, so this field is done
-            result.push(current);
+        } else if (char === separator && !inQuotes) {
+            // End of current cell
+            cells.push(current);
             current = '';
         } else {
             current += char;
         }
     }
 
-    // Add the last field
-    result.push(current);
+    // Push the last cell
+    cells.push(current);
 
-    return result;
-}
-
-function convertValueType(value: string) {
-    const trimmed = value.trim();
-
-    // Check for boolean
-    if (trimmed.toLowerCase() === 'true') return true;
-    if (trimmed.toLowerCase() === 'false') return false;
-
-    // Check for number
-    const num = Number(trimmed);
-    if (!isNaN(num) && trimmed !== '') {
-        // Additionally, verify that trimmed is a valid number format without extra chars
-        if (/^-?\d+(\.\d+)?$/.test(trimmed)) {
-            return num;
-        }
-    }
-
-    // Return the trimmed string if not boolean or number
-    return trimmed;
+    return cells;
 }
 
 /**
- * Convert javascript array to CSV string
- * @param json Javascript array to convert
- * @param use_keys Fields in the objects to use in the CSV output
- * @param seperator Seperator between field values in the CSV data
+ * Converts an array of JSON objects into a CSV string.
+ *
+ * @param data - The JSON array to convert.
+ * @param separator - The optional field separator (comma by default).
+ * @returns A string in CSV format.
  */
-export function jsonToCsv(
-    json: HashMap[],
-    use_keys?: string[],
-    seperator = ','
-) {
-    /* istanbul ignore else */
-    if (json instanceof Array && json.length > 0) {
-        const keys = Object.keys(json[0]);
-        const valid_keys = keys.filter(
-            (key) =>
-                (!use_keys || use_keys.includes(key)) &&
-                json[0].hasOwnProperty(key)
-        );
-        return `\uFEFF${valid_keys.join(seperator)}\n${json
-            .map((item) =>
-                valid_keys
-                    .map((key) =>
-                        item[key] instanceof Object
-                            ? JSON.stringify(item[key])
-                            : item[key]
-                    )
-                    .join(seperator)
-            )
-            .join('\n')}`;
-    }
-    return '';
+export function jsonToCsv<T extends Record<string, any>>(
+    data: T[],
+    use_keys: string[] = [],
+    separator = ','
+): string {
+    if (!data.length) return '';
+
+    const headers = Object.keys(data[0]).filter(
+        (key) => !use_keys.length || use_keys.includes(key)
+    );
+    const headerRow = headers.join(separator);
+
+    const rows = data.map((item) => {
+        return headers
+            .map((header) => {
+                let cell = item[header];
+
+                // If the cell is an object or array, convert it to a JSON string.
+                if (cell && typeof cell === 'object') {
+                    cell = JSON.stringify(cell);
+                }
+
+                // Convert undefined or null to empty string; otherwise, to string
+                const cellStr = cell == null ? '' : String(cell);
+
+                // If the cell contains the separator, quotes, or new lines, wrap it in quotes.
+                if (
+                    cellStr.includes(separator) ||
+                    cellStr.includes('"') ||
+                    cellStr.includes('\n')
+                ) {
+                    // Escape quotes
+                    const escaped = cellStr.replace(/"/g, '""');
+                    return `"${escaped}"`;
+                }
+
+                return cellStr;
+            })
+            .join(separator);
+    });
+
+    return [headerRow, ...rows].join('\n');
 }
 
 /**

@@ -136,14 +136,18 @@ export class BulkItemModalComponent<T = HashMap<any>> {
      * Handle list data
      * @param data List of data to process
      */
-    public handleList(data: HashMap[], is_mapped: boolean = false): void {
+    public handleList(data: HashMap[], is_mapped = false): void {
         if (data.length) {
             if (is_mapped) {
                 const Resource = this._data.constr;
                 this.item_list = data.map((item) => {
                     const new_item = {};
                     Object.keys(item).forEach((key) => {
-                        new_item[key] = item[key];
+                        try {
+                            new_item[key] = JSON.parse(item[key]);
+                        } catch {
+                            new_item[key] = item[key];
+                        }
                     });
                     return new Resource(new_item);
                 });

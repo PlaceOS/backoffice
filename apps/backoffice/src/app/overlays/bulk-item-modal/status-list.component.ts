@@ -14,17 +14,34 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
 @Component({
     selector: 'bulk-item-status-list',
     template: `
-        <div class="info" *ngIf="!done">{{ 'COMMON.BULK_UPLOADING' }}</div>
-        <div *ngFor="let item of list; let i = index" class="item">
-            <div class="name">{{ item.name }}</div>
-            <div class="status">
-                <app-icon *ngIf="status[i] !== 'loading'" [class]="status[i]">
-                    {{ status[i] === 'done' ? 'done' : 'close' }}
-                </app-icon>
-                <mat-spinner
-                    *ngIf="status[i] === 'loading'"
-                    diameter="24"
-                ></mat-spinner>
+        <div class="flex flex-col items-center px-4 pb-4">
+            <div class="info" *ngIf="!done">
+                {{ 'COMMON.BULK_UPLOADING' | translate }}
+            </div>
+            <div
+                *ngFor="let item of list; let i = index"
+                class="flex items-center p-2 rounded border border-base-200 w-[24rem]"
+            >
+                <div class="name flex-1 px-2">{{ item.name }}</div>
+                <div class="status">
+                    <div
+                        *ngIf="status[i] !== 'loading'"
+                        class="h-8 w-8 rounded-full shadow text-2xl flex items-center justify-center"
+                        [class.bg-error]="status[i] !== 'done'"
+                        [class.text-error-content]="status[i] !== 'done'"
+                        [class.bg-success]="status[i] === 'done'"
+                        [class.text-success-content]="status[i] === 'done'"
+                        [matTooltip]="status[i]"
+                    >
+                        <app-icon>
+                            {{ status[i] === 'done' ? 'done' : 'close' }}
+                        </app-icon>
+                    </div>
+                    <mat-spinner
+                        *ngIf="status[i] === 'loading'"
+                        diameter="24"
+                    ></mat-spinner>
+                </div>
             </div>
         </div>
     `,
@@ -55,7 +72,10 @@ export class StatusListComponent implements OnChanges {
                 const saved_item = await this.save({ ...item, id: '' })
                     .toPromise()
                     .catch((err) => {
-                        this.status[index] = `Error: ${err.message || err}`;
+                        console.log('Error:', err);
+                        this.status[index] = `Error: ${err.status || err} ${
+                            err.statusText || err
+                        }`;
                         console.error(this.status[index]);
                         // notifyError(this.status[index]);
                     });
