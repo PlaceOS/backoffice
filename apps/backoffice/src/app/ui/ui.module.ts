@@ -97,6 +97,7 @@ import { TriggerConditionModalComponent } from './forms/trigger-condition-modal.
 import { TriggerActionModalComponent } from './forms/trigger-action-modal.component';
 import { UserAvatarComponent } from './user-avatar.component';
 import { TranslatePipe } from './translate.pipe';
+import { CronInputFieldComponent } from './custom-fields/cron-input-field.component';
 
 const FORM_COMPONENTS: Type<any>[] = [
     SystemFormComponent,
@@ -125,6 +126,7 @@ const FORM_COMPONENTS: Type<any>[] = [
     NewTerminalComponent,
     RichTextInputComponent,
     SettingsToggleComponent,
+    CronInputFieldComponent,
 ];
 
 const COMPONENTS: Type<any>[] = [

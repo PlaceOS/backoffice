@@ -32,7 +32,7 @@ const STORE_KEY = 'BACKOFFICE.locale';
     providedIn: 'root',
 })
 export class LocaleService {
-    private _default_locale = 'en-AU';
+    private _default_locale = 'en';
     private _current_locale = this._default_locale;
     private _current_locale_short = this._current_locale.split('-')[0];
     private _cache_time = 7 * 24 * 60 * 60 * 1000;

@@ -1,4 +1,10 @@
-import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
+import {
+    Component,
+    Input,
+    SimpleChanges,
+    OnChanges,
+    OnInit,
+} from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import {
     PlaceModule,
@@ -188,7 +194,9 @@ import { i18n } from '../../../common/translate';
         </ng-template> `,
     styles: [``],
 })
-export class TriggerConditionComparisonFormComponent implements OnChanges {
+export class TriggerConditionComparisonFormComponent
+    implements OnChanges, OnInit
+{
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
     /** Systems used for templating the status variables */
@@ -293,6 +301,7 @@ export class TriggerConditionComparisonFormComponent implements OnChanges {
      */
     public loadSystemStatusVariables(mod_name: string, side: 'left' | 'right') {
         const name = (mod_name || '').split('_');
+        if (!name[0]?.length) return;
         systemModuleState(
             this.system.id,
             name.length > 1

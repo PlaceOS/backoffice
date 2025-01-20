@@ -194,7 +194,8 @@
         "DATE_FROM_IN_MONTHS": "In {{ months }} month(s)",
         "DATE_FROM_MONTHS_AGO": "{{ months }} month(s) ago",
         "DATE_FROM_IN_YEAS": "In {{ years }} year(s)",
-        "DATE_FROM_YEARS_AGO": "{{ years }} year(s) ago"
+        "DATE_FROM_YEARS_AGO": "{{ years }} year(s) ago",
+        "CRON_CUSTOM": "Custom"
     },
     "SYSTEMS": {
         "SINGULAR": "System",

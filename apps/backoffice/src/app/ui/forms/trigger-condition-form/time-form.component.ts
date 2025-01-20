@@ -1,4 +1,10 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnChanges,
+    OnInit,
+    SimpleChanges,
+} from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { TriggerTimeConditionType } from '@placeos/ts-client';
 import { AsyncHandler } from '../../../common/async-handler.class';
@@ -91,6 +97,7 @@ import { i18n } from '../../../common/translate';
                     </mat-select>
                 </mat-form-field>
             </div>
+            @if (cron_period !== 'custom') {
             <div class="flex items-center space-x-4">
                 <div class="field flex-1 w-2/5" *ngIf="cron_period === 'year'">
                     <label for="month"
@@ -223,13 +230,19 @@ import { i18n } from '../../../common/translate';
                     </mat-form-field>
                 </div>
             </div>
+            } @else {
+            <cron-input-field
+                [(ngModel)]="cron_string"
+                (ngModelChange)="saveCRON($event)"
+            ></cron-input-field>
+            }
         </ng-template>
     `,
     styles: [],
 })
 export class TriggerConditionTimeFormComponent
     extends AsyncHandler
-    implements OnChanges
+    implements OnChanges, OnInit
 {
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
@@ -278,6 +291,7 @@ export class TriggerConditionTimeFormComponent
             { id: 'week', name: i18n('COMMON.WEEK') },
             { id: 'month', name: i18n('COMMON.MONTH') },
             { id: 'year', name: i18n('COMMON.YEAR') },
+            { id: 'custom', name: i18n('COMMON.CRON_CUSTOM') },
         ];
         this.days_of_week = new Array(7)
             .fill(0)
@@ -334,6 +348,14 @@ export class TriggerConditionTimeFormComponent
         this.updateCronString();
     }
 
+    public saveCRON(cron_str: string) {
+        this.timeout(
+            'save_cron',
+            () => this.form.controls.cron.setValue(cron_str),
+            1000
+        );
+    }
+
     /**
      * Update the output CRON string for the selected periods
      */
@@ -349,9 +371,12 @@ export class TriggerConditionTimeFormComponent
             let cron_str = '* * * * *';
             switch (this.cron_period) {
                 case 'minute':
+                    cron_str = minute ? `*/${minute} * * * *` : '* * * * *';
                     break;
                 case 'hour':
-                    cron_str = `${minute} * * * *`;
+                    cron_str = hour
+                        ? `${minute} */${hour} * * *`
+                        : `${minute} * * * *`;
                     break;
                 case 'day':
                     cron_str = `${minute} ${hour} * * *`;

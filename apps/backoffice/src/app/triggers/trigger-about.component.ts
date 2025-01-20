@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
     PlaceTrigger,
     PlaceSystem,
@@ -259,7 +259,7 @@ import { TriggerStateService } from './trigger-state.service';
         `,
     ],
 })
-export class TriggerAboutComponent extends AsyncHandler {
+export class TriggerAboutComponent extends AsyncHandler implements OnInit {
     /** System to use for conditions with systen variables and functions */
     public template_system: PlaceSystem;
     /** List of variable comparison trigger conditions */
