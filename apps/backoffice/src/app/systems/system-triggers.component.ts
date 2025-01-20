@@ -105,12 +105,12 @@ export interface TriggerInstanceState {
                 <div class="flex flex-col items-start px-4 py-2 leading-snug">
                     <a
                         class="truncate underline"
-                        [routerLink]="['/triggers', row.id]"
+                        [routerLink]="['/triggers', row.trigger_id]"
                     >
                         {{ row.name }}
                     </a>
                     <div class="text-[0.625rem] opacity-30 font-mono">
-                        {{ row.id }}
+                        {{ row.trigger_id }}
                     </div>
                 </div>
             </ng-template>
