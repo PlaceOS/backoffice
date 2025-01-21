@@ -57,6 +57,8 @@ export interface BulkItemModalData<T = HashMap<any>> {
             <bulk-item-match-fields
                 [list]="data_list"
                 [field_list]="available_fields"
+                [mappings]="mappings"
+                (new_mappings)="mappings = $event"
                 (mapping_done)="handleList($event, true)"
                 (previous)="flow_step = ''"
             ></bulk-item-match-fields>
@@ -113,6 +115,7 @@ export class BulkItemModalComponent<T = HashMap<any>> {
     public loading: boolean;
     /** Template data for use */
     public template: HashMap[] = [];
+    public mappings: Record<string, string> = {};
 
     public available_fields: Identity[] = [];
 

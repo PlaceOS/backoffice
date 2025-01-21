@@ -4,6 +4,8 @@ import {
     SimpleChanges,
     EventEmitter,
     Output,
+    OnChanges,
+    OnInit,
 } from '@angular/core';
 
 import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
@@ -51,23 +53,35 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
     `,
     styles: [``],
 })
-export class MatchFieldsComponent {
+export class MatchFieldsComponent implements OnChanges, OnInit {
     /** List of bulk items to add */
     @Input() public list: HashMap<any>[];
     /** List of fields available for building new item */
     @Input() public field_list: Identity[] = [];
+    /** User selected mappings for field mappings */
+    @Input() public mappings: Record<string, string> = {};
     /** Emitter for mapped changes to list */
     @Output() public mapping_done = new EventEmitter<HashMap<any>[]>();
     /** Emitter user want to return to previous step in flow */
     @Output() public previous = new EventEmitter<void>();
+    /** Emitter for changes to user selected field mappings */
+    @Output() public new_mappings = new EventEmitter<Record<string, string>>();
     /** List of fields available to be selected */
     public source_fields: Identity[] = [];
     /** Mapping of raw data fields ids to item fields ids */
     public field_mapping: HashMap<string> = {};
 
+    public ngOnInit() {
+        if (this.mappings) {
+            this.field_mapping = {
+                ...this.field_mapping,
+                ...this.mappings,
+            };
+        }
+    }
+
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.list && this.list && this.list.length) {
-            console.log('List:', this.list);
             this.source_fields = Object.keys(this.list[0]).map((i) => ({
                 id: i.toLowerCase().split(' ').join('_'),
                 name: i.split('_').join(' '),
@@ -77,6 +91,15 @@ export class MatchFieldsComponent {
                     this.field_mapping[`${field.id}`] = `${field.id}`;
                 }
             });
+            if (this.mappings) {
+                this.field_mapping = {
+                    ...this.field_mapping,
+                    ...this.mappings,
+                };
+            }
+        }
+        if (changes.mappings && this.mappings) {
+            this.field_mapping = { ...this.field_mapping, ...this.mappings };
         }
     }
 
@@ -90,6 +113,8 @@ export class MatchFieldsComponent {
             }
             return mapped_item;
         });
+        this.mappings = { ...this.field_mapping };
+        this.new_mappings.emit(this.mappings);
         this.mapping_done.emit(mapped_list);
     }
 }
