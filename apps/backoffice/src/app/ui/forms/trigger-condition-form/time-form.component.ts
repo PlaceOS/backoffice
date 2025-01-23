@@ -251,8 +251,14 @@ export class TriggerConditionTimeFormComponent
     /** Whether condition is a cron(recurring) job */
     public is_cron: boolean;
     /** The period which the user selects the recurrence */
-    public cron_period: 'minute' | 'hour' | 'day' | 'week' | 'month' | 'year' =
-        'minute';
+    public cron_period:
+        | 'minute'
+        | 'hour'
+        | 'day'
+        | 'week'
+        | 'month'
+        | 'year'
+        | 'custom' = 'minute';
 
     public minutes_in_hour = new Array(12).fill(0).map((_, idx) => idx * 5);
     public hours_in_day = new Array(24).fill(0).map((_, idx) => idx);
@@ -264,6 +270,7 @@ export class TriggerConditionTimeFormComponent
             name: `${numberToPosition(index + 1)}`,
         }));
     public months_of_year = [];
+    public cron_string = '';
     /** Minute of the hour to recurr on */
     public cron_minute = 0;
     /** Hour of the day to recurr on */
@@ -397,6 +404,32 @@ export class TriggerConditionTimeFormComponent
     }
 
     private loadCronTab(cron_tab: string): void {
+        this.cron_string = cron_tab;
+        if (
+            this.cron_string.includes('-') ||
+            this.cron_string.includes('/') ||
+            this.cron_string.includes(',')
+        ) {
+            this.cron_period = 'custom';
+            return;
+        }
+        const [minute, hour, day, month, weekday] = cron_tab.split(' ');
+        this.cron_minute = +minute || 0;
+        this.cron_hour = +hour || 0;
+        this.cron_day = +weekday || 0;
+        this.cron_date = +hour || 1;
+        this.cron_month = +month - 1;
+        this.cron_period = 'minute';
+        if (month !== '*') {
+            this.cron_period = 'month';
+        } else if (weekday !== '*') {
+            this.cron_period = 'week';
+        } else if (day !== '*') {
+            this.cron_period = 'day';
+        } else if (hour !== '*') {
+            this.cron_period = 'hour';
+        }
+        this.cron_hour_period = this.cron_hour > 12 ? 'PM' : 'AM';
         // const cron_str = new CronBuilder(cron_tab);
         // this.cron_minute =
         //     cron_str.get('minute') === '*'
