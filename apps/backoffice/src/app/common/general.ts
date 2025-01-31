@@ -217,7 +217,9 @@ export function parseCSV(csv: string, separator = ','): any[] {
             try {
                 record[header] = cell !== '' ? JSON.parse(cell) : '';
             } catch {
-                record[header] = cell;
+                const lower = `${cell}`.toLowerCase();
+                record[header] =
+                    lower === 'true' ? true : lower === 'false' ? false : cell;
             }
         });
 
