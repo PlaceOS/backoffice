@@ -22,7 +22,15 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
                 *ngFor="let item of list; let i = index"
                 class="flex items-center p-2 rounded border border-base-200 w-[24rem]"
             >
-                <div class="name flex-1 px-2">{{ item.name }}</div>
+                <div class="flex flex-col flex-1 justify-center px-2">
+                    <div class="name flex-1">{{ item.name }}</div>
+                    <div
+                        class="text-error text-xs"
+                        *ngIf="status[i] && status[i] !== 'done'"
+                    >
+                        {{ status[i] }}
+                    </div>
+                </div>
                 <div class="status">
                     <div
                         *ngIf="status[i] !== 'loading'"
