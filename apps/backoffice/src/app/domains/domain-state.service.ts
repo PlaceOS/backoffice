@@ -154,7 +154,7 @@ export class DomainStateService {
         const ref = this._dialog.open(ItemCreateUpdateModalComponent, {
             data: {
                 item,
-                name: 'Application',
+                name: 'DOMAINS.APPLICATION',
                 save: (i) => {
                     delete i.client_id;
                     return i.id

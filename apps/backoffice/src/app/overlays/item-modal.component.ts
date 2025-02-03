@@ -67,7 +67,9 @@ export interface CreateEditModalData<T extends Identity = any> {
         <fullscreen-modal-shell
             [heading]="
                 name +
-                    ((name.includes('ADMIN') ? '_' : '.') +
+                    ((name.includes('ADMIN') || name.startsWith('DOMAINS.')
+                        ? '_'
+                        : '.') +
                         (item && edit ? 'EDIT' : 'NEW')) | translate
             "
             [loading]="loading"
