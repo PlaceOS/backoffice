@@ -20,6 +20,14 @@ import {
 import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
 import { Observable } from 'rxjs';
 
+const IGNORE_FIELDS = [
+    'created_at',
+    'updated_at',
+    'version',
+    'settings',
+    'module_list',
+];
+
 export interface BulkItemModalData<T = HashMap<any>> {
     constr: Type<T>;
     name: string;
@@ -175,7 +183,12 @@ export class BulkItemModalComponent<T = HashMap<any>> {
         return unique(
             list.map((i) => ({ id: i, name: i.split('_').join(' ') })),
             'id'
-        ).filter((field) => field.id !== 'id' && field.id[0] !== '_');
+        ).filter(
+            (field) =>
+                field.id !== 'id' &&
+                field.id[0] !== '_' &&
+                !IGNORE_FIELDS.includes(field.id)
+        );
     }
 
     private generateTemplate(): HashMap[] {
