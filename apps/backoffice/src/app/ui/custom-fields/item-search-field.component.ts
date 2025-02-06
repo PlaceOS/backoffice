@@ -26,7 +26,11 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
 @Component({
     selector: 'item-search-field',
     template: `
-        <div class="item-search-field" form-field [class.disabled]="disabled">
+        <div
+            class="item-search-field flex flex-col max-h-full"
+            form-field
+            [class.disabled]="disabled"
+        >
             <mat-form-field appearance="outline">
                 <input
                     matInput
@@ -56,7 +60,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
             </mat-form-field>
             <ng-container *ngIf="display_list">
                 <div
-                    class="overflow-auto max-h-[50vh] space-y-2"
+                    class="overflow-auto h-[50vh] space-y-2 flex-1"
                     *ngIf="item_list?.length; else empty_state"
                 >
                     <button

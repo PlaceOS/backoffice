@@ -14,21 +14,23 @@ export interface SelectItemModalData<T = any> {
     selector: 'select-item-modal',
     template: `
         <div
-            class="flex items-center justify-between px-4 border-b border-base-200"
+            class="flex items-center justify-between mx-2 mt-2 rounded bg-base-200 px-4 py-2"
         >
-            <h3 class="text-lg font-medium py-4">
+            <h3 class="text-xl font-medium">
                 {{ 'COMMON.ITEM_ADD' | translate: { item: name } }}
             </h3>
-            <button btn icon mat-dialog-close>
+            <button btn icon mat-dialog-close *ngIf="!loading">
                 <app-icon>close</app-icon>
             </button>
         </div>
         <main
             *ngIf="!loading; else load_state"
-            class="p-4 w-[32rem] h-[65vh] max-w-[calc(100vw-2rem)]"
+            class="px-2 pt-2 w-[32rem] h-[65vh] max-w-[calc(100vw-2rem)]"
         >
             <item-search-field
+                class="block h-full"
                 [query_fn]="query_fn"
+                [exclude]="filter_fn"
                 [(ngModel)]="item"
                 [display_list]="true"
             ></item-search-field>
@@ -69,6 +71,8 @@ export class SelectItemModalComponent extends AsyncHandler {
     public item: any;
     /** Whether the item request is being processed */
     public loading: boolean;
+
+    public readonly filter_fn = () => false;
 
     constructor(@Inject(MAT_DIALOG_DATA) private _data: SelectItemModalData) {
         super();
