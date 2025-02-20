@@ -22,7 +22,7 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
             <main class="flex flex-col flex-1 pb-4">
                 <div class="flex items-center space-x-2 mb-2 px-4">
                     <div
-                        class="relative px-4 py-2 rounded border border-base-300 min-w-48"
+                        class="relative px-4 py-2 rounded border border-base-300 min-w-48 h-14"
                     >
                         <div
                             class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded text-xs px-2 py-1"
@@ -30,35 +30,36 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                             {{ 'COMMON.METADATA_OWNER' | translate }}
                         </div>
                         <div class="truncate">
+                            {{ parent_name || id }}
+                        </div>
+                        <div class="opacity-30 text-xs" *ngIf="parent_name">
                             {{ id }}
                         </div>
-                        <div class="opacity-30 text-xs"></div>
                     </div>
                     <div
-                        class="relative px-4 py-2 rounded border border-base-300 min-w-48"
+                        class="relative px-4 py-2 rounded border border-base-300 min-w-48 h-14 flex items-center"
                     >
                         <div
                             class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded text-xs px-2 py-1"
                         >
                             {{ 'COMMON.METADATA_KEY' | translate }}
                         </div>
-                        <div class="truncate">
+                        <div class="truncate font-mono text-lg">
                             {{ name }}
                         </div>
-                        <div class="opacity-30 text-xs"></div>
                     </div>
                 </div>
                 <div
                     class="flex items-center justify-between space-x-2 mb-2 px-4"
                 >
-                    <mat-form-field appearance="outline" class="w-64">
+                    <mat-form-field appearance="outline" class="w-[20rem]">
                         <mat-select
                             [(ngModel)]="first"
                             placeholder="Select metadata version"
                         >
                             <mat-option
                                 *ngFor="let item of history"
-                                [value]="item.updated_at"
+                                [value]="item"
                                 (click)="select(0, item)"
                                 class="leading-tight"
                             >
@@ -71,16 +72,19 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                                 </div>
                             </mat-option>
                         </mat-select>
+                        <mat-hint *ngIf="first" class="truncate">{{
+                            first.description
+                        }}</mat-hint>
                     </mat-form-field>
-                    <mat-form-field appearance="outline" class="w-64">
+                    <mat-form-field appearance="outline" class="w-[20rem]">
                         <mat-select
                             [(ngModel)]="second"
                             placeholder="Compare with"
                         >
                             @for (item of history; track item.updated_at) {
                             <mat-option
-                                *ngIf="item.updated_at !== first"
-                                [value]="item.updated_at"
+                                *ngIf="item !== first"
+                                [value]="item"
                                 (click)="select(1, item)"
                                 class="leading-tight"
                             >
@@ -94,6 +98,9 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                             </mat-option>
                             }
                         </mat-select>
+                        <mat-hint *ngIf="second" class="truncate">{{
+                            second.description
+                        }}</mat-hint>
                     </mat-form-field>
                 </div>
                 <div class="relative flex-1 w-full px-4">
@@ -116,23 +123,26 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
 })
 export class MetadataHistoryModalComponent implements OnInit {
     public readonly id = this._data.id;
+    public readonly parent_name = this._data.parent_name;
     public readonly name = this._data.name;
 
     public history: PlaceMetadata[] = [];
 
-    public first = '';
-    public second = '';
+    public first = null;
+    public second = null;
     public first_details = '';
     public second_details = '';
 
     constructor(
-        @Inject(MAT_DIALOG_DATA) private _data: { id: string; name: string }
+        @Inject(MAT_DIALOG_DATA)
+        private _data: { id: string; parent_name: string; name: string }
     ) {}
 
     public async ngOnInit() {
         console.log('Details:', this._data);
         const history = await listMetadataHistory(this._data.id, {
             name: this._data.name,
+            limit: 5000,
         }).toPromise();
         this.history = history;
         console.log('History:', history);
@@ -141,7 +151,7 @@ export class MetadataHistoryModalComponent implements OnInit {
     public select(idx: 0 | 1, item: PlaceMetadata) {
         if (idx === 0) {
             this.first_details = JSON.stringify(item.details, undefined, 4);
-            this.second = '';
+            this.second = null;
             this.second_details = '';
         } else {
             this.second_details = JSON.stringify(item.details, undefined, 4);

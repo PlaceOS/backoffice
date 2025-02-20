@@ -392,7 +392,11 @@ export class MetadataDisplayComponent extends AsyncHandler {
 
     public viewMetadataHistory(item: PlaceMetadata) {
         this._dialog.open(MetadataHistoryModalComponent, {
-            data: { id: this.item.id, name: item.name },
+            data: {
+                id: this.item.id,
+                parent_name: this.item.display_name || this.item.name,
+                name: item.name,
+            },
         });
     }
 }
