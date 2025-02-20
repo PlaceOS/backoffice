@@ -167,7 +167,6 @@
         "WEDNESDAY": "Wednesday",
         "THURSDAY": "Thursday",
         "FRIDAY": "Friday",
-        "SATURDAY": "Saturday",
         "JANUARY": "January",
         "FEBRUARY": "February",
         "MARCH": "March",
@@ -194,8 +193,7 @@
         "DATE_FROM_IN_MONTHS": "In {{ months }} month(s)",
         "DATE_FROM_MONTHS_AGO": "{{ months }} month(s) ago",
         "DATE_FROM_IN_YEAS": "In {{ years }} year(s)",
-        "DATE_FROM_YEARS_AGO": "{{ years }} year(s) ago",
-        "CRON_CUSTOM": "Custom"
+        "DATE_FROM_YEARS_AGO": "{{ years }} year(s) ago"
     },
     "SYSTEMS": {
         "SINGULAR": "System",
@@ -272,8 +270,7 @@
         "TRIGGER_ACTIVE": "Trigger Active",
         "TRIGGER_ENABLED": "Enabled",
         "TRIGGER_EXECUTE_ENABLED": "Execute Enabled",
-        "TRIGGER_IMPORTANT": "Important",
-        "MISCONFIGURED": "Room system does not contain all required zones"
+        "TRIGGER_IMPORTANT": "Important"
     },
     "MODULES": {
         "SINGULAR": "Module",
@@ -328,8 +325,7 @@
         "CUSTOM_NAME": "Custom Name",
         "STATE": "Module State",
         "STATE_UPDATE": "Update state",
-        "STATE_LOADING": "Loading module's state...",
-        "ERROR": "Runtime error in the module"
+        "STATE_LOADING": "Loading module's state..."
     },
     "ZONES": {
         "SINGULAR": "Zone",
@@ -377,8 +373,7 @@
         "TRIGGERS_EMPTY": "No triggers for selected zone",
         "PARENT_ZONE": "Parent Zone",
         "NAME_REQUIRED": "A unique zone name is required",
-        "DISPLAY_NAME": "Display name",
-        "MISCONFIGURED": "Tags in zone require a parent zone"
+        "DISPLAY_NAME": "Display name"
     },
     "DRIVERS": {
         "SINGULAR": "Driver",
@@ -507,7 +502,6 @@
         "CONDITIONS": "Conditions",
         "CONDITION_ADD": "Add Condition",
         "CONDITION_NEW": "New Condition",
-        "CONDITION_EDIT": "Edit Condition",
         "CONDITION_FIELD_TYPE": "Condition Type",
         "CONDITION_COMPARE": "Compare Values",
         "CONDITION_TIME": "Particular Time",
@@ -520,7 +514,6 @@
         "ACTIONS": "Actions",
         "ACTION_ADD": "Add Action",
         "ACTION_NEW": "New Action",
-        "ACTION_EDIT": "Edit Action",
         "ACTION_FIELD_TYPE": "ACtion Type",
         "ACTION_EXECUTE": "Execute Method",
         "ACTION_EXECUTE_SELECT": "Select method to execute",
@@ -760,7 +753,6 @@
         "TAB_CUSTOM_SCHEMAS": "Custom Schemas",
         "TAB_UPLOAD_STORAGE": "Data Stores",
         "TAB_UPLOADS_LIBRARY": "Uploads Library",
-        "TAB_BUILD_JOBS": "Build Jobs",
         "APPLICATION_DETAILS": "Application Details",
         "VIEW_CHANGELOG": "View Changelog",
         "BUILD": "Build",
@@ -969,14 +961,6 @@
         "UPLOADS_LIB_REMOVE_LOADING": "Removing upload...",
         "UPLOADS_LIB_FIELD_TYPE": "File Type",
         "UPLOADS_LIB_FIELD_SIZE": "Size",
-        "UPLOADS_LIB_LIST_EMPTY": "No uploads for the selected domain",
-
-        "BUILD_LIST_HEADER": "Build Service Jobs",
-        "BUILD_LIST_EMPTY": "No build jobs available to monitor",
-        "BUILD_LIST_REMOVE": "Cancel Build Job",
-        "BUILD_LIST_REMOVE_MSG": "Are you sure you wish to cancel the build job for {{ driver }} from {{ repo }}?",
-        "BUILD_LIST_REMOVE_LOADING": "Cancelling build job...",
-        "BUILD_LIST_REMOVE_ERROR": "Failed to cancel build job. Error: {{ error }}",
-        "BUILD_LIST_REMOVE_SUCCESS": "Successfully cancelled build job."
+        "UPLOADS_LIB_LIST_EMPTY": "No uploads for the selected domain"
     }
 }
