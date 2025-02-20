@@ -19,7 +19,7 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                     <app-icon>close</app-icon>
                 </button>
             </div>
-            <main class="flex flex-col flex-1">
+            <main class="flex flex-col flex-1 pb-4">
                 <div class="flex items-center space-x-2 mb-2 px-4">
                     <div
                         class="relative px-4 py-2 rounded border border-base-300 min-w-48"
@@ -96,12 +96,18 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div class="flex-1 w-full px-4">
+                <div class="relative flex-1 w-full px-4">
                     <diff-viewer
                         *ngIf="first_details && second_details"
                         [modified]="first_details"
                         [original]="second_details"
                     ></diff-viewer>
+                    <div
+                        *ngIf="!(first_details && second_details)"
+                        class="h-full w-full bg-base-200 flex items-center justify-center rounded-lg opacity-40"
+                    >
+                        Select 2 versions of the metadata to get started
+                    </div>
                 </div>
             </main>
         </div>
