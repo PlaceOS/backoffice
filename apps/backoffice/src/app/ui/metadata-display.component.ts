@@ -23,6 +23,12 @@ import {
 } from '../overlays/confirm-modal.component';
 import { MetadataDetailsModalComponent } from '../overlays/metadata-details-modal/metadata-details-modal.component';
 import { MetadataHistoryModalComponent } from '../overlays/metadata-history-modal.component';
+import { VERSION } from '../../environments/version';
+import { currentUser } from '../common/user-state';
+
+function replaceDescTag(inputString, newContent) {
+    return inputString.replace(/^\[.*?\]/, `[${newContent}]`);
+}
 
 @Component({
     selector: 'metadata-display',
@@ -262,9 +268,27 @@ export class MetadataDisplayComponent extends AsyncHandler {
             );
         const value = form.value;
         this.loading[field.name] = true;
+        const desc = value.description;
+        const new_desc = replaceDescTag(desc, `${VERSION.hash}|B`);
+        const data = JSON.parse(value.details);
+        if (/^\[.*?\]/.test(desc)) {
+            const user = currentUser();
+            data.edited_by = {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                auth_id: user.authority_id,
+                role: user.sys_admin
+                    ? 'Admin'
+                    : user.support
+                    ? 'Support'
+                    : 'User',
+            };
+        }
         updateMetadata(this.item.id, {
             ...value,
-            details: JSON.parse(value.details),
+            description: new_desc,
+            details: data,
         }).subscribe(
             (item: PlaceMetadata) => {
                 this.loading[field.name] = false;
