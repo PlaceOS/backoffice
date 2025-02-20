@@ -19,6 +19,7 @@ import { MatchFieldsComponent } from './bulk-item-modal/match-fields.component';
 import { ListComponent } from './bulk-item-modal/list.component';
 import { StatusListComponent } from './bulk-item-modal/status-list.component';
 import { DuplicateModalComponent } from './duplicate-modal/duplicate-modal.component';
+import { MetadataHistoryModalComponent } from './metadata-history-modal.component';
 
 const OVERLAYS: Type<any>[] = [
     ConfirmModalComponent,
@@ -31,6 +32,7 @@ const OVERLAYS: Type<any>[] = [
     ViewResponseModalComponent,
     MetadataDetailsModalComponent,
     BulkItemModalComponent,
+    MetadataHistoryModalComponent,
 ];
 
 @NgModule({

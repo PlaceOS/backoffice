@@ -22,6 +22,7 @@ import {
     CONFIRM_METADATA,
 } from '../overlays/confirm-modal.component';
 import { MetadataDetailsModalComponent } from '../overlays/metadata-details-modal/metadata-details-modal.component';
+import { MetadataHistoryModalComponent } from '../overlays/metadata-history-modal.component';
 
 @Component({
     selector: 'metadata-display',
@@ -87,6 +88,20 @@ import { MetadataDetailsModalComponent } from '../overlays/metadata-details-moda
                                     "
                                 >
                                     <app-icon>edit</app-icon>
+                                </button>
+                                <button
+                                    btn
+                                    icon
+                                    class="no-underline"
+                                    [matTooltip]="
+                                        'COMMON.METADATA_HISTORY' | translate
+                                    "
+                                    (click)="
+                                        viewMetadataHistory(item);
+                                        $event.stopPropagation()
+                                    "
+                                >
+                                    <app-icon>history</app-icon>
                                 </button>
                                 <div
                                     class="flex min-w-[2rem] justify-end"
@@ -348,6 +363,12 @@ export class MetadataDisplayComponent extends AsyncHandler {
                 .map((key) => map[key])
                 .sort((a, b) => a.name.localeCompare(b.name));
             this.generateForms();
+        });
+    }
+
+    public viewMetadataHistory(item: PlaceMetadata) {
+        this._dialog.open(MetadataHistoryModalComponent, {
+            data: { id: this.item.id, name: item.name },
         });
     }
 }
