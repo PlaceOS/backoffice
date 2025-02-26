@@ -105,9 +105,9 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                 </div>
                 <div class="relative flex-1 w-full px-4">
                     <diff-viewer
-                        *ngIf="first_details && second_details"
-                        [modified]="first_details"
-                        [original]="second_details"
+                        *ngIf="first_details || second_details"
+                        [modified]="second_details || ''"
+                        [original]="first_details || ''"
                     ></diff-viewer>
                     <div
                         *ngIf="!(first_details && second_details)"
@@ -151,8 +151,10 @@ export class MetadataHistoryModalComponent implements OnInit {
     public select(idx: 0 | 1, item: PlaceMetadata) {
         if (idx === 0) {
             this.first_details = JSON.stringify(item.details, undefined, 4);
-            this.second = null;
-            this.second_details = '';
+            if (this.first === this.second) {
+                this.second = null;
+                this.second_details = '';
+            }
         } else {
             this.second_details = JSON.stringify(item.details, undefined, 4);
         }
