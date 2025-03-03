@@ -13,7 +13,7 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
     template: `
         <button
             matRipple
-            class="relative flex flex-col items-center justify-center space-y-4 h-[24rem] w-[24rem] border-4 border-dashed border-base-300 rounded-xl mx-4 hover:bg-base-200"
+            class="relative mx-4 flex h-[24rem] w-[24rem] flex-col items-center justify-center space-y-4 rounded-xl border-4 border-dashed border-base-300 hover:bg-base-200"
             *ngIf="!loading; else load_state"
             [class.hover]="dragging"
             (dragenter)="dragging = true"
@@ -40,7 +40,7 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
         </div>
         <ng-template #load_state>
             <div
-                class="flex flex-col items-center justify-center space-y-4 h-[24rem] w-[24rem] "
+                class="flex h-[24rem] w-[24rem] flex-col items-center justify-center space-y-4"
             >
                 <mat-spinner diameter="32"></mat-spinner>
                 <div class="text">
@@ -76,7 +76,7 @@ export class CsvUploadComponent {
                 reader.addEventListener('load', (evt) => {
                     this.processCSVData(
                         (evt.srcElement as any).result,
-                        file.name.endsWith('.csv') ? ',' : '\t'
+                        file.name.endsWith('.csv') ? ',' : '\t',
                     );
                     element.value = '';
                 });
@@ -93,9 +93,9 @@ export class CsvUploadComponent {
         const csv_data = jsonToCsv(
             this.template,
             Object.keys(this.template[0]).filter(
-                (key) => ignore_keys.indexOf(key) < 0
+                (key) => ignore_keys.indexOf(key) < 0,
             ),
-            '\t'
+            '\t',
         );
         downloadFile('bulk-upload.tsv', csv_data);
     }

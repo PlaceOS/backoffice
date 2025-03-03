@@ -39,8 +39,8 @@ export interface ExternalResource {
 @Component({
     selector: 'resource-imports',
     template: `
-        <div class="flex flex-col h-full w-full">
-            <div class="flex items-center justify-between space-x-2 my-4">
+        <div class="flex h-full w-full flex-col">
+            <div class="my-4 flex items-center justify-between space-x-2">
                 <div class="text-2xl">
                     {{ 'ADMIN.RESOURCE_IMPORTS_HEADER' | translate }}
                 </div>
@@ -77,14 +77,14 @@ export interface ExternalResource {
                     </button>
                 </div>
             </div>
-            <div class="flex-1 w-full h-1/2 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="sticky left-0 w-full"
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[48rem] block text-sm mb-4"
+                    class="mb-4 block min-w-[48rem] text-sm"
                     [data]="resource_list"
                     [columns]="[
                         {
@@ -95,36 +95,36 @@ export interface ExternalResource {
                         {
                             key: 'email',
                             name: 'COMMON.FIELD_EMAIL' | translate,
-                            content: email_template
+                            content: email_template,
                         },
                         {
                             key: 'imported',
                             name: 'ADMIN.RESOURCE_IMPORTS_IMPORTED' | translate,
                             content: bool_template,
-                            size: '5.5rem'
+                            size: '5.5rem',
                         },
                         {
                             key: 'actions',
                             name: ' ',
                             content: actions_template,
                             sortable: false,
-                            size: '6.25rem'
-                        }
+                            size: '6.25rem',
+                        },
                     ]"
                     [sortable]="true"
                     [empty_message]="'ADMIN.RESOURCE_IMPORTS_EMPTY' | translate"
                 ></simple-table>
                 <ng-template #email_template let-data="data">
-                    <div class="p-4 mono text-xs">{{ data }}</div>
+                    <div class="mono p-4 text-xs">{{ data }}</div>
                 </ng-template>
                 <ng-template #email_template let-data="data">
-                    <div class="p-4 mono text-xs">{{ data }}</div>
+                    <div class="mono p-4 text-xs">{{ data }}</div>
                 </ng-template>
                 <ng-template #bool_template let-data="data">
                     <div
                         [class.bg-error]="!data"
                         [class.bg-success]="data"
-                        class="rounded h-8 w-8 flex items-center justify-center text-2xl text-white mx-auto"
+                        class="mx-auto flex h-8 w-8 items-center justify-center rounded text-2xl text-white"
                     >
                         <app-icon>{{ data ? 'done' : 'close' }}</app-icon>
                     </div>
@@ -133,8 +133,8 @@ export interface ExternalResource {
                     <div
                         class="flex items-center justify-between space-x-2 px-4 py-2"
                     >
-                        <div class="flex-1 flex flex-col">
-                            <div class="truncate w-full">
+                        <div class="flex flex-1 flex-col">
+                            <div class="w-full truncate">
                                 {{ row.display_name }}
                             </div>
                             <div
@@ -183,7 +183,7 @@ export class ResourceImportsComponent {
 
     public readonly domain_list = queryDomains({ limit: 100 }).pipe(
         map((r) => r.data),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly resource_list: Observable<ExternalResource[]> =
@@ -197,7 +197,7 @@ export class ResourceImportsComponent {
                         limit: 1000,
                         authority_id: domain.id,
                     },
-                }).pipe(catchError((_) => of({ data: [] })))
+                }).pipe(catchError((_) => of({ data: [] }))),
             ),
             switchMap(async (r) => {
                 const list = r.data.map((_) => ({
@@ -220,7 +220,7 @@ export class ResourceImportsComponent {
                     const system = data.find(
                         (_) =>
                             _.email.toLowerCase() ===
-                            resource.email.toLowerCase()
+                            resource.email.toLowerCase(),
                     );
                     if (system) {
                         resource.imported = true;
@@ -230,7 +230,7 @@ export class ResourceImportsComponent {
                 return list;
             }),
             startWith([]),
-            shareReplay(1)
+            shareReplay(1),
         );
 
     constructor(private _dialog: MatDialog) {}
@@ -266,7 +266,7 @@ export class ResourceImportsComponent {
                 icon: { type: 'icon', content: 'publish' },
                 action: 'Import',
             },
-            this._dialog
+            this._dialog,
         );
 
         if (resp?.reason !== 'done') return;
@@ -276,13 +276,13 @@ export class ResourceImportsComponent {
         notifySuccess(
             i18n('ADMIN.RESOURCE_IMPORTS_ALL_SUCCESS', {
                 count: missing.length,
-            })
+            }),
         );
     }
 
     public async importResource(
         resource: ExternalResource,
-        notify: boolean = true
+        notify: boolean = true,
     ) {
         const domain = this.domain.getValue();
         if (!domain) return;
@@ -299,7 +299,7 @@ export class ResourceImportsComponent {
         notifySuccess(
             i18n('ADMIN.RESOURCE_IMPORTS_SUCCESS', {
                 name: resource.display_name,
-            })
+            }),
         );
     }
 }

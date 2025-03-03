@@ -50,13 +50,14 @@ export class SchemaStateService {
             form_data: schema,
             path: 'schema',
         };
-        const new_schema = await (schema.id
-            ? update<JsonSchema>({
-                  ...details,
-                  id: schema.id,
-                  method: 'patch',
-              })
-            : create<JsonSchema>({ ...details })
+        const new_schema = await (
+            schema.id
+                ? update<JsonSchema>({
+                      ...details,
+                      id: schema.id,
+                      method: 'patch',
+                  })
+                : create<JsonSchema>({ ...details })
         ).toPromise();
         schema_list = [
             ...schema_list.filter((_) => schema.id !== _.id),

@@ -75,7 +75,7 @@ export class PlaceDebugService extends AsyncHandler {
                 }, [${event.level.toUpperCase()}]\u001b[0m ${event.message
                     .split('\n')
                     .reverse()
-                    .join('\n')}`
+                    .join('\n')}`,
         );
         return list.join('\n');
     }
@@ -149,7 +149,7 @@ export class PlaceDebugService extends AsyncHandler {
         if (module) {
             this.unsub(`debug_${module.id}`);
             this._bound_modules = this._bound_modules.filter(
-                (mod) => mod.id !== module.id
+                (mod) => mod.id !== module.id,
             );
             this._changed.next(Date.now());
         }

@@ -9,8 +9,8 @@ import { i18n } from '../../common/translate';
 @Component({
     selector: 'admin-api-keys',
     template: `
-        <div class="flex flex-col h-full w-full">
-            <div class="flex items-center justify-between space-x-2 my-4">
+        <div class="flex h-full w-full flex-col">
+            <div class="my-4 flex items-center justify-between space-x-2">
                 <div class="text-2xl">
                     {{ 'ADMIN.APP_KEYS_HEADER' | translate }}
                 </div>
@@ -42,14 +42,14 @@ import { i18n } from '../../common/translate';
                 </div>
             </div>
             <div
-                class="flex items-start space-x-2 my-4"
+                class="my-4 flex items-start space-x-2"
                 *ngIf="last_key | async"
             >
                 <div
-                    class="rounded shadow border border-base-200 min-w-[24rem]"
+                    class="min-w-[24rem] rounded border border-base-200 shadow"
                 >
-                    <div class="border-b px-2 pb-1 bg-base-200 !w-full">
-                        <label class="p-0 m-0">
+                    <div class="!w-full border-b bg-base-200 px-2 pb-1">
+                        <label class="m-0 p-0">
                             {{ 'ADMIN.APP_KEYS_LAST_DETAILS' | translate }} ({{
                                 (last_key | async)?.name || 'Unanamed API Key'
                             }})
@@ -57,7 +57,7 @@ import { i18n } from '../../common/translate';
                     </div>
                     <div class="p-2">
                         <div
-                            class="select-all text-xs opacity-60 mono break-words cursor-pointer"
+                            class="mono cursor-pointer select-all break-words text-xs opacity-60"
                             (click)="copyKey()"
                         >
                             {{ (last_key | async)?.x_api_key }}
@@ -65,56 +65,56 @@ import { i18n } from '../../common/translate';
                     </div>
                 </div>
             </div>
-            <div class="flex-1 w-full h-1/2 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[64rem] block text-sm"
+                    class="block min-w-[64rem] text-sm"
                     [data]="key_list"
                     [columns]="[
                         { key: 'name', name: 'COMMON.FIELD_NAME' | translate },
                         {
                             key: 'description',
                             name: 'COMMON.FIELD_DESCRIPTION' | translate,
-                            content: description_template
+                            content: description_template,
                         },
                         {
                             key: 'scopes',
                             name: 'ADMIN.APP_KEYS_FIELD_SCOPES' | translate,
-                            content: scopes_template
+                            content: scopes_template,
                         },
                         {
                             key: 'permissions',
                             name:
                                 'ADMIN.APP_KEYS_FIELD_PERMISSIONS' | translate,
                             content: access_template,
-                            size: '6rem'
+                            size: '6rem',
                         },
                         {
                             key: 'created_at',
                             name: 'COMMON.CREATED_AT' | translate,
                             content: data_from_template,
-                            size: '8rem'
+                            size: '8rem',
                         },
                         {
                             key: 'actions',
                             name: ' ',
                             content: actions_template,
                             size: '3.5rem',
-                            sortable: false
-                        }
+                            sortable: false,
+                        },
                     ]"
                     [sortable]="true"
                     [empty_message]="'ADMIN.APP_KEYS_LIST_EMPTY' | translate"
                 ></simple-table>
-                <div class="w-full h-12"></div>
+                <div class="h-12 w-full"></div>
             </div>
         </div>
         <ng-template #scopes_template let-data="data">
-            <div class="px-4 py-2 flex flex-wrap">
+            <div class="flex flex-wrap px-4 py-2">
                 <code *ngFor="let scope of data" class="m-1 text-xs">
                     {{ scope }}
                 </code>
@@ -142,7 +142,7 @@ import { i18n } from '../../common/translate';
             </div>
         </ng-template>
         <ng-template #actions_template let-row="row">
-            <div class="flex items-center space-x-2 p-2 mx-auto">
+            <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
                     matRipple
@@ -170,7 +170,7 @@ export class AdminAPIKeysComponent {
 
     constructor(
         private _service: APIKeyService,
-        private _clipboard: Clipboard
+        private _clipboard: Clipboard,
     ) {}
 
     public async ngOnInit() {

@@ -15,11 +15,11 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
     selector: 'a-terminal',
     template: `
         <div
-            class="p-2 w-full h-full overflow-hidden"
+            class="h-full w-full overflow-hidden p-2"
             #container
             (window:resize)="resizeTerminal()"
         >
-            <div terminal class="max-w-full min-h-full" #terminal></div>
+            <div terminal class="min-h-full max-w-full" #terminal></div>
         </div>
     `,
     styles: [
@@ -89,7 +89,7 @@ export class TerminalComponent
         const box = this.container_el.nativeElement.getBoundingClientRect();
         const width = Math.floor(box.width / (font_size * 0.6));
         const height = Math.floor(
-            box.height / (line_height * font_size * 1.28)
+            box.height / (line_height * font_size * 1.28),
         );
         this.terminal.resize(width - 2, height);
     }

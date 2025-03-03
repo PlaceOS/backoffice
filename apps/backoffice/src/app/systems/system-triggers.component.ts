@@ -20,10 +20,10 @@ export interface TriggerInstanceState {
 @Component({
     selector: 'system-triggers',
     template: `
-        <section class="flex items-center mb-4 space-x-2">
+        <section class="mb-4 flex items-center space-x-2">
             <mat-form-field appearance="outline" class="h-12 flex-1">
                 <div class="prefix" matPrefix>
-                    <app-icon class="text-2xl relative -left-0.5">
+                    <app-icon class="relative -left-0.5 text-2xl">
                         search
                     </app-icon>
                 </div>
@@ -46,42 +46,42 @@ export interface TriggerInstanceState {
                 [class.opacity-0]="!(loading | async).triggers"
             ></mat-progress-bar>
             <simple-table
-                class="min-w-[42rem] block text-sm"
+                class="block min-w-[42rem] text-sm"
                 [data]="triggers"
                 [columns]="[
                     {
                         key: 'status',
                         name: ' ',
                         size: '3rem',
-                        content: status_template
+                        content: status_template,
                     },
                     {
                         key: 'name',
                         name: 'SYSTEMS.TRIGGER_FIELD_NAME' | translate,
-                        content: name_template
+                        content: name_template,
                     },
                     {
                         key: 'count',
                         name: 'SYSTEMS.TRIGGER_FIELD_COUNT' | translate,
-                        content: count_template
+                        content: count_template,
                     },
                     {
                         key: 'errors',
                         name: 'SYSTEMS.TRIGGER_FIELD_ERRORS' | translate,
-                        content: errors_template
+                        content: errors_template,
                     },
                     {
                         key: 'added',
                         name: 'SYSTEMS.TRIGGER_FIELD_ADDED' | translate,
-                        content: added_template
+                        content: added_template,
                     },
                     {
                         key: 'actions',
                         name: ' ',
                         content: actions_template,
                         size: '8.75rem',
-                        sortable: false
-                    }
+                        sortable: false,
+                    },
                 ]"
                 [empty_message]="'SYSTEMS.TRIGGERS_EMPTY' | translate"
             ></simple-table>
@@ -96,7 +96,7 @@ export interface TriggerInstanceState {
                     (modelChange)="updateComparisons(row.id)"
                 ></i>
                 <div
-                    class="h-2 w-2 rounded-full mx-auto"
+                    class="mx-auto h-2 w-2 rounded-full"
                     [class.bg-base-content]="!trigger_state[row.id]?.triggered"
                     [class.bg-success]="trigger_state[row.id]?.triggered"
                 ></div>
@@ -109,7 +109,7 @@ export interface TriggerInstanceState {
                     >
                         {{ row.name }}
                     </a>
-                    <div class="text-[0.625rem] opacity-30 font-mono">
+                    <div class="font-mono text-[0.625rem] opacity-30">
                         {{ row.trigger_id }}
                     </div>
                 </div>
@@ -202,12 +202,12 @@ export class SystemTriggersComponent {
             return filter
                 ? list.filter((t) => t.name.toLowerCase().includes(search))
                 : list;
-        })
+        }),
     );
 
     public readonly copyWebhookURL = (t) => {
         copyToClipboard(
-            `${location.origin}/api/engine/v2/webhook/${t.id}/notify?secret=${t.webhook_secret}`
+            `${location.origin}/api/engine/v2/webhook/${t.id}/notify?secret=${t.webhook_secret}`,
         );
         notifyInfo(i18n('SYSTEMS.COPIED_WEBHOOK'));
     };
@@ -231,9 +231,8 @@ export class SystemTriggersComponent {
                     if (this.comparisons[id]) {
                         this.comparisons[id] += '\n';
                     }
-                    this.comparisons[
-                        id
-                    ] += `${key}: ${this.trigger_state[id].conditions[key]}`;
+                    this.comparisons[id] +=
+                        `${key}: ${this.trigger_state[id].conditions[key]}`;
                 }
             }
         }

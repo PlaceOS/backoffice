@@ -16,15 +16,15 @@ import { TriggerStateService } from './trigger-state.service';
 @Component({
     selector: 'trigger-about',
     template: `
-        <section class="flex space-x-2 mb-4">
+        <section class="mb-4 flex space-x-2">
             <div
-                class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-2"
+                class="grid w-1/3 flex-1 gap-2 rounded border border-base-200 p-4"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
-                <div class=" flex items-center">
+                <div class="flex items-center">
                     <span
                         [matTooltip]="
                             (item.created_at * 1000 | date: 'mediumDate') +
@@ -36,10 +36,10 @@ import { TriggerStateService } from './trigger-state.service';
                         {{ item.created_at * 1000 | dateFrom }}
                     </span>
                 </div>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.UPDATED_AT' | translate }}
                 </div>
-                <div class=" flex items-center">
+                <div class="flex items-center">
                     <span
                         [matTooltip]="
                             (item.updated_at * 1000 | date: 'mediumDate') +
@@ -69,8 +69,8 @@ import { TriggerStateService } from './trigger-state.service';
                 [(ngModel)]="template_system"
             ></item-search-field>
         </div>
-        <header class="flex items-center my-4">
-            <div class="font-medium text-lg flex-1">
+        <header class="my-4 flex items-center">
+            <div class="flex-1 text-lg font-medium">
                 {{ 'TRIGGERS.CONDITIONS' | translate }}
             </div>
             <button
@@ -81,60 +81,60 @@ import { TriggerStateService } from './trigger-state.service';
                 (click)="editCondition()"
             >
                 <app-icon class="text-2xl">add</app-icon>
-                <div class="mr-4 ml-2">
+                <div class="ml-2 mr-4">
                     {{ 'TRIGGERS.CONDITION_ADD' | translate }}
                 </div>
             </button>
         </header>
         <section>
             <simple-table
-                class="w-full min-w-[32rem] block text-sm mb-4"
+                class="mb-4 block w-full min-w-[32rem] text-sm"
                 [data]="comparisons || []"
                 [columns]="[
                     {
                         key: 'operator',
                         name: 'TRIGGERS.FIELD_VAR_COMPARE' | translate,
-                        content: comparison_template
+                        content: comparison_template,
                     },
                     {
                         key: 'actions',
                         name: ' ',
                         size: '6rem',
                         sortable: false,
-                        content: actions_template
-                    }
+                        content: actions_template,
+                    },
                 ]"
                 [sortable]="true"
                 [empty_message]="'TRIGGERS.CONDITION_COMPARE_EMPTY' | translate"
             ></simple-table>
             <simple-table
-                class="w-full min-w-[32rem] block text-sm"
+                class="block w-full min-w-[32rem] text-sm"
                 [data]="time_dependents || []"
                 [columns]="[
                     {
                         key: 'time',
                         name: 'TRIGGERS.FIELD_TIME_DEPS' | translate,
-                        content: time_dep_template
+                        content: time_dep_template,
                     },
                     {
                         key: 'actions',
                         name: ' ',
                         size: '6rem',
                         sortable: false,
-                        content: actions_template
-                    }
+                        content: actions_template,
+                    },
                 ]"
                 [sortable]="true"
                 [empty_message]="'TRIGGERS.CONDITION_TIME_EMPTY' | translate"
             ></simple-table>
             <ng-template #time_dep_template let-row="row">
-                <div class="flex items-center space-x-2 p-4 mono text-sm">
+                <div class="mono flex items-center space-x-2 p-4 text-sm">
                     {{ row.type === 'at' ? 'At time' : 'CRON' }}
                     {{ row.type === 'at' ? row.time : row.cron }}
                 </div>
             </ng-template>
             <ng-template #comparison_template let-row="row">
-                <div class="flex items-center space-x-4 p-4 mono text-xs">
+                <div class="mono flex items-center space-x-4 p-4 text-xs">
                     <pre>{{ row.left | json }}</pre>
                     <code class="bg-success text-success-content">
                         {{ row.operator }}
@@ -143,7 +143,7 @@ import { TriggerStateService } from './trigger-state.service';
                 </div>
             </ng-template>
             <ng-template #actions_template let-row="row">
-                <div class="flex items-center space-x-2 p-2 mx-auto">
+                <div class="mx-auto flex items-center space-x-2 p-2">
                     <button
                         icon
                         matRipple
@@ -158,8 +158,8 @@ import { TriggerStateService } from './trigger-state.service';
                 </div>
             </ng-template>
         </section>
-        <header class="flex items-center space-x-2 my-4">
-            <div class="font-medium text-lg flex-1">
+        <header class="my-4 flex items-center space-x-2">
+            <div class="flex-1 text-lg font-medium">
                 {{ 'TRIGGERS.ACTIONS' | translate }}
             </div>
             <button
@@ -170,56 +170,56 @@ import { TriggerStateService } from './trigger-state.service';
                 (click)="editAction()"
             >
                 <app-icon class="text-2xl">add</app-icon>
-                <div class="mr-4 ml-2">
+                <div class="ml-2 mr-4">
                     {{ 'TRIGGERS.ACTION_ADD' | translate }}
                 </div>
             </button>
         </header>
         <section>
             <simple-table
-                class="w-full min-w-[32rem] block text-sm mb-4"
+                class="mb-4 block w-full min-w-[32rem] text-sm"
                 [data]="functions || []"
                 [columns]="[
                     {
                         key: 'time',
                         name: 'TRIGGERS.FIELD_ACTION_FN_CALL' | translate,
-                        content: function_call_template
+                        content: function_call_template,
                     },
                     {
                         key: 'actions',
                         name: ' ',
                         size: '6rem',
                         sortable: false,
-                        content: fn_actions_template
-                    }
+                        content: fn_actions_template,
+                    },
                 ]"
                 [can_reorder]="true"
                 (ondrop)="confirmReorder('function', $event)"
                 [empty_message]="'TRIGGERS.ACTION_FN_EMPTY' | translate"
             ></simple-table>
             <simple-table
-                class="w-full min-w-[32rem] block text-sm mb-4"
+                class="mb-4 block w-full min-w-[32rem] text-sm"
                 [data]="mailers || []"
                 [columns]="[
                     {
                         key: 'time',
                         name: 'TRIGGERS.FIELD_ACTION_EMAIL' | translate,
-                        content: email_call_template
+                        content: email_call_template,
                     },
                     {
                         key: 'actions',
                         name: ' ',
                         size: '6rem',
                         sortable: false,
-                        content: fn_actions_template
-                    }
+                        content: fn_actions_template,
+                    },
                 ]"
                 [can_reorder]="true"
                 (ondrop)="confirmReorder('function', $event)"
                 [empty_message]="'TRIGGERS.ACTION_EMAIL_EMPTY' | translate"
             ></simple-table>
             <ng-template #function_call_template let-row="row">
-                <div class="flex space-x-2 p-4 mono text-xs">
+                <div class="mono flex space-x-2 p-4 text-xs">
                     <div>
                         <code>{{ row.mod }}</code>
                     </div>
@@ -234,7 +234,7 @@ import { TriggerStateService } from './trigger-state.service';
                 </div>
             </ng-template>
             <ng-template #fn_actions_template let-row="row">
-                <div class="flex items-center space-x-2 p-2 mx-auto">
+                <div class="mx-auto flex items-center space-x-2 p-2">
                     <button
                         icon
                         matRipple
@@ -300,7 +300,7 @@ export class TriggerAboutComponent extends AsyncHandler implements OnInit {
                     this.functions = item.actions?.functions || [];
                     this.mailers = item.actions?.mailers || [];
                 }
-            })
+            }),
         );
     }
     /**
@@ -310,7 +310,7 @@ export class TriggerAboutComponent extends AsyncHandler implements OnInit {
      */
     public confirmReorder(
         type: 'function' | 'mailer',
-        [previous, current]: [number, number]
+        [previous, current]: [number, number],
     ): void {
         if (previous === current) return;
         this._service.reorderAction(type, previous, current);

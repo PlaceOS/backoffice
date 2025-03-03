@@ -6,8 +6,8 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
 @Component({
     selector: 'admin-schemas',
     template: `
-        <div class="flex flex-col h-full w-full">
-            <div class="flex items-center justify-between space-x-2 my-4">
+        <div class="flex h-full w-full flex-col">
+            <div class="my-4 flex items-center justify-between space-x-2">
                 <div class="text-2xl">
                     {{ 'ADMIN.SCHEMA_HEADER' | translate }}
                 </div>
@@ -31,7 +31,7 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
                             <mat-option
                                 (click)="newSchema(); $event.preventDefault()"
                             >
-                                <span class="italic font-sans">{{
+                                <span class="font-sans italic">{{
                                     'ADMIN.SCHEMA_NEW' | translate
                                 }}</span>
                             </mat-option>
@@ -40,15 +40,15 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
                     <button
                         btn
                         matRipple
-                        class="w-40 h-12"
+                        class="h-12 w-40"
                         (click)="newSchema()"
                     >
                         {{ 'ADMIN.SCHEMA_ADD' | translate }}
                     </button>
                 </div>
             </div>
-            <div class="flex items-center space-x-2 mb-4" *ngIf="schema_copy">
-                <div class="flex flex-col flex-1 w-1/2">
+            <div class="mb-4 flex items-center space-x-2" *ngIf="schema_copy">
+                <div class="flex w-1/2 flex-1 flex-col">
                     <label for="type"
                         >{{ 'ADMIN.SCHEMA_NAME' | translate }}:
                     </label>
@@ -59,11 +59,11 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
                         <input matInput [(ngModel)]="schema_copy.name" />
                     </mat-form-field>
                 </div>
-                <button btn class="mt-6 w-40 h-12" (click)="saveSchema()">
+                <button btn class="mt-6 h-12 w-40" (click)="saveSchema()">
                     {{ 'COMMON.SAVE' | translate }}
                 </button>
             </div>
-            <div class="relative flex-1 h-1/2">
+            <div class="relative h-1/2 flex-1">
                 <ng-container *ngIf="schema_copy; else empty_state">
                     <settings-form-field
                         [(ngModel)]="schema_copy.schema"

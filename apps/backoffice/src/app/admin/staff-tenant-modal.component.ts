@@ -37,8 +37,8 @@ export interface StaffTenantModalData {
             (save)="save()"
         >
             <form [formGroup]="form" class="mb-16">
-                <div class="flex items-center flex-wrap space-x-0 sm:space-x-2">
-                    <div class="flex flex-col flex-1">
+                <div class="flex flex-wrap items-center space-x-0 sm:space-x-2">
+                    <div class="flex flex-1 flex-col">
                         <label>
                             {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                         </label>
@@ -55,7 +55,7 @@ export interface StaffTenantModalData {
                             }}</mat-error>
                         </mat-form-field>
                     </div>
-                    <div class="flex flex-col flex-1">
+                    <div class="flex flex-1 flex-col">
                         <label>
                             {{ 'ADMIN.TENANTS_PLATFORM' | translate }}
                             <span>*</span>
@@ -70,7 +70,7 @@ export interface StaffTenantModalData {
                         </mat-form-field>
                     </div>
                 </div>
-                <div class="flex flex-col flex-1">
+                <div class="flex flex-1 flex-col">
                     <label>
                         {{ 'ADMIN.TENANTS_EMAIL_DOMAIN' | translate }}
                     </label>
@@ -161,13 +161,13 @@ export interface StaffTenantModalData {
                     </mat-form-field>
                 </div>
                 <div
-                    class="flex items-center flex-wrap space-x-0 sm:space-x-2"
+                    class="flex flex-wrap items-center space-x-0 sm:space-x-2"
                     *ngIf="
                         form.value.platform !== 'google' &&
                         !form.value.delegated
                     "
                 >
-                    <div class="flex flex-col flex-1">
+                    <div class="flex flex-1 flex-col">
                         <label>
                             {{ 'ADMIN.TENANTS_SERVICE_ACCOUNT' | translate }}
                         </label>
@@ -188,7 +188,7 @@ export interface StaffTenantModalData {
                         </mat-form-field>
                     </div>
                 </div>
-                <div class="flex items-center mb-6">
+                <div class="mb-6 flex items-center">
                     <settings-toggle
                         [name]="'ADMIN.TENANTS_DELEGATED' | translate"
                         class="w-1/2"
@@ -244,7 +244,7 @@ export interface StaffTenantModalData {
                     </ng-container>
                 </form>
                 <div
-                    class="flex items-center mb-4"
+                    class="mb-4 flex items-center"
                     *ngIf="form.value.platform === 'office365'"
                 >
                     <settings-toggle
@@ -260,9 +260,9 @@ export interface StaffTenantModalData {
                     formGroupName="outlook_config"
                 >
                     <div
-                        class="flex items-center flex-wrap space-x-0 sm:space-x-2"
+                        class="flex flex-wrap items-center space-x-0 sm:space-x-2"
                     >
-                        <div class="flex flex-col flex-1">
+                        <div class="flex flex-1 flex-col">
                             <label>
                                 {{ 'ADMIN.TENANTS_APP_ID' | translate }}
                                 <span>*</span>
@@ -280,7 +280,7 @@ export interface StaffTenantModalData {
                                 }}</mat-error>
                             </mat-form-field>
                         </div>
-                        <div class="flex flex-col flex-1">
+                        <div class="flex flex-1 flex-col">
                             <label>{{
                                 'ADMIN.TENANTS_APP_DOMAIN' | translate
                             }}</label>
@@ -302,9 +302,9 @@ export interface StaffTenantModalData {
                         </div>
                     </div>
                     <div
-                        class="flex items-center flex-wrap space-x-0 sm:space-x-2"
+                        class="flex flex-wrap items-center space-x-0 sm:space-x-2"
                     >
-                        <div class="flex flex-col flex-1">
+                        <div class="flex flex-1 flex-col">
                             <label>
                                 {{ 'ADMIN.TENANTS_APP_RESOURCE' | translate }}
                             </label>
@@ -324,7 +324,7 @@ export interface StaffTenantModalData {
                                 </mat-error>
                             </mat-form-field>
                         </div>
-                        <div class="flex flex-col flex-1">
+                        <div class="flex flex-1 flex-col">
                             <label>
                                 {{
                                     'ADMIN.TENANTS_SOURCE_LOCATION' | translate
@@ -349,9 +349,9 @@ export interface StaffTenantModalData {
                         </div>
                     </div>
                     <div
-                        class="flex items-center flex-wrap space-x-0 sm:space-x-4"
+                        class="flex flex-wrap items-center space-x-0 sm:space-x-4"
                     >
-                        <div class="flex flex-col flex-1">
+                        <div class="flex flex-1 flex-col">
                             <label>
                                 {{ 'ADMIN.TENANTS_BASE_PATH' | translate }}
                             </label>
@@ -406,7 +406,7 @@ export class StaffTenantModalComponent implements OnInit {
     public form = new FormGroup({
         id: new FormControl(this.tenant?.id || ''),
         domain: new FormControl(
-            this.domain?.domain || this.tenant?.domain || 'localhost'
+            this.domain?.domain || this.tenant?.domain || 'localhost',
         ),
         name: new FormControl(this.tenant?.name || '', [Validators.required]),
         email_domain: new FormControl(this.tenant?.email_domain || ''),
@@ -456,7 +456,7 @@ export class StaffTenantModalComponent implements OnInit {
 
     constructor(
         @Inject(MAT_DIALOG_DATA) private _data: StaffTenantModalData,
-        private _dialog_ref: MatDialogRef<StaffTenantModalComponent>
+        private _dialog_ref: MatDialogRef<StaffTenantModalComponent>,
     ) {}
 
     public ngOnInit() {
@@ -495,7 +495,7 @@ export class StaffTenantModalComponent implements OnInit {
             this.form.removeControl('credentials');
             this.form.addControl(
                 'credentials',
-                platform === 'office365' ? this.office_form : this.google_form
+                platform === 'office365' ? this.office_form : this.google_form,
             );
             if (platform === 'office365') {
                 (this.form as any).addControl(
@@ -506,7 +506,7 @@ export class StaffTenantModalComponent implements OnInit {
                         app_resource: new FormControl(''),
                         source_location: new FormControl(''),
                         base_path: new FormControl(''),
-                    })
+                    }),
                 );
             } else {
                 (this.form as any).removeControl('outlook_config');
@@ -532,7 +532,7 @@ export class StaffTenantModalComponent implements OnInit {
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {
                     field_list: getInvalidFields(this.form).join(', '),
-                })
+                }),
             );
         }
         this._dialog_ref.disableClose = true;
@@ -569,7 +569,7 @@ export class StaffTenantModalComponent implements OnInit {
                 ...value,
                 booking_limits,
             },
-            ['', null, undefined]
+            ['', null, undefined],
         );
         const call = this.tenant?.id
             ? put(`/api/staff/v1/tenants/${this.tenant.id}`, data)

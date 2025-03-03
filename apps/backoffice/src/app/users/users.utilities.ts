@@ -27,7 +27,9 @@ export function generateUserFormFields(user: PlaceUser) {
         first_name: new FormControl(user?.first_name || user?.name || '', [
             Validators.required,
         ]),
-        last_name: new FormControl(user?.last_name || '', [Validators.required]),
+        last_name: new FormControl(user?.last_name || '', [
+            Validators.required,
+        ]),
         email: new FormControl(user?.email || '', [
             Validators.email,
             Validators.required,
@@ -38,7 +40,7 @@ export function generateUserFormFields(user: PlaceUser) {
         groups: new FormControl(user?.groups || []),
         password: new FormControl(
             '',
-            !user?.id ? [Validators.required] : undefined
+            !user?.id ? [Validators.required] : undefined,
         ),
         confirm_password: new FormControl('', [validateMatch('password')]),
         card_number: new FormControl(user?.card_number || ''),

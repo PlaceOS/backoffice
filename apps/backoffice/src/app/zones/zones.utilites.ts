@@ -21,7 +21,7 @@ export function generateZoneFormFields(zone?: PlaceZone) {
     };
 
     fields.parent_zone.valueChanges.subscribe((parent_zone: PlaceZone) =>
-        fields.parent_id.setValue(parent_zone?.id)
+        fields.parent_id.setValue(parent_zone?.id),
     );
     return new FormGroup(fields);
 }

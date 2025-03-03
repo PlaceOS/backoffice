@@ -93,8 +93,12 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
                                 *ngFor="let type of auth_methods"
                                 [value]="type.id"
                             >
-                                {type.name, select, Plain { Plain } SSL { SSL }
-                                TLS { TLS } other { Other }}
+                                {type.name, select,
+                                    Plain {Plain}
+                                    SSL {SSL}
+                                    TLS {TLS}
+                                    other {Other}
+                                }
                             </mat-option>
                         </mat-select>
                     </mat-form-field>

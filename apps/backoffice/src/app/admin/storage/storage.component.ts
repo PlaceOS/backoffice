@@ -18,8 +18,8 @@ import { i18n } from '../../common/translate';
 @Component({
     selector: 'app-storage',
     template: `
-        <div class="flex flex-col h-full w-full">
-            <div class="flex items-center justify-between space-x-2 my-4">
+        <div class="flex h-full w-full flex-col">
+            <div class="my-4 flex items-center justify-between space-x-2">
                 <div class="text-2xl">
                     {{ 'ADMIN.STORAGE_HEADER' | translate }}
                 </div>
@@ -47,33 +47,37 @@ import { i18n } from '../../common/translate';
                     </button>
                 </div>
             </div>
-            <div class="flex-1 w-full h-1/2 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[40rem] block text-sm"
+                    class="block min-w-[40rem] text-sm"
                     [data]="storage_list"
                     [columns]="[
-                        { key: 'name', name: 'DOMAINS.SINGULAR' | translate, content: name_template },
+                        {
+                            key: 'name',
+                            name: 'DOMAINS.SINGULAR' | translate,
+                            content: name_template,
+                        },
                         {
                             key: 'storage_type',
                             name: 'ADMIN.STORAGE_FIELD_TYPE' | translate,
                             content: code_template,
-                            size: '6rem'
+                            size: '6rem',
                         },
                         {
                             key: 'region',
                             name: 'ADMIN.STORAGE_FIELD_REGION' | translate,
-                            content: code_template
+                            content: code_template,
                         },
                         {
                             key: 'updated_at',
                             name: 'COMMON.UPDATED_AT' | translate,
                             content: date_from_template,
-                            size: '10rem'
+                            size: '10rem',
                         },
                         {
                             key: 'actions',
@@ -81,7 +85,7 @@ import { i18n } from '../../common/translate';
                             content: actions_template,
                             size: '6.5rem',
                             sortable: false,
-                        }
+                        },
                     ]"
                     [sortable]="true"
                     [empty_message]="
@@ -90,7 +94,7 @@ import { i18n } from '../../common/translate';
                                 : {
                                       item: domain.getValue()
                                           ? 'selected'
-                                          : 'any'
+                                          : 'any',
                                   }
                     "
                 ></simple-table>
@@ -115,7 +119,7 @@ import { i18n } from '../../common/translate';
             </div>
         </ng-template>
         <ng-template #actions_template let-row="row">
-            <div class="flex items-center space-x-2 p-2 mx-auto">
+            <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
                     matRipple
@@ -144,7 +148,7 @@ export class StorageComponent {
     public domain_list = queryDomains().pipe(
         map((_) => _.data),
         catchError((_) => []),
-        shareReplay(1)
+        shareReplay(1),
     );
     /** Currently active domain */
     public readonly domain = new BehaviorSubject<PlaceDomain>(null);
@@ -158,7 +162,7 @@ export class StorageComponent {
         map(({ data }) => data),
         catchError((_) => []),
         tap((_) => (this.loading = '')),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly storage_list = combineLatest([
@@ -171,7 +175,7 @@ export class StorageComponent {
                 ..._,
                 domain: domains.find((d) => d.id === _.authority_id),
             }));
-        })
+        }),
     );
 
     constructor(private _dialog: MatDialog) {}
@@ -181,7 +185,7 @@ export class StorageComponent {
             data: { item, domain: this.domain.getValue()?.id },
         });
         ref.afterClosed().subscribe(() =>
-            this.domain.next(this.domain.getValue())
+            this.domain.next(this.domain.getValue()),
         );
     }
 
@@ -195,7 +199,7 @@ export class StorageComponent {
                 }),
                 icon: { content: 'delete_forever' },
             },
-            this._dialog
+            this._dialog,
         );
         if (resp.reason !== 'done') return;
         resp.loading(i18n('ADMIN.STORAGE_REMOVE_LOADING'));

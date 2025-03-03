@@ -20,8 +20,8 @@ export const ROUTES: Routes = [
             { path: 'metadata', component: SystemMetadataComponent },
             { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: 'history', component: SettingsHistoryViewComponent },
-            { path: '**', redirectTo: 'about' }
-        ]
+            { path: '**', redirectTo: 'about' },
+        ],
     },
-    { path: '**', redirectTo: '-' }
+    { path: '**', redirectTo: '-' },
 ];

@@ -32,10 +32,10 @@ import { EdgeModalComponent } from './edge-modal.component';
             (click)="copyKey(item.x_api_key)"
             matRipple
             [matTooltip]="'Copy API Key for ' + item.name"
-            class="absolute flex rounded cursor-pointer items-center right-4 top-4 bg-base-100  shadow border border-base-200  max-w-[calc(100%-11rem)] overflow-hidden"
+            class="absolute right-4 top-4 flex max-w-[calc(100%-11rem)] cursor-pointer items-center overflow-hidden rounded border border-base-200 bg-base-100 shadow"
         >
             <div
-                class="p-2 flex-1 w-1/2 flex h-full items-center border-r border-base-200  "
+                class="flex h-full w-1/2 flex-1 items-center border-r border-base-200 p-2"
             >
                 <code class="flex-1 truncate">{{ item.x_api_key }}</code>
             </div>
@@ -43,8 +43,8 @@ import { EdgeModalComponent } from './edge-modal.component';
                 <app-icon>content_copy</app-icon>
             </button>
         </div>
-        <div class="flex flex-col h-full w-full">
-            <div class="flex items-center justify-between space-x-2 my-4">
+        <div class="flex h-full w-full flex-col">
+            <div class="my-4 flex items-center justify-between space-x-2">
                 <div class="text-2xl">
                     {{ 'ADMIN.EDGE_HEADER' | translate }}
                 </div>
@@ -54,14 +54,14 @@ import { EdgeModalComponent } from './edge-modal.component';
                     </button>
                 </div>
             </div>
-            <div class="flex-1 w-full h-1/2 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[64rem] block text-sm"
+                    class="block min-w-[64rem] text-sm"
                     [data]="edges"
                     [columns]="[
                         {
@@ -73,15 +73,15 @@ import { EdgeModalComponent } from './edge-modal.component';
                             key: 'description',
                             name: 'COMMON.FIELD_DESCRIPTION' | translate,
                             size: '40rem',
-                            content: description_template
+                            content: description_template,
                         },
                         {
                             key: 'actions',
                             name: ' ',
                             content: actions_template,
                             size: '6rem',
-                            sortable: false
-                        }
+                            sortable: false,
+                        },
                     ]"
                     [sortable]="true"
                     [empty_message]="'ADMIN.EDGE_LIST_EMPTY' | translate"
@@ -95,7 +95,7 @@ import { EdgeModalComponent } from './edge-modal.component';
             </div>
         </ng-template>
         <ng-template #description_template let-data="data">
-            <div class="px-4 py-2 select-text overflow-hidden w-full text-xs">
+            <div class="w-full select-text overflow-hidden px-4 py-2 text-xs">
                 {{ data }}
                 <span class="opacity-30" *ngIf="!data">
                     {{ 'COMMON.DESCRIPTION_EMPTY' | translate }}
@@ -155,11 +155,11 @@ export class PlaceEdgeComponent {
         map((details?: { data: PlaceEdge[] }) => {
             this.loading = '';
             return (details?.data || []).sort((a, b) =>
-                a.id?.localeCompare(b.id)
+                a.id?.localeCompare(b.id),
             );
         }),
         startWith([]),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly edges = combineLatest([this._edge_list, this._hide]).pipe(
@@ -168,7 +168,7 @@ export class PlaceEdgeComponent {
             if (!hide) return list;
             const edges = list.filter((_) => _.id !== hide);
             return edges.sort((a, b) => a.id?.localeCompare(b.id));
-        })
+        }),
     );
 
     public readonly token = async (edge: PlaceEdge) => {
@@ -193,7 +193,7 @@ export class PlaceEdgeComponent {
                 content: `Remove <strong>${i.name}</strong>?<br>You or your users may lose access to some data.`,
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog
+            this._dialog,
         );
         if (!details) return;
         details.loading('Removing edge...');
@@ -205,7 +205,7 @@ export class PlaceEdgeComponent {
             return notifyError(
                 `Error removing edge. Error: ${
                     err.statusText || err.message || err
-                }`
+                }`,
             );
         sessionStorage.removeItem('BACKOFFICE.last_edge');
         this.last_change.next(null);
@@ -213,7 +213,10 @@ export class PlaceEdgeComponent {
         this._hide.next(i.id);
     };
 
-    constructor(private _dialog: MatDialog, private _clipboard: Clipboard) {}
+    constructor(
+        private _dialog: MatDialog,
+        private _clipboard: Clipboard,
+    ) {}
 
     public ngOnInit() {
         const edge_data = sessionStorage.getItem('BACKOFFICE.last_edge');

@@ -23,7 +23,7 @@ export interface ModuleStateModalData {
     selector: 'view-module-state-modal',
     template: `
         <div
-            class="flex items-center justify-between m-4 rounded bg-base-200 px-4 py-2"
+            class="m-4 flex items-center justify-between rounded bg-base-200 px-4 py-2"
         >
             <h3 class="text-xl font-medium">
                 {{ 'MODULES.STATE' | translate }}
@@ -33,39 +33,39 @@ export interface ModuleStateModalData {
             </button>
         </div>
         <main
-            class="w-[80vw] h-[70vh] px-4 pb-4 space-y-2 flex flex-col"
+            class="flex h-[70vh] w-[80vw] flex-col space-y-2 px-4 pb-4"
             *ngIf="!loading; else load_state"
         >
-            <div class="flex items-center space-x-2 mb-2">
+            <div class="mb-2 flex items-center space-x-2">
                 <div
-                    class="relative px-4 py-2 rounded border border-base-300 min-w-48"
+                    class="relative min-w-48 rounded border border-base-300 px-4 py-2"
                 >
                     <div
-                        class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded text-xs px-2 py-1"
+                        class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 px-2 py-1 text-xs"
                     >
                         {{ 'SYSTEMS.SINGULAR' | translate }}
                     </div>
                     <div class="truncate">
                         {{ system?.display_name || system?.name }}
                     </div>
-                    <div class="opacity-30 text-xs">{{ system?.id }}</div>
+                    <div class="text-xs opacity-30">{{ system?.id }}</div>
                 </div>
                 <div
-                    class="relative px-4 py-2 rounded border border-base-300 min-w-48"
+                    class="relative min-w-48 rounded border border-base-300 px-4 py-2"
                 >
                     <div
-                        class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded text-xs px-2 py-1"
+                        class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 px-2 py-1 text-xs"
                     >
                         {{ 'MODULES.SINGULAR' | translate }}
                     </div>
                     <div class="truncate">
                         {{ module?.custom_name || module?.name }}
                     </div>
-                    <div class="opacity-30 text-xs">
+                    <div class="text-xs opacity-30">
                         {{ device_classes[module?.id] }}
                     </div>
                 </div>
-                <div class="flex-1 w-px"></div>
+                <div class="w-px flex-1"></div>
                 <div>
                     <button btn matRipple class="w-40" (click)="updateState()">
                         {{ 'MODULES.STATE_UPDATE' | translate }}
@@ -81,7 +81,7 @@ export interface ModuleStateModalData {
         </main>
         <ng-template #load_state>
             <main
-                class="flex flex-col items-center justify-center w-[80vw] h-[70vh]"
+                class="flex h-[70vh] w-[80vw] flex-col items-center justify-center"
             >
                 <mat-spinner diameter="32"></mat-spinner>
 
@@ -123,7 +123,7 @@ export class ViewModuleStateModalComponent
 
     constructor(
         private _dialog: MatDialogRef<ViewModuleStateModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: ModuleStateModalData
+        @Inject(MAT_DIALOG_DATA) private _data: ModuleStateModalData,
     ) {
         super();
     }
@@ -164,7 +164,7 @@ export class ViewModuleStateModalComponent
         systemModuleState(
             this.system.id,
             class_parts.slice(0, class_parts.length - 1).join('_'),
-            num
+            num,
         ).subscribe(
             (state) => {
                 const pre_state =
@@ -179,7 +179,7 @@ export class ViewModuleStateModalComponent
             (err) => {
                 notifyError(JSON.stringify(err.response || err.message || err));
                 this.loading = false;
-            }
+            },
         );
     }
 

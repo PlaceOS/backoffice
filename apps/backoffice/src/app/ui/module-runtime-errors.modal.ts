@@ -22,12 +22,16 @@ import { AsyncHandler } from '../common/async-handler.class';
             *ngIf="!loading; else load_state"
         >
             <code *ngIf="(errors | async)?.length; else empty_state">
-                {{ (errors | async)?.join('
-') }}
+                {{
+                    (errors | async)?.join(
+                        '
+'
+                    )
+                }}
             </code>
             <ng-template #empty_state>
                 <div
-                    class="flex flex-col items-center justify-center w-[24rem] h-64 space-y-2 opacity-30"
+                    class="flex h-64 w-[24rem] flex-col items-center justify-center space-y-2 opacity-30"
                 >
                     {{ 'MODULES.RUNTIME_ERRORS_NO' | translate }}
                 </div>
@@ -35,7 +39,7 @@ import { AsyncHandler } from '../common/async-handler.class';
         </main>
         <ng-template #load_state>
             <main
-                class="flex flex-col items-center justify-center w-[24rem] h-64 space-y-2"
+                class="flex h-64 w-[24rem] flex-col items-center justify-center space-y-2"
             >
                 <mat-spinner diameter="32"></mat-spinner>
                 <div class="opacity-30">
@@ -54,14 +58,14 @@ export class ModuleRuntimeErrorsModalComponent extends AsyncHandler {
             this.loading = true;
             return showModule(id);
         }),
-        shareReplay(1)
+        shareReplay(1),
     );
     public readonly errors = this.module.pipe(
         switchMap(({ id }) =>
-            moduleRuntimeError(id).pipe(catchError(() => of([] as string[])))
+            moduleRuntimeError(id).pipe(catchError(() => of([] as string[]))),
         ),
         tap(() => (this.loading = false)),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     constructor(@Inject(MAT_DIALOG_DATA) private _module_id: string) {

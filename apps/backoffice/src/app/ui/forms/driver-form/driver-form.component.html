@@ -195,26 +195,26 @@
     </ng-container>
 </div>
 <ng-template #load_state>
-    <div class="flex flex-col items-center justify-center p-8 space-y-4">
+    <div class="flex flex-col items-center justify-center space-y-4 p-8">
         <mat-spinner diameter="32"></mat-spinner>
         <div class="text">{{ 'DRIVERS.DETAILS_LOADING' | translate }}</div>
     </div>
 </ng-template>
 <ng-template #load_commit_state>
-    <div class="flex flex-col items-center justify-center p-8 space-y-4">
+    <div class="flex flex-col items-center justify-center space-y-4 p-8">
         <mat-spinner diameter="32"></mat-spinner>
         <div class="text">{{ 'DRIVERS.COMMITS_LOADING' | translate }}</div>
     </div>
 </ng-template>
 <ng-template #load_driver_state>
-    <div class="flex flex-col items-center justify-center p-8 space-y-4">
+    <div class="flex flex-col items-center justify-center space-y-4 p-8">
         <mat-spinner diameter="32"></mat-spinner>
         <div class="text">{{ 'DRIVERS.DRIVERS_LOADING' | translate }}</div>
     </div>
 </ng-template>
 <ng-template #fail_state>
     <div class="info-block">
-        <div class="text text-error text-center">
+        <div class="text text-center text-error">
             {{ 'DRIVERS.DETAILS_ERROR_1' | translate }}<br />
             {{ 'DRIVERS.DETAILS_ERROR_2' | translate }}
         </div>

@@ -6,8 +6,8 @@ import { take } from 'rxjs/operators';
 @Component({
     selector: 'email-templates',
     template: `
-        <div class="flex flex-col h-full w-full">
-            <div class="flex items-center justify-between space-x-2 my-4">
+        <div class="flex h-full w-full flex-col">
+            <div class="my-4 flex items-center justify-between space-x-2">
                 <div class="text-2xl">Email Template</div>
                 <div class="flex items-center space-x-2">
                     <mat-form-field
@@ -38,14 +38,14 @@ import { take } from 'rxjs/operators';
                     </a>
                 </div>
             </div>
-            <div class="flex-1 w-full h-1/2 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="sticky left-0 w-full"
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[56rem] block text-sm mb-4"
+                    class="mb-4 block min-w-[56rem] text-sm"
                     [data]="templates"
                     [columns]="[]"
                 ></simple-table>

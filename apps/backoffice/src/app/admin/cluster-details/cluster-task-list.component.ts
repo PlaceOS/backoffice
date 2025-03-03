@@ -29,7 +29,7 @@ const task_details = {};
 @Component({
     selector: 'engine-cluster-task-list',
     template: `
-        <div class="flex items-center mb-4">
+        <div class="mb-4 flex items-center">
             <button btn icon (click)="close.emit()">
                 <app-icon>arrow_back</app-icon>
             </button>
@@ -39,7 +39,7 @@ const task_details = {};
             <div class="flex-1"></div>
             <mat-form-field appearance="outline" class="h-12">
                 <div class="prefix" matPrefix>
-                    <app-icon class="text-2xl relative -left-0.5">
+                    <app-icon class="relative -left-0.5 text-2xl">
                         search
                     </app-icon>
                 </div>
@@ -59,37 +59,37 @@ const task_details = {};
             [class.opacity-0]="!loading"
         ></mat-progress-bar>
         <simple-table
-            class="min-w-[40rem] block text-sm"
+            class="block min-w-[40rem] text-sm"
             [data]="filtered_list"
             [columns]="[
                 {
                     key: 'id',
                     name: 'COMMON.FIELD_NAME' | translate,
-                    content: name_template
+                    content: name_template,
                 },
                 {
                     key: 'cpu_usage',
                     name: 'ADMIN.CLUSTERS_FIELD_CPU_USAGE' | translate,
                     content: cpu_template,
-                    size: '6rem'
+                    size: '6rem',
                 },
                 {
                     key: 'used_memory',
                     name: 'ADMIN.CLUSTERS_FIELD_MEMORY_USAGE' | translate,
-                    size: '7rem'
+                    size: '7rem',
                 },
                 {
                     key: 'module_instances',
                     name: 'ADMIN.CLUSTERS_FIELD_INSTANCES' | translate,
-                    size: '6rem'
+                    size: '6rem',
                 },
                 {
                     key: 'actions',
                     name: ' ',
                     content: actions_template,
                     size: '3.5rem',
-                    sortable: false
-                }
+                    sortable: false,
+                },
             ]"
             [sortable]="true"
             [empty_message]="'ADMIN.CLUSTER_PROCESSES_EMPTY' | translate"
@@ -97,26 +97,26 @@ const task_details = {};
         <ng-template #name_template let-row="row">
             <div class="flex flex-col px-4 py-2 font-mono">
                 <div class="mb-1">{{ taskDetails(row.id).path }}</div>
-                <div class="flex items-center text-[0.625rem] space-x-2">
-                    <div class="px-2 bg-info text-info-content rounded">
+                <div class="flex items-center space-x-2 text-[0.625rem]">
+                    <div class="rounded bg-info px-2 text-info-content">
                         {{ taskDetails(row.id).type }}
                     </div>
-                    <div class="px-2 bg-base-200 rounded">
+                    <div class="rounded bg-base-200 px-2">
                         {{ taskDetails(row.id).hash }}
                     </div>
-                    <div class="px-2 bg-base-200 rounded">
+                    <div class="rounded bg-base-200 px-2">
                         {{ taskDetails(row.id).arch }}
                     </div>
                 </div>
             </div>
         </ng-template>
         <ng-template #cpu_template let-row="row">
-            <div class="p-4 w-full text-right">
+            <div class="w-full p-4 text-right">
                 {{ row.cpu_usage.toFixed(2) }}%
             </div>
         </ng-template>
         <ng-template #actions_template let-row="row">
-            <div class="flex items-center space-x-2 p-2 mx-auto">
+            <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
                     matRipple
@@ -187,14 +187,14 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
                 catchError((_) => {
                     console.error(_);
                     return of([]);
-                })
+                }),
             );
         }),
         map((l) =>
-            (l || []).sort((a, b) => b.module_instances - a.module_instances)
+            (l || []).sort((a, b) => b.module_instances - a.module_instances),
         ),
         tap(() => (this.loading = false)),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly filtered_list = combineLatest([
@@ -203,10 +203,10 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
     ]).pipe(
         map(([filter, processes]) => {
             return processes.filter((_) =>
-                _.id.toLowerCase().includes(filter.toLowerCase())
+                _.id.toLowerCase().includes(filter.toLowerCase()),
             );
         }),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     constructor(private _dialog: MatDialog) {
@@ -235,7 +235,7 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
                 if (event.reason === 'done') {
                     this.killing = process.id;
                     ref.componentInstance.loading = i18n(
-                        'ADMIN.CLUSTER_PROCESS_KILL_LOADING'
+                        'ADMIN.CLUSTER_PROCESS_KILL_LOADING',
                     );
                     this.killProcess(process).then(
                         () => {
@@ -248,15 +248,15 @@ export class PlaceClusterTaskListComponent extends AsyncHandler {
                             notifyError(
                                 i18n('ADMIN.CLUSTER_PROCESS_KILL_ERROR', {
                                     error: JSON.stringify(
-                                        err.response || err.message || err
+                                        err.response || err.message || err,
                                     ),
-                                })
+                                }),
                             );
                             ref.close();
-                        }
+                        },
                     );
                 }
-            })
+            }),
         );
     }
 

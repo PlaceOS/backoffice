@@ -16,7 +16,7 @@ import { TableColumn } from '../../ui/simple-table.component';
     selector: 'bulk-item-list',
     template: `
         <div
-            class="flex flex-wrap px-4 max-w-[80vw] max-h-[65vh] overflow-auto text-sm"
+            class="flex max-h-[65vh] max-w-[80vw] flex-wrap overflow-auto px-4 text-sm"
         >
             <simple-table
                 [style.min-width]="12 * fields.length + 'rem'"
@@ -66,7 +66,7 @@ export class ListComponent implements OnChanges {
                         name: i.name.toUpperCase(),
                         content: this._input_tmpl,
                         sortable: true,
-                    } as TableColumn)
+                    }) as TableColumn,
             );
         }
     }

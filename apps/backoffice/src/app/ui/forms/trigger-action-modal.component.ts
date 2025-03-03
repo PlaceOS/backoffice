@@ -48,7 +48,7 @@ export interface TriggerActionModalData {
             <form
                 trigger-action
                 *ngIf="form"
-                class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
+                class="flex w-[36rem] max-w-[calc(100vw-4rem)] flex-col"
                 [formGroup]="form"
             >
                 <div class="field" *ngIf="form.controls.action_type">
@@ -93,7 +93,7 @@ export interface TriggerActionModalData {
                                         *ngFor="let item of email_list"
                                         (removed)="removeEmail(item)"
                                     >
-                                        <div class="truncate max-w-md">
+                                        <div class="max-w-md truncate">
                                             {{ item }}
                                         </div>
                                         <button
@@ -193,7 +193,7 @@ export class TriggerActionModalComponent extends AsyncHandler {
 
     constructor(
         private _dialog: MatDialogRef<TriggerActionModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: TriggerActionModalData
+        @Inject(MAT_DIALOG_DATA) private _data: TriggerActionModalData,
     ) {
         super();
     }
@@ -273,7 +273,7 @@ export class TriggerActionModalComponent extends AsyncHandler {
                     notifySuccess(
                         `Successfully ${
                             this.is_new ? 'added' : 'updated'
-                        } condition to trigger`
+                        } condition to trigger`,
                     );
                     this._dialog.close();
                 },
@@ -283,10 +283,10 @@ export class TriggerActionModalComponent extends AsyncHandler {
                         `Error ${
                             this.is_new ? 'adding' : 'updating'
                         } condition to trigger. Error: ${JSON.stringify(
-                            err.response || err.message || err
-                        )}`
+                            err.response || err.message || err,
+                        )}`,
                     );
-                }
+                },
             );
     }
 
@@ -299,7 +299,7 @@ export class TriggerActionModalComponent extends AsyncHandler {
         if (this._data.action) {
             const old_mailer = JSON.stringify(this._data.action || {});
             const index = mailers.findIndex(
-                (a_mailer) => JSON.stringify(a_mailer) === old_mailer
+                (a_mailer) => JSON.stringify(a_mailer) === old_mailer,
             );
             mailers.splice(index, 1, new_mailer);
         } else {
@@ -313,7 +313,7 @@ export class TriggerActionModalComponent extends AsyncHandler {
         if (this._data.action) {
             const old_function = JSON.stringify(this._data.action);
             const index = functions.findIndex(
-                (fn) => JSON.stringify(fn) === old_function
+                (fn) => JSON.stringify(fn) === old_function,
             );
             functions.splice(index, 1, this.form.value.method_call);
         } else {

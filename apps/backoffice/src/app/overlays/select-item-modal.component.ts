@@ -14,7 +14,7 @@ export interface SelectItemModalData<T = any> {
     selector: 'select-item-modal',
     template: `
         <div
-            class="flex items-center justify-between mx-2 mt-2 rounded bg-base-200 px-4 py-2"
+            class="mx-2 mt-2 flex items-center justify-between rounded bg-base-200 px-4 py-2"
         >
             <h3 class="text-xl font-medium">
                 {{ 'COMMON.ITEM_ADD' | translate: { item: name } }}
@@ -25,7 +25,7 @@ export interface SelectItemModalData<T = any> {
         </div>
         <main
             *ngIf="!loading; else load_state"
-            class="px-2 pt-2 w-[32rem] h-[65vh] max-w-[calc(100vw-2rem)]"
+            class="h-[65vh] w-[32rem] max-w-[calc(100vw-2rem)] px-2 pt-2"
         >
             <item-search-field
                 class="block h-full"
@@ -37,7 +37,7 @@ export interface SelectItemModalData<T = any> {
         </main>
         <footer
             *ngIf="!loading"
-            class="flex justify-end px-4 py-2 border-t border-base-200"
+            class="flex justify-end border-t border-base-200 px-4 py-2"
         >
             <button
                 btn

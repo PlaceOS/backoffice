@@ -38,19 +38,19 @@ export interface PlaceClusterUsageStamp {
     selector: 'admin-cluster-node',
     template: `
         <h4 *ngIf="show_name">{{ node?.hostname }}</h4>
-        <div class="mb-2 w-full h-36 p-2 border border-base-300 rounded">
+        <div class="mb-2 h-36 w-full rounded border border-base-300 p-2">
             <div basic-line-graph [lines]="lines" class="h-full w-full"></div>
         </div>
         <div class="memory-utilisation">
             <div class="flex space-x-2">
                 <div
-                    class="flex flex-col items-center justify-center flex-1 border border-base-300 rounded p-1 space-y-1"
+                    class="flex flex-1 flex-col items-center justify-center space-y-1 rounded border border-base-300 p-1"
                 >
                     <div>{{ 'ADMIN.CLUSTERS_CPU_USAGE' | translate }}</div>
-                    <div class="text-4xl mono font-medium">
+                    <div class="mono text-4xl font-medium">
                         {{ node?.total_cpu.toFixed(0) }}%
                     </div>
-                    <div class="mono text-xs w-36 text-center">
+                    <div class="mono w-36 text-center text-xs">
                         {{
                             'ADMIN.CLUSTERS_CPU_CORES'
                                 | translate: { count: node?.cpu_count || 0 }
@@ -58,13 +58,13 @@ export interface PlaceClusterUsageStamp {
                     </div>
                 </div>
                 <div
-                    class="flex flex-col items-center justify-center flex-1 border border-base-300 rounded p-1 space-y-1"
+                    class="flex flex-1 flex-col items-center justify-center space-y-1 rounded border border-base-300 p-1"
                 >
                     <div>{{ 'ADMIN.CLUSTERS_MEMORY_USAGE' | translate }}</div>
-                    <div class="text-4xl mono font-medium">
+                    <div class="mono text-4xl font-medium">
                         {{ memory_percentage.toFixed(0) }}%
                     </div>
-                    <div class="mono text-xs w-36 text-center">
+                    <div class="mono w-36 text-center text-xs">
                         {{ used_memory }}/{{ total_memory }}
                     </div>
                 </div>

@@ -5,18 +5,18 @@ import { SystemStateService } from './system-state.service';
 @Component({
     selector: 'system-about',
     template: `
-        <section class="flex space-x-2 mb-4">
+        <section class="mb-4 flex space-x-2">
             <div class="flex-1">
                 <div
-                    class="rounded p-4 border border-base-200 w-full inline-grid gap-2"
+                    class="inline-grid w-full gap-2 rounded border border-base-200 p-4"
                     [style.gridTemplateColumns]="'7.5rem auto'"
                 >
                     <ng-container *ngIf="item?.support_url">
-                        <div class="text-sm font-medium flex items-center">
+                        <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.SUPPORT_URL' | translate }}
                         </div>
                         <a
-                            class="underline select-all truncate"
+                            class="select-all truncate underline"
                             [href]="item?.support_url"
                             target="_blank"
                         >
@@ -24,7 +24,7 @@ import { SystemStateService } from './system-state.service';
                         </a>
                     </ng-container>
                     <ng-container *ngIf="item?.email">
-                        <div class="text-sm font-medium flex items-center">
+                        <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.BOOKABLE' | translate }}
                         </div>
                         <div>
@@ -37,7 +37,7 @@ import { SystemStateService } from './system-state.service';
                         </div>
                     </ng-container>
                     <ng-container *ngIf="item?.email">
-                        <div class="text-sm font-medium flex items-center">
+                        <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.PUBLIC' | translate }}
                         </div>
                         <div>
@@ -48,50 +48,50 @@ import { SystemStateService } from './system-state.service';
                         </div>
                     </ng-container>
                     <ng-container *ngIf="item?.code">
-                        <div class="text-sm font-medium flex items-center">
+                        <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.CODE' | translate }}
                         </div>
                         <div>{{ item?.code }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.email">
-                        <div class="text-sm font-medium flex items-center">
+                        <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.EMAIL' | translate }}
                         </div>
                         <a
-                            class="underline select-all truncate"
+                            class="select-all truncate underline"
                             [href]="'mailto:' + item?.email"
                             target="_blank"
                             >{{ item?.email }}</a
                         >
                     </ng-container>
                     <ng-container *ngIf="item?.capacity">
-                        <div class="text-sm font-medium flex items-center">
+                        <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.CAPACITY' | translate }}
                         </div>
                         <div>{{ item?.capacity }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.map_id">
-                        <div class="text-sm font-medium flex items-center">
+                        <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.MAP_ID' | translate }}
                         </div>
                         <div class="value mono">{{ item?.map_id }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.installed_ui_devices">
-                        <div class="text-sm font-medium flex items-center">
+                        <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.PANEL_COUNT' | translate }}
                         </div>
                         <div>{{ item?.installed_ui_devices }}</div>
                     </ng-container>
                     <ng-container *ngIf="item?.timezone">
-                        <div class="text-sm font-medium flex items-center">
+                        <div class="flex items-center text-sm font-medium">
                             {{ 'COMMON.TIMEZONE' | translate }}
                         </div>
                         <div>{{ item?.timezone }}</div>
                     </ng-container>
-                    <div class="text-sm font-medium flex items-center">
+                    <div class="flex items-center text-sm font-medium">
                         {{ 'COMMON.CREATED_AT' | translate }}
                     </div>
-                    <div class=" flex items-center">
+                    <div class="flex items-center">
                         <span
                             [matTooltip]="
                                 (item.created_at * 1000 | date: 'mediumDate') +
@@ -103,10 +103,10 @@ import { SystemStateService } from './system-state.service';
                             {{ item.created_at * 1000 | dateFrom }}
                         </span>
                     </div>
-                    <div class="text-sm font-medium flex items-center">
+                    <div class="flex items-center text-sm font-medium">
                         {{ 'COMMON.UPDATED_AT' | translate }}
                     </div>
-                    <div class=" flex items-center">
+                    <div class="flex items-center">
                         <span
                             [matTooltip]="
                                 (item.updated_at * 1000 | date: 'mediumDate') +
@@ -121,16 +121,16 @@ import { SystemStateService } from './system-state.service';
                 </div>
             </div>
             <div
-                class="rounded p-2 border border-base-200 w-1/3 flex-1 inline-flex flex-col"
+                class="inline-flex w-1/3 flex-1 flex-col rounded border border-base-200 p-2"
             >
-                <h3 class="w-full text-center font-medium mono uppercase p-2">
+                <h3 class="mono w-full p-2 text-center font-medium uppercase">
                     {{ 'SYSTEMS.CONTROLS' | translate }}
                 </h3>
-                <div class="flex items-center flex-wrap">
+                <div class="flex flex-wrap items-center">
                     <button
                         btn
                         matRipple
-                        class="flex-1 min-w-36 m-2"
+                        class="m-2 min-w-36 flex-1"
                         (click)="start()"
                     >
                         {{ 'SYSTEMS.START' | translate }}
@@ -138,7 +138,7 @@ import { SystemStateService } from './system-state.service';
                     <button
                         btn
                         matRipple
-                        class="flex-1 inverse error min-w-36 m-2"
+                        class="inverse error m-2 min-w-36 flex-1"
                         (click)="stop()"
                     >
                         {{ 'SYSTEMS.STOP' | translate }}
@@ -147,7 +147,7 @@ import { SystemStateService } from './system-state.service';
             </div>
         </section>
         <hr class="my-4" />
-        <header class="font-medium text-lg">
+        <header class="text-lg font-medium">
             {{ 'COMMON.SETTINGS' | translate }}
         </header>
         <section *ngIf="item?.settings && other_settings; else load_state">
@@ -159,7 +159,7 @@ import { SystemStateService } from './system-state.service';
             ></a-settings-form>
         </section>
         <ng-template #load_state>
-            <div class="flex flex-col p-8 items-center justify-center">
+            <div class="flex flex-col items-center justify-center p-8">
                 <mat-spinner class="mb-4" [diameter]="32"></mat-spinner>
                 <p>{{ 'SYSTEMS.LOADING_SETTINGS' | translate }}</p>
             </div>

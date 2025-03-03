@@ -137,16 +137,16 @@ import { i18n } from '../../common/translate';
                     </mat-form-field>
                 </div>
             </div>
-            <div class="flex items-center space-x-4 mb-4">
+            <div class="mb-4 flex items-center space-x-4">
                 <settings-toggle
                     *ngIf="form.controls.support"
-                    class="flex-1 max-w-1/2"
+                    class="max-w-1/2 flex-1"
                     [name]="'USERS.ROLE_SUPPORT' | translate"
                     formControlName="support"
                 ></settings-toggle>
                 <settings-toggle
                     *ngIf="form.controls.sys_admin"
-                    class="flex-1 max-w-1/2"
+                    class="max-w-1/2 flex-1"
                     [name]="'USERS.ROLE_ADMIN' | translate"
                     formControlName="sys_admin"
                 ></settings-toggle>
@@ -235,7 +235,7 @@ import { i18n } from '../../common/translate';
                             *ngFor="let item of group_list"
                             (removed)="removeGroup(item)"
                         >
-                            <div class="truncate max-w-md">{{ item }}</div>
+                            <div class="max-w-md truncate">{{ item }}</div>
                             <button
                                 matChipRemove
                                 [attr.aria-label]="
@@ -272,7 +272,7 @@ export class UserFormComponent {
     /** List of available domains */
     public readonly domain_list = queryDomains().pipe(
         map(({ data }) => data),
-        shareReplay(1)
+        shareReplay(1),
     );
     /** List of separator characters for groups */
     public readonly separators: number[] = [ENTER, COMMA];

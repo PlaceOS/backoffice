@@ -38,42 +38,42 @@ function listPattern(fieldPattern) {
     selector: 'cron-input-field',
     template: `
         <div
-            class="flex items-center space-x-2 border border-base-300 focus-within:border-base-content focus-within:outline-4 focus-within:outline-base-content rounded w-full mb-1"
+            class="mb-1 flex w-full items-center space-x-2 rounded border border-base-300 focus-within:border-base-content focus-within:outline-4 focus-within:outline-base-content"
             [formGroup]="form"
         >
             <input
-                class="bg-none border-none text-base flex-1 p-2 w-px outline-none"
+                class="w-px flex-1 border-none bg-none p-2 text-base outline-none"
                 placeholder="*"
                 name="minute"
                 formControlName="minute"
                 (keydown)="preventInvalidCharacters($event)"
             />
             <input
-                class="bg-none border-none text-base flex-1 p-2 w-px outline-none"
+                class="w-px flex-1 border-none bg-none p-2 text-base outline-none"
                 placeholder="*"
                 name="hour"
                 formControlName="hour"
             />
             <input
-                class="bg-none border-none text-base flex-1 p-2 w-px outline-none"
+                class="w-px flex-1 border-none bg-none p-2 text-base outline-none"
                 placeholder="*"
                 name="day"
                 formControlName="day"
             />
             <input
-                class="bg-none border-none text-base flex-1 p-2 w-px outline-none"
+                class="w-px flex-1 border-none bg-none p-2 text-base outline-none"
                 placeholder="*"
                 name="month"
                 formControlName="month"
             />
             <input
-                class="bg-none border-none text-base flex-1 p-2 w-px outline-none"
+                class="w-px flex-1 border-none bg-none p-2 text-base outline-none"
                 placeholder="*"
                 name="day_of_week"
                 formControlName="day_of_week"
             />
         </div>
-        <div class="text-error text-xs" [class.opacity-0]="form.valid">
+        <div class="text-xs text-error" [class.opacity-0]="form.valid">
             CRON expression is invalid
         </div>
     `,
@@ -92,36 +92,36 @@ export class CronInputFieldComponent implements ControlValueAccessor, OnInit {
         minute: new FormControl('*', [
             Validators.pattern(
                 listPattern(
-                    '(?:\\*(?:/\\d{1,2})?|[0-5]?\\d(?:-[0-5]?\\d)?(?:/\\d{1,2})?)'
-                )
+                    '(?:\\*(?:/\\d{1,2})?|[0-5]?\\d(?:-[0-5]?\\d)?(?:/\\d{1,2})?)',
+                ),
             ),
         ]),
         hour: new FormControl('*', [
             Validators.pattern(
                 listPattern(
-                    '(?:\\*(?:/\\d{1,2})?|(?:[01]?\\d|2[0-3])(?:-(?:[01]?\\d|2[0-3]))?(?:/\\d{1,2})?)'
-                )
+                    '(?:\\*(?:/\\d{1,2})?|(?:[01]?\\d|2[0-3])(?:-(?:[01]?\\d|2[0-3]))?(?:/\\d{1,2})?)',
+                ),
             ),
         ]),
         day: new FormControl('*', [
             Validators.pattern(
                 listPattern(
-                    '(?:\\*(?:/\\d{1,2})?|(?:[1-9]|[12]\\d|3[01])(?:-(?:[1-9]|[12]d|3[01]))?(?:/\\d{1,2})?)'
-                )
+                    '(?:\\*(?:/\\d{1,2})?|(?:[1-9]|[12]\\d|3[01])(?:-(?:[1-9]|[12]d|3[01]))?(?:/\\d{1,2})?)',
+                ),
             ),
         ]),
         month: new FormControl('*', [
             Validators.pattern(
                 listPattern(
-                    '(?:\\*(?:/\\d{1,2})?|(?:[1-9]|1[0-2])(?:-(?:[1-9]|1[0-2]))?(?:/\\d{1,2})?)'
-                )
+                    '(?:\\*(?:/\\d{1,2})?|(?:[1-9]|1[0-2])(?:-(?:[1-9]|1[0-2]))?(?:/\\d{1,2})?)',
+                ),
             ),
         ]),
         day_of_week: new FormControl('*', [
             Validators.pattern(
                 listPattern(
-                    '(?:\\*(?:/\\d{1,2})?|[0-6](?:-[0-6])?(?:/\\d{1,2})?)'
-                )
+                    '(?:\\*(?:/\\d{1,2})?|[0-6](?:-[0-6])?(?:/\\d{1,2})?)',
+                ),
             ),
         ]),
     });
@@ -139,7 +139,7 @@ export class CronInputFieldComponent implements ControlValueAccessor, OnInit {
             this.setValue(
                 `${value.minute || '*'} ${value.hour || '*'} ${
                     value.day || '*'
-                } ${value.month || '*'} ${value.day_of_week || '*'}`
+                } ${value.month || '*'} ${value.day_of_week || '*'}`,
             );
         });
     }

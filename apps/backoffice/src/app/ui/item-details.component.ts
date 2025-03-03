@@ -33,29 +33,29 @@ export interface DisplayItem {
                     }}
                 </div>
                 <div class="flex items-center space-x-2">
-                    <a class="text-xs mono opacity-60" (click)="copyID()">
+                    <a class="mono text-xs opacity-60" (click)="copyID()">
                         {{ item?.id }}
                     </a>
                     <div
-                        class="px-2 py-1 rounded-xl text-xs bg-info text-info-content"
+                        class="rounded-xl bg-info px-2 py-1 text-xs text-info-content"
                         *ngIf="driver_type"
                     >
                         {{ driver_type }}
                     </div>
                     <div
-                        class="px-2 py-1 rounded-xl text-xs mono bg-info text-info-content"
+                        class="mono rounded-xl bg-info px-2 py-1 text-xs text-info-content"
                         *ngIf="domain"
                     >
                         {{ domain }}
                     </div>
                     <div
-                        class="px-2 py-1 rounded-xl text-xs bg-info text-info-content uppercase"
+                        class="rounded-xl bg-info px-2 py-1 text-xs uppercase text-info-content"
                         *ngFor="let tag of tags"
                     >
                         {{ tag }}
                     </div>
                     <div
-                        class="px-2 py-1 rounded-xl text-xs bg-error text-error-content"
+                        class="rounded-xl bg-error px-2 py-1 text-xs text-error-content"
                         *ngIf="
                             item?.running !== null &&
                             item?.running !== undefined
@@ -69,14 +69,14 @@ export interface DisplayItem {
                         }}
                     </div>
                     <div
-                        class="px-2 py-1 rounded-xl text-xs bg-info text-info-content"
+                        class="rounded-xl bg-info px-2 py-1 text-xs text-info-content"
                         *ngIf="item?.edge_id"
                         [matTooltip]="item?.edge_id"
                     >
                         {{ 'COMMON.EDGE' | translate }}
                     </div>
                     <div
-                        class="px-2 py-1 rounded-xl text-xs bg-success flex items-center space-x-2 text-success-content"
+                        class="flex items-center space-x-2 rounded-xl bg-success px-2 py-1 text-xs text-success-content"
                         *ngIf="item?.tls"
                     >
                         <app-icon>lock</app-icon>
@@ -143,7 +143,7 @@ export interface DisplayItem {
                 class="flex items-center space-x-2"
                 (click)="delete.emit(); deleteItem()"
             >
-                <app-icon class="text-error text-2xl">delete</app-icon>
+                <app-icon class="text-2xl text-error">delete</app-icon>
                 <div class="flex-1">
                     {{ 'COMMON.DELETE_TYPE' | translate: { name: type } }}
                 </div>
@@ -190,7 +190,7 @@ export class ItemDetailsComponent {
     constructor(
         private _service: ActiveItemService,
         private _users: BackofficeUsersService,
-        private _clipboard: Clipboard
+        private _clipboard: Clipboard,
     ) {}
 
     public get driver_type(): string {
@@ -220,7 +220,7 @@ export class ItemDetailsComponent {
         const csv_data = jsonToCsv(
             [item],
             Object.keys(item).filter((key) => ignore_keys.indexOf(key) < 0),
-            '\t'
+            '\t',
         );
         downloadFile(filename, csv_data);
     }

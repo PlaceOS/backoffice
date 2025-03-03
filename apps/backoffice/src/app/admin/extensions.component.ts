@@ -48,8 +48,8 @@ export interface BackofficeExtension {
 @Component({
     selector: '[app-extensions]',
     template: `
-        <div class="flex flex-col h-full w-full">
-            <div class="flex items-center justify-between space-x-2 my-4">
+        <div class="flex h-full w-full flex-col">
+            <div class="my-4 flex items-center justify-between space-x-2">
                 <div class="text-2xl">
                     {{ 'ADMIN.EXTENSIONS_HEADER' | translate }}
                 </div>
@@ -75,55 +75,55 @@ export interface BackofficeExtension {
                 </div>
             </div>
             <div
-                class="bg-info mb-4 p-4 flex items-center rounded shadow space-x-4 text-sm text-info-content"
+                class="mb-4 flex items-center space-x-4 rounded bg-info p-4 text-sm text-info-content shadow"
             >
                 <p>{{ 'ADMIN.EXTENSIONS_NOTICE' | translate }}</p>
             </div>
-            <div class="flex-1 w-full h-1/2 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[56rem] block text-sm"
+                    class="block min-w-[56rem] text-sm"
                     [data]="extensions"
                     [columns]="[
                         {
                             key: 'type',
                             name: 'ADMIN.EXTENSIONS_FIELD_TYPE' | translate,
                             content: type_template,
-                            size: '5rem'
+                            size: '5rem',
                         },
                         {
                             key: 'name',
                             name: 'ADMIN.EXTENSIONS_FIELD_TAB' | translate,
-                            size: '10rem'
+                            size: '10rem',
                         },
                         {
                             key: 'url',
                             name: 'ADMIN.EXTENSIONS_FIELD_URL' | translate,
-                            content: url_template
+                            content: url_template,
                         },
                         {
                             key: 'conditions',
                             name: 'ADMIN.EXTENSIONS_FIELD_CHECKS' | translate,
                             content: conditions_template,
-                            size: '6rem'
+                            size: '6rem',
                         },
                         {
                             key: 'actions',
                             name: ' ',
                             size: '6rem',
                             content: actions_template,
-                            sortable: false
-                        }
+                            sortable: false,
+                        },
                     ]"
                     [sortable]="true"
                     [empty_message]="'ADMIN.EXTENSIONS_LIST_EMPTY' | translate"
                 ></simple-table>
                 <ng-template #type_template let-row="row">
-                    <div class="p-4 uppercase font-mono text-xs">
+                    <div class="p-4 font-mono text-xs uppercase">
                         {{ row.type }}
                     </div>
                 </ng-template>
@@ -205,11 +205,12 @@ export class PlaceExtensionsComponent implements OnInit {
             }
             extensions.sort(
                 (a, b) =>
-                    a.type.localeCompare(b.type) || a.name.localeCompare(b.name)
+                    a.type.localeCompare(b.type) ||
+                    a.name.localeCompare(b.name),
             );
             return extensions;
         }),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     constructor(private _dialog: MatDialog) {}
@@ -256,7 +257,7 @@ export class PlaceExtensionsComponent implements OnInit {
                     content: `Are you sure you want to remove the extension "${item.name}" from ${item.type}?`,
                     icon: { content: 'delete' },
                 },
-            }
+            },
         );
         ref.componentInstance.event
             .pipe(first((_) => _.reason === 'done'))
@@ -265,7 +266,7 @@ export class PlaceExtensionsComponent implements OnInit {
                 let ext_list = await this.extensions.pipe(take(1)).toPromise();
                 ext_list = ext_list.filter((i) => i.name !== item.name);
                 await this.updateDomain(ext_list).catch((e) =>
-                    notifyError(`Error removing extension: ${e}`)
+                    notifyError(`Error removing extension: ${e}`),
                 );
                 ref.componentInstance.loading = '';
                 ref.close();

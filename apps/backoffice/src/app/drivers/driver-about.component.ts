@@ -7,16 +7,16 @@ import { DriverStateService } from './driver-state.service';
     template: `
         <section class="mb-4 flex space-x-2">
             <div
-                class="rounded p-4 border border-base-200 w-1/3 flex-1 inline-grid gap-2"
+                class="inline-grid w-1/3 flex-1 gap-2 rounded border border-base-200 p-4"
                 [style.gridTemplateColumns]="'6rem auto'"
             >
                 <ng-container *ngIf="item.default_uri">
-                    <div class="text-sm font-medium flex items-center">
+                    <div class="flex items-center text-sm font-medium">
                         {{ 'DRIVERS.DEFAULT_URI' | translate }}
                     </div>
-                    <div class="underline select-all overflow-hidden">
+                    <div class="select-all overflow-hidden underline">
                         <a
-                            class="truncate w-full block mono text-sm"
+                            class="mono block w-full truncate text-sm"
                             [href]="item.default_uri | safe: 'url'"
                             target="_blank"
                             >{{ item.default_uri }}</a
@@ -24,12 +24,12 @@ import { DriverStateService } from './driver-state.service';
                     </div>
                 </ng-container>
                 <ng-container *ngIf="item.default_port">
-                    <div class="text-sm font-medium flex items-center">
+                    <div class="flex items-center text-sm font-medium">
                         {{ 'DRIVERS.DEFAULT_PORT' | translate }}
                     </div>
                     <div class="mono text-sm">{{ item.default_port }}</div>
                 </ng-container>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'REPOS.SINGULAR' | translate }}
                 </div>
                 <div>
@@ -37,21 +37,21 @@ import { DriverStateService } from './driver-state.service';
                         [routerLink]="[
                             '/repositories',
                             item.repository_id,
-                            'about'
+                            'about',
                         ]"
-                        class="underline mono text-sm"
+                        class="mono text-sm underline"
                     >
                         {{ item.repository_id }}</a
                     >
                 </div>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'DRIVERS.MODULE_NAME' | translate }}
                 </div>
-                <div class="mono text-sm truncate">{{ item?.module_name }}</div>
-                <div class="text-sm font-medium flex items-center">
+                <div class="mono truncate text-sm">{{ item?.module_name }}</div>
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
-                <div class=" flex items-center">
+                <div class="flex items-center">
                     <span
                         [matTooltip]="
                             (item.created_at * 1000 | date: 'mediumDate') +
@@ -63,10 +63,10 @@ import { DriverStateService } from './driver-state.service';
                         {{ item.created_at * 1000 | dateFrom }}
                     </span>
                 </div>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.UPDATED_AT' | translate }}
                 </div>
-                <div class=" flex items-center">
+                <div class="flex items-center">
                     <span
                         [matTooltip]="
                             (item.updated_at * 1000 | date: 'mediumDate') +
@@ -80,10 +80,10 @@ import { DriverStateService } from './driver-state.service';
                 </div>
             </div>
             <div
-                class="rounded p-4 border border-base-200 flex-1 w-1/3 inline-grid gap-2"
+                class="inline-grid w-1/3 flex-1 gap-2 rounded border border-base-200 p-4"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'DRIVERS.COMPILED' | translate }}
                 </div>
                 <div class="flex items-center">
@@ -102,21 +102,21 @@ import { DriverStateService } from './driver-state.service';
                         {{ 'DRIVERS.VIEW_ERRORS' | translate }}
                     </button>
                 </div>
-                <div class="text-sm font-medium flex items-center">Commit</div>
+                <div class="flex items-center text-sm font-medium">Commit</div>
                 <div class="flex items-center overflow-hidden">
                     <code
-                        class="text-xs truncate inline-block max-w-full"
+                        class="inline-block max-w-full truncate text-xs"
                         [matTooltip]="item.commit"
                     >
                         {{ item.commit }}
                     </code>
                 </div>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'DRIVERS.FILENAME' | translate }}
                 </div>
                 <div class="flex items-center overflow-hidden">
                     <div
-                        class="mono text-sm truncate"
+                        class="mono truncate text-sm"
                         [matTooltip]="item.file_name"
                     >
                         {{ item.file_name }}
@@ -133,7 +133,7 @@ import { DriverStateService } from './driver-state.service';
                 >
                     {{ 'COMMON.UPDATE' | translate }}
                 </button>
-                <div class="flex items-center space-x-4 w-full col-span-2">
+                <div class="col-span-2 flex w-full items-center space-x-4">
                     <button btn matRipple class="flex-1" (click)="recompile()">
                         {{ 'DRIVERS.RECOMPILE' | translate }}
                     </button>
@@ -144,7 +144,7 @@ import { DriverStateService } from './driver-state.service';
             </div>
         </section>
         <hr class="my-4" />
-        <header class="font-medium text-lg">
+        <header class="text-lg font-medium">
             {{ 'COMMON.SETTINGS' | translate }}
         </header>
         <section *ngIf="item.settings; else load_state">

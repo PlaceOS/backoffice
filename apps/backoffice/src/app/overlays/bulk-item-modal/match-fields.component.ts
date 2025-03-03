@@ -14,10 +14,10 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
     selector: 'bulk-item-match-fields',
     template: `
         <div
-            class="flex flex-wrap px-2 -mt-2 max-w-[80vw] max-h-[65vh] overflow-auto"
+            class="-mt-2 flex max-h-[65vh] max-w-[80vw] flex-wrap overflow-auto px-2"
         >
             <div
-                class="flex-1 min-w-[40%] flex flex-col m-2"
+                class="m-2 flex min-w-[40%] flex-1 flex-col"
                 *ngFor="let field of field_list"
             >
                 <label class="uppercase" [for]="field.id">{{ field.id }}</label>

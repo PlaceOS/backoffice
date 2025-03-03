@@ -13,7 +13,7 @@ describe('ContextMenuComponent', () => {
     });
 
     beforeEach(
-        () => (spectator = createComponent('<div context-menu=""></div>'))
+        () => (spectator = createComponent('<div context-menu=""></div>')),
     );
 
     it('should create component', () =>
@@ -23,7 +23,7 @@ describe('ContextMenuComponent', () => {
         const spy = jest.spyOn(spectator.component, 'onEvent');
         spectator.hostDebugElement.children[0].triggerEventHandler(
             'contextmenu',
-            { preventDefault: jest.fn() }
+            { preventDefault: jest.fn() },
         );
         expect(spy).toBeCalled();
     });

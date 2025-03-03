@@ -25,7 +25,7 @@ export interface TableColumn {
     template: `
         <div
             role="table"
-            class="grid border border-base-200 overflow-visible"
+            class="grid overflow-visible border border-base-200"
             [style.gridTemplateColumns]="column_template"
             (click)="active_row >= 0 ? onclick.emit(active_row) : null"
             (touchend)="active_row = -1"
@@ -37,12 +37,12 @@ export interface TableColumn {
         >
             <div
                 *ngIf="can_reorder"
-                class="sticky top-0 flex items-center justify-between px-2 border-r border-base-200 bg-base-300 min-h-full z-10"
+                class="sticky top-0 z-10 flex min-h-full items-center justify-between border-r border-base-200 bg-base-300 px-2"
                 [style.gridArea]="gridSquare(1, 1)"
             ></div>
             <div
                 *ngIf="selectable"
-                class="sticky top-0 flex items-center justify-between px-2 border-r border-base-200 bg-base-300 min-h-full z-10"
+                class="sticky top-0 z-10 flex min-h-full items-center justify-between border-r border-base-200 bg-base-300 px-2"
                 [style.gridArea]="gridSquare(1, 1 + (can_reorder ? 1 : 0))"
             >
                 <mat-checkbox
@@ -59,7 +59,7 @@ export interface TableColumn {
                 matRipple
                 *ngFor="let column of active_columns; let i = index"
                 [id]="'column-' + column.key"
-                class="sticky top-0 flex items-center justify-between p-4 border-base-200 bg-base-300 min-h-full z-10"
+                class="sticky top-0 z-10 flex min-h-full items-center justify-between border-base-200 bg-base-300 p-4"
                 [style.gridArea]="
                     gridSquare(
                         1,
@@ -90,48 +90,50 @@ export interface TableColumn {
                 *ngFor="let row of (data$ | async) || []; let i = index"
             >
                 @if (can_reorder) {
-                <div
-                    class="grid"
-                    cdkDrag
-                    [style.gridArea]="i + 2 + '/1/' + (i + 2) + '/' + -1"
-                    [style.gridTemplateColumns]="column_template"
-                >
                     <div
-                        *cdkDragPlaceholder
-                        class="border-2 border-base-300 bg-base-200 w-full border-dashed h-16"
-                        [style.gridArea]="
-                            i + 2 + '/1/' + (i + 2) + '/' + column_count
-                        "
-                    ></div>
-                    <div
-                        class="flex items-center justify-center px-2 border-r border-base-200 min-h-full z-0"
-                        [style.gridArea]="gridSquare(2 + i, 1)"
-                        [class.border-b]="i !== (data$ | async)?.length - 1"
-                        [style.background]="color[i]"
+                        class="grid"
+                        cdkDrag
+                        [style.gridArea]="i + 2 + '/1/' + (i + 2) + '/' + -1"
+                        [style.gridTemplateColumns]="column_template"
                     >
-                        <button
-                            icon
-                            matRipple
-                            class=" h-full w-full rounded-none"
-                            cdkDragHandle
+                        <div
+                            *cdkDragPlaceholder
+                            class="h-16 w-full border-2 border-dashed border-base-300 bg-base-200"
+                            [style.gridArea]="
+                                i + 2 + '/1/' + (i + 2) + '/' + column_count
+                            "
+                        ></div>
+                        <div
+                            class="z-0 flex min-h-full items-center justify-center border-r border-base-200 px-2"
+                            [style.gridArea]="gridSquare(2 + i, 1)"
+                            [class.border-b]="i !== (data$ | async)?.length - 1"
+                            [style.background]="color[i]"
                         >
-                            <app-icon class="text-2xl">unfold_more</app-icon>
-                        </button>
+                            <button
+                                icon
+                                matRipple
+                                class="h-full w-full rounded-none"
+                                cdkDragHandle
+                            >
+                                <app-icon class="text-2xl"
+                                    >unfold_more</app-icon
+                                >
+                            </button>
+                        </div>
+                        <ng-container
+                            *ngTemplateOutlet="
+                                row_template;
+                                context: { row: row, index: i }
+                            "
+                        ></ng-container>
                     </div>
+                } @else {
                     <ng-container
                         *ngTemplateOutlet="
                             row_template;
                             context: { row: row, index: i }
                         "
                     ></ng-container>
-                </div>
-                } @else {
-                <ng-container
-                    *ngTemplateOutlet="
-                        row_template;
-                        context: { row: row, index: i }
-                    "
-                ></ng-container>
                 }
             </ng-container>
             <div
@@ -146,7 +148,7 @@ export interface TableColumn {
         <ng-template #row_template let-row="row" let-i="index">
             <div
                 *ngIf="selectable"
-                class="flex items-center justify-between px-2 border-r border-base-200 min-h-full z-0"
+                class="z-0 flex min-h-full items-center justify-between border-r border-base-200 px-2"
                 [style.gridArea]="gridSquare(2 + i, 1 + (can_reorder ? 1 : 0))"
                 [class.border-b]="i !== (data$ | async)?.length - 1"
                 [style.background]="color[i]"
@@ -160,7 +162,7 @@ export interface TableColumn {
             </div>
             <div
                 *ngFor="let column of active_columns; let j = index"
-                class="relative flex items-center justify-between border-base-200 min-h-full z-0"
+                class="relative z-0 flex min-h-full items-center justify-between border-base-200"
                 [style.gridArea]="
                     gridSquare(
                         2 + i,
@@ -197,7 +199,7 @@ export interface TableColumn {
                                     data: row[column.key],
                                     row: row,
                                     key: column.key,
-                                    name: column.name || column.key
+                                    name: column.name || column.key,
                                 }
                             "
                         ></ng-container>
@@ -252,7 +254,7 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
     private _data$ = new BehaviorSubject<T[]>([]);
     private _filter$ = new BehaviorSubject<string>('');
     private _sort$ = new BehaviorSubject<{ key: string; reverse: boolean }>(
-        null
+        null,
     );
 
     public data$: Observable<T[]> = combineLatest([
@@ -267,8 +269,8 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
                     Object.values(_).some((i) =>
                         JSON.stringify(i)
                             .toLowerCase()
-                            .includes(filter.toLowerCase())
-                    )
+                            .includes(filter.toLowerCase()),
+                    ),
                 );
             }
             if (sort && data.length) {
@@ -290,7 +292,7 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
             this.selected = [];
             this.page = 0;
             return data;
-        })
+        }),
     );
 
     public get can_sort() {
@@ -331,7 +333,7 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
             } else {
                 this.subscription(
                     'data',
-                    this.data.subscribe((_) => this._data$.next(_))
+                    this.data.subscribe((_) => this._data$.next(_)),
                 );
             }
         }

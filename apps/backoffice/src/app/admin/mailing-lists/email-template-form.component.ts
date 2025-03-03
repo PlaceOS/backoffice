@@ -16,18 +16,18 @@ export function extractTextFromHTML(html_string: string) {
 @Component({
     selector: 'email-template-form',
     template: `
-        <div class="absolute inset-0 bg-base-100 overflow-auto p-4">
+        <div class="absolute inset-0 overflow-auto bg-base-100 p-4">
             <form
-                class="max-w-full w-[48rem] mx-auto min-h-full pt-4"
+                class="mx-auto min-h-full w-[48rem] max-w-full pt-4"
                 [formGroup]="form"
             >
-                <div class="flex items-center space-x-2 mb-8">
+                <div class="mb-8 flex items-center space-x-2">
                     <h2 class="text-2xl font-medium">
                         {{ template?.id ? 'Edit' : 'New' }} Email Template
                     </h2>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <div class="flex-1 space-y-2 w-1/4">
+                    <div class="w-1/4 flex-1 space-y-2">
                         <label for="trigger">Trigger</label>
                         <mat-form-field appearance="outline" class="w-full">
                             <mat-select
@@ -41,7 +41,7 @@ export function extractTextFromHTML(html_string: string) {
                                     [value]="template.id"
                                 >
                                     <div
-                                        class="flex flex-col-reverse leading-tight my-2"
+                                        class="my-2 flex flex-col-reverse leading-tight"
                                     >
                                         <div class="text-xs opacity-30">
                                             {{ template.name_details[0] }}
@@ -59,7 +59,7 @@ export function extractTextFromHTML(html_string: string) {
                     <button
                         btn
                         matRipple
-                        class="flex-1 w-1/4 my-4"
+                        class="my-4 w-1/4 flex-1"
                         matTooltip="Values that get replaced in the email template when sent"
                         [disabled]="!form.value.trigger"
                         [matMenuTriggerFor]="tracking_menu"
@@ -109,7 +109,7 @@ export function extractTextFromHTML(html_string: string) {
                     </mat-form-field>
                 </div>
                 <mat-form-field appearance="outline" class="w-full">
-                    <app-icon matPrefix class="text-2xl relative -left-1">
+                    <app-icon matPrefix class="relative -left-1 text-2xl">
                         description
                     </app-icon>
                     <input
@@ -123,7 +123,7 @@ export function extractTextFromHTML(html_string: string) {
                     formControlName="html"
                     placeholder="Body of the email template"
                     [images_allowed]="true"
-                    class="min-h-[calc(100vh-28rem)] block"
+                    class="block min-h-[calc(100vh-28rem)]"
                 ></rich-text-input>
                 <div
                     class="sticky bottom-0 flex items-center justify-end space-x-2 bg-base-100"
@@ -151,7 +151,7 @@ export function extractTextFromHTML(html_string: string) {
         <ng-template #load_state>
             <div class="absolute inset-0 bg-base-100">
                 <div
-                    class="h-full w-full flex flex-col items-center justify-center space-y-2"
+                    class="flex h-full w-full flex-col items-center justify-center space-y-2"
                 >
                     <mat-spinner [diameter]="32"></mat-spinner>
                     <p>{{ loading }}</p>
@@ -181,7 +181,7 @@ export class EmailTemplateFormComponent extends AsyncHandler {
         private _state: EmailStateService,
         private _route: ActivatedRoute,
         private _router: Router,
-        private _clipboard: Clipboard
+        private _clipboard: Clipboard,
     ) {
         super();
     }
@@ -193,7 +193,7 @@ export class EmailTemplateFormComponent extends AsyncHandler {
                 if (params.has('id')) {
                     this.loading = 'Loading email template...';
                     this.template = await this._state.loadTemplate(
-                        params.get('id')
+                        params.get('id'),
                     );
                     this.loading = '';
                     console.log('Template:', this.template);
@@ -203,7 +203,7 @@ export class EmailTemplateFormComponent extends AsyncHandler {
                         this.form.patchValue(this.template);
                     }
                 }
-            })
+            }),
         );
         this.subscription(
             'trigger',
@@ -213,10 +213,10 @@ export class EmailTemplateFormComponent extends AsyncHandler {
                         .pipe(take(1))
                         .toPromise();
                     this.active_trigger = trigger_list.find(
-                        (_) => _.id === value.trigger
+                        (_) => _.id === value.trigger,
                     );
                 }
-            })
+            }),
         );
     }
 

@@ -21,7 +21,7 @@ export interface EdgeModalData {
             (save)="save()"
         >
             <form [formGroup]="form" class="overflow-auto p-4">
-                <div class="flex flex-col flex-1">
+                <div class="flex flex-1 flex-col">
                     <label>
                         {{ 'COMMON.FIELD_NAME' | translate }}<span>*</span>
                     </label>
@@ -38,7 +38,7 @@ export interface EdgeModalData {
                         }}</mat-error>
                     </mat-form-field>
                 </div>
-                <div class="flex flex-col flex-1">
+                <div class="flex flex-1 flex-col">
                     <label>{{ 'COMMON.FIELD_DESCRIPTION' | translate }}</label>
                     <mat-form-field appearance="outline">
                         <textarea
@@ -77,7 +77,7 @@ export class EdgeModalComponent {
 
     constructor(
         @Inject(MAT_DIALOG_DATA) private _data: EdgeModalData,
-        private _dialog_ref: MatDialogRef<EdgeModalComponent>
+        private _dialog_ref: MatDialogRef<EdgeModalComponent>,
     ) {}
 
     public ngOnInit() {

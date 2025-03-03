@@ -7,7 +7,7 @@
  * @Last modified time: 03/02/2017 2:26 PM
  */
 
-import { addMinutes, startOfMinute } from "date-fns";
+import { addMinutes, startOfMinute } from 'date-fns';
 
 const win = self as any;
 

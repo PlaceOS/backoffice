@@ -10,24 +10,24 @@ import { i18n } from '../common/translate';
 @Component({
     selector: 'domain-applications',
     template: `
-        <div class="flex flex-col h-full w-full">
+        <div class="flex h-full w-full flex-col">
             <div header class="">
                 <button
                     btn
-                    class="w-full sm:w-40 mb-4"
+                    class="mb-4 w-full sm:w-40"
                     (click)="newApplication()"
                 >
                     {{ 'DOMAINS.APPLICATION_NEW' | translate }}
                 </button>
             </div>
-            <div class="flex-1 w-full h-1/2 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[84rem] block text-sm"
+                    class="block min-w-[84rem] text-sm"
                     [data]="applications"
                     [columns]="[
                         { key: 'name', name: 'Name', content: name_template },
@@ -35,18 +35,18 @@ import { i18n } from '../common/translate';
                             key: 'redirect_uri',
                             name: 'DOMAINS.FIELD_REDIRECT_URI' | translate,
                             content: redirect_template,
-                            size: '20rem'
+                            size: '20rem',
                         },
                         {
                             key: 'uid',
                             name: 'DOMAINS.FIELD_CLIENT_ID' | translate,
                             content: client_id_template,
-                            size: '17rem'
+                            size: '17rem',
                         },
                         {
                             key: 'secret',
                             name: 'DOMAINS.FIELD_CLIENT_SECRET' | translate,
-                            content: secret_template
+                            content: secret_template,
                         },
                         { key: 'scopes', name: 'Scopes' },
                         {
@@ -54,8 +54,8 @@ import { i18n } from '../common/translate';
                             name: ' ',
                             size: '6rem',
                             sortable: false,
-                            content: actions_template
-                        }
+                            content: actions_template,
+                        },
                     ]"
                     [sortable]="true"
                     [empty_message]="'DOMAINS.APPLICATIONS_EMPTY' | translate"
@@ -103,7 +103,7 @@ import { i18n } from '../common/translate';
                 <div class="p-2 font-mono text-xs">
                     <span
                         *ngIf="!show_secret[row.id]"
-                        class="p-2 bg-base-200 rounded"
+                        class="rounded bg-base-200 p-2"
                         >{{ 'DOMAINS.SECRET_HIDDEN' | translate }}</span
                     >
                     <span *ngIf="show_secret[row.id]">{{ row.secret }}</span>
@@ -111,7 +111,7 @@ import { i18n } from '../common/translate';
             </div>
         </ng-template>
         <ng-template #actions_template let-row="row">
-            <div class="flex items-center space-x-2 p-2 mx-auto">
+            <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
                     matRipple

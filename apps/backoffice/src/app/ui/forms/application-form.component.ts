@@ -115,7 +115,9 @@ export class ApplicationFormComponent extends AsyncHandler {
             const { id, client_id, redirect_uri } = this.form.value;
             this.default_redirect_uri = redirect_uri || '';
             this.client_id.next(
-                client_id || redirect_uri ? Md5.hashStr(redirect_uri || '') : ''
+                client_id || redirect_uri
+                    ? Md5.hashStr(redirect_uri || '')
+                    : '',
             );
             this.subscription(
                 'form.redirect_uri',
@@ -126,9 +128,9 @@ export class ApplicationFormComponent extends AsyncHandler {
                         this.client_id.next(value ? Md5.hashStr(value) : '');
                         this.form.patchValue(
                             { redirect_uri: value?.trim() },
-                            { emitEvent: false }
+                            { emitEvent: false },
                         );
-                    })
+                    }),
             );
             this.subscription(
                 'form.preserve_client_id',
@@ -140,7 +142,7 @@ export class ApplicationFormComponent extends AsyncHandler {
                             ? this.default_redirect_uri
                             : value;
                         this.client_id.next(uri ? Md5.hashStr(uri) : '');
-                    })
+                    }),
             );
         }
     }

@@ -46,7 +46,7 @@ export class LocaleService {
 
     constructor() {
         this.setLocale(
-            localStorage.getItem(`${STORE_KEY}`) || this._default_locale
+            localStorage.getItem(`${STORE_KEY}`) || this._default_locale,
         );
     }
 
@@ -86,7 +86,7 @@ export class LocaleService {
 
     private async _loadLocale(locale: string) {
         const existing: LocaleStore = JSON.parse(
-            localStorage.getItem(`${STORE_KEY}.${locale}`) || '{}'
+            localStorage.getItem(`${STORE_KEY}.${locale}`) || '{}',
         );
         if (!existing.expiry || existing.expiry < Date.now()) {
             localStorage.removeItem(`${STORE_KEY}.${locale}`);
@@ -95,7 +95,7 @@ export class LocaleService {
                 delete this._load_promises[locale];
                 return console.error(
                     `Failed to loaded locale file for "${locale}".`,
-                    resp
+                    resp,
                 );
             }
             const locale_data = await resp.json();
@@ -107,7 +107,7 @@ export class LocaleService {
             };
             localStorage.setItem(
                 `${STORE_KEY}.${locale}`,
-                JSON.stringify(store)
+                JSON.stringify(store),
             );
         } else {
             this._locale_mappings[locale] = existing.mappings;

@@ -12,15 +12,15 @@ export function generateBrokerFormFields(broker?: PlaceMQTTBroker) {
         tls: new FormControl(!!broker.tls),
         username: new FormControl(
             broker.username,
-            auth_type === AuthType.UserPassword ? [Validators.required] : []
+            auth_type === AuthType.UserPassword ? [Validators.required] : [],
         ),
         password: new FormControl(
             broker.password,
-            auth_type === AuthType.UserPassword ? [Validators.required] : []
+            auth_type === AuthType.UserPassword ? [Validators.required] : [],
         ),
         certificate: new FormControl(
             broker.certificate,
-            auth_type === AuthType.Certificate ? [Validators.required] : []
+            auth_type === AuthType.Certificate ? [Validators.required] : [],
         ),
         filters: new FormControl(broker.filters),
     };

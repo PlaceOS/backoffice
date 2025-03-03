@@ -51,21 +51,21 @@ export class RepositoriesStateService {
                 return of(null);
             this._loading.next(true);
             return listRepositoryDrivers(item.id, { limit: 2000 }).pipe(
-                catchError((_) => [])
+                catchError((_) => []),
             );
         }),
         tap((_) => this._loading.next(false)),
         startWith([]),
-        shareReplay(1)
+        shareReplay(1),
     );
     /** Get latest commit for the active repository */
     public readonly commit = this._state.active_item$.pipe(
         filter((i) => i instanceof PlaceRepository),
         switchMap((item) =>
-            listRepositoryCommits(item.id, { count: 1 } as any)
+            listRepositoryCommits(item.id, { count: 1 } as any),
         ),
         catchError((_) => []),
-        map((details) => details[0]?.commit || 'HEAD')
+        map((details) => details[0]?.commit || 'HEAD'),
     );
 
     public get active_item(): PlaceRepository {
@@ -74,7 +74,7 @@ export class RepositoriesStateService {
 
     constructor(
         private _state: ActiveItemService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
     ) {}
 
     public async pullLatestCommit() {
@@ -86,9 +86,9 @@ export class RepositoriesStateService {
                         error: JSON.stringify(
                             err.response ||
                                 err.message ||
-                                i18n('REPOS.GIT_PULL_TIMEOUT')
+                                i18n('REPOS.GIT_PULL_TIMEOUT'),
                         ),
-                    })
+                    }),
                 );
             });
         if (!commit) return;
@@ -110,7 +110,7 @@ export class RepositoriesStateService {
                     name: 'DRIVERS.NEW',
                     save: (item) => addDriver(item),
                 },
-            }
+            },
         );
     }
 }

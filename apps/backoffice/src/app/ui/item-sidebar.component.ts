@@ -17,18 +17,18 @@ import { ActiveItemService } from '../common/item.service';
     selector: 'item-sidebar',
     template: `
         <div
-            class="flex flex-col w-[24rem] min-w-64 max-w-[25vw] space-y-2 bg-base-100  shadow rounded overflow-hidden h-full sm:border-r border-base-200 "
+            class="flex h-full w-[24rem] min-w-64 max-w-[25vw] flex-col space-y-2 overflow-hidden rounded border-base-200 bg-base-100 shadow sm:border-r"
             (click)="$event.stopPropagation()"
         >
-            <div class="relative flex items-center border-b border-base-200 ">
+            <div class="relative flex items-center border-b border-base-200">
                 <app-icon
-                    class="absolute top-1/2 left-2 -translate-y-1/2 text-2xl pointer-events-none"
+                    class="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-2xl"
                 >
                     search
                 </app-icon>
                 <input
                     #search_input
-                    class="border-none flex-1 pl-10 pr-4 py-4 bg-transparent"
+                    class="bg-transparent flex-1 border-none py-4 pl-10 pr-4"
                     [(ngModel)]="search"
                     (ngModelChange)="updateSearch($event)"
                     [placeholder]="
@@ -38,22 +38,22 @@ import { ActiveItemService } from '../common/item.service';
                 <mat-spinner
                     *ngIf="loading | async"
                     diameter="24"
-                    class="absolute top-1/2 right-2 -translate-y-1/2 mr-2"
+                    class="absolute right-2 top-1/2 mr-2 -translate-y-1/2"
                 ></mat-spinner>
             </div>
-            <p class="text-sm  opacity-60 w-full px-2">
+            <p class="w-full px-2 text-sm opacity-60">
                 {{
                     'COMMON.TOTAL_ITEMS' | translate: { count: (total | async) }
                 }}
             </p>
-            <div class="flex flex-col flex-1 h-1/2">
+            <div class="flex h-1/2 flex-1 flex-col">
                 <cdk-virtual-scroll-viewport
                     no-x-scroll
                     itemSize="64"
                     (scroll)="(is_scrolled)"
                     (scrolledIndexChange)="atBottom()"
                     *ngIf="(items | async)?.length; else empty_state"
-                    class="relative flex-1 h-1/2 w-full"
+                    class="relative h-1/2 w-full flex-1"
                 >
                     <a
                         *cdkVirtualFor="
@@ -68,7 +68,7 @@ import { ActiveItemService } from '../common/item.service';
                         routerLinkActive="active"
                         [routerLinkActiveOptions]="{
                             exact: false,
-                            __change_detection_hack__: item.id + subroute
+                            __change_detection_hack__: item.id + subroute,
                         }"
                         [matTooltip]="
                             item.update_available &&
@@ -76,23 +76,23 @@ import { ActiveItemService } from '../common/item.service';
                                 ? ('COMMON.UPDATE_AVAILABLE' | translate)
                                 : ''
                         "
-                        class="relative flex flex-col px-2 py-2 w-[23rem] m-2 max-w-[calc(100%-1rem)] rounded"
+                        class="relative m-2 flex w-[23rem] max-w-[calc(100%-1rem)] flex-col rounded px-2 py-2"
                         (click)="show = false"
                     >
-                        <p class="truncate w-full">
+                        <p class="w-full truncate">
                             {{ item.name }}
                         </p>
-                        <div class="w-full inline-block overflow-hidden">
+                        <div class="inline-block w-full overflow-hidden">
                             <span
                                 extra
-                                class="text-xs mono opacity-60 truncate max-w-full px-2 py-1 bg-base-content/10 /5 rounded mt-1"
+                                class="mono bg-base-content/10 /5 mt-1 max-w-full truncate rounded px-2 py-1 text-xs opacity-60"
                                 *ngIf="item.extra"
                             >
                                 {{ item.extra }}
                             </span>
                         </div>
                         <app-icon
-                            class="absolute -top-1 -right-1 text-info text-2xl rotate-12"
+                            class="absolute -right-1 -top-1 rotate-12 text-2xl text-info"
                             *ngIf="
                                 item.update_available &&
                                 item.commit !== item.update_info.commit
@@ -101,7 +101,7 @@ import { ActiveItemService } from '../common/item.service';
                             new_releases
                         </app-icon>
                         <div
-                            class="absolute -top-1 -right-1 text-warning-content bg-warning rounded-full h-8 w-8 text-2xl rotate-12 flex items-center justify-center"
+                            class="absolute -right-1 -top-1 flex h-8 w-8 rotate-12 items-center justify-center rounded-full bg-warning text-2xl text-warning-content"
                             *ngIf="item.zone_issues"
                             [matTooltip]="
                                 (item.zone_issues === 'system'
@@ -113,16 +113,14 @@ import { ActiveItemService } from '../common/item.service';
                             <app-icon> brightness_alert </app-icon>
                         </div>
                         <div
-                            class="absolute -top-1 -right-1 text-error-content bg-error rounded-full h-8 w-8 text-2xl rotate-12 flex items-center justify-center"
+                            class="absolute -right-1 -top-1 flex h-8 w-8 rotate-12 items-center justify-center rounded-full bg-error text-2xl text-error-content"
                             *ngIf="item.has_runtime_error"
                             [matTooltip]="'MODULES.ERROR' | translate"
                         >
                             <app-icon> error </app-icon>
                         </div>
                     </a>
-                    <div
-                        class="p-2 text-center opacity-30 text-sm bg-base-200 "
-                    >
+                    <div class="bg-base-200 p-2 text-center text-sm opacity-30">
                         {{ 'COMMON.END_OF_LIST' | translate }}
                     </div>
                 </cdk-virtual-scroll-viewport>
@@ -130,7 +128,7 @@ import { ActiveItemService } from '../common/item.service';
         </div>
         <ng-template #empty_state>
             <div
-                class="p-8 flex flex-col items-center justify-center opacity-30"
+                class="flex flex-col items-center justify-center p-8 opacity-30"
             >
                 <p>
                     {{
@@ -180,7 +178,7 @@ export class ItemSidebarComponent extends AsyncHandler {
     public search = '';
     /** List of items for the active route */
     public readonly items = this._service.list.pipe(
-        map((l) => this._processItems(l))
+        map((l) => this._processItems(l)),
     );
     /** Whether list of items for the active route are loading */
     public readonly loading = this._service.loading_list;
@@ -197,7 +195,10 @@ export class ItemSidebarComponent extends AsyncHandler {
         return this._router.url.split('/')[3] || '';
     }
 
-    constructor(private _router: Router, private _service: ActiveItemService) {
+    constructor(
+        private _router: Router,
+        private _service: ActiveItemService,
+    ) {
         super();
     }
 
@@ -256,10 +257,10 @@ export class ItemSidebarComponent extends AsyncHandler {
                     item.role === PlaceDriverRole.Service
                         ? item.uri
                         : item.role === PlaceDriverRole.Logic
-                        ? name
-                            ? `${name} | ${item.control_system_id} `
-                            : item.control_system_id
-                        : item.ip;
+                          ? name
+                              ? `${name} | ${item.control_system_id} `
+                              : item.control_system_id
+                          : item.ip;
                 (item as any).display_name =
                     item.custom_name || item.name || '<Unnamed>';
                 (item as any).extra = detail;

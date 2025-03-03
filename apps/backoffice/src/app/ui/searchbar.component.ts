@@ -15,10 +15,10 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
     template: `
         <div
             [class]="
-                'absolute top-2 sm:top-auto right-16 sm:right-auto sm:relative w-12 sm:!w-full flex items-center space-x-2 sm:bg-base-100 rounded px-2 overflow-hidden ' +
+                'absolute right-16 top-2 flex w-12 items-center space-x-2 overflow-hidden rounded px-2 sm:relative sm:right-auto sm:top-auto sm:!w-full sm:bg-base-100 ' +
                 (model.focus || filter || model.dictate
-                    ? 'bg-opacity-100 text-base-content w-4/5 bg-base-100'
-                    : 'text-base-100 bg-opacity-20 sm:bg-opacity-20')
+                    ? 'w-4/5 bg-base-100 bg-opacity-100 text-base-content'
+                    : 'bg-opacity-20 text-base-100 sm:bg-opacity-20')
             "
             widget
             tabindex="0"
@@ -27,7 +27,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
             <app-icon class="text-xl">search</app-icon>
             <input
                 #input
-                class="flex-1 w-24 bg-base-100 bg-opacity-0 outline-none border-none"
+                class="w-24 flex-1 border-none bg-base-100 bg-opacity-0 outline-none"
                 [(ngModel)]="filter"
                 (ngModelChange)="post()"
                 (focus)="model.focus = true; focus.emit($event)"
@@ -72,7 +72,10 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
             }
 
             [widget] {
-                transition: color 200ms, background-color 200ms, width 200ms;
+                transition:
+                    color 200ms,
+                    background-color 200ms,
+                    width 200ms;
             }
         `,
     ],
@@ -156,7 +159,7 @@ export class SearchbarComponent extends AsyncHandler {
                     this.focus.emit();
                 }
             },
-            50
+            50,
         );
     }
 

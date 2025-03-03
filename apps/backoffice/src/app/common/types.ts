@@ -1,14 +1,20 @@
-
 /** Generic Dictionary type */
 export interface HashMap<T = any> {
     [key: string]: T;
 }
 
 export interface AppComponentExtensions {
-    [name: string]: AppComponentExtension
+    [name: string]: AppComponentExtension;
 }
 
-export type ExtensionConditions = 'equals' | 'true' | 'truthy' | 'false' | 'falsy' | 'includes' | 'none';
+export type ExtensionConditions =
+    | 'equals'
+    | 'true'
+    | 'truthy'
+    | 'false'
+    | 'falsy'
+    | 'includes'
+    | 'none';
 
 export interface AppComponentExtension {
     /** URL to embed in the application extension */
@@ -84,7 +90,7 @@ export interface ApplicationIcon {
 /** Generic event for dialog boxes */
 export interface DialogEvent<T = any> {
     /** Reason the event was called */
-    reason: 'action' | 'close' | 'reset' | 'loading' | 'done' | 'other',
+    reason: 'action' | 'close' | 'reset' | 'loading' | 'done' | 'other';
     metadata?: T;
 }
 

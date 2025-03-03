@@ -36,10 +36,10 @@ import { LocaleService } from './common/locale.service';
 @Component({
     selector: 'placeos-root',
     template: `
-        <div class="h-full w-full flex flex-col overflow-hidden">
+        <div class="flex h-full w-full flex-col overflow-hidden">
             <ng-container *ngIf="!(loading | async); else load_state">
                 <global-banner></global-banner>
-                <div class="flex-1 w-full relative h-1/2">
+                <div class="relative h-1/2 w-full flex-1">
                     <router-outlet></router-outlet>
                 </div>
                 <ng-container *ngIf="filter">
@@ -49,7 +49,7 @@ import { LocaleService } from './common/locale.service';
             </ng-container>
             <ng-template #load_state>
                 <div
-                    class="absolute inset-0 flex items-center justify-center z-50"
+                    class="absolute inset-0 z-50 flex items-center justify-center"
                 >
                     <mat-spinner [diameter]="64"></mat-spinner>
                 </div>
@@ -57,7 +57,7 @@ import { LocaleService } from './common/locale.service';
         </div>
         <div
             *ngIf="!online && !(loading | async)"
-            class="fixed bottom-2 left-1/2 -translate-x-1/2 shadow rounded-3xl px-4 py-2 bg-error text-base-100 text-xs z-[9999]"
+            class="fixed bottom-2 left-1/2 z-[9999] -translate-x-1/2 rounded-3xl bg-error px-4 py-2 text-xs text-base-100 shadow"
         >
             Unable to reach server... Some features may not work.
         </div>
@@ -100,7 +100,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
         private _snackbar: MatSnackBar,
         private _router: Router,
         private _route: ActivatedRoute,
-        @Optional() private _locale: LocaleService
+        @Optional() private _locale: LocaleService,
     ) {
         super();
     }
@@ -152,7 +152,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
                     ? document.body.classList.add('dark')
                     : document.body.classList.remove('dark');
             },
-            200
+            200,
         );
         this._router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
@@ -184,7 +184,7 @@ export class AppComponent extends AsyncHandler implements OnInit {
                         tenant.name
                     }" has a secret that will expire on ${format(
                         tenant.secret_expiry * 1000,
-                        "MMM do 'at' h:mma"
+                        "MMM do 'at' h:mma",
                     )}.`,
                 });
             }

@@ -9,7 +9,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
     template: `
         <div class="object-list" *ngIf="fields && fields.length">
             <div
-                class="header row text-sm h-6"
+                class="header row h-6 text-sm"
                 *ngIf="active_list && active_list.length"
             >
                 <div

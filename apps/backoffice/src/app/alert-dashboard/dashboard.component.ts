@@ -13,27 +13,27 @@ const SYSTEMS = {};
 @Component({
     selector: 'mqtt-dashboard',
     template: `
-        <div class="h-full w-full bg-base-100 [#424242] flex flex-col">
+        <div class="[#424242] flex h-full w-full flex-col bg-base-100">
             <div
-                class="w-full px-4 py-2 bg-secondary flex items-center justify-between text-base-100"
+                class="flex w-full items-center justify-between bg-secondary px-4 py-2 text-base-100"
             >
                 <h2 class="text-2xl">PlaceOS Alerts</h2>
                 <div class="flex items-center space-x-2">
                     <clock></clock>
                     <div
-                        class="text-right flex flex-col items-center justify-center"
+                        class="flex flex-col items-center justify-center text-right"
                     >
                         <div class="">{{ time | date: 'shortTime' }}</div>
                         <div>{{ time | date: 'EEE, MMM d' }}</div>
                     </div>
                 </div>
             </div>
-            <div class="w-full h-1/2 flex-1 overflow-auto p-4 space-y-4">
+            <div class="h-1/2 w-full flex-1 space-y-4 overflow-auto p-4">
                 <div
-                    class="divide-y divide-base-100/50 border border-base-100/50"
+                    class="divide-base-100/50 border-base-100/50 divide-y border"
                     *ngFor="let sys of systems | async"
                 >
-                    <div class="bg-[#212121] text-base-100 p-2">
+                    <div class="bg-[#212121] p-2 text-base-100">
                         <h2 class="text-xl">
                             {{ sys.display_name || sys.name }} ({{ sys.id }})
                         </h2>
@@ -42,7 +42,7 @@ const SYSTEMS = {};
                         *ngFor="let ev of sys.events"
                         [class.bg-error]="!ev.value"
                         [class.bg-teal-800]="ev.value"
-                        class="px-2 flex items-center text-base-100"
+                        class="flex items-center px-2 text-base-100"
                     >
                         <div class="w-1/6">{{ ev.mod }}</div>
                         <div class="flex-1">{{ ev.driver_id }}</div>
@@ -82,7 +82,7 @@ export class MqttDashboardComponent {
             .subscribe(() =>
                 this._state
                     .query('placeos/+/state/+/+/+/+/+/+/+/connected')
-                    .subscribe((d) => this._processQuery(d))
+                    .subscribe((d) => this._processQuery(d)),
             );
     }
 

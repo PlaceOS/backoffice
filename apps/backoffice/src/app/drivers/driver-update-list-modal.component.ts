@@ -19,7 +19,7 @@ import { MatDialogRef } from '@angular/material/dialog';
                                 : {
                                       count:
                                           (drivers_with_updates | async)
-                                              ?.total || 0
+                                              ?.total || 0,
                                   }
                     }}
                 </span>
@@ -30,7 +30,7 @@ import { MatDialogRef } from '@angular/material/dialog';
         </header>
         <main
             *ngIf="(drivers_with_updates | async) && !loading; else load_state"
-            class="w-[80vw] max-w-[48rem] max-h-[65vh] overflow-auto"
+            class="max-h-[65vh] w-[80vw] max-w-[48rem] overflow-auto"
         >
             <table>
                 <thead class="text-left">
@@ -68,12 +68,12 @@ import { MatDialogRef } from '@angular/material/dialog';
                                 <td>{{ driver.name }}</td>
                                 <td>
                                     <code [matTooltip]="driver.commit">{{
-                                        driver.commit | slice: 0:9
+                                        driver.commit | slice: 0 : 9
                                     }}</code>
                                 </td>
                                 <td>
                                     <code [matTooltip]="driver.commit">{{
-                                        driver.update_info.commit | slice: 0:9
+                                        driver.update_info.commit | slice: 0 : 9
                                     }}</code>
                                 </td>
                             </tr>
@@ -91,7 +91,7 @@ import { MatDialogRef } from '@angular/material/dialog';
         </main>
         <footer
             *ngIf="!loading"
-            class="border-t border-base-200 p-2 flex justify-end space-x-2"
+            class="flex justify-end space-x-2 border-t border-base-200 p-2"
         >
             <button
                 btn
@@ -106,7 +106,7 @@ import { MatDialogRef } from '@angular/material/dialog';
         </footer>
         <ng-template #load_state>
             <div
-                class="w-[20rem] h-48 flex flex-col space-y-2 items-center justify-center"
+                class="flex h-48 w-[20rem] flex-col items-center justify-center space-y-2"
             >
                 <mat-spinner [diameter]="32"></mat-spinner>
                 <p>{{ 'DRIVERS.LOADING' | translate }}</p>
@@ -141,7 +141,7 @@ export class DriverUpdateListModalComponent {
             this.loading = '';
             return _;
         }),
-        shareReplay(1)
+        shareReplay(1),
     );
     public selected_drivers = [];
 
@@ -154,7 +154,7 @@ export class DriverUpdateListModalComponent {
     }
 
     constructor(
-        private _dialog_ref: MatDialogRef<DriverUpdateListModalComponent>
+        private _dialog_ref: MatDialogRef<DriverUpdateListModalComponent>,
     ) {}
 
     public toggleDriver(id: string, state: boolean) {
@@ -180,7 +180,7 @@ export class DriverUpdateListModalComponent {
             .pipe(take(1))
             .toPromise();
         const selected = drivers.data.filter((_) =>
-            this.selected_drivers.includes(_.id)
+            this.selected_drivers.includes(_.id),
         );
         await Promise.all(
             selected.map((driver) =>
@@ -189,8 +189,8 @@ export class DriverUpdateListModalComponent {
                           ...driver,
                           commit: driver.update_info.commit,
                       }).toPromise()
-                    : Promise.resolve()
-            )
+                    : Promise.resolve(),
+            ),
         ).catch((_) => {
             notifyError('Error updating drivers', _);
             this.loading = '';

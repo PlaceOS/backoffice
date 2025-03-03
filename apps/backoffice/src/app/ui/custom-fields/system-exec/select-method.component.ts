@@ -29,7 +29,7 @@ import { ModuleLike } from './select-module.component';
     template: `
         <ng-container *ngIf="!loading; else load_state">
             <mat-form-field
-                class="w-full h-14"
+                class="h-14 w-full"
                 appearance="outline"
                 *ngIf="(method_list | async)?.length; else empty_state"
             >
@@ -48,13 +48,13 @@ import { ModuleLike } from './select-module.component';
             </mat-form-field>
         </ng-container>
         <ng-template #load_state>
-            <div class="p-4 flex space-x-2 items-center justify-center">
+            <div class="flex items-center justify-center space-x-2 p-4">
                 <mat-spinner diameter="32"></mat-spinner>
                 <p>{{ 'COMMON.EXECUTE_METHOD_LOADING' | translate }}</p>
             </div>
         </ng-template>
         <ng-template #empty_state>
-            <div class="p-4 flex space-x-2 items-center justify-center">
+            <div class="flex items-center justify-center space-x-2 p-4">
                 <p class="opacity-30">
                     {{ 'COMMON.EXECUTE_METHOD_EMPTY' | translate }}
                 </p>
@@ -90,17 +90,17 @@ export class SelectMethodComponent
         distinctUntilChanged(),
         tap(() => (this.loading = true)),
         switchMap(([id, { module, index }]) =>
-            !!id && !!module ? functionList(id, module, index) : of({})
+            !!id && !!module ? functionList(id, module, index) : of({}),
         ),
         catchError(() => of({})),
         map((fn_mapping) =>
             Object.keys(fn_mapping || {}).map((i) => ({
                 name: i,
                 ...fn_mapping[i],
-            }))
+            })),
         ),
         tap(() => (this.loading = false)),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     /** Form control on change handler */
@@ -113,10 +113,10 @@ export class SelectMethodComponent
             'methods',
             this.method_list.subscribe((list) => {
                 const active = list.find(
-                    (_) => _.name === (this.method as any)?.name
+                    (_) => _.name === (this.method as any)?.name,
                 );
                 if (active) this.setValue(active);
-            })
+            }),
         );
     }
 

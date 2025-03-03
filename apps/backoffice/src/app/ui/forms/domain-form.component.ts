@@ -130,7 +130,7 @@ import { isValidDomain } from '../../common/validation';
                             *ngFor="let item of email_domain_list"
                             (removed)="removeEmailDomain(item)"
                         >
-                            <div class="truncate max-w-md">{{ item }}</div>
+                            <div class="max-w-md truncate">{{ item }}</div>
                             <button
                                 matChipRemove
                                 [attr.aria-label]="

@@ -34,7 +34,7 @@ describe('ZoneAboutComponent', () => {
             MockModule(MatSelectModule),
             MockModule(MatChipsModule),
             MockModule(MatProgressSpinnerModule),
-            FormsModule
+            FormsModule,
         ],
     });
 

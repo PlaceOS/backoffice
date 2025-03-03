@@ -54,10 +54,10 @@ export class RichTextInputComponent
     private _updateFn = () => this.setValue(this._editor.root.innerHTML);
 
     private _onChange: (
-        _: string
+        _: string,
     ) => void; /** Form control on change handler */
     private _onTouch: (
-        _: string
+        _: string,
     ) => void; /** Form control on touched handler */
 
     public readonly registerOnChange = (fn: (_: string) => void) =>
@@ -141,7 +141,7 @@ export class RichTextInputComponent
         });
         this._editor.on('text-change', this._updateFn);
         this.subscription('changes', () =>
-            this._editor.off('text-change', this._updateFn)
+            this._editor.off('text-change', this._updateFn),
         );
     }
 

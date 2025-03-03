@@ -13,7 +13,10 @@ export const ROUTES: Routes = [
         children: [
             { path: 'about', component: DomainAboutComponent },
             { path: 'applications', component: DomainApplicationsComponent },
-            { path: 'authentication', component: DomainAuthenticationComponent },
+            {
+                path: 'authentication',
+                component: DomainAuthenticationComponent,
+            },
             { path: 'users', component: DomainUsersComponent },
             { path: 'extend/:id', component: ExtensionOutletComponent },
             { path: '**', redirectTo: 'about' },

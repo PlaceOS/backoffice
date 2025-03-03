@@ -27,7 +27,7 @@ export class SystemLogModalComponent extends AsyncHandler implements OnInit {
 
     constructor(
         private _dialog: MatDialogRef<SystemLogModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: SystemLogModalData
+        @Inject(MAT_DIALOG_DATA) private _data: SystemLogModalData,
     ) {
         super();
     }

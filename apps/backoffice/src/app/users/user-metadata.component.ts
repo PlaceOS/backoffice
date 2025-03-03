@@ -5,7 +5,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
 @Component({
     selector: 'user-metadata',
     template: `
-        <metadata-display  *ngIf="item" [item]="item"></metadata-display>
+        <metadata-display *ngIf="item" [item]="item"></metadata-display>
     `,
     styles: [``],
 })

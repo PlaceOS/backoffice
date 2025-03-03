@@ -21,13 +21,13 @@ describe('Zones test', () => {
 
     it('Can create a zone', () => {
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('input[name="zone-name"]').type(zone_name);
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -48,7 +48,7 @@ describe('Zones test', () => {
         cy.wait(1000);
         cy.contains('Save Pending').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -68,7 +68,7 @@ describe('Zones test', () => {
 
     it('Can prevent the a zone being saved without a name', () => {
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('*[class^="mat-button-wrapper"]').contains('Save').click();
@@ -106,7 +106,7 @@ describe('Zones test', () => {
                 force: true,
             });
         cy.get(
-            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
         ).click();
         cy.get('*[class^="heading select-text"]').then(($hd) => {
             let zone = $hd.text();
@@ -114,7 +114,7 @@ describe('Zones test', () => {
             cy.wait(1000);
             cy.contains('Export zone').click();
             cy.readFile(path.join(downloadsFolder, zone + '.zones.tsv')).should(
-                'exist'
+                'exist',
             );
         });
     });
@@ -143,7 +143,7 @@ describe('Zones test', () => {
             });
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Saved'
+            'Saved',
         );
     });
 
@@ -181,7 +181,7 @@ describe('Zones test', () => {
         cy.get('*[class^="backoffice-trash ng-star-inserted"]').click();
         cy.contains('Ok').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -193,7 +193,7 @@ describe('Zones test', () => {
                 force: true,
             });
         cy.get(
-            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
         ).click();
         cy.contains('Edit zone').click({
             force: true,
@@ -228,7 +228,7 @@ describe('Zones test', () => {
         cy.get('*[class^="ng-untouched ng-dirty ng-invalid"]').should('exist');
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'invalid'
+            'invalid',
         );
         cy.get('*[class^="view-lines monaco-mouse-cursor-text"]')
             .click()
@@ -267,7 +267,7 @@ describe('Zones test', () => {
             force: true,
         });
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -315,14 +315,14 @@ describe('Zones test', () => {
         cy.get('*[class^="backoffice-trash ng-star-inserted"]').click();
         cy.contains('Ok').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
     it('Can add a child Zone to a parent Zone', () => {
         let child_name = uniqueNamesGenerator(config);
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('input[name="zone-name"]').type(child_name);
@@ -349,14 +349,14 @@ describe('Zones test', () => {
                 force: true,
             });
         cy.get(
-            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.contains('Delete zone').click();
         cy.wait(1000);
         cy.contains('Ok').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 });

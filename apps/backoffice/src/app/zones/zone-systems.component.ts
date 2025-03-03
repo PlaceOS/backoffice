@@ -10,7 +10,7 @@ import { ZonesStateService } from './zones-state.service';
         <div class="flex">
             <mat-form-field class="flex-1" appearance="outline">
                 <div class="prefix" matPrefix>
-                    <app-icon class="text-2xl relative -left-0.5">
+                    <app-icon class="relative -left-0.5 text-2xl">
                         search
                     </app-icon>
                 </div>
@@ -29,25 +29,25 @@ import { ZonesStateService } from './zones-state.service';
             [class.opacity-0]="!(loading | async)"
         ></mat-progress-bar>
         <simple-table
-            class="min-w-[32rem] block text-sm"
+            class="block min-w-[32rem] text-sm"
             [data]="systems"
             [columns]="[
                 {
                     key: 'name',
                     name: 'COMMON.FIELD_NAME' | translate,
-                    content: name_template
+                    content: name_template,
                 },
                 {
                     key: 'installed_ui_devices',
                     name: 'ZONES.SYSTEMS_FIELD_MODULE_COUNT' | translate,
-                    size: '10rem'
+                    size: '10rem',
                 },
                 {
                     key: 'created_at',
                     name: 'COMMON.CREATED_AT' | translate,
                     content: added_template,
-                    size: '10rem'
-                }
+                    size: '10rem',
+                },
             ]"
             [sortable]="true"
             [empty_message]="'ZONES.SYSTEMS_EMPTY' | translate"
@@ -60,7 +60,7 @@ import { ZonesStateService } from './zones-state.service';
                 >
                     {{ row.name }}
                 </a>
-                <div class="text-[0.625rem] opacity-30 font-mono">
+                <div class="font-mono text-[0.625rem] opacity-30">
                     {{ row.id }}
                 </div>
             </div>
@@ -94,9 +94,9 @@ export class ZoneSystemsComponent {
             return !filter
                 ? systems
                 : systems.filter((sys) =>
-                      sys.name.toLowerCase().includes(search)
+                      sys.name.toLowerCase().includes(search),
                   );
-        })
+        }),
     );
 
     constructor(private _state: ZonesStateService) {}

@@ -34,14 +34,14 @@ export class ViewResponseModalComponent {
             this.content_string = JSON.stringify(
                 this._data.content,
                 undefined,
-                4
+                4,
             );
         } else {
             try {
                 this.content_string = JSON.stringify(
                     JSON.parse(this._data.content),
                     undefined,
-                    4
+                    4,
                 );
             } catch {
                 this.content_string = this._data.content;

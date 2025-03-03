@@ -38,7 +38,7 @@ export interface BulkItemModalData<T = HashMap<any>> {
     selector: 'app-bulk-item-modal',
     template: `
         <div
-            class="flex items-center justify-between m-4 rounded bg-base-200 px-4 py-2"
+            class="m-4 flex items-center justify-between rounded bg-base-200 px-4 py-2"
         >
             <h3 class="text-xl font-medium">
                 {{ 'COMMON.BULK_ADD' | translate: { type: type } }}
@@ -48,34 +48,39 @@ export interface BulkItemModalData<T = HashMap<any>> {
             </button>
         </div>
         <main>
-            @switch (flow_step) { @case ('status') {
-            <bulk-item-status-list
-                [save]="save"
-                [list]="item_list"
-                (done)="done()"
-            ></bulk-item-status-list>
-            } @case ('list') {
-            <bulk-item-list
-                [(list)]="item_list"
-                [fields]="available_fields"
-                (next)="showStatus()"
-                (previous)="flow_step = 'match-fields'"
-            ></bulk-item-list
-            >} @case ('match-fields') {
-            <bulk-item-match-fields
-                [list]="data_list"
-                [field_list]="available_fields"
-                [mappings]="mappings"
-                (new_mappings)="mappings = $event"
-                (mapping_done)="handleList($event, true)"
-                (previous)="flow_step = ''"
-            ></bulk-item-match-fields>
-            } @default {
-            <bulk-item-csv-upload
-                [template]="template"
-                (list)="handleList($event)"
-            ></bulk-item-csv-upload>
-            } }
+            @switch (flow_step) {
+                @case ('status') {
+                    <bulk-item-status-list
+                        [save]="save"
+                        [list]="item_list"
+                        (done)="done()"
+                    ></bulk-item-status-list>
+                }
+                @case ('list') {
+                    <bulk-item-list
+                        [(list)]="item_list"
+                        [fields]="available_fields"
+                        (next)="showStatus()"
+                        (previous)="flow_step = 'match-fields'"
+                    ></bulk-item-list>
+                }
+                @case ('match-fields') {
+                    <bulk-item-match-fields
+                        [list]="data_list"
+                        [field_list]="available_fields"
+                        [mappings]="mappings"
+                        (new_mappings)="mappings = $event"
+                        (mapping_done)="handleList($event, true)"
+                        (previous)="flow_step = ''"
+                    ></bulk-item-match-fields>
+                }
+                @default {
+                    <bulk-item-csv-upload
+                        [template]="template"
+                        (list)="handleList($event)"
+                    ></bulk-item-csv-upload>
+                }
+            }
         </main>
     `,
     styles: [
@@ -137,7 +142,7 @@ export class BulkItemModalComponent<T = HashMap<any>> {
 
     constructor(
         private _dialog_ref: MatDialogRef<BulkItemModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: BulkItemModalData<T>
+        @Inject(MAT_DIALOG_DATA) private _data: BulkItemModalData<T>,
     ) {
         this.available_fields = this.getAvailableFields();
         this.template = this.generateTemplate();
@@ -182,12 +187,12 @@ export class BulkItemModalComponent<T = HashMap<any>> {
         const list: readonly string[] = Object.keys(new this._data.constr());
         return unique(
             list.map((i) => ({ id: i, name: i.split('_').join(' ') })),
-            'id'
+            'id',
         ).filter(
             (field) =>
                 field.id !== 'id' &&
                 field.id[0] !== '_' &&
-                !IGNORE_FIELDS.includes(field.id)
+                !IGNORE_FIELDS.includes(field.id),
         );
     }
 

@@ -40,7 +40,7 @@ import { ModuleLike } from './select-module.component';
                     (ngModelChange)="postArguments($event)"
                 ></function-arguments>
                 <div
-                    class="w-full flex items-center space-x-2 mt-2"
+                    class="mt-2 flex w-full items-center space-x-2"
                     *ngIf="can_execute"
                 >
                     <button class="inverse flex-1" btn (click)="clear()">
@@ -57,7 +57,7 @@ import { ModuleLike } from './select-module.component';
                 </div>
             </div>
             <div
-                class="absolute -inset-2 flex flex-col items-center justify-center bg-base-100/80 /40 rounded"
+                class="bg-base-100/80 /40 absolute -inset-2 flex flex-col items-center justify-center rounded"
                 *ngIf="loading"
             >
                 <mat-spinner diameter="32"></mat-spinner>
@@ -183,7 +183,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
                         null
                     );
                 }
-            })
+            }),
         )
             .toPromise()
             .catch((err) => {
@@ -195,7 +195,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
                             (this.fn as any).name
                         }' failed.\nView Error?`,
                         'View',
-                        () => this.viewDetails(err)
+                        () => this.viewDetails(err),
                     );
                 }
                 this.loading = false;
@@ -204,7 +204,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
         notifySuccess(
             'Command successful executed.\nView Response?',
             'View',
-            () => this.viewDetails(result)
+            () => this.viewDetails(result),
         );
         this.loading = false;
     }
@@ -220,7 +220,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
                             ? await details.json()
                             : details,
                 },
-            }
+            },
         );
     }
 }

@@ -39,20 +39,20 @@ function cancelBuildJob(id, q = {}) {
 @Component({
     selector: '[admin-build-list]',
     template: `
-        <div class="flex flex-col h-full w-full">
-            <div class="flex items-center justify-between space-x-2 my-4">
+        <div class="flex h-full w-full flex-col">
+            <div class="my-4 flex items-center justify-between space-x-2">
                 <div class="text-2xl">
                     {{ 'ADMIN.BUILD_LIST_HEADER' | translate }}
                 </div>
             </div>
-            <div class="flex-1 w-full h-1/2 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[64rem] block text-sm"
+                    class="block min-w-[64rem] text-sm"
                     [data]="jobs"
                     [columns]="[
                         {
@@ -69,15 +69,15 @@ function cancelBuildJob(id, q = {}) {
                             key: 'message',
                             name: 'COMMON.FIELD_DESCRIPTION' | translate,
                             size: '32rem',
-                            content: description_template
+                            content: description_template,
                         },
                         {
                             key: 'actions',
                             name: ' ',
                             content: actions_template,
                             size: '3.5rem',
-                            sortable: false
-                        }
+                            sortable: false,
+                        },
                     ]"
                     [sortable]="true"
                     [empty_message]="'ADMIN.BUILD_LIST_EMPTY' | translate"
@@ -97,7 +97,7 @@ function cancelBuildJob(id, q = {}) {
             </div>
         </ng-template>
         <ng-template #description_template let-data="data">
-            <div class="px-4 py-2 select-text overflow-hidden w-full text-xs">
+            <div class="w-full select-text overflow-hidden px-4 py-2 text-xs">
                 {{ data }}
                 <span class="opacity-30" *ngIf="!data">
                     {{ 'COMMON.DESCRIPTION_EMPTY' | translate }}
@@ -149,11 +149,11 @@ export class PlaceBuildListComponent {
         map((details?: { data: PlaceEdge[] }) => {
             this.loading = '';
             return (details?.data || []).sort((a, b) =>
-                a.id?.localeCompare(b.id)
+                a.id?.localeCompare(b.id),
             );
         }),
         startWith([]),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly jobs = combineLatest([this._job_list, this._hide]).pipe(
@@ -162,7 +162,7 @@ export class PlaceBuildListComponent {
             if (!hide) return list;
             const edges = list.filter((_) => _.id !== hide);
             return edges.sort((a, b) => a.id?.localeCompare(b.id));
-        })
+        }),
     );
 
     public readonly remove = async (i: BuildJob) => {
@@ -175,7 +175,7 @@ export class PlaceBuildListComponent {
                 }),
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog
+            this._dialog,
         );
         if (!details) return;
         details.loading(i18n('ADMIN.BUILD_LIST_REMOVE_LOADING'));
@@ -187,7 +187,7 @@ export class PlaceBuildListComponent {
             return notifyError(
                 i18n('ADMIN.BUILD_LIST_REMOVE_ERROR', {
                     error: err.statusText || err.message || err,
-                })
+                }),
             );
         this.last_change.next(null);
         notifySuccess(i18n('ADMIN.BUILD_LIST_REMOVE_SUCCESS'));

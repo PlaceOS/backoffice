@@ -46,17 +46,17 @@ export class DriverStateService {
     public readonly updates_available = this._poll.pipe(
         switchMap(() =>
             queryDrivers({ update_available: true, limit: 1 }).pipe(
-                catchError(() => of({ data: [], total: 0 }))
-            )
+                catchError(() => of({ data: [], total: 0 })),
+            ),
         ),
         map((d) => d.total > 1),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly is_compiled = this.item.pipe(
         filter((d) => !!d && d instanceof PlaceDriver),
         switchMap((driver) =>
-            isDriverCompiled(driver.id).pipe(catchError(() => of(false)))
+            isDriverCompiled(driver.id).pipe(catchError(() => of(false))),
         ),
         catchError(async (_: Response) => {
             const err = await _?.json();
@@ -65,7 +65,7 @@ export class DriverStateService {
         }),
         retryWhen(delay(5000)),
         tap((_) => (_ ? this._last_error.next(null) : '')),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly modules = this.item.pipe(
@@ -79,14 +79,17 @@ export class DriverStateService {
             return details;
         }),
         map((d) => d.data),
-        shareReplay()
+        shareReplay(),
     );
 
     public get active_item() {
         return this._state.active_item;
     }
 
-    constructor(private _state: ActiveItemService, private _dialog: MatDialog) {
+    constructor(
+        private _state: ActiveItemService,
+        private _dialog: MatDialog,
+    ) {
         this.item.subscribe(() => this._last_error.next(null));
     }
 
@@ -101,7 +104,7 @@ export class DriverStateService {
             ViewResponseModalComponent,
             {
                 data: { title: 'Driver Compilation Error', content: error },
-            }
+            },
         );
     }
 
@@ -114,7 +117,7 @@ export class DriverStateService {
                 content: `<p>Are you sure you want update this driver?</p><p>New driver code will be loaded and device settings will be updated.</p>`,
                 icon: { type: 'icon', content: 'update' },
             },
-            this._dialog
+            this._dialog,
         );
         if (!details || !details.reason) return details.close();
         details.loading('Updating driver...');
@@ -138,7 +141,7 @@ export class DriverStateService {
                 content: `<p>Are you sure you want recompile this driver?</p>`,
                 icon: { type: 'icon', content: 'build' },
             },
-            this._dialog
+            this._dialog,
         );
         if (!details || !details.reason) return details.close();
         details.loading('Recompiling driver... This may take a while.');
@@ -159,7 +162,7 @@ export class DriverStateService {
                 content: `<p>Are you sure you want reload this driver?</p>`,
                 icon: { type: 'icon', content: 'refresh' },
             },
-            this._dialog
+            this._dialog,
         );
         if (!details || !details.reason) return details.close();
         details.loading('Reload driver... This may take a while.');
@@ -183,7 +186,7 @@ export class DriverStateService {
                 ],
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog
+            this._dialog,
         );
         if (!details || !details.reason) return;
         const system = await removeSystemModule(this.active_item.id, device.id)
@@ -192,7 +195,7 @@ export class DriverStateService {
                 notifyError(
                     `Error removing module ${device.id}. Error: ${
                         err.statusText || err.message || err
-                    }`
+                    }`,
                 );
             });
         details.close();

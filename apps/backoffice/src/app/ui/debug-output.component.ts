@@ -25,7 +25,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                 *ngIf="is_shown"
             >
                 <div
-                    class="relative overflow-hidden border border-base-200 bg-[#212121] text-white shadow z-10 flex flex-col"
+                    class="relative z-10 flex flex-col overflow-hidden border border-base-200 bg-[#212121] text-white shadow"
                     content
                     #content
                     [@show]="is_shown ? 'show' : 'hide'"
@@ -48,31 +48,31 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                     ></new-terminal>
                     <!-- <a-terminal [content]="logs" [resize]="resize"></a-terminal> -->
                     <div
-                        class="absolute h-4 -top-2 left-0 right-0 select-none"
+                        class="absolute -top-2 left-0 right-0 h-4 select-none"
                         ns-resize
                         (mousedown)="startResize($event, 'y')"
                         (touchstart)="startResize($event, 'y')"
                     ></div>
                     <div
-                        class="absolute w-4 -left-2 top-0 bottom-0 select-none"
+                        class="absolute -left-2 bottom-0 top-0 w-4 select-none"
                         ew-resize
                         (mousedown)="startResize($event, 'x')"
                         (touchstart)="startResize($event, 'x')"
                     ></div>
                     <div
-                        class="absolute w-4 h-4 -left-2 -top-2 select-none"
+                        class="absolute -left-2 -top-2 h-4 w-4 select-none"
                         nwse-resize
                         (mousedown)="startResize($event, 'xy')"
                         (touchstart)="startResize($event, 'xy')"
                     ></div>
                     <div
                         actions
-                        class="absolute flex items-center space-x-2 bottom-2 right-2"
+                        class="absolute bottom-2 right-2 flex items-center space-x-2"
                     >
                         <button
                             btn
                             icon
-                            class="bg-neutral-focus text-neutral-content shadow rounded-full"
+                            class="rounded-full bg-neutral-focus text-neutral-content shadow"
                             (click)="downloadLogs()"
                         >
                             <app-icon
@@ -86,7 +86,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                         <button
                             btn
                             icon
-                            class="bg-neutral-focus text-neutral-content shadow rounded-full"
+                            class="rounded-full bg-neutral-focus text-neutral-content shadow"
                             (click)="toggleDebugPosition()"
                         >
                             <app-icon
@@ -103,7 +103,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                         <button
                             btn
                             icon
-                            class="bg-neutral-focus text-neutral-content shadow rounded-full"
+                            class="rounded-full bg-neutral-focus text-neutral-content shadow"
                             (click)="clearDebugMessages()"
                         >
                             <app-icon
@@ -118,7 +118,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                             btn
                             icon
                             (click)="clearBindings()"
-                            class="bg-neutral-focus text-neutral-content shadow rounded-full"
+                            class="rounded-full bg-neutral-focus text-neutral-content shadow"
                             [matTooltip]="
                                 'COMMON.DEBUG_UNBIND_MODULES' | translate
                             "
@@ -129,7 +129,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
                             btn
                             icon
                             (click)="close()"
-                            class="bg-neutral-focus text-neutral-content shadow rounded-full"
+                            class="rounded-full bg-neutral-focus text-neutral-content shadow"
                             [matTooltip]="
                                 'COMMON.DEBUG_CLOSE_CONSOLE' | translate
                             "
@@ -229,7 +229,7 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
 
     constructor(
         private _service: PlaceDebugService,
-        private _renderer: Renderer2
+        private _renderer: Renderer2,
     ) {
         super();
     }
@@ -239,7 +239,7 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
             'changes',
             this._service.events.subscribe((_) => {
                 this.logs = this._service.terminal_string.split('\n');
-            })
+            }),
         );
         this.subscription(
             'binding_change',
@@ -247,7 +247,7 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
                 if (!this._service.is_listening) {
                     this.show_content = false;
                 }
-            })
+            }),
         );
     }
 
@@ -282,8 +282,8 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
             this.subscription(
                 'resize_move',
                 this._renderer.listen('window', 'mousemove', (event) =>
-                    this.resizeMove(event, dir)
-                )
+                    this.resizeMove(event, dir),
+                ),
             );
             this.subscription(
                 'resize_end',
@@ -294,14 +294,14 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
                         this._content_el.nativeElement.getBoundingClientRect();
                     this.height = box.height;
                     this.width = box.width;
-                })
+                }),
             );
         } else {
             this.subscription(
                 'resize_move',
                 this._renderer.listen('window', 'touchmove', (event) =>
-                    this.resizeMove(event, dir)
-                )
+                    this.resizeMove(event, dir),
+                ),
             );
             this.subscription(
                 'resize_end',
@@ -312,7 +312,7 @@ export class DebugOutputComponent extends AsyncHandler implements OnInit {
                         this._content_el.nativeElement.getBoundingClientRect();
                     this.height = box.height;
                     this.width = box.width;
-                })
+                }),
             );
         }
     }

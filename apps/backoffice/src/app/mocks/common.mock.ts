@@ -14,9 +14,8 @@ export const API = '/api/engine/v2';
 const ENDPOINT_SUBJECTS: HashMap<BehaviorSubject<any[]>> = {};
 const ENDPOINT_OBSERVABLES: HashMap<Observable<any[]>> = {};
 /** List of available characters for IDs */
-const AVAILABLE_CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~'.split(
-    ''
-);
+const AVAILABLE_CHARS =
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~'.split('');
 
 export type FilterFn<T> = (item: T, query: HashMap) => boolean;
 
@@ -26,7 +25,7 @@ export type FilterFn<T> = (item: T, query: HashMap) => boolean;
  */
 export function generateID(
     length: number = 12,
-    chars: string[] = AVAILABLE_CHARS
+    chars: string[] = AVAILABLE_CHARS,
 ) {
     let id = '';
     while (id.length < length) {
@@ -63,7 +62,7 @@ export function endpointData(endpoint: string): any[] {
 export function generateBasicHandlers<T = any>(
     endpoint: string,
     data: T[],
-    filter: FilterFn<T> = (_: T, q: HashMap) => true
+    filter: FilterFn<T> = (_: T, q: HashMap) => true,
 ): Observable<T[]> {
     if (ENDPOINT_SUBJECTS[endpoint]) {
         ENDPOINT_SUBJECTS[endpoint].complete();
@@ -93,7 +92,7 @@ export function generateBasicHandlers<T = any>(
             return list.find(
                 (item) =>
                     item.id === event.route_params.id &&
-                    filter(item, event.query_params)
+                    filter(item, event.query_params),
             );
         },
     } as MockHttpRequestHandler);
@@ -120,7 +119,7 @@ export function generateBasicHandlers<T = any>(
             const item = event.body;
             const list = ENDPOINT_SUBJECTS[endpoint].getValue() || [];
             const index = list.find(
-                (an_item) => an_item.id === event.query_params.id
+                (an_item) => an_item.id === event.query_params.id,
             );
             if (index >= 0) {
                 const old_item = list[index];
@@ -143,7 +142,7 @@ export function generateBasicHandlers<T = any>(
             const item = event.body;
             const list = ENDPOINT_SUBJECTS[endpoint].getValue() || [];
             const index = list.find(
-                (an_item) => an_item.id === event.query_params.id
+                (an_item) => an_item.id === event.query_params.id,
             );
             if (index >= 0) {
                 list.splice(index, 1);

@@ -6,27 +6,27 @@ import { DomainStateService } from './domain-state.service';
 @Component({
     selector: 'domain-users',
     template: `
-        <div class="w-full h-full overflow-auto">
+        <div class="h-full w-full overflow-auto">
             <mat-progress-bar
                 mode="indeterminate"
                 class="w-full"
                 [class.opacity-0]="!(loading | async)"
             ></mat-progress-bar>
             <simple-table
-                class="min-w-[32rem] block text-sm"
+                class="block min-w-[32rem] text-sm"
                 [data]="users"
                 [columns]="[
                     {
                         key: 'name',
                         name: 'DOMAINS.FIELD_USER' | translate,
-                        content: name_template
+                        content: name_template,
                     },
                     {
                         key: 'role',
                         name: 'DOMAINS.FIELD_ROLE' | translate,
                         content: role_template,
-                        size: '6rem'
-                    }
+                        size: '6rem',
+                    },
                 ]"
                 [sortable]="true"
                 [empty_message]="'DOMAINS.USER_LIST_EMPTY' | translate"
@@ -48,8 +48,8 @@ import { DomainStateService } from './domain-state.service';
                         (row.sys_admin
                             ? 'COMMON.USER_ADMIN'
                             : row.support
-                            ? 'COMMON.USER_SUPPORT'
-                            : 'COMMON.USER_BASIC'
+                              ? 'COMMON.USER_SUPPORT'
+                              : 'COMMON.USER_BASIC'
                         ) | translate
                     }}
                 </code>

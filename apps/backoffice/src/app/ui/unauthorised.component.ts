@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
     selector: 'app-unauthorised',
     template: `
         <div
-            class="unauthorised bg-base-100 text-base-content rounded border border-gray-300 text-center pt-2 px-8 pb-8 m-4"
+            class="unauthorised border-gray-300 m-4 rounded border bg-base-100 px-8 pb-8 pt-2 text-center text-base-content"
         >
             <h1>403</h1>
             <h3>{{ 'COMMON.FORBIDDEN' | translate }}</h3>

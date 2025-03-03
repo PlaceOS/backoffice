@@ -13,7 +13,7 @@ import { ActiveItemService } from '../common/item.service';
     selector: 'settings-history-view',
     template: `
         <div class="flex items-center justify-between">
-            <mat-form-field appearance="outline" class="flex-1 h-[3.25rem]">
+            <mat-form-field appearance="outline" class="h-[3.25rem] flex-1">
                 <mat-select
                     ngModel
                     (ngModelChange)="old_setting.next($event)"
@@ -30,8 +30,8 @@ import { ActiveItemService } from '../common/item.service';
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <div class="flex-1 w-px"></div>
-            <mat-form-field appearance="outline" class="flex-1 h-[3.25rem]">
+            <div class="w-px flex-1"></div>
+            <mat-form-field appearance="outline" class="h-[3.25rem] flex-1">
                 <mat-select
                     ngModel
                     (ngModelChange)="active_setting.next($event)"
@@ -60,14 +60,14 @@ import { ActiveItemService } from '../common/item.service';
         </div>
         <ng-template #empty_state>
             <div
-                class="w-full p-16 opacity-30 text-center"
+                class="w-full p-16 text-center opacity-30"
                 *ngIf="(history$ | async).length; else no_history_state"
             >
                 {{ 'COMMON.SETTINGS_COMPARE_SELECT_MSG' | translate }}
             </div>
         </ng-template>
         <ng-template #no_history_state>
-            <div class="w-full p-16 opacity-30 text-center">
+            <div class="w-full p-16 text-center opacity-30">
                 {{ 'COMMON.SELECTED_FIRST_VERSION' | translate }}
             </div>
         </ng-template>
@@ -80,13 +80,13 @@ export class SettingsHistoryViewComponent {
 
     public readonly settings$ = this._service.item.pipe(
         switchMap((i) =>
-            !i ? of({ data: [] }) : querySettings({ parent_id: i.id })
+            !i ? of({ data: [] }) : querySettings({ parent_id: i.id }),
         ),
         map((_) => _.data),
-        shareReplay(1)
+        shareReplay(1),
     );
     public readonly history$ = this.active_setting.pipe(
-        switchMap((_) => (!_ ? of([]) : settingsHistory(_.id)))
+        switchMap((_) => (!_ ? of([]) : settingsHistory(_.id))),
     );
 
     constructor(private _service: ActiveItemService) {}

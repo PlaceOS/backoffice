@@ -10,7 +10,7 @@ import { LocaleService } from '../common/locale.service';
 @Component({
     selector: 'user-menu-tooltip',
     template: `
-        <div class="bg-base-100  rounded m-2 divide-y divide-base-200 shadow">
+        <div class="m-2 divide-y divide-base-200 rounded bg-base-100 shadow">
             <a
                 matRipple
                 type="button"
@@ -21,9 +21,9 @@ import { LocaleService } from '../common/locale.service';
                 <app-icon>person</app-icon>
                 {{ 'COMMON.PROFILE' | translate }}
             </a>
-            <div dark-mode class="flex items-center p-4 w-[16rem]">
+            <div dark-mode class="flex w-[16rem] items-center p-4">
                 <app-icon>dark_mode</app-icon>
-                <p class="flex-1 w-1/2">
+                <p class="w-1/2 flex-1">
                     {{ 'COMMON.DARK_MODE' | translate }}
                 </p>
                 <mat-slide-toggle [(ngModel)]="dark_mode"></mat-slide-toggle>
@@ -60,7 +60,7 @@ import { LocaleService } from '../common/locale.service';
                     {{ 'COMMON.LANGUAGE' | translate }}
                 </div>
                 <div
-                    class="px-2 py-1 text-sm bg-base-200 truncate max-w-24 rounded"
+                    class="max-w-24 truncate rounded bg-base-200 px-2 py-1 text-sm"
                 >
                     {{ active_lang.name }}
                 </div>
@@ -73,7 +73,7 @@ import { LocaleService } from '../common/locale.service';
                     (click)="setLanguage(language.id)"
                 >
                     <div
-                        class="flex items-center justify-between space-x-4 w-full"
+                        class="flex w-full items-center justify-between space-x-4"
                     >
                         <div>{{ language.name }}</div>
                         <div>{{ language.flag }}</div>
@@ -138,16 +138,16 @@ export class UserMenuTooltipComponent implements OnInit {
         const title = `Issue on page`;
         const description = issueDescription(
             VERSION.hash,
-            format(VERSION.time, 'dd MMM yyyy, h:mm a')
+            format(VERSION.time, 'dd MMM yyyy, h:mm a'),
         );
         return `https://github.com/PlaceOS/backoffice/issues/new?title=${encodeURIComponent(
-            title
+            title,
         )}&body=${encodeURIComponent(description)}&labels=bug`;
     }
 
     constructor(
         private _settings: SettingsService,
-        private _locale: LocaleService
+        private _locale: LocaleService,
     ) {}
 
     public ngOnInit() {

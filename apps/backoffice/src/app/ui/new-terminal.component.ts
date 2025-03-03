@@ -15,22 +15,22 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
     selector: 'new-terminal',
     template: `
         <div
-            class="bg-[#424242] text-white w-full h-full text-xs flex items-end relative"
+            class="relative flex h-full w-full items-end bg-[#424242] text-xs text-white"
             #container
         >
             <cdk-virtual-scroll-viewport
                 itemSize="24"
-                class="w-full max-h-full"
+                class="max-h-full w-full"
                 [style.height]="24 * item_count + 'px'"
             >
                 <div
                     *cdkVirtualFor="let item of output_lines | async"
                     [innerHTML]="item | safe"
-                    class="mono p-1 hover:bg-base-content/10"
+                    class="mono hover:bg-base-content/10 p-1"
                 ></div>
             </cdk-virtual-scroll-viewport>
             <div
-                class="absolute inset-0 flex flex-col items-center justify-center text-base select-none"
+                class="absolute inset-0 flex select-none flex-col items-center justify-center text-base"
                 *ngIf="!(output_lines | async)?.length"
             >
                 <p class="opacity-60">
@@ -38,10 +38,10 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
                 </p>
             </div>
             <div
-                class="absolute -top-11 right-0 p-2 flex items-center space-x-2"
+                class="absolute -top-11 right-0 flex items-center space-x-2 p-2"
             >
                 <input
-                    class="bg-neutral-700 border-none mono text-sm p-1"
+                    class="bg-neutral-700 mono border-none p-1 text-sm"
                     [(ngModel)]="search"
                     placeholder="🔍 Filter output"
                     (ngModelChange)="search_string.next($event)"
@@ -109,12 +109,12 @@ export class NewTerminalComponent extends AsyncHandler {
                     }
                     this.old_count = 0;
                 },
-                10
+                10,
             );
             return out_lines;
         }),
         catchError(() => of([])),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     constructor(private _sanitize_pipe: SanitizePipe) {
@@ -138,8 +138,8 @@ export class NewTerminalComponent extends AsyncHandler {
             40,
             Math.floor(
                 this._container_el.nativeElement.getBoundingClientRect().width /
-                    8
-            )
+                    8,
+            ),
         );
         this.line_list.next(this.line_list.getValue());
     }
@@ -160,9 +160,9 @@ export class NewTerminalComponent extends AsyncHandler {
                 }${setTermColorsForLine(
                     sanitized_line.substring(
                         count * this.line_length,
-                        (count + 1) * this.line_length
-                    )
-                )}`
+                        (count + 1) * this.line_length,
+                    ),
+                )}`,
             );
             count += 1;
         }
@@ -173,6 +173,6 @@ export class NewTerminalComponent extends AsyncHandler {
 function setTermColorsForLine(line: string) {
     return `<span>${line.replace(
         /\u001b?\[([0-9]*)m/g,
-        '</span><span class="tc-$1">'
+        '</span><span class="tc-$1">',
     )}</span>`.replace('<span></span>', '');
 }

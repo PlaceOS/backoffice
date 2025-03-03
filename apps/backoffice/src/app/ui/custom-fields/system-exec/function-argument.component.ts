@@ -48,16 +48,16 @@ const validateType = (type) => (control: AbstractControl) => {
         <form class="pl-8" *ngIf="form; else empty_state" [formGroup]="form">
             <div
                 field
-                class="flex items-center space-x-2 relative"
+                class="relative flex items-center space-x-2"
                 *ngFor="let key of method.order; let i = index"
             >
                 <div
-                    class="absolute left-0 transform -translate-x-full -translate-y-1/2 border-l-2 border-b-2 border-base-200 w-4"
+                    class="absolute left-0 w-4 -translate-x-full -translate-y-1/2 transform border-b-2 border-l-2 border-base-200"
                     [class.h-6]="i === 0"
                     [class.h-14]="i !== 0"
                 ></div>
                 <!-- <label [for]="key">{{ key }}</label> -->
-                <mat-form-field class="w-1/2 flex-1 h-14" appearance="outline">
+                <mat-form-field class="h-14 w-1/2 flex-1" appearance="outline">
                     <input
                         [name]="key"
                         matInput
@@ -68,7 +68,7 @@ const validateType = (type) => (control: AbstractControl) => {
                     />
                 </mat-form-field>
                 <div
-                    class="text-xs rounded px-2 py-1 w-16 text-center"
+                    class="w-16 rounded px-2 py-1 text-center text-xs"
                     [class.bg-success]="required[key]"
                     [class.text-success-content]="required[key]"
                     [class.bg-base-200]="!required[key]"
@@ -84,7 +84,7 @@ const validateType = (type) => (control: AbstractControl) => {
             </div>
         </form>
         <ng-template #empty_state>
-            <div class="p-4 flex space-x-2 items-center justify-center">
+            <div class="flex items-center justify-center space-x-2 p-4">
                 <p class="opacity-30">
                     {{ 'COMMON.EXECUTE_NO_ARGS' | translate }}
                 </p>
@@ -145,7 +145,7 @@ export class FunctionArgumentComponent
                           validateType(prop_details.type) as any,
                           Validators.required,
                       ]
-                    : [validateType(prop_details.type) as any]
+                    : [validateType(prop_details.type) as any],
             );
             if (optional) {
                 try {
@@ -159,7 +159,7 @@ export class FunctionArgumentComponent
         this.valid.emit(this.form?.valid);
         this.subscription(
             'form',
-            this.form.valueChanges.subscribe((v) => this.setValue(v))
+            this.form.valueChanges.subscribe((v) => this.setValue(v)),
         );
     }
 

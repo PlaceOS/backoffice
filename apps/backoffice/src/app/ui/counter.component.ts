@@ -19,7 +19,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
                 icon
                 matRipple
                 type="button"
-                class="border border-secondary text-secondary rounded-r-none rounded-l h-12 w-12 z-10"
+                class="z-10 h-12 w-12 rounded-l rounded-r-none border border-secondary text-secondary"
                 [disabled]="!value || value === min"
                 (click)="remove()"
             >
@@ -27,14 +27,14 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
             </button>
             <div
                 value
-                class="relative p-1 flex items-center justify-center min-w-16 flex-1 h-12 rounded-none border-y border-base-300 z-0 focus-within:z-20"
+                class="relative z-0 flex h-12 min-w-16 flex-1 items-center justify-center rounded-none border-y border-base-300 p-1 focus-within:z-20"
             >
                 <span *ngIf="!focused">
                     {{ (render_fn ? render_fn(value) : value) || '0' }}
                 </span>
                 <input
                     type="text"
-                    class="absolute inset-0 opacity-0 focus:opacity-100 p-2"
+                    class="absolute inset-0 p-2 opacity-0 focus:opacity-100"
                     [(ngModel)]="value"
                     (focus)="focused = true"
                     (blur)="setValue(+value); focused = false"
@@ -46,7 +46,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
                 icon
                 matRipple
                 type="button"
-                class="border border-secondary text-secondary rounded-l-none rounded-r h-12 w-12 z-10"
+                class="z-10 h-12 w-12 rounded-l-none rounded-r border border-secondary text-secondary"
                 [disabled]="value === max"
                 (click)="add()"
             >
@@ -96,8 +96,8 @@ export class CounterComponent implements ControlValueAccessor {
         const step = this.ctrl_key
             ? 100 * this.step
             : this.shift_key
-            ? 10 * this.step
-            : this.step || 1;
+              ? 10 * this.step
+              : this.step || 1;
         this.value += step;
         if (this.value > this.max) {
             this.value = this.max || 10;
@@ -113,8 +113,8 @@ export class CounterComponent implements ControlValueAccessor {
         const step = this.ctrl_key
             ? 100 * this.step
             : this.shift_key
-            ? 10 * this.step
-            : this.step || 1;
+              ? 10 * this.step
+              : this.step || 1;
         this.value -= step;
         if (this.value < this.min) {
             this.value = this.min || 0;

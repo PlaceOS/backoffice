@@ -39,7 +39,7 @@ registerMockEndpoint({
     callback: (event) => {
         if (event.route_params.id) {
             const system = endpointData(`${API}/systems`).find(
-                (sys) => sys.id === event.route_params.id
+                (sys) => sys.id === event.route_params.id,
             );
             if (system) {
                 const zones = endpointData(`${API}/zones`);
@@ -58,12 +58,12 @@ registerMockEndpoint({
     callback: (event) => {
         if (event.route_params.id) {
             const system = endpointData(`${API}/systems`).find(
-                (sys) => sys.id === event.route_params.id
+                (sys) => sys.id === event.route_params.id,
             );
             if (system) {
                 const modules = endpointData(`${API}/modules`);
                 return modules.filter((item) =>
-                    system.modules.includes(item.id)
+                    system.modules.includes(item.id),
                 );
             }
         }
@@ -92,7 +92,7 @@ registerMockEndpoint({
     callback: (event) => {
         if (event.route_params.id) {
             const settings = endpointData(`${API}/settings`).filter(
-                (sys) => sys.id === event.route_params.id
+                (sys) => sys.id === event.route_params.id,
             );
             return settings.reduce((map, item) => ({
                 ...map,

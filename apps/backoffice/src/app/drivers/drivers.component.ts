@@ -12,17 +12,17 @@ import { i18n } from '../common/translate';
     selector: 'new-drivers-view',
     template: `
         <div
-            class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-base-200  bg-base-100 "
+            class="absolute inset-0 flex items-center divide-y divide-base-200 bg-base-100 sm:divide-x sm:divide-y-0"
         >
             <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
-            <div class="flex flex-col h-full flex-1 overflow-hidden w-px">
-                <div class="flex flex-1 h-px">
+            <div class="flex h-full w-px flex-1 flex-col overflow-hidden">
+                <div class="flex h-px flex-1">
                     <item-sidebar
                         class="hidden sm:block"
                         [route]="name"
                         [title]="'DRIVERS.PLURAL' | translate"
                     ></item-sidebar>
-                    <div class="flex-1 w-1/2 h-full relative flex flex-col z-0">
+                    <div class="relative z-0 flex h-full w-1/2 flex-1 flex-col">
                         <item-selection
                             class="z-20 sm:hidden"
                             [route]="name"
@@ -31,13 +31,13 @@ import { i18n } from '../common/translate';
                             <button
                                 btn
                                 icon
-                                class="sm:hidden mr-2"
+                                class="mr-2 sm:hidden"
                                 (click)="open_menu = true"
                             >
                                 <app-icon>menu</app-icon>
                             </button>
                         </item-selection>
-                        <div class="flex flex-col flex-1 h-1/2">
+                        <div class="flex h-1/2 flex-1 flex-col">
                             <ng-container *ngIf="item?.id">
                                 <item-details
                                     [can_edit]="true"
@@ -52,7 +52,7 @@ import { i18n } from '../common/translate';
                                 ></item-tablist>
                                 <div
                                     #el
-                                    class="flex-1 h-1/2 w-full overflow-auto p-4 z-0 relative"
+                                    class="relative z-0 h-1/2 w-full flex-1 overflow-auto p-4"
                                     (scroll)="scroll = el.scrollTop"
                                 >
                                     <router-outlet></router-outlet>
@@ -60,7 +60,7 @@ import { i18n } from '../common/translate';
                             </ng-container>
                         </div>
                         <button
-                            class="absolute bottom-16 left-1 sm:-left-8 w-10 h-10 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content border border-base-200"
+                            class="absolute bottom-16 left-1 z-30 flex h-10 w-10 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-8"
                             [matTooltip]="'DRIVERS.UPDATE' | translate"
                             matTooltipPosition="right"
                             matRipple
@@ -70,7 +70,7 @@ import { i18n } from '../common/translate';
                             <app-icon class="text-3xl">update</app-icon>
                         </button>
                         <button
-                            class="absolute bottom-2 left-2 sm:-left-9 w-12 h-12 flex items-center justify-center bg-secondary rounded-lg shadow z-30 text-secondary-content border border-base-200"
+                            class="absolute bottom-2 left-2 z-30 flex h-12 w-12 items-center justify-center rounded-lg border border-base-200 bg-secondary text-secondary-content shadow sm:-left-9"
                             [matTooltip]="'DRIVERS.NEW' | translate"
                             matTooltipPosition="right"
                             matRipple
@@ -142,7 +142,7 @@ export class DriversComponent extends AsyncHandler {
     constructor(
         protected _service: ActiveItemService,
         private _drivers: DriverStateService,
-        private _debug: PlaceDebugService
+        private _debug: PlaceDebugService,
     ) {
         super();
     }
@@ -154,7 +154,7 @@ export class DriversComponent extends AsyncHandler {
                 this.device_count = null;
                 this.updateTabList();
                 this.loadValues(item as any);
-            })
+            }),
         );
     }
 

@@ -90,8 +90,8 @@ export class ActiveItemService extends AsyncHandler {
         .asObservable()
         .pipe(
             distinctUntilChanged(
-                (a, b) => a?.id === b?.id && a?.updated_at === b?.updated_at
-            )
+                (a, b) => a?.id === b?.id && a?.updated_at === b?.updated_at,
+            ),
         );
     /** Observable for list of items */
     public readonly list_items = () => this._list.getValue();
@@ -124,7 +124,7 @@ export class ActiveItemService extends AsyncHandler {
         private _settings: SettingsService,
         private _hotkey: HotkeysService,
         private _dialog: MatDialog,
-        private _user: BackofficeUsersService
+        private _user: BackofficeUsersService,
     ) {
         super();
         this._router.events.subscribe((event) => {
@@ -180,7 +180,7 @@ export class ActiveItemService extends AsyncHandler {
         item = item || this._active_item.getValue();
         const actions =
             Object.values(ACTIONS).find(
-                (v) => item instanceof v.itemConstructor
+                (v) => item instanceof v.itemConstructor,
             ) || this.actions;
         return this.edit(
             copy
@@ -189,7 +189,7 @@ export class ActiveItemService extends AsyncHandler {
                       id: '',
                       name: `${item.name} (1)`,
                   })
-                : new actions.itemConstructor()
+                : new actions.itemConstructor(),
         );
     }
 
@@ -209,13 +209,13 @@ export class ActiveItemService extends AsyncHandler {
             },
         });
         ref.afterClosed().subscribe(() =>
-            this._settings.post('disable_uploads', false)
+            this._settings.post('disable_uploads', false),
         );
     }
 
     public async edit<T extends PlaceResource = any>(
         item?: T,
-        options: HashMap = {}
+        options: HashMap = {},
     ) {
         if (!this._user.current().sys_admin) return;
         item = item || (this._active_item.getValue() as any);
@@ -223,7 +223,7 @@ export class ActiveItemService extends AsyncHandler {
             return new Promise<T>(async (resolve) => {
                 const actions =
                     Object.values(ACTIONS).find(
-                        (v) => item instanceof v.itemConstructor
+                        (v) => item instanceof v.itemConstructor,
                     ) || this.actions;
                 if (item.id) {
                     item = await actions.show(item.id).toPromise();
@@ -280,14 +280,14 @@ export class ActiveItemService extends AsyncHandler {
                 .pipe(filter((e) => e.reason === 'done'))
                 .subscribe((event: DialogEvent) => {
                     ref.componentInstance.loading = i18n(
-                        `${this.actions.name}.DELETE_LOADING`
+                        `${this.actions.name}.DELETE_LOADING`,
                     );
                     this.actions.remove(item).subscribe(
                         () => {
                             notifySuccess(
                                 i18n(`${this.actions.name}.DELETE_SUCCESS`, {
                                     name: item.name,
-                                })
+                                }),
                             );
                             this._active_item.next(null);
                             this.removeItem(item);
@@ -303,11 +303,11 @@ export class ActiveItemService extends AsyncHandler {
                             notifyError(
                                 i18n(`${this.actions.name}.DELETE_ERROR`, {
                                     error: JSON.stringify(
-                                        err.response || err.message || err
+                                        err.response || err.message || err,
                                     ),
-                                })
+                                }),
                             );
-                        }
+                        },
                     );
                 });
         }
@@ -396,13 +396,17 @@ export class ActiveItemService extends AsyncHandler {
                     this._next_query.next(
                         resp.next ||
                             (() =>
-                                of({ data: [], total: resp.total, next: null }))
+                                of({
+                                    data: [],
+                                    total: resp.total,
+                                    next: null,
+                                })),
                     );
                     this._count.next(resp.total);
                     const list = this._list
                         .getValue()
                         .filter(
-                            (i) => !resp.data.find((item) => item.id === i.id)
+                            (i) => !resp.data.find((item) => item.id === i.id),
                         );
                     const new_list = list.concat(resp.data);
                     new_list.sort((a, b) => a.name?.localeCompare(b.name));
@@ -410,7 +414,7 @@ export class ActiveItemService extends AsyncHandler {
                     this._loading_list.next(false);
                 }
             },
-            search ? 300 : 10
+            search ? 300 : 10,
         );
     }
 
@@ -423,45 +427,45 @@ export class ActiveItemService extends AsyncHandler {
             while (settings.length < 4) {
                 if (
                     !settings.find(
-                        (s) => s.encryption_level === EncryptionLevel.None
+                        (s) => s.encryption_level === EncryptionLevel.None,
                     )
                 ) {
                     settings.push(
                         new PlaceSettings({
                             encryption_level: EncryptionLevel.None,
-                        })
+                        }),
                     );
                 } else if (
                     !settings.find(
-                        (s) => s.encryption_level === EncryptionLevel.Support
+                        (s) => s.encryption_level === EncryptionLevel.Support,
                     )
                 ) {
                     settings.push(
                         new PlaceSettings({
                             encryption_level: EncryptionLevel.Support,
-                        })
+                        }),
                     );
                 } else if (
                     !settings.find(
-                        (s) => s.encryption_level === EncryptionLevel.Admin
+                        (s) => s.encryption_level === EncryptionLevel.Admin,
                     )
                 ) {
                     settings.push(
                         new PlaceSettings({
                             encryption_level: EncryptionLevel.Admin,
-                        })
+                        }),
                     );
                 } else {
                     settings.push(
                         new PlaceSettings({
                             encryption_level: EncryptionLevel.NeverDisplay,
-                        })
+                        }),
                     );
                 }
             }
             settings.sort((a, b) => a.encryption_level - b.encryption_level);
             this._active_item.next(
-                new this.actions.itemConstructor({ ...item, settings })
+                new this.actions.itemConstructor({ ...item, settings }),
             );
         }
     }

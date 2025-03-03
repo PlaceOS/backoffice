@@ -16,7 +16,7 @@ describe('SystemStateService', () => {
                     active_item$: new BehaviorSubject(null),
                     item: new BehaviorSubject(null),
                     edit: jest.fn(async () => null),
-                    replaceItem: jest.fn()
+                    replaceItem: jest.fn(),
                 },
             },
             { provide: PlaceDebugService, useValue: {} },
@@ -37,7 +37,7 @@ describe('SystemStateService', () => {
     it.todo('should list triggers for active system');
     it.todo('should starting the active system');
     it.todo('should stopping active system');
-    it.todo('should toggling module\'s debugging for active system');
+    it.todo("should toggling module's debugging for active system");
     it.todo('should allow creating new modules for active system');
     it.todo('should allow editing of modules in active system');
     it.todo('should allow adding new triggers to active system');

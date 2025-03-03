@@ -5,8 +5,13 @@ import { MatChipInputEvent } from '@angular/material/chips';
  * Add a tag to the list of tags for the item
  * @param event Input event
  */
-export function addChipItem<T = string>(control: FormControl<T[]>, event: MatChipInputEvent): void {
-    if (!control) { return; }
+export function addChipItem<T = string>(
+    control: FormControl<T[]>,
+    event: MatChipInputEvent,
+): void {
+    if (!control) {
+        return;
+    }
     const input = event.input;
     const value = (event.value || '').trim() as any;
     const item_list = control.value;
@@ -25,8 +30,13 @@ export function addChipItem<T = string>(control: FormControl<T[]>, event: MatChi
  * Remove tag from the list
  * @param existing_tag Tag to remove
  */
-export function removeChipItem<T = string>(control: FormControl<T[]>, item: T): void {
-    if (!control) { return; }
+export function removeChipItem<T = string>(
+    control: FormControl<T[]>,
+    item: T,
+): void {
+    if (!control) {
+        return;
+    }
     const item_list = control.value;
     const index = item_list.indexOf(item);
 

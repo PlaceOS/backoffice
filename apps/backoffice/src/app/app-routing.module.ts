@@ -12,68 +12,84 @@ const routes: Routes = [
         path: 'mqtt-dashboard',
         canLoad: [AuthorisedUserGuard],
         canActivate: [AuthorisedUserGuard],
-        loadChildren: () => import('./alert-dashboard/dashboard.module').then((m) => m.MqttDashboardModule),
+        loadChildren: () =>
+            import('./alert-dashboard/dashboard.module').then(
+                (m) => m.MqttDashboardModule,
+            ),
     },
     {
         path: 'modules',
         canLoad: [AuthorisedUserGuard],
         canActivate: [AuthorisedUserGuard],
-        loadChildren: () => import('./modules/modules.module').then((m) => m.AppModulesModule),
+        loadChildren: () =>
+            import('./modules/modules.module').then((m) => m.AppModulesModule),
     },
     {
         path: 'domains',
         canLoad: [AuthorisedAdminGuard],
         canActivate: [AuthorisedAdminGuard],
-        loadChildren: () => import('./domains/domains.module').then((m) => m.AppDomainsModule),
+        loadChildren: () =>
+            import('./domains/domains.module').then((m) => m.AppDomainsModule),
     },
     {
         path: 'drivers',
         canLoad: [AuthorisedUserGuard],
         canActivate: [AuthorisedUserGuard],
-        loadChildren: () => import('./drivers/drivers.module').then((m) => m.AppDriversModule),
+        loadChildren: () =>
+            import('./drivers/drivers.module').then((m) => m.AppDriversModule),
     },
     {
         path: 'metrics',
         canLoad: [AuthorisedUserGuard],
         canActivate: [AuthorisedUserGuard],
-        loadChildren: () => import('./metrics/metrics.module').then((m) => m.AppMetricsModule),
+        loadChildren: () =>
+            import('./metrics/metrics.module').then((m) => m.AppMetricsModule),
     },
     {
         path: 'systems',
         canLoad: [AuthorisedUserGuard],
         canActivate: [AuthorisedUserGuard],
-        loadChildren: () => import('./systems/systems.module').then((m) => m.AppSystemsModule),
+        loadChildren: () =>
+            import('./systems/systems.module').then((m) => m.AppSystemsModule),
     },
     {
         path: 'repositories',
         canLoad: [AuthorisedAdminGuard],
         canActivate: [AuthorisedAdminGuard],
         loadChildren: () =>
-            import('./repositories/repositories.module').then((m) => m.AppRepositoriesModule),
+            import('./repositories/repositories.module').then(
+                (m) => m.AppRepositoriesModule,
+            ),
     },
     {
         path: 'triggers',
         canLoad: [AuthorisedUserGuard],
         canActivate: [AuthorisedUserGuard],
-        loadChildren: () => import('./triggers/triggers.module').then((m) => m.AppTriggersModule),
+        loadChildren: () =>
+            import('./triggers/triggers.module').then(
+                (m) => m.AppTriggersModule,
+            ),
     },
     {
         path: 'users',
         canLoad: [AuthorisedAdminGuard],
         canActivate: [AuthorisedAdminGuard],
-        loadChildren: () => import('./users/users.module').then((m) => m.AppUsersModule),
+        loadChildren: () =>
+            import('./users/users.module').then((m) => m.AppUsersModule),
     },
     {
         path: 'zones',
         canLoad: [AuthorisedUserGuard],
         canActivate: [AuthorisedUserGuard],
-        loadChildren: () => import('./zones/zones.module').then((m) => m.AppZonesModule),
+        loadChildren: () =>
+            import('./zones/zones.module').then((m) => m.AppZonesModule),
     },
     {
         path: 'admin',
         canLoad: [AuthorisedAdminGuard],
         canActivate: [AuthorisedAdminGuard],
-        loadChildren: () => import('./admin/admin.module').then((m) => m.AppPlaceModule),
+        loadChildren: () =>
+            import('./admin/admin.module').then((m) => m.AppPlaceModule),
     },
     { path: '**', redirectTo: 'systems' },
 ];

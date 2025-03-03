@@ -19,7 +19,7 @@ const FILTER_FN = (item: any, q: HashMap) => {
     }
     if (q.control_system_id) {
         const system = endpointData(`${API}/systems`).find(
-            (sys) => sys.id === q.control_system_id
+            (sys) => sys.id === q.control_system_id,
         );
         match = match && system && system.zones.includes(item.id);
     }

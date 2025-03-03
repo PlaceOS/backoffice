@@ -21,7 +21,7 @@ describe('Users test', () => {
 
     it('Can create a user', () => {
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('input[name="first-name"]').type(first_name);
@@ -33,7 +33,7 @@ describe('Users test', () => {
         cy.wait(50);
 
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('input[name="first-name"]').type(first_name2);
@@ -72,7 +72,7 @@ describe('Users test', () => {
                 force: true,
             });
         cy.get(
-            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
         ).click();
         cy.contains('Edit user').click({
             force: true,
@@ -96,7 +96,7 @@ describe('Users test', () => {
                 force: true,
             });
         cy.get(
-            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
         ).click();
         cy.get('*[class^="heading select-text"]').then(($hd) => {
             let user = $hd.text();
@@ -104,7 +104,7 @@ describe('Users test', () => {
             cy.wait(1000);
             cy.contains('Export user').click();
             cy.readFile(path.join(downloadsFolder, user + '.users.tsv')).should(
-                'exist'
+                'exist',
             );
         });
     });
@@ -133,7 +133,7 @@ describe('Users test', () => {
         cy.get('*[class^="ng-untouched ng-dirty ng-invalid"]').should('exist');
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'invalid'
+            'invalid',
         );
         cy.get('*[class^="view-lines monaco-mouse-cursor-text"]')
             .click()
@@ -167,7 +167,7 @@ describe('Users test', () => {
             });
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Saved'
+            'Saved',
         );
     });
 
@@ -175,7 +175,7 @@ describe('Users test', () => {
         let first_name3 = uniqueNamesGenerator(config);
         let last_name3 = uniqueNamesGenerator(config);
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('input[name="first-name"]').type(first_name3);
@@ -210,7 +210,7 @@ describe('Users test', () => {
             });
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Saved'
+            'Saved',
         );
 
         cy.wait(1000);
@@ -241,7 +241,7 @@ describe('Users test', () => {
                 force: true,
             });
         cy.get(
-            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.contains('Delete user').click();
@@ -249,7 +249,7 @@ describe('Users test', () => {
         cy.contains('Ok').click();
         // get name of user and filter to get 0 OR
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 });

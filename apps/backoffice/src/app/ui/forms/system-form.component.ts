@@ -13,7 +13,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
     template: `
         <form
             system
-            class="flex flex-col w-full"
+            class="flex w-full flex-col"
             *ngIf="form"
             [formGroup]="form"
         >
@@ -171,7 +171,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                     ></a-counter>
                 </div>
             </div>
-            <div class="flex items-center space-x-4 mb-4">
+            <div class="mb-4 flex items-center space-x-4">
                 <settings-toggle
                     [name]="'SYSTEMS.BOOKABLE' | translate"
                     class="flex-1"
@@ -216,7 +216,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                             *ngFor="let item of feature_list"
                             (removed)="removeFeature(item)"
                         >
-                            <div class="truncate max-w-md">{{ item }}</div>
+                            <div class="max-w-md truncate">{{ item }}</div>
                             <button
                                 matChipRemove
                                 [attr.aria-label]="
@@ -254,7 +254,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
                 }}</label>
                 <mat-form-field appearance="outline">
                     <div class="prefix" matPrefix>
-                        <app-icon class="text-2xl relative -left-0.5">
+                        <app-icon class="relative -left-0.5 text-2xl">
                             search
                         </app-icon>
                     </div>
@@ -324,9 +324,9 @@ export class SystemFormComponent extends AsyncHandler {
                 this.form.valueChanges.subscribe(
                     ({ timezone }) =>
                         (this.filtered_timezones = this.timezones.filter((_) =>
-                            _.toLowerCase().includes(timezone.toLowerCase())
-                        ))
-                )
+                            _.toLowerCase().includes(timezone.toLowerCase()),
+                        )),
+                ),
             );
         }
     }
@@ -370,7 +370,7 @@ export class SystemFormComponent extends AsyncHandler {
         const timezone = this.form?.value?.timezone || '';
         this.timezones = TIMEZONES_IANA;
         this.filtered_timezones = this.timezones.filter((_) =>
-            _.toLowerCase().includes(timezone.toLowerCase())
+            _.toLowerCase().includes(timezone.toLowerCase()),
         );
     }
 }

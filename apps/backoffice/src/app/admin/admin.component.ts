@@ -13,23 +13,23 @@ import { timer } from 'rxjs';
     selector: 'app-engine',
     template: `
         <div
-            class="absolute inset-0 flex items-center divide-y sm:divide-y-0 sm:divide-x divide-base-200  bg-base-100 "
+            class="absolute inset-0 flex items-center divide-y divide-base-200 bg-base-100 sm:divide-x sm:divide-y-0"
         >
             <sidebar-menu [(open)]="open_menu" class="sm:h-full"></sidebar-menu>
-            <div class="flex flex-col h-full flex-1 overflow-hidden w-px">
-                <div class="flex flex-1 z-0 h-1/2  ">
+            <div class="flex h-full w-px flex-1 flex-col overflow-hidden">
+                <div class="z-0 flex h-1/2 flex-1">
                     <div
-                        class="h-full relative sm:w-56 px-2 border-r border-base-200 z-10 pt-10 sm:py-4 space-y-2 overflow-auto"
+                        class="relative z-10 h-full space-y-2 overflow-auto border-r border-base-200 px-2 pt-10 sm:w-56 sm:py-4"
                     >
                         <a
                             btn
                             matRipple
                             *ngFor="let item of tab_list"
-                            class="clear text-left w-auto min-w-full hover:bg-base-200"
+                            class="clear w-auto min-w-full text-left hover:bg-base-200"
                             [routerLink]="['/admin', item.id]"
                             routerLinkActive="!bg-secondary text-secondary-content"
                         >
-                            <div class="flex items-center space-x-2 w-full">
+                            <div class="flex w-full items-center space-x-2">
                                 <app-icon class="text-2xl">{{
                                     item.icon?.value
                                 }}</app-icon>
@@ -40,14 +40,14 @@ import { timer } from 'rxjs';
                         </a>
                     </div>
                     <div
-                        class="relative flex-1 w-1/2 h-full z-0 px-4  overflow-auto"
+                        class="relative z-0 h-full w-1/2 flex-1 overflow-auto px-4"
                     >
                         <router-outlet></router-outlet>
                     </div>
                     <button
                         btn
                         icon
-                        class="sm:hidden mr-2 absolute top-2 left-4 z-40"
+                        class="absolute left-4 top-2 z-40 mr-2 sm:hidden"
                         (click)="open_menu = true"
                     >
                         <app-icon>menu</app-icon>
@@ -182,7 +182,7 @@ export class PlaceComponent extends AsyncHandler {
         private _settings: SettingsService,
         private _service: ActiveItemService,
         private _users: BackofficeUsersService,
-        private _debug: PlaceDebugService
+        private _debug: PlaceDebugService,
     ) {
         super();
     }

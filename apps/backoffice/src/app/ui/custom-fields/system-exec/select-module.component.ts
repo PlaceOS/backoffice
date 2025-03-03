@@ -31,7 +31,7 @@ export interface ModuleLike {
     selector: `select-system-module`,
     template: `
         <mat-form-field
-            class="w-full h-14"
+            class="h-14 w-full"
             appearance="outline"
             *ngIf="!loading; else load_state"
         >
@@ -50,7 +50,7 @@ export interface ModuleLike {
             </mat-select>
         </mat-form-field>
         <ng-template #load_state>
-            <div class="p-4 flex space-x-2 items-center justify-center">
+            <div class="flex items-center justify-center space-x-2 p-4">
                 <mat-spinner diameter="32"></mat-spinner>
                 <p>{{ 'COMMON.EXECUTE_MODULE_LOADING' | translate }}</p>
             </div>
@@ -81,7 +81,7 @@ export class SelectModuleComponent
 
     public modules = combineLatest([this._system, this._change]).pipe(
         distinctUntilChanged(
-            ([id1, time1], [id2, time2]) => id1 === id2 && time1 === time2
+            ([id1, time1], [id2, time2]) => id1 === id2 && time1 === time2,
         ),
         tap(() => (this.loading = true)),
         switchMap(([id]) =>
@@ -91,14 +91,14 @@ export class SelectModuleComponent
                       limit: 500,
                       complete: true,
                   } as any).pipe(map(({ data }) => data))
-                : of([])
+                : of([]),
         ),
         catchError(() => of([])),
         map((mod_list) => {
             mod_list.sort(
                 (a, b) =>
                     this.system.modules.indexOf(a.id) -
-                    this.system.modules.indexOf(b.id)
+                    this.system.modules.indexOf(b.id),
             );
             return mod_list.map((mod) => ({
                 id: mod.id,
@@ -109,7 +109,7 @@ export class SelectModuleComponent
             }));
         }),
         tap(() => (this.loading = false)),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     /** Form control on change handler */
@@ -124,10 +124,10 @@ export class SelectModuleComponent
                 const active = list.find(
                     (_) =>
                         _.module === this.module?.module &&
-                        _.index === this.module?.index
+                        _.index === this.module?.index,
                 );
                 if (active) this.setValue(active);
-            })
+            }),
         );
     }
 

@@ -33,8 +33,8 @@ export interface PlaceTenant {
 @Component({
     selector: 'staff-api',
     template: `
-        <div class="flex flex-col h-full w-full">
-            <div class="flex items-center justify-between space-x-2 my-4">
+        <div class="flex h-full w-full flex-col">
+            <div class="my-4 flex items-center justify-between space-x-2">
                 <div class="text-2xl">
                     {{ 'ADMIN.TENANTS_HEADER' | translate }}
                 </div>
@@ -67,34 +67,34 @@ export interface PlaceTenant {
                     </button>
                 </div>
             </div>
-            <div class="flex-1 w-full h-1/2 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!loading"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[48rem] block text-sm"
+                    class="block min-w-[48rem] text-sm"
                     [data]="tenants"
                     [columns]="[
                         { key: 'name', name: 'COMMON.FIELD_NAME' | translate },
                         {
                             key: 'platform',
-                            name: 'ADMIN.TENANTS_PLATFORM' | translate
+                            name: 'ADMIN.TENANTS_PLATFORM' | translate,
                         },
                         {
                             key: 'secret_expiry',
                             name: 'ADMIN.TENANTS_SECRET_EXPIRY' | translate,
                             content: expires_template,
-                            size: '10rem'
+                            size: '10rem',
                         },
                         {
                             key: 'actions',
                             name: ' ',
                             content: actions_template,
                             sortable: false,
-                            size: '8.75rem'
-                        }
+                            size: '8.75rem',
+                        },
                     ]"
                     [sortable]="true"
                     [empty_message]="'ADMIN.TENANTS_EMPTY' | translate"
@@ -185,10 +185,10 @@ export class PlaceStaffAPIComponent implements OnInit {
         map((tenants) => {
             this.loading = '';
             return tenants.filter(
-                (t) => t.domain === this.domain.getValue()?.domain
+                (t) => t.domain === this.domain.getValue()?.domain,
             );
         }),
-        shareReplay()
+        shareReplay(),
     );
 
     public expiring(tenant: PlaceTenant): boolean {
@@ -222,7 +222,7 @@ export class PlaceStaffAPIComponent implements OnInit {
             data: { tenant, domain: this.domain.getValue() },
         });
         ref.afterClosed().subscribe((_) =>
-            this.domain.next(this.domain.getValue())
+            this.domain.next(this.domain.getValue()),
         );
     }
 
@@ -231,7 +231,7 @@ export class PlaceStaffAPIComponent implements OnInit {
             data: { tenant, domain: this.domain.getValue() },
         });
         ref.afterClosed().subscribe((_) =>
-            this.domain.next(this.domain.getValue())
+            this.domain.next(this.domain.getValue()),
         );
     }
 
@@ -250,7 +250,7 @@ export class PlaceStaffAPIComponent implements OnInit {
                 icon: { type: 'icon', content: 'delete' },
                 action: 'Delete',
             },
-            this._dialog
+            this._dialog,
         );
         if (!details || !details.reason) return;
         details.loading('Removing tenant from domain...');
@@ -260,7 +260,7 @@ export class PlaceStaffAPIComponent implements OnInit {
                 notifyError(
                     `Error removing module ${tenant.id} from domain. Error: ${
                         err.statusText || err.message || err
-                    }`
+                    }`,
                 );
                 return true;
             });

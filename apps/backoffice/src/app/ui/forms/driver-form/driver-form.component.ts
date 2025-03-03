@@ -88,7 +88,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
     public readonly query_fn = (_: string) =>
         queryRepositories({ q: _ }).pipe(
             map((resp) => resp.data),
-            catchError(() => of([]))
+            catchError(() => of([])),
         );
     /** Function to check repo that are excluded from being listed */
     public readonly exclude_fn = (repo: PlaceRepository) =>
@@ -109,12 +109,12 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                 this.driver_list = [];
                 this.commit_list = [];
                 return listRepositoryDrivers(repo_id).pipe(
-                    catchError(() => of([]))
+                    catchError(() => of([])),
                 );
             }),
             catchError((_) => {
                 notifyError(
-                    i18n('DRIVERS.LISTING_ERROR', { error: _.message || _ })
+                    i18n('DRIVERS.LISTING_ERROR', { error: _.message || _ }),
                 );
                 return of([]);
             }),
@@ -124,11 +124,11 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                     id: driver,
                     name: driver.replace(/\//g, ' > '),
                 }));
-            })
+            }),
         );
         this.subscription(
             'driver_list',
-            this.driver_list$.subscribe((list) => (this.driver_list = list))
+            this.driver_list$.subscribe((list) => (this.driver_list = list)),
         );
         this.commit_list$ = this.driver$.pipe(
             debounceTime(120),
@@ -142,7 +142,9 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
             }),
             catchError((_) => {
                 notifyError(
-                    i18n('DRIVERS.COMMIT_LIST_ERROR', { error: _.message || _ })
+                    i18n('DRIVERS.COMMIT_LIST_ERROR', {
+                        error: _.message || _,
+                    }),
                 );
                 return of([]);
             }),
@@ -151,7 +153,7 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                 if (this.form.controls.commit) {
                     this.base_commit = this.commit_list.find(
                         (commit) =>
-                            commit.id === this.form.controls.commit.value
+                            commit.id === this.form.controls.commit.value,
                     ) as any;
                 }
                 return (list || []).map((commit: PlaceRepositoryCommit) => {
@@ -164,11 +166,11 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                             : format(date, 'dd MMM yyyy'),
                     };
                 });
-            })
+            }),
         );
         this.subscription(
             'commit_list',
-            this.commit_list$.subscribe((list) => (this.commit_list = list))
+            this.commit_list$.subscribe((list) => (this.commit_list = list)),
         );
         this.role_types = [
             { id: PlaceDriverRole.SSH, name: i18n('DRIVERS.SSH') },
@@ -247,10 +249,10 @@ export class DriverFormComponent extends AsyncHandler implements OnChanges {
                         ? PlaceDriverRole.SSH
                         : PlaceDriverRole.Device
                     : driver.uri_base
-                    ? driver.uri_base.startsWith('ws')
-                        ? PlaceDriverRole.Websocket
-                        : PlaceDriverRole.Service
-                    : PlaceDriverRole.Logic
+                      ? driver.uri_base.startsWith('ws')
+                          ? PlaceDriverRole.Websocket
+                          : PlaceDriverRole.Service
+                      : PlaceDriverRole.Logic,
             );
             let settings = driver.default_settings || '';
             try {

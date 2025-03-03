@@ -26,7 +26,7 @@ describe('ItemDetailsComponent', () => {
             { provide: Clipboard, useValue: { copy: jest.fn() } },
         ],
         declarations: [MockComponent(IconComponent)],
-        imports: [MockModule(MatMenuModule)]
+        imports: [MockModule(MatMenuModule)],
     });
 
     beforeEach(() => (spectator = createComponent()));

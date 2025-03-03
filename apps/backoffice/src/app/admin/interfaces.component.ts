@@ -7,7 +7,7 @@ import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 @Component({
     selector: 'app-interfaces',
     template: `
-        <div class="flex items-center justify-between space-x-2 my-4">
+        <div class="my-4 flex items-center justify-between space-x-2">
             <div class="text-2xl">PlaceOS Interfaces</div>
         </div>
         <mat-progress-bar
@@ -16,7 +16,7 @@ import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
             [class.opacity-0]="!loading"
         ></mat-progress-bar>
         <simple-table
-            class="min-w-[36rem] block text-sm"
+            class="block min-w-[36rem] text-sm"
             [data]="interfaces"
             [columns]="[
                 { key: 'id', name: 'REPOS.SINGULAR' | translate },
@@ -24,13 +24,13 @@ import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
                     key: 'name',
                     name: 'COMMON.GIT_COMMIT' | translate,
                     content: name_template,
-                    size: '24rem'
-                }
+                    size: '24rem',
+                },
             ]"
             [sortable]="true"
             empty_message="No interfaces"
         ></simple-table>
-        <div class="w-full h-12"></div>
+        <div class="h-12 w-full"></div>
         <ng-template #name_template let-row="row">
             <div class="p-4">
                 <div class="font-mono" *ngIf="row.name">{{ row.name }}</div>
@@ -70,7 +70,7 @@ export class AdminInterfacesComponent implements OnInit {
             return list;
         }),
         tap(() => (this.loading = false)),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public ngOnInit() {

@@ -5,24 +5,24 @@ import { UntypedFormGroup } from '@angular/forms';
     selector: 'system-trigger-form',
     template: `
         <form system-trigger class="flex flex-col" [formGroup]="form">
-            <div class="flex space-x-4 mb-4">
+            <div class="mb-4 flex space-x-4">
                 <div
-                    class="relative p-4 rounded border border-base-300 flex-1 flex items-center"
+                    class="relative flex flex-1 items-center rounded border border-base-300 p-4"
                     *ngIf="form.controls.name"
                 >
                     <div
-                        class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded p-2 text-xs truncation"
+                        class="truncation absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 p-2 text-xs"
                     >
                         {{ 'SYSTEMS.TRIGGER_NAME' | translate }}
                     </div>
                     <div class="text-xl">{{ form.controls.name.value }}</div>
                 </div>
                 <div
-                    class="relative p-4 rounded border border-base-300 flex-1"
+                    class="relative flex-1 rounded border border-base-300 p-4"
                     *ngIf="form.controls.name"
                 >
                     <div
-                        class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded p-2 text-xs"
+                        class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 p-2 text-xs"
                     >
                         {{ 'SYSTEMS.TRIGGER_ACTIVE' | translate }}
                     </div>
@@ -44,19 +44,19 @@ import { UntypedFormGroup } from '@angular/forms';
                     </div>
                 </div>
             </div>
-            <div class="flex items-center flex-wrap -mx-2">
+            <div class="-mx-2 flex flex-wrap items-center">
                 <settings-toggle
-                    class="min-w-[40%] flex-1 m-2 max-w-[calc(50%-1rem)]"
+                    class="m-2 min-w-[40%] max-w-[calc(50%-1rem)] flex-1"
                     [name]="'SYSTEMS.TRIGGER_ENABLED' | translate"
                     formControlName="enabled"
                 ></settings-toggle>
                 <settings-toggle
-                    class="min-w-[40%] flex-1 m-2 max-w-[calc(50%-1rem)]"
+                    class="m-2 min-w-[40%] max-w-[calc(50%-1rem)] flex-1"
                     [name]="'SYSTEMS.TRIGGER_EXECUTE_ENABLED' | translate"
                     formControlName="exec_enabled"
                 ></settings-toggle>
                 <settings-toggle
-                    class="min-w-[40%] flex-1 m-2 max-w-[calc(50%-1rem)]"
+                    class="m-2 min-w-[40%] max-w-[calc(50%-1rem)] flex-1"
                     [name]="'SYSTEMS.TRIGGER_IMPORTANT' | translate"
                     formControlName="important"
                 ></settings-toggle>

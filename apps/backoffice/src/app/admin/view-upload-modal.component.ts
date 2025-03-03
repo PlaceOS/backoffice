@@ -6,7 +6,7 @@ import { UploadInfo } from './upload-library.component';
     selector: 'view-upload-modal',
     template: `
         <header
-            class="flex items-center justify-between p-2 border-b border-base-300"
+            class="flex items-center justify-between border-b border-base-300 p-2"
         >
             <h1 class="px-2">View Upload - {{ name }}</h1>
             <button icon matRipple mat-dialog-close>
@@ -15,17 +15,17 @@ import { UploadInfo } from './upload-library.component';
         </header>
         <main class="bg-base-200">
             <div
-                class="max-w-[80vw] max-h-[65vh] w-[80vw] h-[65vh] flex items-center justify-center"
+                class="flex h-[65vh] max-h-[65vh] w-[80vw] max-w-[80vw] items-center justify-center"
             >
                 <img
                     *ngIf="type === 'image'"
-                    class="w-full h-full object-contain object-center"
+                    class="h-full w-full object-contain object-center"
                     auth
                     [source]="resource"
                 />
                 <video
                     *ngIf="type === 'video'"
-                    class="w-full h-full object-contain object-center"
+                    class="h-full w-full object-contain object-center"
                     auth
                     [source]="resource"
                     autoplay
@@ -45,6 +45,6 @@ export class ViewUploadModalComponent {
         @Inject(MAT_DIALOG_DATA)
         private _data: {
             upload: UploadInfo;
-        }
+        },
     ) {}
 }

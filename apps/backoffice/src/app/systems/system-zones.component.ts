@@ -9,11 +9,11 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 @Component({
     selector: 'system-zones',
     template: `
-        <div class="flex flex-col h-full w-full">
-            <section class="flex items-center space-x-2 mb-2">
+        <div class="flex h-full w-full flex-col">
+            <section class="mb-2 flex items-center space-x-2">
                 <item-search-field
                     [placeholder]="'SYSTEMS.ZONE_SEARCH' | translate"
-                    class="flex-1 h-12"
+                    class="h-12 flex-1"
                     [query_fn]="query_fn"
                     [exclude]="exclude_fn"
                     [clear_on_select]="true"
@@ -21,12 +21,12 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                     (ngModelChange)="addPendingZone($event)"
                 ></item-search-field>
             </section>
-            <section class="flex items-center space-x-2 mb-2">
+            <section class="mb-2 flex items-center space-x-2">
                 <button
                     btn
                     matRipple
                     [disabled]="!this.has_changes"
-                    class="flex-1 inverse"
+                    class="inverse flex-1"
                     (click)="clearChanges()"
                 >
                     {{ 'COMMON.CLEAR' | translate }}
@@ -34,7 +34,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                 <button
                     btn
                     matRipple
-                    class="flex-1 inverse"
+                    class="inverse flex-1"
                     [disabled]="!this.has_changes"
                     (mousedown)="show_original = true"
                     (touchstart)="show_original = true"
@@ -54,64 +54,64 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                 </button>
             </section>
             <div
-                class="p-2 rounded bg-warning text-warning-content mono text-xs text-center mb-2"
+                class="mono mb-2 rounded bg-warning p-2 text-center text-xs text-warning-content"
                 *ngIf="zone_issues | async"
             >
                 {{ zone_issues | async }}
             </div>
-            <section class="w-full flex-1 h-1/2 overflow-auto">
+            <section class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!(loading | async).zones"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[32rem] block text-sm"
+                    class="block min-w-[32rem] text-sm"
                     [data]="show_original ? original_zones : zones"
                     [columns]="[
                         {
                             key: 'name',
                             name: 'SYSTEMS.ZONE_FIELD_NAME' | translate,
                             content: name_template,
-                            size: '14rem'
+                            size: '14rem',
                         },
                         {
                             key: 'description',
                             name: 'SYSTEMS.ZONE_FIELD_DESCRIPTION' | translate,
-                            content: description_template
+                            content: description_template,
                         },
                         {
                             key: 'actions',
                             name: ' ',
                             size: '3.5rem',
                             content: actions_template,
-                            show: (zones | async)?.length > 1
-                        }
+                            show: (zones | async)?.length > 1,
+                        },
                     ]"
                     [color]="show_original ? {} : (changed_colours | async)"
                     [can_reorder]="true"
                     (ondrop)="reorder($event)"
                     empty_message="No zones for selected system"
                 ></simple-table>
-                <div class="w-full h-12"></div>
+                <div class="h-12 w-full"></div>
                 <ng-template #name_template let-row="row">
                     <div
-                        class="flex flex-col items-start px-4 py-2 leading-snug w-full"
+                        class="flex w-full flex-col items-start px-4 py-2 leading-snug"
                     >
                         <a
-                            class="truncate underline w-full"
+                            class="w-full truncate underline"
                             [routerLink]="['/zones', row.id]"
                         >
                             {{ row.name }}
                         </a>
-                        <div class="text-[0.625rem] opacity-30 font-mono">
+                        <div class="font-mono text-[0.625rem] opacity-30">
                             {{ row.id }}
                         </div>
                     </div>
                 </ng-template>
                 <ng-template #description_template let-data="data">
                     <div
-                        class="px-4 py-2 select-text overflow-hidden w-full text-xs"
+                        class="w-full select-text overflow-hidden px-4 py-2 text-xs"
                     >
                         {{ data }}
                         <span class="opacity-30" *ngIf="!data">
@@ -120,7 +120,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
                     </div>
                 </ng-template>
                 <ng-template #actions_template let-row="row">
-                    <div class="flex items-center space-x-2 p-2 mx-auto">
+                    <div class="mx-auto flex items-center space-x-2 p-2">
                         <button
                             icon
                             matRipple
@@ -169,9 +169,9 @@ export class SystemZonesComponent {
     ]).pipe(
         map(([zones, pending, order]) =>
             [...zones, ...pending.map((_) => ({ ..._, pending: true }))].sort(
-                (a, b) => order.indexOf(a.id) - order.indexOf(b.id)
-            )
-        )
+                (a, b) => order.indexOf(a.id) - order.indexOf(b.id),
+            ),
+        ),
     );
 
     public readonly changed_colours = combineLatest([
@@ -180,15 +180,15 @@ export class SystemZonesComponent {
     ]).pipe(
         map(([zones, pending]) => {
             const has_changed = zones.map(
-                (i) => this.changed[i.id] || pending.find((_) => _.id === i.id)
+                (i) => this.changed[i.id] || pending.find((_) => _.id === i.id),
             );
             const colours = {};
             has_changed.forEach((i, index) =>
-                i ? (colours[index] = 'var(--wal)') : ''
+                i ? (colours[index] = 'var(--wal)') : '',
             );
             console.log('Changed:', colours, this.changed);
             return colours;
-        })
+        }),
     );
 
     public readonly zone_issues = combineLatest([
@@ -206,10 +206,10 @@ export class SystemZonesComponent {
             if (!has_building) missing.push('building');
             if (!has_level) missing.push('level');
             return `Zones with tags required for a room system are missing. [${missing.join(
-                ', '
+                ', ',
             )}]`;
         }),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public get has_changes() {
@@ -226,7 +226,7 @@ export class SystemZonesComponent {
     public readonly removeZone = (z) =>
         z.pending
             ? this.pending_zones.next(
-                  this.pending_zones.getValue().filter((_) => _.id !== z.id)
+                  this.pending_zones.getValue().filter((_) => _.id !== z.id),
               )
             : this._service.removeZone(z);
 

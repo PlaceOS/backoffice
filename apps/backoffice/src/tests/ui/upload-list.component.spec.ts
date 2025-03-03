@@ -39,10 +39,8 @@ describe('UploadListComponent', () => {
                 },
             },
         ],
-        declarations: [
-            MockComponent(IconComponent)
-        ],
-        imports: [MatProgressBarModule, MatTooltipModule]
+        declarations: [MockComponent(IconComponent)],
+        imports: [MatProgressBarModule, MatTooltipModule],
     });
 
     beforeEach(() => {
@@ -76,18 +74,22 @@ describe('UploadListComponent', () => {
     });
 
     it('should allow copying completed file links', () => {
-        (spectator.inject(UploadsService).upload_list as any).next([{ progress: 100, link: 'test' }]);
+        (spectator.inject(UploadsService).upload_list as any).next([
+            { progress: 100, link: 'test' },
+        ]);
         spectator.detectChanges();
         const spy = jest.spyOn(spectator.component, 'copyLink');
-        spectator.click('[upload-file] a')
+        spectator.click('[upload-file] a');
         expect(spy).toHaveBeenCalled();
     });
 
     it('should allow retrying failed uploads', () => {
-        (spectator.inject(UploadsService).upload_list as any).next([{ progress: 100, error: 'test', upload: { resume: jest.fn() } }]);
+        (spectator.inject(UploadsService).upload_list as any).next([
+            { progress: 100, error: 'test', upload: { resume: jest.fn() } },
+        ]);
         spectator.detectChanges();
         const spy = jest.spyOn(spectator.component, 'retry');
-        spectator.click('[upload-file] button')
+        spectator.click('[upload-file] button');
         expect(spy).toHaveBeenCalled();
     });
 });

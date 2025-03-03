@@ -64,7 +64,7 @@ export class UserHistoryComponent extends AsyncHandler {
             'item',
             this._service.item.subscribe((item) => {
                 this.loadUserLogs();
-            })
+            }),
         );
     }
 

@@ -49,7 +49,7 @@ export class TriggerStateService {
             return listTriggerInstances(item.id);
         }),
         tap(() => this._loading.next(false)),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public get active_item(): PlaceTrigger {
@@ -58,7 +58,7 @@ export class TriggerStateService {
 
     constructor(
         private _service: ActiveItemService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
     ) {}
 
     /**
@@ -66,7 +66,7 @@ export class TriggerStateService {
      */
     public async editCondition(
         condition: TriggerComparison | TriggerTimeCondition = null,
-        template: PlaceSystem
+        template: PlaceSystem,
     ) {
         if (!template) return;
         const ref = this._dialog.open<
@@ -99,7 +99,7 @@ export class TriggerStateService {
      */
     public async editAction(
         action: TriggerFunction | TriggerMailer = null,
-        template: PlaceSystem
+        template: PlaceSystem,
     ) {
         if (!template) return;
         const ref = this._dialog.open<
@@ -130,7 +130,7 @@ export class TriggerStateService {
     public async reorderAction(
         type: 'function' | 'mailer',
         fst: number,
-        snd: number
+        snd: number,
     ): Promise<void> {
         const details = await openConfirmModal(
             {
@@ -138,7 +138,7 @@ export class TriggerStateService {
                 content: i18n('TRIGGERS.REORDER_CONFIRM_MSG'),
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog
+            this._dialog,
         );
         if (!details) return;
         const list: any[] = [
@@ -164,16 +164,16 @@ export class TriggerStateService {
             return notifyError(
                 i18n('TRIGGERS.REORDER_CONFIRM_ERROR', {
                     error: JSON.stringify(
-                        resp.response || resp.message || resp
+                        resp.response || resp.message || resp,
                     ),
-                })
+                }),
             );
         this._service.replaceItem(resp);
         notifySuccess(i18n('TRIGGERS.REORDER_CONFIRM_SUCCESS'));
     }
 
     public async removeCondition(
-        condition: TriggerComparison | TriggerTimeCondition
+        condition: TriggerComparison | TriggerTimeCondition,
     ) {
         const details = await openConfirmModal(
             {
@@ -181,7 +181,7 @@ export class TriggerStateService {
                 content: i18n('TRIGGERS.REMOVE_CONDITION_MSG'),
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog
+            this._dialog,
         );
         if (!details?.reason) return;
         details.loading(i18n('TRIGGERS.REMOVE_CONDITION_LOADING'));
@@ -194,7 +194,7 @@ export class TriggerStateService {
             ? conditions.time_dependents
             : conditions.comparisons;
         const index = list.findIndex(
-            (i) => JSON.stringify(i) === JSON.stringify(condition)
+            (i) => JSON.stringify(i) === JSON.stringify(condition),
         );
         list.splice(index, 1);
         const resp = await updateTrigger(item.id, {
@@ -208,9 +208,9 @@ export class TriggerStateService {
             return notifyError(
                 i18n('TRIGGERS.REMOVE_CONDITION_ERROR', {
                     error: JSON.stringify(
-                        resp.response || resp.message || resp
+                        resp.response || resp.message || resp,
                     ),
-                })
+                }),
             );
         }
         this._service.replaceItem(resp);
@@ -224,7 +224,7 @@ export class TriggerStateService {
                 content: i18n('TRIGGERS.REMOVE_ACTION_MSG'),
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog
+            this._dialog,
         );
         if (!details?.reason) return;
         details.loading(i18n('TRIGGERS.REMOVE_ACTION_LOADING'));
@@ -250,9 +250,9 @@ export class TriggerStateService {
             return notifyError(
                 i18n('TRIGGERS.REMOVE_ACTION_ERROR', {
                     error: JSON.stringify(
-                        resp.response || resp.message || resp
+                        resp.response || resp.message || resp,
                     ),
-                })
+                }),
             );
         }
         this._service.replaceItem(resp);
@@ -272,7 +272,7 @@ export class TriggerStateService {
                 }),
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog
+            this._dialog,
         );
         if (!details?.reason) return;
         details.loading(i18n('TRIGGERS.REMOVE_INSTANCE_LOADING', { type }));
@@ -280,7 +280,7 @@ export class TriggerStateService {
             type === 'zone' ? removeSystemTrigger : removeSystemTrigger;
         let err: any = await method(
             instance.control_system_id,
-            instance?.id || this.active_item.id
+            instance?.id || this.active_item.id,
         )
             .toPromise()
             .catch((_) => ({ error: _ }));
@@ -291,7 +291,7 @@ export class TriggerStateService {
                 i18n('TRIGGERS.REMOVE_INSTANCE_ERROR', {
                     type,
                     error: err.responseText || err.message || err,
-                })
+                }),
             );
         }
         this._change.next(Date.now());

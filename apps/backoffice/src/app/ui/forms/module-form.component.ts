@@ -177,13 +177,13 @@ import { map } from 'rxjs/operators';
                         </mat-form-field>
                     </div>
                 </div>
-                <div class="flex items-center flex-wrap mb-4 -mx-2">
+                <div class="-mx-2 mb-4 flex flex-wrap items-center">
                     <settings-toggle
                         *ngIf="
                             form.controls.tls &&
                             !(role === 'service' || role === 'websocket')
                         "
-                        class="min-w-[40%] flex-1 max-w-1/2 m-2"
+                        class="max-w-1/2 m-2 min-w-[40%] flex-1"
                         [name]="'COMMON.TLS' | translate"
                         formControlName="tls"
                     ></settings-toggle>
@@ -192,13 +192,13 @@ import { map } from 'rxjs/operators';
                             form.controls.udp &&
                             !(role === 'service' || role === 'websocket')
                         "
-                        class="min-w-[40%] flex-1 max-w-1/2 m-2"
+                        class="max-w-1/2 m-2 min-w-[40%] flex-1"
                         [name]="'COMMON.UDP' | translate"
                         formControlName="udp"
                     ></settings-toggle>
                     <settings-toggle
                         *ngIf="form.controls.makebreak && role !== 'logic'"
-                        class="min-w-[40%] flex-1 max-w-1/2 m-2"
+                        class="max-w-1/2 m-2 min-w-[40%] flex-1"
                         [name]="'MODULES.MAKEBREAK' | translate"
                         formControlName="makebreak"
                     ></settings-toggle>
@@ -206,7 +206,7 @@ import { map } from 'rxjs/operators';
                         *ngIf="
                             form.controls.ignore_connected && role !== 'logic'
                         "
-                        class="min-w-[40%] flex-1 max-w-1/2 m-2"
+                        class="max-w-1/2 m-2 min-w-[40%] flex-1"
                         [name]="'MODULES.IGNORE_CONNECTED' | translate"
                         formControlName="ignore_connected"
                     ></settings-toggle>

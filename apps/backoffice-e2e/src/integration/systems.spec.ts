@@ -23,7 +23,7 @@ describe('Systems test', () => {
 
     it('Can create a system', () => {
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('[placeholder="Search for zone..."]').click();
@@ -31,13 +31,13 @@ describe('Systems test', () => {
         cy.get('[placeholder="System Name"]').click().type(system_name);
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
     it('Can prevent the wrong format of email for a system being saved', () => {
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('[placeholder="Search for zone..."]').click();
@@ -54,7 +54,7 @@ describe('Systems test', () => {
 
     it('Can prevent the wrong format of support URL for a system being saved', () => {
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('[placeholder="Search for zone..."]').click();
@@ -145,7 +145,7 @@ describe('Systems test', () => {
             force: true,
         });
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -200,7 +200,7 @@ describe('Systems test', () => {
         cy.get('[placeholder="Custom Name"]').click().type(module_name);
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -232,7 +232,7 @@ describe('Systems test', () => {
         cy.get('[placeholder="Custom Name"]').clear().type(new_module_name);
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -246,28 +246,28 @@ describe('Systems test', () => {
             .first()
             .within(() => {
                 cy.get(
-                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
                 )
                     .first()
                     .click();
             });
         cy.contains('Toggle Power').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'successfully'
+            'successfully',
         );
 
         cy.get('*[class^="w-24 flex px-2 justify-center"]')
             .first()
             .within(() => {
                 cy.get(
-                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
                 )
                     .first()
                     .click();
             });
         cy.contains('Toggle Power').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'successfully'
+            'successfully',
         );
     });
 
@@ -281,14 +281,14 @@ describe('Systems test', () => {
             .first()
             .within(() => {
                 cy.get(
-                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
                 )
                     .first()
                     .click();
             });
         cy.contains('Load Module').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -302,21 +302,21 @@ describe('Systems test', () => {
             .first()
             .click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'successfully'
+            'successfully',
         );
 
         cy.get('*[class^="w-24 flex px-2 justify-center"]')
             .first()
             .within(() => {
                 cy.get(
-                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
                 )
                     .first()
                     .click();
             });
         cy.contains('Toggle Power').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'successfully'
+            'successfully',
         );
     });
 
@@ -330,7 +330,7 @@ describe('Systems test', () => {
             .first()
             .within(() => {
                 cy.get(
-                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
                 )
                     .first()
                     .click();
@@ -338,7 +338,7 @@ describe('Systems test', () => {
         cy.contains('Remove Module').click();
         cy.contains('Ok').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -359,7 +359,7 @@ describe('Systems test', () => {
         cy.get('[placeholder="Custom Name"]').click().type(module_name2);
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
 
         cy.visit('https://localhost:8443/backoffice/#/systems/-/about');
@@ -374,7 +374,7 @@ describe('Systems test', () => {
             .first()
             .within(() => {
                 cy.get(
-                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
                 )
                     .first()
                     .click();
@@ -398,7 +398,7 @@ describe('Systems test', () => {
         cy.get('[placeholder="phone_numbers"]').type('040000');
         cy.get('[placeholder="message"]').type('custom message');
         cy.get(
-            '*[class^="mat-focus-indicator flex-1 mat-button mat-button-base"]'
+            '*[class^="mat-focus-indicator flex-1 mat-button mat-button-base"]',
         )
             .contains('Execute')
             .click();
@@ -420,7 +420,7 @@ describe('Systems test', () => {
         cy.get('[placeholder="Custom Name"]').click().type(module_name3);
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
 
         cy.visit('https://localhost:8443/backoffice/#/systems/-/about');
@@ -435,7 +435,7 @@ describe('Systems test', () => {
             .first()
             .within(() => {
                 cy.get(
-                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+                    '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
                 )
                     .first()
                     .click();
@@ -459,7 +459,7 @@ describe('Systems test', () => {
         cy.get('[placeholder="phone_numbers"]').type('040000');
         cy.get('[placeholder="message"]').type('custom message');
         cy.get(
-            '*[class^="mat-focus-indicator flex-1 mat-button mat-button-base"]'
+            '*[class^="mat-focus-indicator flex-1 mat-button mat-button-base"]',
         )
             .contains('Execute')
             .click();
@@ -473,13 +473,13 @@ describe('Systems test', () => {
         cy.visit('https://localhost:8443/backoffice/#/zones/-/about');
         cy.wait(1000);
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('input[name="zone-name"]').type(zone_name);
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
 
         cy.visit('https://localhost:8443/backoffice/#/systems/-/about');
@@ -499,7 +499,7 @@ describe('Systems test', () => {
         cy.wait(1000);
         cy.contains('Save Pending').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -527,7 +527,7 @@ describe('Systems test', () => {
             .click({ force: true });
         cy.contains('Ok').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -535,7 +535,7 @@ describe('Systems test', () => {
         cy.visit('https://localhost:8443/backoffice/#/triggers/-/about');
         cy.wait(1000);
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('input[name="trigger-name"]').type(trigger_name);
@@ -567,7 +567,7 @@ describe('Systems test', () => {
         cy.visit('https://localhost:8443/backoffice/#/triggers/-/about');
         cy.wait(1000);
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('input[name="trigger-name"]').type(trigger_name);
@@ -583,7 +583,7 @@ describe('Systems test', () => {
         cy.get('*[class^="name"]').contains('Triggers').click({ force: true });
         cy.get('*[class^="backoffice-link ng-star-inserted"]').first().click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'copied'
+            'copied',
         );
     });
 
@@ -591,7 +591,7 @@ describe('Systems test', () => {
         cy.visit('https://localhost:8443/backoffice/#/triggers/-/about');
         cy.wait(1000);
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('input[name="trigger-name"]').type(trigger_name);
@@ -615,7 +615,7 @@ describe('Systems test', () => {
         cy.visit('https://localhost:8443/backoffice/#/triggers/-/about');
         cy.wait(1000);
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('input[name="trigger-name"]').type(trigger_name);
@@ -632,7 +632,7 @@ describe('Systems test', () => {
         cy.get('*[class^="backoffice-trash ng-star-inserted"]').first().click();
         cy.contains('Ok').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -640,7 +640,7 @@ describe('Systems test', () => {
         cy.visit('https://localhost:8443/backoffice/#/triggers/-/about');
         cy.wait(1000);
         cy.get(
-            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]'
+            '*[class^="mat-focus-indicator mat-tooltip-trigger add mat-icon-button mat-button-base ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.get('input[name="trigger-name"]').type(trigger_name);
@@ -704,7 +704,7 @@ describe('Systems test', () => {
             });
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Saved'
+            'Saved',
         );
     });
 
@@ -740,7 +740,7 @@ describe('Systems test', () => {
         cy.get('*[class^="backoffice-trash ng-star-inserted"]').click();
         cy.contains('Ok').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -766,7 +766,7 @@ describe('Systems test', () => {
         cy.get('*[class^="ng-untouched ng-dirty ng-invalid"]').should('exist');
         cy.contains('Save').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'invalid'
+            'invalid',
         );
         cy.get('*[class^="view-lines monaco-mouse-cursor-text"]')
             .click()
@@ -786,14 +786,14 @@ describe('Systems test', () => {
             });
         cy.wait(1000);
         cy.get(
-            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.contains('Delete system').click();
         cy.wait(1000);
         cy.contains('Ok').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 });

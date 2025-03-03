@@ -1,4 +1,3 @@
-
 import { Spectator, createComponentFactory } from '@ngneat/spectator/jest';
 import { IconComponent } from '../../app/ui/icon.component';
 import { SafePipe } from '../../app/ui/pipes/safe.pipe';
@@ -7,7 +6,7 @@ describe('IconComponent', () => {
     let spectator: Spectator<IconComponent>;
     const createComponent = createComponentFactory({
         component: IconComponent,
-        declarations: [SafePipe]
+        declarations: [SafePipe],
     });
 
     beforeEach(() => (spectator = createComponent()));
@@ -33,7 +32,7 @@ describe('IconComponent', () => {
         expect('img').toBeTruthy();
         expect('img').toContainProperty(
             'src',
-            `${location.origin}/test-image.png`
+            `${location.origin}/test-image.png`,
         );
     });
 });

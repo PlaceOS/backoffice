@@ -53,7 +53,7 @@ export async function setupPlace(settings: PlaceSettings): Promise<void> {
     if (localStorage) {
         localStorage.setItem(
             'mock',
-            `${!!mock && !location.href.includes('mock=false')}`
+            `${!!mock && !location.href.includes('mock=false')}`,
         );
     }
     return setup(config);

@@ -28,7 +28,7 @@ export function generateTriggerFormFields(trigger?: PlaceTrigger) {
         enable_webhook: new FormControl(trigger?.enable_webhook || false),
         supported_methods: new FormControl(trigger?.supported_methods || []),
         debounce_period: new FormControl(
-            Math.max(0, trigger?.debounce_period || 0)
+            Math.max(0, trigger?.debounce_period || 0),
         ),
     };
     return new FormGroup(fields);
@@ -38,7 +38,7 @@ export function generateTriggerFormFields(trigger?: PlaceTrigger) {
  * @param trigger Trigger to generate the form controls for
  */
 export function generateTriggerSettingsFormFields(
-    trigger?: PlaceTrigger
+    trigger?: PlaceTrigger,
 ): FormGroup {
     const fields = {
         name: new FormControl(trigger?.name || ''),
@@ -67,8 +67,8 @@ export function validateCompare(control: AbstractControl) {
             return !value.mod
                 ? { module: true }
                 : !value.status
-                ? { status: true }
-                : null;
+                  ? { status: true }
+                  : null;
         } else {
             return validateJSONString(control);
         }
@@ -80,7 +80,7 @@ export function validateCompare(control: AbstractControl) {
  * Generate form controls for creating a trigger condition
  */
 export function generateTriggerConditionForm(
-    condition: TriggerComparison | TriggerTimeCondition = {} as any
+    condition: TriggerComparison | TriggerTimeCondition = {} as any,
 ) {
     const type = (condition as TriggerTimeCondition).type ? 'time' : 'compare';
     const left =
@@ -96,21 +96,21 @@ export function generateTriggerConditionForm(
         left: new FormControl({ ...(left || {}) }, [validateCompare]),
         operator: new FormControl(
             (condition as TriggerComparison).operator ||
-                TriggerConditionOperator.EQ
+                TriggerConditionOperator.EQ,
         ),
         right: new FormControl(right || undefined, [validateCompare]),
         time_type: new FormControl(
-            (condition as TriggerTimeCondition).type || 'at'
+            (condition as TriggerTimeCondition).type || 'at',
         ),
         time: new FormControl(
             (+(condition as TriggerAtTimeCondition).time || 0) * 1000 ||
-                Date.now()
+                Date.now(),
         ),
         cron: new FormControl(
-            (condition as TriggerCronTimeCondition).cron || undefined
+            (condition as TriggerCronTimeCondition).cron || undefined,
         ),
         timezone: new FormControl(
-            (condition as TriggerCronTimeCondition).timezone || ''
+            (condition as TriggerCronTimeCondition).timezone || '',
         ),
     };
     return new FormGroup(fields);
@@ -126,7 +126,7 @@ export function validateEmailList(control: AbstractControl) {
         return value.reduce(
             (valid, email) =>
                 valid && !Validators.email({ value: email } as any),
-            true
+            true,
         )
             ? null
             : { email: true };
@@ -138,7 +138,7 @@ export function validateEmailList(control: AbstractControl) {
  * Generate form controls for creating a trigger action
  */
 export function generateTriggerActionForm(
-    action: TriggerFunction | TriggerMailer = {} as any
+    action: TriggerFunction | TriggerMailer = {} as any,
 ) {
     const type =
         action && (action as TriggerMailer)?.emails ? 'emails' : 'function';

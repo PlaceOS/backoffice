@@ -49,7 +49,7 @@ function replaceDescTag(inputString, newContent) {
                     >
                         <mat-expansion-panel-header>
                             <mat-panel-title
-                                class="flex items-center h-5 overflow-visible"
+                                class="flex h-5 items-center overflow-visible"
                             >
                                 <div edit class="flex-1">
                                     {{
@@ -57,7 +57,7 @@ function replaceDescTag(inputString, newContent) {
                                     }}
                                 </div>
                                 <code
-                                    class="text-xs mr-2 bg-base-300"
+                                    class="mr-2 bg-base-300 text-xs"
                                     [matTooltip]="
                                         (item.modified_by_id | user | async)
                                             ?.name +
@@ -141,7 +141,7 @@ function replaceDescTag(inputString, newContent) {
         </div>
         <ng-template #empty_state>
             <div
-                class="w-full p-16 flex flex-col items-center justify-center opacity-30 space-y-8"
+                class="flex w-full flex-col items-center justify-center space-y-8 p-16 opacity-30"
             >
                 <app-icon class="text-8xl">settings_alert</app-icon>
                 <div>{{ 'COMMON.METADATA_EMPTY' | translate }}</div>
@@ -186,7 +186,7 @@ export class MetadataDisplayComponent extends AsyncHandler {
 
     constructor(
         private _dialog: MatDialog,
-        private _schemas: SchemaStateService
+        private _schemas: SchemaStateService,
     ) {
         super();
     }
@@ -239,10 +239,10 @@ export class MetadataDisplayComponent extends AsyncHandler {
                     removeMetadata(this.item.id, { name: field }).subscribe(
                         () => {
                             notifySuccess(
-                                `Successfully removed "${field}" metadata.`
+                                `Successfully removed "${field}" metadata.`,
                             );
                             this.metadata = this.metadata.filter(
-                                (prop) => prop.name !== field
+                                (prop) => prop.name !== field,
                             );
                             this.generateForms();
                         },
@@ -250,12 +250,12 @@ export class MetadataDisplayComponent extends AsyncHandler {
                             notifyError(
                                 `Error removing old "${field}" metadata. Error: ${
                                     err.response || err.message || err
-                                }`
-                            )
+                                }`,
+                            ),
                     );
                 }
                 ref.close();
-            })
+            }),
         );
     }
 
@@ -264,7 +264,7 @@ export class MetadataDisplayComponent extends AsyncHandler {
         form.markAllAsTouched();
         if (!form.valid)
             return notifyError(
-                `JSON for property "${form.controls.name.value}" is invalid`
+                `JSON for property "${form.controls.name.value}" is invalid`,
             );
         const value = form.value;
         this.loading[field.name] = true;
@@ -281,8 +281,8 @@ export class MetadataDisplayComponent extends AsyncHandler {
                 role: user.sys_admin
                     ? 'Admin'
                     : user.support
-                    ? 'Support'
-                    : 'User',
+                      ? 'Support'
+                      : 'User',
             };
         }
         updateMetadata(this.item.id, {
@@ -293,7 +293,7 @@ export class MetadataDisplayComponent extends AsyncHandler {
             (item: PlaceMetadata) => {
                 this.loading[field.name] = false;
                 const index = this.metadata.findIndex(
-                    (i) => i.name === field.name
+                    (i) => i.name === field.name,
                 );
                 this.edited[field.name] = false;
                 if (field.name !== item.name) {
@@ -304,9 +304,9 @@ export class MetadataDisplayComponent extends AsyncHandler {
                                 `Error removing old "${
                                     field.name
                                 }" metadata. Error: ${JSON.stringify(
-                                    err.response || err.message || err
-                                )}`
-                            )
+                                    err.response || err.message || err,
+                                )}`,
+                            ),
                         );
                 }
                 if (index >= 0) {
@@ -324,10 +324,10 @@ export class MetadataDisplayComponent extends AsyncHandler {
                     `Error saving "${
                         value.name
                     }" metadata. Error: ${JSON.stringify(
-                        err.response || err.message || err
-                    )}`
+                        err.response || err.message || err,
+                    )}`,
                 );
-            }
+            },
         );
     }
 
@@ -345,22 +345,22 @@ export class MetadataDisplayComponent extends AsyncHandler {
                     this.validateName(
                         this.metadata
                             .filter((i) => i.name !== group.name)
-                            .map((i) => i.name)
+                            .map((i) => i.name),
                     ),
                 ]),
                 description: new FormControl(group.description),
                 editors: new FormControl(group.editors),
                 details: new FormControl(
                     JSON.stringify(details || {}, undefined, 4),
-                    [Validators.required, validateJSONString]
+                    [Validators.required, validateJSONString],
                 ),
                 schema: new FormControl(group.schema),
             });
             this.subscription(
                 `${group.name}_changes`,
                 this.form_map[group.name].valueChanges.subscribe(
-                    () => (this.edited[group.name] = true)
-                )
+                    () => (this.edited[group.name] = true),
+                ),
             );
             this.subscription(
                 `${group.name}_schema`,
@@ -376,7 +376,7 @@ export class MetadataDisplayComponent extends AsyncHandler {
                         }
                     }
                     this.schema_map[group.name] = schema;
-                })
+                }),
             );
         });
     }

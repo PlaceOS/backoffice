@@ -14,7 +14,7 @@ import { TriggerStateService } from './trigger-state.service';
             [class.opacity-0]="!(loading | async)"
         ></mat-progress-bar>
         <simple-table
-            class="min-w-[32rem] block text-sm"
+            class="block min-w-[32rem] text-sm"
             [data]="instances"
             [columns]="[
                 {
@@ -22,34 +22,34 @@ import { TriggerStateService } from './trigger-state.service';
                     name: 'TRIGGERS.FIELD_STATE' | translate,
                     content: state_template,
                     size: '4rem',
-                    sortable: false
+                    sortable: false,
                 },
                 {
                     key: 'name',
                     name: 'TRIGGERS.FIELD_INSTANCE_NAME' | translate,
-                    content: name_template
+                    content: name_template,
                 },
                 {
                     key: 'actions',
                     name: ' ',
                     content: actions_template,
                     size: '3.5rem',
-                    sortable: false
-                }
+                    sortable: false,
+                },
             ]"
             [sortable]="true"
             [empty_message]="'TRIGGERS.INSTANCES_EMPTY' | translate"
         ></simple-table>
         <ng-template #state_template let-row="row">
             <div
-                class="h-2 w-2 rounded-full mx-auto"
+                class="mx-auto h-2 w-2 rounded-full"
                 [class.bg-base-content]="!row.bookable"
                 [class.bg-success]="row.bookable"
             ></div>
         </ng-template>
         <ng-template #name_template let-row="row">
             <a
-                class="underline p-4"
+                class="p-4 underline"
                 [routerLink]="
                     row.zone_id
                         ? ['/zones', row.zone_id]
@@ -66,7 +66,7 @@ import { TriggerStateService } from './trigger-state.service';
             </div>
         </ng-template>
         <ng-template #actions_template let-row="row">
-            <div class="flex items-center space-x-2 p-2 mx-auto">
+            <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
                     matRipple

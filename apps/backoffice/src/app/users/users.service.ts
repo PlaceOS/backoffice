@@ -79,7 +79,7 @@ export class BackofficeUsersService extends AsyncHandler {
     }
 
     public query(
-        query_params?: PlaceUserQueryOptions
+        query_params?: PlaceUserQueryOptions,
     ): Observable<PlaceUser[]> {
         return queryUsers(query_params).pipe(map((resp) => resp.data));
     }
@@ -92,7 +92,7 @@ export class BackofficeUsersService extends AsyncHandler {
                     if (user) {
                         this._user.next(user);
                         Sentry.withScope((scope) =>
-                            scope.setUser({ email: user.email })
+                            scope.setUser({ email: user.email }),
                         );
                         this.state.next('success');
                         this._initialised.next(true);
@@ -102,7 +102,7 @@ export class BackofficeUsersService extends AsyncHandler {
                         this.timeout(
                             'load',
                             () => this.load().then((_) => resolve()),
-                            600
+                            600,
                         );
                     }
                 },
@@ -110,8 +110,8 @@ export class BackofficeUsersService extends AsyncHandler {
                     this.timeout(
                         'load',
                         () => this.load().then((_) => resolve()),
-                        600
-                    )
+                        600,
+                    ),
             );
         });
     }

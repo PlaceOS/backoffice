@@ -81,7 +81,7 @@ export class BasicLineGraphComponent
             ctx.beginPath();
             ctx.moveTo(
                 axis_start.x,
-                (height - axis_start.y) * (i / subdivisions)
+                (height - axis_start.y) * (i / subdivisions),
             );
             ctx.lineTo(width - 2, (height - axis_start.y) * (i / subdivisions));
             ctx.stroke();
@@ -102,7 +102,7 @@ export class BasicLineGraphComponent
                 ctx,
                 [axis_start.x, 0, width - axis_start.x, height - axis_start.y],
                 line,
-                COLORS[this.lines.indexOf(line) % COLORS.length]
+                COLORS[this.lines.indexOf(line) % COLORS.length],
             );
         }
 
@@ -122,7 +122,7 @@ export class BasicLineGraphComponent
 
         ctx.restore();
         this.timeout('draw', () =>
-            requestAnimationFrame(() => this._drawGraph())
+            requestAnimationFrame(() => this._drawGraph()),
         );
     }
 
@@ -130,7 +130,7 @@ export class BasicLineGraphComponent
         ctx: CanvasRenderingContext2D,
         [box_x, box_y, box_w, box_h],
         points: Point[],
-        [stroke, fill]: [string, string]
+        [stroke, fill]: [string, string],
     ) {
         let count = 0;
         ctx.strokeStyle = stroke;
@@ -142,7 +142,7 @@ export class BasicLineGraphComponent
             if (count > 60) break;
             ctx.lineTo(
                 box_w * ((60 - x) / 60) + box_x,
-                box_h * ((100 - y) / 100) - 1 + box_y
+                box_h * ((100 - y) / 100) - 1 + box_y,
             );
             count += 1;
         }

@@ -26,9 +26,7 @@ describe('SystemTriggersComponent', () => {
                 },
             },
         ],
-        declarations: [
-            MockComponent(IconComponent)
-        ],
+        declarations: [MockComponent(IconComponent)],
         imports: [
             MockModule(MatFormFieldModule),
             MockModule(MatProgressSpinnerModule),

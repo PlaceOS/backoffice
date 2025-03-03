@@ -59,15 +59,15 @@ export class DomainStateService {
     ]).pipe(
         filter(([_, item]) => item instanceof PlaceDomain),
         switchMap(([_, item]) =>
-            queryUsers({ authority_id: item.id, limit: 1000 } as any)
+            queryUsers({ authority_id: item.id, limit: 1000 } as any),
         ),
         map((_) => _.data.sort((a, b) => a.name.localeCompare(b.name))),
         catchError((_) => []),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly auth_sources: Observable<PlaceAuthSource[]> = combineLatest(
-        [this._changed, this.item]
+        [this._changed, this.item],
     ).pipe(
         filter(([_, item]) => item instanceof PlaceDomain),
         switchMap(([_, item]) => {
@@ -84,18 +84,18 @@ export class DomainStateService {
             return list;
         }),
         catchError((_) => []),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly applications: Observable<PlaceApplication[]> =
         combineLatest([this._changed, this.item]).pipe(
             filter(([_, item]) => item instanceof PlaceDomain),
             switchMap(([_, item]) =>
-                queryApplications({ authority_id: item.id } as any)
+                queryApplications({ authority_id: item.id } as any),
             ),
             map((_) => _.data),
             catchError((_) => []),
-            shareReplay(1)
+            shareReplay(1),
         );
 
     public readonly counts = combineLatest([this._changed, this.item]).pipe(
@@ -114,8 +114,8 @@ export class DomainStateService {
                     .pipe(
                         map(
                             ([saml, oauth, ldap]) =>
-                                saml.total + oauth.total + ldap.total
-                        )
+                                saml.total + oauth.total + ldap.total,
+                        ),
                     )
                     .toPromise(),
                 queryUsers(q as any)
@@ -129,7 +129,7 @@ export class DomainStateService {
                 users,
             };
         }),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public get active_item() {
@@ -138,7 +138,7 @@ export class DomainStateService {
 
     constructor(
         private _state: ActiveItemService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
     ) {}
 
     public async update(domain: PlaceDomain) {
@@ -184,7 +184,7 @@ export class DomainStateService {
                 content: `<p>Are you sure you want delete the application ${item.name}?</p><p>Configuration will be <strong>immediately</strong> updated</p>`,
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog
+            this._dialog,
         );
         if (!details) return;
         details.loading('Deleting domain application...');
@@ -196,7 +196,7 @@ export class DomainStateService {
             return notifyError(
                 `Error removing domain application. Error: ${
                     err.responseText || err.message || err
-                }`
+                }`,
             );
         notifySuccess('Successfully removed domain application.');
         this._changed.next(new Date().valueOf());
@@ -233,7 +233,7 @@ export class DomainStateService {
                 content: `<p>Are you sure you want delete this auth source?</p><p>Deleting this will remove this auth source <strong>immediately</strong></p>`,
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog
+            this._dialog,
         );
         if (!details) return;
         details.loading('Deleting domain auth source...');
@@ -241,8 +241,8 @@ export class DomainStateService {
             item instanceof PlaceSAMLSource
                 ? removeSAMLSource
                 : item instanceof PlaceOAuthSource
-                ? removeOAuthSource
-                : removeLDAPSource;
+                  ? removeOAuthSource
+                  : removeLDAPSource;
         const err = await method(item.id)
             .toPromise()
             .catch((_) => _);
@@ -251,7 +251,7 @@ export class DomainStateService {
             return notifyError(
                 `Error removing domain auth source. Error: ${
                     err.responseText || err.message || err
-                }`
+                }`,
             );
         notifySuccess('Successfully removed domain auth source.');
         this._changed.next(new Date().valueOf());

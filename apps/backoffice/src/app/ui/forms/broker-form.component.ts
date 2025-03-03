@@ -97,7 +97,7 @@ import { i18n } from '../../common/translate';
                 </div>
                 <div class="field" *ngIf="form.controls.tls">
                     <settings-toggle
-                        class="w-full mt-8"
+                        class="mt-8 w-full"
                         [name]="'COMMON.TLS' | translate"
                         formControlName="tls"
                     ></settings-toggle>
@@ -208,21 +208,23 @@ import { i18n } from '../../common/translate';
                 <mat-form-field appearance="outline" class="w-full">
                     <mat-chip-grid #chipGrid aria-label="Enter fruits">
                         @for (filter of filters; track filter) {
-                        <mat-chip-row
-                            (removed)="removeFilter(filter)"
-                            [aria-description]="'Press enter to edit ' + filter"
-                        >
-                            {{ filter }}
-                            <button
-                                matChipRemove
-                                [attr.aria-label]="
-                                    'COMMON.REMOVE_ITEM'
-                                        | translate: { item: filter }
+                            <mat-chip-row
+                                (removed)="removeFilter(filter)"
+                                [aria-description]="
+                                    'Press enter to edit ' + filter
                                 "
                             >
-                                <app-icon>cancel</app-icon>
-                            </button>
-                        </mat-chip-row>
+                                {{ filter }}
+                                <button
+                                    matChipRemove
+                                    [attr.aria-label]="
+                                        'COMMON.REMOVE_ITEM'
+                                            | translate: { item: filter }
+                                    "
+                                >
+                                    <app-icon>cancel</app-icon>
+                                </button>
+                            </mat-chip-row>
                         }
                         <input
                             [placeholder]="

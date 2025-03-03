@@ -43,7 +43,7 @@ const COMMIT_LIST = [
         commit: generateID(6, '1234567890abcdef'.split('')),
         date: subMinutes(
             Date.now(),
-            Math.floor(Math.random() * 30 * 24 * 60)
+            Math.floor(Math.random() * 30 * 24 * 60),
         ).valueOf(),
         author: 'alex@place.tech',
         subject: 'feat(drivers): cleanup drivers',
@@ -52,7 +52,7 @@ const COMMIT_LIST = [
         commit: generateID(6, '1234567890abcdef'.split('')),
         date: subMinutes(
             Date.now(),
-            Math.floor(Math.random() * 30 * 24 * 60)
+            Math.floor(Math.random() * 30 * 24 * 60),
         ).valueOf(),
         author: 'alex@place.tech',
         subject: 'chore(readme): update readme',
@@ -61,7 +61,7 @@ const COMMIT_LIST = [
         commit: generateID(6, '1234567890abcdef'.split('')),
         date: subMinutes(
             Date.now(),
-            Math.floor(Math.random() * 30 * 24 * 60)
+            Math.floor(Math.random() * 30 * 24 * 60),
         ).valueOf(),
         author: 'alex@place.tech',
         subject: 'refactor(drivers): cleanup lighting driver',
@@ -70,7 +70,7 @@ const COMMIT_LIST = [
         commit: generateID(6, '1234567890abcdef'.split('')),
         date: subMinutes(
             Date.now(),
-            Math.floor(Math.random() * 30 * 24 * 60)
+            Math.floor(Math.random() * 30 * 24 * 60),
         ).valueOf(),
         author: 'alex@place.tech',
         subject: 'test(drivers): update test coverage',
@@ -86,7 +86,7 @@ registerMockEndpoint({
     method: 'GET',
     callback: (_) =>
         REPO_DATA.filter(
-            (repo) => repo.type === PlaceRepositoryType.Interface
+            (repo) => repo.type === PlaceRepositoryType.Interface,
         ).map((repo) => repo.name),
 } as MockHttpRequestHandler);
 
@@ -127,7 +127,7 @@ registerMockEndpoint({
     callback: (event) => {
         if (event.route_params.id) {
             return DISCOVERY_DATA.find(
-                (driver) => driver.id === event.query_params.driver
+                (driver) => driver.id === event.query_params.driver,
             );
         }
         throw { status: 404, message: 'System not found' };

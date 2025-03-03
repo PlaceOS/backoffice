@@ -6,7 +6,7 @@ import { UntypedFormGroup } from '@angular/forms';
     template: `
         <form
             trigger
-            class="flex flex-col w-[36rem] max-w-[calc(100vw-4rem)]"
+            class="flex w-[36rem] max-w-[calc(100vw-4rem)] flex-col"
             *ngIf="form"
             [formGroup]="form"
         >
@@ -44,7 +44,7 @@ import { UntypedFormGroup } from '@angular/forms';
                 </mat-form-field>
             </div>
             <div
-                class="field w-[calc(50%-0.75rem)] mb-4"
+                class="field mb-4 w-[calc(50%-0.75rem)]"
                 *ngIf="form.controls.enable_webhook"
             >
                 <settings-toggle

@@ -24,15 +24,15 @@ import { BackofficeUsersService } from '../users/users.service';
     selector: 'item-selection',
     template: `
         <div
-            class="w-full p-2 flex items-center justify-center border-b border-base-200 "
+            class="flex w-full items-center justify-center border-b border-base-200 p-2"
         >
             <ng-content></ng-content>
             <button
                 (click)="open()"
-                class="border border-base-200  rounded-lg flex items-center flex-1 sm:flex-auto sm:max-w-[512px] max-w-[calc(100vw-1rem)]"
+                class="flex max-w-[calc(100vw-1rem)] flex-1 items-center rounded-lg border border-base-200 sm:max-w-[512px] sm:flex-auto"
             >
-                <app-icon class="text-2xl ml-2 ">search</app-icon>
-                <p class="p-2 text-lg opacity-30  flex-1 w-1/2 text-left">
+                <app-icon class="ml-2 text-2xl">search</app-icon>
+                <p class="w-1/2 flex-1 p-2 text-left text-lg opacity-30">
                     {{ 'COMMON.VIEW_TYPE' | translate: { name: title } }}
                 </p>
                 <span class="keycap mr-2 text-xs">K</span>
@@ -40,25 +40,25 @@ import { BackofficeUsersService } from '../users/users.service';
         </div>
         <ng-container *ngIf="show_view">
             <div
-                class="absolute inset-0 bg-base-100/80 /30"
+                class="bg-base-100/80 /30 absolute inset-0"
                 (click)="show = false"
                 (window:keydown.esc)="show = false"
             ></div>
             <div
-                class=" absolute left-1/2 top-2 -translate-x-1/2 flex flex-col w-[512px] max-w-[calc(100vw-1rem)] space-y-2 bg-base-100  shadow rounded overflow-hidden"
+                class="absolute left-1/2 top-2 flex w-[512px] max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-col space-y-2 overflow-hidden rounded bg-base-100 shadow"
                 (click)="$event.stopPropagation()"
             >
                 <div
-                    class="relative flex items-center border-b border-base-200 "
+                    class="relative flex items-center border-b border-base-200"
                 >
                     <app-icon
-                        class="absolute top-1/2 left-2 -translate-y-1/2 text-2xl pointer-events-none"
+                        class="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-2xl"
                     >
                         search
                     </app-icon>
                     <input
                         #search_input
-                        class="border-none flex-1 pl-10 pr-4 py-4 bg-transparent"
+                        class="bg-transparent flex-1 border-none py-4 pl-10 pr-4"
                         [(ngModel)]="search"
                         (ngModelChange)="updateSearch($event)"
                         [placeholder]="
@@ -68,22 +68,22 @@ import { BackofficeUsersService } from '../users/users.service';
                     <mat-spinner
                         *ngIf="loading | async"
                         diameter="24"
-                        class="absolute top-1/2 right-2 -translate-y-1/2 mr-2"
+                        class="absolute right-2 top-1/2 mr-2 -translate-y-1/2"
                     ></mat-spinner>
                 </div>
-                <p class="text-sm  opacity-60 w-full px-4">
+                <p class="w-full px-4 text-sm opacity-60">
                     {{
                         'COMMON.TOTAL_ITEMS'
                             | translate: { count: (total | async) }
                     }}
                 </p>
-                <div class="flex flex-col flex-1 h-1/2">
+                <div class="flex h-1/2 flex-1 flex-col">
                     <cdk-virtual-scroll-viewport
                         itemSize="48"
                         (scroll)="(is_scrolled)"
                         (scrolledIndexChange)="atBottom()"
                         *ngIf="(items | async)?.length; else empty_state"
-                        class="max-h-[75vh] h-[768px] "
+                        class="h-[768px] max-h-[75vh]"
                     >
                         <a
                             *cdkVirtualFor="
@@ -98,28 +98,28 @@ import { BackofficeUsersService } from '../users/users.service';
                             routerLinkActive="active"
                             [routerLinkActiveOptions]="{
                                 exact: false,
-                                __change_detection_hack__: item.id + subroute
+                                __change_detection_hack__: item.id + subroute,
                             }"
-                            class="block p-2 m-2 rounded max-w-[calc(100vw-2rem)]"
+                            class="m-2 block max-w-[calc(100vw-2rem)] rounded p-2"
                             (click)="show = false"
                         >
-                            <p class="truncate flex-1">
+                            <p class="flex-1 truncate">
                                 {{ item.name }}
                             </p>
                             <div
-                                class="w-full inline-block overflow-hidden"
+                                class="inline-block w-full overflow-hidden"
                                 *ngIf="item.extra"
                             >
                                 <span
                                     extra
-                                    class="text-xs mono opacity-60 truncate max-w-full px-2 py-1 bg-base-content/10 /5 rounded mt-1"
+                                    class="mono bg-base-content/10 /5 mt-1 max-w-full truncate rounded px-2 py-1 text-xs opacity-60"
                                 >
                                     {{ item.extra }}
                                 </span>
                             </div>
                         </a>
                         <div
-                            class="p-2 text-center opacity-30 text-sm bg-base-200 "
+                            class="bg-base-200 p-2 text-center text-sm opacity-30"
                         >
                             {{ 'COMMON.END_OF_LIST' | translate }}
                         </div>
@@ -129,7 +129,7 @@ import { BackofficeUsersService } from '../users/users.service';
         </ng-container>
         <ng-template #empty_state>
             <div
-                class="p-8 flex flex-col items-center justify-center opacity-30"
+                class="flex flex-col items-center justify-center p-8 opacity-30"
             >
                 <p>
                     {{
@@ -189,7 +189,7 @@ export class ItemSelectionComponent extends AsyncHandler {
         private _router: Router,
         private _settings: SettingsService,
         private _hotkeys: HotkeysService,
-        private _service: ActiveItemService
+        private _service: ActiveItemService,
     ) {
         super();
     }
@@ -198,16 +198,16 @@ export class ItemSelectionComponent extends AsyncHandler {
         this.subscription(
             'loading',
             this._service.loading.subscribe(
-                () => (this.show = !this._service.active_item)
-            )
+                () => (this.show = !this._service.active_item),
+            ),
         );
         this.subscription(
             'list',
-            this._service.list.subscribe((l) => this._processItems(l))
+            this._service.list.subscribe((l) => this._processItems(l)),
         );
         this.subscription(
             'hotkey',
-            this._hotkeys.listen(['KeyK'], () => this.open())
+            this._hotkeys.listen(['KeyK'], () => this.open()),
         );
     }
 
@@ -276,8 +276,8 @@ export class ItemSelectionComponent extends AsyncHandler {
                     item.role === PlaceDriverRole.Service
                         ? item.uri
                         : item.role === PlaceDriverRole.Logic
-                        ? item.control_system_id
-                        : item.ip;
+                          ? item.control_system_id
+                          : item.ip;
                 (item as any).display_name =
                     item.custom_name || item.name || '<Unnamed>';
                 (item as any).extra = detail;

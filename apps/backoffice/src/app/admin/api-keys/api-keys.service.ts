@@ -38,14 +38,14 @@ export class APIKeyService {
 
     public readonly available_domains = queryDomains({ limit: 500 }).pipe(
         map((_) => _.data),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly available_scopes: Observable<string[]> = get(
-        '/api/engine/v2/scopes'
+        '/api/engine/v2/scopes',
     ).pipe(
         map((_) => _ as any),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly available_keys = combineLatest([
@@ -63,7 +63,7 @@ export class APIKeyService {
                 : of([] as PlaceAPIKeyDetails[]);
         }),
         tap(() => this._loading.next(false)),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly users = combineLatest([
@@ -75,11 +75,11 @@ export class APIKeyService {
         switchMap(([domain, q]) => {
             return domain
                 ? queryUsers({ authority_id: domain.id, q }).pipe(
-                      map((_) => _.data as PlaceUser[])
+                      map((_) => _.data as PlaceUser[]),
                   )
                 : of([] as PlaceUser[]);
         }),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     constructor(private _dialog: MatDialog) {}
@@ -132,7 +132,7 @@ export class APIKeyService {
                     Removing this key may result in applications using this key to stop working.`,
                 icon: { content: 'delete' },
             },
-            this._dialog
+            this._dialog,
         );
         if (details?.reason !== 'done') return;
         details.loading('Removing API key...');

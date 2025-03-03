@@ -204,7 +204,7 @@ import { i18n } from '../../common/translate';
                         >
                             <div class="flex items-center space-x-2">
                                 <div
-                                    class="flex flex-col flex-1 truncate w-1/2 leading-tight"
+                                    class="flex w-1/2 flex-1 flex-col truncate leading-tight"
                                 >
                                     <div>{{ commit.subject }}</div>
                                     <div class="text-xs opacity-30">
@@ -213,7 +213,7 @@ import { i18n } from '../../common/translate';
                                 </div>
                                 <div class="hidden">&nbsp;|&nbsp;</div>
                                 <code class="text-xs">{{
-                                    commit.hash | slice: 0:8
+                                    commit.hash | slice: 0 : 8
                                 }}</code>
                                 <code class="text-xs" *ngIf="commit.author">{{
                                     commit.author
@@ -303,7 +303,7 @@ export class RepositoryFormComponent extends AsyncHandler {
                 timer(300),
                 this.form.get('uri').valueChanges,
                 this.form.get('username').valueChanges,
-                this.form.get('password').valueChanges
+                this.form.get('password').valueChanges,
             ).pipe(
                 debounceTime(300),
                 switchMap(() => {
@@ -312,20 +312,20 @@ export class RepositoryFormComponent extends AsyncHandler {
                         id
                             ? listRepositoryBranches(id)
                             : isValidUrl(uri) && uri.startsWith('http')
-                            ? listRemoteRepositoryBranches({
-                                  repository_url: uri,
-                                  username,
-                                  password,
-                              })
-                            : of([])
+                              ? listRemoteRepositoryBranches({
+                                    repository_url: uri,
+                                    username,
+                                    password,
+                                })
+                              : of([])
                     ).pipe(catchError((_) => of([])));
                 }),
                 tap((_) =>
                     _.length
                         ? this.form.get('branch').enable()
-                        : this.form.get('branch').disable()
+                        : this.form.get('branch').disable(),
                 ),
-                shareReplay(1)
+                shareReplay(1),
             );
             const default_branch = this.branch_list.pipe(
                 debounceTime(300),
@@ -335,15 +335,15 @@ export class RepositoryFormComponent extends AsyncHandler {
                         id
                             ? listRepositoryDefaultBranch(id)
                             : isValidUrl(uri) && uri.startsWith('http')
-                            ? listRemoteRepositoryDefaultBranch({
-                                  repository_url: uri,
-                                  username,
-                                  password,
-                              })
-                            : of('')
+                              ? listRemoteRepositoryDefaultBranch({
+                                    repository_url: uri,
+                                    username,
+                                    password,
+                                })
+                              : of('')
                     ).pipe(catchError(() => of('')));
                 }),
-                shareReplay(1)
+                shareReplay(1),
             );
             this.subscription(
                 'default_branch',
@@ -352,15 +352,15 @@ export class RepositoryFormComponent extends AsyncHandler {
                         !this.form.value.branch ||
                         !list.includes(this.form.value.branch)
                             ? this.form.patchValue({ branch })
-                            : ''
-                )
+                            : '',
+                ),
             );
             this.commit_list = merge(
                 timer(300),
                 this.form.get('uri').valueChanges,
                 this.form.get('branch').valueChanges,
                 this.form.get('username').valueChanges,
-                this.form.get('password').valueChanges
+                this.form.get('password').valueChanges,
             ).pipe(
                 debounceTime(300),
                 switchMap(() => {
@@ -370,22 +370,22 @@ export class RepositoryFormComponent extends AsyncHandler {
                         id
                             ? listRepositoryCommits(id, { branch })
                             : isValidUrl(uri) &&
-                              uri.startsWith('http') &&
-                              branch
-                            ? listRemoteRepositoryCommits({
-                                  repository_url: uri,
-                                  username,
-                                  password,
-                                  branch,
-                              })
-                            : of([])
+                                uri.startsWith('http') &&
+                                branch
+                              ? listRemoteRepositoryCommits({
+                                    repository_url: uri,
+                                    username,
+                                    password,
+                                    branch,
+                                })
+                              : of([])
                     ).pipe(catchError((_) => of([])));
                 }),
                 map((l) => [
                     { hash: 'HEAD', subject: 'Latest commit on the branch' },
                     ...l,
                 ]),
-                shareReplay(1)
+                shareReplay(1),
             );
         }
     }

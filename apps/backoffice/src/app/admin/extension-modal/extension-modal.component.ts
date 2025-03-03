@@ -138,7 +138,7 @@ import { BackofficeExtension } from '../extensions.component';
                         <button
                             icon
                             matRipple
-                            class="h-12 w-12 rounded text-error border border-error"
+                            class="h-12 w-12 rounded border border-error text-error"
                             (click)="removeCondition(condition)"
                         >
                             <app-icon>delete</app-icon>
@@ -180,7 +180,7 @@ export class ExtensionModalComponent extends AsyncHandler implements OnInit {
 
     constructor(
         @Inject(MAT_DIALOG_DATA) private _data: { item: BackofficeExtension },
-        private _hotkey: HotkeysService
+        private _hotkey: HotkeysService,
     ) {
         super();
     }
@@ -188,7 +188,7 @@ export class ExtensionModalComponent extends AsyncHandler implements OnInit {
     public ngOnInit() {
         this.subscription(
             'save',
-            this._hotkey.listen(['KeyS'], () => this.submit())
+            this._hotkey.listen(['KeyS'], () => this.submit()),
         );
         this.form.patchValue(this.item);
     }
@@ -200,7 +200,7 @@ export class ExtensionModalComponent extends AsyncHandler implements OnInit {
 
     public removeCondition(condition: [string, string, any]) {
         this.form.controls.conditions.setValue(
-            this.form.controls.conditions.value.filter((c) => c !== condition)
+            this.form.controls.conditions.value.filter((c) => c !== condition),
         );
     }
 

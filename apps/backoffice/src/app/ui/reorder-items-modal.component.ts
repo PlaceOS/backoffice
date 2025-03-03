@@ -17,17 +17,17 @@ export interface ReorderItemsOptions {
     selector: 'reorder-items-modal',
     template: `
         <header
-            class="flex items-center justify-between p-2 w-full border-b border-base-200"
+            class="flex w-full items-center justify-between border-b border-base-200 p-2"
         >
             <h2 class="p-2">Reorder {{ type }}</h2>
             <button btn icon mat-dialog-close>
                 <app-icon>close</app-icon>
             </button>
         </header>
-        <main class="min-w-[20rem] max-h-[65vh] overflow-auto p-4">
+        <main class="max-h-[65vh] min-w-[20rem] overflow-auto p-4">
             <div
                 cdkDropList
-                class="flex flex-col divide-y divide-base-200 w-full rounded border border-base-200"
+                class="flex w-full flex-col divide-y divide-base-200 rounded border border-base-200"
                 (cdkDropListDropped)="drop($event)"
             >
                 <div
@@ -36,14 +36,14 @@ export interface ReorderItemsOptions {
                     cdkDrag
                 >
                     <div
-                        class="flex items-center justify-center rounded-full bg-base-200 font-medium text-sm min-w-8 h-8"
+                        class="flex h-8 min-w-8 items-center justify-center rounded-full bg-base-200 text-sm font-medium"
                     >
                         {{ i + 1 }}
                     </div>
                     <div class="flex-1 px-2">{{ item.name }}</div>
                     <div *ngIf="changed.length"></div>
                     <div
-                        class="h-12 w-full border-4 border-base-300 bg-base-200 border-dashed"
+                        class="h-12 w-full border-4 border-dashed border-base-300 bg-base-200"
                         *cdkDragPlaceholder
                     ></div>
                 </div>

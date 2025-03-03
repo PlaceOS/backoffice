@@ -36,7 +36,7 @@ export class DuplicateModalComponent {
 
     constructor(
         @Inject(MAT_DIALOG_DATA) private _data: DuplicateModalData,
-        private _dialog_ref: MatDialogRef<DuplicateModalComponent>
+        private _dialog_ref: MatDialogRef<DuplicateModalComponent>,
     ) {}
 
     /**

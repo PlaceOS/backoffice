@@ -13,7 +13,7 @@ import { UploadsService } from '../common/uploads.service';
         <div
             *ngIf="show"
             upload-list
-            class="absolute bottom-2 left-2 rounded overflow-hidden bg-base-100 border border-base-300 text-sm text-base-content shadow pointer-events-auto"
+            class="pointer-events-auto absolute bottom-2 left-2 overflow-hidden rounded border border-base-300 bg-base-100 text-sm text-base-content shadow"
         >
             <div class="flex items-center bg-base-200 text-base-content">
                 <div class="flex-1 px-4">
@@ -33,7 +33,7 @@ import { UploadsService } from '../common/uploads.service';
                     <app-icon>delete</app-icon>
                 </button>
             </div>
-            <div list class="overflow-auto max-h-[65vh]">
+            <div list class="max-h-[65vh] overflow-auto">
                 <ul *ngIf="(uploads | async)?.length; else no_uploads">
                     <li
                         upload-file
@@ -42,10 +42,10 @@ import { UploadsService } from '../common/uploads.service';
                         [class.error]="item.error"
                     >
                         <div
-                            class="flex items-center p-2 space-x-2"
+                            class="flex items-center space-x-2 p-2"
                             [title]="item.name"
                         >
-                            <div class="flex-1 w-1/2">{{ item.name }}</div>
+                            <div class="w-1/2 flex-1">{{ item.name }}</div>
                             <a
                                 btn
                                 *ngIf="item.progress >= 100 && item.link"
@@ -71,13 +71,13 @@ import { UploadsService } from '../common/uploads.service';
                             </div>
                             <app-icon
                                 *ngIf="item.progress >= 100 && !item.error"
-                                class="bg-success text-base-100 rounded-full"
+                                class="rounded-full bg-success text-base-100"
                             >
                                 done
                             </app-icon>
                             <app-icon
                                 *ngIf="item.error"
-                                class="bg-error text-base-100 rounded-full"
+                                class="rounded-full bg-error text-base-100"
                                 [matTooltip]="item.error"
                             >
                                 close
@@ -107,17 +107,17 @@ import { UploadsService } from '../common/uploads.service';
             *ngIf="show_overlay"
         >
             <div
-                class="absolute bottom-0 p-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center pointer-events-none"
+                class="pointer-events-none absolute bottom-0 left-1/2 flex -translate-x-1/2 transform flex-col items-center p-4"
             >
-                <app-icon class="animate-bounce mb-4 text-7xl text-base-100">
+                <app-icon class="mb-4 animate-bounce text-7xl text-base-100">
                     cloud_upload
                 </app-icon>
-                <div class="bg-base-100 rounded p-4 text-base-content shadow">
+                <div class="rounded bg-base-100 p-4 text-base-content shadow">
                     {{ 'COMMON.DROP_UPLOAD_MSG' | translate }}
                 </div>
             </div>
             <input
-                class="absolute inset-0 opacity-0 z-[9999] w-full pointer-events-auto"
+                class="pointer-events-auto absolute inset-0 z-[9999] w-full opacity-0"
                 type="file"
                 multiple
                 (change)="handleFileEvent($event)"
@@ -125,7 +125,7 @@ import { UploadsService } from '../common/uploads.service';
         </div>
         <ng-template #no_uploads>
             <div
-                class="w-full flex flex-col items-center m-auto p-8 space-y-4 opacity-30"
+                class="m-auto flex w-full flex-col items-center space-y-4 p-8 opacity-30"
             >
                 <app-icon class="text-4xl">cloud_off</app-icon>
                 <p>{{ 'COMMON.NO_UPLOADS' | translate }}</p>
@@ -166,7 +166,7 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
     constructor(
         private _settings: SettingsService,
         private _uploads: UploadsService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
     ) {
         super();
     }
@@ -176,19 +176,19 @@ export class UploadListComponent extends AsyncHandler implements OnInit {
             'show',
             this._settings
                 .listen('show_upload_manager')
-                .subscribe((show) => (this.show = show))
+                .subscribe((show) => (this.show = show)),
         );
         this.subscription(
             'on_dialog_open',
             this._dialog.afterOpened.subscribe(() => {
                 this._settings.post('disable_uploads', true);
-            })
+            }),
         );
         this.subscription(
             'on_dialog_closed',
             this._dialog.afterAllClosed.subscribe(() => {
                 this._settings.post('disable_uploads', false);
-            })
+            }),
         );
     }
 

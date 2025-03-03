@@ -116,13 +116,13 @@ export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
         return this.item instanceof PlaceSAMLSource
             ? 'saml'
             : this.item instanceof PlaceLDAPSource
-            ? 'ldap'
-            : 'oauth';
+              ? 'ldap'
+              : 'oauth';
     }
 
     constructor(
         private _dialog: MatDialogRef<AuthSourceModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: AuthSourceModalData
+        @Inject(MAT_DIALOG_DATA) private _data: AuthSourceModalData,
     ) {
         super();
     }
@@ -195,11 +195,11 @@ export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
                 notifyError(
                     i18n('DOMAINS.AUTHENTICATION_SAVE_ERROR', {
                         error: JSON.stringify(
-                            err.response || err.message || err
+                            err.response || err.message || err,
                         ),
-                    })
+                    }),
                 );
-            }
+            },
         );
     }
 

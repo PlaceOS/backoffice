@@ -68,7 +68,7 @@ export class SystemStateService extends AsyncHandler {
         switchMap((item: PlaceSystem) => {
             if (!item || !(item instanceof PlaceSystem)) return [];
             return systemSettings(item.id);
-        })
+        }),
     );
     /** Observable of the counts of the active item */
     public readonly counts = combineLatest([
@@ -104,7 +104,7 @@ export class SystemStateService extends AsyncHandler {
                 triggers,
                 metadata,
             };
-        })
+        }),
     );
     /** Observable for modules associated with system */
     public readonly modules = combineLatest([this.item, this._change]).pipe(
@@ -141,7 +141,7 @@ export class SystemStateService extends AsyncHandler {
             this._modules.next(modules);
             return modules;
         }),
-        shareReplay(1)
+        shareReplay(1),
     );
     /** Observable for debug state of the active modules */
     public readonly debug_state = combineLatest([
@@ -153,7 +153,7 @@ export class SystemStateService extends AsyncHandler {
                 mapping[device.id] = this._debug.isListening(device);
                 return mapping;
             }, {});
-        })
+        }),
     );
     /** Observable for module bindings */
     public readonly module_bindings = this.modules.pipe(
@@ -162,10 +162,10 @@ export class SystemStateService extends AsyncHandler {
                 (mod) =>
                     `${
                         mod.custom_name || mod.name || 'Blank'
-                    }_${calculateModuleIndex(modules, mod)}`
-            )
+                    }_${calculateModuleIndex(modules, mod)}`,
+            ),
         ),
-        shareReplay()
+        shareReplay(),
     );
     /** Observable for zones associated with system */
     public readonly zones = this._state.item.pipe(
@@ -179,7 +179,7 @@ export class SystemStateService extends AsyncHandler {
                 .pipe(map((i) => i.data))
                 .toPromise();
             zones.sort(
-                (a, b) => item.zones.indexOf(a.id) - item.zones.indexOf(b.id)
+                (a, b) => item.zones.indexOf(a.id) - item.zones.indexOf(b.id),
             );
             this._loading.next({
                 ...this._loading.getValue(),
@@ -187,7 +187,7 @@ export class SystemStateService extends AsyncHandler {
             });
             return zones;
         }),
-        shareReplay()
+        shareReplay(),
     );
     /** Observable for triggers associated with system */
     public readonly triggers = combineLatest([this.item, this._change]).pipe(
@@ -207,7 +207,7 @@ export class SystemStateService extends AsyncHandler {
             });
             return triggers;
         }),
-        shareReplay()
+        shareReplay(),
     );
     /** Observable of the active item */
     public readonly loading = this._loading.asObservable();
@@ -221,7 +221,7 @@ export class SystemStateService extends AsyncHandler {
     constructor(
         private _state: ActiveItemService,
         private _debug: PlaceDebugService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
     ) {
         super();
     }
@@ -242,8 +242,8 @@ export class SystemStateService extends AsyncHandler {
                 .catch((err) => {
                     notifyError(
                         `Failed to start system: ${JSON.stringify(
-                            err.response || err.message || err
-                        )}`
+                            err.response || err.message || err,
+                        )}`,
                     );
                     return err;
                 });
@@ -268,8 +268,8 @@ export class SystemStateService extends AsyncHandler {
             .catch((err) => {
                 notifyError(
                     `Failed to stop system: ${JSON.stringify(
-                        err.response || err.message || err
-                    )}`
+                        err.response || err.message || err,
+                    )}`,
                 );
                 return err;
             });
@@ -286,7 +286,7 @@ export class SystemStateService extends AsyncHandler {
                 device,
                 `${
                     device.custom_name || device.name || 'Blank'
-                }_${calculateModuleIndex(this._modules.getValue(), device)}`
+                }_${calculateModuleIndex(this._modules.getValue(), device)}`,
             );
         }
     }
@@ -297,7 +297,7 @@ export class SystemStateService extends AsyncHandler {
                 new PlaceModule({
                     system: this.active_item,
                     control_system_id: this.active_item.id,
-                })
+                }),
             )
             .catch((_) => null);
         if (!mod) return;
@@ -312,7 +312,7 @@ export class SystemStateService extends AsyncHandler {
     public async addModuleToSystem(device: PlaceModule) {
         if (device.control_system_id)
             return notifyError(
-                'Logic modules cannot be added to another system'
+                'Logic modules cannot be added to another system',
             );
         const item = await this.item.pipe(take(1)).toPromise();
         const ref = this._dialog.open<
@@ -323,7 +323,9 @@ export class SystemStateService extends AsyncHandler {
                 service_name: 'module to system',
                 query_fn: (_) =>
                     querySystems({ q: _ }).pipe(
-                        map((resp) => resp.data.filter((_) => _.id !== item.id))
+                        map((resp) =>
+                            resp.data.filter((_) => _.id !== item.id),
+                        ),
                     ),
             },
         });
@@ -343,7 +345,7 @@ export class SystemStateService extends AsyncHandler {
                 notifyError(
                     `Error adding module to system "${
                         system.display_name || system.name
-                    }". Error: ${JSON.stringify(e.response || e.message || e)}`
+                    }". Error: ${JSON.stringify(e.response || e.message || e)}`,
                 );
                 throw e;
             });
@@ -352,7 +354,7 @@ export class SystemStateService extends AsyncHandler {
         notifySuccess(
             `Successfully added module to system "${
                 system.display_name || system.name
-            }".`
+            }".`,
         );
     }
 
@@ -418,8 +420,8 @@ export class SystemStateService extends AsyncHandler {
                 .catch((err) => {
                     notifyError(
                         `Error updating trigger settings. Error: ${JSON.stringify(
-                            err.response || err.message || err
-                        )}`
+                            err.response || err.message || err,
+                        )}`,
                     );
                     throw err;
                 });
@@ -445,7 +447,7 @@ export class SystemStateService extends AsyncHandler {
                 notifyError(
                     `Error removing trigger ${trigger.id} from system. Error: ${
                         err.statusText || err.message || err
-                    }`
+                    }`,
                 );
                 throw err;
             });
@@ -472,8 +474,8 @@ export class SystemStateService extends AsyncHandler {
             .catch((err) => {
                 notifyError(
                     `Failed to reorder system modules: ${JSON.stringify(
-                        err.response || err.message || err
-                    )}`
+                        err.response || err.message || err,
+                    )}`,
                 );
                 return err;
             });
@@ -501,8 +503,8 @@ export class SystemStateService extends AsyncHandler {
             .catch((err) => {
                 notifyError(
                     `Failed to reorder system zones: ${JSON.stringify(
-                        err.response || err.message || err
-                    )}`
+                        err.response || err.message || err,
+                    )}`,
                 );
                 return err;
             });
@@ -524,7 +526,7 @@ export class SystemStateService extends AsyncHandler {
                 notifyError(
                     `Error adding module ${id} to system. Error: ${
                         err.statusText || err.message || err
-                    }`
+                    }`,
                 );
             });
         this.timeout('join', async () => {
@@ -553,7 +555,7 @@ export class SystemStateService extends AsyncHandler {
                 notifyError(
                     `Error removing module ${device.id} from system. Error: ${
                         err.statusText || err.message || err
-                    }`
+                    }`,
                 );
             });
         details.close();
@@ -582,7 +584,7 @@ export class SystemStateService extends AsyncHandler {
                         zone_list.length
                     } zone(s) to system. Error: ${
                         err.statusText || err.message || err
-                    }`
+                    }`,
                 );
             });
         if (!system) return;
@@ -611,7 +613,7 @@ export class SystemStateService extends AsyncHandler {
                 notifyError(
                     `Error removing zone ${zone.id} from system. Error: ${
                         err.statusText || err.message || err
-                    }`
+                    }`,
                 );
             });
         details.close();
@@ -637,13 +639,13 @@ export class SystemStateService extends AsyncHandler {
                             device.running ? 'stop' : 'start'
                         } module '${device.id}'.\nView Error?`,
                         'View',
-                        () => this.viewDetails(err)
+                        () => this.viewDetails(err),
                     );
                 }
                 throw err;
             });
         notifySuccess(
-            `Module successfully ${device.running ? 'stopped' : 'started'}`
+            `Module successfully ${device.running ? 'stopped' : 'started'}`,
         );
         (device as any).running = !device.running;
     }
@@ -654,7 +656,7 @@ export class SystemStateService extends AsyncHandler {
             ViewResponseModalComponent,
             {
                 data: { content },
-            }
+            },
         );
     }
 

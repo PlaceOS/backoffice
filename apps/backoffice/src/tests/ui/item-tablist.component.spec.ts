@@ -19,10 +19,10 @@ describe('ItemTablistComponent', () => {
     it('should create component', () =>
         expect(spectator.component).toBeTruthy());
 
-        it('should show tabs', () => {
-            expect('[mat-tab-link]').not.toExist();
-            spectator.setInput({ tabs: [{}] as any });
-            spectator.detectChanges();
-            expect('[mat-tab-link]').toExist();
-        });
+    it('should show tabs', () => {
+        expect('[mat-tab-link]').not.toExist();
+        spectator.setInput({ tabs: [{}] as any });
+        spectator.detectChanges();
+        expect('[mat-tab-link]').toExist();
+    });
 });

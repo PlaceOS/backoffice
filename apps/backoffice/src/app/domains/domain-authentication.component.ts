@@ -7,44 +7,44 @@ import { DomainStateService } from './domain-state.service';
 @Component({
     selector: 'domain-authentication',
     template: `
-        <div class="flex flex-col h-full w-full">
+        <div class="flex h-full w-full flex-col">
             <div header class="">
                 <button
                     btn
-                    class="w-full sm:w-48 mb-4"
+                    class="mb-4 w-full sm:w-48"
                     (click)="newAuthSource()"
                 >
                     {{ 'DOMAINS.AUTHENTICATION_NEW' | translate }}
                 </button>
             </div>
-            <div class="flex-1 w-full h-1/2 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[40rem] block text-sm"
+                    class="block min-w-[40rem] text-sm"
                     [data]="auth_sources"
                     [columns]="[
                         {
                             key: 'name',
                             name: 'COMMON.FIELD_NAME' | translate,
-                            content: name_template
+                            content: name_template,
                         },
                         {
                             key: 'type',
                             name: 'DOMAINS.FIELD_TYPE' | translate,
                             size: '6rem',
-                            content: type_template
+                            content: type_template,
                         },
                         {
                             key: 'actions',
                             name: ' ',
                             content: actions_template,
                             size: '6.5rem',
-                            sortable: false
-                        }
+                            sortable: false,
+                        },
                     ]"
                     [sortable]="true"
                     [empty_message]="'DOMAINS.AUTHENTICATION_EMPTY' | translate"
@@ -54,14 +54,14 @@ import { DomainStateService } from './domain-state.service';
         <ng-template #name_template let-row="row">
             <div class="flex flex-col px-4 py-2">
                 <div class="text-sm">{{ row.name }}</div>
-                <div class="text-xs opacity-30 select-all">{{ row.id }}</div>
+                <div class="select-all text-xs opacity-30">{{ row.id }}</div>
             </div>
         </ng-template>
         <ng-template #type_template let-row="row">
-            <div class="p-4 uppercase mono text-sm">{{ row.type }}</div>
+            <div class="mono p-4 text-sm uppercase">{{ row.type }}</div>
         </ng-template>
         <ng-template #actions_template let-row="row">
-            <div class="flex items-center space-x-2 p-2 mx-auto">
+            <div class="mx-auto flex items-center space-x-2 p-2">
                 <button
                     icon
                     matRipple

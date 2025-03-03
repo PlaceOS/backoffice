@@ -10,8 +10,10 @@ describe('TriggerStateService', () => {
     const createService = createServiceFactory({
         service: TriggerStateService,
         providers: [
-            MockProvider(ActiveItemService, { item: new BehaviorSubject(null) }),
-            MockProvider(MatDialog, {})
+            MockProvider(ActiveItemService, {
+                item: new BehaviorSubject(null),
+            }),
+            MockProvider(MatDialog, {}),
         ],
     });
 
@@ -20,5 +22,4 @@ describe('TriggerStateService', () => {
     it('should create component', () => {
         expect(spectator.service).toBeTruthy();
     });
-
 });

@@ -46,7 +46,7 @@ export class UsersStateService {
             return {
                 metadata,
             };
-        })
+        }),
     );
 
     public readonly metadata: Observable<PlaceMetadata[]> = this.item.pipe(
@@ -55,7 +55,7 @@ export class UsersStateService {
             return listMetadata(item.id);
         }),
         catchError((_) => []),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public get active_item(): PlaceZone {

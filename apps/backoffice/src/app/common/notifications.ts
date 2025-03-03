@@ -25,7 +25,7 @@ export function notify(
     icon: ApplicationIcon = {
         type: 'icon',
         content: 'info',
-    }
+    },
 ): void {
     if (!_service) {
         throw new Error("Snackbar service hasn't been initialised");
@@ -49,7 +49,7 @@ export function notify(
 export function notifySuccess(
     msg: string,
     action?: string,
-    on_action?: () => void
+    on_action?: () => void,
 ): void {
     const icon: ApplicationIcon = {
         type: 'icon',
@@ -68,7 +68,7 @@ export function notifySuccess(
 export function notifyError(
     msg: string,
     action?: string,
-    on_action?: () => void
+    on_action?: () => void,
 ): void {
     const icon: ApplicationIcon = {
         type: 'icon',
@@ -87,7 +87,7 @@ export function notifyError(
 export function notifyWarn(
     msg: string,
     action?: string,
-    on_action?: () => void
+    on_action?: () => void,
 ): void {
     const icon: ApplicationIcon = {
         type: 'icon',
@@ -106,7 +106,7 @@ export function notifyWarn(
 export function notifyInfo(
     msg: string,
     action?: string,
-    on_action?: () => void
+    on_action?: () => void,
 ): void {
     console.info(msg);
     notify('info', msg, action, on_action);

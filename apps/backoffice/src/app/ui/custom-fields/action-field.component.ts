@@ -4,7 +4,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     selector: 'an-action-field',
     template: `
         <div
-            class="flex items-center rounded px-4 py-2.5 border border-gray-200 hover:border-base-content"
+            class="border-gray-200 flex items-center rounded border px-4 py-2.5 hover:border-base-content"
             role="button"
             [attr.disabled]="disabled"
             form-field
@@ -13,12 +13,12 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
         >
             <div
                 placeholder
-                class="flex-1 w-0 truncate"
+                class="w-0 flex-1 truncate"
                 (click)="performAction()"
             >
                 <ng-content></ng-content>
             </div>
-            <app-icon class="text-2xl -mr-2" (click)="performAction()">
+            <app-icon class="-mr-2 text-2xl" (click)="performAction()">
                 arrow_drop_{{ show_tooltip ? 'up' : 'down' }}
             </app-icon>
         </div>

@@ -35,8 +35,9 @@ export class HotkeysService {
             if (
                 document.getSelection().type === 'Range' ||
                 (document.activeElement &&
-                (document.activeElement.tagName.toLowerCase() === 'input' ||
-                    document.activeElement.tagName.toLowerCase() === 'textarea'))
+                    (document.activeElement.tagName.toLowerCase() === 'input' ||
+                        document.activeElement.tagName.toLowerCase() ===
+                            'textarea'))
             ) {
                 return;
             }
@@ -69,7 +70,7 @@ export class HotkeysService {
     public listen(combo: string | string[], next: () => void): Subscription {
         combo = combo instanceof Array ? combo : combo.split('+');
         const combination: string[] = combo.map((i) =>
-            this.mapKey(i.toLowerCase())
+            this.mapKey(i.toLowerCase()),
         );
         if (combination.length > 0 && this.validCombination(combination)) {
             this.registered_combos.push(combination);
@@ -94,7 +95,7 @@ export class HotkeysService {
                     }
                     const total = presses.reduce(
                         (a, v) => a + (v > 0 ? 1 : -1),
-                        0
+                        0,
                     );
                     if (total >= combination.length) {
                         next();
@@ -153,9 +154,8 @@ export class HotkeysService {
     private setKeyState(code: string, value: number = null) {
         if (!this.keydown_states[code]) {
             this.keydown_states[code] = new BehaviorSubject(null);
-            this.keydown_observers[code] = this.keydown_states[
-                code
-            ].asObservable();
+            this.keydown_observers[code] =
+                this.keydown_states[code].asObservable();
         }
         this.keydown_states[code].next(value);
     }

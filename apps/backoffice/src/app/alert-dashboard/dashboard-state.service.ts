@@ -32,13 +32,18 @@ export class MqttDashboardStateService {
         state: new FormControl('connected'),
     });
 
-    public readonly topic = this.filters.valueChanges.pipe(map(() => {
-        const { org, bld, lvl, area, sys, drv, mod, idx, state } = this.filters.value;
-        return `placeos/${org || '+'}/state/${bld || '+'}/${lvl || '+'}/${area || '+'}/${sys || '+'}/${drv || '+'}/${mod || '+'}/${idx || '+'}/${state || '+'}`
-    }));
+    public readonly topic = this.filters.valueChanges.pipe(
+        map(() => {
+            const { org, bld, lvl, area, sys, drv, mod, idx, state } =
+                this.filters.value;
+            return `placeos/${org || '+'}/state/${bld || '+'}/${lvl || '+'}/${area || '+'}/${sys || '+'}/${drv || '+'}/${mod || '+'}/${idx || '+'}/${state || '+'}`;
+        }),
+    );
 
     constructor() {
-        onlineState().pipe(first((_) => _)).subscribe(() => this._init());
+        onlineState()
+            .pipe(first((_) => _))
+            .subscribe(() => this._init());
         this.filters.enable();
     }
 
@@ -49,7 +54,7 @@ export class MqttDashboardStateService {
             {
                 username: token(),
                 password: token(),
-            }
+            },
         );
         this._client.on('connect', () => this._connected.next(true));
         this._client.on('message', (topic, message) => {
@@ -57,10 +62,15 @@ export class MqttDashboardStateService {
             if (match) {
                 let data = message.toString();
                 try {
-                    data = JSON.parse(message.toString())
+                    data = JSON.parse(message.toString());
                 } catch {}
-                const old_data = this._topics[match].getValue().filter(([_]) => _.join('/') !== topic);
-                this._topics[match].next([...old_data, [topic.split('/'), data]]);
+                const old_data = this._topics[match]
+                    .getValue()
+                    .filter(([_]) => _.join('/') !== topic);
+                this._topics[match].next([
+                    ...old_data,
+                    [topic.split('/'), data],
+                ]);
             }
         });
     }
@@ -81,9 +91,10 @@ export class MqttDashboardStateService {
         const topic_tokens = topic.split('/');
         for (const key of topic_list) {
             const key_tokens = key.split('/');
-            let i = 0; 
+            let i = 0;
             for (; i < topic_tokens.length; i++) {
-                if (key_tokens[i] !== '+' && key_tokens[i] !== topic_tokens[i]) break;
+                if (key_tokens[i] !== '+' && key_tokens[i] !== topic_tokens[i])
+                    break;
             }
             if (i === topic_tokens.length) return key;
         }

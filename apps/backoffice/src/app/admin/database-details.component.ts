@@ -6,14 +6,14 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 @Component({
     selector: 'app-database-details',
     template: `
-        <div class="flex items-center justify-between space-x-2 my-4 px-2">
+        <div class="my-4 flex items-center justify-between space-x-2 px-2">
             <div class="text-2xl">PlaceOS Database</div>
         </div>
-        <div class="flex w-full p-4 space-x-4">
+        <div class="flex w-full space-x-4 p-4">
             <div
-                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
+                class="flex w-1/3 flex-1 flex-col space-y-2 rounded border border-base-200 p-2"
             >
-                <p class="text-center p-2 max-w-64 mx-auto">
+                <p class="mx-auto max-w-64 p-2 text-center">
                     {{ 'ADMIN.DATABASE_REINDEX_MSG' | translate }}
                 </p>
                 <button
@@ -28,9 +28,9 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
                 </button>
             </div>
             <div
-                class="rounded p-2 border border-base-200  space-y-2 w-1/3 flex-1 flex flex-col"
+                class="flex w-1/3 flex-1 flex-col space-y-2 rounded border border-base-200 p-2"
             >
-                <p class="text-center p-2 max-w-64 mx-auto">
+                <p class="mx-auto max-w-64 p-2 text-center">
                     {{ 'ADMIN.DATABASE_BACKFILL_MSG' | translate }}
                 </p>
                 <button
@@ -46,7 +46,7 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
             </div>
         </div>
         <ng-template #spinner>
-            <div class="flex justify-center w-full my-1">
+            <div class="my-1 flex w-full justify-center">
                 <mat-spinner diameter="32"></mat-spinner>
             </div>
         </ng-template>
@@ -87,10 +87,10 @@ export class PlaceDatabaseDetailsComponent {
                 this.reindexing = false;
                 notifyError(
                     `Error reindexing database. Error: ${JSON.stringify(
-                        err.response || err.message || err
-                    )}`
+                        err.response || err.message || err,
+                    )}`,
                 );
-            }
+            },
         );
     }
 
@@ -102,10 +102,10 @@ export class PlaceDatabaseDetailsComponent {
                 this.backfilling = false;
                 notifyError(
                     `Error reindexing database. Error: ${JSON.stringify(
-                        err.response || err.message || err
-                    )}`
+                        err.response || err.message || err,
+                    )}`,
                 );
-            }
+            },
         );
     }
 }

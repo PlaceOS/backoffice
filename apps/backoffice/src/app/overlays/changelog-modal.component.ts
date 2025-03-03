@@ -24,7 +24,7 @@ export interface ChangelogModalData {
         </fullscreen-modal-shell>
         <ng-template #empty_state>
             <div
-                class="w-full h-[50vh] flex flex-col items-center justify-center space-y-4"
+                class="flex h-[50vh] w-full flex-col items-center justify-center space-y-4"
             >
                 <app-icon class="text-7xl">playlist_remove</app-icon>
                 <div class="text">

@@ -80,10 +80,10 @@
                 {{ form.controls['settings' + option.id].errors.yaml }}
             </div>
             <div
-                class="flex items-center justify-between p-1 space-x-2 border-b border-l border-r border-gray-300 mb-4 rounded-b"
+                class="border-gray-300 mb-4 flex items-center justify-between space-x-2 rounded-b border-b border-l border-r p-1"
                 *ngIf="option.name !== 'Merged'"
             >
-                <div class="text-xs pl-2">
+                <div class="pl-2 text-xs">
                     {{ (settings[i - 1]?.modified_by_id | user | async)?.name }}
                 </div>
                 <code

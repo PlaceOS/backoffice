@@ -32,7 +32,7 @@ export interface FrameMessage {
         <iframe
             *ngIf="url && app_loaded"
             #frame
-            class="absolute inset-0 w-full h-full border-none"
+            class="absolute inset-0 h-full w-full border-none"
             [src]="url | safe: 'resource'"
         ></iframe>
     `,
@@ -51,7 +51,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
     constructor(
         private _route: ActivatedRoute,
         private _location: Location,
-        private _service: ActiveItemService
+        private _service: ActiveItemService,
     ) {
         super();
     }
@@ -60,7 +60,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
         onlineState()
             .pipe(first((_) => _))
             .subscribe(() =>
-                this.timeout('init', () => (this.app_loaded = true))
+                this.timeout('init', () => (this.app_loaded = true)),
             );
         this._route.queryParamMap.subscribe((params) => {
             if (params.has('embed')) this.url = params.get('embed');
@@ -68,7 +68,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
         });
         window.addEventListener('message', this.onMessage);
         this.subscription('message', () =>
-            window.removeEventListener('message', this.onMessage)
+            window.removeEventListener('message', this.onMessage),
         );
     }
 
@@ -139,11 +139,11 @@ export class ExtensionOutletComponent extends AsyncHandler {
     private async loadMetadata(
         item: any,
         message: FrameMessage,
-        parent: boolean = false
+        parent: boolean = false,
     ) {
         const metadata = await showMetadata(
             parent ? item.parent_id : item.id,
-            message.name
+            message.name,
         ).toPromise();
         if (metadata) {
             this._postMessage({
@@ -189,7 +189,7 @@ export class ExtensionOutletComponent extends AsyncHandler {
     private _postMessage(message: FrameMessage) {
         this._frame_el?.nativeElement?.contentWindow?.postMessage(
             JSON.stringify(message),
-            '*'
+            '*',
         );
     }
 }

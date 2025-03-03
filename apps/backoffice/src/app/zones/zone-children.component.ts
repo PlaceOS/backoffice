@@ -11,7 +11,7 @@ import { ZonesStateService } from './zones-state.service';
         <div class="flex items-center">
             <mat-form-field class="flex-1" appearance="outline">
                 <div class="prefix" matPrefix>
-                    <app-icon class="text-2xl relative -left-0.5">
+                    <app-icon class="relative -left-0.5 text-2xl">
                         search
                     </app-icon>
                 </div>
@@ -30,19 +30,19 @@ import { ZonesStateService } from './zones-state.service';
             [class.opacity-0]="!(loading | async)"
         ></mat-progress-bar>
         <simple-table
-            class="min-w-[32rem] block text-sm"
+            class="block min-w-[32rem] text-sm"
             [data]="children"
             [columns]="[
                 {
                     key: 'name',
                     name: 'COMMON.FIELD_NAME' | translate,
-                    content: name_template
+                    content: name_template,
                 },
                 {
                     key: 'description',
                     name: 'COMMON.FIELD_DESCRIPTION' | translate,
-                    content: description_template
-                }
+                    content: description_template,
+                },
             ]"
             [sortable]="true"
             [empty_message]="'ZONES.CHILDREN_EMPTY' | translate"
@@ -52,13 +52,13 @@ import { ZonesStateService } from './zones-state.service';
                 <a class="truncate underline" [routerLink]="['/zones', row.id]">
                     {{ row.name }}
                 </a>
-                <div class="text-[0.625rem] opacity-30 font-mono">
+                <div class="font-mono text-[0.625rem] opacity-30">
                     {{ row.id }}
                 </div>
             </div>
         </ng-template>
         <ng-template #description_template let-data="data">
-            <div class="px-4 py-2 select-text overflow-hidden w-full text-xs">
+            <div class="w-full select-text overflow-hidden px-4 py-2 text-xs">
                 {{ data }}
                 <span class="opacity-30" *ngIf="!data">
                     {{ 'ZONES.DESCRIPTION_EMPTY' | translate }}
@@ -88,9 +88,9 @@ export class ZoneChildrenComponent {
             return !filter
                 ? zones
                 : zones.filter((sys) =>
-                      sys.name.toLowerCase().includes(search)
+                      sys.name.toLowerCase().includes(search),
                   );
-        })
+        }),
     );
 
     public readonly loading = this._state.loading;

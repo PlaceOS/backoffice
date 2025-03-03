@@ -30,7 +30,7 @@ import { i18n } from '../../common/translate';
                 </mat-form-field>
             </div> -->
                 <div class="flex space-x-2">
-                    <div class="flex-1 flex flex-col ">
+                    <div class="flex flex-1 flex-col">
                         <label for="bucket-name">{{
                             'ADMIN.STORAGE_BUCKET_NAME_LABEL' | translate
                         }}</label>
@@ -49,7 +49,7 @@ import { i18n } from '../../common/translate';
                             }}</mat-error>
                         </mat-form-field>
                     </div>
-                    <div class="flex-1 flex flex-col ">
+                    <div class="flex flex-1 flex-col">
                         <label for="region">{{
                             'ADMIN.STORAGE_REGION_LABEL' | translate
                         }}</label>
@@ -69,7 +69,7 @@ import { i18n } from '../../common/translate';
                     </div>
                 </div>
                 <div class="flex space-x-2">
-                    <div class="flex-1 flex flex-col">
+                    <div class="flex flex-1 flex-col">
                         <label for="access-key">{{
                             'ADMIN.STORAGE_ACCESS_KEY_LABEL' | translate
                         }}</label>
@@ -87,7 +87,7 @@ import { i18n } from '../../common/translate';
                             }}</mat-error>
                         </mat-form-field>
                     </div>
-                    <div class="flex-1 flex flex-col">
+                    <div class="flex flex-1 flex-col">
                         <label for="access-secret">{{
                             'ADMIN.STORAGE_SECRET_LABEL' | translate
                         }}</label>
@@ -143,7 +143,7 @@ import { i18n } from '../../common/translate';
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div class="flex flex-col ">
+                <div class="flex flex-col">
                     <label for="mime-types">{{
                         'ADMIN.STORAGE_ALLOWED_MIME_LABEL' | translate
                     }}</label>
@@ -237,7 +237,7 @@ export class StorageProviderModalComponent {
     constructor(
         @Inject(MAT_DIALOG_DATA)
         private _data: { item?: PlaceStorage; domain?: string },
-        private _dialog_ref: MatDialogRef<StorageProviderModalComponent>
+        private _dialog_ref: MatDialogRef<StorageProviderModalComponent>,
     ) {}
 
     public async save() {

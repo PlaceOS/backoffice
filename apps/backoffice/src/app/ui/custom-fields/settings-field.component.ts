@@ -23,7 +23,7 @@ let MODEL: HashMap<monaco.editor.ITextModel> = {};
     selector: 'settings-form-field,[settings-field]',
     template: `
         <div
-            class="relative w-full h-[32rem] border border-gray-300"
+            class="border-gray-300 relative h-[32rem] w-full border"
             editor
             (window:resize)="resizeEditor()"
             #editor
@@ -81,12 +81,12 @@ export class SettingsFieldComponent
                 json: monaco.editor.createModel(
                     '',
                     'json',
-                    monaco.Uri.parse(`http://backoffice/schema.json`)
+                    monaco.Uri.parse(`http://backoffice/schema.json`),
                 ),
                 yaml: monaco.editor.createModel(
                     '',
                     'yaml',
-                    monaco.Uri.parse(`http://backoffice/schema.yaml`)
+                    monaco.Uri.parse(`http://backoffice/schema.yaml`),
                 ),
             };
         }
@@ -105,7 +105,7 @@ export class SettingsFieldComponent
                     });
                 }
             },
-            1000
+            1000,
         );
     }
 
@@ -125,7 +125,7 @@ export class SettingsFieldComponent
         if (changes.decorations && this.editor) {
             this._active_decorators = this.editor.deltaDecorations(
                 this._active_decorators,
-                (this.decorations || []).map((i) => ({ ...i }))
+                (this.decorations || []).map((i) => ({ ...i })),
             );
         }
     }
@@ -217,19 +217,20 @@ export class SettingsFieldComponent
                     this.editor.trigger(
                         'Show Autocomplete',
                         'editor.action.triggerSuggest',
-                        {}
+                        {},
                     );
                 }
             });
             this.timeout(
                 'decorations',
                 () => {
-                    this._active_decorators = this.editor.deltaDecorations(
-                        this._active_decorators,
-                        (this.decorations || []).map((i) => ({ ...i }))
-                    );
+                    this._active_decorators =
+                        this.editor?.deltaDecorations(
+                            this._active_decorators,
+                            (this.decorations || []).map((i) => ({ ...i })),
+                        ) || [];
                 },
-                50
+                50,
             );
         }
     }

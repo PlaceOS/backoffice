@@ -307,7 +307,7 @@ export class TriggerConditionComparisonFormComponent
             name.length > 1
                 ? name.slice(0, name.length - 1).join('_')
                 : name[0],
-            +name[name.length - 1] || 1
+            +name[name.length - 1] || 1,
         ).subscribe(
             (var_map) => {
                 if (Object.keys(var_map || {}).length <= 0) {
@@ -317,7 +317,7 @@ export class TriggerConditionComparisonFormComponent
                     (key) => ({
                         id: key,
                         name: key,
-                    })
+                    }),
                 );
                 this.addExistingStatusVariables();
             },
@@ -326,8 +326,8 @@ export class TriggerConditionComparisonFormComponent
                     i18n('TRIGGERS.COMPARE_VARIABLE_LOAD_ERROR', {
                         system: this.system.id,
                         module: mod_name,
-                    })
-                )
+                    }),
+                ),
         );
     }
 
@@ -344,7 +344,7 @@ export class TriggerConditionComparisonFormComponent
                 this.modules = module_list;
                 const mod_list = this.system.modules;
                 this.modules.sort(
-                    (a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id)
+                    (a, b) => mod_list.indexOf(a.id) - mod_list.indexOf(b.id),
                 );
                 this.module_list = this.modules.map((mod) => {
                     const name = mod.custom_name || mod.name || 'Blank';
@@ -401,7 +401,7 @@ export class TriggerConditionComparisonFormComponent
         if (this.left_side.status) {
             if (
                 !this.left_status_variables.find(
-                    (status) => status.name === this.left_side.status
+                    (status) => status.name === this.left_side.status,
                 )
             ) {
                 this.left_status_variables.unshift({
@@ -414,7 +414,7 @@ export class TriggerConditionComparisonFormComponent
         if (this.right_side.status) {
             if (
                 !this.right_status_variables.find(
-                    (status) => status.name === this.right_side.status
+                    (status) => status.name === this.right_side.status,
                 )
             ) {
                 this.right_status_variables.unshift({

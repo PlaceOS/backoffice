@@ -16,7 +16,7 @@ describe('BindingDirective', () => {
 
     beforeEach(() => {
         spectator = createDirective(
-            `<div binding>Testing Binding Directive</div>`
+            `<div binding>Testing Binding Directive</div>`,
         );
         (ts_client as any).authority = jest.fn(() => true);
         (ts_client as any).onlineState = jest.fn(() => of(true));
@@ -44,7 +44,7 @@ describe('BindingDirective', () => {
             expect(ts_client.getModule).toHaveBeenCalledWith(
                 'system-1',
                 'System',
-                2
+                2,
             );
             spectator.directive.modelChange.subscribe((value) => {
                 if (!value) return;
@@ -72,7 +72,7 @@ describe('BindingDirective', () => {
         expect(ts_client.getModule).toHaveBeenCalledWith(
             'system-1',
             'System',
-            1
+            1,
         );
         expect(execute).toHaveBeenCalledWith('power', []);
         spectator.setHostInput({ params: [false], model: 2 });

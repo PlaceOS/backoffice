@@ -26,25 +26,25 @@ import { i18n } from '../common/translate';
 @Component({
     selector: 'system-modules',
     template: `
-        <div class="w-full h-full flex flex-col" *ngIf="item">
+        <div class="flex h-full w-full flex-col" *ngIf="item">
             <section
                 exec
                 *ngIf="item.id && item.modules && !hide_exec"
                 class="mb-4"
             >
-                <h3 class="font-medium text-lg mb-2">
+                <h3 class="mb-2 text-lg font-medium">
                     {{ 'COMMON.EXECUTE_COMMAND' | translate }}
                 </h3>
                 <execute-method-field
                     [system]="item$ | async"
                 ></execute-method-field>
             </section>
-            <h3 class="font-medium text-lg mb-2">
+            <h3 class="mb-2 text-lg font-medium">
                 {{ 'SYSTEMS.MODULE_LIST' | translate }}
             </h3>
-            <section add-module class="flex space-x-2 flex-wrap mb-2">
+            <section add-module class="mb-2 flex flex-wrap space-x-2">
                 <item-search-field
-                    class="flex-grow-1 w-full sm:flex-1 sm:w-auto h-12"
+                    class="flex-grow-1 h-12 w-full sm:w-auto sm:flex-1"
                     name="module"
                     [placeholder]="'SYSTEMS.FIND_MODULE' | translate"
                     [query_fn]="query_fn"
@@ -55,7 +55,7 @@ import { i18n } from '../common/translate';
                 <button
                     btn
                     matRipple
-                    class="flex-1 w-40 sm:w-32 sm:flex-none h-11"
+                    class="h-11 w-40 flex-1 sm:w-32 sm:flex-none"
                     [disabled]="!new_module"
                     (click)="addModule()"
                 >
@@ -64,45 +64,45 @@ import { i18n } from '../common/translate';
                 <button
                     btn
                     matRipple
-                    class="flex-1 w-40 sm:w-32 sm:flex-none h-11"
+                    class="h-11 w-40 flex-1 sm:w-32 sm:flex-none"
                     (click)="newModule()"
                 >
                     {{ 'COMMON.ADD_NEW' | translate }}
                 </button>
             </section>
-            <section device-list class="overflow-auto min-h-[50vh] flex-1">
+            <section device-list class="min-h-[50vh] flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.opacity-0]="!(loading | async).modules"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[80rem] block text-sm overflow-visible"
+                    class="block min-w-[80rem] overflow-visible text-sm"
                     [data]="modules"
                     [columns]="[
                         {
                             key: 'state',
                             name: 'SYSTEMS.MODULE_FIELD_STATE' | translate,
                             content: state_template,
-                            size: '4rem'
+                            size: '4rem',
                         },
                         {
                             key: 'name',
                             name: 'SYSTEMS.MODULE_FIELD_NAME' | translate,
                             content: name_template,
-                            size: '16rem'
+                            size: '16rem',
                         },
                         {
                             key: 'type',
                             name: 'SYSTEMS.MODULE_FIELD_TYPE' | translate,
                             content: type_template,
-                            size: '7rem'
+                            size: '7rem',
                         },
                         {
                             key: 'class',
                             name: 'SYSTEMS.MODULE_FIELD_CLASS' | translate,
                             content: class_template,
-                            size: '16rem'
+                            size: '16rem',
                         },
                         {
                             key: 'url',
@@ -113,21 +113,21 @@ import { i18n } from '../common/translate';
                             key: 'debug',
                             name: 'SYSTEMS.MODULE_FIELD_DEBUG' | translate,
                             content: debug_template,
-                            size: '4.5rem'
+                            size: '4.5rem',
                         },
                         {
                             key: 'actions',
                             name: ' ',
                             size: '6.5rem',
-                            content: actions_template
-                        }
+                            content: actions_template,
+                        },
                     ]"
                     [can_reorder]="true"
                     [color]="colors | async"
                     (ondrop)="drop($event)"
                     [empty_message]="'SYSTEMS.MODULE_LIST_EMPTY' | translate"
                 ></simple-table>
-                <div class="w-full h-12"></div>
+                <div class="h-12 w-full"></div>
                 <ng-template #state_template let-row="row" let-index="index">
                     <button
                         dot
@@ -136,7 +136,7 @@ import { i18n } from '../common/translate';
                         [mod]="(bindings | async)[index]"
                         bind="connected"
                         [(model)]="row.connected"
-                        class="h-4 w-4 rounded-full mx-auto"
+                        class="mx-auto h-4 w-4 rounded-full"
                         [class.bg-base-content]="!row.running"
                         [class.bg-error]="
                             row.running && row.connected === false
@@ -173,24 +173,24 @@ import { i18n } from '../common/translate';
                     </mat-menu>
                     <mat-spinner
                         *ngIf="row.running && row.connected === undefined"
-                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+                        class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                         diameter="32"
                     ></mat-spinner>
                 </ng-template>
                 <ng-template #name_template let-row="row">
                     <div
-                        class="flex items-center justify-between space-x-2 px-4 py-2 max-w-full w-full"
+                        class="flex w-full max-w-full items-center justify-between space-x-2 px-4 py-2"
                     >
                         <div
-                            class="flex-1 flex flex-col items-start leading-snug max-w-full overflow-hidden"
+                            class="flex max-w-full flex-1 flex-col items-start overflow-hidden leading-snug"
                         >
                             <a
-                                class="truncate underline max-w-full"
+                                class="max-w-full truncate underline"
                                 [routerLink]="['/modules', row.id]"
                             >
                                 {{ row.driver?.name || row.name }}
                             </a>
-                            <div class="text-[0.625rem] opacity-30 font-mono">
+                            <div class="font-mono text-[0.625rem] opacity-30">
                                 {{ row.notes || row.id }}
                             </div>
                         </div>
@@ -198,7 +198,7 @@ import { i18n } from '../common/translate';
                             *ngIf="row.edge_id"
                             icon
                             matRipple
-                            class="text-xs h-6 w-6 max-w-6 min-w-6 rounded-full bg-info border border-base-200 text-info-content"
+                            class="h-6 w-6 min-w-6 max-w-6 rounded-full border border-base-200 bg-info text-xs text-info-content"
                             [matTooltip]="row.edge_id"
                             [routerLink]="['/admin', 'edge', row.edge_id]"
                         >
@@ -217,7 +217,7 @@ import { i18n } from '../common/translate';
                     </div>
                 </ng-template>
                 <ng-template #url_template let-row="row">
-                    <div class="p-4 flex items-center max-w-[22rem]">
+                    <div class="flex max-w-[22rem] items-center p-4">
                         <app-icon [class.opacity-0]="!row.tls" class="text-xl">
                             lock
                         </app-icon>
@@ -229,7 +229,7 @@ import { i18n } from '../common/translate';
                                     : row.uri
                             "
                             target="_blank"
-                            class="truncate underline max-w-[20rem]"
+                            class="max-w-[20rem] truncate underline"
                         >
                             {{ row.ip || row.uri }}
                         </a>
@@ -253,7 +253,7 @@ import { i18n } from '../common/translate';
                     </div>
                 </ng-template>
                 <ng-template #actions_template let-row="row">
-                    <div class="flex items-center space-x-2 p-2 mx-auto">
+                    <div class="mx-auto flex items-center space-x-2 p-2">
                         <button icon matRipple (click)="editModule(row)">
                             <app-icon>edit</app-icon>
                         </button>
@@ -310,7 +310,9 @@ import { i18n } from '../common/translate';
             }
 
             [dot] {
-                transition: height 200ms, width 200ms;
+                transition:
+                    height 200ms,
+                    width 200ms;
             }
 
             mat-checkbox.mat-checkbox-disabled {
@@ -342,7 +344,7 @@ export class SystemModulesComponent extends AsyncHandler {
                 }
             }
             return colors;
-        })
+        }),
     );
     /** Actions available for the context menu */
     public menu_options: AppLink[] = [
@@ -423,8 +425,8 @@ export class SystemModulesComponent extends AsyncHandler {
     public readonly query_fn = (_: string) =>
         queryModules({ q: _, no_logic: true }).pipe(
             map((_) =>
-                _.data.map((mod) => ({ ...mod, extra: mod.driver?.name }))
-            )
+                _.data.map((mod) => ({ ...mod, extra: mod.driver?.name })),
+            ),
         );
     /** Function for excluding modules already within this system */
     public readonly exclude_fn = (item: PlaceModule, _: string) =>
@@ -460,7 +462,7 @@ export class SystemModulesComponent extends AsyncHandler {
 
     constructor(
         private _service: SystemStateService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
     ) {
         super();
     }
@@ -515,7 +517,7 @@ export class SystemModulesComponent extends AsyncHandler {
         const modules = this._service.getModules();
         this._dialog.open<ViewModuleStateModalComponent, ModuleStateModalData>(
             ViewModuleStateModalComponent,
-            { data: { system: this.item, module: device, devices: modules } }
+            { data: { system: this.item, module: device, devices: modules } },
         );
     }
 
@@ -527,14 +529,14 @@ export class SystemModulesComponent extends AsyncHandler {
                     notifySuccess(
                         `Successfully loaded module "${
                             device.name || device.id
-                        }"`
+                        }"`,
                     ),
                 (err) =>
                     notifyError(
                         `Error loading module. Error: ${JSON.stringify(
-                            err.response || err.message || err
-                        )}`
-                    )
+                            err.response || err.message || err,
+                        )}`,
+                    ),
             );
     }
 
@@ -556,7 +558,7 @@ export class SystemModulesComponent extends AsyncHandler {
     public viewRuntimeError(device: PlaceModule) {
         this._dialog.open<ModuleRuntimeErrorsModalComponent>(
             ModuleRuntimeErrorsModalComponent,
-            { data: device.id }
+            { data: device.id },
         );
     }
 }

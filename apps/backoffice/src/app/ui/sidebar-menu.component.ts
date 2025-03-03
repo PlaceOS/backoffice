@@ -21,53 +21,57 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
     template: `
         <div
             sidebar-menu
-            class="absolute pointer-events-none sm:pointer-events-auto inset-0 sm:relative sm:inset-auto hidden sm:flex flex-col justify-between h-full bg-base-200 z-40 sm:z-10"
+            class="pointer-events-none absolute inset-0 z-40 hidden h-full flex-col justify-between bg-base-200 sm:pointer-events-auto sm:relative sm:inset-auto sm:z-10 sm:flex"
             [class.compact]="compact"
             [class.sm:w-52]="!compact"
             [class.!flex]="open"
             [class.!pointer-events-auto]="open"
             (click)="close()"
         >
-            <div class="flex flex-col items-center space-y-2 flex-1 h-1/2">
+            <div class="flex h-1/2 flex-1 flex-col items-center space-y-2">
                 <a
                     [routerLink]="['/']"
-                    class="font-heading text-4xl mt-4 ml-16 sm:ml-0 sm:mb-2"
+                    class="font-heading ml-16 mt-4 text-4xl sm:mb-2 sm:ml-0"
                     [style.width]="compact ? 'auto' : 'calc(100%-2rem)'"
                 >
                     <div [class.sm:hidden]="compact">
-                        Place<span class="text-primary font-heading">OS</span>
+                        Place<span class="font-heading text-primary">OS</span>
                     </div>
                     <img
                         src="assets/icon/mstile-310x310.png"
-                        class="hidden w-12 h-12"
+                        class="hidden h-12 w-12"
                         [class.sm:block]="compact"
                     />
                 </a>
-                <div class="flex-1 overflow-auto space-y-2 w-full pb-2">
-                    @for(link of links; track link.name) {
-                    <a
-                        btn
-                        matRipple
-                        class="clear hover:bg-base-100 text-left w-[calc(100%-1rem)] mx-auto"
-                        [routerLink]="[link.route]"
-                        routerLinkActive="!bg-secondary text-secondary-content"
-                        [matTooltip]="compact ? (link.name | translate) : ''"
-                        matTooltipPosition="right"
-                        *ngIf="!link.show_on || link.show_on()"
-                    >
-                        <div
-                            class="flex items-center space-x-2 w-full"
-                            [class.sm:justify-center]="compact"
+                <div class="w-full flex-1 space-y-2 overflow-auto pb-2">
+                    @for (link of links; track link.name) {
+                        <a
+                            btn
+                            matRipple
+                            class="clear mx-auto w-[calc(100%-1rem)] text-left hover:bg-base-100"
+                            [routerLink]="[link.route]"
+                            routerLinkActive="!bg-secondary text-secondary-content"
+                            [matTooltip]="
+                                compact ? (link.name | translate) : ''
+                            "
+                            matTooltipPosition="right"
+                            *ngIf="!link.show_on || link.show_on()"
                         >
-                            <app-icon class="text-xl">{{ link.icon }}</app-icon>
-                            <p [class.sm:hidden]="compact">
-                                {{ link.name | translate }}
-                            </p>
-                        </div>
-                    </a>
+                            <div
+                                class="flex w-full items-center space-x-2"
+                                [class.sm:justify-center]="compact"
+                            >
+                                <app-icon class="text-xl">{{
+                                    link.icon
+                                }}</app-icon>
+                                <p [class.sm:hidden]="compact">
+                                    {{ link.name | translate }}
+                                </p>
+                            </div>
+                        </a>
                     }
                     <button
-                        class="absolute top-1 left-1 sm:hidden"
+                        class="absolute left-1 top-1 sm:hidden"
                         icon
                         matRipple
                         (click)="open = false; openChange.emit(false)"
@@ -77,15 +81,15 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                 </div>
             </div>
             <div
-                class="m-2 p-2 rounded-xl border border-base-300  flex flex-col space-y-2"
+                class="m-2 flex flex-col space-y-2 rounded-xl border border-base-300 p-2"
                 *ngIf="debug_enabled"
             >
                 <div
-                    class="rounded-xl text-xs mono bg-info text-info-content text-center p-1"
+                    class="mono rounded-xl bg-info p-1 text-center text-xs text-info-content"
                 >
                     {{ 'COMMON.DEBUG_ENABLED' | translate }}
                 </div>
-                <p class="text-xs p-1 text-center">
+                <p class="p-1 text-center text-xs">
                     {{
                         'COMMON.DEBUG_LISTENING_MSG'
                             | translate: { modules: debug_module_count }
@@ -144,7 +148,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             </div>
             <button
                 matRipple
-                class="flex items-center space-x-2 p-2 border-t border-base-300 min-h-16 text-left "
+                class="flex min-h-16 items-center space-x-2 border-t border-base-300 p-2 text-left"
                 customTooltip
                 user
                 [content]="user_controls"
@@ -158,17 +162,17 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     matTooltipPosition="right"
                 ></a-user-avatar>
                 <div
-                    class="flex flex-col flex-1 w-1/2 leading-tight"
+                    class="flex w-1/2 flex-1 flex-col leading-tight"
                     [class.sm:hidden]="compact"
                 >
-                    <div class="truncate w-full">{{ user?.name }}</div>
-                    <div class="truncate text-xs opacity-30 w-full">
+                    <div class="w-full truncate">{{ user?.name }}</div>
+                    <div class="w-full truncate text-xs opacity-30">
                         {{
                             (user?.sys_admin
                                 ? 'COMMON.USER_ADMIN'
                                 : user?.support
-                                ? 'COMMON.USER_SUPPORT'
-                                : 'COMMON.USER_BASIC'
+                                  ? 'COMMON.USER_SUPPORT'
+                                  : 'COMMON.USER_BASIC'
                             ) | translate
                         }}
                     </div>
@@ -177,7 +181,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             <button
                 icon
                 matRipple
-                class="absolute hidden sm:flex bottom-12 right-0 h-6 w-6 min-w-6 translate-x-1/2 bg-base-100 rounded-full shadow border border-base-200 hover:bg-base-200"
+                class="absolute bottom-12 right-0 hidden h-6 w-6 min-w-6 translate-x-1/2 rounded-full border border-base-200 bg-base-100 shadow hover:bg-base-200 sm:flex"
                 (click)="toggleCompactMode()"
             >
                 <app-icon>
@@ -284,7 +288,7 @@ export class SidebarMenuComponent extends AsyncHandler {
         private _settings: SettingsService,
         private _users: BackofficeUsersService,
         private _hotkey: HotkeysService,
-        private _router: Router
+        private _router: Router,
     ) {
         super();
     }
@@ -293,14 +297,14 @@ export class SidebarMenuComponent extends AsyncHandler {
         this.subscription(
             'up',
             this._hotkey.listen(['Control', 'Shift', 'ArrowUp'], () =>
-                this.changeSelected(-1)
-            )
+                this.changeSelected(-1),
+            ),
         );
         this.subscription(
             'down',
             this._hotkey.listen(['Control', 'Shift', 'ArrowDown'], () =>
-                this.changeSelected(1)
-            )
+                this.changeSelected(1),
+            ),
         );
         this.compact =
             localStorage.getItem('BACKOFFICE.SIDEBAR_COMPACT') === 'true';

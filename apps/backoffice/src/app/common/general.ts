@@ -25,7 +25,7 @@ export function log(
     args?: any,
     stream: ConsoleStream = 'debug',
     force: boolean = false,
-    app_name: string = 'BACKOFFICE'
+    app_name: string = 'BACKOFFICE',
 ) {
     if (window.debug || force) {
         const colors: string[] = [
@@ -37,7 +37,7 @@ export function log(
             console[stream](
                 `%c[${app_name}]%c[${type}] %c${msg}`,
                 ...colors,
-                args
+                args,
             );
         } else {
             console[stream](`%c[${app_name}]%c[${type}] %c${msg}`, ...colors);
@@ -47,14 +47,14 @@ export function log(
 
 export async function openConfirmModal(
     data: ConfirmModalData,
-    dialog: MatDialog
+    dialog: MatDialog,
 ) {
     const ref = dialog.open<ConfirmModalComponent, ConfirmModalData>(
         ConfirmModalComponent,
         {
             ...CONFIRM_METADATA,
             data,
-        }
+        },
     );
     return {
         ...(await Promise.race([
@@ -125,8 +125,8 @@ export function unique(array: any[], key: string = '') {
             arr.indexOf(
                 key
                     ? arr.find((i) => i[key] === el[key])
-                    : arr.find((i) => i === el)
-            ) === pos
+                    : arr.find((i) => i === el),
+            ) === pos,
     );
 }
 
@@ -278,12 +278,12 @@ function splitCsvLine(line: string, separator: string): string[] {
 export function jsonToCsv<T extends Record<string, any>>(
     data: T[],
     use_keys: string[] = [],
-    separator = ','
+    separator = ',',
 ): string {
     if (!data.length) return '';
 
     const headers = Object.keys(data[0]).filter(
-        (key) => !use_keys.length || use_keys.includes(key)
+        (key) => !use_keys.length || use_keys.includes(key),
     );
     const headerRow = headers.join(separator);
 
@@ -345,7 +345,7 @@ export function downloadFile(filename: string, contents: string) {
     const element = document.createElement('a');
     element.setAttribute(
         'href',
-        'data:text/plain;charset=utf-8,' + encodeURIComponent(contents)
+        'data:text/plain;charset=utf-8,' + encodeURIComponent(contents),
     );
     element.setAttribute('download', filename);
 
@@ -366,7 +366,7 @@ export function parseJWT(token: string) {
             .map((c) => {
                 return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
             })
-            .join('')
+            .join(''),
     );
     return JSON.parse(jsonPayload);
 }
@@ -471,7 +471,7 @@ export function getInvalidFields(form: UntypedFormGroup, prefix: string = '') {
                 ...invalid,
                 ...getInvalidFields(
                     form.controls[key] as UntypedFormGroup,
-                    `${key}.`
+                    `${key}.`,
                 ),
             ];
         } else if (!form.controls[key].valid) {

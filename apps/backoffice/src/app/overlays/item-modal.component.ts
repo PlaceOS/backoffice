@@ -184,7 +184,7 @@ export class ItemCreateUpdateModalComponent
     constructor(
         private _dialog_ref: MatDialogRef<ItemCreateUpdateModalComponent>,
         @Inject(MAT_DIALOG_DATA) private _data: CreateEditModalData,
-        private _hotkey: HotkeysService
+        private _hotkey: HotkeysService,
     ) {
         super();
     }
@@ -228,7 +228,7 @@ export class ItemCreateUpdateModalComponent
         this.form = this.generateFormData();
         this.subscription(
             'save_item_key',
-            this._hotkey.listen(['KeyS'], () => this.submit())
+            this._hotkey.listen(['KeyS'], () => this.submit()),
         );
     }
 
@@ -241,7 +241,7 @@ export class ItemCreateUpdateModalComponent
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {
                     field_list: getInvalidFields(this.form).join(', '),
-                })
+                }),
             );
         }
         this.loading = i18n(`${this.name}.SAVING`);
@@ -251,7 +251,7 @@ export class ItemCreateUpdateModalComponent
                   { ...this.item.toJSON(), ...this.form.value },
                   this.item_type === 'user'
                       ? [undefined, null, '']
-                      : [undefined, null]
+                      : [undefined, null],
               )
             : { ...this.item.toJSON(), ...this.form.value };
         if (this._data.external_save) {
@@ -267,7 +267,7 @@ export class ItemCreateUpdateModalComponent
                 if (!this.form.value.id && this.form.controls.settings) {
                     this.newSettings(
                         item,
-                        this.form.controls.settings.value
+                        this.form.controls.settings.value,
                     ).then(() => this._dialog_ref.close());
                 } else {
                     this._dialog_ref.close();
@@ -279,11 +279,11 @@ export class ItemCreateUpdateModalComponent
                 notifyError(
                     i18n(`${this.name}.SAVE_ERROR`, {
                         error: JSON.stringify(
-                            (await err.text()) || err.message || err
+                            (await err.text()) || err.message || err,
                         ),
-                    })
+                    }),
                 );
-            }
+            },
         );
     }
 
@@ -304,8 +304,8 @@ export class ItemCreateUpdateModalComponent
                     `Error saving settings for ${
                         item.name || item.id
                     }. Error: ${JSON.stringify(
-                        err.response || err.message || err
-                    )}`
+                        err.response || err.message || err,
+                    )}`,
                 );
             });
         (item as any).settings[EncryptionLevel.None] = settings;

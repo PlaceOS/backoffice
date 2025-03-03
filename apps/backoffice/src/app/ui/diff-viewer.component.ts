@@ -16,7 +16,7 @@ import { BackofficeUsersService } from '../users/users.service';
     selector: 'diff-viewer',
     template: `
         <div
-            class="relative w-full h-[32rem] border border-gray-300  select-initial"
+            class="border-gray-300 select-initial relative h-[32rem] w-full border"
             editor
             (window:resize)="resizeEditor()"
             #editor
@@ -67,7 +67,7 @@ export class DiffViewerComponent
                 fontFamily: `"Fira Code", monospace`,
                 theme: !this._users.dark_mode ? 'vs' : 'vs-dark',
                 readOnly: true,
-            }
+            },
         );
         this.subscription('editor', () => this._editor.dispose());
         this._updateModel();

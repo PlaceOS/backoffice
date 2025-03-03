@@ -34,15 +34,15 @@ export interface PlaceServiceDetails {
 @Component({
     selector: 'app-engine-details',
     template: `
-        <div class="flex items-center justify-between space-x-2 my-4">
+        <div class="my-4 flex items-center justify-between space-x-2">
             <div class="text-2xl">Backoffice & PlaceOS Details</div>
         </div>
         <div
-            class="flex items-center space-x-2 mb-4 px-4 py-2 bg-base-200 rounded"
+            class="mb-4 flex items-center space-x-2 rounded bg-base-200 px-4 py-2"
         >
             <h3 class="text-lg font-medium">
                 {{ 'ADMIN.APPLICATION_DETAILS' | translate }}
-                <span class="mono opacity-60 ml-2">Backoffice</span>
+                <span class="mono ml-2 opacity-60">Backoffice</span>
             </h3>
             <div class="flex-1"></div>
             <button
@@ -54,10 +54,10 @@ export interface PlaceServiceDetails {
             </button>
         </div>
         <section
-            class="border border-base-200 rounded p-4 mb-4 inline-grid gap-2"
+            class="mb-4 inline-grid gap-2 rounded border border-base-200 p-4"
             [style.gridTemplateColumns]="'6.5rem auto'"
         >
-            <div class="text-sm font-medium flex items-center" for="version">
+            <div class="flex items-center text-sm font-medium" for="version">
                 {{ 'COMMON.VERSION' | translate }}
             </div>
             <div class="flex items-center space-x-2">
@@ -75,7 +75,7 @@ export interface PlaceServiceDetails {
                     {{ backoffice_tag }}
                 </code>
             </div>
-            <div class="text-sm font-medium flex items-center" for="hash">
+            <div class="flex items-center text-sm font-medium" for="hash">
                 {{ 'COMMON.GIT_COMMIT' | translate }}
             </div>
             <div>
@@ -83,7 +83,7 @@ export interface PlaceServiceDetails {
                     {{ backoffice_hash }}
                 </code>
             </div>
-            <div class="text-sm font-medium flex items-center" for="build-time">
+            <div class="flex items-center text-sm font-medium" for="build-time">
                 {{ 'ADMIN.BUILD' | translate }}
             </div>
             <div
@@ -94,10 +94,10 @@ export interface PlaceServiceDetails {
                 {{ backoffice_build }}
             </div>
         </section>
-        <div class="flex items-center space-x-4 px-4 py-2 bg-base-200 rounded">
+        <div class="flex items-center space-x-4 rounded bg-base-200 px-4 py-2">
             <div class="text-lg font-medium">
                 {{ 'ADMIN.BACKEND_SERVICES' | translate }}
-                <span class="mono opacity-60 ml-2">API</span>
+                <span class="mono ml-2 opacity-60">API</span>
             </div>
             <code class="bg-base-300" *ngIf="backend_version">
                 {{ backend_version }}
@@ -111,38 +111,38 @@ export interface PlaceServiceDetails {
                 {{ 'ADMIN.VIEW_CHANGELOG' | translate }}
             </button>
         </div>
-        <section class="flex flex-wrap py-2 -mx-2">
+        <section class="-mx-2 flex flex-wrap py-2">
             <ng-container *ngIf="api_details.length > 0; else empty_state">
                 <div
-                    class="bg-base-100  rounded border border-base-200  m-2 min-w-[40%] flex-1 overflow-hidden"
+                    class="m-2 min-w-[40%] flex-1 overflow-hidden rounded border border-base-200 bg-base-100"
                     *ngFor="let api of api_details"
                 >
-                    <h3 class="w-full px-4 py-2 border-b border-base-200 mono">
+                    <h3 class="mono w-full border-b border-base-200 px-4 py-2">
                         {{ api.service }}
                     </h3>
                     <div
-                        class="p-4 inline-grid gap-2"
+                        class="inline-grid gap-2 p-4"
                         [style.gridTemplateColumns]="'7.5rem auto'"
                     >
-                        <div class="text-sm font-medium flex items-center">
+                        <div class="flex items-center text-sm font-medium">
                             {{ 'COMMON.GIT_COMMIT' | translate }}
                         </div>
                         <div>
-                            <code>{{ api.commit | slice: 0:8 }}</code>
+                            <code>{{ api.commit | slice: 0 : 8 }}</code>
                         </div>
-                        <div class="text-sm font-medium flex items-center">
+                        <div class="flex items-center text-sm font-medium">
                             {{ 'COMMON.VERSION' | translate }}
                         </div>
                         <div>
                             <code>{{ api.version }}</code>
                         </div>
-                        <div class="text-sm font-medium flex items-center">
+                        <div class="flex items-center text-sm font-medium">
                             {{ 'ADMIN.PLATFORM' | translate }}
                         </div>
                         <div>
                             <code>{{ api.platform_version }}</code>
                         </div>
-                        <div class="text-sm font-medium flex items-center">
+                        <div class="flex items-center text-sm font-medium">
                             {{ 'ADMIN.BUILT_AT' | translate }}
                         </div>
                         <div class="text-sm">
@@ -153,9 +153,9 @@ export interface PlaceServiceDetails {
             </ng-container>
         </section>
         <ng-template #empty_state>
-            <div class="w-full p-24 flex flex-col items-center justify-center">
+            <div class="flex w-full flex-col items-center justify-center p-24">
                 <div
-                    class="p-4 border border-base-300 rounded-lg bg-base-200 opacity-30"
+                    class="rounded-lg border border-base-300 bg-base-200 p-4 opacity-30"
                 >
                     {{ 'ADMIN.BACKEND_SERVICES_EMPTY' | translate }}
                 </div>
@@ -202,14 +202,14 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
     public get backoffice_build() {
         return `${format(VERSION.time, 'dd MMM yyyy')} at ${format(
             VERSION.time,
-            ' h:mma'
+            ' h:mma',
         )}`;
     }
 
     constructor(
         private _users: BackofficeUsersService,
         private _dialog: MatDialog,
-        private _cdr: ChangeDetectorRef
+        private _cdr: ChangeDetectorRef,
     ) {
         super();
     }
@@ -224,7 +224,7 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
             ChangelogModalComponent,
             {
                 data: { changelog: log },
-            }
+            },
         );
     }
 
@@ -240,10 +240,10 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
                 notifyError(
                     i18n('ADMIN.BACKEND_SERVICES_ERROR', {
                         error: JSON.stringify(
-                            err.response || err.message || err
+                            err.response || err.message || err,
                         ),
-                    })
-                )
+                    }),
+                ),
             );
         this.api_details = (details as any) || [];
         this._cdr.detectChanges();
@@ -256,9 +256,9 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
                 notifyError(
                     i18n('ADMIN.BACKEND_SERVICES_ERROR', {
                         error: JSON.stringify(
-                            err.response || err.message || err
+                            err.response || err.message || err,
                         ),
-                    })
+                    }),
                 );
                 throw err;
             });
@@ -266,7 +266,7 @@ export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
         this.backend_version = version;
         this.backoffice_logs = await (
             await fetch(
-                'https://raw.githubusercontent.com/PlaceOS/backoffice/develop/CHANGELOG.md'
+                'https://raw.githubusercontent.com/PlaceOS/backoffice/develop/CHANGELOG.md',
             )
         ).text();
     }

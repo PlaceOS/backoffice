@@ -14,24 +14,24 @@ import { i18n } from '../common/translate';
     selector: 'app-domain-about',
     template: `
         <div
-            class="rounded p-4 border border-base-200 w-1/2 min-w-[20rem] my-2 relative flex flex-col"
+            class="relative my-2 flex w-1/2 min-w-[20rem] flex-col rounded border border-base-200 p-4"
             *ngIf="item.email_domains?.length"
         >
             <div
-                class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded text-sm font-medium p-2"
+                class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 p-2 text-sm font-medium"
             >
                 {{ 'DOMAINS.EMAIL_DOMAINS' | translate }}
             </div>
             <button
                 matRipple
-                class="mono text-sm p-2 hover:bg-base-200 rounded text-left"
+                class="mono rounded p-2 text-left text-sm hover:bg-base-200"
                 *ngFor="let domain of item.email_domains"
                 (click)="copyEmailDomain(domain)"
             >
                 {{ domain }}
             </button>
         </div>
-        <div class="flex items-center justify-between space-x-2 my-2">
+        <div class="my-2 flex items-center justify-between space-x-2">
             <h3 class="text-lg font-medium">
                 {{ 'COMMON.SETTINGS' | translate }}
             </h3>
@@ -84,7 +84,7 @@ export class DomainAboutComponent extends AsyncHandler implements OnInit {
 
     constructor(
         private _service: DomainStateService,
-        private _clipboard: Clipboard
+        private _clipboard: Clipboard,
     ) {
         super();
     }
@@ -92,7 +92,7 @@ export class DomainAboutComponent extends AsyncHandler implements OnInit {
     public ngOnInit(): void {
         this.subscription(
             'item',
-            this._service.item.subscribe((_) => this.loadForm())
+            this._service.item.subscribe((_) => this.loadForm()),
         );
     }
 

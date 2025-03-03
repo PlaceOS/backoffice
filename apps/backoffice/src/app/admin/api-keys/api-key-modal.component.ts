@@ -113,7 +113,7 @@ import { i18n } from '../../common/translate';
                     <mat-menu #menu="matMenu">
                         <mat-form-field
                             appearance="outline"
-                            class="px-2 no-subtext"
+                            class="no-subtext px-2"
                             (click)="
                                 $event.preventDefault();
                                 $event.stopPropagation()
@@ -130,11 +130,11 @@ import { i18n } from '../../common/translate';
                         </mat-form-field>
                         <button
                             mat-menu-item
-                            *ngFor="let item of users | async | slice: 0:10"
+                            *ngFor="let item of users | async | slice: 0 : 10"
                             (click)="
                                 form.patchValue({
                                     user: item,
-                                    user_id: item.id
+                                    user_id: item.id,
                                 });
                                 setSearch('')
                             "
@@ -193,7 +193,7 @@ export class APIKeyModalComponent {
         description: new FormControl(''),
         scopes: new FormControl(
             [],
-            [Validators.required, Validators.minLength(1)]
+            [Validators.required, Validators.minLength(1)],
         ),
         permissions: new FormControl(''),
     });
@@ -213,7 +213,7 @@ export class APIKeyModalComponent {
             if (permissions === 'support')
                 return users.filter((_) => _.support || _.sys_admin);
             return users.sort((a, b) => a.name?.localeCompare(b.name));
-        })
+        }),
     );
 
     /** List of separator characters for tags */
@@ -242,7 +242,7 @@ export class APIKeyModalComponent {
             return notifyError(
                 i18n('COMMON.INVALID_FIELDS', {
                     field_list: getInvalidFields(this.form).join(', '),
-                })
+                }),
             );
         }
         const data = { ...this.form.value };

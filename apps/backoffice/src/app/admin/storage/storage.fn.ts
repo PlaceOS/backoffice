@@ -67,7 +67,7 @@ export function queryStorage(query_params: StorageQueryParameters = {}) {
  */
 export function showStorage(
     id: string,
-    query_params: StorageQueryParameters = {}
+    query_params: StorageQueryParameters = {},
 ) {
     return show({ id, query_params, fn: process, path: PATH });
 }
@@ -82,7 +82,7 @@ export function showStorage(
 export function updateStorage(
     id: string,
     form_data: Partial<PlaceStorage>,
-    method: 'put' | 'patch' = 'patch'
+    method: 'put' | 'patch' = 'patch',
 ) {
     return update({
         id,
@@ -120,7 +120,7 @@ export function addStorage(form_data: Partial<PlaceStorage>) {
  */
 export function removeStorage(
     id: string,
-    query_params: Record<string, any> = {}
+    query_params: Record<string, any> = {},
 ) {
     return remove({ id, query_params, path: PATH });
 }

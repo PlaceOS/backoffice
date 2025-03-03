@@ -1,7 +1,11 @@
-
 import { PlaceUser } from '@placeos/ts-client';
 
-import { addMinutes, format, formatDuration as formatAsDuration, set } from 'date-fns';
+import {
+    addMinutes,
+    format,
+    formatDuration as formatAsDuration,
+    set,
+} from 'date-fns';
 
 // attendees: FormFormatters.attendees(user),
 // date: FormFormatters.date,
@@ -12,7 +16,9 @@ import { addMinutes, format, formatDuration as formatAsDuration, set } from 'dat
  * Get function to create formatted string for a list of users with a host
  * @param host Host user
  */
-export function formatAttendeesWithHost(host: PlaceUser): (_: PlaceUser[]) => string {
+export function formatAttendeesWithHost(
+    host: PlaceUser,
+): (_: PlaceUser[]) => string {
     return (l) => formatAttendees(l, host);
 }
 
@@ -26,7 +32,7 @@ export function formatAttendees(list: PlaceUser[], host?: PlaceUser) {
     if (list && list.length > 0) {
         const users = [...list];
         if (host) {
-            const result = users.find(a => a.email === host.email);
+            const result = users.find((a) => a.email === host.email);
             if (result) {
                 users.splice(users.indexOf(result), 1);
             }
@@ -88,17 +94,35 @@ export function formatDuration(duration: number) {
 }
 
 /** Human readable names of applicable recurrence periods */
-export const RECURRENCE_PERIODS: string[] = ['None', 'Daily', 'Weekly', 'Monthly', 'Yearly'];
+export const RECURRENCE_PERIODS: string[] = [
+    'None',
+    'Daily',
+    'Weekly',
+    'Monthly',
+    'Yearly',
+];
 
 /**
  * Create human readable string for recurrence metadata
  * @param value
  */
-export function formatRecurrence(value: { period: string | number, end: number }) {
-    if (!value || !value.period || value.period as any >= RECURRENCE_PERIODS.length) {
+export function formatRecurrence(value: {
+    period: string | number;
+    end: number;
+}) {
+    if (
+        !value ||
+        !value.period ||
+        (value.period as any) >= RECURRENCE_PERIODS.length
+    ) {
         return 'No recurrence';
     }
-    const period = typeof value.period === 'string' ? value.period : RECURRENCE_PERIODS[value.period];
-    const end = value.end ? `until ${format(value.end, 'dd MMM YYYY')}` : 'forever';
+    const period =
+        typeof value.period === 'string'
+            ? value.period
+            : RECURRENCE_PERIODS[value.period];
+    const end = value.end
+        ? `until ${format(value.end, 'dd MMM YYYY')}`
+        : 'forever';
     return `${period} ${end}`;
 }

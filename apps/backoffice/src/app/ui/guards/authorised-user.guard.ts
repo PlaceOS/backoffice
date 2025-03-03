@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Route, UrlSegment, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
+import {
+    Route,
+    UrlSegment,
+    ActivatedRouteSnapshot,
+    RouterStateSnapshot,
+    UrlTree,
+    Router,
+} from '@angular/router';
 import { PlaceUser, onlineState } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';
 
@@ -8,15 +15,15 @@ import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.serv
 @Injectable({
     providedIn: 'root',
 })
-export class AuthorisedUserGuard  {
+export class AuthorisedUserGuard {
     constructor(
         private _router: Router,
-        private _users: BackofficeUsersService
+        private _users: BackofficeUsersService,
     ) {}
 
     public async canActivate(
         next: ActivatedRouteSnapshot,
-        state: RouterStateSnapshot
+        state: RouterStateSnapshot,
     ): Promise<boolean | UrlTree> {
         await onlineState()
             .pipe(first((_) => _))
@@ -33,7 +40,7 @@ export class AuthorisedUserGuard  {
 
     public async canLoad(
         route: Route,
-        segments: UrlSegment[]
+        segments: UrlSegment[],
     ): Promise<boolean> {
         await onlineState()
             .pipe(first((_) => _))

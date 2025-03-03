@@ -62,7 +62,7 @@ export class AsyncHandler {
             throw new Error(
                 name
                     ? 'Cannot create named timeout without a name'
-                    : 'Cannot create a timeout without a callback'
+                    : 'Cannot create a timeout without a callback',
             );
         }
     }
@@ -92,7 +92,7 @@ export class AsyncHandler {
             throw new Error(
                 name
                     ? 'Cannot create named interval without a name'
-                    : 'Cannot create a interval without a callback'
+                    : 'Cannot create a interval without a callback',
             );
         }
     }

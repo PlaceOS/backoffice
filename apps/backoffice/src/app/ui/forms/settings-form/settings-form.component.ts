@@ -44,7 +44,7 @@ export class SettingsFormComponent
         PlaceSettings,
         PlaceSettings,
         PlaceSettings,
-        PlaceSettings
+        PlaceSettings,
     ];
     /** Whether to display merged settings */
     @Input() merge: boolean;
@@ -92,7 +92,7 @@ export class SettingsFormComponent
         active?: boolean;
     } {
         return this.available_levels.find(
-            (i) => i.id === this.encryption_level
+            (i) => i.id === this.encryption_level,
         );
     }
 
@@ -174,7 +174,7 @@ export class SettingsFormComponent
 
     constructor(
         private _hotkey: HotkeysService,
-        private _users: BackofficeUsersService
+        private _users: BackofficeUsersService,
     ) {
         super();
     }
@@ -182,11 +182,11 @@ export class SettingsFormComponent
     public ngOnInit(): void {
         this.subscription(
             'save_all',
-            this._hotkey.listen(['KeyA'], () => this.saveAll())
+            this._hotkey.listen(['KeyA'], () => this.saveAll()),
         );
         this.subscription(
             'clear_all',
-            this._hotkey.listen(['KeyC'], () => this.clearChanges())
+            this._hotkey.listen(['KeyC'], () => this.clearChanges()),
         );
     }
 
@@ -202,11 +202,11 @@ export class SettingsFormComponent
                 'upete_merge',
                 () => {
                     this.used_settings = this.processSettings(
-                        this.settings || []
+                        this.settings || [],
                     );
                     this.initForm();
                 },
-                50
+                50,
             );
         }
         if (changes.settings) {
@@ -236,10 +236,10 @@ export class SettingsFormComponent
                         notifySuccess(
                             i18n('COMMON.SETTINGS_SAVE_SUCCESS', {
                                 type: this.type(level),
-                            })
+                            }),
                         );
                         this.used_settings = this.processSettings(
-                            this.settings || []
+                            this.settings || [],
                         );
                         this.initForm();
                     },
@@ -248,11 +248,11 @@ export class SettingsFormComponent
                         notifyError(
                             i18n('COMMON.SETTINGS_SAVE_ERROR', {
                                 error: JSON.stringify(
-                                    err.response || err.message || err
+                                    err.response || err.message || err,
                                 ),
-                            })
+                            }),
                         );
-                    }
+                    },
                 );
         }
     }
@@ -273,7 +273,7 @@ export class SettingsFormComponent
                 promises.push(
                     this.settings[i].id
                         ? updateSettings(this.settings[i].id, details)
-                        : addSettings(details)
+                        : addSettings(details),
                 );
             }
         }
@@ -286,7 +286,7 @@ export class SettingsFormComponent
                     }
                     notifySuccess(i18n('COMMON.SETTINGS_SAVE_SUCCESS_ALL'));
                     this.used_settings = this.processSettings(
-                        this.settings || []
+                        this.settings || [],
                     );
                     this.initForm();
                 },
@@ -297,11 +297,11 @@ export class SettingsFormComponent
                     notifyError(
                         i18n('COMMON.SETTINGS_SAVE_ERROR', {
                             error: JSON.stringify(
-                                err.response || err.message || err
+                                err.response || err.message || err,
                             ),
-                        })
+                        }),
                     );
-                }
+                },
             );
         }
     }
@@ -318,23 +318,23 @@ export class SettingsFormComponent
         this.form = new UntypedFormGroup({
             settings0: new UntypedFormControl(
                 this.used_settings[0].settings_string,
-                [validateYAML]
+                [validateYAML],
             ),
             settings1: new UntypedFormControl(
                 this.used_settings[1].settings_string,
-                [validateYAML]
+                [validateYAML],
             ),
             settings2: new UntypedFormControl(
                 this.used_settings[2].settings_string,
-                [validateYAML]
+                [validateYAML],
             ),
             settings3: new UntypedFormControl(
                 this.used_settings[3].settings_string,
-                [validateYAML]
+                [validateYAML],
             ),
             settings4: new UntypedFormControl(
                 this.used_settings[4].settings_string,
-                [validateYAML]
+                [validateYAML],
             ),
         });
     }
@@ -347,7 +347,7 @@ export class SettingsFormComponent
         processed_settings.push(
             this.merge
                 ? this.generateMergedSettings(processed_settings)
-                : settings[3]
+                : settings[3],
         );
         return processed_settings;
     }
@@ -378,7 +378,7 @@ export class SettingsFormComponent
 
     /** Genereate merged settings from all available settings */
     private generateMergedSettings(
-        settings: PlaceSettings[] = []
+        settings: PlaceSettings[] = [],
     ): PlaceSettings {
         const merge_settings =
             this.merge_settings?.filter((item) => item.parent_id !== this.id) ||
@@ -414,7 +414,7 @@ export class SettingsFormComponent
         this.merge_decorations = this.decorationForSettings(
             settings_string,
             merge_settings.concat(settings),
-            remote_settings.concat(local_settings)
+            remote_settings.concat(local_settings),
         );
         return new PlaceSettings({
             id: 'merged',
@@ -427,7 +427,7 @@ export class SettingsFormComponent
     private decorationForSettings(
         display: string,
         settings: PlaceSettings[],
-        setting_maps: HashMap[]
+        setting_maps: HashMap[],
     ) {
         const decorations: HashMap = {};
         for (let i = 0; i < settings.length; i++) {
@@ -437,7 +437,7 @@ export class SettingsFormComponent
                 setting_maps[i],
                 display,
                 settings[i],
-                type
+                type,
             );
         }
         return Object.keys(decorations).map((i) => decorations[i]);
@@ -450,7 +450,7 @@ export class SettingsFormComponent
         settings: PlaceSettings,
         type: number,
         prefix: string = '',
-        level: number = 0
+        level: number = 0,
     ) {
         for (const key in obj) {
             if (obj.hasOwnProperty(key)) {
@@ -469,7 +469,7 @@ export class SettingsFormComponent
                     range: calcRangeOfStringInText(
                         `${whiteSpace(level * 2)}${key}:`,
                         display,
-                        level * 2
+                        level * 2,
                     ),
                 };
                 if (obj[key] instanceof Object) {
@@ -480,7 +480,7 @@ export class SettingsFormComponent
                         settings,
                         type,
                         `${field}.`,
-                        level + 1
+                        level + 1,
                     );
                 }
             }
@@ -536,7 +536,7 @@ function itemUrl(id: string) {
 function calcRangeOfStringInText(
     find: string,
     in_text: string,
-    index: number = 0
+    index: number = 0,
 ) {
     const lines = in_text.split('\n');
     let line = '';

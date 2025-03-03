@@ -25,9 +25,9 @@ export const CONFIRM_METADATA = {};
     selector: 'confirm-modal',
     template: `
         <header
-            class="sticky top-0 p-2 m-2 w-[calc(100%-1rem)] border-none z-10 bg-base-200 rounded"
+            class="sticky top-0 z-10 m-2 w-[calc(100%-1rem)] rounded border-none bg-base-200 p-2"
         >
-            <h2 class="text-xl font-medium px-2">
+            <h2 class="px-2 text-xl font-medium">
                 {{ title || 'Confirm' }}
             </h2>
             <button icon matRipple mat-dialog-close *ngIf="!loading">
@@ -36,10 +36,10 @@ export const CONFIRM_METADATA = {};
         </header>
         <main confirm-modal>
             <div
-                class="flex flex-col items-center p-4 space-x-4 min-w-[24rem] max-w-[28rem]"
+                class="flex min-w-[24rem] max-w-[28rem] flex-col items-center space-x-4 p-4"
                 *ngIf="!loading; else load_state"
             >
-                <div class="h-full flex items-center mb-4">
+                <div class="mb-4 flex h-full items-center">
                     <app-icon class="text-5xl" [icon]="icon"></app-icon>
                 </div>
                 <div class="flex flex-col space-y-4 text-center">
@@ -54,7 +54,7 @@ export const CONFIRM_METADATA = {};
                         [class.text-info-content]="extra[0] === 'info'"
                         [class.text-warning-content]="extra[0] === 'warning'"
                         [class.text-error-content]="extra[0] === 'error'"
-                        class="p-2 rounded shadow text-xs"
+                        class="rounded p-2 text-xs shadow"
                         [innerHTML]="extra[1]"
                     ></div>
                 </div>
@@ -62,7 +62,7 @@ export const CONFIRM_METADATA = {};
         </main>
         <footer
             *ngIf="!loading"
-            class="flex items-center justify-end space-x-2 p-2 border-t border-base-200"
+            class="flex items-center justify-end space-x-2 border-t border-base-200 p-2"
         >
             <button
                 btn
@@ -75,7 +75,7 @@ export const CONFIRM_METADATA = {};
         </footer>
         <ng-template #load_state>
             <div
-                class="flex items-center justify-center flex-col p-4 space-y-4 min-w-[24rem] max-w-[28rem] h-56"
+                class="flex h-56 min-w-[24rem] max-w-[28rem] flex-col items-center justify-center space-y-4 p-4"
             >
                 <mat-spinner diameter="32"></mat-spinner>
                 <p>{{ loading }}</p>

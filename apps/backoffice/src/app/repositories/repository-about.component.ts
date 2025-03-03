@@ -8,16 +8,16 @@ import { RepositoriesStateService } from './repositories-state.service';
     template: `
         <section class="mb-4 flex space-x-2">
             <div
-                class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-2"
+                class="grid w-1/3 flex-1 gap-2 rounded border border-base-200 p-4"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
                 </div>
                 <div class="select-all">
                     {{ item.description || 'No description' }}
                 </div>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'REPOS.FIELD_TYPE' | translate }}
                 </div>
                 <div>
@@ -28,7 +28,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                         ) | translate
                     }}
                 </div>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'REPOS.FOLDER_NAME' | translate }}
                 </div>
                 <div
@@ -43,10 +43,10 @@ import { RepositoriesStateService } from './repositories-state.service';
                         </span>
                     </a>
                 </div>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
-                <div class=" flex items-center">
+                <div class="flex items-center">
                     <span
                         [matTooltip]="
                             (item.created_at * 1000 | date: 'mediumDate') +
@@ -58,10 +58,10 @@ import { RepositoriesStateService } from './repositories-state.service';
                         {{ item.created_at * 1000 | dateFrom }}
                     </span>
                 </div>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.UPDATED_AT' | translate }}
                 </div>
-                <div class=" flex items-center">
+                <div class="flex items-center">
                     <span
                         [matTooltip]="
                             (item.updated_at * 1000 | date: 'mediumDate') +
@@ -75,37 +75,37 @@ import { RepositoriesStateService } from './repositories-state.service';
                 </div>
             </div>
             <div
-                class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-2 overflow-hidden"
+                class="grid w-1/3 flex-1 gap-2 overflow-hidden rounded border border-base-200 p-4"
                 [style.gridTemplateColumns]="'6.5rem auto'"
             >
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'REPOS.URI' | translate }}
                 </div>
-                <div class="underline select-all overflow-hidden">
+                <div class="select-all overflow-hidden underline">
                     <a
-                        class="truncate w-full block"
+                        class="block w-full truncate"
                         [href]="item.uri | safe: 'url'"
                         target="_blank"
                         >{{ repo_uri || 'No URI set' }}</a
                     >
                 </div>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.GIT_BRANCH' | translate }}
                 </div>
                 <div class="flex items-center overflow-hidden">
                     <code
-                        class="text-xs truncate inline-block max-w-full"
+                        class="inline-block max-w-full truncate text-xs"
                         [matTooltip]="item.branch"
                     >
                         {{ item.branch }}
                     </code>
                 </div>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.GIT_COMMIT' | translate }}
                 </div>
                 <div class="flex items-center overflow-hidden">
                     <code
-                        class="text-xs truncate inline-block max-w-full"
+                        class="inline-block max-w-full truncate text-xs"
                         [matTooltip]="
                             commit && commit !== item.commit_hash
                                 ? commit
@@ -114,7 +114,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                     >
                         {{ item.commit_hash || 'HEAD' }}
                         <span
-                            class="select-text mono  break-words"
+                            class="mono select-text break-words"
                             *ngIf="commit && commit !== item.commit_hash"
                         >
                             ({{ commit }})
@@ -123,7 +123,7 @@ import { RepositoriesStateService } from './repositories-state.service';
                 </div>
                 <button
                     btn
-                    class="w-full col-span-2"
+                    class="col-span-2 w-full"
                     [disabled]="pulling"
                     (click)="pullLatestCommit()"
                 >
@@ -183,7 +183,7 @@ export class RepositoryAboutComponent extends AsyncHandler {
         this.commit = '';
         this.subscription(
             'commit',
-            this._service.commit.subscribe((_) => (this.commit = _))
+            this._service.commit.subscribe((_) => (this.commit = _)),
         );
     }
 

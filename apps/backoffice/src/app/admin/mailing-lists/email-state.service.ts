@@ -44,7 +44,7 @@ export class EmailStateService {
 
     public readonly domain_list = queryDomains({ limit: 100 }).pipe(
         map((r) => r.data),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     constructor() {}

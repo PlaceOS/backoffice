@@ -36,12 +36,12 @@ export function generateSystemsFormFields(system?: PlaceSystem) {
         support_url: new FormControl(system.support_url || '', [validateURL]),
         installed_ui_devices: new FormControl(
             system.installed_ui_devices || 0,
-            [Validators.pattern('[0-9]*')]
+            [Validators.pattern('[0-9]*')],
         ),
         features: new FormControl(
             (typeof system.features === 'string'
                 ? (system.features as any).split(' ')
-                : system.features) || []
+                : system.features) || [],
         ),
         capacity: new FormControl(system.capacity || 0, [
             Validators.pattern('[0-9]*'),
@@ -58,7 +58,7 @@ export function generateSystemsFormFields(system?: PlaceSystem) {
     };
     if (!system.id) {
         fields.zone.valueChanges.subscribe((value: PlaceZone) =>
-            fields.zones.setValue([value.id])
+            fields.zones.setValue([value.id]),
         );
     } else delete fields.zone;
     return new FormGroup(fields);

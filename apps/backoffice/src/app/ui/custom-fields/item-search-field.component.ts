@@ -27,7 +27,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
     selector: 'item-search-field',
     template: `
         <div
-            class="item-search-field flex flex-col max-h-full"
+            class="item-search-field flex max-h-full flex-col"
             form-field
             [class.disabled]="disabled"
         >
@@ -50,7 +50,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                     (blur)="resetSearchString()"
                 />
                 <div class="prefix" matPrefix>
-                    <app-icon class="text-2xl relative -left-0.5"
+                    <app-icon class="relative -left-0.5 text-2xl"
                         >search</app-icon
                     >
                 </div>
@@ -60,14 +60,14 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
             </mat-form-field>
             <ng-container *ngIf="display_list">
                 <div
-                    class="overflow-auto h-[50vh] space-y-2 flex-1"
+                    class="h-[50vh] flex-1 space-y-2 overflow-auto"
                     *ngIf="item_list?.length; else empty_state"
                 >
                     <button
                         matRipple
                         *ngFor="let option of item_list"
                         (click)="search$.next(option); setValue(option)"
-                        class="rounded hover:bg-base-200 text-left px-4 py-2 w-full"
+                        class="w-full rounded px-4 py-2 text-left hover:bg-base-200"
                     >
                         <div class="leading-tight">
                             <ng-container
@@ -82,7 +82,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
             </ng-container>
             <ng-template #empty_state>
                 <div
-                    class="flex flex-col items-center justify-center p-8 min-h-48 opacity-30"
+                    class="flex min-h-48 flex-col items-center justify-center p-8 opacity-30"
                 >
                     <p class="text-sm">
                         {{
@@ -113,12 +113,12 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
                 </mat-option>
             </mat-autocomplete>
             <ng-template #item_option let-option="option">
-                <div class="flex items-center justify-between h-5">
+                <div class="flex h-5 items-center justify-between">
                     <div
                         name
                         [innerHTML]="item_name[option.id] | sanitize"
                     ></div>
-                    <code *ngIf="option.notes" class="!text-xs truncate">{{
+                    <code *ngIf="option.notes" class="truncate !text-xs">{{
                         option.notes
                     }}</code>
                 </div>
@@ -223,8 +223,8 @@ export class ItemSearchFieldComponent<T extends Identity = any>
                 return this.options && this.options.length > 0
                     ? of(this.options)
                     : !this.min_length || query.length >= this.min_length
-                    ? this.query_fn(query)
-                    : of([]);
+                      ? this.query_fn(query)
+                      : of([]);
             }),
             catchError((_) => of([])),
             map((list: T[]) => {
@@ -233,11 +233,11 @@ export class ItemSearchFieldComponent<T extends Identity = any>
                     this.exclude
                         ? !this.exclude(
                               item,
-                              (this.search_str || '').toLowerCase()
+                              (this.search_str || '').toLowerCase(),
                           )
-                        : true
+                        : true,
                 );
-            })
+            }),
         );
         // Process API results
         this.subscription(
@@ -245,7 +245,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
             this.search_results$.subscribe((list) => {
                 this.item_list = list;
                 this._updateNameMap();
-            })
+            }),
         );
         this.timeout('init', () => {
             this.search$.next('');
@@ -273,7 +273,7 @@ export class ItemSearchFieldComponent<T extends Identity = any>
                 if (this._input_el?.nativeElement)
                     this._input_el.nativeElement.value = this.search_str || '';
             },
-            50
+            50,
         );
     }
 
@@ -325,8 +325,8 @@ export class ItemSearchFieldComponent<T extends Identity = any>
                     item.role === PlaceDriverRole.Service
                         ? item.uri
                         : item.role === PlaceDriverRole.Logic
-                        ? item.control_system_id
-                        : item.ip;
+                          ? item.control_system_id
+                          : item.ip;
                 map[item.id] = `${
                     item.name || '<Unnamed>'
                 } <span class="small">${detail}<span>`;

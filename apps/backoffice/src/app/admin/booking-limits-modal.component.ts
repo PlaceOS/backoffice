@@ -17,7 +17,7 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
         <main
             [formGroup]="form"
             *ngIf="!loading; else load_state"
-            class="overflow-auto w-[512px] max-w-[100vw]"
+            class="w-[512px] max-w-[100vw] overflow-auto"
         >
             <div class="flex flex-col">
                 <object-list-field
@@ -28,12 +28,12 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
         </main>
         <footer
             *ngIf="!loading"
-            class="p-2 border-t border-base-200 flex justify-center"
+            class="flex justify-center border-t border-base-200 p-2"
         >
             <button btn class="w-32" (click)="save()">Save</button>
         </footer>
         <ng-template #load_state>
-            <main class="flex flex-col p-8 items-center justify-center">
+            <main class="flex flex-col items-center justify-center p-8">
                 <mat-spinner class="mb-4" [diameter]="48"></mat-spinner>
                 <p>Saving booking limits for Staff API tenant...</p>
             </main>
@@ -52,7 +52,7 @@ export class BookingLimitsModalComponent {
 
     constructor(
         @Inject(MAT_DIALOG_DATA) private _data: StaffTenantModalData,
-        private _dialog_ref: MatDialogRef<BookingLimitsModalComponent>
+        private _dialog_ref: MatDialogRef<BookingLimitsModalComponent>,
     ) {
         const limits = this.tenant?.booking_limits || {};
         this.form.patchValue({
@@ -76,7 +76,7 @@ export class BookingLimitsModalComponent {
         }
         const call = post(
             `/api/staff/v1/tenants/${this.tenant.id}/limits`,
-            booking_limits
+            booking_limits,
         );
         const resp = await call.toPromise().catch((_) => null);
         this.loading = false;

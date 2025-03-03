@@ -42,7 +42,7 @@ describe('Drivers test', () => {
             force: true,
         });
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 
@@ -77,14 +77,14 @@ describe('Drivers test', () => {
                 force: true,
             });
         cy.get(
-            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]'
+            '*[class^="backoffice-dots-three-vertical ng-star-inserted"]',
         ).click();
         cy.wait(1000);
         cy.contains('Delete driver').click();
         cy.wait(1000);
         cy.contains('Ok').click();
         cy.get('*[class^="mat-simple-snackbar ng-star-inserted"]').contains(
-            'Successfully'
+            'Successfully',
         );
     });
 });

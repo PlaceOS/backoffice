@@ -15,7 +15,7 @@ export class UploadsService {
     constructor(private _dialog: MatDialog) {
         if (localStorage) {
             this._upload_list.next(
-                JSON.parse(localStorage.getItem('BACKOFFICE.uploads') || '[]')
+                JSON.parse(localStorage.getItem('BACKOFFICE.uploads') || '[]'),
             );
         }
     }
@@ -37,7 +37,7 @@ export class UploadsService {
                     const id = await this.uploadFile(
                         details.file,
                         details.is_public,
-                        details.permissions
+                        details.permissions,
                     ).catch((e) => {
                         reject(e);
                         throw e;
@@ -51,7 +51,7 @@ export class UploadsService {
     public uploadFile(
         file: File,
         pub: boolean = true,
-        permissions: UploadPermissions = 'none'
+        permissions: UploadPermissions = 'none',
     ) {
         return new Promise<number>((resolve) => {
             let resolved = false;
@@ -70,7 +70,7 @@ export class UploadsService {
             uploadFile(file, pub, permissions).subscribe(
                 update_fn,
                 update_fn,
-                () => this._updateUploadHistory()
+                () => this._updateUploadHistory(),
             );
         });
     }
@@ -83,7 +83,7 @@ export class UploadsService {
         if (localStorage) {
             localStorage.setItem(
                 'BACKOFFICE.uploads',
-                JSON.stringify(done_list)
+                JSON.stringify(done_list),
             );
         }
     }

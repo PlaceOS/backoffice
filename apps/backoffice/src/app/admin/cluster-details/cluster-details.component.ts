@@ -21,44 +21,48 @@ import { interval } from 'rxjs';
 @Component({
     selector: 'engine-cluster-details',
     template: `
-        <div class="flex items-center justify-between space-x-2 my-4 px-2">
+        <div class="my-4 flex items-center justify-between space-x-2 px-2">
             <div class="text-2xl">{{ 'ADMIN.CLUSTERS' | translate }}</div>
         </div>
-        <div class="flex flex-wrap overflow-auto max-h-full">
+        <div class="flex max-h-full flex-wrap overflow-auto">
             <ng-container
                 *ngIf="cluster_list && cluster_list.length; else empty_state"
             >
                 <ng-container *ngIf="!active_cluster; else process_state">
-                    @for(cluster of cluster_list; track cluster.id) {
-                    <div
-                        class="m-2 rounded-lg bg-base-100 border border-base-200 shadow p-2 space-y-2"
-                    >
-                        <h3
-                            class="mono text-lg font-medium uppercase p-2 bg-base-200 rounded mb-2"
+                    @for (cluster of cluster_list; track cluster.id) {
+                        <div
+                            class="m-2 space-y-2 rounded-lg border border-base-200 bg-base-100 p-2 shadow"
                         >
-                            {{ cluster.hostname || '&lt;BLANK&gt;' }}
-                        </h3>
-                        @for(node of cluster_nodes[cluster.id]; track
-                        node.hostname) {
-                        <admin-cluster-node
-                            [show_name]="cluster_nodes.length > 1"
-                            [node]="node"
-                            [history]="
-                                (usage_history[cluster.id] || {})[
-                                    node.hostname
-                                ] || []
-                            "
-                        ></admin-cluster-node>
-                        }
-                        <button
-                            btn
-                            matRipple
-                            class="w-full"
-                            (click)="active_cluster = cluster"
-                        >
-                            {{ 'ADMIN.CLUSTERS_VIEW_PROCESSES' | translate }}
-                        </button>
-                    </div>
+                            <h3
+                                class="mono mb-2 rounded bg-base-200 p-2 text-lg font-medium uppercase"
+                            >
+                                {{ cluster.hostname || '&lt;BLANK&gt;' }}
+                            </h3>
+                            @for (
+                                node of cluster_nodes[cluster.id];
+                                track node.hostname
+                            ) {
+                                <admin-cluster-node
+                                    [show_name]="cluster_nodes.length > 1"
+                                    [node]="node"
+                                    [history]="
+                                        (usage_history[cluster.id] || {})[
+                                            node.hostname
+                                        ] || []
+                                    "
+                                ></admin-cluster-node>
+                            }
+                            <button
+                                btn
+                                matRipple
+                                class="w-full"
+                                (click)="active_cluster = cluster"
+                            >
+                                {{
+                                    'ADMIN.CLUSTERS_VIEW_PROCESSES' | translate
+                                }}
+                            </button>
+                        </div>
                     }
                 </ng-container>
             </ng-container>
@@ -102,7 +106,7 @@ export class PlaceClusterDetailsComponent
         switchMap(() => {
             this.loading = true;
             return queryClusters({ include_status: true } as any).pipe(
-                catchError((_) => ({ data: [] } as any))
+                catchError((_) => ({ data: [] }) as any),
             );
         }),
         map((resp: { data: any[] }) => resp.data),
@@ -129,7 +133,7 @@ export class PlaceClusterDetailsComponent
                 }
             });
         }),
-        tap(() => (this.loading = false))
+        tap(() => (this.loading = false)),
     );
 
     public ngOnInit(): void {

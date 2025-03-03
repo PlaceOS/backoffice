@@ -8,7 +8,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 @Component({
     selector: 'repository-drivers',
     template: `
-        <h3 class="font-medium text-lg mb-2">
+        <h3 class="mb-2 text-lg font-medium">
             {{ 'REPOS.AVAILABLE_DRIVERS' | translate }}
         </h3>
         <mat-progress-bar
@@ -17,7 +17,7 @@ import { AsyncHandler } from '../common/async-handler.class';
             [class.opacity-0]="!loading"
         ></mat-progress-bar>
         <simple-table
-            class="min-w-[32rem] block text-sm"
+            class="block min-w-[32rem] text-sm"
             [data]="driver_list"
             [columns]="[
                 {
@@ -25,12 +25,18 @@ import { AsyncHandler } from '../common/async-handler.class';
                     name: 'COMMON.FIELD_NAME' | translate,
                     content: name_template,
                 },
-                { key: 'actions', name: ' ', size: '3.25rem', sortable: false, content: actions_template }
+                {
+                    key: 'actions',
+                    name: ' ',
+                    size: '3.25rem',
+                    sortable: false,
+                    content: actions_template,
+                },
             ]"
             [sortable]="true"
             [empty_message]="'REPOS.DRIVER_LIST_EMPTY' | translate"
         ></simple-table>
-        <div class="w-full h-8"></div>
+        <div class="h-8 w-full"></div>
         <ng-template #name_template let-row="row">
             <div
                 class="flex items-center px-4 py-2 font-mono text-sm"
@@ -74,7 +80,7 @@ export class RepositoryDriversComponent extends AsyncHandler {
 
     constructor(
         private _service: RepositoriesStateService,
-        private _router: Router
+        private _router: Router,
     ) {
         super();
     }
@@ -83,13 +89,13 @@ export class RepositoryDriversComponent extends AsyncHandler {
         this.timeout(
             'has_drivers',
             () => this._router.navigate(['/repositories', this.item.id]),
-            3000
+            3000,
         );
         this.subscription(
             'has_drivers',
             this.driver_list.subscribe((_) => {
                 if (_?.length) this.clearTimeout('has_drivers');
-            })
+            }),
         );
     }
 }

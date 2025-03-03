@@ -1,7 +1,7 @@
-import { createComponentFactory, Spectator } from "@ngneat/spectator/jest";
-import { fakeAsync } from "@angular/core/testing";
-import { MockComponent } from "ng-mocks";
-import { TerminalComponent } from "../../app/ui/terminal.component";
+import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
+import { fakeAsync } from '@angular/core/testing';
+import { MockComponent } from 'ng-mocks';
+import { TerminalComponent } from '../../app/ui/terminal.component';
 
 jest.mock('xterm');
 
@@ -16,7 +16,7 @@ class TERMINAL {
     clearSelection = jest.fn();
     write = jest.fn();
     writeln = jest.fn();
-    options = {}
+    options = {};
 }
 
 describe('TerminalComponent', () => {
@@ -24,19 +24,22 @@ describe('TerminalComponent', () => {
     const createComponent = createComponentFactory({
         component: TerminalComponent,
         providers: [],
-        declarations: []
+        declarations: [],
     });
 
     beforeEach(() => {
         (xterm as any).Terminal = TERMINAL;
-        spectator = createComponent()
+        spectator = createComponent();
     });
 
-    it('should create component', () => expect(spectator.component).toBeTruthy());
+    it('should create component', () =>
+        expect(spectator.component).toBeTruthy());
 
-    it('should have an output for the terminal', () => expect('[terminal]').toExist());
+    it('should have an output for the terminal', () =>
+        expect('[terminal]').toExist());
 
-    it('should open the terminal', () => expect(spectator.component.terminal.open).toBeCalled());
+    it('should open the terminal', () =>
+        expect(spectator.component.terminal.open).toBeCalled());
 
     it('should allow resizing the terminal', fakeAsync(() => {
         expect(spectator.component.terminal.resize).not.toBeCalled();
@@ -50,5 +53,4 @@ describe('TerminalComponent', () => {
         spectator.setInput({ content: 'Test' });
         expect(spectator.component.terminal.writeln).toBeCalledWith('Test');
     });
-
 });

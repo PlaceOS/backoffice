@@ -10,13 +10,13 @@ import { timer } from 'rxjs';
     selector: 'app-metrics',
     template: `
         <div
-            class="h-full w-full flex flex-col bg-base-100"
+            class="flex h-full w-full flex-col bg-base-100"
             [class.fullscreen]="fullscreen"
         >
             <div
-                class="flex items-center w-full bg-base-200 text-base-content py-2 px-4 border-b border-neutral"
+                class="flex w-full items-center border-b border-neutral bg-base-200 px-4 py-2 text-base-content"
             >
-                <div class="text-2xl flex-1 font-medium">
+                <div class="flex-1 text-2xl font-medium">
                     {{ 'COMMON.METRICS' | translate }}
                 </div>
                 <div class="flex items-center space-x-2">
@@ -27,9 +27,9 @@ import { timer } from 'rxjs';
                     </div>
                 </div>
             </div>
-            <div class="flex-1 w-full h-[60vh] relative">
+            <div class="relative h-[60vh] w-full flex-1">
                 <iframe
-                    class="absolute inset-0 w-full h-full"
+                    class="absolute inset-0 h-full w-full"
                     [src]="metrics_url | safe: 'resource'"
                 ></iframe>
             </div>

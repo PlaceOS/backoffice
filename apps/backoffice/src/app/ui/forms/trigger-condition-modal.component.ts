@@ -120,7 +120,7 @@ export class TriggerConditionModalComponent extends AsyncHandler {
 
     constructor(
         private _dialog: MatDialogRef<TriggerConditionModalComponent>,
-        @Inject(MAT_DIALOG_DATA) private _data: TriggerConditionData
+        @Inject(MAT_DIALOG_DATA) private _data: TriggerConditionData,
     ) {
         super();
     }
@@ -142,10 +142,10 @@ export class TriggerConditionModalComponent extends AsyncHandler {
                 notifyError(
                     i18n('TRIGGERS.CONDITION_SAVE_ERROR', {
                         error: JSON.stringify(
-                            err.response || err.message || err
+                            err.response || err.message || err,
                         ),
-                    })
-                )
+                    }),
+                ),
             );
         if (item) {
             this.event.emit({
@@ -177,7 +177,7 @@ export class TriggerConditionModalComponent extends AsyncHandler {
         if (this._data.condition) {
             const old_value = JSON.stringify(this._data.condition);
             const index = old_values.findIndex(
-                (cmp) => JSON.stringify(cmp) === old_value
+                (cmp) => JSON.stringify(cmp) === old_value,
             );
             if (index >= 0) {
                 old_values.splice(index, 1, new_value);
@@ -213,7 +213,7 @@ export class TriggerConditionModalComponent extends AsyncHandler {
         if (this._data.condition) {
             const old_value = JSON.stringify(this._data.condition);
             const index = old_values.findIndex(
-                (time) => JSON.stringify(time) === old_value
+                (time) => JSON.stringify(time) === old_value,
             );
             if (index >= 0) {
                 old_values.splice(index, 1, new_value as any);

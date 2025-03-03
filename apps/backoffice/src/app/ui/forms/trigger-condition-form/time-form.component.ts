@@ -98,143 +98,154 @@ import { i18n } from '../../../common/translate';
                 </mat-form-field>
             </div>
             @if (cron_period !== 'custom') {
-            <div class="flex items-center space-x-4">
-                <div class="field flex-1 w-2/5" *ngIf="cron_period === 'year'">
-                    <label for="month"
-                        >{{ 'TRIGGERS.TIME_MONTH_OF_YEAR' | translate }}
+                <div class="flex items-center space-x-4">
+                    <div
+                        class="field w-2/5 flex-1"
+                        *ngIf="cron_period === 'year'"
+                    >
+                        <label for="month"
+                            >{{ 'TRIGGERS.TIME_MONTH_OF_YEAR' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <mat-select
+                                name="month"
+                                [(ngModel)]="cron_month"
+                                (ngModelChange)="updateCronString()"
+                                [ngModelOptions]="{ standalone: true }"
+                            >
+                                <mat-option
+                                    *ngFor="
+                                        let month of months_of_year;
+                                        let i = index
+                                    "
+                                    [value]="i + 1"
+                                >
+                                    {{ month }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div
+                        class="field w-2/5 flex-1"
+                        *ngIf="
+                            cron_period === 'month' || cron_period === 'year'
+                        "
+                    >
+                        <label for="day"
+                            >{{ 'TRIGGERS.TIME_DAY_OF_MONTH' | translate }}
+                        </label>
+                        <mat-form-field appearance="outline">
+                            <mat-select
+                                name="day"
+                                [(ngModel)]="cron_date"
+                                (ngModelChange)="updateCronString()"
+                                [ngModelOptions]="{ standalone: true }"
+                            >
+                                <mat-option
+                                    *ngFor="let period of days_of_month"
+                                    [value]="period.id"
+                                >
+                                    {{ period.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="field" *ngIf="cron_period === 'week'">
+                    <label for="weekday">
+                        {{ 'TRIGGERS.TIME_DAY_OF_WEEK' | translate }}
                     </label>
                     <mat-form-field appearance="outline">
                         <mat-select
-                            name="month"
-                            [(ngModel)]="cron_month"
+                            name="weekday"
+                            [(ngModel)]="cron_day"
                             (ngModelChange)="updateCronString()"
                             [ngModelOptions]="{ standalone: true }"
                         >
                             <mat-option
                                 *ngFor="
-                                    let month of months_of_year;
+                                    let weekday of days_of_week;
                                     let i = index
                                 "
-                                [value]="i + 1"
+                                [value]="i"
                             >
-                                {{ month }}
+                                {{ weekday }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div
-                    class="field flex-1 w-2/5"
-                    *ngIf="cron_period === 'month' || cron_period === 'year'"
-                >
-                    <label for="day"
-                        >{{ 'TRIGGERS.TIME_DAY_OF_MONTH' | translate }}
-                    </label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
-                            name="day"
-                            [(ngModel)]="cron_date"
-                            (ngModelChange)="updateCronString()"
-                            [ngModelOptions]="{ standalone: true }"
-                        >
-                            <mat-option
-                                *ngFor="let period of days_of_month"
-                                [value]="period.id"
-                            >
-                                {{ period.name }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="field" *ngIf="cron_period === 'week'">
-                <label for="weekday">
-                    {{ 'TRIGGERS.TIME_DAY_OF_WEEK' | translate }}
-                </label>
-                <mat-form-field appearance="outline">
-                    <mat-select
-                        name="weekday"
-                        [(ngModel)]="cron_day"
-                        (ngModelChange)="updateCronString()"
-                        [ngModelOptions]="{ standalone: true }"
+                <div class="flex items-center space-x-4">
+                    <div
+                        class="field w-2/5 flex-1"
+                        *ngIf="
+                            cron_period !== 'minute' && cron_period !== 'hour'
+                        "
                     >
-                        <mat-option
-                            *ngFor="let weekday of days_of_week; let i = index"
-                            [value]="i"
-                        >
-                            {{ weekday }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div class="flex items-center space-x-4">
-                <div
-                    class="field flex-1 w-2/5"
-                    *ngIf="cron_period !== 'minute' && cron_period !== 'hour'"
-                >
-                    <label for="hour">{{
-                        'TRIGGERS.TIME_HOUR_OF_DAY' | translate
-                    }}</label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
-                            name="hour"
-                            [(ngModel)]="cron_hour"
-                            (ngModelChange)="updateCronString()"
-                            [ngModelOptions]="{ standalone: true }"
-                        >
-                            <mat-select-trigger>
-                                {{ pad(cron_hour) }}:<span class="opacity-30"
-                                    >00</span
-                                >
-                            </mat-select-trigger>
-                            <mat-option
-                                *ngFor="let hour of hours_in_day"
-                                [value]="+hour"
+                        <label for="hour">{{
+                            'TRIGGERS.TIME_HOUR_OF_DAY' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <mat-select
+                                name="hour"
+                                [(ngModel)]="cron_hour"
+                                (ngModelChange)="updateCronString()"
+                                [ngModelOptions]="{ standalone: true }"
                             >
-                                {{ pad(hour) }}:<span class="opacity-30"
-                                    >00</span
+                                <mat-select-trigger>
+                                    {{ pad(cron_hour) }}:<span
+                                        class="opacity-30"
+                                        >00</span
+                                    >
+                                </mat-select-trigger>
+                                <mat-option
+                                    *ngFor="let hour of hours_in_day"
+                                    [value]="+hour"
                                 >
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div
-                    class="field flex-1 w-2/5"
-                    *ngIf="cron_period !== 'minute'"
-                >
-                    <label for="minute">{{
-                        'TRIGGERS.TIME_MINUTE_OF_HOUR' | translate
-                    }}</label>
-                    <mat-form-field appearance="outline">
-                        <mat-select
-                            name="minute"
-                            [(ngModel)]="cron_minute"
-                            (ngModelChange)="updateCronString()"
-                            [ngModelOptions]="{ standalone: true }"
-                        >
-                            <mat-select-trigger>
-                                <span class="opacity-30">{{
-                                    pad(cron_hour)
-                                }}</span
-                                >:{{ pad(cron_minute) }}
-                            </mat-select-trigger>
-                            <mat-option
-                                *ngFor="let minute of minutes_in_hour"
-                                [value]="+minute"
+                                    {{ pad(hour) }}:<span class="opacity-30"
+                                        >00</span
+                                    >
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div
+                        class="field w-2/5 flex-1"
+                        *ngIf="cron_period !== 'minute'"
+                    >
+                        <label for="minute">{{
+                            'TRIGGERS.TIME_MINUTE_OF_HOUR' | translate
+                        }}</label>
+                        <mat-form-field appearance="outline">
+                            <mat-select
+                                name="minute"
+                                [(ngModel)]="cron_minute"
+                                (ngModelChange)="updateCronString()"
+                                [ngModelOptions]="{ standalone: true }"
                             >
-                                <span class="opacity-30">{{
-                                    pad(cron_hour)
-                                }}</span
-                                >:{{ pad(minute) }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
+                                <mat-select-trigger>
+                                    <span class="opacity-30">{{
+                                        pad(cron_hour)
+                                    }}</span
+                                    >:{{ pad(cron_minute) }}
+                                </mat-select-trigger>
+                                <mat-option
+                                    *ngFor="let minute of minutes_in_hour"
+                                    [value]="+minute"
+                                >
+                                    <span class="opacity-30">{{
+                                        pad(cron_hour)
+                                    }}</span
+                                    >:{{ pad(minute) }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
                 </div>
-            </div>
             } @else {
-            <cron-input-field
-                [(ngModel)]="cron_string"
-                (ngModelChange)="saveCRON($event)"
-            ></cron-input-field>
+                <cron-input-field
+                    [(ngModel)]="cron_string"
+                    (ngModelChange)="saveCRON($event)"
+                ></cron-input-field>
             }
         </ng-template>
     `,
@@ -306,9 +317,9 @@ export class TriggerConditionTimeFormComponent
                 i18n(
                     `COMMON.${format(
                         setDay(Date.now(), index),
-                        'EEEE'
-                    ).toUpperCase()}`
-                )
+                        'EEEE',
+                    ).toUpperCase()}`,
+                ),
             );
         this.months_of_year = Array(12)
             .fill(0)
@@ -316,9 +327,9 @@ export class TriggerConditionTimeFormComponent
                 i18n(
                     `COMMON.${format(
                         setMonth(Date.now(), index),
-                        'MMMM'
-                    ).toUpperCase()}`
-                )
+                        'MMMM',
+                    ).toUpperCase()}`,
+                ),
             );
     }
 
@@ -332,7 +343,9 @@ export class TriggerConditionTimeFormComponent
                 'timezone',
                 this.form
                     .get('timezone')
-                    .valueChanges.subscribe((tz) => this.updateTimezoneList(tz))
+                    .valueChanges.subscribe((tz) =>
+                        this.updateTimezoneList(tz),
+                    ),
             );
             this.updateTimezoneList(this.form.get('timezone').value);
         }
@@ -341,7 +354,7 @@ export class TriggerConditionTimeFormComponent
     public updateTimezoneList(tz: string) {
         const tz_lower = (tz || '').toLowerCase();
         this.timezones = TIMEZONES_IANA.filter((_) =>
-            _.toLowerCase().includes(tz_lower)
+            _.toLowerCase().includes(tz_lower),
         );
     }
 
@@ -350,7 +363,7 @@ export class TriggerConditionTimeFormComponent
         this.form.controls.time_type.setValue(
             is_cron
                 ? TriggerTimeConditionType.CRON
-                : TriggerTimeConditionType.AT
+                : TriggerTimeConditionType.AT,
         );
         this.updateCronString();
     }
@@ -359,7 +372,7 @@ export class TriggerConditionTimeFormComponent
         this.timeout(
             'save_cron',
             () => this.form.controls.cron.setValue(cron_str),
-            1000
+            1000,
         );
     }
 

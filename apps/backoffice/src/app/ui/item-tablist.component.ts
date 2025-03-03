@@ -13,8 +13,8 @@ export interface ItemTab {
 @Component({
     selector: 'item-tablist',
     template: `
-        <div class="w-full h-12">
-            <div class="w-full overflow-hidden h-14">
+        <div class="h-12 w-full">
+            <div class="h-14 w-full overflow-hidden">
                 <nav
                     mat-tab-nav-bar
                     [class.shadow]="scrolled"
@@ -36,7 +36,7 @@ export interface ItemTab {
                         >&nbsp;
                         <div class="name">{{ link.name }}&nbsp;</div>
                         <div
-                            class="text-xs rounded-full bg-base-200  flex items-center justify-center h-5 min-w-[1.25rem] px-1.5"
+                            class="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-base-200 px-1.5 text-xs"
                             *ngIf="link.count || link.count === 0"
                         >
                             {{ link.count || '0' }}
@@ -55,7 +55,10 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
     @Input() public tabs: ItemTab[] = [];
     @Input() public scrolled = false;
 
-    constructor(private _router: Router, private _hotkey: HotkeysService) {
+    constructor(
+        private _router: Router,
+        private _hotkey: HotkeysService,
+    ) {
         super();
     }
 
@@ -66,15 +69,15 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
                 if (event instanceof NavigationEnd) {
                     this._updateID();
                 }
-            })
+            }),
         );
         this.subscription(
             'right',
-            this._hotkey.listen(['ArrowRight'], () => this._changeTab(1))
+            this._hotkey.listen(['ArrowRight'], () => this._changeTab(1)),
         );
         this.subscription(
             'left',
-            this._hotkey.listen(['ArrowLeft'], () => this._changeTab(-1))
+            this._hotkey.listen(['ArrowLeft'], () => this._changeTab(-1)),
         );
         this._updateID();
     }
@@ -84,7 +87,7 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
             'change_tab',
             () => {
                 const index = this.tabs.findIndex(
-                    (tab) => this._router.url?.indexOf(tab.id) >= 0
+                    (tab) => this._router.url?.indexOf(tab.id) >= 0,
                 );
                 if (index < 0 || !this.tabs[index + direction]) return;
                 this._router.navigate([
@@ -93,7 +96,7 @@ export class ItemTablistComponent extends AsyncHandler implements OnInit {
                     this.tabs[index + direction].id,
                 ]);
             },
-            100
+            100,
         );
     }
 

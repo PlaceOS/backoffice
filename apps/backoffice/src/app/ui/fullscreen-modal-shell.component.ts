@@ -3,9 +3,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
     selector: 'fullscreen-modal-shell,[fs-modal-shell]',
     template: `
-        <div class="w-screen h-screen bg-base-100 flex flex-col overflow-auto">
+        <div class="flex h-screen w-screen flex-col overflow-auto bg-base-100">
             <header
-                class="sticky top-0 px-4 py-2 mx-auto my-2 max-w-[640px] w-full border-none z-10 bg-base-200 rounded"
+                class="sticky top-0 z-10 mx-auto my-2 w-full max-w-[640px] rounded border-none bg-base-200 px-4 py-2"
             >
                 <h2 class="text-xl font-medium">
                     {{ heading }}
@@ -15,22 +15,22 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
                 </button>
             </header>
             <main
-                class="h-1/2 flex-1 px-4 py-2 space-y-8 z-0 max-w-[640px] w-full mx-auto"
+                class="z-0 mx-auto h-1/2 w-full max-w-[640px] flex-1 space-y-8 px-4 py-2"
             >
                 <ng-content></ng-content>
-                <div class="w-full h-10"></div>
+                <div class="h-10 w-full"></div>
             </main>
             <footer
-                class="fixed bottom-0 left-1/2 -translate-x-1/2 px-4 py-2 mx-auto my-2 max-w-[640px] w-full border-none z-10 bg-base-200 rounded flex items-center justify-end"
+                class="fixed bottom-0 left-1/2 z-10 mx-auto my-2 flex w-full max-w-[640px] -translate-x-1/2 items-center justify-end rounded border-none bg-base-200 px-4 py-2"
                 *ngIf="!loading && !hide_confirm"
             >
                 <button btn matRipple class="w-32" (click)="save.emit()">
-                    <div class="flex space-x-2 items-center">
+                    <div class="flex items-center space-x-2">
                         <div>
                             {{ confirm_text || ('COMMON.SAVE' | translate) }}
                         </div>
                         <div
-                            class="relative top-0.5 mono text-sm"
+                            class="mono relative top-0.5 text-sm"
                             *ngIf="!confirm_text"
                         >
                             [S]
@@ -41,7 +41,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
         </div>
         <ng-template #load_state>
             <div
-                class="w-full flex-1 h-1/2 flex flex-col items-center justify-center p-12"
+                class="flex h-1/2 w-full flex-1 flex-col items-center justify-center p-12"
             >
                 <mat-spinner [diameter]="32"></mat-spinner>
                 <p class="text-center">{{ loading }}</p>

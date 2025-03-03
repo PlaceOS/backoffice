@@ -11,9 +11,15 @@ export function toQueryString(map: HashMap) {
     let str = '';
     if (map) {
         for (const key in map) {
-            if (map.hasOwnProperty(key) && map[key] !== undefined && map[key] !== null) {
+            if (
+                map.hasOwnProperty(key) &&
+                map[key] !== undefined &&
+                map[key] !== null
+            ) {
                 str += `${str ? '&' : ''}${key}=${encodeURIComponent(
-                    map[key] instanceof Object ? JSON.stringify(map[key]) : map[key]
+                    map[key] instanceof Object
+                        ? JSON.stringify(map[key])
+                        : map[key],
                 )}`;
             }
         }
@@ -26,7 +32,10 @@ export function toQueryString(map: HashMap) {
  * @param module_list List of modules in the parent system
  * @param module Module to work out index
  */
-export function calculateModuleIndex(module_list: PlaceModule[], module: PlaceModule): number {
+export function calculateModuleIndex(
+    module_list: PlaceModule[],
+    module: PlaceModule,
+): number {
     const driver = module.driver || { class_name: 'System' };
     const module_class = module.custom_name || module.name || driver.class_name;
     const modules_with_class = module_list.filter((mod) => {
@@ -34,7 +43,10 @@ export function calculateModuleIndex(module_list: PlaceModule[], module: PlaceMo
         const mod_class = mod.custom_name || mod.name || d.class_name;
         return mod_class === module_class;
     });
-    return Math.max(1, modules_with_class.findIndex((mod) => mod.id === module.id) + 1);
+    return Math.max(
+        1,
+        modules_with_class.findIndex((mod) => mod.id === module.id) + 1,
+    );
 }
 
 export function extensionsForItem(item: PlaceResource, type: string) {
@@ -70,9 +82,17 @@ export function extensionsForItem(item: PlaceResource, type: string) {
         if (matches >= extension_list[name].conditions.length) {
             let url = extension_list[name].url;
             for (const key in item) {
-                if (item[key] && (typeof item[key] === 'string' || typeof item[key] === 'number')) {
-                    if (typeof item[key] === 'string' && item[key].length > 128) continue;
-                    url = url.replace(`{{${key}}}`, encodeURIComponent(`${item[key]}`));
+                if (
+                    item[key] &&
+                    (typeof item[key] === 'string' ||
+                        typeof item[key] === 'number')
+                ) {
+                    if (typeof item[key] === 'string' && item[key].length > 128)
+                        continue;
+                    url = url.replace(
+                        `{{${key}}}`,
+                        encodeURIComponent(`${item[key]}`),
+                    );
                 }
             }
             extensions.push({

@@ -5,13 +5,13 @@ import { PlaceUser } from '@placeos/ts-client';
     selector: 'a-user-avatar',
     template: `
         <div
-            class="flex items-center justify-center rounded-full overflow-hidden"
+            class="flex items-center justify-center overflow-hidden rounded-full"
             *ngIf="user"
             [attr.user-id]="user.id"
         >
             <div
                 initials
-                class="text-base-content text-opacity-80 uppercase"
+                class="uppercase text-base-content text-opacity-80"
                 *ngIf="!user.photo && !user.image; else image_state"
             >
                 {{ initials }}

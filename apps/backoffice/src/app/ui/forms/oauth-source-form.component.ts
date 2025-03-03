@@ -292,7 +292,7 @@ export class OauthSourceFormComponent
         mappings: { PlaceOS: string; Remote: string }[],
         control: AbstractControl,
         split: boolean = false,
-        fields: [string, string] = ['PlaceOS', 'Remote']
+        fields: [string, string] = ['PlaceOS', 'Remote'],
     ) {
         const map: HashMap = {};
         for (const pair of mappings) {

@@ -77,8 +77,8 @@ export interface UploadInfo {
 @Component({
     selector: 'upload-library',
     template: `
-        <div class="flex flex-col h-full w-full">
-            <div class="flex items-center justify-between space-x-2 my-4">
+        <div class="flex h-full w-full flex-col">
+            <div class="my-4 flex items-center justify-between space-x-2">
                 <div class="text-2xl">
                     {{ 'ADMIN.UPLOADS_LIB_HEADER' | translate }}
                 </div>
@@ -112,45 +112,45 @@ export interface UploadInfo {
                     </button>
                 </div>
             </div>
-            <div class="flex-1 w-full h-1/2 overflow-auto">
+            <div class="h-1/2 w-full flex-1 overflow-auto">
                 <mat-progress-bar
                     mode="indeterminate"
                     class="sticky left-0 w-full"
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="min-w-[64rem] block text-sm mb-4"
+                    class="mb-4 block min-w-[64rem] text-sm"
                     [data]="uploads_list"
                     [columns]="[
                         {
                             key: 'file_name',
                             name: 'COMMON.FIELD_NAME' | translate,
-                            content: name_template
+                            content: name_template,
                         },
                         {
                             key: 'mime_type',
                             name: 'ADMIN.UPLOADS_LIB_FIELD_TYPE' | translate,
-                            content: type_template
+                            content: type_template,
                         },
                         {
                             key: 'file_size',
                             name: 'ADMIN.UPLOADS_LIB_FIELD_SIZE' | translate,
                             content: size_template,
-                            size: '7rem'
+                            size: '7rem',
                         },
                         {
                             key: 'created_at',
                             name: 'COMMON.CREATED_AT' | translate,
                             content: from_template,
-                            size: '8rem'
+                            size: '8rem',
                         },
                         {
                             key: 'actions',
                             name: ' ',
                             content: actions_template,
                             sortable: false,
-                            size: '8.75rem'
-                        }
+                            size: '8.75rem',
+                        },
                     ]"
                     [sortable]="true"
                     [empty_message]="'ADMIN.UPLOADS_LIB_LIST_EMPTY' | translate"
@@ -163,24 +163,24 @@ export interface UploadInfo {
             </ng-template>
             <ng-template #name_template let-data="data">
                 <div
-                    class="p-4 mono text-xs break-words max-w-[calc(50vw-16rem)]"
+                    class="mono max-w-[calc(50vw-16rem)] break-words p-4 text-xs"
                 >
                     {{ data }}
                 </div>
             </ng-template>
             <ng-template #type_template let-data="data">
-                <div class="p-4 mono text-xs">
+                <div class="mono p-4 text-xs">
                     {{ data }}
                 </div>
             </ng-template>
             <ng-template #size_template let-data="data">
-                <div class="p-4 mono text-xs w-full text-right">
+                <div class="mono w-full p-4 text-right text-xs">
                     {{ sizeOf(data) }}
                 </div>
             </ng-template>
             <ng-template #actions_template let-row="row">
                 <div
-                    class="flex items-center justify-end space-x-2 w-full px-2"
+                    class="flex w-full items-center justify-end space-x-2 px-2"
                 >
                     <button
                         icon
@@ -223,7 +223,7 @@ export class UploadLibraryComponent {
 
     public readonly domain_list = queryDomains({ limit: 100 }).pipe(
         map((r) => r.data),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly uploads_list: Observable<UploadInfo[]> = this.domain.pipe(
@@ -235,13 +235,13 @@ export class UploadLibraryComponent {
                     limit: 1000,
                     authority_id: domain.id,
                 },
-            }).pipe(catchError((_) => of({ data: [] })))
+            }).pipe(catchError((_) => of({ data: [] }))),
         ),
         map((r) =>
-            r.data.map((_) => ({ ..._, mime_type: getMimeType(_.file_name) }))
+            r.data.map((_) => ({ ..._, mime_type: getMimeType(_.file_name) })),
         ),
         startWith([]),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     constructor(private _dialog: MatDialog) {}
@@ -281,7 +281,7 @@ export class UploadLibraryComponent {
             return notifyError(
                 i18n('ADMIN.UPLOADS_LIB_DOWNLOAD_ERROR', {
                     error: result.statusText || result.status,
-                })
+                }),
             );
         }
         const data = await result.blob();
@@ -311,7 +311,7 @@ export class UploadLibraryComponent {
                 }),
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog
+            this._dialog,
         );
         if (result?.reason !== 'done') return;
         result.loading(i18n('ADMIN.UPLOADS_LIB_REMOVE_LOADING'));

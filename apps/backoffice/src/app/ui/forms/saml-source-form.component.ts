@@ -353,7 +353,7 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
                 this.attribute_statement_mappings = Object.keys(map).map(
                     (key) => {
                         return { name: key, mappings: map[key].join(',') };
-                    }
+                    },
                 );
             }
             if (this.form.controls.idp_sso_target_url_runtime_params) {
@@ -372,7 +372,7 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
      * @param mappings Mapping listing
      */
     public updateAttributeStatements(
-        mappings: { name: string; mappings: string }[]
+        mappings: { name: string; mappings: string }[],
     ) {
         this.timeout(
             'mappings',
@@ -385,7 +385,7 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
                 }
                 this.form.controls.attribute_statements.setValue(map);
             },
-            200
+            200,
         );
     }
 
@@ -404,10 +404,10 @@ export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
                     }
                 }
                 this.form.controls.idp_sso_target_url_runtime_params.setValue(
-                    map
+                    map,
                 );
             },
-            200
+            200,
         );
     }
 }

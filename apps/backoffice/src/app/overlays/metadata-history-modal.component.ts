@@ -7,10 +7,10 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
     selector: 'metadata-history-modal',
     template: `
         <div
-            class="w-screen h-screen bg-base-100 flex flex-col overflow-hidden"
+            class="flex h-screen w-screen flex-col overflow-hidden bg-base-100"
         >
             <div
-                class="flex items-center justify-between m-4 rounded bg-base-200 px-4 py-2"
+                class="m-4 flex items-center justify-between rounded bg-base-200 px-4 py-2"
             >
                 <h3 class="text-xl font-medium">
                     {{ 'COMMON.METADATA_HISTORY' | translate }}
@@ -19,28 +19,28 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                     <app-icon>close</app-icon>
                 </button>
             </div>
-            <main class="flex flex-col flex-1 pb-4">
-                <div class="flex items-center space-x-2 mb-2 px-4">
+            <main class="flex flex-1 flex-col pb-4">
+                <div class="mb-2 flex items-center space-x-2 px-4">
                     <div
-                        class="relative px-4 py-2 rounded border border-base-300 min-w-48 h-14"
+                        class="relative h-14 min-w-48 rounded border border-base-300 px-4 py-2"
                     >
                         <div
-                            class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded text-xs px-2 py-1"
+                            class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 px-2 py-1 text-xs"
                         >
                             {{ 'COMMON.METADATA_OWNER' | translate }}
                         </div>
                         <div class="truncate">
                             {{ parent_name || id }}
                         </div>
-                        <div class="opacity-30 text-xs" *ngIf="parent_name">
+                        <div class="text-xs opacity-30" *ngIf="parent_name">
                             {{ id }}
                         </div>
                     </div>
                     <div
-                        class="relative px-4 py-2 rounded border border-base-300 min-w-48 h-14 flex items-center"
+                        class="relative flex h-14 min-w-48 items-center rounded border border-base-300 px-4 py-2"
                     >
                         <div
-                            class="absolute top-0 left-4 -translate-y-1/2 bg-base-100 rounded text-xs px-2 py-1"
+                            class="absolute left-4 top-0 -translate-y-1/2 rounded bg-base-100 px-2 py-1 text-xs"
                         >
                             {{ 'COMMON.METADATA_KEY' | translate }}
                         </div>
@@ -50,7 +50,7 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                     </div>
                 </div>
                 <div
-                    class="flex items-center justify-between space-x-2 mb-2 px-4"
+                    class="mb-2 flex items-center justify-between space-x-2 px-4"
                 >
                     <mat-form-field appearance="outline" class="w-[20rem]">
                         <mat-select
@@ -67,7 +67,7 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                                     {{ item.updated_at | date: 'mediumDate' }},
                                     {{ item.updated_at | date: 'shortTime' }}
                                 </div>
-                                <div class="text-xs opacity-30 truncate">
+                                <div class="truncate text-xs opacity-30">
                                     {{ item.description }}
                                 </div>
                             </mat-option>
@@ -82,20 +82,25 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                             placeholder="Compare with"
                         >
                             @for (item of history; track item.updated_at) {
-                            <mat-option
-                                *ngIf="item !== first"
-                                [value]="item"
-                                (click)="select(1, item)"
-                                class="leading-tight"
-                            >
-                                <div class="">
-                                    {{ item.updated_at | date: 'mediumDate' }},
-                                    {{ item.updated_at | date: 'shortTime' }}
-                                </div>
-                                <div class="text-xs opacity-30 truncate">
-                                    {{ item.description }}
-                                </div>
-                            </mat-option>
+                                <mat-option
+                                    *ngIf="item !== first"
+                                    [value]="item"
+                                    (click)="select(1, item)"
+                                    class="leading-tight"
+                                >
+                                    <div class="">
+                                        {{
+                                            item.updated_at
+                                                | date: 'mediumDate'
+                                        }},
+                                        {{
+                                            item.updated_at | date: 'shortTime'
+                                        }}
+                                    </div>
+                                    <div class="truncate text-xs opacity-30">
+                                        {{ item.description }}
+                                    </div>
+                                </mat-option>
                             }
                         </mat-select>
                         <mat-hint *ngIf="second" class="truncate">{{
@@ -103,7 +108,7 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                         }}</mat-hint>
                     </mat-form-field>
                 </div>
-                <div class="relative flex-1 w-full px-4">
+                <div class="relative w-full flex-1 px-4">
                     <diff-viewer
                         *ngIf="first_details || second_details"
                         [modified]="second_details || ''"
@@ -111,7 +116,7 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
                     ></diff-viewer>
                     <div
                         *ngIf="!(first_details && second_details)"
-                        class="h-full w-full bg-base-200 flex items-center justify-center rounded-lg opacity-40"
+                        class="flex h-full w-full items-center justify-center rounded-lg bg-base-200 opacity-40"
                     >
                         Select 2 versions of the metadata to get started
                     </div>
@@ -135,17 +140,15 @@ export class MetadataHistoryModalComponent implements OnInit {
 
     constructor(
         @Inject(MAT_DIALOG_DATA)
-        private _data: { id: string; parent_name: string; name: string }
+        private _data: { id: string; parent_name: string; name: string },
     ) {}
 
     public async ngOnInit() {
-        console.log('Details:', this._data);
         const history = await listMetadataHistory(this._data.id, {
             name: this._data.name,
             limit: 5000,
         }).toPromise();
         this.history = history;
-        console.log('History:', history);
     }
 
     public select(idx: 0 | 1, item: PlaceMetadata) {

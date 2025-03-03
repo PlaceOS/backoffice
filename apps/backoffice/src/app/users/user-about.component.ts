@@ -6,9 +6,9 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
 @Component({
     selector: 'user-about',
     template: `
-        <section class="flex items-center space-x-2 mb-4">
+        <section class="mb-4 flex items-center space-x-2">
             <div
-                class="flex items-center space-x-2 border border-base-300 p-2 rounded-3xl"
+                class="flex items-center space-x-2 rounded-3xl border border-base-300 p-2"
             >
                 <div class="px-2">{{ 'USERS.ROLE_SUPPORT' | translate }}</div>
                 <div
@@ -27,7 +27,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                 </div>
             </div>
             <div
-                class="flex items-center space-x-2 border border-base-300 p-2 rounded-3xl"
+                class="flex items-center space-x-2 rounded-3xl border border-base-300 p-2"
             >
                 <div class="px-2">{{ 'USERS.ROLE_ADMIN' | translate }}</div>
                 <div
@@ -46,52 +46,52 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                 </div>
             </div>
         </section>
-        <section class="flex space-x-2 mb-4">
+        <section class="mb-4 flex space-x-2">
             <div
-                class="rounded p-4 border border-base-200 w-1/3 flex-1 grid gap-2"
+                class="grid w-1/3 flex-1 gap-2 rounded border border-base-200 p-4"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.FIELD_EMAIL' | translate }}
                 </div>
                 <div>
                     <a
-                        class="underline mono text-sm truncate"
+                        class="mono truncate text-sm underline"
                         [href]="'mailto:' + item?.email"
                     >
                         {{ item?.email }}
                     </a>
                 </div>
                 <ng-container *ngIf="item?.department">
-                    <div class="text-sm font-medium flex items-center">
+                    <div class="flex items-center text-sm font-medium">
                         {{ 'USERS.FIELD_DEPARTMENT' | translate }}
                     </div>
                     <div>{{ item?.department }}</div>
                 </ng-container>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'USERS.AUTHORITY_ID' | translate }}
                 </div>
                 <div class="mono text-sm">
                     {{ item?.authority_id }}
                 </div>
-                <div class="text-sm font-medium flex items-center" for="groups">
+                <div class="flex items-center text-sm font-medium" for="groups">
                     {{ 'USERS.FIELD_GROUPS' | translate }}
                 </div>
                 <div
                     *ngIf="item.groups?.length; else empty_group_state"
-                    class="flex flex-wrap -mx-1"
+                    class="-mx-1 flex flex-wrap"
                 >
                     <div
                         *ngFor="let group of item.groups"
-                        class="mono text-[0.625rem] px-2 py-1 m-1 bg-base-200 rounded"
+                        class="mono m-1 rounded bg-base-200 px-2 py-1 text-[0.625rem]"
                     >
                         {{ group }}
                     </div>
                 </div>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
-                <div class=" flex items-center">
+                <div class="flex items-center">
                     <span
                         [matTooltip]="
                             (item.created_at * 1000 | date: 'mediumDate') +
@@ -104,10 +104,10 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                     </span>
                 </div>
                 <ng-template *ngIf="item.updated_at">
-                    <div class="text-sm font-medium flex items-center">
+                    <div class="flex items-center text-sm font-medium">
                         {{ 'COMMON.UPDATED_AT' | translate }}
                     </div>
-                    <div class=" flex items-center">
+                    <div class="flex items-center">
                         <span
                             [matTooltip]="
                                 (item.updated_at * 1000 | date: 'mediumDate') +

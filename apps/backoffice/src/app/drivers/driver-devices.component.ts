@@ -10,10 +10,10 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
 @Component({
     selector: 'driver-devices',
     template: `
-        <section class="flex items-center mb-4">
+        <section class="mb-4 flex items-center">
             <mat-form-field appearance="outline" class="h-12 flex-1">
                 <div class="prefix" matPrefix>
-                    <app-icon class="text-2xl relative -left-0.5">
+                    <app-icon class="relative -left-0.5 text-2xl">
                         search
                     </app-icon>
                 </div>
@@ -33,7 +33,7 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                 [class.opacity-0]="!(loading | async)"
             ></mat-progress-bar>
             <simple-table
-                class="min-w-[32rem] block text-sm"
+                class="block min-w-[32rem] text-sm"
                 [data]="modules"
                 [columns]="[
                     {
@@ -41,20 +41,20 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                         name: 'MODULES.FIELD_STATE' | translate,
                         content: state_template,
                         size: '4rem',
-                        sortable: false
+                        sortable: false,
                     },
                     {
                         key: 'name',
                         name: 'DRIVERS.MODULE_NAME' | translate,
-                        content: name_template
+                        content: name_template,
                     },
                     {
                         key: 'actions',
                         name: ' ',
                         content: actions_template,
                         size: '6rem',
-                        sortable: false
-                    }
+                        sortable: false,
+                    },
                 ]"
                 [sortable]="true"
                 [empty_message]="'DRIVERS.MODULES_EMPTY' | translate"
@@ -69,7 +69,7 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                     bind="connected"
                 ></i>
                 <div
-                    class="h-2 w-2 rounded-full mx-auto"
+                    class="mx-auto h-2 w-2 rounded-full"
                     [class.bg-base-content]="!row.running"
                     [class.bg-error]="row.running && !row.connected"
                     [class.bg-success]="row.running && row.connected"
@@ -83,13 +83,13 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                     >
                         {{ row.name }}
                     </a>
-                    <div class="text-[0.625rem] opacity-30 font-mono">
+                    <div class="font-mono text-[0.625rem] opacity-30">
                         {{ row.id }}
                     </div>
                 </div>
             </ng-template>
             <ng-template #actions_template let-row="row">
-                <div class="flex items-center space-x-2 p-2 mx-auto">
+                <div class="mx-auto flex items-center space-x-2 p-2">
                     <button
                         icon
                         matRipple
@@ -109,7 +109,7 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                     </button>
                     <mat-menu #menu="matMenu">
                         <div
-                            class="flex items-center justify-center px-2 pb-2 opacity-70 border-b border-base-200 text-sm"
+                            class="flex items-center justify-center border-b border-base-200 px-2 pb-2 text-sm opacity-70"
                         >
                             {{
                                 'DRIVERS.SYSTEM_COUNT'
@@ -133,7 +133,7 @@ import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
                             [routerLink]="['/systems', system.id]"
                         >
                             <div
-                                class="flex flex-col justify-center px-2 h-full"
+                                class="flex h-full flex-col justify-center px-2"
                             >
                                 <div class="text-base">
                                     {{ system.display_name || system.name }}
@@ -185,10 +185,10 @@ export class DriverModulesComponent extends AsyncHandler {
                 ? modules.filter(
                       (mod) =>
                           mod.name.toLowerCase().includes(search) ||
-                          mod.custom_name.toLowerCase().includes(search)
+                          mod.custom_name.toLowerCase().includes(search),
                   )
                 : modules;
-        })
+        }),
     );
 
     public readonly removeModule = (d) => this._service.removeModule(d);

@@ -8,10 +8,10 @@ import { ZonesStateService } from './zones-state.service';
 @Component({
     selector: 'zone-triggers',
     template: `
-        <section class="flex items-center mb-4 space-x-2">
+        <section class="mb-4 flex items-center space-x-2">
             <mat-form-field appearance="outline" class="h-12 flex-1">
                 <div class="prefix" matPrefix>
-                    <app-icon class="text-2xl relative -left-0.5">
+                    <app-icon class="relative -left-0.5 text-2xl">
                         search
                     </app-icon>
                 </div>
@@ -34,26 +34,26 @@ import { ZonesStateService } from './zones-state.service';
                 [class.opacity-0]="!(loading | async)"
             ></mat-progress-bar>
             <simple-table
-                class="min-w-[32rem] block text-sm"
+                class="block min-w-[32rem] text-sm"
                 [data]="triggers"
                 [columns]="[
                     {
                         key: 'name',
                         name: 'COMMON.FIELD_NAME' | translate,
-                        content: name_template
+                        content: name_template,
                     },
                     {
                         key: 'added',
                         name: 'TRIGGERS.FIELD_ADDED' | translate,
-                        content: added_template
+                        content: added_template,
                     },
                     {
                         key: 'actions',
                         name: ' ',
                         content: actions_template,
                         size: '3.5rem',
-                        sortable: false
-                    }
+                        sortable: false,
+                    },
                 ]"
                 [empty_message]="'ZONES.TRIGGERS_EMPTY' | translate"
             ></simple-table>
@@ -65,7 +65,7 @@ import { ZonesStateService } from './zones-state.service';
                     >
                         {{ row.name }}
                     </a>
-                    <div class="text-[0.625rem] opacity-30 font-mono">
+                    <div class="font-mono text-[0.625rem] opacity-30">
                         {{ row.id }}
                     </div>
                 </div>
@@ -111,9 +111,9 @@ export class ZoneTriggersComponent {
             return !filter
                 ? systems
                 : systems.filter((sys) =>
-                      sys.name.toLowerCase().includes(search)
+                      sys.name.toLowerCase().includes(search),
                   );
-        })
+        }),
     );
 
     public readonly loading = this._state.loading;

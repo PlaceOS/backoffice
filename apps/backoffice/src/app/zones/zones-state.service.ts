@@ -74,7 +74,7 @@ export class ZonesStateService {
                 metadata,
                 children,
             };
-        })
+        }),
     );
 
     public readonly systems = this.item.pipe(
@@ -84,7 +84,7 @@ export class ZonesStateService {
         }),
         map((list) => list.data),
         catchError((_) => []),
-        shareReplay()
+        shareReplay(),
     );
 
     public readonly triggers = this.item.pipe(
@@ -94,7 +94,7 @@ export class ZonesStateService {
         }),
         map((list) => list.data),
         catchError((_) => []),
-        shareReplay()
+        shareReplay(),
     );
 
     public readonly metadata: Observable<PlaceMetadata[]> = this.item.pipe(
@@ -103,7 +103,7 @@ export class ZonesStateService {
             return listMetadata(item.id);
         }),
         catchError((_) => []),
-        shareReplay(1)
+        shareReplay(1),
     );
 
     public readonly children = this.item.pipe(
@@ -113,7 +113,7 @@ export class ZonesStateService {
         }),
         map((list) => list.data),
         catchError((_) => []),
-        shareReplay()
+        shareReplay(),
     );
 
     public get active_item(): PlaceZone {
@@ -122,7 +122,7 @@ export class ZonesStateService {
 
     constructor(
         private _service: ActiveItemService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
     ) {
         setTimeout(() => this._change.next(!this._change.getValue()), 1000);
     }
@@ -164,7 +164,7 @@ export class ZonesStateService {
                 content: `<p>Are you sure you want remove trigger "${trigger.name}"?</p><p>Configuration will be updated <strong>immediately</strong>.</p>`,
                 icon: { type: 'icon', content: 'delete' },
             },
-            this._dialog
+            this._dialog,
         );
         if (!details || !details.reason) return;
         const zone = await updateZone(this.active_item.id, {
@@ -177,7 +177,7 @@ export class ZonesStateService {
                 notifyError(
                     `Error removing trigger ${trigger.id} from zone. Error: ${
                         err.statusText || err.message || err
-                    }`
+                    }`,
                 );
                 throw err;
             });

@@ -8,31 +8,31 @@ import { MatDialog } from '@angular/material/dialog';
 @Component({
     selector: 'module-about',
     template: `
-        <section class="space-x-2 flex">
+        <section class="flex space-x-2">
             <div
-                class="rounded p-4 border border-base-200 w-1/3 flex-1 inline-grid gap-2"
+                class="inline-grid w-1/3 flex-1 gap-2 rounded border border-base-200 p-4"
                 [style.gridTemplateColumns]="'4.5rem auto'"
             >
                 <ng-container *ngIf="item.notes">
-                    <div class="text-sm font-medium flex items-center">
+                    <div class="flex items-center text-sm font-medium">
                         {{ 'MODULES.NOTES' | translate }}
                     </div>
                     <div>{{ item.notes }}</div>
                 </ng-container>
                 <ng-container *ngIf="item.ip">
-                    <div class="text-sm font-medium flex items-center">
+                    <div class="flex items-center text-sm font-medium">
                         {{ 'MODULES.IP_ADDRESS' | translate }}
                     </div>
                     <div class="mono">{{ item.ip }}</div>
                 </ng-container>
                 <ng-container *ngIf="item.port > 1">
-                    <div class="text-sm font-medium flex items-center">
+                    <div class="flex items-center text-sm font-medium">
                         {{ 'MODULES.PORT_NUMBER' | translate }}
                     </div>
                     <div class="mono">{{ item.port }}</div>
                 </ng-container>
                 <ng-container *ngIf="item.tls || item.udp">
-                    <div class="text-sm font-medium flex items-center">
+                    <div class="flex items-center text-sm font-medium">
                         {{ 'MODULES.PROTOCOL' | translate }}
                     </div>
                     <div class="flex items-center">
@@ -45,11 +45,11 @@ import { MatDialog } from '@angular/material/dialog';
                     </div>
                 </ng-container>
                 <ng-container *ngIf="driver | async">
-                    <div class="text-sm font-medium flex items-center">
+                    <div class="flex items-center text-sm font-medium">
                         {{ 'DRIVERS.SINGULAR' | translate }}
                     </div>
                     <a
-                        class="underline truncate"
+                        class="truncate underline"
                         [routerLink]="['/drivers', item.driver_id]"
                     >
                         {{
@@ -61,32 +61,32 @@ import { MatDialog } from '@angular/material/dialog';
                     </a>
                 </ng-container>
                 <ng-container *ngIf="system | async">
-                    <div class="text-sm font-medium flex items-center">
+                    <div class="flex items-center text-sm font-medium">
                         {{ 'SYSTEMS.SINGULAR' | translate }}
                     </div>
                     <a
-                        class="underline truncate"
+                        class="truncate underline"
                         [routerLink]="[
                             '/systems',
                             (system | async).id,
-                            'modules'
+                            'modules',
                         ]"
                     >
                         {{ (system | async).name }}
                     </a>
                 </ng-container>
                 <ng-container *ngIf="edge | async">
-                    <div class="text-sm font-medium flex items-center">
+                    <div class="flex items-center text-sm font-medium">
                         {{ 'COMMON.EDGE' | translate }}
                     </div>
                     <div class="flex items-center">
                         <a
-                            class="underline truncate"
+                            class="truncate underline"
                             [routerLink]="['/admin', 'edge', (edge | async).id]"
                         >
                             {{ (edge | async).name }}
                         </a>
-                        <div class="flex-1 w-px"></div>
+                        <div class="w-px flex-1"></div>
                         <button
                             icon
                             customTooltip
@@ -98,26 +98,26 @@ import { MatDialog } from '@angular/material/dialog';
                         >
                             <app-icon
                                 *ngIf="(edge | async).description"
-                                class="border border-base-200  rounded-full"
+                                class="rounded-full border border-base-200"
                                 >info</app-icon
                             >
                         </button>
                     </div>
                     <ng-template #edge_desc_template>
                         <div
-                            class="bg-base-100 p-2 rounded max-w-[24rem] pointer-events-none border border-base-200 shadow"
+                            class="pointer-events-none max-w-[24rem] rounded border border-base-200 bg-base-100 p-2 shadow"
                         >
                             <pre
-                                class="text-sm overflow-hidden bg-base-200 p-2 rounded-xl"
+                                class="overflow-hidden rounded-xl bg-base-200 p-2 text-sm"
                                 >{{ (edge | async).description }}</pre
                             >
                         </div>
                     </ng-template>
                 </ng-container>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
-                <div class=" flex items-center">
+                <div class="flex items-center">
                     <span
                         [matTooltip]="
                             (item.created_at * 1000 | date: 'mediumDate') +
@@ -129,10 +129,10 @@ import { MatDialog } from '@angular/material/dialog';
                         {{ item.created_at * 1000 | dateFrom }}
                     </span>
                 </div>
-                <div class="text-sm font-medium flex items-center">
+                <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.UPDATED_AT' | translate }}
                 </div>
-                <div class=" flex items-center">
+                <div class="flex items-center">
                     <span
                         [matTooltip]="
                             (item.updated_at * 1000 | date: 'mediumDate') +
@@ -147,7 +147,7 @@ import { MatDialog } from '@angular/material/dialog';
                 <button
                     btn
                     matRipple
-                    class="flex items-center col-span-2 w-full"
+                    class="col-span-2 flex w-full items-center"
                     *ngIf="item.has_runtime_error"
                     (click)="viewErrors()"
                 >
@@ -155,16 +155,16 @@ import { MatDialog } from '@angular/material/dialog';
                 </button>
             </div>
             <div
-                class="rounded p-2 border border-base-200 w-1/3 flex-1 inline-flex flex-col"
+                class="inline-flex w-1/3 flex-1 flex-col rounded border border-base-200 p-2"
             >
-                <h3 class="w-full text-center font-medium mono uppercase p-2">
+                <h3 class="mono w-full p-2 text-center font-medium uppercase">
                     {{ 'MODULES.CONTROLS' | translate }}
                 </h3>
-                <div class="flex items-center flex-wrap">
+                <div class="flex flex-wrap items-center">
                     <button
                         btn
                         matRipple
-                        class="flex-1 min-w-36 m-2"
+                        class="m-2 min-w-36 flex-1"
                         [disabled]="item.running || stopping"
                         (click)="toggleModuleState()"
                     >
@@ -179,7 +179,7 @@ import { MatDialog } from '@angular/material/dialog';
                     <button
                         btn
                         matRipple
-                        class="flex-1 inverse error min-w-36 m-2"
+                        class="inverse error m-2 min-w-36 flex-1"
                         [disabled]="!item.running || stopping"
                         (click)="toggleModuleState()"
                     >
@@ -195,7 +195,7 @@ import { MatDialog } from '@angular/material/dialog';
             </div>
         </section>
         <hr class="my-4" />
-        <header class="font-medium text-lg">
+        <header class="text-lg font-medium">
             {{ 'COMMON.SETTINGS' | translate }}
         </header>
         <section
@@ -209,7 +209,7 @@ import { MatDialog } from '@angular/material/dialog';
             ></a-settings-form>
         </section>
         <ng-template #load_state>
-            <div class="p-8 flex flex-col items-center justify-center m-auto">
+            <div class="m-auto flex flex-col items-center justify-center p-8">
                 <mat-spinner class="mb-4" diameter="48"></mat-spinner>
                 <p>{{ 'MODULES.LOADING_SETTINGS' | translate }}</p>
             </div>
@@ -246,7 +246,7 @@ export class ModuleAboutComponent {
 
     constructor(
         private _service: ModuleStateService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
     ) {}
 
     public async toggleModuleState() {
@@ -258,7 +258,7 @@ export class ModuleAboutComponent {
     public viewErrors() {
         this._dialog.open<ModuleRuntimeErrorsModalComponent>(
             ModuleRuntimeErrorsModalComponent,
-            { data: this.item.id }
+            { data: this.item.id },
         );
     }
 }

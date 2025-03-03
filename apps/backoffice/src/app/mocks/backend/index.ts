@@ -1,4 +1,3 @@
-
 import './zones.mock';
 import './repositories.mock';
 import './drivers.mock';
