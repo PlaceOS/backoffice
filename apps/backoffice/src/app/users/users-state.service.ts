@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import {
+    listMetadata,
     PlaceMetadata,
     PlaceUser,
     PlaceZone,
-    listMetadata,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import {

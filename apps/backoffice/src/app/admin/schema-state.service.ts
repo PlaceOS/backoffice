@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { create, query, update } from '@placeos/ts-client';
-import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -23,7 +22,7 @@ export class SchemaStateService {
         this.loadSchemas();
     }
 
-    public getSchema(id: string): HashMap {
+    public getSchema(id: string): Record<string, any> {
         const schema_list = this._schemas.getValue();
         const schema = schema_list.find((_) => _.id === id);
         if (!schema) return null;

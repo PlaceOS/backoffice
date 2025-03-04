@@ -1,15 +1,15 @@
 import {
     Component,
+    EventEmitter,
     Input,
-    SimpleChanges,
     OnChanges,
     Output,
-    EventEmitter,
-    ViewChild,
+    SimpleChanges,
     TemplateRef,
+    ViewChild,
 } from '@angular/core';
 
-import { Identity, HashMap } from 'apps/backoffice/src/app/common/types';
+import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
 import { TableColumn } from '../../ui/simple-table.component';
 
 @Component({

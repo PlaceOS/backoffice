@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PlaceZone, PlaceSystem } from '@placeos/ts-client';
+import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
 
 import { ZonesStateService } from './zones-state.service';
 

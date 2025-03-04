@@ -1,14 +1,14 @@
 import {
     Component,
+    ElementRef,
+    EventEmitter,
     Input,
     Output,
-    EventEmitter,
     ViewChild,
-    ElementRef,
 } from '@angular/core';
 
-import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
+import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
 
 @Component({
     selector: 'searchbar',

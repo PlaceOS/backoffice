@@ -1,5 +1,4 @@
-import { authority, PlaceModule } from '@placeos/ts-client';
-import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
+import { authority, PlaceModule, PlaceResource } from '@placeos/ts-client';
 
 import { AppComponentExtensions, HashMap } from './types';
 

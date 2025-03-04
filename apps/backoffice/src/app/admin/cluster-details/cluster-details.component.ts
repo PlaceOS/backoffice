@@ -1,22 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import {
-    map,
     catchError,
+    filter,
+    map,
+    startWith,
     switchMap,
     tap,
-    filter,
-    startWith,
 } from 'rxjs/operators';
 
 import { PlaceCluster, queryClusters } from '@placeos/ts-client';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 
-import {
-    PlaceClusterNode,
-    PlaceClusterUsageStamp,
-} from './cluster-node.component';
 import { interval } from 'rxjs';
+import { PlaceClusterNode } from './cluster-node.component';
 
 @Component({
     selector: 'engine-cluster-details',

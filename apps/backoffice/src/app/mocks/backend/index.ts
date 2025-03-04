@@ -1,11 +1,11 @@
-import './zones.mock';
-import './repositories.mock';
+import './domains.mock';
 import './drivers.mock';
 import './modules.mock';
+import './repositories.mock';
 import './systems.mock';
 import './triggers.mock';
 import './users.mock';
-import './domains.mock';
+import './zones.mock';
 
-import './settings.mock';
 import './general.mock';
+import './settings.mock';

@@ -5,6 +5,7 @@ import {
     addSystemModule,
     addSystemTrigger,
     apiEndpoint,
+    listMetadata,
     listSystemTriggers,
     listSystemZones,
     PlaceModule,
@@ -13,9 +14,11 @@ import {
     PlaceZone,
     put,
     queryModules,
+    querySystems,
     queryTriggers,
     removeSystemModule,
     removeSystemTrigger,
+    showSystem,
     startModule,
     startSystem,
     stopModule,
@@ -23,9 +26,6 @@ import {
     systemSettings,
     updateSystem,
     updateTrigger,
-    listMetadata,
-    showSystem,
-    querySystems,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
@@ -39,7 +39,7 @@ import {
 import { calculateModuleIndex } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
-import { openConfirmModal, randomInt, unique } from '../common/general';
+import { openConfirmModal, unique } from '../common/general';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';

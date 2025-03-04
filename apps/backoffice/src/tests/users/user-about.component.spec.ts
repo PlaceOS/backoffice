@@ -1,5 +1,5 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
-import { MockComponent, MockProvider } from 'ng-mocks';
+import { MockProvider } from 'ng-mocks';
 import { ActiveItemService } from '../../app/common/item.service';
 import { UserAboutComponent } from '../../app/users/user-about.component';
 

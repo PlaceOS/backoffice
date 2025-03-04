@@ -3,8 +3,8 @@ import { PlaceSystem, PlaceZone, queryZones } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, shareReplay, take } from 'rxjs/operators';
 
-import { SystemStateService } from './system-state.service';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
+import { SystemStateService } from './system-state.service';
 
 @Component({
     selector: 'system-zones',

@@ -1,10 +1,10 @@
-import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
 import {
-    FormGroup,
-    FormControl,
-    Validators,
     AbstractControl,
+    FormControl,
+    FormGroup,
+    Validators,
 } from '@angular/forms';
+import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
 import { Subscription } from 'rxjs';
 
 import * as yaml from 'js-yaml';

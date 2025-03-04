@@ -1,4 +1,4 @@
-import { uniqueNamesGenerator, Config, names } from 'unique-names-generator';
+import { names, uniqueNamesGenerator } from 'unique-names-generator';
 const path = require('path');
 const downloadsFolder = Cypress.config('downloadsFolder');
 

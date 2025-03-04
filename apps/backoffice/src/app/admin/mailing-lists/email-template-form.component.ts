@@ -1,11 +1,11 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
-import { Clipboard } from '@angular/cdk/clipboard';
 import { AsyncHandler } from '../../common/async-handler.class';
-import { EmailStateService, EmailTemplate } from './email-state.service';
 import { notifySuccess } from '../../common/notifications';
+import { EmailStateService, EmailTemplate } from './email-state.service';
 
 export function extractTextFromHTML(html_string: string) {
     const temp_element = document.createElement('div');

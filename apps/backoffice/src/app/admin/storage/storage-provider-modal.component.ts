@@ -1,9 +1,9 @@
 import { Component, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { PlaceStorage, saveStorage } from './storage.fn';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { i18n } from '../../common/translate';
+import { PlaceStorage, saveStorage } from './storage.fn';
 
 @Component({
     selector: 'storage-provider-modal',

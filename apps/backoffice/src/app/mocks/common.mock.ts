@@ -1,5 +1,5 @@
-import { Observable, BehaviorSubject } from 'rxjs';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import {
     MockHttpRequestHandler,

@@ -1,12 +1,12 @@
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { HashMap } from 'apps/backoffice/src/app/common/types';
 import {
     csvToJson,
-    jsonToCsv,
     downloadFile,
+    jsonToCsv,
 } from 'apps/backoffice/src/app/common/general';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
+import { HashMap } from 'apps/backoffice/src/app/common/types';
 
 @Component({
     selector: 'bulk-item-csv-upload',

@@ -1,8 +1,8 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { UntypedFormGroup, AbstractControl } from '@angular/forms';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 
-import { Identity, HashMap } from 'apps/backoffice/src/app/common/types';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
+import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
 
 @Component({
     selector: 'oauth-source-form',

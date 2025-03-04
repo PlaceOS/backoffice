@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { cleanObject, PlaceDomain, post, put } from '@placeos/ts-client';
 import { getInvalidFields } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { i18n } from '../common/translate';
 import { DialogEvent, HashMap } from '../common/types';
 import { PlaceTenant } from './staff-api.component';
-import { i18n } from '../common/translate';
 
 const FIELD_NAME_MAPPING: HashMap<string> = {
     issuer: 'Service Account Email',

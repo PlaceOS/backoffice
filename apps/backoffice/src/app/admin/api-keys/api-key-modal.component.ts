@@ -12,9 +12,9 @@ import { map } from 'rxjs/operators';
 import { addChipItem, removeChipItem } from '../../common/forms';
 import { getInvalidFields } from '../../common/general';
 import { notifyError } from '../../common/notifications';
+import { i18n } from '../../common/translate';
 import { DialogEvent } from '../../common/types';
 import { APIKeyService } from './api-keys.service';
-import { i18n } from '../../common/translate';
 
 @Component({
     selector: 'api-key-modal',

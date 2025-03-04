@@ -10,9 +10,9 @@ import {
     startWith,
     switchMap,
 } from 'rxjs/operators';
+import { toQueryString } from '../common/api';
 import { openConfirmModal } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { toQueryString } from '../common/api';
 import { i18n } from '../common/translate';
 
 interface BuildJob {

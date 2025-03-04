@@ -1,14 +1,14 @@
+import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, Input, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { PlaceZone, showZone, queryZones } from '@placeos/ts-client';
-import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
+import { PlaceZone, queryZones, showZone } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
-import { map } from 'rxjs/operators';
 import {
     addChipItem,
     removeChipItem,
 } from 'apps/backoffice/src/app/common/forms';
+import { map } from 'rxjs/operators';
 import { TIMEZONES_IANA } from '../../common/timezones';
 
 @Component({

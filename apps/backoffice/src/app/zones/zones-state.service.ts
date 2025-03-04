@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
+    listMetadata,
     listZoneTriggers,
     PlaceMetadata,
     PlaceTrigger,
@@ -8,7 +9,6 @@ import {
     querySystems,
     queryTriggers,
     queryZones,
-    listMetadata,
     updateZone,
 } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';

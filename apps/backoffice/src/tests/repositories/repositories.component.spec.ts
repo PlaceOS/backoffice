@@ -1,9 +1,9 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockProvider } from 'ng-mocks';
+import { of } from 'rxjs';
 import { ActiveItemService } from '../../app/common/item.service';
 import { RepositoriesStateService } from '../../app/repositories/repositories-state.service';
 import { RepositoriesComponent } from '../../app/repositories/repositories.component';
-import { of } from 'rxjs';
 
 describe('RepositoriesComponent', () => {
     let spectator: Spectator<RepositoriesComponent>;

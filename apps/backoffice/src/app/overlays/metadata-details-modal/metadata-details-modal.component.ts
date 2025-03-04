@@ -1,11 +1,11 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormGroup, FormControl } from '@angular/forms';
 import {
     addChipItem,
     removeChipItem,
 } from 'apps/backoffice/src/app/common/forms';
-import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 
 export interface MetadataDetailsModalData {
     form: FormGroup;

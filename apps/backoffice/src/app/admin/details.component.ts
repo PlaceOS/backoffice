@@ -1,21 +1,21 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { get, apiEndpoint } from '@placeos/ts-client';
+import { apiEndpoint, get } from '@placeos/ts-client';
 
-import { VERSION } from '../../environments/version';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
+import {
+    notifyError,
+    notifyInfo,
+} from 'apps/backoffice/src/app/common/notifications';
 import {
     ChangelogModalComponent,
     ChangelogModalData,
 } from 'apps/backoffice/src/app/overlays/changelog-modal.component';
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
-import {
-    notifyError,
-    notifyInfo,
-} from 'apps/backoffice/src/app/common/notifications';
+import { VERSION } from '../../environments/version';
 
-import { copyToClipboard } from '../common/general';
 import { format } from 'date-fns';
+import { copyToClipboard } from '../common/general';
 import { i18n } from '../common/translate';
 
 export interface PlaceServiceDetails {

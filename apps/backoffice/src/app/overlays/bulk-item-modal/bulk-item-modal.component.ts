@@ -1,24 +1,24 @@
 import { Component, Inject, Type } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import {
-    PlaceSystem,
-    PlaceModule,
     PlaceDriver,
+    PlaceModule,
+    PlaceResource,
+    PlaceSystem,
     PlaceUser,
     PlaceZone,
 } from '@placeos/ts-client';
-import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
 import { unique } from 'apps/backoffice/src/app/common/general';
+import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
+import { Observable } from 'rxjs';
 import {
-    SYSTEM_TEMPLATE,
-    MODULE_TEMPLATE,
     DRIVER_TEMPLATE,
+    MODULE_TEMPLATE,
+    SYSTEM_TEMPLATE,
     USER_TEMPLATE,
     ZONE_TEMPLATE,
 } from './template-data';
-import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
-import { Observable } from 'rxjs';
 
 const IGNORE_FIELDS = [
     'created_at',

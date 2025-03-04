@@ -2,9 +2,9 @@ import { UntypedFormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { first } from 'rxjs/operators';
 import {
+    CONFIRM_METADATA,
     ConfirmModalComponent,
     ConfirmModalData,
-    CONFIRM_METADATA,
 } from '../overlays/confirm-modal.component';
 import { HashMap, Point } from './types';
 

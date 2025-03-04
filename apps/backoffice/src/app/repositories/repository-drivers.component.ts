@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { PlaceRepository } from '@placeos/ts-client';
 
-import { RepositoriesStateService } from './repositories-state.service';
 import { Router } from '@angular/router';
 import { AsyncHandler } from '../common/async-handler.class';
+import { RepositoriesStateService } from './repositories-state.service';
 
 @Component({
     selector: 'repository-drivers',

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import {
     apiKey,
     authority,
@@ -8,6 +9,7 @@ import {
     remove,
     token,
 } from '@placeos/ts-client';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import {
     catchError,
     filter,
@@ -17,12 +19,10 @@ import {
     switchMap,
     take,
 } from 'rxjs/operators';
-import { BehaviorSubject, Observable, of } from 'rxjs';
 import { openConfirmModal } from '../common/general';
-import { MatDialog } from '@angular/material/dialog';
-import { ViewUploadModalComponent } from './view-upload-modal.component';
 import { notifyError } from '../common/notifications';
 import { i18n } from '../common/translate';
+import { ViewUploadModalComponent } from './view-upload-modal.component';
 
 function getMimeType(filename: string): string {
     // Mapping of file extensions to MIME types

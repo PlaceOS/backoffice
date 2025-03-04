@@ -1,5 +1,5 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
-import { MockComponent, MockProvider } from 'ng-mocks';
+import { MockProvider } from 'ng-mocks';
 import { BehaviorSubject } from 'rxjs';
 import { TriggerInstancesComponent } from '../../app/triggers/trigger-instances.component';
 import { TriggerStateService } from '../../app/triggers/trigger-state.service';

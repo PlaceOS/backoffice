@@ -4,7 +4,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
 import { copyToClipboard } from 'apps/backoffice/src/app/common/general';
 import { notifyInfo } from 'apps/backoffice/src/app/common/notifications';
 import { SettingsService } from 'apps/backoffice/src/app/common/settings.service';
-import { UploadDetails, uploadFile } from '../common/uploads';
+import { UploadDetails } from '../common/uploads';
 import { UploadsService } from '../common/uploads.service';
 
 @Component({

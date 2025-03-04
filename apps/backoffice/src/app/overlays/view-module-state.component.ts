@@ -1,5 +1,5 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
     PlaceModule,
     PlaceSystem,
@@ -7,8 +7,8 @@ import {
 } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
-import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
+import { HashMap } from 'apps/backoffice/src/app/common/types';
 
 export interface ModuleStateModalData {
     /** System Data to show the details for */

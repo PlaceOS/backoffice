@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { authority } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
+import { timer } from 'rxjs';
 import { SettingsService } from '../common/settings.service';
 import { i18n } from '../common/translate';
-import { timer } from 'rxjs';
 
 @Component({
     selector: 'app-metrics',

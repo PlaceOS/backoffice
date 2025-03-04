@@ -6,22 +6,15 @@ import {
     queryDomains,
     updateDomain,
 } from '@placeos/ts-client';
-import {
-    debounceTime,
-    first,
-    map,
-    shareReplay,
-    switchMap,
-    take,
-} from 'rxjs/operators';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import { ApplicationIcon } from 'apps/backoffice/src/app/common/types';
 import {
     ConfirmModalComponent,
     ConfirmModalData,
 } from 'apps/backoffice/src/app/overlays/confirm-modal.component';
-import { ExtensionModalComponent } from './extension-modal/extension-modal.component';
 import { BehaviorSubject, combineLatest } from 'rxjs';
+import { debounceTime, first, map, shareReplay, take } from 'rxjs/operators';
+import { ExtensionModalComponent } from './extension-modal/extension-modal.component';
 
 export interface BackofficeExtension {
     /** Section of backoffice to extend */

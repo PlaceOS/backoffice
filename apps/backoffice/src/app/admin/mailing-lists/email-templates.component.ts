@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { authority } from '@placeos/ts-client';
-import { EmailStateService } from './email-state.service';
 import { take } from 'rxjs/operators';
+import { EmailStateService } from './email-state.service';
 
 @Component({
     selector: 'email-templates',

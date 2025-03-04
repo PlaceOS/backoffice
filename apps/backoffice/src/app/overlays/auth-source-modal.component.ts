@@ -1,31 +1,31 @@
-import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
-    PlaceDomain,
-    PlaceOAuthSource,
-    PlaceLDAPSource,
-    PlaceSAMLSource,
-    updateSAMLSource,
-    addSAMLSource,
-    updateLDAPSource,
     addLDAPSource,
-    updateOAuthSource,
     addOAuthSource,
+    addSAMLSource,
+    PlaceDomain,
+    PlaceLDAPSource,
+    PlaceOAuthSource,
+    PlaceSAMLSource,
+    updateLDAPSource,
+    updateOAuthSource,
+    updateSAMLSource,
 } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
+import {
+    notifyError,
+    notifySuccess,
+} from 'apps/backoffice/src/app/common/notifications';
 import { DialogEvent, Identity } from 'apps/backoffice/src/app/common/types';
 import {
-    generateOAuthSourceForm,
     generateLDAPSourceForm,
+    generateOAuthSourceForm,
     generateSAMLSourceForm,
 } from 'apps/backoffice/src/app/domains/auth-sources.utilities';
 import { Observable } from 'rxjs';
-import {
-    notifySuccess,
-    notifyError,
-} from 'apps/backoffice/src/app/common/notifications';
 import { i18n } from '../common/translate';
 
 export interface AuthSourceModalData {

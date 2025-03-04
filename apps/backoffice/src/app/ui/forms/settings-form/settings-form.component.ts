@@ -1,28 +1,27 @@
 import {
     Component,
     Input,
-    SimpleChanges,
     OnChanges,
     OnInit,
+    SimpleChanges,
 } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import {
+    addSettings,
+    EncryptionLevel,
     PlaceSettings,
     PlaceUser,
-    EncryptionLevel,
     updateSettings,
-    addSettings,
 } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
-import { Identity } from 'apps/backoffice/src/app/common/types';
-import { validateYAML } from 'apps/backoffice/src/app/systems/systems.utilities';
-import { HashMap } from 'apps/backoffice/src/app/common/types';
+import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
 import {
     notifyError,
     notifySuccess,
 } from 'apps/backoffice/src/app/common/notifications';
-import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
+import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
+import { validateYAML } from 'apps/backoffice/src/app/systems/systems.utilities';
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
 
 import * as yaml from 'js-yaml';

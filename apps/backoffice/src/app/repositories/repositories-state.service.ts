@@ -16,7 +16,6 @@ import {
     debounceTime,
     filter,
     map,
-    share,
     shareReplay,
     startWith,
     switchMap,
@@ -25,11 +24,11 @@ import {
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError } from '../common/notifications';
+import { i18n } from '../common/translate';
 import {
     CreateEditModalData,
     ItemCreateUpdateModalComponent,
 } from '../overlays/item-modal.component';
-import { i18n } from '../common/translate';
 
 @Injectable({
     providedIn: 'root',

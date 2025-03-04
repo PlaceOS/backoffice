@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 import { queryDrivers, updateDriver } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, take } from 'rxjs/operators';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'driver-update-list-modal',

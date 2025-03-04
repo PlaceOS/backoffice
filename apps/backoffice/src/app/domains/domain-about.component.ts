@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
 import { PlaceDomain } from '@placeos/ts-client';
 
+import { Clipboard } from '@angular/cdk/clipboard';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
-import { DomainStateService } from './domain-state.service';
 import { notifySuccess } from '../common/notifications';
-import { Clipboard } from '@angular/cdk/clipboard';
 import { i18n } from '../common/translate';
+import { DomainStateService } from './domain-state.service';
 
 @Component({
     selector: 'app-domain-about',

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import {
-    PlaceTrigger,
     PlaceSystem,
+    PlaceTrigger,
     TriggerComparison,
-    TriggerTimeCondition,
     TriggerFunction,
     TriggerMailer,
+    TriggerTimeCondition,
     querySystems,
 } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';

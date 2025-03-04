@@ -1,6 +1,5 @@
 import { MatMenuModule } from '@angular/material/menu';
 import { createHostFactory, SpectatorHost } from '@ngneat/spectator/jest';
-import { MockComponent } from 'ng-mocks';
 import { ContextMenuComponent } from '../../app/ui/context-menu.component';
 
 describe('ContextMenuComponent', () => {

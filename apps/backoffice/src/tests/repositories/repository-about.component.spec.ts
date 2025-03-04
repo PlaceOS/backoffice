@@ -1,5 +1,5 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
-import { MockComponent, MockProvider } from 'ng-mocks';
+import { MockProvider } from 'ng-mocks';
 import { BehaviorSubject } from 'rxjs';
 import { RepositoriesStateService } from '../../app/repositories/repositories-state.service';
 import { RepositoryAboutComponent } from '../../app/repositories/repository-about.component';

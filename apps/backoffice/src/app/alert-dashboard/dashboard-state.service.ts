@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
-import { token, onlineState } from '@placeos/ts-client';
+import { FormControl, FormGroup } from '@angular/forms';
+import { onlineState, token } from '@placeos/ts-client';
 
 import * as mqtt from 'mqtt/dist/mqtt';
 import { BehaviorSubject } from 'rxjs';

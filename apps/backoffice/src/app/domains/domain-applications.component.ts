@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { PlaceDomain, PlaceApplication } from '@placeos/ts-client';
+import { PlaceApplication, PlaceDomain } from '@placeos/ts-client';
 
-import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { copyToClipboard } from 'apps/backoffice/src/app/common/general';
 import { notifyInfo } from 'apps/backoffice/src/app/common/notifications';
-import { DomainStateService } from './domain-state.service';
+import { HashMap } from 'apps/backoffice/src/app/common/types';
 import { i18n } from '../common/translate';
+import { DomainStateService } from './domain-state.service';
 
 @Component({
     selector: 'domain-applications',

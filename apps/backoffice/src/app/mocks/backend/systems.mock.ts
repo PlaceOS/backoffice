@@ -1,6 +1,6 @@
-import { SYSTEMS as SYSTEM_DATA } from '../data/systems';
-import { generateBasicHandlers, API, endpointData } from '../common.mock';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import { API, endpointData, generateBasicHandlers } from '../common.mock';
+import { SYSTEMS as SYSTEM_DATA } from '../data/systems';
 
 import {
     MockHttpRequestHandler,

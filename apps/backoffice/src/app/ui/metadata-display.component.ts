@@ -12,19 +12,19 @@ import {
     removeMetadata,
     updateMetadata,
 } from '@placeos/ts-client';
+import { VERSION } from '../../environments/version';
+import { SchemaStateService } from '../admin/schema-state.service';
 import { AsyncHandler } from '../common/async-handler.class';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
+import { currentUser } from '../common/user-state';
 import { validateJSONString } from '../common/validation';
-import { SchemaStateService } from '../admin/schema-state.service';
 import {
-    ConfirmModalComponent,
     CONFIRM_METADATA,
+    ConfirmModalComponent,
 } from '../overlays/confirm-modal.component';
 import { MetadataDetailsModalComponent } from '../overlays/metadata-details-modal/metadata-details-modal.component';
 import { MetadataHistoryModalComponent } from '../overlays/metadata-history-modal.component';
-import { VERSION } from '../../environments/version';
-import { currentUser } from '../common/user-state';
 
 function replaceDescTag(inputString, newContent) {
     return inputString.replace(/^\[.*?\]/, `[${newContent}]`);

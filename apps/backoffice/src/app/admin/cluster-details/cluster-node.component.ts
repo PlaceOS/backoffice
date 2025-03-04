@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { humanReadableByteCount } from '@placeos/ts-client';
 
-import { differenceInSeconds } from 'date-fns';
 import { Point } from '../../common/types';
 
 interface PlaceClusterRunCounts {

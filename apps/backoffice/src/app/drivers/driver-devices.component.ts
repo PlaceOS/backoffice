@@ -2,10 +2,9 @@ import { Component } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { DriverStateService } from './driver-state.service';
-import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
-import { PlaceModule, PlaceSystem, querySystems } from '@placeos/ts-client';
 
 @Component({
     selector: 'driver-devices',
@@ -171,7 +170,7 @@ export class DriverModulesComponent extends AsyncHandler {
     /** Currently active driver */
     public readonly item = this._service.item;
     /** List of systems associated with modules */
-    public readonly systems: HashMap<PlaceSystem[]> = {};
+    public readonly systems: Record<string, PlaceSystem[]> = {};
     /** Whether systems are being loaded */
     /** List of modules */
     public readonly modules = combineLatest([

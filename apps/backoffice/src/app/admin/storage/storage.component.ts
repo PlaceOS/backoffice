@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { PlaceDomain, queryDomains } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
@@ -9,11 +10,10 @@ import {
     switchMap,
     tap,
 } from 'rxjs/operators';
-import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
-import { MatDialog } from '@angular/material/dialog';
-import { StorageProviderModalComponent } from './storage-provider-modal.component';
 import { openConfirmModal } from '../../common/general';
 import { i18n } from '../../common/translate';
+import { StorageProviderModalComponent } from './storage-provider-modal.component';
+import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
 
 @Component({
     selector: 'app-storage',

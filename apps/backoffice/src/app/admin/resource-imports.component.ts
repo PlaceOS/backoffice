@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import {
+    addSystem,
     authority,
     PlaceDomain,
-    queryDomains,
     query,
+    queryDomains,
     querySystemsWithEmails,
-    addSystem,
 } from '@placeos/ts-client';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import {
@@ -17,9 +18,8 @@ import {
     switchMap,
     take,
 } from 'rxjs/operators';
-import { notifySuccess, notifyWarn } from '../common/notifications';
 import { openConfirmModal } from '../common/general';
-import { MatDialog } from '@angular/material/dialog';
+import { notifySuccess, notifyWarn } from '../common/notifications';
 import { i18n } from '../common/translate';
 
 export interface ExternalResource {

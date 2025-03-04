@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
-import { UploadPermissions } from '../common/uploads';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { UploadPermissions } from '../common/uploads';
 
 @Component({
     selector: 'upload-permissions-modal',

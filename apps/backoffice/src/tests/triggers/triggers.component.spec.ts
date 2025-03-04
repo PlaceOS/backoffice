@@ -1,9 +1,9 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
-import { MockComponent, MockProvider } from 'ng-mocks';
-import { TriggersComponent } from '../../app/triggers/triggers.component';
-import { ActiveItemService } from '../../app/common/item.service';
-import { PlaceDebugService } from '../../app/common/debug.service';
+import { MockProvider } from 'ng-mocks';
 import { BehaviorSubject } from 'rxjs';
+import { PlaceDebugService } from '../../app/common/debug.service';
+import { ActiveItemService } from '../../app/common/item.service';
+import { TriggersComponent } from '../../app/triggers/triggers.component';
 
 describe('TriggersComponent', () => {
     let spectator: Spectator<TriggersComponent>;

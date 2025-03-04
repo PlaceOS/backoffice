@@ -2,24 +2,24 @@ import { Routes } from '@angular/router';
 
 import { AuthorisedAdminGuard } from 'apps/backoffice/src/app/ui/guards/authorised-admin.guard';
 
+import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 import { PlaceComponent } from './admin.component';
+import { AdminAPIKeysComponent } from './api-keys/api-keys.component';
+import { AdminBrokersComponent } from './brokers.component';
+import { PlaceBuildListComponent } from './build-list.component';
+import { PlaceClusterDetailsComponent } from './cluster-details/cluster-details.component';
 import { PlaceDatabaseDetailsComponent } from './database-details.component';
 import { PlaceDetailsComponent } from './details.component';
-import { PlaceClusterDetailsComponent } from './cluster-details/cluster-details.component';
-import { AdminInterfacesComponent } from './interfaces.component';
-import { AdminBrokersComponent } from './brokers.component';
-import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
-import { PlaceExtensionsComponent } from './extensions.component';
-import { PlaceStaffAPIComponent } from './staff-api.component';
 import { PlaceEdgeComponent } from './edge.component';
+import { PlaceExtensionsComponent } from './extensions.component';
+import { AdminInterfacesComponent } from './interfaces.component';
+import { EmailTemplateFormComponent } from './mailing-lists/email-template-form.component';
+import { EmailTemplatesComponent } from './mailing-lists/email-templates.component';
+import { ResourceImportsComponent } from './resource-imports.component';
 import { AdminSchemasComponent } from './schemas.component';
-import { AdminAPIKeysComponent } from './api-keys/api-keys.component';
+import { PlaceStaffAPIComponent } from './staff-api.component';
 import { StorageComponent } from './storage/storage.component';
 import { UploadLibraryComponent } from './upload-library.component';
-import { ResourceImportsComponent } from './resource-imports.component';
-import { EmailTemplatesComponent } from './mailing-lists/email-templates.component';
-import { EmailTemplateFormComponent } from './mailing-lists/email-template-form.component';
-import { PlaceBuildListComponent } from './build-list.component';
 
 export const ROUTES: Routes = [
     {

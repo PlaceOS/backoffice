@@ -1,7 +1,7 @@
-import { Validators, FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
-    PlaceOAuthSource,
     PlaceLDAPSource,
+    PlaceOAuthSource,
     PlaceSAMLSource,
 } from '@placeos/ts-client';
 

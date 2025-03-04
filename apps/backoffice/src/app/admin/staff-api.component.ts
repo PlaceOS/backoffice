@@ -7,6 +7,7 @@ import {
     PlaceDomain,
     queryDomains,
 } from '@placeos/ts-client';
+import { addDays, getUnixTime, startOfDay } from 'date-fns';
 import { BehaviorSubject } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal } from '../common/general';
@@ -14,7 +15,6 @@ import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
 import { BookingLimitsModalComponent } from './booking-limits-modal.component';
 import { StaffTenantModalComponent } from './staff-tenant-modal.component';
-import { addDays, getUnixTime, startOfDay } from 'date-fns';
 
 export interface PlaceTenant {
     id: string;

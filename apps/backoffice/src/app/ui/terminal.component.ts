@@ -1,12 +1,12 @@
 import {
     Component,
-    OnInit,
-    Input,
-    OnDestroy,
-    ViewChild,
     ElementRef,
-    SimpleChanges,
+    Input,
     OnChanges,
+    OnDestroy,
+    OnInit,
+    SimpleChanges,
+    ViewChild,
 } from '@angular/core';
 import { Terminal } from '@xterm/xterm';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';

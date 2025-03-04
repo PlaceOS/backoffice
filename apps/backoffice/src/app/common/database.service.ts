@@ -1,5 +1,5 @@
-import { post, apiEndpoint } from '@placeos/ts-client';
 import { Injectable } from '@angular/core';
+import { apiEndpoint, post } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 

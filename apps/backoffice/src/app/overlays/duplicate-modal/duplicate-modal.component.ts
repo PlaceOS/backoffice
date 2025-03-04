@@ -1,9 +1,9 @@
-import { Component, Inject, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 
-import { HashMap, DialogEvent } from 'apps/backoffice/src/app/common/types';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
+import { DialogEvent, HashMap } from 'apps/backoffice/src/app/common/types';
 
 export interface DuplicateModalData {
     item: HashMap;

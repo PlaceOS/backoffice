@@ -23,7 +23,7 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-import { uniqueNamesGenerator, Config, animals } from 'unique-names-generator';
+import { animals } from 'unique-names-generator';
 
 const config = {
     dictionaries: [animals],

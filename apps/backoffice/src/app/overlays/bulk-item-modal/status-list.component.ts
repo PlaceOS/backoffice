@@ -1,15 +1,13 @@
 import {
     Component,
-    Input,
-    Output,
     EventEmitter,
-    SimpleChanges,
+    Input,
     OnChanges,
+    Output,
+    SimpleChanges,
 } from '@angular/core';
-import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
+import { PlaceResource } from '@placeos/ts-client';
 import { Observable } from 'rxjs';
-
-import { HashMap } from 'apps/backoffice/src/app/common/types';
 
 @Component({
     selector: 'bulk-item-status-list',
@@ -57,13 +55,15 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
 })
 export class StatusListComponent implements OnChanges {
     /** List of bulk items to add */
-    @Input() public list: HashMap<any>[] = [];
+    @Input() public list: Record<string, any>[] = [];
     /** Method to save changes to items in the list */
-    @Input() public save: (item: HashMap) => Observable<PlaceResource>;
+    @Input() public save: (
+        item: Record<string, any>,
+    ) => Observable<PlaceResource>;
     /** Emitter for completion status of the item upload */
-    @Output() public done = new EventEmitter<HashMap<any>[]>();
+    @Output() public done = new EventEmitter<Record<string, any>[]>();
     /** Status of each of the items to be created */
-    public status: HashMap<string> = {};
+    public status: Record<string, string> = {};
 
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.list && this.list) {

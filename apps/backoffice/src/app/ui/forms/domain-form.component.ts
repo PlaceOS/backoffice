@@ -1,7 +1,7 @@
+import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, Input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { addChipItem, removeChipItem } from '../../common/forms';
-import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { notifyWarn } from '../../common/notifications';
 import { isValidDomain } from '../../common/validation';
 

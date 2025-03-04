@@ -20,13 +20,12 @@ import {
     updateApplication,
     updateDomain,
 } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest, merge, Observable, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import {
     catchError,
     filter,
     first,
     map,
-    share,
     shareReplay,
     switchMap,
 } from 'rxjs/operators';

@@ -1,5 +1,5 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { PlaceMQTTBroker, AuthType } from '@placeos/ts-client';
+import { AuthType, PlaceMQTTBroker } from '@placeos/ts-client';
 
 export function generateBrokerFormFields(broker?: PlaceMQTTBroker) {
     const auth_type = broker.auth_type ?? AuthType.NoAuth;

@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
-import { DomainStateService } from './domain-state.service';
 import { i18n } from '../common/translate';
+import { DomainStateService } from './domain-state.service';
 
 @Component({
     selector: 'new-domains-view',

@@ -1,5 +1,5 @@
 import { Component, forwardRef, Input } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { HashMap } from 'apps/backoffice/src/app/common/types';

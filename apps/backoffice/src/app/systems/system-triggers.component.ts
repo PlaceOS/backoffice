@@ -5,9 +5,9 @@ import { map } from 'rxjs/operators';
 import { copyToClipboard, unique } from '../common/general';
 import { notifyInfo } from '../common/notifications';
 
+import { i18n } from '../common/translate';
 import { HashMap } from '../common/types';
 import { SystemStateService } from './system-state.service';
-import { i18n } from '../common/translate';
 
 export interface TriggerInstanceState {
     triggered: boolean;

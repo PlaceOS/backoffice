@@ -1,13 +1,13 @@
 import {
-    Component,
-    ViewChild,
-    ElementRef,
     AfterViewInit,
-    Input,
+    Component,
+    ElementRef,
     HostListener,
+    Input,
     OnInit,
+    ViewChild,
 } from '@angular/core';
-import { MatMenuTrigger, MatMenuPanel } from '@angular/material/menu';
+import { MatMenuPanel, MatMenuTrigger } from '@angular/material/menu';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 
 @Component({

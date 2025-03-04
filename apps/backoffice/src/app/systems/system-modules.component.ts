@@ -8,7 +8,6 @@ import {
     queryModules,
     showModule,
 } from '@placeos/ts-client';
-import { map, tap } from 'rxjs/operators';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import {
     notifyError,
@@ -19,9 +18,10 @@ import {
     ModuleStateModalData,
     ViewModuleStateModalComponent,
 } from 'apps/backoffice/src/app/overlays/view-module-state.component';
-import { SystemStateService } from './system-state.service';
-import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
+import { map } from 'rxjs/operators';
 import { i18n } from '../common/translate';
+import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
+import { SystemStateService } from './system-state.service';
 
 @Component({
     selector: 'system-modules',

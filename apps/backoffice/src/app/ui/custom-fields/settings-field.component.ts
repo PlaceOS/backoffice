@@ -2,20 +2,20 @@
 
 import {
     Component,
-    forwardRef,
-    ViewChild,
     ElementRef,
-    OnInit,
+    forwardRef,
     Input,
-    OnDestroy,
-    SimpleChanges,
     OnChanges,
+    OnDestroy,
+    OnInit,
+    SimpleChanges,
+    ViewChild,
 } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { AsyncHandler } from '../../common/async-handler.class';
-import { HashMap } from '../../common/types';
 import { SettingsService } from '../../common/settings.service';
+import { HashMap } from '../../common/types';
 
 let MODEL: HashMap<monaco.editor.ITextModel> = {};
 

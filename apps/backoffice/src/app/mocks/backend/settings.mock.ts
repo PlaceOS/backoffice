@@ -1,10 +1,10 @@
-import {
-    generateBasicHandlers,
-    API,
-    listenToHandlerChanges,
-    generateID,
-} from '../common.mock';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import {
+    API,
+    generateBasicHandlers,
+    generateID,
+    listenToHandlerChanges,
+} from '../common.mock';
 
 import { EncryptionLevel } from '@placeos/ts-client';
 

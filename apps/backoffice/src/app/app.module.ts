@@ -1,30 +1,30 @@
+import { ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, ErrorHandler, LOCALE_ID } from '@angular/core';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { FormsModule } from '@angular/forms';
 
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { environment } from '../environments/environment';
 
+import { SentryService } from './common/sentry.service';
 import { SharedOverlaysModule } from './overlays/overlays.module';
 import { SharedContentModule } from './ui/ui.module';
-import { SentryService } from './common/sentry.service';
 
-import { AuthorisedUserGuard } from './ui/guards/authorised-user.guard';
 import { AuthorisedAdminGuard } from './ui/guards/authorised-admin.guard';
+import { AuthorisedUserGuard } from './ui/guards/authorised-user.guard';
 
-import './mocks';
 import { LocaleService } from './common/locale.service';
+import './mocks';
 
-import localeFr from '@angular/common/locales/fr';
-import localeJa from '@angular/common/locales/ja';
-import localeAr from '@angular/common/locales/ar';
-import localeZh from '@angular/common/locales/zh';
-import localeEs from '@angular/common/locales/es';
-import localeIt from '@angular/common/locales/it';
 import { registerLocaleData } from '@angular/common';
+import localeAr from '@angular/common/locales/ar';
+import localeEs from '@angular/common/locales/es';
+import localeFr from '@angular/common/locales/fr';
+import localeIt from '@angular/common/locales/it';
+import localeJa from '@angular/common/locales/ja';
+import localeZh from '@angular/common/locales/zh';
 
 @NgModule({
     declarations: [AppComponent],

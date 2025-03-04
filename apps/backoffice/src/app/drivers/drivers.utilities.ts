@@ -1,8 +1,8 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
     PlaceDriver,
-    PlaceRepository,
     PlaceDriverRole,
+    PlaceRepository,
 } from '@placeos/ts-client';
 
 import { validateURI } from 'apps/backoffice/src/app/common/validation';

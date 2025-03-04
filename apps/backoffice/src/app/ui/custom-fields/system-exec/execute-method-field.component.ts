@@ -8,7 +8,6 @@ import {
     PlaceSystem,
     TriggerFunction,
 } from '@placeos/ts-client';
-import { HashMap } from '@placeos/ts-client/dist/esm/utilities/types';
 import { notifyError, notifySuccess } from '../../../common/notifications';
 import { ViewResponseModalComponent } from '../../../overlays/view-response-modal.component';
 import { ModuleLike } from './select-module.component';
@@ -84,7 +83,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     public valid = true;
     public module: ModuleLike;
     public fn: PlaceModuleFunction;
-    public arguments: HashMap;
+    public arguments: Record<string, any>;
 
     public loading = false;
 
@@ -126,7 +125,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
         this.arguments = args;
     }
 
-    public postArguments(arg_map: HashMap) {
+    public postArguments(arg_map: Record<string, any>) {
         if (!this.fn?.params) return;
         const args = {};
         for (const key in arg_map) {
@@ -210,7 +209,7 @@ export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     }
 
     /** View Results of the execute */
-    private async viewDetails(details: Response | HashMap) {
+    private async viewDetails(details: Response | Record<string, any>) {
         this._dialog.open<ViewResponseModalComponent>(
             ViewResponseModalComponent,
             {

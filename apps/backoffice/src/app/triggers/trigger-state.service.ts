@@ -4,12 +4,12 @@ import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceSystem,
     PlaceTrigger,
-    listTriggerInstances,
-    removeSystemTrigger,
     TriggerComparison,
     TriggerFunction,
     TriggerMailer,
     TriggerTimeCondition,
+    listTriggerInstances,
+    removeSystemTrigger,
     updateTrigger,
 } from '@placeos/ts-client';
 import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
@@ -18,6 +18,7 @@ import { openConfirmModal } from '../common/general';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { i18n } from '../common/translate';
 import { DialogEvent } from '../common/types';
 import {
     TriggerActionModalComponent,
@@ -27,7 +28,6 @@ import {
     TriggerConditionData,
     TriggerConditionModalComponent,
 } from '../ui/forms/trigger-condition-modal.component';
-import { i18n } from '../common/translate';
 
 @Injectable({
     providedIn: 'root',

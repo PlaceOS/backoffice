@@ -1,11 +1,11 @@
 import {
     Component,
-    Input,
-    SimpleChanges,
     EventEmitter,
-    Output,
+    Input,
     OnChanges,
     OnInit,
+    Output,
+    SimpleChanges,
 } from '@angular/core';
 
 import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';

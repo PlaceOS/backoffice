@@ -1,40 +1,40 @@
 import {
     Component,
-    Input,
-    SimpleChanges,
-    OnChanges,
     EventEmitter,
+    Input,
+    OnChanges,
     Output,
+    SimpleChanges,
 } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import {
-    PlaceRepositoryCommit,
-    PlaceRepository,
-    PlaceRepositoryType,
-    PlaceDriverRole,
-    listRepositoryDriverDetails,
     listRepositoryCommits,
+    listRepositoryDriverDetails,
     listRepositoryDrivers,
-    showRepository,
+    PlaceDriverRole,
+    PlaceRepository,
+    PlaceRepositoryCommit,
+    PlaceRepositoryType,
     queryRepositories,
+    showRepository,
 } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import { Identity } from 'apps/backoffice/src/app/common/types';
+import { Observable, of, Subject } from 'rxjs';
 import {
+    catchError,
     debounceTime,
     distinctUntilChanged,
-    switchMap,
-    catchError,
     map,
+    switchMap,
 } from 'rxjs/operators';
-import { of, Subject, Observable } from 'rxjs';
 
-import * as yaml from 'js-yaml';
-import { DateFromPipe } from '../../pipes/date-from.pipe';
 import { format, isAfter, subMinutes } from 'date-fns';
+import * as yaml from 'js-yaml';
 import { i18n } from '../../../common/translate';
+import { DateFromPipe } from '../../pipes/date-from.pipe';
 
 @Component({
     selector: 'driver-form',

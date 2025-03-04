@@ -1,15 +1,15 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, ElementRef, forwardRef, ViewChild } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { Clipboard } from '@angular/cdk/clipboard';
 import { Upload } from '@placeos/cloud-uploads';
 
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-import { unique } from '../../common/general';
 import { AsyncHandler } from '../../common/async-handler.class';
+import { unique } from '../../common/general';
 import { notifyInfo } from '../../common/notifications';
 import { UploadsService } from '../../common/uploads.service';
 

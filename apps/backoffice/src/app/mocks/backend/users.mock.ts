@@ -1,5 +1,5 @@
-import { generateBasicHandlers, generateID, API } from '../common.mock';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import { API, generateBasicHandlers, generateID } from '../common.mock';
 
 const FILTER_FN = (item: any, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {

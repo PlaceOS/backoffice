@@ -1,8 +1,8 @@
 import {
+    AbstractControl,
     FormControl,
     FormGroup,
     Validators,
-    AbstractControl,
 } from '@angular/forms';
 import { PlaceUser } from '@placeos/ts-client';
 

@@ -1,6 +1,6 @@
-import { ZONES as ZONE_DATA } from '../data/zones';
-import { generateBasicHandlers, API, endpointData } from '../common.mock';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import { API, endpointData, generateBasicHandlers } from '../common.mock';
+import { ZONES as ZONE_DATA } from '../data/zones';
 
 const FILTER_FN = (item: any, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {

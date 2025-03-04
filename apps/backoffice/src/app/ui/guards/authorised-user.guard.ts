@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import {
-    Route,
-    UrlSegment,
     ActivatedRouteSnapshot,
-    RouterStateSnapshot,
-    UrlTree,
+    Route,
     Router,
+    RouterStateSnapshot,
+    UrlSegment,
+    UrlTree,
 } from '@angular/router';
 import { PlaceUser, onlineState } from '@placeos/ts-client';
 import { first } from 'rxjs/operators';

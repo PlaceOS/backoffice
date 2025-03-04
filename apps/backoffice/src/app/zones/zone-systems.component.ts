@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { combineLatest, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ZonesStateService } from './zones-state.service';

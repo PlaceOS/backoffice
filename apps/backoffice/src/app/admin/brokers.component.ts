@@ -2,21 +2,21 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import {
-    PlaceMQTTBroker,
-    updateBroker,
     addBroker,
+    PlaceMQTTBroker,
     queryBrokers,
     removeBroker,
+    updateBroker,
 } from '@placeos/ts-client';
 import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 
-import { ItemCreateUpdateModalComponent } from 'apps/backoffice/src/app/overlays/item-modal.component';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
-import {
-    notifySuccess,
-    notifyError,
-} from 'apps/backoffice/src/app/common/notifications';
 import { openConfirmModal } from 'apps/backoffice/src/app/common/general';
+import {
+    notifyError,
+    notifySuccess,
+} from 'apps/backoffice/src/app/common/notifications';
+import { ItemCreateUpdateModalComponent } from 'apps/backoffice/src/app/overlays/item-modal.component';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({

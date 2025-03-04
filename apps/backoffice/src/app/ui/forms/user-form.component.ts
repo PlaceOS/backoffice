@@ -1,7 +1,7 @@
-import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, Input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { PlaceDomain, queryDomains } from '@placeos/ts-client';
+import { queryDomains } from '@placeos/ts-client';
 import { map, shareReplay } from 'rxjs/operators';
 
 import {

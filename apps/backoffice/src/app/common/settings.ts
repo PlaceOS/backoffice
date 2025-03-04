@@ -1,5 +1,3 @@
-import { ApplicationIcon } from './types';
-
 /*=======================*\
 ||    GENERAL SETTINGS   ||
 \*=======================*/

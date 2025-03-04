@@ -1,6 +1,6 @@
-import { DRIVERS as DRIVER_DATA } from '../data/drivers';
-import { generateBasicHandlers, API } from '../common.mock';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import { API, generateBasicHandlers } from '../common.mock';
+import { DRIVERS as DRIVER_DATA } from '../data/drivers';
 
 import {
     MockHttpRequestHandler,

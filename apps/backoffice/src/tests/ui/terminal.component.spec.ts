@@ -1,6 +1,5 @@
-import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { fakeAsync } from '@angular/core/testing';
-import { MockComponent } from 'ng-mocks';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { TerminalComponent } from '../../app/ui/terminal.component';
 
 jest.mock('xterm');

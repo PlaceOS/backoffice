@@ -1,16 +1,16 @@
-import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
-    PlaceModule,
-    PlaceSystem,
     PlaceDriver,
     PlaceDriverRole,
     PlaceEdge,
+    PlaceModule,
+    PlaceSystem,
 } from '@placeos/ts-client';
 
 import { HashMap } from 'apps/backoffice/src/app/common/types';
 import {
-    validateURI,
     validateIpAddress,
+    validateURI,
 } from 'apps/backoffice/src/app/common/validation';
 
 export function generateModuleFormFields(mod?: PlaceModule) {

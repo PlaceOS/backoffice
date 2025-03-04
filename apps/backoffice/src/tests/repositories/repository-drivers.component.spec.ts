@@ -1,5 +1,5 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
-import { MockComponent, MockProvider } from 'ng-mocks';
+import { MockProvider } from 'ng-mocks';
 import { RepositoriesStateService } from '../../app/repositories/repositories-state.service';
 import { RepositoryDriversComponent } from '../../app/repositories/repository-drivers.component';
 

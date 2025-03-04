@@ -1,6 +1,6 @@
-import { MODULES as MODULE_DATA } from '../data/modules';
-import { generateBasicHandlers, API, endpointData } from '../common.mock';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
+import { API, endpointData, generateBasicHandlers } from '../common.mock';
+import { MODULES as MODULE_DATA } from '../data/modules';
 
 const FILTER_FN = (item: any, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {

@@ -3,7 +3,7 @@ import { showSystem } from '@placeos/ts-client';
 import { startOfMinute } from 'date-fns';
 import { BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { unique, randomInt } from '../common/general';
+import { randomInt, unique } from '../common/general';
 import { MqttDashboardStateService } from './dashboard-state.service';
 
 type MqttQueryResponse = [string[], Record<string, any>][];

@@ -1,18 +1,18 @@
 import {
     Component,
+    EventEmitter,
     forwardRef,
     Input,
     OnChanges,
     Output,
     SimpleChanges,
-    EventEmitter,
 } from '@angular/core';
 import {
     AbstractControl,
     ControlValueAccessor,
+    NG_VALUE_ACCESSOR,
     UntypedFormControl,
     UntypedFormGroup,
-    NG_VALUE_ACCESSOR,
     Validators,
 } from '@angular/forms';
 import { PlaceModuleFunction } from '@placeos/ts-client';

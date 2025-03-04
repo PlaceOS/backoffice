@@ -1,6 +1,6 @@
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, Input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 
 import { AuthType } from '@placeos/ts-client';

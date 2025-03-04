@@ -2,18 +2,18 @@ import { Injectable } from '@angular/core';
 import {
     PlaceUser,
     PlaceUserQueryOptions,
-    logout,
     currentUser,
-    queryUsers,
+    logout,
     onlineState,
+    queryUsers,
 } from '@placeos/ts-client';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Md5 } from 'ts-md5/dist/md5';
 import { first, map } from 'rxjs/operators';
+import { Md5 } from 'ts-md5/dist/md5';
 
-import { FilterFn } from '../common/types';
 import { AsyncHandler } from '../common/async-handler.class';
 import { SettingsService } from '../common/settings.service';
+import { FilterFn } from '../common/types';
 
 import * as Sentry from '@sentry/browser';
 import { addDays } from 'date-fns';

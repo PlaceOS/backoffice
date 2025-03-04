@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
 
-import { ModuleAboutComponent } from './module-about.component';
-import { ModuleSystemsComponent } from './module-systems.component';
 import { ExtensionOutletComponent } from '../ui/extension-outlet.component';
 import { SettingsHistoryViewComponent } from '../ui/settings-history-view.component';
+import { ModuleAboutComponent } from './module-about.component';
+import { ModuleSystemsComponent } from './module-systems.component';
 import { ModulesComponent } from './modules.component';
 
 export const ROUTES: Routes = [

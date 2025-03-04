@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { showModule, moduleRuntimeError } from '@placeos/ts-client';
+import { moduleRuntimeError, showModule } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
 import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { map, shareReplay, take } from 'rxjs/operators';
-import { randomInt } from '../common/general';
+import { shareReplay } from 'rxjs/operators';
 import { JsonSchema, SchemaStateService } from './schema-state.service';
 
 @Component({

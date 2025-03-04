@@ -1,39 +1,39 @@
 import { Injectable } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { NavigationEnd, Router } from '@angular/router';
+import { PlaceResource } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
-import { filter, map, distinctUntilChanged } from 'rxjs/operators';
-import { PlaceResource } from '@placeos/ts-client/dist/esm/resources/resource';
+import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 
 import {
-    ConfirmModalComponent,
-    ConfirmModalData,
-    CONFIRM_METADATA,
-} from '../overlays/confirm-modal.component';
-import { ItemActions, ACTIONS } from './actions';
-import { SettingsService } from '../common/settings.service';
-import { HotkeysService } from '../common/hotkeys.service';
-import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
-import { notifySuccess, notifyError } from './notifications';
+    EncryptionLevel,
+    PlaceSettings,
+    QueryResponse,
+    querySettings,
+} from '@placeos/ts-client';
 import {
     DialogEvent,
     HashMap,
     Identity,
 } from 'apps/backoffice/src/app/common/types';
+import { HotkeysService } from '../common/hotkeys.service';
+import { SettingsService } from '../common/settings.service';
+import { BulkItemModalComponent } from '../overlays/bulk-item-modal/bulk-item-modal.component';
+import {
+    CONFIRM_METADATA,
+    ConfirmModalComponent,
+    ConfirmModalData,
+} from '../overlays/confirm-modal.component';
 import {
     DuplicateModalComponent,
     DuplicateModalData,
 } from '../overlays/duplicate-modal/duplicate-modal.component';
-import { QueryResponse } from '@placeos/ts-client/dist/esm/resources/functions';
-import { log } from './general';
-import { AsyncHandler } from './async-handler.class';
-import {
-    EncryptionLevel,
-    PlaceSettings,
-    querySettings,
-} from '@placeos/ts-client';
+import { ItemCreateUpdateModalComponent } from '../overlays/item-modal.component';
 import { BackofficeUsersService } from '../users/users.service';
-import { BulkItemModalComponent } from '../overlays/bulk-item-modal/bulk-item-modal.component';
+import { ACTIONS, ItemActions } from './actions';
+import { AsyncHandler } from './async-handler.class';
+import { log } from './general';
+import { notifyError, notifySuccess } from './notifications';
 import { i18n } from './translate';
 
 export type ResourceType =

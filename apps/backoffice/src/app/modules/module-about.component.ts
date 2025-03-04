@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { PlaceModule } from '@placeos/ts-client';
 
-import { ModuleStateService } from './module-state.service';
-import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
 import { MatDialog } from '@angular/material/dialog';
+import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
+import { ModuleStateService } from './module-state.service';
 
 @Component({
     selector: 'module-about',

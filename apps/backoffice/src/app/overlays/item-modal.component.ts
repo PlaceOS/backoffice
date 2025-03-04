@@ -1,48 +1,48 @@
-import { Component, Inject, EventEmitter, Output, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+import { UntypedFormGroup } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
-    PlaceSystem,
-    PlaceModule,
-    PlaceZone,
-    PlaceDriver,
-    PlaceUser,
-    PlaceDomain,
-    PlaceApplication,
-    PlaceSettings,
-    PlaceTrigger,
-    PlaceRepository,
-    PlaceMQTTBroker,
     EncryptionLevel,
+    PlaceApplication,
+    PlaceDomain,
+    PlaceDriver,
+    PlaceMQTTBroker,
+    PlaceModule,
+    PlaceRepository,
+    PlaceSettings,
+    PlaceSystem,
+    PlaceTrigger,
+    PlaceUser,
+    PlaceZone,
     addSettings,
     cleanObject,
 } from '@placeos/ts-client';
-import { UntypedFormGroup } from '@angular/forms';
 
-import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
-import {
-    DialogEvent,
-    Identity,
-    HashMap,
-} from 'apps/backoffice/src/app/common/types';
-import { generateSystemsFormFields } from 'apps/backoffice/src/app/systems/systems.utilities';
-import { generateModuleFormFields } from 'apps/backoffice/src/app/modules/modules.utilities';
-import { generateZoneFormFields } from 'apps/backoffice/src/app/zones/zones.utilites';
-import { generateDriverFormFields } from 'apps/backoffice/src/app/drivers/drivers.utilities';
-import { generateUserFormFields } from 'apps/backoffice/src/app/users/users.utilities';
-import { generateDomainFormFields } from 'apps/backoffice/src/app/domains/domains.utilities';
-import { generateApplicationFormFields } from 'apps/backoffice/src/app/domains/applications.utilities';
-import {
-    generateTriggerFormFields,
-    generateTriggerSettingsFormFields,
-} from 'apps/backoffice/src/app/triggers/triggers.utilities';
-import { generateRepositoryFormFields } from 'apps/backoffice/src/app/repositories/repositories.utilities';
 import { generateBrokerFormFields } from 'apps/backoffice/src/app/admin/brokers.utilities';
-import { Observable } from 'rxjs';
+import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
+import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
 import {
     notifyError,
     notifySuccess,
 } from 'apps/backoffice/src/app/common/notifications';
-import { HotkeysService } from 'apps/backoffice/src/app/common/hotkeys.service';
+import {
+    DialogEvent,
+    HashMap,
+    Identity,
+} from 'apps/backoffice/src/app/common/types';
+import { generateApplicationFormFields } from 'apps/backoffice/src/app/domains/applications.utilities';
+import { generateDomainFormFields } from 'apps/backoffice/src/app/domains/domains.utilities';
+import { generateDriverFormFields } from 'apps/backoffice/src/app/drivers/drivers.utilities';
+import { generateModuleFormFields } from 'apps/backoffice/src/app/modules/modules.utilities';
+import { generateRepositoryFormFields } from 'apps/backoffice/src/app/repositories/repositories.utilities';
+import { generateSystemsFormFields } from 'apps/backoffice/src/app/systems/systems.utilities';
+import {
+    generateTriggerFormFields,
+    generateTriggerSettingsFormFields,
+} from 'apps/backoffice/src/app/triggers/triggers.utilities';
+import { generateUserFormFields } from 'apps/backoffice/src/app/users/users.utilities';
+import { generateZoneFormFields } from 'apps/backoffice/src/app/zones/zones.utilites';
+import { Observable } from 'rxjs';
 import { getInvalidFields } from '../common/general';
 import { i18n } from '../common/translate';
 

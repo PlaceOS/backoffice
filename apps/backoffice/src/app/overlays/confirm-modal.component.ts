@@ -1,9 +1,11 @@
-import { Component, OnInit, Output, EventEmitter, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { ApplicationIcon } from 'apps/backoffice/src/app/common/types';
-import { DialogEvent } from 'apps/backoffice/src/app/common/types';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
+import {
+    ApplicationIcon,
+    DialogEvent,
+} from 'apps/backoffice/src/app/common/types';
 
 export type ConfirmExtraType = 'info' | 'warning' | 'error';
 

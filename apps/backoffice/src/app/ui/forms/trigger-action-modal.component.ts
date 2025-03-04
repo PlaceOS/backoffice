@@ -1,28 +1,28 @@
 import {
     Component,
-    Output,
     EventEmitter,
     Inject,
+    Output,
     ViewChild,
 } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
-    PlaceTrigger,
     PlaceSystem,
-    TriggerMailer,
+    PlaceTrigger,
     TriggerFunction,
+    TriggerMailer,
     updateTrigger,
 } from '@placeos/ts-client';
 
+import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
+import { MatChipGrid } from '@angular/material/chips';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
-import { DialogEvent, Identity } from 'apps/backoffice/src/app/common/types';
-import { generateTriggerActionForm } from 'apps/backoffice/src/app/triggers/triggers.utilities';
 import {
     notifyError,
     notifySuccess,
 } from 'apps/backoffice/src/app/common/notifications';
-import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
-import { MatChipGrid } from '@angular/material/chips';
+import { DialogEvent, Identity } from 'apps/backoffice/src/app/common/types';
+import { generateTriggerActionForm } from 'apps/backoffice/src/app/triggers/triggers.utilities';
 import { i18n } from '../../common/translate';
 
 export interface TriggerActionModalData {

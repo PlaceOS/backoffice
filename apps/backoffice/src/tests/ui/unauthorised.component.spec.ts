@@ -1,5 +1,4 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
-import { MockComponent } from 'ng-mocks';
 import { UnauthorisedComponent } from '../../app/ui/unauthorised.component';
 
 describe('UnauthorisedComponent', () => {

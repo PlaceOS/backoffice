@@ -1,9 +1,4 @@
-import {
-    uniqueNamesGenerator,
-    Config,
-    animals,
-    colors,
-} from 'unique-names-generator';
+import { animals, colors, uniqueNamesGenerator } from 'unique-names-generator';
 const path = require('path');
 const downloadsFolder = Cypress.config('downloadsFolder');
 

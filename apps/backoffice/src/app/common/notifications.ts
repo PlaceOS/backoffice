@@ -1,7 +1,6 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { ApplicationIcon } from './types';
-import { first } from 'rxjs/operators';
 
 let _service: MatSnackBar;
 

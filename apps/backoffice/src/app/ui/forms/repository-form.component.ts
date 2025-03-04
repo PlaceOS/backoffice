@@ -2,17 +2,15 @@ import { Component, Input, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 
 import {
-    PlaceRepositoryType,
-    listRepositoryBranches,
-    listRepositoryCommits,
     GitCommitDetails,
-} from '@placeos/ts-client';
-import {
+    PlaceRepositoryType,
     listRemoteRepositoryBranches,
     listRemoteRepositoryCommits,
     listRemoteRepositoryDefaultBranch,
+    listRepositoryBranches,
+    listRepositoryCommits,
     listRepositoryDefaultBranch,
-} from '@placeos/ts-client/dist/esm/repositories/functions';
+} from '@placeos/ts-client';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 import { combineLatest, merge, of, timer } from 'rxjs';
 import {
@@ -24,9 +22,9 @@ import {
     tap,
 } from 'rxjs/operators';
 import { AsyncHandler } from '../../common/async-handler.class';
+import { i18n } from '../../common/translate';
 import { isValidUrl } from '../../common/validation';
 import { DateFromPipe } from '../pipes/date-from.pipe';
-import { i18n } from '../../common/translate';
 
 @Component({
     selector: 'repository-form',

@@ -8,8 +8,8 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
     DateAdapter,
-    MatDateFormats,
     MAT_DATE_FORMATS,
+    MatDateFormats,
     NativeDateAdapter,
 } from '@angular/material/core';
 import {

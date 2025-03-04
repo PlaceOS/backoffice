@@ -1,6 +1,6 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { PlaceModule } from '@placeos/ts-client';
-import { MockComponent, MockProvider } from 'ng-mocks';
+import { MockProvider } from 'ng-mocks';
 import { ModuleAboutComponent } from '../../app/modules/module-about.component';
 import { ModuleStateService } from '../../app/modules/module-state.service';
 

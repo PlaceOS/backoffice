@@ -1,8 +1,13 @@
 import { Component, OnInit, Optional, ViewEncapsulation } from '@angular/core';
-import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { SwUpdate } from '@angular/service-worker';
+import {
+    Amazon,
+    Azure,
+    Google,
+    OpenStack,
+    initialiseUploadService,
+} from '@placeos/cloud-uploads';
 import {
     get,
     invalidateToken,
@@ -11,27 +16,22 @@ import {
     setAPI_Key,
     token,
 } from '@placeos/ts-client';
-import {
-    Amazon,
-    Azure,
-    Google,
-    OpenStack,
-    initialiseUploadService,
-} from '@placeos/cloud-uploads';
+import { BehaviorSubject } from 'rxjs';
+import { first } from 'rxjs/operators';
 
-import { SettingsService } from './common/settings.service';
-import { setupPlace } from './common/placeos';
-import { setupCache } from './common/application';
-import { setNotifyOutlet } from './common/notifications';
-import { AsyncHandler } from './common/async-handler.class';
-import { log, detectIE } from './common/general';
-import { BackofficeUsersService } from './users/users.service';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { currentUser } from './common/user-state';
 import { addDays, format, getUnixTime } from 'date-fns';
+import { setupCache } from './common/application';
+import { AsyncHandler } from './common/async-handler.class';
+import { detectIE, log } from './common/general';
+import { setNotifyOutlet } from './common/notifications';
+import { setupPlace } from './common/placeos';
+import { SettingsService } from './common/settings.service';
+import { currentUser } from './common/user-state';
+import { BackofficeUsersService } from './users/users.service';
 
-import { setTranslationService } from './common/translate';
 import { LocaleService } from './common/locale.service';
+import { setTranslationService } from './common/translate';
 
 @Component({
     selector: 'placeos-root',

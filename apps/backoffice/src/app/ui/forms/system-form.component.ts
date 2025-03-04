@@ -1,6 +1,6 @@
+import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
 import { Component, Input, SimpleChanges } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { SPACE, ENTER, COMMA } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { queryZones } from '@placeos/ts-client';
 import { map } from 'rxjs/operators';

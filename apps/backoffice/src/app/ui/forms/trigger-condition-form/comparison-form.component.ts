@@ -1,9 +1,9 @@
 import {
     Component,
     Input,
-    SimpleChanges,
     OnChanges,
     OnInit,
+    SimpleChanges,
 } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import {
@@ -15,10 +15,10 @@ import {
     systemModuleState,
 } from '@placeos/ts-client';
 
-import { Identity } from 'apps/backoffice/src/app/common/types';
 import { calculateModuleIndex } from 'apps/backoffice/src/app/common/api';
-import { map } from 'rxjs/operators';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
+import { Identity } from 'apps/backoffice/src/app/common/types';
+import { map } from 'rxjs/operators';
 import { i18n } from '../../../common/translate';
 
 @Component({

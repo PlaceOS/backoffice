@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { PlaceZone } from '@placeos/ts-client';
-import { combineLatest, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ZonesStateService } from './zones-state.service';

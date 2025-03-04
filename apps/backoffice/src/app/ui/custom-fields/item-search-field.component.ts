@@ -1,24 +1,24 @@
 import {
     Component,
-    OnInit,
+    ElementRef,
     forwardRef,
     Input,
-    SimpleChanges,
     OnChanges,
+    OnInit,
+    SimpleChanges,
     ViewChild,
-    ElementRef,
 } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
-import { Subject, Observable, of } from 'rxjs';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Observable, of, Subject } from 'rxjs';
 import {
-    switchMap,
+    catchError,
     debounceTime,
     distinctUntilChanged,
     map,
-    catchError,
+    switchMap,
 } from 'rxjs/operators';
 
-import { PlaceModule, PlaceDriverRole } from '@placeos/ts-client';
+import { PlaceDriverRole, PlaceModule } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';

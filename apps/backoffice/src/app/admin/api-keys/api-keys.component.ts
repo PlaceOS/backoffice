@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { take } from 'rxjs/operators';
-import { APIKeyService } from './api-keys.service';
-import { notifyInfo } from '../../common/notifications';
+import { Component } from '@angular/core';
 import { authority } from '@placeos/ts-client';
+import { take } from 'rxjs/operators';
+import { notifyInfo } from '../../common/notifications';
 import { i18n } from '../../common/translate';
+import { APIKeyService } from './api-keys.service';
 
 @Component({
     selector: 'admin-api-keys',

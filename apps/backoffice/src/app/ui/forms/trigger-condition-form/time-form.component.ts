@@ -7,12 +7,12 @@ import {
 } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { TriggerTimeConditionType } from '@placeos/ts-client';
+import { format, setDay, setMonth } from 'date-fns';
 import { AsyncHandler } from '../../../common/async-handler.class';
 import { numberToPosition } from '../../../common/general';
 import { TIMEZONES_IANA } from '../../../common/timezones';
-import { Identity } from '../../../common/types';
-import { format, setDay, setMonth } from 'date-fns';
 import { i18n } from '../../../common/translate';
+import { Identity } from '../../../common/types';
 
 @Component({
     selector: 'trigger-condition-time-form',

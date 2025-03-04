@@ -1,17 +1,17 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { ROUTES } from './zones.routes';
 
+import { SharedContentModule } from '../ui/ui.module';
 import { ZoneAboutComponent } from './zone-about.component';
-import { ZoneSystemsComponent } from './zone-systems.component';
-import { ZoneTriggersComponent } from './zone-triggers.component';
 import { ZoneChildrenComponent } from './zone-children.component';
 import { ZoneMetadataComponent } from './zone-metadata.component';
+import { ZoneSystemsComponent } from './zone-systems.component';
+import { ZoneTriggersComponent } from './zone-triggers.component';
 import { ZonesComponent } from './zones.component';
-import { SharedContentModule } from '../ui/ui.module';
 
 @NgModule({
     declarations: [

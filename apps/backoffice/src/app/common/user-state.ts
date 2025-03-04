@@ -1,6 +1,6 @@
-import { showUser, PlaceUser } from '@placeos/ts-client';
+import { PlaceUser, showUser } from '@placeos/ts-client';
 import { BehaviorSubject } from 'rxjs';
-import { delay, map, retry } from 'rxjs/operators';
+import { delay, retry } from 'rxjs/operators';
 
 const EMPTY_USER = new PlaceUser();
 

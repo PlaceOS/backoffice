@@ -3,12 +3,10 @@ import {
     Component,
     ElementRef,
     Input,
-    OnChanges,
-    SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { Point } from '../common/types';
 import { AsyncHandler } from '../common/async-handler.class';
+import { Point } from '../common/types';
 
 function scale(domain, range) {
     const m = (range[1] - range[0]) / (domain[1] - domain[0]);

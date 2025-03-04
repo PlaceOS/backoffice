@@ -1,16 +1,16 @@
-import { NgModule } from '@angular/core';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { ROUTES } from './triggers.routes';
 
 import { TriggerAboutComponent } from './trigger-about.component';
 import { TriggerInstancesComponent } from './trigger-instances.component';
 
-import { TriggersComponent } from './triggers.component';
 import { SharedContentModule } from '../ui/ui.module';
+import { TriggersComponent } from './triggers.component';
 
 @NgModule({
     declarations: [

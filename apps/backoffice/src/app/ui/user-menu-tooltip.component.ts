@@ -3,9 +3,9 @@ import { logout } from '@placeos/ts-client';
 import { format } from 'date-fns';
 import { VERSION } from '../../environments/version';
 import { issueDescription } from '../common/general';
+import { LocaleService } from '../common/locale.service';
 import { SettingsService } from '../common/settings.service';
 import { i18n } from '../common/translate';
-import { LocaleService } from '../common/locale.service';
 
 @Component({
     selector: 'user-menu-tooltip',

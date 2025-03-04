@@ -1,18 +1,18 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PlaceCluster,
     PlaceProcess,
-    terminateProcess,
     queryProcesses,
+    terminateProcess,
 } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
-import {
-    ConfirmModalComponent,
-    CONFIRM_METADATA,
-} from 'apps/backoffice/src/app/overlays/confirm-modal.component';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
+import {
+    CONFIRM_METADATA,
+    ConfirmModalComponent,
+} from 'apps/backoffice/src/app/overlays/confirm-modal.component';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import {
     catchError,

@@ -1,8 +1,7 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
-import { MockComponent, MockProvider } from 'ng-mocks';
+import { MockProvider } from 'ng-mocks';
 import { BehaviorSubject } from 'rxjs';
 import { ActiveItemService } from '../../app/common/item.service';
-import { ModuleStateService } from '../../app/modules/module-state.service';
 import { ModulesComponent } from '../../app/modules/modules.component';
 
 describe('ModulesComponent', () => {

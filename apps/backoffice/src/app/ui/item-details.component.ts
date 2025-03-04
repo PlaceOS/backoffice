@@ -4,8 +4,8 @@ import { PlaceDriverRole } from '@placeos/ts-client';
 import { downloadFile, jsonToCsv } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyInfo } from '../common/notifications';
-import { BackofficeUsersService } from '../users/users.service';
 import { i18n } from '../common/translate';
+import { BackofficeUsersService } from '../users/users.service';
 
 export interface DisplayItem {
     id: string;

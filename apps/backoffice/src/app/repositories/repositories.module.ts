@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
@@ -8,8 +8,8 @@ import { ROUTES } from './repositories.routes';
 import { RepositoryAboutComponent } from './repository-about.component';
 import { RepositoryDriversComponent } from './repository-drivers.component';
 
-import { RepositoriesComponent } from './repositories.component';
 import { SharedContentModule } from '../ui/ui.module';
+import { RepositoriesComponent } from './repositories.component';
 
 @NgModule({
     declarations: [

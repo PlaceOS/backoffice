@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
+import { timer } from 'rxjs';
 import { extensionsForItem } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
 import { SettingsService } from '../common/settings.service';
-import { BackofficeUsersService } from '../users/users.service';
 import { i18n } from '../common/translate';
-import { timer } from 'rxjs';
+import { BackofficeUsersService } from '../users/users.service';
 
 @Component({
     selector: 'app-engine',

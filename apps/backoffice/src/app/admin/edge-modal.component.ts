@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { addEdge, PlaceEdge, updateEdge } from '@placeos/ts-client';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { DialogEvent } from '../common/types';
 import { i18n } from '../common/translate';
+import { DialogEvent } from '../common/types';
 
 export interface EdgeModalData {
     edge: PlaceEdge;
