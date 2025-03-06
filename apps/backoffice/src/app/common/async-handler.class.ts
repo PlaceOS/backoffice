@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
-export class AsyncHandler {
+export class AsyncHandler implements OnDestroy {
     /** Store for named timers */
     protected _timers: { [name: string]: number } = {};
     /** Store for named intervals */
@@ -29,17 +29,17 @@ export class AsyncHandler {
 
     protected destroy() {
         for (const key in this._timers) {
-            if (this._timers.hasOwnProperty(key)) {
+            if (key in this._timers) {
                 this.clearTimeout(key);
             }
         }
         for (const key in this._intervals) {
-            if (this._intervals.hasOwnProperty(key)) {
+            if (key in this._intervals) {
                 this.clearInterval(key);
             }
         }
         for (const key in this._subscriptions) {
-            if (this._subscriptions.hasOwnProperty(key)) {
+            if (key in this._subscriptions) {
                 this.unsub(key);
             }
         }
@@ -123,8 +123,8 @@ export class AsyncHandler {
      * @param name
      */
     protected unsub(name: string) {
-        if (this._subscriptions && this._subscriptions[name]) {
-            this._subscriptions[name] instanceof Subscription
+        if (name in this._subscriptions) {
+            'unsubscribe' in this._subscriptions[name]
                 ? (this._subscriptions[name] as Subscription).unsubscribe()
                 : (this._subscriptions[name] as any)();
             this._subscriptions[name] = null;
