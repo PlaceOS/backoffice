@@ -27,14 +27,16 @@ import {
     updateSystem,
     updateTrigger,
 } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import {
     debounceTime,
     first,
     map,
     shareReplay,
+    startWith,
     switchMap,
     take,
+    tap,
 } from 'rxjs/operators';
 import { calculateModuleIndex } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
@@ -107,21 +109,28 @@ export class SystemStateService extends AsyncHandler {
         }),
     );
     /** Observable for modules associated with system */
-    public readonly modules = combineLatest([this.item, this._change]).pipe(
-        debounceTime(500),
-        switchMap(async ([item]) => {
-            if (!item || !(item instanceof PlaceSystem)) return [];
+    public readonly modules: Observable<PlaceModule[]> = combineLatest([
+        this.item,
+        this._change,
+    ]).pipe(
+        debounceTime(200),
+        switchMap(([item]) => {
+            this._modules.next([]);
+            if (!item || !(item instanceof PlaceSystem)) return of([]);
             this._loading.next({
                 ...this._loading.getValue(),
                 modules: true,
             });
-            const modules = await queryModules({
+            return queryModules({
                 control_system_id: item.id,
                 complete: true,
                 limit: 200,
-            } as any)
-                .pipe(map((i) => i.data))
-                .toPromise();
+            } as any).pipe(
+                map((i) => [item, i.data]),
+                startWith([item, []]),
+            );
+        }),
+        map(([item, modules]: [any, PlaceModule[]]) => {
             modules.forEach((_) => ((_ as any).connected = undefined));
             this._loading.next({
                 ...this._loading.getValue(),
@@ -165,19 +174,23 @@ export class SystemStateService extends AsyncHandler {
                     }_${calculateModuleIndex(modules, mod)}`,
             ),
         ),
-        shareReplay(),
+        shareReplay(1),
     );
     /** Observable for zones associated with system */
-    public readonly zones = this._state.item.pipe(
-        switchMap(async (item: PlaceSystem) => {
-            if (!item || !(item instanceof PlaceSystem)) return [];
+    public readonly zones: Observable<PlaceZone[]> = this._state.item.pipe(
+        debounceTime(200),
+        switchMap((item: PlaceSystem) => {
+            if (!item || !(item instanceof PlaceSystem)) return of([]);
             this._loading.next({
                 ...this._loading.getValue(),
                 zones: true,
             });
-            const zones = await listSystemZones(item.id)
-                .pipe(map((i) => i.data))
-                .toPromise();
+            return listSystemZones(item.id).pipe(
+                map((i) => [item, i.data]),
+                startWith([item, []]),
+            );
+        }),
+        map(([item, zones]) => {
             zones.sort(
                 (a, b) => item.zones.indexOf(a.id) - item.zones.indexOf(b.id),
             );
@@ -187,27 +200,35 @@ export class SystemStateService extends AsyncHandler {
             });
             return zones;
         }),
-        shareReplay(),
+        startWith([]),
+        shareReplay(1),
     );
     /** Observable for triggers associated with system */
-    public readonly triggers = combineLatest([this.item, this._change]).pipe(
-        switchMap(async (_) => {
-            const [item] = _;
-            if (!item || !(item instanceof PlaceSystem)) return [];
+    public readonly triggers: Observable<PlaceTrigger[]> = combineLatest([
+        this.item,
+        this._change,
+    ]).pipe(
+        debounceTime(200),
+        switchMap(([item]) => {
+            if (!item || !(item instanceof PlaceSystem)) {
+                return of([]);
+            }
             this._loading.next({
                 ...this._loading.getValue(),
                 triggers: true,
             });
-            const triggers = await listSystemTriggers(item.id)
-                .pipe(map((i) => i.data))
-                .toPromise();
+            return listSystemTriggers(item.id).pipe(
+                map((i) => i.data),
+                startWith([] as PlaceTrigger[]),
+            );
+        }),
+        tap(() =>
             this._loading.next({
                 ...this._loading.getValue(),
                 triggers: false,
-            });
-            return triggers;
-        }),
-        shareReplay(),
+            }),
+        ),
+        shareReplay(1),
     );
     /** Observable of the active item */
     public readonly loading = this._loading.asObservable();

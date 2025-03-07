@@ -17,6 +17,7 @@ import {
     filter,
     map,
     shareReplay,
+    startWith,
     switchMap,
     tap,
 } from 'rxjs/operators';
@@ -64,10 +65,12 @@ export class ModuleStateService {
     public readonly system_list = this.item.pipe(
         switchMap((item) => {
             this._loading.next(true);
-            return querySystems({ module_id: item.id });
+            return querySystems({ module_id: item.id }).pipe(
+                catchError(() => of({ data: [] })),
+                startWith({ data: [] }),
+            );
         }),
         map((details) => details.data),
-        catchError(() => []),
         tap((_) => this._loading.next(false)),
         shareReplay(1),
     );

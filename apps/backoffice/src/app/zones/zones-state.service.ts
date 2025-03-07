@@ -4,6 +4,7 @@ import {
     listMetadata,
     listZoneTriggers,
     PlaceMetadata,
+    PlaceSystem,
     PlaceTrigger,
     PlaceZone,
     querySystems,
@@ -18,6 +19,7 @@ import {
     first,
     map,
     shareReplay,
+    startWith,
     switchMap,
 } from 'rxjs/operators';
 import { openConfirmModal, unique } from '../common/general';
@@ -77,43 +79,51 @@ export class ZonesStateService {
         }),
     );
 
-    public readonly systems = this.item.pipe(
+    public readonly systems: Observable<PlaceSystem[]> = this.item.pipe(
         switchMap((item) => {
-            if (!(item instanceof PlaceZone)) return [];
-            return querySystems({ zone_id: item.id });
+            if (!(item instanceof PlaceZone)) return of({ data: [] });
+            return querySystems({ zone_id: item.id }).pipe(
+                catchError(() => of({ data: [] })),
+                startWith({ data: [] }),
+            );
         }),
         map((list) => list.data),
-        catchError((_) => []),
-        shareReplay(),
+        shareReplay(1),
     );
 
     public readonly triggers = this.item.pipe(
         switchMap((item) => {
             if (!(item instanceof PlaceZone)) return [];
-            return listZoneTriggers(item.id);
+            return listZoneTriggers(item.id).pipe(
+                catchError(() => of({ data: [] })),
+                startWith({ data: [] }),
+            );
         }),
         map((list) => list.data),
-        catchError((_) => []),
-        shareReplay(),
+        shareReplay(1),
     );
 
     public readonly metadata: Observable<PlaceMetadata[]> = this.item.pipe(
         switchMap((item) => {
             if (!(item instanceof PlaceZone)) return of([]);
-            return listMetadata(item.id);
+            return listMetadata(item.id).pipe(
+                catchError(() => of([])),
+                startWith([]),
+            );
         }),
-        catchError((_) => []),
         shareReplay(1),
     );
 
     public readonly children = this.item.pipe(
         switchMap((item) => {
             if (!(item instanceof PlaceZone)) return [];
-            return queryZones({ parent_id: item.id });
+            return queryZones({ parent_id: item.id }).pipe(
+                catchError(() => of({ data: [] })),
+                startWith({ data: [] }),
+            );
         }),
         map((list) => list.data),
-        catchError((_) => []),
-        shareReplay(),
+        shareReplay(1),
     );
 
     public get active_item(): PlaceZone {

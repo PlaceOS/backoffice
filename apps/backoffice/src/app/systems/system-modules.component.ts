@@ -507,9 +507,7 @@ export class SystemModulesComponent extends AsyncHandler {
     public async reload(device: PlaceModule) {
         const item = await showModule(device.id).toPromise();
         for (const k in item) {
-            if (item.hasOwnProperty(k)) {
-                device[k] = item[k];
-            }
+            if (k in item) device[k] = item[k];
         }
     }
 
