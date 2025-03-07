@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["css;70377810c25da5afc0c8c972ea69fdf28978f5b7dc52e047fb5c74248e79949c;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/systems/system-triggers.component.ts"],
+  "sourcesContent": ["\n            :host {\n                height: 100%;\n                width: 100%;\n            }\n\n            [flex] {\n                min-width: 8rem;\n            }\n\n            [role='table'] > div {\n                width: 100%;\n                min-width: 36rem;\n            }\n        "],
+  "mappings": "AACY,MACI,OAAQ,KACR,MAAO,IACX,CAEA,CAAC,MACG,UAAW,IACf,CAEA,CAAC,WAAc,CAAE,IACb,MAAO,KACP,UAAW,KACf",
+  "names": []
+}

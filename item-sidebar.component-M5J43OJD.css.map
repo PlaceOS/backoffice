@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["css;c9f02e2496141dc021b95581cee91e9f844251b23d00b4fe761b2ca359b68c31;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/item-sidebar.component.ts"],
+  "sourcesContent": ["\n            :host {\n                height: 100%;\n            }\n            a:nth-child(2n) {\n                background-color: var(--b2);\n            }\n            a:hover {\n                background-color: var(--b3);\n            }\n            a.active {\n                background-color: var(--s);\n                color: var(--sc);\n            }\n\n            a:hover [extra] {\n                background-color: var(--b2);\n            }\n\n            a [extra] {\n                background-color: var(--b3);\n            }\n\n            a.active [extra] {\n                background-color: var(--sf);\n            }\n        "],
+  "mappings": "AACY,MACI,OAAQ,IACZ,CACA,CAAC,eACG,iBAAkB,IAAI,KAC1B,CACA,CAAC,OACG,iBAAkB,IAAI,KAC1B,CACA,CAAC,CAAC,OACE,iBAAkB,IAAI,KACtB,MAAO,IAAI,KACf,CAEA,CAAC,OAAO,CAAC,OACL,iBAAkB,IAAI,KAC1B,CAEA,EAAE,CAAC,OACC,iBAAkB,IAAI,KAC1B,CAEA,CAAC,CAbC,OAaO,CAAC,OACN,iBAAkB,IAAI,KAC1B",
+  "names": []
+}

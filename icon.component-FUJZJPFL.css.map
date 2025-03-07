@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;9dcb326dcc2b3d8b68e7d89ef488eb28abc701fb0e2ab3f372b27f7bf732088c;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/icon.component.ts"],
-  "sourcesContent": ["\n            i {\n                font-size: 1em;\n            }\n        "],
-  "mappings": "AACY,EACI,UAAW,GACf",
-  "names": []
-}

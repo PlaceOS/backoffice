@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;5a9d4ad78fbd733d6bae3e98235b5cff9293f47e8579cab48bc92b1fef278e28;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/custom-fields/date-field.component.ts"],
-  "sourcesContent": ["\n            mat-form-field {\n                width: 100%;\n            }\n        "],
-  "mappings": "AACY,eACI,MAAO,IACX",
-  "names": []
-}

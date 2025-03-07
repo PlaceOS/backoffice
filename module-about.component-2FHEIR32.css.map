@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["css;4fbeda631554c4840a8f923f177b6563f8a4c604336f3dc26536e6ada05aaf6a;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/modules/module-about.component.ts"],
+  "sourcesContent": ["\n            :host {\n                height: 100%;\n                width: 100%;\n            }\n\n            label {\n                width: 4rem;\n            }\n        "],
+  "mappings": "AACY,MACI,OAAQ,KACR,MAAO,IACX,CAEA,MACI,MAAO,IACX",
+  "names": []
+}

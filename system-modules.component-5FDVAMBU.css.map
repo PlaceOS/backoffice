@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["css;e23b6a646f892176ac3184c929da8a44abc4c9839c2f8ee0b53cdae5e6853d78;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/systems/system-modules.component.ts"],
+  "sourcesContent": ["\n            button[btn] {\n                min-width: 8rem;\n            }\n\n            button.mat-menu-item {\n                display: flex;\n                align-items: center;\n            }\n\n            button .text {\n                margin-left: 1rem;\n            }\n\n            .bg-success {\n                height: 0.5rem !important;\n                width: 0.5rem !important;\n            }\n\n            [dot] {\n                transition:\n                    height 200ms,\n                    width 200ms;\n            }\n\n            mat-checkbox.mat-checkbox-disabled {\n                pointer-events: none;\n            }\n        "],
+  "mappings": "AACY,MAAM,CAAC,KACH,UAAW,IACf,CAEA,MAAM,CAAC,cACH,QAAS,KACT,YAAa,MACjB,CAEA,OAAO,CAAC,KACJ,YAAa,IACjB,CAEA,CAAC,WACG,OAAQ,gBACR,MAAO,eACX,CAEA,CAAC,KACG,WACI,OAAO,GAAK,CACZ,MAAM,GACd,CAEA,YAAY,CAAC,sBACT,eAAgB,IACpB",
+  "names": []
+}

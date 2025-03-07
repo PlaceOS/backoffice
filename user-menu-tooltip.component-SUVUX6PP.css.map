@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["css;383375b90bfeeffd216378c31cc50c95b642e279884caa104d56962062617a31;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/user-menu-tooltip.component.ts"],
+  "sourcesContent": ["\n            [type='button'] {\n                display: flex;\n                align-items: center;\n                padding: 1rem;\n                width: 16rem;\n            }\n\n            [type='button']:hover {\n                background-color: rgba(0, 0, 0, 0.2);\n            }\n\n            app-icon {\n                margin-right: 0.5rem;\n            }\n        "],
+  "mappings": "AACY,CAAC,aACG,QAAS,KACT,YAAa,OAH7B,QAIyB,KACT,MAAO,KACX,CAEA,CAAC,YAAc,OACX,iBAAkB,KACtB,CAEA,SACI,aAAc,KAClB",
+  "names": []
+}

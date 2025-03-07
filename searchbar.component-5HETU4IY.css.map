@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["css;d10b760c2166f9f48e332f95e3ec694b9d2770eb9ab64d6534eebe21cec1b7b5;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/searchbar.component.ts"],
+  "sourcesContent": ["\n            .active {\n                color: var(--pending);\n            }\n\n            input::placeholder {\n                color: rgba(255, 255, 255, 0.35);\n            }\n\n            .bg-opacity-100 input::placeholder {\n                color: rgba(0, 0, 0, 0.35);\n            }\n\n            [widget] {\n                transition:\n                    color 200ms,\n                    background-color 200ms,\n                    width 200ms;\n            }\n        "],
+  "mappings": "AACY,CAAC,OACG,MAAO,IAAI,UACf,CAEA,KAAK,cACD,MAAO,SACX,CAEA,CAAC,eAAe,KAAK,cACjB,MAAO,SACX,CAEA,CAAC,QACG,WACI,MAAM,GAAK,CACX,iBAAiB,GAAK,CACtB,MAAM,GACd",
+  "names": []
+}

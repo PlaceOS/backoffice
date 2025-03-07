@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["css;b066d1f2c672dbab69594b3a1a6a6d2a7dd0d617d629b42e4332cd8f2278a065;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/forms/driver-form/driver-form.component.ts"],
+  "sourcesContent": ["\n            mat-checkbox {\n                margin-top: 2.5em;\n                margin-bottom: 1.5em;\n\n                @media screen and (max-width: 640px) {\n                    margin-top: 0;\n                }\n            }\n        "],
+  "mappings": "AACY,aACI,WAAY,MACZ,cAAe,KAKnB,CAHI,OAAO,OAAO,IAAI,CAAC,SAAS,EAAE,OAJlC,aAKQ,WAAY,EAChB",
+  "names": []
+}

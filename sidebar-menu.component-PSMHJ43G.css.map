@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;4f1cf15c78b1a170d92391e4d9f63612c0659d6bcfe33b20ea95cf99602d3977;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/sidebar-menu.component.ts"],
-  "sourcesContent": ["\n            [sidebar-menu] {\n                transition: width 200ms;\n            }\n\n            .active {\n                background-color: var(--s);\n                color: var(--sc);\n            }\n\n            @media screen and (min-width: 512px) {\n                .compact {\n                    width: 4.5rem;\n                }\n            }\n        "],
-  "mappings": "AACY,CAAC,cACG,WAAY,MAAM,GACtB,CAEA,CAAC,OACG,iBAAkB,IAAI,KACtB,MAAO,IAAI,KACf,CAEA,OAAO,OAAO,IAAI,CAAC,SAAS,EAAE,OAC1B,CAAC,QACG,MAAO,MACX,CACJ",
-  "names": []
-}

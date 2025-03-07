@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["css;9cc846b1d3396d19d698e2501a8588454ccaa6c3b66998133007dfe2e1ef00a8;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/custom-fields/object-list-field.component.ts"],
+  "sourcesContent": ["\n            :host,\n            mat-form-field {\n                width: 100%;\n            }\n\n            .row {\n                display: flex;\n                width: 100%;\n                height: 3.5em;\n            }\n\n            .row > * {\n                margin: 0 0.25em;\n            }\n\n            .row > *:first-child {\n                margin-left: 0;\n            }\n\n            .row > *:last-child {\n                margin-right: 0;\n            }\n\n            .header > * {\n                padding: 0 0.5em;\n            }\n\n            .field {\n                flex: 1;\n                min-width: 1px;\n            }\n\n            button .contents {\n                display: flex;\n                align-items: center;\n            }\n        "],
+  "mappings": "AACY,MACA,eACI,MAAO,IACX,CAEA,CAAC,IACG,QAAS,KACT,MAAO,KACP,OAAQ,KACZ,CAEA,CANC,GAMI,CAAE,EAZnB,OAawB,EAAE,KACd,CAEA,CAVC,GAUI,CAAE,CAAC,aACJ,YAAa,CACjB,CAEA,CAdC,GAcI,CAAE,CAAC,YACJ,aAAc,CAClB,CAEA,CAAC,MAAO,CAAE,EAxBtB,QAyByB,EAAE,IACf,CAEA,CAAC,MACG,KAAM,EACN,UAAW,GACf,CAEA,OAAO,CAAC,SACJ,QAAS,KACT,YAAa,MACjB",
+  "names": []
+}

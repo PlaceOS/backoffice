@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["css;5f07c17d32b664473205b0ab367d8c0e96f539f2bf6f3b78e6797189a5211777;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/repositories/repository-about.component.ts"],
+  "sourcesContent": ["\n            :host {\n                height: 100%;\n                width: 100%;\n            }\n\n            .mono {\n                font-family: var(--mono-font);\n            }\n\n            label {\n                width: 6rem;\n                text-align: left;\n            }\n        "],
+  "mappings": "AACY,MACI,OAAQ,KACR,MAAO,IACX,CAEA,CAAC,KACG,YAAa,IAAI,YACrB,CAEA,MACI,MAAO,KACP,WAAY,IAChB",
+  "names": []
+}

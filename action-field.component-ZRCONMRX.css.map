@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;a89c969431fddd1af866f287b7ffe66378db8974de1b99cceaa796653c5f916f;/home/runner/work/backoffice/backoffice/apps/backoffice/src/app/ui/custom-fields/action-field.component.ts"],
-  "sourcesContent": ["\n            :host > div:hover {\n                box-shadow: inset 0 0 0 1px currentColor;\n            }\n        "],
-  "mappings": "AACY,KAAM,CAAE,GAAG,OACP,WAAY,MAAM,EAAE,EAAE,EAAE,IAAI,YAChC",
-  "names": []
-}
