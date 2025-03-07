@@ -173,6 +173,7 @@ import { DriverStateService } from './driver-state.service';
             }
         `,
     ],
+    standalone: false
 })
 export class DriverAboutComponent {
     public readonly compiled = this._service.is_compiled;

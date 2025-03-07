@@ -320,6 +320,7 @@ import { SystemStateService } from './system-state.service';
             }
         `,
     ],
+    standalone: false
 })
 export class SystemModulesComponent extends AsyncHandler {
     /** Whether a device should be listened to */

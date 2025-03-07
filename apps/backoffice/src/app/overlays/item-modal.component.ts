@@ -124,6 +124,7 @@ export interface CreateEditModalData<T extends Identity = any> {
         </fullscreen-modal-shell>
     `,
     styles: [''],
+    standalone: false
 })
 export class ItemCreateUpdateModalComponent
     extends AsyncHandler

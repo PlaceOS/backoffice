@@ -61,6 +61,7 @@ export interface SelectItemModalData<T = any> {
         </ng-template>
     `,
     styles: [``],
+    standalone: false
 })
 export class SelectItemModalComponent extends AsyncHandler {
     /** Emitter for user action on the modal */

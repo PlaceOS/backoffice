@@ -250,6 +250,7 @@ import { Identity } from '../../../common/types';
         </ng-template>
     `,
     styles: [],
+    standalone: false
 })
 export class TriggerConditionTimeFormComponent
     extends AsyncHandler

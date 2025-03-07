@@ -252,6 +252,7 @@ import { map } from 'rxjs/operators';
         </form>
     `,
     styles: [``],
+    standalone: false
 })
 export class ModuleFormComponent extends AsyncHandler implements OnDestroy {
     /** Group of form fields used for creating the system */

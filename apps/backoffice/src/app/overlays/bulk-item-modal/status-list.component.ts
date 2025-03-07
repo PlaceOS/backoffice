@@ -52,6 +52,7 @@ import { Observable } from 'rxjs';
         </div>
     `,
     styles: [``],
+    standalone: false
 })
 export class StatusListComponent implements OnChanges {
     /** List of bulk items to add */

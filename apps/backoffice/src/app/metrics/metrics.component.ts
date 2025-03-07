@@ -51,6 +51,7 @@ import { i18n } from '../common/translate';
             }
         `,
     ],
+    standalone: false
 })
 export class MetricsComponent extends AsyncHandler implements OnInit {
     /** Whether to only render the metrics view */

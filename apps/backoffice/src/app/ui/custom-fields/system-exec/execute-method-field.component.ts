@@ -72,6 +72,7 @@ import { ModuleLike } from './select-module.component';
             multi: true,
         },
     ],
+    standalone: false
 })
 export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     @Input() public zone?: string;

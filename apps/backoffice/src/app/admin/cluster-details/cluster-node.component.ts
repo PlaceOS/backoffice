@@ -71,6 +71,7 @@ export interface PlaceClusterUsageStamp {
         </div>
     `,
     styles: [],
+    standalone: false
 })
 export class AdminClusterNodeComponent implements OnChanges, OnInit {
     @Input() public show_name = true;

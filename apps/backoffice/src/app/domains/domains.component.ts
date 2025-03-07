@@ -67,6 +67,7 @@ import { DomainStateService } from './domain-state.service';
         </div>
     `,
     styles: [``],
+    standalone: false
 })
 export class DomainsComponent extends AsyncHandler {
     public readonly name = 'domains';

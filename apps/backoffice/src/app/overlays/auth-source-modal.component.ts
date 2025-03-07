@@ -88,6 +88,7 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
         </fullscreen-modal-shell>
     `,
     styles: [``],
+    standalone: false
 })
 export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
     /** Emitter for events on the modal */

@@ -154,6 +154,7 @@ import { BackofficeUsersService } from '../users/users.service';
             }
         `,
     ],
+    standalone: false
 })
 export class ItemSelectionComponent extends AsyncHandler {
     @Input() public show = true;

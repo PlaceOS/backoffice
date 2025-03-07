@@ -96,6 +96,7 @@ export const CONFIRM_METADATA = {};
             }
         `,
     ],
+    standalone: false
 })
 export class ConfirmModalComponent extends AsyncHandler {
     /** Emitter for user action on the modal */

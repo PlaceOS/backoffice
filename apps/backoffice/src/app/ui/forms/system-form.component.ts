@@ -300,6 +300,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             }
         `,
     ],
+    standalone: false
 })
 export class SystemFormComponent extends AsyncHandler {
     public timezones: string[] = [];

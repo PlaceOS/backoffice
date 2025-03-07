@@ -146,6 +146,7 @@ import { SystemStateService } from './system-state.service';
             }
         `,
     ],
+    standalone: false
 })
 export class SystemZonesComponent {
     public order_changed = false;

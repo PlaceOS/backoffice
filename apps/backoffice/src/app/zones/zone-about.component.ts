@@ -189,6 +189,7 @@ import { marked } from 'marked';
             }
         `,
     ],
+    standalone: false
 })
 export class ZoneAboutComponent {
     /** List of associated systems */

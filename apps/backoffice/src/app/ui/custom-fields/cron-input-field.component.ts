@@ -85,6 +85,7 @@ function listPattern(fieldPattern) {
             multi: true,
         },
     ],
+    standalone: false
 })
 export class CronInputFieldComponent implements ControlValueAccessor, OnInit {
     public cron_string: string;

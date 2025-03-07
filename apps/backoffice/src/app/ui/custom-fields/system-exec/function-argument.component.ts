@@ -105,6 +105,7 @@ const validateType = (type) => (control: AbstractControl) => {
             multi: true,
         },
     ],
+    standalone: false
 })
 export class FunctionArgumentComponent
     extends AsyncHandler

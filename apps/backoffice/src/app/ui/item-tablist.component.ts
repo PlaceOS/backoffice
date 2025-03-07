@@ -48,6 +48,7 @@ export interface ItemTab {
         <mat-tab-nav-panel #tabPanel class="hidden"></mat-tab-nav-panel>
     `,
     styles: [``],
+    standalone: false
 })
 export class ItemTablistComponent extends AsyncHandler implements OnInit {
     @Input() public base: string = 'systems';

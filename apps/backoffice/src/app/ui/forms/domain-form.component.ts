@@ -167,6 +167,7 @@ import { isValidDomain } from '../../common/validation';
             }
         `,
     ],
+    standalone: false
 })
 export class DomainFormComponent {
     /** Group of form fields used for creating the system */

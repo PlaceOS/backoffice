@@ -160,6 +160,7 @@ export function extractTextFromHTML(html_string: string) {
         </ng-template>
     `,
     styles: [``],
+    standalone: false
 })
 export class EmailTemplateFormComponent extends AsyncHandler {
     public loading = '';

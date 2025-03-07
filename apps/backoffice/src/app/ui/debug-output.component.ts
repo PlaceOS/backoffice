@@ -183,6 +183,7 @@ import { Point } from 'apps/backoffice/src/app/common/types';
         `,
     ],
     animations: [ANIMATION_SHOW_CONTRACT_EXPAND_BIDIR],
+    standalone: false
 })
 export class DebugOutputComponent extends AsyncHandler implements OnInit {
     /** Whether display output is shown */

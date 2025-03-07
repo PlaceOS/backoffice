@@ -59,6 +59,7 @@ export interface ReorderItemsOptions {
         </footer>
     `,
     styles: [``],
+    standalone: false
 })
 export class ReorderItemsModalComponent {
     public readonly items = new BehaviorSubject([]);

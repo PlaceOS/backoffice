@@ -178,6 +178,7 @@ import { Identity } from 'apps/backoffice/src/app/common/types';
             }
         `,
     ],
+    standalone: false
 })
 export class LdapSourceFormComponent {
     /** Group of form fields used for creating the system */

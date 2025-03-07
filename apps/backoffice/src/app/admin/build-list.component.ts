@@ -127,6 +127,7 @@ function cancelBuildJob(id, q = {}) {
             }
         `,
     ],
+    standalone: false
 })
 export class PlaceBuildListComponent {
     public loading = '';

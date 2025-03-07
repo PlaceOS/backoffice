@@ -40,6 +40,7 @@ import { PlaceUser } from '@placeos/ts-client';
             }
         `,
     ],
+    standalone: false
 })
 export class UserAvatarComponent {
     /** User to display avatar for */

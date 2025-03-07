@@ -14,6 +14,7 @@ export interface DuplicateModalData {
     selector: 'app-duplicate-modal',
     templateUrl: './duplicate-modal.component.html',
     styleUrls: ['./duplicate-modal.component.scss'],
+    standalone: false
 })
 export class DuplicateModalComponent {
     /** Emitter for user action on the modal */

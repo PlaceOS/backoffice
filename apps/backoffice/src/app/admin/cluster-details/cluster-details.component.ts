@@ -82,6 +82,7 @@ import { PlaceClusterNode } from './cluster-node.component';
         </ng-template>
     `,
     styles: [``],
+    standalone: false
 })
 export class PlaceClusterDetailsComponent
     extends AsyncHandler

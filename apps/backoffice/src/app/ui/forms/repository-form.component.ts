@@ -248,6 +248,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
         </form>
     `,
     styles: [``],
+    standalone: false
 })
 export class RepositoryFormComponent extends AsyncHandler {
     /** Group of form fields used for creating the system */

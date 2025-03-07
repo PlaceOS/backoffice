@@ -125,6 +125,7 @@ import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
         </div>
     `,
     styles: [``],
+    standalone: false
 })
 export class MetadataHistoryModalComponent implements OnInit {
     public readonly id = this._data.id;

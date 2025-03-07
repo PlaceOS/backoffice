@@ -144,6 +144,7 @@ import { DomainStateService } from './domain-state.service';
             }
         `,
     ],
+    standalone: false
 })
 export class DomainApplicationsComponent {
     /** List of applications associated with the active domain */

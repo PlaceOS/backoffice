@@ -154,6 +154,7 @@ import { RepositoriesStateService } from './repositories-state.service';
             }
         `,
     ],
+    standalone: false
 })
 export class RepositoryAboutComponent extends AsyncHandler {
     /** Whether the latest commit is being pulled on the server */

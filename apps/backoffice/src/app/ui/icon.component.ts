@@ -26,6 +26,7 @@ import { ApplicationIcon } from '../common/types';
             }
         `,
     ],
+    standalone: false
 })
 export class IconComponent {
     @Input() public className: string = 'material-symbols-rounded';

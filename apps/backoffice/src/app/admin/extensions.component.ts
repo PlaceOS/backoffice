@@ -164,6 +164,7 @@ export interface BackofficeExtension {
             }
         `,
     ],
+    standalone: false
 })
 export class PlaceExtensionsComponent implements OnInit {
     /** Loading state */

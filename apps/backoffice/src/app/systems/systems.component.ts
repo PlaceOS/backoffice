@@ -88,6 +88,7 @@ import { SystemStateService } from './system-state.service';
         </div>
     `,
     styles: [``],
+    standalone: false
 })
 export class SystemsComponent extends AsyncHandler {
     public readonly name = 'systems';

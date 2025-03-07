@@ -51,6 +51,7 @@ import { DateFromPipe } from '../../pipes/date-from.pipe';
             }
         `,
     ],
+    standalone: false
 })
 export class DriverFormComponent extends AsyncHandler implements OnChanges {
     /** Group of form fields used for creating the system */

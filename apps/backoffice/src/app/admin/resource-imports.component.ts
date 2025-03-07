@@ -176,6 +176,7 @@ export interface ExternalResource {
         </div>
     `,
     styles: [``],
+    standalone: false
 })
 export class ResourceImportsComponent {
     public readonly loading = new BehaviorSubject<boolean>(false);

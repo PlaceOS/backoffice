@@ -81,6 +81,7 @@ import { i18n } from '../common/translate';
         </div>
     `,
     styles: [``],
+    standalone: false
 })
 export class TriggersComponent extends AsyncHandler {
     public readonly name = 'triggers';

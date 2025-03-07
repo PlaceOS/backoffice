@@ -150,6 +150,7 @@ import { UploadsService } from '../common/uploads.service';
             }
         `,
     ],
+    standalone: false
 })
 export class UploadListComponent extends AsyncHandler implements OnInit {
     /** Whether upload list should be displayed */

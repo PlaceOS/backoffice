@@ -140,6 +140,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
         </ng-template>
     `,
     styles: [``],
+    standalone: false
 })
 export class StorageComponent {
     /** Loading state */

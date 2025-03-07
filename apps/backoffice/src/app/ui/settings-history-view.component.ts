@@ -73,6 +73,7 @@ import { ActiveItemService } from '../common/item.service';
         </ng-template>
     `,
     styles: [``],
+    standalone: false
 })
 export class SettingsHistoryViewComponent {
     public readonly active_setting = new BehaviorSubject<PlaceSettings>(null);

@@ -34,6 +34,7 @@ export interface ChangelogModalData {
         </ng-template>
     `,
     styles: [``],
+    standalone: false
 })
 export class ChangelogModalComponent extends AsyncHandler {
     /** Whether the changelog is loading */

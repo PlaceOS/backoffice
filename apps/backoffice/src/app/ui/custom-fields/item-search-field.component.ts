@@ -161,6 +161,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
             multi: true,
         },
     ],
+    standalone: false
 })
 export class ItemSearchFieldComponent<T extends Identity = any>
     extends AsyncHandler

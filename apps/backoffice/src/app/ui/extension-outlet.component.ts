@@ -36,6 +36,7 @@ export interface FrameMessage {
             [src]="url | safe: 'resource'"
         ></iframe>
     `,
+    standalone: false
 })
 export class ExtensionOutletComponent extends AsyncHandler {
     public url = '';

@@ -34,6 +34,7 @@ export interface BannerDetails {
             }
         `,
     ],
+    standalone: false
 })
 export class GlobalBannerComponent {
     public get has_viewed() {

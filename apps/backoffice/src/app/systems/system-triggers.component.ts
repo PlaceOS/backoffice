@@ -179,6 +179,7 @@ export interface TriggerInstanceState {
             }
         `,
     ],
+    standalone: false
 })
 export class SystemTriggersComponent {
     public readonly filter$ = new BehaviorSubject<string>('');

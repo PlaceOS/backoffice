@@ -17,6 +17,7 @@ import { AsyncHandler } from '../common/async-handler.class';
 
 @Directive({
     selector: 'i[bind], [binding], co-bind',
+    standalone: false
 })
 export class BindingDirective<T = any>
     extends AsyncHandler

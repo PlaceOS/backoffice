@@ -175,6 +175,7 @@ export interface PlaceServiceDetails {
             }
         `,
     ],
+    standalone: false
 })
 export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
     /** Current details about the API */

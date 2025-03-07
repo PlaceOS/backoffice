@@ -67,6 +67,7 @@ import { RepositoriesStateService } from './repositories-state.service';
         </div>
     `,
     styles: [``],
+    standalone: false
 })
 export class RepositoriesComponent extends AsyncHandler {
     public readonly name = 'repositories';

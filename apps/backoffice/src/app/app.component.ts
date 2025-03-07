@@ -69,6 +69,7 @@ import { setTranslationService } from './common/translate';
         './styles/native-element.styles.scss',
     ],
     encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class AppComponent extends AsyncHandler implements OnInit {
     /** Whether the application is loading */

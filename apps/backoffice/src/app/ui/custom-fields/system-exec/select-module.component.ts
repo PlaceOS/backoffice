@@ -64,6 +64,7 @@ export interface ModuleLike {
             multi: true,
         },
     ],
+    standalone: false
 })
 export class SelectModuleComponent
     extends AsyncHandler

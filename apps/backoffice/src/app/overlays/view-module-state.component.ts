@@ -92,6 +92,7 @@ export interface ModuleStateModalData {
         </ng-template>
     `,
     styles: [``],
+    standalone: false
 })
 export class ViewModuleStateModalComponent
     extends AsyncHandler

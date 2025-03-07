@@ -81,6 +81,7 @@ import { Identity } from '../../common/types';
             multi: true,
         },
     ],
+    standalone: false
 })
 export class TimeFieldComponent
     extends AsyncHandler

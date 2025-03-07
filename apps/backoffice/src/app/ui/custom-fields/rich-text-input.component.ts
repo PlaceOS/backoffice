@@ -38,6 +38,7 @@ import { uploadFile } from '../../common/uploads';
             multi: true,
         },
     ],
+    standalone: false
 })
 export class RichTextInputComponent
     extends AsyncHandler

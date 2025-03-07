@@ -68,6 +68,7 @@ import { DomainStateService } from './domain-state.service';
             }
         `,
     ],
+    standalone: false
 })
 export class DomainAboutComponent extends AsyncHandler implements OnInit {
     /** Form group for edit domain settings */

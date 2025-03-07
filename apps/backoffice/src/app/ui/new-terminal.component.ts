@@ -61,6 +61,7 @@ import { SanitizePipe } from './pipes/sanitise.pipe';
         `,
     ],
     providers: [SanitizePipe],
+    standalone: false
 })
 export class NewTerminalComponent extends AsyncHandler {
     @Input() public lines: string[] = [];

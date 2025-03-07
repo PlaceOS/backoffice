@@ -65,6 +65,7 @@ import { RepositoriesStateService } from './repositories-state.service';
             }
         `,
     ],
+    standalone: false
 })
 export class RepositoryDriversComponent extends AsyncHandler {
     /** Whether driver list is loading */

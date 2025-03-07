@@ -134,6 +134,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
             }
         `,
     ],
+    standalone: false
 })
 export class UserAboutComponent {
     public get item(): PlaceUser {

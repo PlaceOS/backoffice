@@ -258,6 +258,7 @@ import { TriggerStateService } from './trigger-state.service';
             }
         `,
     ],
+    standalone: false
 })
 export class TriggerAboutComponent extends AsyncHandler implements OnInit {
     /** System to use for conditions with systen variables and functions */

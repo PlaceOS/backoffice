@@ -48,6 +48,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
             </div>
         </ng-template>
     `,
+    standalone: false
 })
 export class FullscreenModalShellComponent {
     @Input() public loading = '';

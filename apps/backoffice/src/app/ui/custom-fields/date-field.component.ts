@@ -82,6 +82,7 @@ const FIELD_DATE_FORMATS: MatDateFormats = {
             multi: true,
         },
     ],
+    standalone: false
 })
 export class DateFieldComponent
     extends AsyncHandler

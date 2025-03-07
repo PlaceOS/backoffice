@@ -49,6 +49,7 @@ import { AsyncHandler } from '../common/async-handler.class';
         </ng-template>
     `,
     styles: [``],
+    standalone: false
 })
 export class ModuleRuntimeErrorsModalComponent extends AsyncHandler {
     public loading = false;

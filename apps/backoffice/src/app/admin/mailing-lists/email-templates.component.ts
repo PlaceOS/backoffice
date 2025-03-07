@@ -53,6 +53,7 @@ import { EmailStateService } from './email-state.service';
         </div>
     `,
     styles: [``],
+    standalone: false
 })
 export class EmailTemplatesComponent {
     public readonly loading = this._service.loading;

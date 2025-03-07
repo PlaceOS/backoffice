@@ -62,6 +62,7 @@ export interface EdgeModalData {
             }
         `,
     ],
+    standalone: false
 })
 export class EdgeModalComponent {
     @Output() public readonly event = new EventEmitter<DialogEvent>();

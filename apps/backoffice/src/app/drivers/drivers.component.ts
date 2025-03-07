@@ -93,6 +93,7 @@ import { DriverStateService } from './driver-state.service';
         </div>
     `,
     styles: [``],
+    standalone: false
 })
 export class DriversComponent extends AsyncHandler {
     public readonly name = 'drivers';

@@ -93,6 +93,7 @@ import { JsonSchema, SchemaStateService } from './schema-state.service';
             }
         `,
     ],
+    standalone: false
 })
 export class AdminSchemasComponent {
     public active_schema: JsonSchema;

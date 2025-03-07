@@ -183,6 +183,7 @@ import { APIKeyService } from './api-keys.service';
         </fullscreen-modal-shell>
     `,
     styles: [``],
+    standalone: false
 })
 export class APIKeyModalComponent {
     @Output() public event = new EventEmitter<DialogEvent>();

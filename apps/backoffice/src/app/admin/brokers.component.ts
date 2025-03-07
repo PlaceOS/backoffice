@@ -162,6 +162,7 @@ import { BehaviorSubject } from 'rxjs';
             }
         `,
     ],
+    standalone: false
 })
 export class AdminBrokersComponent extends AsyncHandler implements OnInit {
     private _change = new BehaviorSubject<number>(0);

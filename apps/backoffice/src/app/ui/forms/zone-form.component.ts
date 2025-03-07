@@ -228,6 +228,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
         </form>
     `,
     styles: [``],
+    standalone: false
 })
 export class ZoneFormComponent extends AsyncHandler {
     public timezones: string[] = [];

@@ -48,6 +48,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
             }
         `,
     ],
+    standalone: false
 })
 export class UserHistoryComponent extends AsyncHandler {
     public logs: { start: number; end: number; systems: string[] }[] = [];

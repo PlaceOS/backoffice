@@ -112,6 +112,7 @@ import { i18n } from '../common/translate';
             }
         `,
     ],
+    standalone: false
 })
 export class UserMenuTooltipComponent implements OnInit {
     /** Whether dark mode is enabled */

@@ -52,6 +52,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
         </div>
     `,
     styles: [``],
+    standalone: false
 })
 export class MatchFieldsComponent implements OnChanges, OnInit {
     /** List of bulk items to add */

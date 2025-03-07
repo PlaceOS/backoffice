@@ -101,6 +101,7 @@ import { Md5 } from 'ts-md5';
             }
         `,
     ],
+    standalone: false
 })
 export class ApplicationFormComponent extends AsyncHandler {
     /** Group of form fields used for creating the system */

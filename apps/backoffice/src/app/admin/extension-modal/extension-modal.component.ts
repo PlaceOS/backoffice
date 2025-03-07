@@ -152,6 +152,7 @@ import { BackofficeExtension } from '../extensions.component';
         </fullscreen-modal-shell>
     `,
     styles: [``],
+    standalone: false
 })
 export class ExtensionModalComponent extends AsyncHandler implements OnInit {
     /** Emitter for user action on the modal */

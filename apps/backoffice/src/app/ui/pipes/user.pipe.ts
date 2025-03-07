@@ -5,6 +5,7 @@ const USERS: PlaceUser[] = [];
 
 @Pipe({
     name: 'user',
+    standalone: false
 })
 export class UserPipe implements PipeTransform {
     public async transform(id: string): Promise<PlaceUser> {

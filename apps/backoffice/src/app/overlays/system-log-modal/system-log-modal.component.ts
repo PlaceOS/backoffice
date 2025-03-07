@@ -12,6 +12,7 @@ export interface SystemLogModalData {
     selector: 'system-log-modal',
     templateUrl: './system-log-modal.component.html',
     styleUrls: ['./system-log-modal.component.scss'],
+    standalone: false
 })
 export class SystemLogModalComponent extends AsyncHandler implements OnInit {
     /** ID of the system to get logs for */

@@ -169,6 +169,7 @@ import { PlaceStorage, saveStorage } from './storage.fn';
         </fullscreen-modal-shell>
     `,
     styles: [``],
+    standalone: false
 })
 export class StorageProviderModalComponent {
     public readonly ALLOWED_FILE_EXTENSIONS = [

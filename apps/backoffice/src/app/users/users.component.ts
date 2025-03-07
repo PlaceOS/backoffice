@@ -75,6 +75,7 @@ import { i18n } from '../common/translate';
         </div>
     `,
     styles: [``],
+    standalone: false
 })
 export class UsersComponent extends AsyncHandler {
     public readonly name = 'users';

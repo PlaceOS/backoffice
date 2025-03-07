@@ -156,6 +156,7 @@ export interface TriggerActionModalData {
         </fullscreen-modal-shell>
     `,
     styles: [``],
+    standalone: false
 })
 export class TriggerActionModalComponent extends AsyncHandler {
     /** Emitter for events on the modal */

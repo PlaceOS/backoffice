@@ -160,6 +160,7 @@ import { DriverStateService } from './driver-state.service';
             }
         `,
     ],
+    standalone: false
 })
 export class DriverModulesComponent extends AsyncHandler {
     public loading_systems = false;

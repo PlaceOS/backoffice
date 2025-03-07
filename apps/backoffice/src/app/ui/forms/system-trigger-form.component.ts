@@ -64,6 +64,7 @@ import { UntypedFormGroup } from '@angular/forms';
         </form>
     `,
     styles: [``],
+    standalone: false
 })
 export class SystemTriggerFormComponent {
     /** Group of form fields used for creating the system */

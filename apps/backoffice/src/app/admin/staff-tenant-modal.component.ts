@@ -394,6 +394,7 @@ export interface StaffTenantModalData {
             }
         `,
     ],
+    standalone: false
 })
 export class StaffTenantModalComponent implements OnInit {
     @Output() public readonly event = new EventEmitter<DialogEvent>();

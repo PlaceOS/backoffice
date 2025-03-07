@@ -247,6 +247,7 @@ import { i18n } from '../../common/translate';
             }
         `,
     ],
+    standalone: false
 })
 export class BrokerFormComponent {
     /** Group of form fields used for creating the system */

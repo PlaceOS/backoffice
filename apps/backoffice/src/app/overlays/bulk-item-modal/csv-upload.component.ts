@@ -50,6 +50,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
         </ng-template>
     `,
     styles: [``],
+    standalone: false
 })
 export class CsvUploadComponent {
     /** Data for the template CSV */

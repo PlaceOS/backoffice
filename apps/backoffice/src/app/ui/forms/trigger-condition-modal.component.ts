@@ -86,6 +86,7 @@ export interface TriggerConditionData {
         </fullscreen-modal-shell>
     `,
     styles: [``],
+    standalone: false
 })
 export class TriggerConditionModalComponent extends AsyncHandler {
     /** Emitter for events on the modal */

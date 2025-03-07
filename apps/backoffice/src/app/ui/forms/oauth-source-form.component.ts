@@ -237,6 +237,7 @@ import { HashMap, Identity } from 'apps/backoffice/src/app/common/types';
             }
         `,
     ],
+    standalone: false
 })
 export class OauthSourceFormComponent
     extends AsyncHandler

@@ -48,6 +48,7 @@ import { debounceTime, map, shareReplay, switchMap, tap } from 'rxjs/operators';
             }
         `,
     ],
+    standalone: false
 })
 export class AdminInterfacesComponent implements OnInit {
     /** List of interfaces */

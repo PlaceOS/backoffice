@@ -227,6 +227,7 @@ import { ModuleStateService } from './module-state.service';
             }
         `,
     ],
+    standalone: false
 })
 export class ModuleAboutComponent {
     /** Driver for the active item */

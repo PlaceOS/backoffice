@@ -140,6 +140,7 @@ const task_details = {};
             }
         `,
     ],
+    standalone: false
 })
 export class PlaceClusterTaskListComponent extends AsyncHandler {
     /** Cluster to display tasks details for */

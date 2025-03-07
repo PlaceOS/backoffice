@@ -68,6 +68,7 @@ const SYSTEMS = {};
             }
         `,
     ],
+    standalone: false
 })
 export class MqttDashboardComponent {
     public readonly systems = new BehaviorSubject([]);

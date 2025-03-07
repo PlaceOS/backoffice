@@ -168,6 +168,7 @@ import { ActiveItemService } from '../common/item.service';
             }
         `,
     ],
+    standalone: false
 })
 export class ItemSidebarComponent extends AsyncHandler {
     @Input() public title = 'Systems';

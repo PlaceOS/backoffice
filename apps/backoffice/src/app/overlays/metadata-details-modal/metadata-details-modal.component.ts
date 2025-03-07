@@ -106,6 +106,7 @@ export interface MetadataDetailsModalData {
         </footer>
     `,
     styles: [``],
+    standalone: false
 })
 export class MetadataDetailsModalComponent implements OnInit {
     public form = new FormGroup({

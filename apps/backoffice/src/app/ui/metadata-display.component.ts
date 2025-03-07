@@ -162,6 +162,7 @@ function replaceDescTag(inputString, newContent) {
             }
         `,
     ],
+    standalone: false
 })
 export class MetadataDisplayComponent extends AsyncHandler {
     @Input() public item: any;

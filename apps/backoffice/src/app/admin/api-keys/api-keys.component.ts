@@ -155,6 +155,7 @@ import { APIKeyService } from './api-keys.service';
         </ng-template>
     `,
     styles: [``],
+    standalone: false
 })
 export class AdminAPIKeysComponent {
     public readonly domain = this._service.active_domain;

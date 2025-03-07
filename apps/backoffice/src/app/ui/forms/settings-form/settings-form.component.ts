@@ -31,6 +31,7 @@ import { i18n } from '../../../common/translate';
     selector: 'a-settings-form',
     templateUrl: './settings-form.component.html',
     styleUrls: ['./settings-form.component.scss'],
+    standalone: false
 })
 export class SettingsFormComponent
     extends AsyncHandler

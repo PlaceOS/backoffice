@@ -336,6 +336,7 @@ import { HashMap } from 'apps/backoffice/src/app/common/types';
             }
         `,
     ],
+    standalone: false
 })
 export class SamlSourceFormComponent extends AsyncHandler implements OnChanges {
     /** Group of form fields used for creating the system */

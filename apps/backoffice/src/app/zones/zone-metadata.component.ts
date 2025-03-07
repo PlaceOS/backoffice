@@ -8,6 +8,7 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
         <metadata-display *ngIf="item" [item]="item"></metadata-display>
     `,
     styles: [``],
+    standalone: false
 })
 export class ZoneMetadataComponent {
     public get item(): PlaceZone {

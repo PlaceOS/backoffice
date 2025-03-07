@@ -259,6 +259,7 @@ import { i18n } from '../../common/translate';
         </form>
     `,
     styles: [``],
+    standalone: false
 })
 export class UserFormComponent {
     /** Group of form fields used for creating the system */

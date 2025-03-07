@@ -81,6 +81,7 @@ import { BackofficeUsersService } from '../users/users.service';
             }
         `,
     ],
+    standalone: false
 })
 export class PlaceComponent extends AsyncHandler {
     public tab_list = [];

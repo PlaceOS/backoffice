@@ -133,6 +133,7 @@ import { EdgeModalComponent } from './edge-modal.component';
             }
         `,
     ],
+    standalone: false
 })
 export class PlaceEdgeComponent {
     public loading: string = '';

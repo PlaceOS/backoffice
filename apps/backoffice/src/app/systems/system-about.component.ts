@@ -177,6 +177,7 @@ import { SystemStateService } from './system-state.service';
             }
         `,
     ],
+    standalone: false
 })
 export class SystemAboutComponent {
     /** List of settings for associated modules, drivers and zones */

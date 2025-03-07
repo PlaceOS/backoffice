@@ -39,6 +39,7 @@ import { StaffTenantModalData } from './staff-tenant-modal.component';
             </main>
         </ng-template>`,
     styles: [``],
+    standalone: false
 })
 export class BookingLimitsModalComponent {
     public readonly tenant = this._data.tenant;

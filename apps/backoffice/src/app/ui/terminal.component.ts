@@ -29,6 +29,7 @@ import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class
             }
         `,
     ],
+    standalone: false
 })
 export class TerminalComponent
     extends AsyncHandler

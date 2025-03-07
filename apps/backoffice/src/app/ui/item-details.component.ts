@@ -152,6 +152,7 @@ export interface DisplayItem {
         </mat-menu>
     `,
     styles: [``],
+    standalone: false
 })
 export class ItemDetailsComponent {
     @Input() public type: string = 'system';

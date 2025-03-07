@@ -4,6 +4,7 @@ import { i18n } from '../../common/translate';
 
 @Pipe({
     name: 'dateFrom',
+    standalone: false
 })
 export class DateFromPipe implements PipeTransform {
     public transform(date: number): string {

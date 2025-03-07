@@ -79,6 +79,7 @@ import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.serv
             }
         `,
     ],
+    standalone: false
 })
 export class SearchbarComponent extends AsyncHandler {
     @Input() public filter: string;

@@ -35,6 +35,7 @@ import { UploadInfo } from './upload-library.component';
         </main>
     `,
     styles: [``],
+    standalone: false
 })
 export class ViewUploadModalComponent {
     public readonly resource = `/api/engine/v2/uploads/${this._data.upload.id}/url`;

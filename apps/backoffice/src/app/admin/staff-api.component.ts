@@ -167,6 +167,7 @@ export interface PlaceTenant {
             }
         `,
     ],
+    standalone: false
 })
 export class PlaceStaffAPIComponent implements OnInit {
     /** Loading state */

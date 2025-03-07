@@ -116,6 +116,7 @@ export interface BulkItemModalData<T = HashMap<any>> {
             }
         `,
     ],
+    standalone: false
 })
 export class BulkItemModalComponent<T = HashMap<any>> {
     /** Current step in the bulk add flow */

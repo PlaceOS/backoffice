@@ -230,6 +230,7 @@ export interface TableColumn {
             }
         `,
     ],
+    standalone: false
 })
 export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
     @Input() public data: T[] | Observable<T[]>;

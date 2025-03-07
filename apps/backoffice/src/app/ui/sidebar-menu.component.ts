@@ -208,6 +208,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             }
         `,
     ],
+    standalone: false
 })
 export class SidebarMenuComponent extends AsyncHandler {
     @Input() public open = true;

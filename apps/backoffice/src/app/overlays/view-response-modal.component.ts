@@ -20,6 +20,7 @@ export interface ViewResponseModalData {
         </fullscreen-modal-shell>
     `,
     styles: [``],
+    standalone: false
 })
 export class ViewResponseModalComponent {
     public readonly title = this._data.title || '';

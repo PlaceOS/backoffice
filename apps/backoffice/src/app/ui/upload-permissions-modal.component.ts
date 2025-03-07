@@ -63,6 +63,7 @@ import { UploadPermissions } from '../common/uploads';
         </footer>
     `,
     styles: [``],
+    standalone: false
 })
 export class UploadPermissionsModalComponent {
     /** File to upload */

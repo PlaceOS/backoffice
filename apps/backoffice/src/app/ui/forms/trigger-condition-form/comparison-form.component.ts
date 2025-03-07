@@ -193,6 +193,7 @@ import { i18n } from '../../../common/translate';
             </div>
         </ng-template> `,
     styles: [``],
+    standalone: false
 })
 export class TriggerConditionComparisonFormComponent
     implements OnChanges, OnInit

@@ -120,6 +120,7 @@ import { notifyError, notifySuccess } from '../common/notifications';
             }
         `,
     ],
+    standalone: false
 })
 export class DriverUpdateListModalComponent {
     public loading = 'Loading drivers...';

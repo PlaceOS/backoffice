@@ -91,6 +91,7 @@ import { ZonesStateService } from './zones-state.service';
         </div>
     `,
     styles: [``],
+    standalone: false
 })
 export class ZonesComponent extends AsyncHandler {
     public readonly name = 'zones';

@@ -69,6 +69,7 @@ import { ModuleLike } from './select-module.component';
             multi: true,
         },
     ],
+    standalone: false
 })
 export class SelectMethodComponent
     extends AsyncHandler

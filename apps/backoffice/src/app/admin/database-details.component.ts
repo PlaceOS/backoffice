@@ -70,6 +70,7 @@ import { notifyError } from 'apps/backoffice/src/app/common/notifications';
             }
         `,
     ],
+    standalone: false
 })
 export class PlaceDatabaseDetailsComponent {
     /** Whether backend is reindexing the database */

@@ -216,6 +216,7 @@ export interface UploadInfo {
         </div>
     `,
     styles: [``],
+    standalone: false
 })
 export class UploadLibraryComponent {
     public readonly loading = new BehaviorSubject<boolean>(false);
