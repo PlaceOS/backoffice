@@ -27,6 +27,8 @@ function removeNesting(value: object, path = ''): Record<string, string> {
 }
 
 const STORE_KEY = 'BACKOFFICE.locale';
+const LOCALE_REGEX =
+    /^[a-z]{2,3}([-_][A-Z][a-z]{3})?([-_]([A-Z]{2}|[0-9]{3}))?$/;
 
 @Injectable({
     providedIn: 'root',
@@ -75,6 +77,10 @@ export class LocaleService {
     }
 
     public setLocale(locale: string) {
+        if (!LOCALE_REGEX.test(locale)) {
+            console.error(`Invalid locale "${locale}"`);
+            return;
+        }
         this._current_locale = locale;
         this._current_locale_short = this._current_locale.split('-')[0];
         if (!this._locale_mappings[locale] && !this._load_promises[locale]) {
