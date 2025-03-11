@@ -391,6 +391,7 @@
         "SERVICE": "Service",
         "WEBSOCKET": "Websocket",
         "LOGIC": "Logic",
+        "UNKNOWN": "Unknown",
         "SEARCH": "Search for drivers...",
         "ADD": "Add driver",
         "EDIT": "Edit driver",
