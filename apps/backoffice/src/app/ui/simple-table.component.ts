@@ -7,8 +7,9 @@ import {
     TemplateRef,
 } from '@angular/core';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
+import { nextValueFrom } from '../common/general';
 
 export interface TableColumn {
     key: string;
@@ -230,7 +231,7 @@ export interface TableColumn {
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
     @Input() public data: T[] | Observable<T[]>;
@@ -354,7 +355,7 @@ export class SimpleTableComponent<T extends {} = any> extends AsyncHandler {
     }
 
     public async selectAll(state: boolean) {
-        const list = await this.data$.pipe(take(1)).toPromise();
+        const list = await nextValueFrom(this.data$);
         if (state) this.selected = list.map((_, i) => i);
         else this.selected = [];
     }

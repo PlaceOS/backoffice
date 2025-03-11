@@ -16,9 +16,8 @@ import {
     shareReplay,
     startWith,
     switchMap,
-    take,
 } from 'rxjs/operators';
-import { openConfirmModal } from '../common/general';
+import { nextValueFrom, openConfirmModal } from '../common/general';
 import { notifySuccess, notifyWarn } from '../common/notifications';
 import { i18n } from '../common/translate';
 
@@ -176,7 +175,7 @@ export interface ExternalResource {
         </div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class ResourceImportsComponent {
     public readonly loading = new BehaviorSubject<boolean>(false);
@@ -238,7 +237,7 @@ export class ResourceImportsComponent {
 
     public async ngOnInit() {
         const domain = authority();
-        const domain_list = await this.domain_list.pipe(take(1)).toPromise();
+        const domain_list = await nextValueFrom(this.domain_list);
         if (!domain_list?.length) return;
         const match = domain_list.find((d) => d.id === domain.id);
         if (match) this.domain.next(match);
@@ -248,7 +247,7 @@ export class ResourceImportsComponent {
     public async importMissingResources() {
         const domain = this.domain.getValue();
         if (!domain) return;
-        const list = await this.resource_list.pipe(take(1)).toPromise();
+        const list = await nextValueFrom(this.resource_list);
         const missing = list.filter((_) => !_.imported);
         if (!missing.length) {
             return notifyWarn(i18n('ADMIN.RESOURCE_IMPORTS_ALL_WARNING'));

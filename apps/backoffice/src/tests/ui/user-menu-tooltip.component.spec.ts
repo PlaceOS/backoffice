@@ -1,7 +1,9 @@
 import { FormsModule } from '@angular/forms';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { createRoutingFactory, SpectatorRouting } from '@ngneat/spectator/jest';
 import { MockComponent, MockModule, MockProvider } from 'ng-mocks';
+import { LocaleService } from '../../app/common/locale.service';
 import { SettingsService } from '../../app/common/settings.service';
 import { IconComponent } from '../../app/ui/icon.component';
 import { SafePipe } from '../../app/ui/pipes/safe.pipe';
@@ -18,9 +20,14 @@ describe('UserMenuTooltipComponent', () => {
                 post: jest.fn(),
                 dark_mode: false,
             } as any),
+            MockProvider(LocaleService, {}),
         ],
         declarations: [SafePipe, MockComponent(IconComponent)],
-        imports: [MockModule(MatSlideToggleModule), FormsModule],
+        imports: [
+            MockModule(MatSlideToggleModule),
+            MockModule(MatMenuModule),
+            FormsModule,
+        ],
     });
 
     beforeEach(() => (spectator = createComponent()));

@@ -258,7 +258,7 @@ import { TriggerStateService } from './trigger-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class TriggerAboutComponent extends AsyncHandler implements OnInit {
     /** System to use for conditions with systen variables and functions */
@@ -283,7 +283,7 @@ export class TriggerAboutComponent extends AsyncHandler implements OnInit {
     public readonly removeAction = (a) => this._service.removeAction(a);
 
     public get item(): PlaceTrigger {
-        return this._service.active_item as any;
+        return (this._service.active_item as any) || {};
     }
 
     constructor(private _service: TriggerStateService) {

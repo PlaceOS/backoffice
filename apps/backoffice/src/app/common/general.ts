@@ -1,6 +1,7 @@
 import { UntypedFormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { first } from 'rxjs/operators';
+import { lastValueFrom, Observable } from 'rxjs';
+import { first, take } from 'rxjs/operators';
 import {
     CONFIRM_METADATA,
     ConfirmModalComponent,
@@ -479,4 +480,12 @@ export function getInvalidFields(form: UntypedFormGroup, prefix: string = '') {
         }
     }
     return invalid;
+}
+
+/**
+ * Create a promise that returns the next value returned by the given observable
+ * @param obs Observable to use
+ */
+export function nextValueFrom<T = any>(obs: Observable<T>): Promise<T> {
+    return lastValueFrom(obs.pipe(take(1)));
 }

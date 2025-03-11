@@ -117,7 +117,9 @@ export class AsyncHandler implements OnDestroy {
      * @param name
      */
     protected unsub(name: string) {
-        if (!(name in this._subscriptions)) return;
+        if (!(name in this._subscriptions) || !this._subscriptions[name]) {
+            return;
+        }
         'unsubscribe' in this._subscriptions[name]
             ? (this._subscriptions[name] as Subscription).unsubscribe()
             : (this._subscriptions[name] as any)();

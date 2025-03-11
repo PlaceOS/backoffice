@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { queryDrivers, updateDriver } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
-import { catchError, map, shareReplay, switchMap, take } from 'rxjs/operators';
+import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { nextValueFrom } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
 
 @Component({
@@ -120,7 +121,7 @@ import { notifyError, notifySuccess } from '../common/notifications';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class DriverUpdateListModalComponent {
     public loading = 'Loading drivers...';
@@ -170,16 +171,14 @@ export class DriverUpdateListModalComponent {
             return;
         }
         this.selected_drivers = (
-            await this.drivers_with_updates.pipe(take(1)).toPromise()
+            await nextValueFrom(this.drivers_with_updates)
         ).data.map((_) => _.id);
     }
 
     public async updateDrivers() {
         this.loading = 'Updating drivers...';
         this._dialog_ref.disableClose = true;
-        const drivers = await this.drivers_with_updates
-            .pipe(take(1))
-            .toPromise();
+        const drivers = await nextValueFrom(this.drivers_with_updates);
         const selected = drivers.data.filter((_) =>
             this.selected_drivers.includes(_.id),
         );

@@ -47,6 +47,7 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
                     @for (link of links; track link.name) {
                         <a
                             btn
+                            link
                             matRipple
                             class="clear mx-auto w-[calc(100%-1rem)] text-left hover:bg-base-100"
                             [routerLink]="[link.route]"
@@ -208,13 +209,13 @@ import { UserMenuTooltipComponent } from './user-menu-tooltip.component';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class SidebarMenuComponent extends AsyncHandler {
     @Input() public open = true;
     @Output() public openChange = new EventEmitter();
     public items: any[] = [];
-    public compact: boolean = false;
+    public compact = false;
     public readonly user_controls = UserMenuTooltipComponent;
     public readonly links = [
         { name: 'COMMON.SYSTEMS', route: '/systems', icon: 'meeting_room' },

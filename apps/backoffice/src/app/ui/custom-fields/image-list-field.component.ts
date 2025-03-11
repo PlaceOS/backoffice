@@ -6,10 +6,10 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { Upload } from '@placeos/cloud-uploads';
 
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 import { AsyncHandler } from '../../common/async-handler.class';
-import { unique } from '../../common/general';
+import { nextValueFrom, unique } from '../../common/general';
 import { notifyInfo } from '../../common/notifications';
 import { UploadsService } from '../../common/uploads.service';
 
@@ -188,7 +188,7 @@ export interface UploadDetails {
             multi: true,
         },
     ],
-    standalone: false
+    standalone: false,
 })
 export class ImageListFieldComponent extends AsyncHandler {
     /** List of images */
@@ -315,9 +315,7 @@ export class ImageListFieldComponent extends AsyncHandler {
     private async _updateUploadHistory() {
         const list = this.upload_ids.getValue();
         if (list.length === 0) return;
-        const global_list = await this._uploads.upload_list
-            .pipe(take(1))
-            .toPromise();
+        const global_list = await nextValueFrom(this._uploads.upload_list);
         const new_list = global_list.filter((_) =>
             list.find((i) => i === _.id),
         );

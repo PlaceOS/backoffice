@@ -2,8 +2,8 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { take } from 'rxjs/operators';
 import { AsyncHandler } from '../../common/async-handler.class';
+import { nextValueFrom } from '../../common/general';
 import { notifySuccess } from '../../common/notifications';
 import { EmailStateService, EmailTemplate } from './email-state.service';
 
@@ -160,7 +160,7 @@ export function extractTextFromHTML(html_string: string) {
         </ng-template>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class EmailTemplateFormComponent extends AsyncHandler {
     public loading = '';
@@ -210,9 +210,7 @@ export class EmailTemplateFormComponent extends AsyncHandler {
             'trigger',
             this.form.valueChanges.subscribe(async (value) => {
                 if (value.trigger) {
-                    const trigger_list = await this.definitions
-                        .pipe(take(1))
-                        .toPromise();
+                    const trigger_list = await nextValueFrom(this.definitions);
                     this.active_trigger = trigger_list.find(
                         (_) => _.id === value.trigger,
                     );

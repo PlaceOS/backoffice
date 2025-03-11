@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { authority } from '@placeos/ts-client';
-import { take } from 'rxjs/operators';
+import { nextValueFrom } from '../../common/general';
 import { EmailStateService } from './email-state.service';
 
 @Component({
@@ -53,9 +53,9 @@ import { EmailStateService } from './email-state.service';
         </div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
-export class EmailTemplatesComponent {
+export class EmailTemplatesComponent implements OnInit {
     public readonly loading = this._service.loading;
     public readonly domain = this._service.domain;
     public readonly domain_list = this._service.domain_list;
@@ -67,7 +67,7 @@ export class EmailTemplatesComponent {
 
     public async ngOnInit() {
         const domain = authority();
-        const domain_list = await this.domain_list.pipe(take(1)).toPromise();
+        const domain_list = await nextValueFrom(this.domain_list);
         if (!domain_list?.length) return;
         const match = domain_list.find((d) => d.id === domain.id);
         if (match) this._service.setDomain(match);

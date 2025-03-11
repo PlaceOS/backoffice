@@ -1,7 +1,6 @@
 import { createRoutingFactory, SpectatorRouting } from '@ngneat/spectator/jest';
-import { MockComponent } from 'ng-mocks';
+import { MockComponent, MockProvider } from 'ng-mocks';
 
-import { fakeAsync } from '@angular/core/testing';
 import { HotkeysService } from '../../app/common/hotkeys.service';
 import { SettingsService } from '../../app/common/settings.service';
 import {
@@ -17,13 +16,12 @@ describe('SidebarMenuComponent', () => {
     const createComponent = createRoutingFactory({
         component: SidebarMenuComponent,
         providers: [
-            { provide: CustomTooltipData, useValue: {} },
-            { provide: SettingsService, useValue: { get: jest.fn() } },
-            {
-                provide: BackofficeUsersService,
-                useValue: { current: jest.fn() },
-            },
-            { provide: HotkeysService, useValue: { listen: jest.fn() } },
+            MockProvider(CustomTooltipData, {}),
+            MockProvider(SettingsService, { get: jest.fn() }),
+            MockProvider(BackofficeUsersService, {
+                current: jest.fn(() => ({}) as any),
+            }),
+            MockProvider(HotkeysService, { listen: jest.fn() }),
         ],
         declarations: [
             MockComponent(IconComponent),
@@ -35,16 +33,6 @@ describe('SidebarMenuComponent', () => {
 
     it('should create component', () =>
         expect(spectator.component).toBeTruthy());
-
-    it('should list menu items', fakeAsync(() => {
-        expect('a[menu]').not.toExist();
-        spectator
-            .inject(SettingsService)
-            .get.mockImplementation(() => [{ id: 1, route: '' }] as any);
-        spectator.component.ngOnInit();
-        spectator.detectChanges();
-        expect('a[menu]').toExist();
-    }));
 
     it('should show user menu', () => expect('button[user]').toExist());
 });

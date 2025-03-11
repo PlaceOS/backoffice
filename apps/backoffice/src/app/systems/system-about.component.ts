@@ -129,6 +129,7 @@ import { SystemStateService } from './system-state.service';
                 <div class="flex flex-wrap items-center">
                     <button
                         btn
+                        start
                         matRipple
                         class="m-2 min-w-36 flex-1"
                         (click)="start()"
@@ -137,6 +138,7 @@ import { SystemStateService } from './system-state.service';
                     </button>
                     <button
                         btn
+                        stop
                         matRipple
                         class="inverse error m-2 min-w-36 flex-1"
                         (click)="stop()"
@@ -177,7 +179,7 @@ import { SystemStateService } from './system-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class SystemAboutComponent {
     /** List of settings for associated modules, drivers and zones */

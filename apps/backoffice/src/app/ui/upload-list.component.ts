@@ -150,13 +150,13 @@ import { UploadsService } from '../common/uploads.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class UploadListComponent extends AsyncHandler implements OnInit {
     /** Whether upload list should be displayed */
-    public show: boolean = false;
+    public show = false;
     /** Whether drop details overlay should be shown */
-    public show_overlay: boolean = false;
+    public show_overlay = false;
     /** List of uploads */
     public readonly uploads = this._uploads.upload_list;
 

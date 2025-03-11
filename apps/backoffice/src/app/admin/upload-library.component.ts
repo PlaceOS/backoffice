@@ -17,9 +17,8 @@ import {
     shareReplay,
     startWith,
     switchMap,
-    take,
 } from 'rxjs/operators';
-import { openConfirmModal } from '../common/general';
+import { nextValueFrom, openConfirmModal } from '../common/general';
 import { notifyError } from '../common/notifications';
 import { i18n } from '../common/translate';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
@@ -216,7 +215,7 @@ export interface UploadInfo {
         </div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class UploadLibraryComponent {
     public readonly loading = new BehaviorSubject<boolean>(false);
@@ -249,7 +248,7 @@ export class UploadLibraryComponent {
 
     public async ngOnInit() {
         const domain = authority();
-        const domain_list = await this.domain_list.pipe(take(1)).toPromise();
+        const domain_list = await nextValueFrom(this.domain_list);
         if (!domain_list?.length) return;
         const match = domain_list.find((d) => d.id === domain.id);
         if (match) this.domain.next(match);

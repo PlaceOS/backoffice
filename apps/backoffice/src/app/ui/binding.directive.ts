@@ -17,32 +17,36 @@ import { AsyncHandler } from '../common/async-handler.class';
 
 @Directive({
     selector: 'i[bind], [binding], co-bind',
-    standalone: false
+    standalone: false,
 })
 export class BindingDirective<T = any>
     extends AsyncHandler
     implements OnInit, OnChanges, OnDestroy
 {
     /** ID of the system to bind */
-    @Input() public sys: string = '';
+    @Input() public sys = '';
     /** Class name of the module to bind */
-    @Input() public mod: string = '';
+    @Input() public mod = '';
     /** Index of the system to bind */
     @Input() public index = 1;
     /** Status variable to bind to */
-    @Input() public bind: string = '';
+    @Input() public bind = '';
     /** Method to execute */
-    @Input() public exec: string = '';
+    @Input() public exec = '';
+    /** Method to execute */
+    @Input() public delay = 100;
     /** Event to listen for on the parent */
-    @Input('onEvent') public on_event: string = '';
+    @Input('onEvent') public on_event = '';
     /** ID of the system to bind to */
-    @Input() public params: any[] = [];
+    @Input() public params: any[] = null;
+    @Input() public ignore = false;
     /** Current value of the binding */
     @Input() public model: T | null = null;
     /** Emitter for changes to the value of the binding */
     @Output() public modelChange = new EventEmitter<T | null>();
 
     private _binding = false;
+    private _old_model: T | null = null;
 
     constructor(
         private _element: ElementRef<HTMLElement>,
@@ -63,9 +67,10 @@ export class BindingDirective<T = any>
         }
         if (
             changes.model &&
-            changes.model.previousValue !== this.model &&
+            this._old_model !== this.model &&
             this.model != null
         ) {
+            this._old_model = this.model;
             this.execute();
         }
         if (changes.on_event && this.on_event) {
@@ -105,7 +110,9 @@ export class BindingDirective<T = any>
                                 setTimeout(() => {
                                     this._binding = false;
                                     this.clearTimeout('bound');
+                                    if (this.ignore) return;
                                     this.model = value;
+                                    this._old_model = this.model;
                                     this.modelChange.emit(this.model);
                                 }, 10);
                             }),
@@ -119,25 +126,30 @@ export class BindingDirective<T = any>
 
     /** Excute the set method on the module */
     private execute() {
-        if (authority() && this.exec && this.sys && this.mod) {
-            const module = getModule(this.sys, this.mod, this.index);
-            if (this.bind) this.params = this.params || [this.model];
-            module.execute(this.exec, this.params).then((result) => {
-                // Emit exec result if not bound to status variable
-                if (!this.bind) {
-                    this.model = result;
-                    this.modelChange.emit(this.model);
-                }
-            });
+        if (
+            authority() &&
+            this.exec &&
+            this.sys &&
+            this.mod &&
+            !this._timers['execute']
+        ) {
+            this.timeout(
+                'execute',
+                () => {
+                    const module = getModule(this.sys, this.mod, this.index);
+                    let params = this.params;
+                    if (this.bind) params = this.params || [this.model];
+                    module.execute(this.exec, params || []).then((result) => {
+                        // Emit exec result if not bound to status variable
+                        if (!this.bind) {
+                            this.model = result;
+                            this._old_model = this.model;
+                            this.modelChange.emit(this.model);
+                        }
+                    });
+                },
+                this.delay,
+            );
         }
-    }
-    /**
-     * Update local value when form control value is changed
-     * @param value The new value for the component
-     */
-    public writeValue(value: T) {
-        this.model = value;
-        this.modelChange.emit(this.model);
-        this.execute();
     }
 }

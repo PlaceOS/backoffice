@@ -1,7 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { authority } from '@placeos/ts-client';
-import { take } from 'rxjs/operators';
+import { nextValueFrom } from '../../common/general';
 import { notifyInfo } from '../../common/notifications';
 import { i18n } from '../../common/translate';
 import { APIKeyService } from './api-keys.service';
@@ -155,9 +155,9 @@ import { APIKeyService } from './api-keys.service';
         </ng-template>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
-export class AdminAPIKeysComponent {
+export class AdminAPIKeysComponent implements OnInit {
     public readonly domain = this._service.active_domain;
     public readonly domain_list = this._service.available_domains;
     public readonly key_list = this._service.available_keys;
@@ -176,14 +176,14 @@ export class AdminAPIKeysComponent {
 
     public async ngOnInit() {
         const domain = authority();
-        const domain_list = await this.domain_list.pipe(take(1)).toPromise();
+        const domain_list = await nextValueFrom(this.domain_list);
         if (!domain_list?.length) return;
         const match = domain_list.find((d) => d.id === domain.id);
         if (match) this.setDomain(match);
     }
 
     public async copyKey() {
-        const key = await this.last_key.pipe(take(1)).toPromise();
+        const key = await nextValueFrom(this.last_key);
         if (!key?.x_api_key) return;
         this._clipboard.copy(key.x_api_key);
         notifyInfo(i18n('ADMIN.APP_KEYS_COPIED'));

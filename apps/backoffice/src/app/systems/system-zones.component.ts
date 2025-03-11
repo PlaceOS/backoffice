@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { PlaceSystem, PlaceZone, queryZones } from '@placeos/ts-client';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, shareReplay, take } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 
 import { moveItemInArray } from '@angular/cdk/drag-drop';
+import { nextValueFrom } from '../common/general';
 import { SystemStateService } from './system-state.service';
 
 @Component({
@@ -146,7 +147,7 @@ import { SystemStateService } from './system-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class SystemZonesComponent {
     public order_changed = false;
@@ -241,7 +242,7 @@ export class SystemZonesComponent {
     };
 
     public readonly saveZoneOrder = async () => {
-        const zones = await this._service.zones.pipe(take(1)).toPromise();
+        const zones = await nextValueFrom(this._service.zones);
         let zone_order = this.zone_order.getValue();
         if (zones.every(({ id }, idx) => zone_order[idx] === id)) return;
         await this._service.reorderZones(zone_order);
@@ -269,7 +270,7 @@ export class SystemZonesComponent {
     constructor(private _service: SystemStateService) {}
 
     public async reorder([previous, current]: [number, number]) {
-        const zones = await this.zones.pipe(take(1)).toPromise();
+        const zones = await nextValueFrom(this.zones);
         moveItemInArray(zones, previous, current);
         this.changed[zones[previous].id] = true;
         this.zone_order.next(zones.map(({ id }) => id));

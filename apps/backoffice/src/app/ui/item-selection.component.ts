@@ -13,8 +13,8 @@ import {
     PlaceRepository,
 } from '@placeos/ts-client';
 import { isBefore } from 'date-fns';
-import { take } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
+import { nextValueFrom } from '../common/general';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ActiveItemService } from '../common/item.service';
 import { SettingsService } from '../common/settings.service';
@@ -154,7 +154,7 @@ import { BackofficeUsersService } from '../users/users.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class ItemSelectionComponent extends AsyncHandler {
     @Input() public show = true;
@@ -254,7 +254,7 @@ export class ItemSelectionComponent extends AsyncHandler {
      * Check if user has scrolled to the bottom of the sidebar and emit an event to get next page of items
      */
     public async atBottom() {
-        const loading = await this.loading.pipe(take(1)).toPromise();
+        const loading = await nextValueFrom(this.loading);
         if (loading || !this.is_stale) return;
         if (!this.viewport) {
             return this.timeout('atBottom', () => this.atBottom());

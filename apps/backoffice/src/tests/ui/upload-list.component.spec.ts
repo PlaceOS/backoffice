@@ -2,8 +2,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
-import { MockComponent } from 'ng-mocks';
+import { MockComponent, MockProvider } from 'ng-mocks';
 import { BehaviorSubject, of } from 'rxjs';
+
 import { SettingsService } from '../../app/common/settings.service';
 import { UploadsService } from '../../app/common/uploads.service';
 import { IconComponent } from '../../app/ui/icon.component';
@@ -14,30 +15,21 @@ describe('UploadListComponent', () => {
     const createComponent = createComponentFactory({
         component: UploadListComponent,
         providers: [
-            {
-                provide: SettingsService,
-                useValue: {
-                    get: jest.fn(),
-                    post: jest.fn(),
-                    value: jest.fn(),
-                    listen: jest.fn(() => of(true)),
-                },
-            },
-            {
-                provide: UploadsService,
-                useValue: {
-                    get: jest.fn(),
-                    upload_list: new BehaviorSubject([]),
-                },
-            },
-            {
-                provide: MatDialog,
-                useValue: {
-                    open: jest.fn(),
-                    afterOpened: of(1),
-                    afterAllClosed: of(1),
-                },
-            },
+            MockProvider(SettingsService, {
+                get: jest.fn(),
+                post: jest.fn(),
+                value: jest.fn(),
+                listen: jest.fn(() => of(true)),
+            } as any),
+            MockProvider(UploadsService, {
+                get: jest.fn(),
+                upload_list: new BehaviorSubject([]),
+            } as any),
+            MockProvider(MatDialog, {
+                open: jest.fn(),
+                afterOpened: of(1),
+                afterAllClosed: of(1),
+            } as any),
         ],
         declarations: [MockComponent(IconComponent)],
         imports: [MatProgressBarModule, MatTooltipModule],
@@ -45,7 +37,7 @@ describe('UploadListComponent', () => {
 
     beforeEach(() => {
         spectator = createComponent();
-        spectator.setInput({ show: true });
+        spectator.component.show = true;
         spectator.detectChanges();
     });
 
@@ -54,7 +46,7 @@ describe('UploadListComponent', () => {
 
     it('should allow closing the upload list', () => {
         expect('[upload-list]').toExist();
-        spectator.setInput({ show: false });
+        spectator.component.show = false;
         spectator.detectChanges();
         expect('[upload-list]').not.toExist();
     });

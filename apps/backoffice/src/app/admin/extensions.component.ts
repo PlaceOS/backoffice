@@ -13,7 +13,8 @@ import {
     ConfirmModalData,
 } from 'apps/backoffice/src/app/overlays/confirm-modal.component';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { debounceTime, first, map, shareReplay, take } from 'rxjs/operators';
+import { debounceTime, first, map, shareReplay } from 'rxjs/operators';
+import { nextValueFrom } from '../common/general';
 import { ExtensionModalComponent } from './extension-modal/extension-modal.component';
 
 export interface BackofficeExtension {
@@ -164,7 +165,7 @@ export interface BackofficeExtension {
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class PlaceExtensionsComponent implements OnInit {
     /** Loading state */
@@ -233,7 +234,7 @@ export class PlaceExtensionsComponent implements OnInit {
             .pipe(first((_) => _.reason === 'done'))
             .subscribe(async (event) => {
                 ref.componentInstance.loading = true;
-                let ext_list = await this.extensions.pipe(take(1)).toPromise();
+                let ext_list = await nextValueFrom(this.extensions);
                 ext_list = ext_list.filter((i) => i.name !== item.name);
                 ext_list.push(event.metadata);
                 await this.updateDomain(ext_list);
@@ -257,7 +258,7 @@ export class PlaceExtensionsComponent implements OnInit {
             .pipe(first((_) => _.reason === 'done'))
             .subscribe(async (_) => {
                 ref.componentInstance.loading = 'Removing extension...';
-                let ext_list = await this.extensions.pipe(take(1)).toPromise();
+                let ext_list = await nextValueFrom(this.extensions);
                 ext_list = ext_list.filter((i) => i.name !== item.name);
                 await this.updateDomain(ext_list).catch((e) =>
                     notifyError(`Error removing extension: ${e}`),
@@ -268,7 +269,7 @@ export class PlaceExtensionsComponent implements OnInit {
     }
 
     public async updateDomain(extension_list: BackofficeExtension[]) {
-        const domain = await this.domain.pipe(take(1)).toPromise();
+        const domain = await nextValueFrom(this.domain);
         if (!domain) return;
         const extensions = {};
         for (const ext of extension_list) {

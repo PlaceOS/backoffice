@@ -35,13 +35,12 @@ import {
     shareReplay,
     startWith,
     switchMap,
-    take,
     tap,
 } from 'rxjs/operators';
 import { calculateModuleIndex } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
-import { openConfirmModal, unique } from '../common/general';
+import { nextValueFrom, openConfirmModal, unique } from '../common/general';
 
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -335,7 +334,7 @@ export class SystemStateService extends AsyncHandler {
             return notifyError(
                 'Logic modules cannot be added to another system',
             );
-        const item = await this.item.pipe(take(1)).toPromise();
+        const item = await nextValueFrom(this.item);
         const ref = this._dialog.open<
             SelectItemModalComponent,
             SelectItemModalData

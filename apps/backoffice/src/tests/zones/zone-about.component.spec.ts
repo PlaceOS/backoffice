@@ -5,10 +5,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { createRoutingFactory, SpectatorRouting } from '@ngneat/spectator/jest';
 import { PlaceZone } from '@placeos/ts-client';
-import { MockComponent, MockModule } from 'ng-mocks';
+import { MockComponent, MockModule, MockPipe } from 'ng-mocks';
 import { BehaviorSubject } from 'rxjs';
 import { ExecuteMethodFieldComponent } from '../../app/ui/custom-fields/system-exec/execute-method-field.component';
 import { SettingsFormComponent } from '../../app/ui/forms/settings-form/settings-form.component';
+import { DateFromPipe } from '../../app/ui/pipes/date-from.pipe';
 import { ZoneAboutComponent } from '../../app/zones/zone-about.component';
 import { ZonesStateService } from '../../app/zones/zones-state.service';
 
@@ -28,6 +29,7 @@ describe('ZoneAboutComponent', () => {
         declarations: [
             MockComponent(ExecuteMethodFieldComponent),
             MockComponent(SettingsFormComponent),
+            MockPipe(DateFromPipe),
         ],
         imports: [
             MockModule(MatFormFieldModule),

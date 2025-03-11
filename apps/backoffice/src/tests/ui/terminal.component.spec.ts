@@ -1,22 +1,23 @@
-import { fakeAsync } from '@angular/core/testing';
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
+import { lastValueFrom, timer } from 'rxjs';
 import { TerminalComponent } from '../../app/ui/terminal.component';
 
-jest.mock('xterm');
-
-import * as xterm from 'xterm';
-
-class TERMINAL {
-    open = jest.fn();
-    clear = jest.fn();
-    dispose = jest.fn();
-    resize = jest.fn();
-    selectAll = jest.fn();
-    clearSelection = jest.fn();
-    write = jest.fn();
-    writeln = jest.fn();
-    options = {};
-}
+jest.mock('@xterm/xterm', () => {
+    class TERMINAL {
+        open = jest.fn();
+        clear = jest.fn();
+        dispose = jest.fn();
+        resize = jest.fn();
+        selectAll = jest.fn();
+        clearSelection = jest.fn();
+        write = jest.fn();
+        writeln = jest.fn();
+        options = {};
+    }
+    return {
+        Terminal: TERMINAL,
+    };
+});
 
 describe('TerminalComponent', () => {
     let spectator: Spectator<TerminalComponent>;
@@ -26,10 +27,7 @@ describe('TerminalComponent', () => {
         declarations: [],
     });
 
-    beforeEach(() => {
-        (xterm as any).Terminal = TERMINAL;
-        spectator = createComponent();
-    });
+    beforeEach(() => (spectator = createComponent()));
 
     it('should create component', () =>
         expect(spectator.component).toBeTruthy());
@@ -38,18 +36,20 @@ describe('TerminalComponent', () => {
         expect('[terminal]').toExist());
 
     it('should open the terminal', () =>
-        expect(spectator.component.terminal.open).toBeCalled());
+        expect(spectator.component.terminal.open).toHaveBeenCalled());
 
-    it('should allow resizing the terminal', fakeAsync(() => {
-        expect(spectator.component.terminal.resize).not.toBeCalled();
+    it('should allow resizing the terminal', async () => {
+        expect(spectator.component.terminal.resize).not.toHaveBeenCalled();
         spectator.setInput({ resize: true });
-        spectator.tick(301);
-        expect(spectator.component.terminal.resize).toBeCalled();
-    }));
+        await lastValueFrom(timer(301));
+        expect(spectator.component.terminal.resize).toHaveBeenCalled();
+    });
 
     it('should allow updating the terminal contents', () => {
-        expect(spectator.component.terminal.writeln).not.toBeCalled();
+        expect(spectator.component.terminal.writeln).not.toHaveBeenCalled();
         spectator.setInput({ content: 'Test' });
-        expect(spectator.component.terminal.writeln).toBeCalledWith('Test');
+        expect(spectator.component.terminal.writeln).toHaveBeenCalledWith(
+            'Test',
+        );
     });
 });
