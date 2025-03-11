@@ -320,7 +320,7 @@ import { SystemStateService } from './system-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class SystemModulesComponent extends AsyncHandler {
     /** Whether a device should be listened to */
@@ -443,7 +443,7 @@ export class SystemModulesComponent extends AsyncHandler {
     public readonly addToSystem = (d) => this._service.addModuleToSystem(d);
 
     public driver_type(role: PlaceDriverRole): string {
-        if (role == null) return '';
+        if (!role && role != 0) return '';
         switch (role) {
             case PlaceDriverRole.Device:
                 return i18n('DRIVERS.DEVICE');
@@ -453,8 +453,10 @@ export class SystemModulesComponent extends AsyncHandler {
                 return i18n('DRIVERS.SERVICE');
             case PlaceDriverRole.Websocket:
                 return i18n('DRIVERS.WEBSOCKET');
+            case PlaceDriverRole.Logic:
+                return i18n('DRIVERS.LOGIC');
         }
-        return i18n('DRIVERS.LOGIC');
+        return i18n('DRIVERS.UNKNOWN');
     }
 
     public get item(): PlaceSystem {
