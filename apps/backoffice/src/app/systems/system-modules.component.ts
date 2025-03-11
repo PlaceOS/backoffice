@@ -456,7 +456,7 @@ export class SystemModulesComponent extends AsyncHandler {
             case PlaceDriverRole.Logic:
                 return i18n('DRIVERS.LOGIC');
         }
-        return i18n('DRIVERS.UNKNOWN');
+        return `${i18n('DRIVERS.UNKNOWN')} (${role})`;
     }
 
     public get item(): PlaceSystem {
