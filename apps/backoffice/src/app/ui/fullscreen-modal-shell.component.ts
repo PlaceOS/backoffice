@@ -3,9 +3,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
     selector: 'fullscreen-modal-shell,[fs-modal-shell]',
     template: `
-        <div class="flex h-screen w-screen flex-col overflow-auto bg-base-100">
+        <div
+            class="flex h-screen w-screen flex-col items-center overflow-auto bg-base-200"
+        >
+            <div
+                class="fixed top-0 mx-auto h-screen w-[40rem] max-w-full border-x border-base-300 bg-base-100"
+            ></div>
             <header
-                class="sticky top-0 z-10 mx-auto my-2 w-full max-w-[640px] rounded border-none bg-base-200 px-4 py-2"
+                class="sticky top-0 z-10 mx-auto my-2 w-[39rem] max-w-full rounded border border-base-100 bg-base-200 px-4 py-2"
             >
                 <h2 class="text-xl font-medium">
                     {{ heading }}
@@ -15,13 +20,13 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
                 </button>
             </header>
             <main
-                class="z-0 mx-auto h-1/2 w-full max-w-[640px] flex-1 space-y-8 px-4 py-2"
+                class="z-0 mx-auto h-1/2 w-[39rem] max-w-full flex-1 space-y-8 px-4 py-2"
             >
                 <ng-content></ng-content>
                 <div class="h-10 w-full"></div>
             </main>
             <footer
-                class="fixed bottom-0 left-1/2 z-10 mx-auto my-2 flex w-full max-w-[640px] -translate-x-1/2 items-center justify-end rounded border-none bg-base-200 px-4 py-2"
+                class="fixed bottom-0 left-1/2 z-10 mx-auto my-2 flex w-[39rem] max-w-full -translate-x-1/2 items-center justify-end rounded border border-base-100 bg-base-200 px-4 py-2"
                 *ngIf="!loading && !hide_confirm"
             >
                 <button btn matRipple class="w-32" (click)="save.emit()">
@@ -48,7 +53,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
             </div>
         </ng-template>
     `,
-    standalone: false
+    standalone: false,
 })
 export class FullscreenModalShellComponent {
     @Input() public loading = '';

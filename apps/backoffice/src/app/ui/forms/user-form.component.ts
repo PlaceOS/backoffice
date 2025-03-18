@@ -259,7 +259,7 @@ import { i18n } from '../../common/translate';
         </form>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class UserFormComponent {
     /** Group of form fields used for creating the system */
@@ -269,7 +269,7 @@ export class UserFormComponent {
     /** Whether password confirm should be visible in plaintext */
     public show_confirm: boolean;
     /** Loading state */
-    public loading: string = '';
+    public loading = '';
     /** List of available domains */
     public readonly domain_list = queryDomains().pipe(
         map(({ data }) => data),
