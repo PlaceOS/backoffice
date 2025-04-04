@@ -617,6 +617,7 @@
         "FIELD_DEPARTMENT": "Department",
         "AUTHORITY_ID": "Authority ID",
         "NO_GROUPS": "No user groups",
+        "GROUP_COPIED": "User's group copied to clipboard",
         "FIELD_SESSION_START": "Session Start",
         "FIELD_SESSION_END": "End",
         "FIELD_SYSTEMS_ACCESSED": "Systems Accessed",

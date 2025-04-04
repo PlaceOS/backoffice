@@ -1,7 +1,10 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component } from '@angular/core';
 import { PlaceUser } from '@placeos/ts-client';
 
 import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
+import { notifySuccess } from '../common/notifications';
+import { i18n } from '../common/translate';
 
 @Component({
     selector: 'user-about',
@@ -81,12 +84,14 @@ import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
                     *ngIf="item.groups?.length; else empty_group_state"
                     class="-mx-1 flex flex-wrap"
                 >
-                    <div
+                    <button
+                        matRipple
                         *ngFor="let group of item.groups"
                         class="mono m-1 rounded bg-base-200 px-2 py-1 text-[0.625rem]"
+                        (click)="copyGroup(group)"
                     >
                         {{ group }}
-                    </div>
+                    </button>
                 </div>
                 <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.CREATED_AT' | translate }}
@@ -141,5 +146,13 @@ export class UserAboutComponent {
         return (this._service.active_item as any) || {};
     }
 
-    constructor(private _service: ActiveItemService) {}
+    constructor(
+        private _service: ActiveItemService,
+        private _clipboard: Clipboard,
+    ) {}
+
+    public copyGroup(group: string) {
+        this._clipboard.copy(group);
+        notifySuccess(i18n('USERS.GROUP_COPIED'));
+    }
 }
