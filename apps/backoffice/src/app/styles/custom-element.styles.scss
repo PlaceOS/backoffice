@@ -74,6 +74,8 @@ form {
             margin-bottom: 0.5rem;
         }
     }
+
+    
 }
 
 .panel {
@@ -668,6 +670,7 @@ a[icon] {
     .mat-mdc-menu-panel {
         background-color: var(--b1);
         color: var(--bc);
+        max-width: none;
     }
 
     .mat-mdc-menu-item {

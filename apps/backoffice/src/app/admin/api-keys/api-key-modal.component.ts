@@ -113,7 +113,7 @@ import { APIKeyService } from './api-keys.service';
                     <mat-menu #menu="matMenu">
                         <mat-form-field
                             appearance="outline"
-                            class="no-subtext px-2"
+                            class="no-subscript min-w-[20rem] px-2"
                             (click)="
                                 $event.preventDefault();
                                 $event.stopPropagation()
@@ -142,13 +142,30 @@ import { APIKeyService } from './api-keys.service';
                                 form.value.user?.id === item.id
                             "
                         >
-                            {{ item.name }}
+                            <div class="flex w-full items-center space-x-4">
+                                <div class="flex-1 leading-tight">
+                                    <div>{{ item.name }}</div>
+                                    <div class="text-xs opacity-30">
+                                        {{ item.email }}
+                                    </div>
+                                </div>
+                                <code
+                                    *ngIf="item.sys_admin || item.support"
+                                    class="px-2"
+                                    >{{
+                                        (item.sys_admin
+                                            ? 'COMMON.USER_ADMIN'
+                                            : 'COMMON.USER_SUPPORT'
+                                        ) | translate
+                                    }}</code
+                                >
+                            </div>
                         </button>
                         <button
                             mat-menu-item
                             [disabled]="true"
                             *ngIf="!(users | async)?.length"
-                            class="text-center"
+                            class="min-w-[20rem] text-center"
                         >
                             No results
                         </button>
@@ -183,7 +200,7 @@ import { APIKeyService } from './api-keys.service';
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class APIKeyModalComponent {
     @Output() public event = new EventEmitter<DialogEvent>();
