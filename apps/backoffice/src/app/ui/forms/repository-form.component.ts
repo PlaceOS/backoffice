@@ -1,4 +1,10 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnChanges,
+    OnInit,
+    SimpleChanges,
+} from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 
 import {
@@ -191,6 +197,64 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                 <label for="commit"> {{ 'REPOS.COMMIT' | translate }}</label>
                 <mat-form-field appearance="outline">
                     <mat-select
+                        formControlName="commit_hash"
+                        placeholder="Select commit"
+                        [disabled]="!(commit_list | async)?.length"
+                    >
+                        <mat-select-trigger>
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-1 truncate">
+                                    {{
+                                        base_commit?.subject || 'Latest commit'
+                                    }}
+                                </div>
+                                <div
+                                    class="!mr-4 rounded bg-base-200 px-1.5 font-mono text-[0.625rem]"
+                                >
+                                    {{
+                                        form.value.commit_hash || 'HEAD'
+                                            | slice: 0 : 8
+                                    }}
+                                </div>
+                            </div>
+                        </mat-select-trigger>
+                        <mat-option
+                            *ngFor="let commit of commit_list | async"
+                            [value]="commit.hash"
+                        >
+                            <div
+                                class="flex w-[calc(100%-2.20rem)] flex-1 items-center space-x-2"
+                                [class.!w-full]="
+                                    form.value.commit_hash === commit.hash
+                                "
+                                (click)="base_commit = commit"
+                            >
+                                <div
+                                    class="flex w-1/2 flex-1 flex-col truncate leading-tight"
+                                >
+                                    <div class="truncate">
+                                        {{ commit.subject }}
+                                    </div>
+                                    <div
+                                        class="truncate font-mono text-[0.625rem] text-base-content opacity-30"
+                                    >
+                                        {{ commit.date | date: 'medium' }}
+                                    </div>
+                                </div>
+                                <code
+                                    class="rounded bg-base-200 p-1 text-xs"
+                                    *ngIf="commit.author"
+                                    >{{ commit.author }}</code
+                                >
+                                <code class="rounded bg-base-200 p-1 text-xs">{{
+                                    commit.hash | slice: 0 : 8
+                                }}</code>
+                            </div>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <!-- <mat-form-field appearance="outline">
+                    <mat-select
                         name="type"
                         formControlName="commit_hash"
                         placeholder="Select commit"
@@ -222,7 +286,7 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
                     <mat-error>{{
                         'REPOS.COMMIT_REQUIRED' | translate
                     }}</mat-error>
-                </mat-form-field>
+                </mat-form-field> -->
             </div>
             <div class="field" *ngIf="can_change_commit && is_interface">
                 <settings-form-field
@@ -248,9 +312,12 @@ import { DateFromPipe } from '../pipes/date-from.pipe';
         </form>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
-export class RepositoryFormComponent extends AsyncHandler {
+export class RepositoryFormComponent
+    extends AsyncHandler
+    implements OnInit, OnChanges
+{
     /** Group of form fields used for creating the system */
     @Input() public form: UntypedFormGroup;
     /** List of commits available for repository */
@@ -265,7 +332,7 @@ export class RepositoryFormComponent extends AsyncHandler {
     public follow_latest: boolean;
     /** List of available types of repositories */
     public repo_types: Identity[] = [];
-    public show_password: boolean = false;
+    public show_password = false;
     public date_pipe = new DateFromPipe();
 
     public get hide_uri() {
@@ -384,6 +451,12 @@ export class RepositoryFormComponent extends AsyncHandler {
                     { hash: 'HEAD', subject: 'Latest commit on the branch' },
                     ...l,
                 ]),
+                tap((l) => {
+                    const commit =
+                        l.find((c) => c.hash === this.form.value.commit_hash) ||
+                        l[0];
+                    this.base_commit = commit;
+                }),
                 shareReplay(1),
             );
         }
