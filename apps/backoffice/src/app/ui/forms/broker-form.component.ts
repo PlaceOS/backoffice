@@ -5,7 +5,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 
 import { AuthType } from '@placeos/ts-client';
 import { unique } from '../../common/general';
-import { i18n } from '../../common/translate';
+import { i18n } from '../../common/locale.service';
 
 @Component({
     selector: 'broker-form',
@@ -247,7 +247,7 @@ import { i18n } from '../../common/translate';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class BrokerFormComponent {
     /** Group of form fields used for creating the system */

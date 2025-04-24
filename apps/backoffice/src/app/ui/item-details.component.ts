@@ -3,8 +3,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PlaceDriverRole } from '@placeos/ts-client';
 import { downloadFile, jsonToCsv } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
+import { i18n } from '../common/locale.service';
 import { notifyInfo } from '../common/notifications';
-import { i18n } from '../common/translate';
 import { BackofficeUsersService } from '../users/users.service';
 
 export interface DisplayItem {

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
-import { i18n } from '../common/translate';
+import { i18n } from '../common/locale.service';
 import { RepositoriesStateService } from './repositories-state.service';
 
 @Component({
@@ -67,7 +67,7 @@ import { RepositoriesStateService } from './repositories-state.service';
         </div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class RepositoriesComponent extends AsyncHandler {
     public readonly name = 'repositories';

@@ -26,7 +26,7 @@ import {
     generateSAMLSourceForm,
 } from 'apps/backoffice/src/app/domains/auth-sources.utilities';
 import { Observable } from 'rxjs';
-import { i18n } from '../common/translate';
+import { i18n } from '../common/locale.service';
 
 export interface AuthSourceModalData {
     /** Domain the auth source is associated with */
@@ -88,7 +88,7 @@ export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class AuthSourceModalComponent extends AsyncHandler implements OnInit {
     /** Emitter for events on the modal */

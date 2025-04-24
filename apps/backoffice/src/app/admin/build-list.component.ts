@@ -12,8 +12,8 @@ import {
 } from 'rxjs/operators';
 import { toQueryString } from '../common/api';
 import { openConfirmModal } from '../common/general';
+import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { i18n } from '../common/translate';
 
 interface BuildJob {
     state: 'pending' | 'running' | 'cancelled' | 'error' | 'done';
@@ -127,7 +127,7 @@ function cancelBuildJob(id, q = {}) {
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class PlaceBuildListComponent {
     public loading = '';

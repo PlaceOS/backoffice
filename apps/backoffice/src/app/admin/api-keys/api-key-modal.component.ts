@@ -11,8 +11,8 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { addChipItem, removeChipItem } from '../../common/forms';
 import { getInvalidFields } from '../../common/general';
+import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
-import { i18n } from '../../common/translate';
 import { DialogEvent } from '../../common/types';
 import { APIKeyService } from './api-keys.service';
 

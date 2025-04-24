@@ -11,8 +11,8 @@ import {
 import { first } from 'rxjs/operators';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
+import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { i18n } from '../common/translate';
 import { HashMap } from '../common/types';
 
 const RESOURCE_STORE = new Map<string, string>();
@@ -36,7 +36,7 @@ export interface FrameMessage {
             [src]="url | safe: 'resource'"
         ></iframe>
     `,
-    standalone: false
+    standalone: false,
 })
 export class ExtensionOutletComponent extends AsyncHandler {
     public url = '';

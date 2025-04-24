@@ -33,7 +33,7 @@ import {
 
 import { format, isAfter, subMinutes } from 'date-fns';
 import * as yaml from 'js-yaml';
-import { i18n } from '../../../common/translate';
+import { i18n } from '../../../common/locale.service';
 import { DateFromPipe } from '../../pipes/date-from.pipe';
 
 @Component({
@@ -51,7 +51,7 @@ import { DateFromPipe } from '../../pipes/date-from.pipe';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class DriverFormComponent extends AsyncHandler implements OnChanges {
     /** Group of form fields used for creating the system */

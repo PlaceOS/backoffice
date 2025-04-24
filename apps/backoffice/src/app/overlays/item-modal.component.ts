@@ -44,7 +44,7 @@ import { generateUserFormFields } from 'apps/backoffice/src/app/users/users.util
 import { generateZoneFormFields } from 'apps/backoffice/src/app/zones/zones.utilites';
 import { Observable } from 'rxjs';
 import { getInvalidFields } from '../common/general';
-import { i18n } from '../common/translate';
+import { i18n } from '../common/locale.service';
 
 export interface CreateEditModalData<T extends Identity = any> {
     /** Service associated with the item being created/edited */
@@ -124,7 +124,7 @@ export interface CreateEditModalData<T extends Identity = any> {
         </fullscreen-modal-shell>
     `,
     styles: [''],
-    standalone: false
+    standalone: false,
 })
 export class ItemCreateUpdateModalComponent
     extends AsyncHandler

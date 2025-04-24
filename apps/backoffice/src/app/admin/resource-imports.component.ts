@@ -18,8 +18,8 @@ import {
     switchMap,
 } from 'rxjs/operators';
 import { nextValueFrom, openConfirmModal } from '../common/general';
+import { i18n } from '../common/locale.service';
 import { notifySuccess, notifyWarn } from '../common/notifications';
-import { i18n } from '../common/translate';
 
 export interface ExternalResource {
     id: string;

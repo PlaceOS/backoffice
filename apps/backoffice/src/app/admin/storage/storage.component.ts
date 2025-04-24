@@ -11,7 +11,7 @@ import {
     tap,
 } from 'rxjs/operators';
 import { openConfirmModal } from '../../common/general';
-import { i18n } from '../../common/translate';
+import { i18n } from '../../common/locale.service';
 import { StorageProviderModalComponent } from './storage-provider-modal.component';
 import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
 
@@ -140,7 +140,7 @@ import { PlaceStorage, queryStorage, removeStorage } from './storage.fn';
         </ng-template>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class StorageComponent {
     /** Loading state */

@@ -16,7 +16,7 @@ import { VERSION } from '../../environments/version';
 
 import { format } from 'date-fns';
 import { copyToClipboard } from '../common/general';
-import { i18n } from '../common/translate';
+import { i18n } from '../common/locale.service';
 
 export interface PlaceServiceDetails {
     /** Name of the service */
@@ -175,7 +175,7 @@ export interface PlaceServiceDetails {
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class PlaceDetailsComponent extends AsyncHandler implements OnInit {
     /** Current details about the API */

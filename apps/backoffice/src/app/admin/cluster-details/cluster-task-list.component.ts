@@ -22,7 +22,7 @@ import {
     switchMap,
     tap,
 } from 'rxjs/operators';
-import { i18n } from '../../common/translate';
+import { i18n } from '../../common/locale.service';
 
 const task_details = {};
 
@@ -140,7 +140,7 @@ const task_details = {};
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class PlaceClusterTaskListComponent extends AsyncHandler {
     /** Cluster to display tasks details for */

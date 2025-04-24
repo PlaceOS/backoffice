@@ -4,7 +4,7 @@ import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
-import { i18n } from '../common/translate';
+import { i18n } from '../common/locale.service';
 
 @Component({
     selector: 'new-triggers-view',
@@ -81,7 +81,7 @@ import { i18n } from '../common/translate';
         </div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class TriggersComponent extends AsyncHandler {
     public readonly name = 'triggers';

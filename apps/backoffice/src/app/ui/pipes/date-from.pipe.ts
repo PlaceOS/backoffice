@@ -1,10 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { differenceInMinutes } from 'date-fns';
-import { i18n } from '../../common/translate';
+import { i18n } from '../../common/locale.service';
 
 @Pipe({
     name: 'dateFrom',
-    standalone: false
+    standalone: false,
 })
 export class DateFromPipe implements PipeTransform {
     public transform(date: number): string {

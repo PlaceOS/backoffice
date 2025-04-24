@@ -33,8 +33,8 @@ import { BackofficeUsersService } from '../users/users.service';
 import { ACTIONS, ItemActions } from './actions';
 import { AsyncHandler } from './async-handler.class';
 import { log } from './general';
+import { i18n } from './locale.service';
 import { notifyError, notifySuccess } from './notifications';
-import { i18n } from './translate';
 
 export type ResourceType =
     | 'domains'

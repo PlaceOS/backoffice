@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { copyToClipboard, unique } from '../common/general';
 import { notifyInfo } from '../common/notifications';
 
-import { i18n } from '../common/translate';
+import { i18n } from '../common/locale.service';
 import { HashMap } from '../common/types';
 import { SystemStateService } from './system-state.service';
 
@@ -179,7 +179,7 @@ export interface TriggerInstanceState {
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class SystemTriggersComponent {
     public readonly filter$ = new BehaviorSubject<string>('');

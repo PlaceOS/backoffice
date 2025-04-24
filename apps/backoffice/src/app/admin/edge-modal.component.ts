@@ -2,8 +2,8 @@ import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { addEdge, PlaceEdge, updateEdge } from '@placeos/ts-client';
+import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { i18n } from '../common/translate';
 import { DialogEvent } from '../common/types';
 
 export interface EdgeModalData {
@@ -62,7 +62,7 @@ export interface EdgeModalData {
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class EdgeModalComponent {
     @Output() public readonly event = new EventEmitter<DialogEvent>();

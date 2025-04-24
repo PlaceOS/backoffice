@@ -19,7 +19,7 @@ import {
     ViewModuleStateModalComponent,
 } from 'apps/backoffice/src/app/overlays/view-module-state.component';
 import { map } from 'rxjs/operators';
-import { i18n } from '../common/translate';
+import { i18n } from '../common/locale.service';
 import { ModuleRuntimeErrorsModalComponent } from '../ui/module-runtime-errors.modal';
 import { SystemStateService } from './system-state.service';
 

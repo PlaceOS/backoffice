@@ -6,8 +6,8 @@ import { PlaceDomain } from '@placeos/ts-client';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
+import { i18n } from '../common/locale.service';
 import { notifySuccess } from '../common/notifications';
-import { i18n } from '../common/translate';
 import { DomainStateService } from './domain-state.service';
 
 @Component({
@@ -68,7 +68,7 @@ import { DomainStateService } from './domain-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class DomainAboutComponent extends AsyncHandler implements OnInit {
     /** Form group for edit domain settings */

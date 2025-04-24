@@ -19,8 +19,8 @@ import {
     switchMap,
 } from 'rxjs/operators';
 import { nextValueFrom, openConfirmModal } from '../common/general';
+import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
-import { i18n } from '../common/translate';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
 
 function getMimeType(filename: string): string {

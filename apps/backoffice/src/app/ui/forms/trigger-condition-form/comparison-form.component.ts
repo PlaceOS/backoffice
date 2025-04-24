@@ -19,7 +19,7 @@ import { calculateModuleIndex } from 'apps/backoffice/src/app/common/api';
 import { notifyError } from 'apps/backoffice/src/app/common/notifications';
 import { Identity } from 'apps/backoffice/src/app/common/types';
 import { map } from 'rxjs/operators';
-import { i18n } from '../../../common/translate';
+import { i18n } from '../../../common/locale.service';
 
 @Component({
     selector: 'trigger-condition-comparison-form',
@@ -193,7 +193,7 @@ import { i18n } from '../../../common/translate';
             </div>
         </ng-template> `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class TriggerConditionComparisonFormComponent
     implements OnChanges, OnInit

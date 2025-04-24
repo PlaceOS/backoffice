@@ -2,8 +2,8 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit } from '@angular/core';
 import { authority } from '@placeos/ts-client';
 import { nextValueFrom } from '../../common/general';
+import { i18n } from '../../common/locale.service';
 import { notifyInfo } from '../../common/notifications';
-import { i18n } from '../../common/translate';
 import { APIKeyService } from './api-keys.service';
 
 @Component({

@@ -28,7 +28,7 @@ import {
     tap,
 } from 'rxjs/operators';
 import { AsyncHandler } from '../../common/async-handler.class';
-import { i18n } from '../../common/translate';
+import { i18n } from '../../common/locale.service';
 import { isValidUrl } from '../../common/validation';
 import { DateFromPipe } from '../pipes/date-from.pipe';
 

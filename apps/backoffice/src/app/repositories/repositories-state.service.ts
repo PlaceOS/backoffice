@@ -23,8 +23,8 @@ import {
 } from 'rxjs/operators';
 
 import { ActiveItemService } from '../common/item.service';
+import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
-import { i18n } from '../common/translate';
 import {
     CreateEditModalData,
     ItemCreateUpdateModalComponent,

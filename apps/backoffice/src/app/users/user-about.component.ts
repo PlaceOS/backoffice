@@ -3,8 +3,8 @@ import { Component } from '@angular/core';
 import { PlaceUser } from '@placeos/ts-client';
 
 import { ActiveItemService } from 'apps/backoffice/src/app/common/item.service';
+import { i18n } from '../common/locale.service';
 import { notifySuccess } from '../common/notifications';
-import { i18n } from '../common/translate';
 
 @Component({
     selector: 'user-about',

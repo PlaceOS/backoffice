@@ -4,7 +4,7 @@ import { PlaceApplication, PlaceDomain } from '@placeos/ts-client';
 import { copyToClipboard } from 'apps/backoffice/src/app/common/general';
 import { notifyInfo } from 'apps/backoffice/src/app/common/notifications';
 import { HashMap } from 'apps/backoffice/src/app/common/types';
-import { i18n } from '../common/translate';
+import { i18n } from '../common/locale.service';
 import { DomainStateService } from './domain-state.service';
 
 @Component({
@@ -144,7 +144,7 @@ import { DomainStateService } from './domain-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class DomainApplicationsComponent {
     /** List of applications associated with the active domain */

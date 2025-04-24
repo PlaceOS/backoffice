@@ -15,7 +15,7 @@ import {
 } from 'apps/backoffice/src/app/common/notifications';
 import { DialogEvent, Identity } from 'apps/backoffice/src/app/common/types';
 import { generateTriggerConditionForm } from 'apps/backoffice/src/app/triggers/triggers.utilities';
-import { i18n } from '../../common/translate';
+import { i18n } from '../../common/locale.service';
 
 export interface TriggerConditionData {
     /** Item to add/update the trigger on */
@@ -86,7 +86,7 @@ export interface TriggerConditionData {
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class TriggerConditionModalComponent extends AsyncHandler {
     /** Emitter for events on the modal */

@@ -5,8 +5,8 @@ import { timer } from 'rxjs';
 import { extensionsForItem } from '../common/api';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
+import { i18n } from '../common/locale.service';
 import { SettingsService } from '../common/settings.service';
-import { i18n } from '../common/translate';
 import { BackofficeUsersService } from '../users/users.service';
 
 @Component({
@@ -81,7 +81,7 @@ import { BackofficeUsersService } from '../users/users.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class PlaceComponent extends AsyncHandler {
     public tab_list = [];

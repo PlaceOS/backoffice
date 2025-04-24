@@ -4,7 +4,7 @@ import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
-import { i18n } from '../common/translate';
+import { i18n } from '../common/locale.service';
 import { ZonesStateService } from './zones-state.service';
 
 @Component({
@@ -91,7 +91,7 @@ import { ZonesStateService } from './zones-state.service';
         </div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class ZonesComponent extends AsyncHandler {
     public readonly name = 'zones';

@@ -25,13 +25,13 @@ import { validateYAML } from 'apps/backoffice/src/app/systems/systems.utilities'
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
 
 import * as yaml from 'js-yaml';
-import { i18n } from '../../../common/translate';
+import { i18n } from '../../../common/locale.service';
 
 @Component({
     selector: 'a-settings-form',
     templateUrl: './settings-form.component.html',
     styleUrls: ['./settings-form.component.scss'],
-    standalone: false
+    standalone: false,
 })
 export class SettingsFormComponent
     extends AsyncHandler

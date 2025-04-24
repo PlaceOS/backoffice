@@ -43,9 +43,8 @@ import { ActiveItemService } from '../common/item.service';
                 ></mat-spinner>
             </div>
             <p class="w-full px-2 text-sm opacity-60">
-                {{
-                    'COMMON.TOTAL_ITEMS' | translate: { count: (total | async) }
-                }}
+                @let t = total | async;
+                {{ 'COMMON.TOTAL_ITEMS' | translate: { count: t } : t }}
             </p>
             <div class="flex h-1/2 flex-1 flex-col">
                 <cdk-virtual-scroll-viewport

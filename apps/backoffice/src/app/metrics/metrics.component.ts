@@ -3,8 +3,8 @@ import { authority } from '@placeos/ts-client';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { timer } from 'rxjs';
+import { i18n } from '../common/locale.service';
 import { SettingsService } from '../common/settings.service';
-import { i18n } from '../common/translate';
 
 @Component({
     selector: 'app-metrics',
@@ -51,7 +51,7 @@ import { i18n } from '../common/translate';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class MetricsComponent extends AsyncHandler implements OnInit {
     /** Whether to only render the metrics view */

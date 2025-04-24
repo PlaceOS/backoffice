@@ -1,8 +1,8 @@
 import { Component, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
-import { i18n } from '../../common/translate';
 import { PlaceStorage, saveStorage } from './storage.fn';
 
 @Component({
@@ -169,7 +169,7 @@ import { PlaceStorage, saveStorage } from './storage.fn';
         </fullscreen-modal-shell>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class StorageProviderModalComponent {
     public readonly ALLOWED_FILE_EXTENSIONS = [

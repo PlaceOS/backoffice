@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
-import { i18n } from '../common/translate';
+import { i18n } from '../common/locale.service';
 import { DomainStateService } from './domain-state.service';
 
 @Component({
@@ -98,7 +98,7 @@ export class DomainsComponent extends AsyncHandler implements OnInit {
         this.extra_actions = [
             {
                 label: 'DOMAINS.AZURE_INTEGRATION',
-                icon: { content: 'add' },
+                icon: 'integration_instructions',
                 action: () => this._service.performAzureIntegration(),
             },
         ];

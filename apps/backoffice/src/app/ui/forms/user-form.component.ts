@@ -8,7 +8,7 @@ import {
     addChipItem,
     removeChipItem,
 } from 'apps/backoffice/src/app/common/forms';
-import { i18n } from '../../common/translate';
+import { i18n } from '../../common/locale.service';
 
 @Component({
     selector: 'user-form',

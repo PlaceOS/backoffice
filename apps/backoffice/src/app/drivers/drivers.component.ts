@@ -5,7 +5,7 @@ import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
-import { i18n } from '../common/translate';
+import { i18n } from '../common/locale.service';
 import { DriverStateService } from './driver-state.service';
 
 @Component({
@@ -93,7 +93,7 @@ import { DriverStateService } from './driver-state.service';
         </div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class DriversComponent extends AsyncHandler {
     public readonly name = 'drivers';

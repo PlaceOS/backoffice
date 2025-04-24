@@ -10,8 +10,8 @@ import { TriggerTimeConditionType } from '@placeos/ts-client';
 import { format, setDay, setMonth } from 'date-fns';
 import { AsyncHandler } from '../../../common/async-handler.class';
 import { numberToPosition } from '../../../common/general';
+import { i18n } from '../../../common/locale.service';
 import { TIMEZONES_IANA } from '../../../common/timezones';
-import { i18n } from '../../../common/translate';
 import { Identity } from '../../../common/types';
 
 @Component({
@@ -250,7 +250,7 @@ import { Identity } from '../../../common/types';
         </ng-template>
     `,
     styles: [],
-    standalone: false
+    standalone: false,
 })
 export class TriggerConditionTimeFormComponent
     extends AsyncHandler

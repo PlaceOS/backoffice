@@ -30,8 +30,7 @@ import { SettingsService } from './common/settings.service';
 import { currentUser } from './common/user-state';
 import { BackofficeUsersService } from './users/users.service';
 
-import { LocaleService } from './common/locale.service';
-import { setTranslationService } from './common/translate';
+import { LocaleService, setTranslationService } from './common/locale.service';
 
 @Component({
     selector: 'placeos-root',
@@ -69,7 +68,7 @@ import { setTranslationService } from './common/translate';
         './styles/native-element.styles.scss',
     ],
     encapsulation: ViewEncapsulation.None,
-    standalone: false
+    standalone: false,
 })
 export class AppComponent extends AsyncHandler implements OnInit {
     /** Whether the application is loading */

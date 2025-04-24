@@ -3,8 +3,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { cleanObject, PlaceDomain, post, put } from '@placeos/ts-client';
 import { getInvalidFields } from '../common/general';
+import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { i18n } from '../common/translate';
 import { DialogEvent, HashMap } from '../common/types';
 import { PlaceTenant } from './staff-api.component';
 
@@ -394,7 +394,7 @@ export interface StaffTenantModalData {
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class StaffTenantModalComponent implements OnInit {
     @Output() public readonly event = new EventEmitter<DialogEvent>();

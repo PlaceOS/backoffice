@@ -3,7 +3,7 @@ import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
 import { ActiveItemService } from '../common/item.service';
-import { i18n } from '../common/translate';
+import { i18n } from '../common/locale.service';
 import { SystemStateService } from './system-state.service';
 
 @Component({
@@ -88,7 +88,7 @@ import { SystemStateService } from './system-state.service';
         </div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class SystemsComponent extends AsyncHandler {
     public readonly name = 'systems';
