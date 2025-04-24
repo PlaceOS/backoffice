@@ -137,6 +137,21 @@ export interface DisplayItem {
                     }}
                 </div>
             </button>
+            @for (item of extra_actions; track item.label) {
+                <button
+                    mat-menu-item
+                    class="flex items-center space-x-2"
+                    (click)="item.action()"
+                >
+                    <app-icon class="text-2xl">{{ item.icon }}</app-icon>
+                    <div class="flex-1">
+                        {{ item.label | translate }}
+                    </div>
+                    <span class="keycap" *ngIf="item.keycap">{{
+                        item.keycap
+                    }}</span>
+                </button>
+            }
             <button
                 *ngIf="can_edit"
                 mat-menu-item
@@ -152,12 +167,18 @@ export interface DisplayItem {
         </mat-menu>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class ItemDetailsComponent {
-    @Input() public type: string = 'system';
+    @Input() public type = 'system';
     @Input() public item: DisplayItem;
     @Input() public can_edit = false;
+    @Input() public extra_actions: {
+        label: string;
+        action: () => void;
+        icon: string;
+        keycap?: string;
+    }[] = [];
     @Output() public create = new EventEmitter<boolean>();
     @Output() public edit = new EventEmitter();
     @Output() public delete = new EventEmitter();

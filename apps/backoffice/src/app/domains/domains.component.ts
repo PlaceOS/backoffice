@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
@@ -37,6 +37,7 @@ import { DomainStateService } from './domain-state.service';
                         <item-details
                             [can_edit]="true"
                             [item]="item"
+                            [extra_actions]="extra_actions"
                             [type]="'DOMAINS.SINGULAR' | translate"
                         ></item-details>
                         <item-tablist
@@ -67,13 +68,14 @@ import { DomainStateService } from './domain-state.service';
         </div>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
-export class DomainsComponent extends AsyncHandler {
+export class DomainsComponent extends AsyncHandler implements OnInit {
     public readonly name = 'domains';
 
     public open_menu = false;
     public tab_list = [];
+    public extra_actions = [];
 
     public readonly newItem = () => this._item.create();
 
@@ -90,6 +92,21 @@ export class DomainsComponent extends AsyncHandler {
         protected _item: ActiveItemService,
     ) {
         super();
+    }
+
+    public ngOnInit(): void {
+        this.extra_actions = [
+            {
+                label: 'DOMAINS.AZURE_INTEGRATION',
+                icon: { content: 'add' },
+                action: () => this._service.performAzureIntegration(),
+            },
+        ];
+        this.updateTabList({});
+        this.subscription(
+            'item',
+            this._service.counts.subscribe((c) => this.updateTabList(c as any)),
+        );
     }
 
     public updateTabList(count: Record<string, number>) {
@@ -118,13 +135,5 @@ export class DomainsComponent extends AsyncHandler {
                 icon: { content: 'group' },
             },
         ].concat(this.extensions);
-    }
-
-    public ngOnInit(): void {
-        this.updateTabList({});
-        this.subscription(
-            'item',
-            this._service.counts.subscribe((c) => this.updateTabList(c as any)),
-        );
     }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     addApplication,
+    get,
     PlaceApplication,
     PlaceDomain,
     PlaceLDAPSource,
@@ -20,7 +21,12 @@ import {
     updateApplication,
     updateDomain,
 } from '@placeos/ts-client';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import {
+    BehaviorSubject,
+    combineLatest,
+    lastValueFrom,
+    Observable,
+} from 'rxjs';
 import {
     catchError,
     filter,
@@ -102,24 +108,22 @@ export class DomainStateService {
         switchMap(async ([_, item]) => {
             const q = { authority_id: item?.id };
             const details = await Promise.all([
-                queryApplications(q as any)
-                    .pipe(map((_) => _.total))
-                    .toPromise(),
-                combineLatest([
-                    querySAMLSources(q as any),
-                    queryOAuthSources(q as any),
-                    queryLDAPSources(q as any),
-                ])
-                    .pipe(
+                lastValueFrom(
+                    queryApplications(q as any).pipe(map((_) => _.total)),
+                ),
+                lastValueFrom(
+                    combineLatest([
+                        querySAMLSources(q as any),
+                        queryOAuthSources(q as any),
+                        queryLDAPSources(q as any),
+                    ]).pipe(
                         map(
                             ([saml, oauth, ldap]) =>
                                 saml.total + oauth.total + ldap.total,
                         ),
-                    )
-                    .toPromise(),
-                queryUsers(q as any)
-                    .pipe(map((_) => _.total))
-                    .toPromise(),
+                    ),
+                ),
+                lastValueFrom(queryUsers(q as any).pipe(map((_) => _.total))),
             ]);
             const [applications, auth_sources, users] = details;
             return {
@@ -143,6 +147,20 @@ export class DomainStateService {
     public async update(domain: PlaceDomain) {
         const item = await updateDomain(domain.id, domain).toPromise();
         this._state.replaceItem(item);
+    }
+
+    public async performAzureIntegration() {
+        const item = this.active_item;
+        if (!(item instanceof PlaceDomain)) return;
+        const result = await lastValueFrom(
+            get(`/api/engine/v2/admin_consent/${encodeURIComponent(item.id)}`),
+        ).catch((error) => {
+            notifyError(i18n('DOMAINS.AZURE_INTEGRATION_ERROR', { error }));
+            throw error;
+        });
+        if (result.url) {
+            window.open(result.url, '_blank', 'noopener noreferrer');
+        }
     }
 
     /**
