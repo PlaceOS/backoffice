@@ -222,6 +222,7 @@ import { i18n } from '../../common/locale.service';
             </div>
             <div class="field" *ngIf="form.controls.groups">
                 <label
+                    for="groups"
                     [class.error]="
                         form.controls.groups.invalid &&
                         form.controls.groups.touched
@@ -254,6 +255,28 @@ import { i18n } from '../../common/locale.service';
                         [matChipInputAddOnBlur]="true"
                         (matChipInputTokenEnd)="addGroup($event)"
                     />
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="form.controls.image">
+                <label
+                    for="image"
+                    [class.error]="
+                        form.controls.image.invalid &&
+                        form.controls.image.touched
+                    "
+                >
+                    {{ 'USERS.IMAGE' | translate }}
+                </label>
+                <mat-form-field appearance="outline">
+                    <input
+                        matInput
+                        name="image"
+                        [placeholder]="'USERS.IMAGE' | translate"
+                        formControlName="image"
+                    />
+                    <mat-error>{{
+                        'USERS.IMAGE_INVALID' | translate
+                    }}</mat-error>
                 </mat-form-field>
             </div>
         </form>

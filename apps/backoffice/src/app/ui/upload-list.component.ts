@@ -99,13 +99,14 @@ import { UploadsService } from '../common/uploads.service';
             (drop)="hideOverlay()"
         ></div>
         <div
-            class="fixed inset-0 bg-base-content bg-opacity-60"
+            class="fixed inset-0"
             dropzone
             (dragend)="show_overlay = false"
             (dragleave)="show_overlay = false"
             (drop)="handleFileEvent($event)"
             *ngIf="show_overlay"
         >
+            <div class="absolute inset-0 z-0 bg-base-content opacity-60"></div>
             <div
                 class="pointer-events-none absolute bottom-0 left-1/2 flex -translate-x-1/2 transform flex-col items-center p-4"
             >

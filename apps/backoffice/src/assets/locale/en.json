@@ -634,7 +634,9 @@
         "STAFF_CARD": "Card Number",
         "PASSWORD_REQUIRED": "A valid password is required",
         "PASSWORD_CONFIRM": "Confirm Password",
-        "PASSOWRD_MATCH": "Passwords do not match"
+        "PASSOWRD_MATCH": "Passwords do not match",
+        "IMAGE": "Profile Image",
+        "IMAGE_INVALID": "A valid URL is required for profile image"
     },
     "DOMAINS": {
         "SINGULAR": "Domain",

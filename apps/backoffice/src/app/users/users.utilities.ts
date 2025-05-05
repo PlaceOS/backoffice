@@ -5,6 +5,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { PlaceUser } from '@placeos/ts-client';
+import { validateURL } from '../common/validation';
 
 export function validateMatch(name: string) {
     return (control: AbstractControl) => {
@@ -44,6 +45,7 @@ export function generateUserFormFields(user: PlaceUser) {
         ),
         confirm_password: new FormControl('', [validateMatch('password')]),
         card_number: new FormControl(user?.card_number || ''),
+        image: new FormControl(user?.image || '', [validateURL]),
     };
     if (user?.id) {
         fields.authority_id.disable();
