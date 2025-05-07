@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { listZoneTags } from '@placeos/ts-client';
+import { shareReplay } from 'rxjs';
 import { extensionsForItem } from '../common/api';
 import { AsyncHandler } from '../common/async-handler.class';
 import { PlaceDebugService } from '../common/debug.service';
@@ -20,6 +22,7 @@ import { ZonesStateService } from './zones-state.service';
                         class="hidden sm:block"
                         [route]="name"
                         [title]="'ZONES.PLURAL' | translate"
+                        [filter_options]="zone_tags | async"
                     ></item-sidebar>
                     <div class="relative z-0 flex h-full w-1/2 flex-1 flex-col">
                         <item-selection
@@ -101,6 +104,7 @@ export class ZonesComponent extends AsyncHandler {
 
     public readonly newItem = () => this._item.create();
     public readonly bulkAdd = () => this._item.bulkAdd();
+    public readonly zone_tags = listZoneTags().pipe(shareReplay(1));
 
     public get item() {
         return this._service.active_item;

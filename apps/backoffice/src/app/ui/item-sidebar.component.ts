@@ -21,26 +21,60 @@ import { ActiveItemService } from '../common/item.service';
             class="flex h-full w-[24rem] min-w-64 max-w-[25vw] flex-col space-y-2 overflow-hidden rounded border-base-200 bg-base-100 shadow sm:border-r"
             (click)="$event.stopPropagation()"
         >
-            <div class="relative flex items-center border-b border-base-200">
-                <app-icon
-                    class="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-2xl"
+            <div class="flex items-center space-x-2 px-1 pt-1">
+                <div
+                    class="relative flex items-center rounded-lg border border-base-300 shadow"
                 >
-                    search
-                </app-icon>
-                <input
-                    #search_input
-                    class="bg-transparent flex-1 border-none py-4 pl-10 pr-4"
-                    [(ngModel)]="search"
-                    (ngModelChange)="updateSearch($event)"
-                    [placeholder]="
-                        'COMMON.SEARCH_FOR' | translate: { name: title }
-                    "
-                />
-                <mat-spinner
-                    *ngIf="loading | async"
-                    diameter="24"
-                    class="absolute right-2 top-1/2 mr-2 -translate-y-1/2"
-                ></mat-spinner>
+                    <app-icon
+                        class="pointer-events-none absolute left-1 top-1/2 -translate-y-1/2 text-2xl"
+                    >
+                        search
+                    </app-icon>
+                    <input
+                        #search_input
+                        class="bg-transparent w-full flex-1 rounded-lg border-none py-2.5 pl-9 pr-4"
+                        [(ngModel)]="search"
+                        (ngModelChange)="updateSearch($event)"
+                        [placeholder]="
+                            'COMMON.SEARCH_FOR' | translate: { name: title }
+                        "
+                    />
+                    <mat-spinner
+                        *ngIf="loading | async"
+                        diameter="24"
+                        class="absolute right-2 top-1/2 mr-2 -translate-y-1/2"
+                    ></mat-spinner>
+                </div>
+                @if (filter_options?.length) {
+                    <button
+                        icon
+                        matRipple
+                        class="relative overflow-hidden"
+                        [class.border]="selected_filters.length"
+                        [class.border-info]="selected_filters.length"
+                        [class.text-info]="selected_filters.length"
+                    >
+                        <icon class="text-2xl">filter_list</icon>
+                        <mat-form-field
+                            appearance="outline"
+                            class="-translate-1/2 absolute right-0 top-1/2 opacity-0"
+                        >
+                            <mat-select
+                                multiple
+                                [(ngModel)]="selected_filters"
+                                (ngModelChange)="updateSearch(search)"
+                            >
+                                @for (option of filter_options; track option) {
+                                    <mat-option
+                                        [value]="option"
+                                        class="capitalize"
+                                        >{{ option }}</mat-option
+                                    >
+                                }
+                            </mat-select>
+                        </mat-form-field>
+                    </button>
+                }
             </div>
             <p class="w-full px-2 text-sm opacity-60">
                 @let t = total | async;
@@ -173,10 +207,12 @@ import { ActiveItemService } from '../common/item.service';
 export class ItemSidebarComponent extends AsyncHandler {
     @Input() public title = 'Systems';
     @Input() public route = 'systems';
+    @Input() public filter_options: string[] = [];
 
     public last_total = 0;
     public last_check = 0;
     public search = '';
+    public selected_filters: string[] = [];
     /** List of items for the active route */
     public readonly items = this._service.list.pipe(
         map((l) => this._processItems(l)),
@@ -213,7 +249,8 @@ export class ItemSidebarComponent extends AsyncHandler {
     }
 
     public updateSearch(str: string) {
-        this._service.setSearch(str);
+        const search_string = `${this.selected_filters.join(' ')} ${str}`;
+        this._service.setSearch(search_string);
     }
 
     public trackByFn(item: Record<string, any>, index: number) {
