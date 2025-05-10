@@ -15,22 +15,22 @@ import { UploadsService } from '../common/uploads.service';
             upload-list
             class="pointer-events-auto absolute bottom-2 left-2 overflow-hidden rounded border border-base-300 bg-base-100 text-sm text-base-content shadow"
         >
-            <div class="flex items-center bg-base-200 text-base-content">
-                <div class="flex-1 px-4">
-                    {{ 'COMMON.UPLOADS' | translate }}({{
+            <div class="flex items-center bg-base-200 p-2 text-base-content">
+                <div class="flex-1 text-lg font-medium">
+                    {{ 'COMMON.UPLOADS' | translate }} ({{
                         (uploads | async)?.length || '0'
                     }})
                 </div>
                 <button
-                    btn
                     icon
+                    matRipple
                     (click)="clearList()"
                     [matTooltip]="'COMMON.CLEAR_UPLOADS' | translate"
                 >
                     <app-icon>clear_all</app-icon>
                 </button>
-                <button btn icon (click)="show = false">
-                    <app-icon>delete</app-icon>
+                <button icon matRipple (click)="show = false">
+                    <app-icon>close</app-icon>
                 </button>
             </div>
             <div list class="max-h-[65vh] overflow-auto">
@@ -38,53 +38,52 @@ import { UploadsService } from '../common/uploads.service';
                     <li
                         upload-file
                         *ngFor="let item of uploads | async"
-                        class="my-1 h-12 hover:bg-base-200"
+                        class="relative my-1 flex h-12 items-center space-x-2 hover:bg-base-200"
                         [class.error]="item.error"
+                        [title]="item.name"
                     >
+                        <div class="w-1/2 flex-1 pl-2">{{ item.name }}</div>
+                        <button btn *ngIf="item.error" (click)="retry(item)">
+                            {{ 'COMMON.RETRY' | translate }}
+                        </button>
                         <div
-                            class="flex items-center space-x-2 p-2"
-                            [title]="item.name"
+                            class="size mr-2 w-20 text-right font-mono text-sm"
                         >
-                            <div class="w-1/2 flex-1">{{ item.name }}</div>
-                            <a
-                                btn
-                                *ngIf="item.progress >= 100 && item.link"
-                                (click)="copyLink(item)"
-                            >
-                                {{ 'COMMON.LINK' | translate }}
-                            </a>
-                            <button
-                                btn
-                                *ngIf="item.error"
-                                (click)="retry(item)"
-                            >
-                                {{ 'COMMON.RETRY' | translate }}
-                            </button>
-                            <div class="size mr-2">
-                                {{ item.formatted_size }}
-                            </div>
-                            <div
-                                class="progress"
-                                *ngIf="item.progress < 100 && !item.error"
-                            >
-                                {{ item.progress }}%
-                            </div>
-                            <app-icon
-                                *ngIf="item.progress >= 100 && !item.error"
-                                class="rounded-full bg-success text-base-100"
-                            >
-                                done
-                            </app-icon>
-                            <app-icon
-                                *ngIf="item.error"
-                                class="rounded-full bg-error text-base-100"
-                                [matTooltip]="item.error"
-                            >
-                                close
-                            </app-icon>
+                            {{ item.formatted_size }}
                         </div>
+                        <div
+                            class="progress font-mono"
+                            *ngIf="item.progress < 100 && !item.error"
+                        >
+                            {{ item.progress }}%
+                        </div>
+                        <app-icon
+                            *ngIf="item.progress >= 100 && !item.error"
+                            class="rounded-full bg-success text-base-100"
+                        >
+                            done
+                        </app-icon>
+                        <app-icon
+                            *ngIf="item.error"
+                            class="rounded-full bg-error text-base-100"
+                            [matTooltip]="item.error"
+                        >
+                            close
+                        </app-icon>
+                        <button
+                            icon
+                            matRipple
+                            class="clear !mr-2"
+                            *ngIf="item.progress >= 100 && item.link"
+                            [matTooltip]="'COMMON.COPY_LINK' | translate"
+                            matTooltipPosition="right"
+                            (click)="copyLink(item)"
+                        >
+                            <icon class="text-2xl">content_copy</icon>
+                        </button>
                         <mat-progress-bar
                             *ngIf="item.progress < 100 && !item.error"
+                            class="absolute inset-x-0 bottom-0 !mx-0"
                             mode="determinate"
                             [value]="item.progress"
                         ></mat-progress-bar>
