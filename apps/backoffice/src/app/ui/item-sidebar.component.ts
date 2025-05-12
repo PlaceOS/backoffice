@@ -23,7 +23,7 @@ import { ActiveItemService } from '../common/item.service';
         >
             <div class="flex items-center space-x-2 px-1 pt-1">
                 <div
-                    class="relative flex items-center rounded-lg border border-base-300 shadow"
+                    class="relative flex flex-1 items-center rounded-lg border border-base-300 shadow"
                 >
                     <app-icon
                         class="pointer-events-none absolute left-1 top-1/2 -translate-y-1/2 text-2xl"
@@ -57,7 +57,7 @@ import { ActiveItemService } from '../common/item.service';
                         <icon class="text-2xl">filter_list</icon>
                         <mat-form-field
                             appearance="outline"
-                            class="-translate-1/2 absolute right-0 top-1/2 opacity-0"
+                            class="-translate-1/2 absolute -right-2 top-1/2 h-12 opacity-0"
                         >
                             <mat-select
                                 multiple
@@ -249,8 +249,19 @@ export class ItemSidebarComponent extends AsyncHandler {
     }
 
     public updateSearch(str: string) {
-        const search_string = `${this.selected_filters.join(' ')} ${str}`;
-        this._service.setSearch(search_string);
+        let search_str = '';
+        if (this.selected_filters.length) {
+            search_str += `tags:(${this.selected_filters
+                .map((_) => `+${_.trim()}`)
+                .join(' AND ')
+                .trim()})`;
+        }
+        if (str) {
+            if (search_str.length > 0) {
+                search_str += ` AND (+${str.trim()})`;
+            } else search_str += str.trim();
+        }
+        this._service.setSearch(search_str);
     }
 
     public trackByFn(item: Record<string, any>, index: number) {
