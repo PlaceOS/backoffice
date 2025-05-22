@@ -65,6 +65,11 @@ import { EdgeModalComponent } from './edge-modal.component';
                     [data]="edges"
                     [columns]="[
                         {
+                            key: 'online',
+                            name: ' ',
+                            content: bool_template,
+                        },
+                        {
                             key: 'id',
                             name: 'COMMON.FIELD_NAME' | translate,
                             content: name_template,
@@ -72,8 +77,13 @@ import { EdgeModalComponent } from './edge-modal.component';
                         {
                             key: 'description',
                             name: 'COMMON.FIELD_DESCRIPTION' | translate,
-                            size: '40rem',
+                            size: '36rem',
                             content: description_template,
+                        },
+                        {
+                            key: 'last_seen',
+                            name: 'COMMON.LAST_SEEN' | translate,
+                            content: time_template,
                         },
                         {
                             key: 'actions',
@@ -92,6 +102,26 @@ import { EdgeModalComponent } from './edge-modal.component';
             <div class="flex flex-col px-4 py-2">
                 <div>{{ row.name }}</div>
                 <div class="text-xs opacity-30">{{ row.id }}</div>
+            </div>
+        </ng-template>
+        <ng-template #time_template let-data="data">
+            <div class="flex flex-col p-4">
+                <div>{{ data | dateFrom }}</div>
+            </div>
+        </ng-template>
+        <ng-template #bool_template let-data="data">
+            <div
+                class="flex h-full w-full items-center justify-center"
+                [matTooltip]="
+                    (data ? 'COMMON.ONLINE' : 'COMMON.OFFLINE') | translate
+                "
+                matTooltipPosition="right"
+            >
+                <div
+                    class="h-3 w-3 rounded-full"
+                    [class.bg-success]="data"
+                    [class.bg-error]="!data"
+                ></div>
             </div>
         </ng-template>
         <ng-template #description_template let-data="data">
@@ -133,7 +163,7 @@ import { EdgeModalComponent } from './edge-modal.component';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class PlaceEdgeComponent {
     public loading: string = '';

@@ -91,6 +91,7 @@
         "SECURE": "Secure",
         "TLS": "TLS",
         "UDP": "UDP",
+        "LAST_SEEN": "Last Seen",
         "EDIT_TYPE": "Edit {{ name }}",
         "CREATE_FROM_TYPE": "Create new from this {{ name }}",
         "DUPLICATE_TYPE": "Duplicate {{ name }}",
