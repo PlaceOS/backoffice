@@ -23,7 +23,7 @@ export interface ModuleStateModalData {
     selector: 'view-module-state-modal',
     template: `
         <div
-            class="m-4 flex items-center justify-between rounded bg-base-200 px-4 py-2"
+            class="mx-4 mb-2 mt-4 flex items-center justify-between rounded bg-base-200 px-4 py-2"
         >
             <h3 class="text-xl font-medium">
                 {{ 'MODULES.STATE' | translate }}
@@ -33,7 +33,7 @@ export interface ModuleStateModalData {
             </button>
         </div>
         <main
-            class="flex h-[70vh] w-[80vw] flex-col space-y-2 px-4 pb-4"
+            class="flex h-[40rem] max-h-[70vh] w-[80vw] flex-col space-y-2 overflow-auto p-4"
             *ngIf="!loading; else load_state"
         >
             <div class="mb-2 flex items-center space-x-2">
@@ -72,7 +72,7 @@ export interface ModuleStateModalData {
                     </button>
                 </div>
             </div>
-            <div class="flex-1 overflow-hidden">
+            <div class="pb-4">
                 <settings-form-field
                     [ngModel]="state"
                     [readonly]="true"
@@ -92,7 +92,7 @@ export interface ModuleStateModalData {
         </ng-template>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class ViewModuleStateModalComponent
     extends AsyncHandler
