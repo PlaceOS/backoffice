@@ -17,10 +17,10 @@ import { TIMEZONES_IANA } from '../../common/timezones';
         <form zone *ngIf="form" class="flex flex-col" [formGroup]="form">
             <div class="field" *ngIf="form.controls.parent_zone">
                 <label for="parent-zone">
-                    {{ 'COMMON.EDGE' | translate }}
+                    {{ 'ZONES.PARENT' | translate }}
                 </label>
                 <item-search-field
-                    [name]="'ZONE.SEARCH' | translate"
+                    [placeholder]="'ZONES.SEARCH' | translate"
                     [query_fn]="query_fn"
                     [exclude]="exclude"
                     formControlName="parent_zone"
@@ -228,7 +228,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
         </form>
     `,
     styles: [``],
-    standalone: false
+    standalone: false,
 })
 export class ZoneFormComponent extends AsyncHandler {
     public timezones: string[] = [];
