@@ -189,7 +189,7 @@ import { TIMEZONES_IANA } from '../../common/timezones';
             </div>
             <div class="fieldset mb-4">
                 <div class="field" *ngIf="form.controls.count">
-                    <label for="count">{{ 'ZONES.COUNT' | translatec }}</label>
+                    <label for="count">{{ 'ZONES.COUNT' | translate }}</label>
                     <a-counter
                         formControlName="count"
                         [min]="0"
