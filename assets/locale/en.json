@@ -364,6 +364,7 @@
         "TAG_WARNING": "Tags set in this zone require a parent zone to work correctly.",
         "SELECT_SYSTEM": "Select system",
         "PARENT_ID": "Parent ID",
+        "PARENT": "Parent Zone",
         "LOCATION": "Location",
         "LOCATION_PLACEHOLDER": "Geo-location details for zone. <lat, long>",
         "CODE": "Code",
