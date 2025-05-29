@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
     apiKey,
@@ -18,9 +19,15 @@ import {
     startWith,
     switchMap,
 } from 'rxjs/operators';
+import { AsyncHandler } from '../common/async-handler.class';
 import { nextValueFrom, openConfirmModal } from '../common/general';
 import { i18n } from '../common/locale.service';
-import { notifyError } from '../common/notifications';
+import {
+    notifyError,
+    notifyInfo,
+    notifySuccess,
+} from '../common/notifications';
+import { UploadsService } from '../common/uploads.service';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
 
 function getMimeType(filename: string): string {
@@ -100,13 +107,13 @@ export interface UploadInfo {
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
-                    <button
-                        btn
-                        matRipple
-                        class="h-12 w-32"
-                        [disabled]="true"
-                        (click)="uploadFile()"
-                    >
+                    <button btn matRipple class="relative h-12 w-32">
+                        <input
+                            class="pointer-events-auto absolute inset-0 w-full opacity-0"
+                            type="file"
+                            multiple
+                            (change)="handleFileEvent($event)"
+                        />
                         {{ 'COMMON.UPLOAD_FILE' | translate }}
                     </button>
                 </div>
@@ -118,7 +125,7 @@ export interface UploadInfo {
                     [class.opacity-0]="!(loading | async)"
                 ></mat-progress-bar>
                 <simple-table
-                    class="mb-4 block min-w-[64rem] text-sm"
+                    class="mb-4 block min-w-[68rem] text-sm"
                     [data]="uploads_list"
                     [columns]="[
                         {
@@ -130,6 +137,7 @@ export interface UploadInfo {
                             key: 'mime_type',
                             name: 'ADMIN.UPLOADS_LIB_FIELD_TYPE' | translate,
                             content: type_template,
+                            size: '14rem',
                         },
                         {
                             key: 'file_size',
@@ -148,7 +156,7 @@ export interface UploadInfo {
                             name: ' ',
                             content: actions_template,
                             sortable: false,
-                            size: '8.75rem',
+                            size: '11rem',
                         },
                     ]"
                     [sortable]="true"
@@ -161,9 +169,7 @@ export interface UploadInfo {
                 </div>
             </ng-template>
             <ng-template #name_template let-data="data">
-                <div
-                    class="mono max-w-[calc(50vw-16rem)] break-words p-4 text-xs"
-                >
+                <div class="mono max-w-[24rem] break-words p-4 text-xs">
                     {{ data }}
                 </div>
             </ng-template>
@@ -188,6 +194,14 @@ export interface UploadInfo {
                         [matTooltip]="'ADMIN.UPLOADS_LIB_DOWNLOAD' | translate"
                     >
                         <app-icon>download</app-icon>
+                    </button>
+                    <button
+                        icon
+                        matRipple
+                        (click)="copyLink(row)"
+                        [matTooltip]="'ADMIN.UPLOADS_LIB_COPY' | translate"
+                    >
+                        <app-icon>content_copy</app-icon>
                     </button>
                     <button
                         icon
@@ -217,7 +231,7 @@ export interface UploadInfo {
     styles: [``],
     standalone: false,
 })
-export class UploadLibraryComponent {
+export class UploadLibraryComponent extends AsyncHandler implements OnInit {
     public readonly loading = new BehaviorSubject<boolean>(false);
     public readonly domain = new BehaviorSubject<PlaceDomain>(null);
 
@@ -238,13 +252,21 @@ export class UploadLibraryComponent {
             }).pipe(catchError((_) => of({ data: [] }))),
         ),
         map((r) =>
-            r.data.map((_) => ({ ..._, mime_type: getMimeType(_.file_name) })),
+            r.data
+                .map((_) => ({ ..._, mime_type: getMimeType(_.file_name) }))
+                .sort((a, b) => a.file_name.localeCompare(b.file_name)),
         ),
         startWith([]),
         shareReplay(1),
     );
 
-    constructor(private _dialog: MatDialog) {}
+    constructor(
+        private _dialog: MatDialog,
+        private _clipboard: Clipboard,
+        private _uploads: UploadsService,
+    ) {
+        super();
+    }
 
     public async ngOnInit() {
         const domain = authority();
@@ -264,7 +286,34 @@ export class UploadLibraryComponent {
         return `${short_bytes} ${sizes[level]}`;
     }
 
-    public uploadFile() {}
+    public copyLink(upload: UploadInfo) {
+        this._clipboard.copy(
+            `${location.protocol}//${location.host}/api/engine/v2/uploads/${upload.id}/url`,
+        );
+        notifyInfo(`Copied upload URL to clipboard.`);
+    }
+
+    /** Upload the image to the cloud */
+    public handleFileEvent(event: DragEvent) {
+        this.timeout('file_event', async () => {
+            const element: HTMLInputElement = event.target as any;
+            /* istanbul ignore else */
+            if (element?.files) {
+                const files: FileList = element.files;
+                /* istanbul ignore else */
+                if (files.length) {
+                    const uploads = [];
+                    for (let i = 0; i < files.length; i++) {
+                        uploads.push(
+                            this._uploads.uploadFileWithPermissions(files[i]),
+                        );
+                    }
+                    await Promise.all(uploads);
+                    notifySuccess('Successfully uploaded file.');
+                }
+            }
+        });
+    }
 
     public async downloadUpload(upload: UploadInfo) {
         const tkn = token();
