@@ -984,6 +984,7 @@
         "UPLOADS_LIB_FIELD_TYPE": "File Type",
         "UPLOADS_LIB_FIELD_SIZE": "Size",
         "UPLOADS_LIB_LIST_EMPTY": "No uploads for the selected domain",
+        "UPLOADS_LIB_COPY": "Copy Upload URL",
 
         "BUILD_LIST_HEADER": "Build Service Jobs",
         "BUILD_LIST_EMPTY": "No build jobs available to monitor",
