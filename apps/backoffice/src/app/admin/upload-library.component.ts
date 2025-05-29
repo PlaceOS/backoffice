@@ -308,8 +308,31 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
                             this._uploads.uploadFileWithPermissions(files[i]),
                         );
                     }
-                    await Promise.all(uploads);
-                    notifySuccess('Successfully uploaded file.');
+                    const id_list = await Promise.all(uploads);
+                    this.subscription(
+                        'upload_list',
+                        this._uploads.upload_list.subscribe((list) => {
+                            let success = 0;
+                            let failed = 0;
+                            for (const id of id_list) {
+                                const upload = list.find((_) => _.id === id);
+                                if (!upload) continue;
+
+                                if (upload.error) failed += 1;
+                                else if (upload.progress >= 100) success += 1;
+                            }
+                            if (success + failed >= id_list.length) {
+                                if (failed) {
+                                    notifyError('Failed to upload files.');
+                                } else if (success) {
+                                    notifySuccess(
+                                        'Succesfully uploaded files.',
+                                    );
+                                }
+                                this.unsub('upload_list');
+                            }
+                        }),
+                    );
                 }
             }
         });
