@@ -5,8 +5,8 @@ import { AsyncHandler } from '../common/async-handler.class';
 const IMAGE_STORE = new Map<string, string>();
 
 @Directive({
-    selector: 'img [auth]',
-    standalone: false
+    selector: 'img [auth],video [auth]',
+    standalone: false,
 })
 export class AuthenticatedImageDirective extends AsyncHandler {
     @Input() public source: string;
