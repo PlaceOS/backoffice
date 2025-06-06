@@ -6,7 +6,9 @@ import { SystemStateService } from './system-state.service';
 @Component({
     selector: 'system-about',
     template: `
-        <section class="mb-2 flex space-x-2">
+        <section
+            class="flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0"
+        >
             <div class="flex-1">
                 <div
                     class="inline-grid w-full gap-2 rounded border border-base-200 p-4"
@@ -122,17 +124,19 @@ import { SystemStateService } from './system-state.service';
                 </div>
             </div>
             <div
-                class="inline-flex w-1/3 flex-1 flex-col rounded border border-base-200 p-2"
+                class="inline-flex flex-1 flex-col rounded border border-base-200 sm:w-1/3"
             >
-                <h3 class="mono w-full p-2 text-center font-medium uppercase">
+                <h3
+                    class="w-full rounded bg-base-200 px-4 py-3 text-lg font-medium"
+                >
                     {{ 'SYSTEMS.CONTROLS' | translate }}
                 </h3>
-                <div class="flex flex-wrap items-center">
+                <div class="flex flex-wrap items-center p-1">
                     <button
                         btn
                         start
                         matRipple
-                        class="m-2 min-w-36 flex-1"
+                        class="m-1 min-w-36 flex-1"
                         (click)="start()"
                     >
                         {{ 'SYSTEMS.START' | translate }}
@@ -141,7 +145,7 @@ import { SystemStateService } from './system-state.service';
                         btn
                         stop
                         matRipple
-                        class="inverse error m-2 min-w-36 flex-1"
+                        class="inverse error m-1 min-w-36 flex-1"
                         (click)="stop()"
                     >
                         {{ 'SYSTEMS.STOP' | translate }}

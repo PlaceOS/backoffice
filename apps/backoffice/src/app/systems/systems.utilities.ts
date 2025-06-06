@@ -21,7 +21,7 @@ export function validateYAML(control: AbstractControl) {
     try {
         yaml.load(value, { strict: true });
     } catch (e) {
-        console.error(e);
+        // console.error(e);
         message = e.message;
     }
     return message ? { yaml: message } : null;

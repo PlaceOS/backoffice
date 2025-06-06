@@ -6,9 +6,11 @@ import { DriverStateService } from './driver-state.service';
 @Component({
     selector: 'driver-about',
     template: `
-        <section class="mb-4 flex space-x-2">
+        <section
+            class="mb-4 flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0"
+        >
             <div
-                class="inline-grid w-1/3 flex-1 gap-2 rounded border border-base-200 p-4"
+                class="inline-grid flex-1 gap-2 rounded border border-base-200 p-4 sm:w-1/3"
                 [style.gridTemplateColumns]="'6rem auto'"
             >
                 <ng-container *ngIf="item.default_uri">
@@ -81,19 +83,29 @@ import { DriverStateService } from './driver-state.service';
                 </div>
             </div>
             <div
-                class="inline-grid w-1/3 flex-1 gap-2 rounded border border-base-200 p-4"
+                class="inline-grid flex-1 gap-2 rounded border border-base-200 p-4 sm:w-1/3"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
                 <div class="flex items-center text-sm font-medium">
                     {{ 'DRIVERS.COMPILED' | translate }}
                 </div>
-                <div class="flex items-center">
-                    <div>
-                        {{ (compiled | async) ? 'Yes' : 'No' }}
+                <div class="flex items-center space-x-2">
+                    @let is_compiled = compiled | async;
+                    <div
+                        class="rounded-2xl px-2 py-1 text-xs shadow"
+                        [class.bg-success]="is_compiled"
+                        [class.text-success-content]="is_compiled"
+                        [class.bg-error]="!is_compiled"
+                        [class.text-error-content]="!is_compiled"
+                    >
+                        {{
+                            (is_compiled ? 'COMMON.TRUE' : 'COMMON.FALSE')
+                                | translate
+                        }}
                     </div>
                     <mat-spinner
                         diameter="24"
-                        *ngIf="!(compiled | async)"
+                        *ngIf="!is_compiled"
                     ></mat-spinner>
                     <button
                         btn
@@ -123,23 +135,35 @@ import { DriverStateService } from './driver-state.service';
                         {{ item.file_name }}
                     </div>
                 </div>
-                <button
-                    btn
-                    (click)="updateDriver()"
-                    class="col-span-2"
-                    *ngIf="
-                        item.update_available &&
-                        item.commit !== item.update_info.commit
-                    "
+                <div
+                    class="mx-auto mt-2 flex items-center justify-between space-x-2"
                 >
-                    {{ 'COMMON.UPDATE' | translate }}
-                </button>
-                <div class="col-span-2 flex w-full items-center space-x-4">
-                    <button btn matRipple class="flex-1" (click)="recompile()">
-                        {{ 'DRIVERS.RECOMPILE' | translate }}
+                    <button
+                        icon
+                        matRipple
+                        [matTooltip]="'COMMON.UPDATE' | translate"
+                        (click)="updateDriver()"
+                        class="h-12 w-12 rounded bg-secondary text-secondary-content"
+                    >
+                        <icon class="text-2xl">update</icon>
                     </button>
-                    <button btn matRipple class="flex-1" (click)="reload()">
-                        {{ 'DRIVERS.RELOAD' | translate }}
+                    <button
+                        icon
+                        matRipple
+                        [matTooltip]="'DRIVERS.RECOMPILE' | translate"
+                        (click)="recompile()"
+                        class="h-12 w-12 rounded bg-secondary text-secondary-content"
+                    >
+                        <icon class="text-2xl">build</icon>
+                    </button>
+                    <button
+                        icon
+                        matRipple
+                        [matTooltip]="'DRIVERS.RELOAD' | translate"
+                        (click)="reload()"
+                        class="h-12 w-12 rounded bg-secondary text-secondary-content"
+                    >
+                        <icon class="text-2xl">refresh</icon>
                     </button>
                 </div>
             </div>

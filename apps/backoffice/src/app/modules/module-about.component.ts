@@ -8,9 +8,11 @@ import { ModuleStateService } from './module-state.service';
 @Component({
     selector: 'module-about',
     template: `
-        <section class="flex space-x-2">
+        <section
+            class="flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0"
+        >
             <div
-                class="inline-grid w-1/3 flex-1 gap-2 rounded border border-base-200 p-4"
+                class="inline-grid flex-1 gap-2 rounded border border-base-200 p-4 sm:w-1/3"
                 [style.gridTemplateColumns]="'4.5rem auto'"
             >
                 <ng-container *ngIf="item.notes">
@@ -155,16 +157,18 @@ import { ModuleStateService } from './module-state.service';
                 </button>
             </div>
             <div
-                class="inline-flex w-1/3 flex-1 flex-col rounded border border-base-200 p-2"
+                class="inline-flex flex-1 flex-col rounded border border-base-200 sm:w-1/3"
             >
-                <h3 class="mono w-full p-2 text-center font-medium uppercase">
+                <h3
+                    class="w-full rounded bg-base-200 px-4 py-3 text-lg font-medium"
+                >
                     {{ 'MODULES.CONTROLS' | translate }}
                 </h3>
-                <div class="flex flex-wrap items-center">
+                <div class="flex flex-wrap items-center p-1">
                     <button
                         btn
                         matRipple
-                        class="m-2 min-w-36 flex-1"
+                        class="m-1 min-w-36 flex-1"
                         [disabled]="item.running || stopping"
                         (click)="toggleModuleState()"
                     >
@@ -179,7 +183,7 @@ import { ModuleStateService } from './module-state.service';
                     <button
                         btn
                         matRipple
-                        class="inverse error m-2 min-w-36 flex-1"
+                        class="inverse error m-1 min-w-36 flex-1"
                         [disabled]="!item.running || stopping"
                         (click)="toggleModuleState()"
                     >
