@@ -6,6 +6,7 @@ import { PlaceDomain } from '@placeos/ts-client';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
 import { validateJSONString } from 'apps/backoffice/src/app/common/validation';
+import { marked } from 'marked';
 import { i18n } from '../common/locale.service';
 import { notifySuccess } from '../common/notifications';
 import { DomainStateService } from './domain-state.service';
@@ -13,6 +14,18 @@ import { DomainStateService } from './domain-state.service';
 @Component({
     selector: 'app-domain-about',
     template: `
+        @if (item?.description) {
+            <div class="w-full rounded border border-base-200">
+                <h3 class="w-full rounded bg-base-200 p-4 text-lg font-medium">
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                </h3>
+                <div
+                    class="markdown w-full overflow-auto p-4 text-sm"
+                    [innerHTML]="description | sanitize"
+                ></div>
+            </div>
+            <hr class="my-4 text-base-300" />
+        }
         <div
             class="relative my-2 flex w-1/2 min-w-[20rem] flex-col rounded border border-base-200 p-4"
             *ngIf="item.email_domains?.length"
@@ -31,14 +44,22 @@ import { DomainStateService } from './domain-state.service';
                 {{ domain }}
             </button>
         </div>
-        <div class="my-2 flex items-center justify-between space-x-2">
-            <h3 class="text-lg font-medium">
+        <header
+            class="mb-2 flex h-16 w-full items-center justify-between rounded bg-base-200 px-2 text-lg font-medium"
+        >
+            <h3 class="px-2 text-lg font-medium">
                 {{ 'COMMON.SETTINGS' | translate }}
             </h3>
-            <button btn matRipple (click)="saveChanges()">
-                {{ 'COMMON.SAVE_CHANGES' | translate }}
+            <button
+                icon
+                matRipple
+                class="rounded bg-secondary text-secondary-content"
+                [matTooltip]="'COMMON.SAVE_CHANGES' | translate"
+                (click)="saveChanges()"
+            >
+                <icon class="text-2xl">save</icon>
             </button>
-        </div>
+        </header>
         <section *ngIf="form" [formGroup]="form">
             <mat-tab-group [(selectedIndex)]="index">
                 <mat-tab [label]="'DOMAINS.SETTINGS_CONFIG' | translate">
@@ -81,6 +102,11 @@ export class DomainAboutComponent extends AsyncHandler implements OnInit {
 
     public get item(): PlaceDomain {
         return this._service.active_item as any;
+    }
+
+    /** HTML string for rendering the description */
+    public get description(): string {
+        return marked(this.item.description || '', { async: false }) as string;
     }
 
     constructor(

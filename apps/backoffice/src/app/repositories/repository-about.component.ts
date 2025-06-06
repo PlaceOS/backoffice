@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { PlaceRepositoryType } from '@placeos/ts-client';
+import { marked } from 'marked';
 import { AsyncHandler } from '../common/async-handler.class';
 import { RepositoriesStateService } from './repositories-state.service';
 
@@ -133,6 +134,18 @@ import { RepositoriesStateService } from './repositories-state.service';
                 </button>
             </div>
         </section>
+        @if (item?.description) {
+            <hr class="my-4 text-base-300" />
+            <div class="w-full rounded border border-base-200">
+                <h3 class="w-full rounded bg-base-200 p-4 text-lg font-medium">
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                </h3>
+                <div
+                    class="markdown w-full overflow-auto p-4 text-sm"
+                    [innerHTML]="description | sanitize"
+                ></div>
+            </div>
+        }
         <ng-template #spinner>
             <mat-spinner diameter="32"></mat-spinner>
         </ng-template>
@@ -154,7 +167,7 @@ import { RepositoriesStateService } from './repositories-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class RepositoryAboutComponent extends AsyncHandler {
     /** Whether the latest commit is being pulled on the server */
@@ -174,6 +187,11 @@ export class RepositoryAboutComponent extends AsyncHandler {
 
     public get repo_uri() {
         return this.item?.uri.replace(/\/[a-zA-Z0-9\-\.:]*@/, '/...@');
+    }
+
+    /** HTML string for rendering the description */
+    public get description(): string {
+        return marked(this.item.description || '', { async: false }) as string;
     }
 
     constructor(private _service: RepositoriesStateService) {

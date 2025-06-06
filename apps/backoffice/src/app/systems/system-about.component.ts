@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { PlaceSystem } from '@placeos/ts-client';
+import { marked } from 'marked';
 import { SystemStateService } from './system-state.service';
 
 @Component({
     selector: 'system-about',
     template: `
-        <section class="mb-4 flex space-x-2">
+        <section class="mb-2 flex space-x-2">
             <div class="flex-1">
                 <div
                     class="inline-grid w-full gap-2 rounded border border-base-200 p-4"
@@ -70,24 +71,24 @@ import { SystemStateService } from './system-state.service';
                         </div>
                         <div>{{ item?.capacity }}</div>
                     </ng-container>
-                    <ng-container *ngIf="item?.map_id">
+                    @if (item?.map_id) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.MAP_ID' | translate }}
                         </div>
                         <div class="value mono">{{ item?.map_id }}</div>
-                    </ng-container>
-                    <ng-container *ngIf="item?.installed_ui_devices">
+                    }
+                    @if (item?.installed_ui_devices) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'SYSTEMS.PANEL_COUNT' | translate }}
                         </div>
                         <div>{{ item?.installed_ui_devices }}</div>
-                    </ng-container>
-                    <ng-container *ngIf="item?.timezone">
+                    }
+                    @if (item?.timezone) {
                         <div class="flex items-center text-sm font-medium">
                             {{ 'COMMON.TIMEZONE' | translate }}
                         </div>
                         <div>{{ item?.timezone }}</div>
-                    </ng-container>
+                    }
                     <div class="flex items-center text-sm font-medium">
                         {{ 'COMMON.CREATED_AT' | translate }}
                     </div>
@@ -148,10 +149,19 @@ import { SystemStateService } from './system-state.service';
                 </div>
             </div>
         </section>
-        <hr class="my-4" />
-        <header class="text-lg font-medium">
-            {{ 'COMMON.SETTINGS' | translate }}
-        </header>
+        @if (item?.description) {
+            <hr class="my-4 text-base-300" />
+            <div class="w-full rounded border border-base-200">
+                <h3 class="w-full rounded bg-base-200 p-4 text-lg font-medium">
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                </h3>
+                <div
+                    class="markdown w-full overflow-auto p-4 text-sm"
+                    [innerHTML]="description | sanitize"
+                ></div>
+            </div>
+        }
+        <hr class="my-4 text-base-300" />
         <section *ngIf="item?.settings && other_settings; else load_state">
             <a-settings-form
                 [id]="item?.id"
@@ -190,6 +200,11 @@ export class SystemAboutComponent {
 
     public get item(): PlaceSystem {
         return this._service.active_item as any;
+    }
+
+    /** HTML string for rendering the description */
+    public get description(): string {
+        return marked(this.item.description || '', { async: false }) as string;
     }
 
     constructor(private _service: SystemStateService) {}

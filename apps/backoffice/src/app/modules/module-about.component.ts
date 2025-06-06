@@ -195,9 +195,6 @@ import { ModuleStateService } from './module-state.service';
             </div>
         </section>
         <hr class="my-4" />
-        <header class="text-lg font-medium">
-            {{ 'COMMON.SETTINGS' | translate }}
-        </header>
         <section
             *ngIf="item.settings && (other_settings | async); else load_state"
         >
@@ -227,7 +224,7 @@ import { ModuleStateService } from './module-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class ModuleAboutComponent {
     /** Driver for the active item */

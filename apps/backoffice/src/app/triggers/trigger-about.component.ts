@@ -11,6 +11,7 @@ import {
 import { map } from 'rxjs/operators';
 
 import { AsyncHandler } from 'apps/backoffice/src/app/common/async-handler.class';
+import { marked } from 'marked';
 import { TriggerStateService } from './trigger-state.service';
 
 @Component({
@@ -53,6 +54,18 @@ import { TriggerStateService } from './trigger-state.service';
                 </div>
             </div>
         </section>
+        @if (item?.description) {
+            <hr class="my-4 text-base-300" />
+            <div class="w-full rounded border border-base-200">
+                <h3 class="w-full rounded bg-base-200 p-4 text-lg font-medium">
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                </h3>
+                <div
+                    class="markdown w-full overflow-auto p-4 text-sm"
+                    [innerHTML]="description | sanitize"
+                ></div>
+            </div>
+        }
         <hr class="my-4" />
         <div class="flex flex-col">
             <label
@@ -284,6 +297,11 @@ export class TriggerAboutComponent extends AsyncHandler implements OnInit {
 
     public get item(): PlaceTrigger {
         return (this._service.active_item as any) || {};
+    }
+
+    /** HTML string for rendering the description */
+    public get description(): string {
+        return marked(this.item.description || '', { async: false }) as string;
     }
 
     constructor(private _service: TriggerStateService) {

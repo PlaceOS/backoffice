@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { PlaceDriver } from '@placeos/ts-client';
+import { marked } from 'marked';
 import { DriverStateService } from './driver-state.service';
 
 @Component({
@@ -143,10 +144,19 @@ import { DriverStateService } from './driver-state.service';
                 </div>
             </div>
         </section>
+        @if (item?.description) {
+            <hr class="my-4 text-base-300" />
+            <div class="w-full rounded border border-base-200">
+                <h3 class="w-full rounded bg-base-200 p-4 text-lg font-medium">
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                </h3>
+                <div
+                    class="markdown w-full overflow-auto p-4 text-sm"
+                    [innerHTML]="description | sanitize"
+                ></div>
+            </div>
+        }
         <hr class="my-4" />
-        <header class="text-lg font-medium">
-            {{ 'COMMON.SETTINGS' | translate }}
-        </header>
         <section *ngIf="item.settings; else load_state">
             <a-settings-form
                 [merge]="true"
@@ -173,7 +183,7 @@ import { DriverStateService } from './driver-state.service';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class DriverAboutComponent {
     public readonly compiled = this._service.is_compiled;
@@ -186,6 +196,11 @@ export class DriverAboutComponent {
 
     public get item(): PlaceDriver {
         return (this._service.active_item || {}) as any;
+    }
+
+    /** HTML string for rendering the description */
+    public get description(): string {
+        return marked(this.item.description || '', { async: false }) as string;
     }
 
     constructor(private _service: DriverStateService) {}

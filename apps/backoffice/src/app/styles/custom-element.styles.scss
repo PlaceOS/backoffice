@@ -5,12 +5,18 @@
 }
 
 .font-heading {
-    font-family: 'Young' 'Roboto', sans-serif;
+    font-family:
+        'Young' 'Roboto',
+        sans-serif;
     font-weight: 500;
 }
 
 .mdc-tab-body-wrapper {
     flex-grow: 1;
+}
+
+hr {
+    color: var(--b3);
 }
 
 form {
@@ -78,7 +84,6 @@ form {
     .mdc-list-item__primary-text {
         width: 100%;
     }
-
 }
 
 .panel {
@@ -457,7 +462,9 @@ a-date-picker {
         height: 12px;
         width: 12px;
         transform: rotate(45deg);
-        transition: transform 200ms, top 200ms;
+        transition:
+            transform 200ms,
+            top 200ms;
         border-bottom: 3px solid var(--bc);
         border-right: 3px solid var(--bc);
     }
@@ -1129,22 +1136,29 @@ a[icon] {
     }
 }
 
-.markdown {
-    h1 {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-        margin-top: 0.5rem;
-        font-weight: 500;
-    }
-    h2,
-    h3 {
-        font-size: 1.25rem;
-        margin-bottom: 0.5rem;
-    }
-    ul {
-        list-style: initial;
-        padding-left: 1.5rem;
-        margin-bottom: 0.5rem;
+#placeos {
+    .markdown {
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+        h2,
+        h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        ul {
+            list-style: initial;
+            padding-left: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        a {
+            color: var(--in);
+            text-decoration: underline;
+        }
     }
 }
 
@@ -1204,7 +1218,7 @@ mat-form-field {
 }
 
 [table-row] {
-    @apply flex items-center border-b border-base-200 divide-x divide-base-200 hover:bg-base-200;
+    @apply flex items-center divide-x divide-base-200 border-b border-base-200 hover:bg-base-200;
     height: 3.25rem;
 
     &:last-child {
@@ -1221,5 +1235,5 @@ mat-form-field {
 }
 
 .info-block {
-    @apply w-full p-16 flex flex-col items-center justify-center opacity-30;
+    @apply flex w-full flex-col items-center justify-center p-16 opacity-30;
 }

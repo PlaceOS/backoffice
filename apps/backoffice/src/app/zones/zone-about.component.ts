@@ -155,18 +155,19 @@ import { marked } from 'marked';
                 </div>
             </div>
         </section>
-        <header class="text-lg font-medium" *ngIf="item?.description">
-            {{ 'ZONES.DESCRIPTION' | translate }}
-        </header>
-        <section
-            class="description"
-            *ngIf="item?.description"
-            [innerHTML]="parsed_description"
-        ></section>
+        @if (item?.description) {
+            <hr class="my-4 text-base-300" />
+            <div class="w-full rounded border border-base-200">
+                <h3 class="w-full rounded bg-base-200 p-4 text-lg font-medium">
+                    {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                </h3>
+                <div
+                    class="markdown w-full overflow-auto p-4 text-sm"
+                    [innerHTML]="parsed_description | sanitize"
+                ></div>
+            </div>
+        }
         <hr class="my-4" />
-        <header class="text-lg font-medium">
-            {{ 'COMMON.SETTINGS' | translate }}
-        </header>
         <section *ngIf="item?.settings; else load_state">
             <a-settings-form
                 [merge]="true"
@@ -189,7 +190,7 @@ import { marked } from 'marked';
             }
         `,
     ],
-    standalone: false
+    standalone: false,
 })
 export class ZoneAboutComponent {
     /** List of associated systems */

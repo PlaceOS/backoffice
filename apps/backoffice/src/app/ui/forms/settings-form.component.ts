@@ -25,12 +25,193 @@ import { validateYAML } from 'apps/backoffice/src/app/systems/systems.utilities'
 import { BackofficeUsersService } from 'apps/backoffice/src/app/users/users.service';
 
 import * as yaml from 'js-yaml';
-import { i18n } from '../../../common/locale.service';
+import { i18n } from '../../common/locale.service';
 
 @Component({
     selector: 'a-settings-form',
-    templateUrl: './settings-form.component.html',
-    styleUrls: ['./settings-form.component.scss'],
+    template: `
+        <header
+            class="mb-2 flex h-16 w-full items-center justify-between rounded bg-base-200 px-2 text-lg font-medium"
+        >
+            <h3 class="px-2">{{ 'COMMON.SETTINGS' | translate }}</h3>
+            @if (active_edited) {
+                <div class="flex items-center space-x-2">
+                    <button
+                        icon
+                        matRipple
+                        class="rounded border border-secondary bg-base-100 text-secondary"
+                        [disabled]="edited_count <= 0"
+                        [matTooltip]="'COMMON.CLEAR' | translate"
+                        (click)="clearChanges()"
+                    >
+                        @if (!saving[shown_option.id]) {
+                            <icon class="text-2xl">delete_sweep</icon>
+                        } @else {
+                            <mat-spinner diameter="32"></mat-spinner>
+                        }
+                    </button>
+                    <button
+                        icon
+                        matRipple
+                        class="rounded bg-secondary text-secondary-content"
+                        [disabled]="
+                            !active_edited ||
+                            (has_errors && !saving[shown_option.id])
+                        "
+                        [matTooltip]="'COMMON.SAVE' | translate"
+                        (click)="save(shown_option.id)"
+                    >
+                        @if (!saving[shown_option.id]) {
+                            <icon class="text-2xl">save</icon>
+                        } @else {
+                            <mat-spinner diameter="32"></mat-spinner>
+                        }
+                    </button>
+                </div>
+            }
+        </header>
+        @if (form && used_settings && used_settings.length) {
+            <form [formGroup]="form">
+                <mat-tab-group
+                    [selectedIndex]="level_index"
+                    (selectedIndexChange)="
+                        encryption_level = available_levels[$event].id
+                    "
+                >
+                    <mat-tab
+                        *ngFor="let option of available_levels"
+                        [label]="
+                            option.name +
+                            (option.id !== 4 &&
+                            form.controls['settings' + option.id].dirty
+                                ? ' *'
+                                : '')
+                        "
+                    >
+                    </mat-tab>
+                </mat-tab-group>
+                <ng-container
+                    *ngFor="let option of available_levels; let i = index"
+                >
+                    <ng-container
+                        *ngIf="
+                            form &&
+                            encryption_level === option.id &&
+                            form.controls['settings' + option.id]
+                        "
+                    >
+                        <div
+                            [class.error-border]="
+                                form.controls['settings' + option.id]?.errors
+                            "
+                        >
+                            <settings-form-field
+                                [decorations]="
+                                    option.id === 4 ? merge_decorations : []
+                                "
+                                [formControlName]="'settings' + option.id"
+                                [readonly]="
+                                    !option.active || this.saving[option.id]
+                                "
+                            ></settings-form-field>
+                        </div>
+                        <div
+                            class="error-display"
+                            *ngIf="
+                                form.controls['settings' + option.id]?.errors
+                            "
+                        >
+                            {{
+                                form.controls['settings' + option.id].errors
+                                    .yaml
+                            }}
+                        </div>
+                        <div
+                            class="border-gray-300 mb-4 flex items-center justify-between space-x-2 rounded-b border-b border-l border-r p-1"
+                            *ngIf="option.name !== 'Merged'"
+                        >
+                            <div class="pl-2 text-xs">
+                                {{
+                                    (
+                                        settings[i - 1]?.modified_by_id
+                                        | user
+                                        | async
+                                    )?.name
+                                }}
+                            </div>
+                            <code
+                                class="text-xs"
+                                [matTooltip]="
+                                    settings[i - 1]?.updated_at * 1000 || 0
+                                        | date: 'medium'
+                                "
+                            >
+                                {{ 'COMMON.LAST_EDIT' | translate }}:
+                                {{
+                                    settings[i - 1]?.updated_at * 1000
+                                        | dateFrom
+                                }}
+                            </code>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </form>
+        }
+        <ng-template #spinner>
+            <mat-spinner diameter="32"></mat-spinner>
+        </ng-template>
+    `,
+    styles: [
+        `
+            .settings {
+                position: relative;
+                width: calc(100vw - 29em);
+                height: calc(100vh - 32em);
+
+                @media screen and (max-width: 640px) {
+                    width: calc(100vw - 3em);
+                }
+            }
+
+            .error-border {
+                border: 2px solid var(--error);
+            }
+
+            .error-display {
+                color: #fff;
+                background-color: var(--error);
+                white-space: pre-wrap;
+                margin: 0 0.5em 0.5em;
+                padding: 0.5em;
+                border-radius: 0 0 4px 4px;
+                font-family: var(--mono-font);
+                @apply shadow;
+            }
+
+            .actions {
+                display: flex;
+                align-items: center;
+                justify-content: end;
+                padding: 0.5em 0;
+                margin-top: -2em;
+                height: 3em;
+                @media screen and (max-width: 640px) {
+                    margin-left: 4.5em;
+                }
+
+                button {
+                    @media screen and (max-width: 640px) {
+                        font-size: 0.8em;
+                    }
+                }
+            }
+
+            .off-screen {
+                position: absolute;
+                left: 110vw;
+            }
+        `,
+    ],
     standalone: false,
 })
 export class SettingsFormComponent
