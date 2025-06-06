@@ -17,18 +17,21 @@ import { PlaceStorage, saveStorage } from './storage.fn';
             (save)="save()"
         >
             <form [formGroup]="form" class="w-full">
-                <!-- <div class="flex flex-col ">
-                <label for="storage-type">Storage Type</label>
-                <mat-form-field appearance="outline">
-                    <mat-select
-                        name="storage-type"
-                        formControlName="storage_type"
-                        placeholder="None"
-                    >
-                        <mat-option value="s3">Amazon S3</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div> -->
+                <div class="flex flex-col">
+                    <label for="storage-type">Storage Type</label>
+                    <mat-form-field appearance="outline">
+                        <mat-select
+                            name="storage-type"
+                            formControlName="storage_type"
+                            placeholder="None"
+                        >
+                            <mat-option value="s3">Amazon S3</mat-option>
+                            <mat-option value="azure"
+                                >Microsoft Azure</mat-option
+                            >
+                        </mat-select>
+                    </mat-form-field>
+                </div>
                 <div class="flex space-x-2">
                     <div class="flex flex-1 flex-col">
                         <label for="bucket-name">{{
