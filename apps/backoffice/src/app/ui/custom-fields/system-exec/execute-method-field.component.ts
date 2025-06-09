@@ -39,7 +39,7 @@ import { ModuleLike } from './select-module.component';
                     (ngModelChange)="postArguments($event)"
                 ></function-arguments>
                 <div
-                    class="mt-2 flex w-full items-center space-x-2"
+                    class="flex w-full items-center space-x-2"
                     *ngIf="can_execute"
                 >
                     <button class="inverse flex-1" btn (click)="clear()">
@@ -55,13 +55,15 @@ import { ModuleLike } from './select-module.component';
                     </button>
                 </div>
             </div>
-            <div
-                class="bg-base-100/80 /40 absolute -inset-2 flex flex-col items-center justify-center rounded"
-                *ngIf="loading"
-            >
-                <mat-spinner diameter="32"></mat-spinner>
-                <p>{{ 'COMMON.EXECUTE_LOADING' | translate }}</p>
-            </div>
+            @if (loading) {
+                <div
+                    class="absolute -inset-2 flex flex-col items-center justify-center rounded"
+                >
+                    <div class="absolute inset-0 bg-base-100 opacity-60"></div>
+                    <mat-spinner diameter="32"></mat-spinner>
+                    <p>{{ 'COMMON.EXECUTE_LOADING' | translate }}</p>
+                </div>
+            }
         </div>
     `,
     styles: [``],
@@ -72,7 +74,7 @@ import { ModuleLike } from './select-module.component';
             multi: true,
         },
     ],
-    standalone: false
+    standalone: false,
 })
 export class ExecuteMethodFieldComponent implements ControlValueAccessor {
     @Input() public zone?: string;

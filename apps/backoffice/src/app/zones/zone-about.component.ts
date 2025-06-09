@@ -15,40 +15,47 @@ import { marked } from 'marked';
             {{ 'ZONES.TAG_WARNING' | translate }}
         </div>
         <section class="mb-4 flex space-x-2">
-            <div
-                class="flex w-1/3 flex-1 flex-col space-y-2 rounded border border-base-200 p-2"
-                *ngIf="(systems | async)?.length"
-            >
-                <header
-                    class="text-lg font-medium"
-                    *ngIf="(systems | async)?.length"
+            @if ((systems | async)?.length) {
+                <div
+                    class="flex w-1/3 flex-1 flex-col rounded border border-base-200"
                 >
-                    {{ 'COMMON.EXECUTE_COMMAND' | translate }}
-                </header>
-                <mat-form-field appearance="outline" class="h-12">
-                    <mat-select
-                        [(ngModel)]="active_system"
-                        [placeholder]="'ZONES.SELECT_SYSTEM' | translate"
+                    <header
+                        class="w-full rounded bg-base-200 px-4 py-3 text-lg font-medium"
                     >
-                        <mat-option
-                            *ngFor="let system of systems | async"
-                            [value]="system"
+                        {{ 'COMMON.EXECUTE_COMMAND' | translate }}
+                    </header>
+                    <div class="w-full p-2">
+                        <mat-form-field
+                            appearance="outline"
+                            class="no-subscript mb-2 w-full"
                         >
-                            {{ system.name }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <execute-method-field
-                    *ngIf="active_system && active_system.id"
-                    [zone]="item?.id"
-                    [system]="active_system"
-                ></execute-method-field>
-            </div>
+                            <mat-select
+                                [(ngModel)]="active_system"
+                                [placeholder]="
+                                    'ZONES.SELECT_SYSTEM' | translate
+                                "
+                            >
+                                <mat-option
+                                    *ngFor="let system of systems | async"
+                                    [value]="system"
+                                >
+                                    {{ system.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <execute-method-field
+                            *ngIf="active_system && active_system.id"
+                            [zone]="item?.id"
+                            [system]="active_system"
+                        ></execute-method-field>
+                    </div>
+                </div>
+            }
             <div
                 class="inline-grid w-1/3 flex-1 gap-2 rounded border border-base-200 p-4"
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
-                <ng-container *ngIf="item?.parent_id">
+                @if (item?.parent_id) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'ZONES.PARENT_ID' | translate }}
                     </div>
@@ -59,52 +66,52 @@ import { marked } from 'marked';
                             >{{ item?.parent_id }}</a
                         >
                     </div>
-                </ng-container>
-                <ng-container *ngIf="item?.location">
+                }
+                @if (item?.location) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'ZONES.LOCATION' | translate }}
                     </div>
                     <div>{{ item?.location }}</div>
-                </ng-container>
-                <ng-container *ngIf="item?.code">
+                }
+                @if (item?.code) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'ZONES.CODE' | translate }}
                     </div>
                     <div>{{ item?.code }}</div>
-                </ng-container>
-                <ng-container *ngIf="item?.type">
+                }
+                @if (item?.type) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'ZONES.TYPE' | translate }}&nbsp;
                     </div>
                     <div>{{ item?.type }}</div>
-                </ng-container>
-                <ng-container *ngIf="item?.count">
+                }
+                @if (item?.count) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'ZONES.COUNT' | translate }}
                     </div>
                     <div>{{ item?.count }}</div>
-                </ng-container>
-                <ng-container *ngIf="item?.capacity">
+                }
+                @if (item?.capacity) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'ZONES.CAPACITY' | translate }}
                     </div>
                     <div>{{ item?.capacity }}</div>
-                </ng-container>
-                <ng-container *ngIf="item?.timezone">
+                }
+                @if (item?.timezone) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'COMMON.TIMEZONE' | translate }}
                     </div>
                     <div class="mono text-sm">{{ item?.timezone }}</div>
-                </ng-container>
-                <ng-container *ngIf="item?.map_id">
+                }
+                @if (item?.map_id) {
                     <div class="flex items-center text-sm font-medium">
                         {{ 'ZONES.MAP_URL' | translate }}
                     </div>
                     <a class="truncate underline" [href]="item?.map_id">{{
                         item?.map_id
                     }}</a>
-                </ng-container>
-                <ng-container *ngIf="item?.tags">
+                }
+                @if (item?.tags) {
                     <div
                         class="flex items-center text-sm font-medium"
                         for="tags"
@@ -122,7 +129,7 @@ import { marked } from 'marked';
                             {{ 'ZONES.TAGS_EMPTY' | translate }}
                         </span>
                     </div>
-                </ng-container>
+                }
                 <div class="flex items-center text-sm font-medium">
                     {{ 'COMMON.CREATED_AT' | translate }}
                 </div>
@@ -168,19 +175,20 @@ import { marked } from 'marked';
             </div>
         }
         <hr class="my-4" />
-        <section *ngIf="item?.settings; else load_state">
-            <a-settings-form
-                [merge]="true"
-                [id]="item?.id"
-                [settings]="item?.settings"
-            ></a-settings-form>
-        </section>
-        <ng-template #load_state>
+        @if (item?.settings) {
+            <section>
+                <a-settings-form
+                    [merge]="true"
+                    [id]="item?.id"
+                    [settings]="item?.settings"
+                ></a-settings-form>
+            </section>
+        } @else {
             <div class="flex flex-col items-center p-8">
                 <mat-spinner class="mb-4" diameter="48"></mat-spinner>
                 <p>{{ 'ZONES.LOADING_SETTINGS' | translate }}</p>
             </div>
-        </ng-template>
+        }
     `,
     styles: [
         `

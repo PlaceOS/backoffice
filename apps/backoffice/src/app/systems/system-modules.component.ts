@@ -30,16 +30,18 @@ import { SystemStateService } from './system-state.service';
             <section
                 exec
                 *ngIf="item.id && item.modules && !hide_exec"
-                class="mb-4"
+                class="mb-6"
             >
-                <h3 class="mb-2 text-lg font-medium">
+                <h3
+                    class="mb-2 w-full rounded bg-base-200 p-4 text-lg font-medium"
+                >
                     {{ 'COMMON.EXECUTE_COMMAND' | translate }}
                 </h3>
                 <execute-method-field
                     [system]="item$ | async"
                 ></execute-method-field>
             </section>
-            <h3 class="mb-2 text-lg font-medium">
+            <h3 class="mb-2 w-full rounded bg-base-200 p-4 text-lg font-medium">
                 {{ 'SYSTEMS.MODULE_LIST' | translate }}
             </h3>
             <section add-module class="mb-2 flex flex-wrap space-x-2">
