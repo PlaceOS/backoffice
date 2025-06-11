@@ -14,6 +14,7 @@ import {
 } from '@placeos/ts-client';
 import { VERSION } from '../../environments/version';
 import { SchemaStateService } from '../admin/schema-state.service';
+import { ANIMATION_SHOW_CONTRACT_EXPAND } from '../common/angular-animations';
 import { AsyncHandler } from '../common/async-handler.class';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { HashMap } from '../common/types';
@@ -33,101 +34,103 @@ function replaceDescTag(inputString, newContent) {
 @Component({
     selector: 'metadata-display',
     template: `
-        <button btn (click)="newMetadata()">
-            {{ 'COMMON.METADATA_NEW' | translate }}
-        </button>
+        <div class="flex items-center justify-between space-x-2">
+            <button btn (click)="newMetadata()">
+                {{ 'COMMON.METADATA_NEW' | translate }}
+            </button>
+            <mat-form-field appearance="outline" class="no-subscript">
+                <icon matPrefix class="relative -left-1 text-2xl">search</icon>
+                <input
+                    matInput
+                    [(ngModel)]="search_text"
+                    (ngModelChange)="filterMetadata()"
+                    placeholder="Search metadata blocks..."
+                />
+            </mat-form-field>
+        </div>
         <div
-            class="mt-4"
+            class="mt-4 space-y-2"
             *ngIf="metadata && metadata.length > 0; else empty_state"
         >
-            <mat-accordion>
-                <ng-container *ngFor="let item of metadata">
-                    <mat-expansion-panel
-                        [class.no-padding]="true"
-                        *ngIf="form_map[item.name]"
-                        [formGroup]="form_map[item.name]"
+            @for (item of metadata; track item.name) {
+                <div
+                    block
+                    class="rounded border border-base-300"
+                    [class.shadow]="show_view === item.name"
+                    [class.opacity-30]="item.match === false"
+                    [formGroup]="form_map[item.name]"
+                >
+                    <div
+                        header
+                        class="flex items-center space-x-2 bg-base-200 px-2 py-1"
                     >
-                        <mat-expansion-panel-header>
-                            <mat-panel-title
-                                class="flex h-5 items-center overflow-visible"
+                        <h3 class="px-2 font-mono text-xs font-medium">
+                            {{ form_map[item.name].controls.name.value }}
+                        </h3>
+                        <div class="flex-1"></div>
+                        <div
+                            class="rounded border border-base-300 px-2 py-1 font-mono text-xs"
+                        >
+                            {{ item.updated_at | dateFrom }}
+                        </div>
+                        <div
+                            class="flex items-center rounded-full border border-base-300 bg-base-100"
+                        >
+                            <button
+                                icon
+                                matRipple
+                                (click)="editMetadata(item)"
+                                [disabled]="!edited[item.name]"
+                                [matTooltip]="'COMMON.SAVE' | translate"
                             >
-                                <div edit class="flex-1">
-                                    {{
-                                        form_map[item.name].controls.name.value
-                                    }}
-                                </div>
-                                <code
-                                    class="mr-2 bg-base-300 text-xs"
-                                    [matTooltip]="
-                                        (item.modified_by_id | user | async)
-                                            ?.name +
-                                        '
-' +
-                                        (item.updated_at || 0 | date: 'medium')
-                                    "
-                                    >{{ item.updated_at | dateFrom }}</code
-                                >
-                                <ng-container *ngIf="edited[item.name]">
-                                    <button
-                                        btn
-                                        save
-                                        *ngIf="
-                                            !loading[item.name];
-                                            else load_state
-                                        "
-                                        (click)="$event.stopPropagation()"
-                                        (click)="saveMetadata(item)"
-                                    >
-                                        Save
-                                    </button>
-                                </ng-container>
-                                <button
-                                    btn
-                                    icon
-                                    class="no-underline"
-                                    [matTooltip]="
-                                        'COMMON.METADATA_EDIT' | translate
-                                    "
-                                    (click)="
-                                        editMetadataDetails(item);
-                                        $event.stopPropagation()
-                                    "
-                                >
-                                    <app-icon>edit</app-icon>
-                                </button>
-                                <button
-                                    btn
-                                    icon
-                                    class="no-underline"
-                                    [matTooltip]="
-                                        'COMMON.METADATA_HISTORY' | translate
-                                    "
-                                    (click)="
-                                        viewMetadataHistory(item);
-                                        $event.stopPropagation()
-                                    "
-                                >
-                                    <app-icon>history</app-icon>
-                                </button>
-                                <div
-                                    class="flex min-w-[2rem] justify-end"
-                                    *ngIf="!item.new"
-                                >
-                                    <button
-                                        btn
-                                        icon
-                                        class="no-underline"
-                                        [matTooltip]="
-                                            'COMMON.METADATA_REMOVE' | translate
-                                        "
-                                        (click)="deleteMetadata(item.name)"
-                                    >
-                                        <app-icon>delete</app-icon>
-                                    </button>
-                                </div>
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <div class="w-full">
+                                <icon class="text-xl">save</icon>
+                            </button>
+                            <button
+                                icon
+                                matRipple
+                                (click)="editMetadata(item)"
+                                [matTooltip]="
+                                    'COMMON.METADATA_EDIT' | translate
+                                "
+                            >
+                                <icon class="text-xl">edit</icon>
+                            </button>
+                            <button
+                                icon
+                                matRipple
+                                (click)="viewHistory(item)"
+                                [matTooltip]="
+                                    'COMMON.METADATA_HISTORY' | translate
+                                "
+                            >
+                                <icon class="text-xl">history</icon>
+                            </button>
+                            <button
+                                icon
+                                matRipple
+                                class="text-error"
+                                (click)="deleteMetadata(item.name)"
+                                [matTooltip]="
+                                    'COMMON.METADATA_REMOVE' | translate
+                                "
+                            >
+                                <icon class="text-xl">delete</icon>
+                            </button>
+                        </div>
+                        <button icon matRipple (click)="toggleView(item)">
+                            <icon class="text-xl">{{
+                                show_view === item.name
+                                    ? 'keyboard_arrow_down'
+                                    : 'chevron_right'
+                            }}</icon>
+                        </button>
+                    </div>
+                    <div
+                        body
+                        class="overflow-hidden"
+                        [@show]="show_view === item.name ? 'show' : 'hide'"
+                    >
+                        <div class="border-t border-base-300 p-1">
                             <settings-form-field
                                 formControlName="details"
                                 lang="json"
@@ -135,9 +138,9 @@ function replaceDescTag(inputString, newContent) {
                                 [readonly]="false"
                             ></settings-form-field>
                         </div>
-                    </mat-expansion-panel>
-                </ng-container>
-            </mat-accordion>
+                    </div>
+                </div>
+            }
         </div>
         <ng-template #empty_state>
             <div
@@ -153,16 +156,13 @@ function replaceDescTag(inputString, newContent) {
     `,
     styles: [
         `
-            mat-panel-title button {
-                font-size: 0.8em;
-                background: none;
-                border: none;
-                text-decoration: underline;
-                color: inherit;
+            [block] {
+                transition: opacity 0.2s ease-in-out;
             }
         `,
     ],
-    standalone: false
+    animations: [ANIMATION_SHOW_CONTRACT_EXPAND],
+    standalone: false,
 })
 export class MetadataDisplayComponent extends AsyncHandler {
     @Input() public item: any;
@@ -176,6 +176,10 @@ export class MetadataDisplayComponent extends AsyncHandler {
     public loading: HashMap<boolean> = {};
     /** Map of metadata schemas to the associated metadata */
     public schema_map: HashMap<HashMap | string> = {};
+    /** Metadata contents to view */
+    public show_view = '';
+    /** Search text for filtering metadata */
+    public search_text = '';
 
     private validateName(name_list: string[]) {
         return (control: AbstractControl) => {
@@ -196,6 +200,12 @@ export class MetadataDisplayComponent extends AsyncHandler {
         if (changes.item && this.item) {
             this.loadMetadata();
         }
+    }
+
+    public toggleView(item: any) {
+        this.show_view = this.show_view === item.name ? '' : item.name;
+        this.search_text = '';
+        this.filterMetadata();
     }
 
     public newMetadata() {
@@ -226,7 +236,7 @@ export class MetadataDisplayComponent extends AsyncHandler {
         const ref = this._dialog.open(ConfirmModalComponent, {
             ...CONFIRM_METADATA,
             data: {
-                title: `Kill process`,
+                title: `Remove Metadata block`,
                 content: `
                     <p>Are you sure you want delete the metadata property "${field}"?</p>
                 `,
@@ -258,6 +268,18 @@ export class MetadataDisplayComponent extends AsyncHandler {
                 ref.close();
             }),
         );
+    }
+
+    public filterMetadata() {
+        const search = this.search_text.toLowerCase();
+        if (search) this.show_view = '';
+        for (const block of this.metadata) {
+            (block as any).match =
+                block.name.toLowerCase().includes(search) ||
+                `${this.form_map[block.name].controls.name.value}`
+                    .toLowerCase()
+                    .includes(search);
+        }
     }
 
     public saveMetadata(field: PlaceMetadata) {

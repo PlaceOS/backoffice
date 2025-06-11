@@ -1,5 +1,6 @@
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { CdkPortal } from '@angular/cdk/portal';
+import { CdkPortal, PortalModule } from '@angular/cdk/portal';
+import { CommonModule } from '@angular/common';
 import {
     Component,
     ElementRef,
@@ -49,16 +50,16 @@ export class CustomTooltipData<T = any> {
             </div>
         </ng-template>
     `,
-    standalone: false
+    imports: [CommonModule, PortalModule],
 })
 export class CustomTooltipComponent<T = any>
     extends AsyncHandler
     implements OnChanges, OnDestroy
 {
     /** Horizontal position of the rendered overlay */
-    @Input('xPosition') public x_pos: 'start' | 'center' | 'end';
+    @Input('xPosition') public x_pos: 'start' | 'center' | 'end' = 'end';
     /** Vertical position of the rendered overlay */
-    @Input('yPosition') public y_pos: 'top' | 'center' | 'bottom';
+    @Input('yPosition') public y_pos: 'top' | 'center' | 'bottom' = 'top';
     /** Content to render in the tooltip */
     @Input() public content: TemplateRef<any> | Type<any> | string;
     /** Data associated with the tooltip content */
@@ -157,16 +158,10 @@ export class CustomTooltipComponent<T = any>
 
     public close() {
         this.clearTimeout('open');
-        this.timeout(
-            'close',
-            () => {
-                if (this._overlay_ref) {
-                    this._overlay_ref.dispose();
-                    this._overlay_ref = null;
-                }
-            },
-            50,
-        );
+        if (this._overlay_ref) {
+            this._overlay_ref.dispose();
+            this._overlay_ref = null;
+        }
     }
 
     private _updateType() {

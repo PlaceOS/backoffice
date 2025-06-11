@@ -14,9 +14,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogModule } from '@angular/material/dialog';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
@@ -133,7 +131,6 @@ const FORM_COMPONENTS: Type<any>[] = [
 
 const COMPONENTS: Type<any>[] = [
     SearchbarComponent,
-    IconComponent,
     UserAvatarComponent,
     ...FORM_COMPONENTS,
     TerminalComponent,
@@ -151,7 +148,6 @@ const COMPONENTS: Type<any>[] = [
 
     SidebarMenuComponent,
     ItemSelectionComponent,
-    CustomTooltipComponent,
     UserMenuTooltipComponent,
     ItemDetailsComponent,
     ItemTablistComponent,
@@ -173,19 +169,16 @@ const PIPES: Type<any>[] = [
     SanitizePipe,
     SettingsFormatPipe,
     UserPipe,
-    TranslatePipe,
 ];
 
 const ENTRY_COMPONENT: Type<any>[] = [
     ItemSearchFieldComponent,
     SettingsFieldComponent,
-    DateFieldComponent,
     TimeFieldComponent,
     ContextMenuComponent,
     ImageListFieldComponent,
     ObjectListFieldComponent,
 ];
-
 const MATERIAL_MODULES: any[] = [
     MatButtonModule,
     MatButtonToggleModule,
@@ -204,13 +197,18 @@ const MATERIAL_MODULES: any[] = [
     MatChipsModule,
     MatTabsModule,
     MatCardModule,
-    MatExpansionModule,
     MatChipsModule,
-    MatDatepickerModule,
     MatRippleModule,
     PortalModule,
     DragDropModule,
     CdkTableModule,
+];
+
+const STANDALONE_COMPONENTS: any[] = [
+    IconComponent,
+    DateFieldComponent,
+    TranslatePipe,
+    CustomTooltipComponent,
 ];
 
 @NgModule({
@@ -228,7 +226,14 @@ const MATERIAL_MODULES: any[] = [
         ScrollingModule,
         ...MATERIAL_MODULES,
         RouterModule.forChild([]),
+        ...STANDALONE_COMPONENTS,
     ],
-    exports: [...COMPONENTS, ...PIPES, ...ENTRY_COMPONENT, ...MATERIAL_MODULES],
+    exports: [
+        ...COMPONENTS,
+        ...PIPES,
+        ...ENTRY_COMPONENT,
+        ...MATERIAL_MODULES,
+        ...STANDALONE_COMPONENTS,
+    ],
 })
 export class SharedContentModule {}

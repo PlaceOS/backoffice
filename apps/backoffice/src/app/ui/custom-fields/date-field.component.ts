@@ -1,128 +1,180 @@
+import { CommonModule, DatePipe } from '@angular/common';
 import {
     Component,
     forwardRef,
-    Injectable,
+    Injector,
     Input,
     OnInit,
+    ViewChild,
 } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
-    DateAdapter,
-    MAT_DATE_FORMATS,
-    MatDateFormats,
-    NativeDateAdapter,
-} from '@angular/material/core';
-import {
-    addYears,
-    endOfDay,
-    format,
-    formatISO,
-    set,
-    startOfDay,
-} from 'date-fns';
-
+    ControlValueAccessor,
+    FormsModule,
+    NG_VALUE_ACCESSOR,
+    NgControl,
+} from '@angular/forms';
+import { addYears, endOfDay, set, startOfDay } from 'date-fns';
 import { AsyncHandler } from '../../common/async-handler.class';
-import { HashMap } from '../../common/types';
+import { getTimezoneOffsetString } from '../../common/timezone-helpers';
+import { CustomTooltipComponent } from '../custom-tooltip.component';
+import { IconComponent } from '../icon.component';
+import { TranslatePipe } from '../translate.pipe';
+import { DateCalendarComponent } from './date-calendar.component';
 
-@Injectable()
-class FieldDateAdapter extends NativeDateAdapter {
-    format(date: Date, displayFormat: HashMap | string): string {
-        if (displayFormat === 'input') {
-            return format(date, 'MMMM d, yyyy');
-        }
-        return format(date, 'MMM yyyy');
-    }
+export enum TimezoneDiffRange {
+    Both,
+    Start,
+    End,
 }
-const FIELD_DATE_FORMATS: MatDateFormats = {
-    parse: {
-        dateInput: 'LL',
-    },
-    display: {
-        dateInput: 'input',
-        monthYearLabel: 'MMM YYYY',
-        dateA11yLabel: 'LL',
-        monthYearA11yLabel: 'MMMM YYYY',
-    },
-};
 
 @Component({
     selector: 'a-date-field',
     template: `
-        <mat-form-field appearance="outline" overlay (click)="picker.open()">
-            <input
-                matInput
-                [ngModel]="date"
-                [disabled]="disabled"
-                [min]="from"
-                [max]="until"
-                (ngModelChange)="setValue($event)"
-                [matDatepicker]="picker"
-            />
-            <mat-datepicker-toggle
-                matSuffix
-                [for]="picker"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-            <mat-error><ng-content></ng-content></mat-error>
-        </mat-form-field>
+        <button
+            class="flex h-12 w-full items-center justify-between rounded border border-neutral"
+            customTooltip
+            [content]="calendar_picker"
+            yPosition="top"
+            [disabled]="disabled"
+            [class.opacity-30]="disabled"
+            matRipple
+        >
+            <div
+                class="flex w-1/2 flex-1 flex-col truncate px-4 py-2 text-left leading-tight"
+            >
+                <div class="text-base font-normal">
+                    @if (date) {
+                        {{ date | date: date_format }}
+                    } @else {
+                        <span class="opacity-30">{{
+                            'FORM.DATE_EMPTY' | translate
+                        }}</span>
+                    }
+                </div>
+                <div class="truncate text-xs opacity-30" *ngIf="timezone && tz">
+                    <span *ngIf="range !== 2">{{ start_of_day }}</span>
+                    <span *ngIf="range === 0"> - </span>
+                    <span *ngIf="range !== 1">{{ end_of_day }}</span>
+                </div>
+            </div>
+            <div class="flex h-10 w-10 items-center justify-center text-2xl">
+                <icon>today</icon>
+            </div>
+        </button>
+        <div class="error h-5 p-1 text-xs text-error">
+            <span *ngIf="has_error"><ng-content></ng-content></span>
+        </div>
+        <ng-template #calendar_picker>
+            <div class="relative w-[18rem] rounded bg-base-100 px-2 py-4">
+                <date-calendar
+                    [ngModel]="date || now"
+                    [from]="from"
+                    [to]="until"
+                    [offset_weekday]="week_start"
+                    (ngModelChange)="setValue($event)"
+                ></date-calendar>
+            </div>
+        </ng-template>
     `,
-    styles: [
-        `
-            mat-form-field {
-                width: 100%;
-            }
-        `,
-    ],
+    styles: [``],
     providers: [
-        { provide: DateAdapter, useClass: FieldDateAdapter },
-        { provide: MAT_DATE_FORMATS, useValue: FIELD_DATE_FORMATS },
         {
             provide: NG_VALUE_ACCESSOR,
             useExisting: forwardRef(() => DateFieldComponent),
             multi: true,
         },
     ],
-    standalone: false
+    imports: [
+        CommonModule,
+        FormsModule,
+        DateCalendarComponent,
+        IconComponent,
+        CustomTooltipComponent,
+        TranslatePipe,
+    ],
 })
 export class DateFieldComponent
     extends AsyncHandler
     implements OnInit, ControlValueAccessor
 {
     /** Earliest date available the user is allowed to pick */
-    @Input('from') public _from: number = new Date().valueOf();
+    @Input('from') public from_date: number = startOfDay(Date.now()).valueOf();
     /** Latest date available the user is allowed to pick */
-    @Input('to') public _to: number;
-    /** Position of the tooltip */
-    @Input() public position: 'right' | 'left' = 'right';
-    /** Offset of the tooltip */
-    @Input() public offset: 'top' | 'bottom' = 'bottom';
+    @Input('to') public to_date: number;
+    /** Index of the day to start the week on when displaying the calendar */
+    @Input() public week_start = 0;
+    @Input() public use_24hr = false;
     /** Whether form control is disabled */
     @Input() public disabled: boolean;
-    /** Whether to show the calendar tooltip */
-    public show_tooltip: boolean;
+    @Input() public short = false;
+    @Input() public timezone = '';
+    @Input() public range: TimezoneDiffRange = TimezoneDiffRange.Both;
     /** Currently selected date */
-    public date: string;
+    public date: number;
+
+    public readonly now = Date.now();
 
     /** Form control on change handler */
     private _onChange: (_: number) => void;
     /** Form control on touch handler */
     private _onTouch: (_: number) => void;
+    private _control?: NgControl;
+
+    public get date_format() {
+        return this.short ? 'MMM d, yyyy' : 'MMMM d, yyyy';
+    }
+
+    public get time_format() {
+        return this.use_24hr ? 'HH : mm' : 'h : mm a';
+    }
+
+    private _date_pipe = new DatePipe('en');
+
+    public get start_of_day() {
+        const start = startOfDay(this.date).valueOf();
+        const format = `MMM d, ${this.time_format}${this.range === 1 ? ' (z)' : ''}`;
+        return this._date_pipe.transform(start, format, this.tz);
+    }
+
+    public get end_of_day() {
+        const end = endOfDay(this.date).valueOf();
+        const format = `MMM d, ${this.time_format}${this.range === 1 ? ' (z)' : ''}`;
+        return this._date_pipe.transform(end, format, this.tz);
+    }
+
+    public get has_error(): boolean {
+        return this._control?.invalid && this._control?.touched;
+    }
+
+    private _local_tz = getTimezoneOffsetString(
+        Intl.DateTimeFormat().resolvedOptions().timeZone,
+    );
+
+    public get tz() {
+        const tz = this.timezone;
+        if (!tz) return '';
+        const tz_offset = getTimezoneOffsetString(tz);
+        return tz_offset === this._local_tz ? '' : tz_offset;
+    }
+
+    @ViewChild(CustomTooltipComponent) private _tooltip: CustomTooltipComponent;
+
+    constructor(private _injector: Injector) {
+        super();
+    }
 
     /** First allowed date on the calendar */
     public get from(): Date {
-        return new Date(this._from) || startOfDay(new Date());
+        return new Date(this.from_date) || startOfDay(new Date());
     }
     /** Current date value */
     public get until(): Date {
-        return new Date(this._to) || addYears(endOfDay(new Date()), 1);
-    }
-    /** Display value for the current date */
-    public get date_string(): string {
-        return format(new Date(this.date), 'dd MMM YYYY');
+        return new Date(this.to_date) || addYears(endOfDay(new Date()), 1);
     }
 
     public ngOnInit() {
-        this.date = new Date().toISOString();
+        this._control = this._injector.get(NgControl);
+        this.date = Date.now();
     }
 
     /**
@@ -140,11 +192,11 @@ export class DateFieldComponent
         if (new_date < this.from.valueOf()) {
             new_date = this.from.valueOf();
         }
-        this.date = formatISO(new_date || new Date());
+        this.date = new_date;
         if (this._onChange) {
             this._onChange(new_date);
         }
-        this.show_tooltip = false;
+        this._tooltip?.close();
     }
 
     /* istanbul ignore next */
@@ -153,8 +205,8 @@ export class DateFieldComponent
      * @param value The new value for the component
      */
     public writeValue(value: number) {
-        this.date = formatISO(value || new Date());
-        this.show_tooltip = false;
+        this.date = value;
+        this._tooltip?.close();
     }
 
     /* istanbul ignore next */
