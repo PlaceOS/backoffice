@@ -80,7 +80,7 @@ function replaceDescTag(inputString, newContent) {
                             <button
                                 icon
                                 matRipple
-                                (click)="editMetadata(item)"
+                                (click)="saveMetadata(item)"
                                 [disabled]="!edited[item.name]"
                                 [matTooltip]="'COMMON.SAVE' | translate"
                             >
@@ -89,7 +89,7 @@ function replaceDescTag(inputString, newContent) {
                             <button
                                 icon
                                 matRipple
-                                (click)="editMetadata(item)"
+                                (click)="editMetadataDetails(item)"
                                 [matTooltip]="
                                     'COMMON.METADATA_EDIT' | translate
                                 "
@@ -119,7 +119,7 @@ function replaceDescTag(inputString, newContent) {
                             </button>
                         </div>
                         <button icon matRipple (click)="toggleView(item)">
-                            <icon class="text-xl">{{
+                            <icon class="text-2xl">{{
                                 show_view === item.name
                                     ? 'keyboard_arrow_down'
                                     : 'chevron_right'
