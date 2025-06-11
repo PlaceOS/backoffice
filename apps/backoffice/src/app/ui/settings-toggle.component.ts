@@ -16,7 +16,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
                 *ngIf="value"
             ></div>
             <div class="ml-2 flex flex-1 items-center space-x-2 text-left">
-                <div>{{ name }}</div>
+                <div>{{ name }}<ng-content></ng-content></div>
                 <app-icon *ngIf="info" [matTooltip]="info">info</app-icon>
             </div>
             <mat-checkbox

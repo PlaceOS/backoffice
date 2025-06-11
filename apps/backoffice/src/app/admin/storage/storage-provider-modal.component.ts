@@ -168,6 +168,9 @@ import { PlaceStorage, saveStorage } from './storage.fn';
                         </mat-select>
                     </mat-form-field>
                 </div>
+                <settings-toggle formControlName="is_default">{{
+                    'ADMIN.STORAGE_IS_DEFAULT_LABEL' | translate
+                }}</settings-toggle>
             </form>
         </fullscreen-modal-shell>
     `,
@@ -235,6 +238,7 @@ export class StorageProviderModalComponent {
         endpoint: new FormControl(this._data.item?.endpoint || ''),
         ext_filter: new FormControl(this._data.item?.ext_filter || []),
         mime_filter: new FormControl(this._data.item?.mime_filter || []),
+        is_default: new FormControl(this._data.item?.is_default || false),
     });
     public loading = false;
 

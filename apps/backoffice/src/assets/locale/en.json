@@ -973,6 +973,7 @@
         "STORAGE_ALLOWED_MIME_LABEL": "Allowed file MIME types",
         "STORAGE_ALLOW_ALL_EXTENSIONS": "Allow all file extensions",
         "STORAGE_ALLOW_ALL_MIME": "Allow all MIME types",
+        "STORAGE_IS_DEFAULT_LABEL": "Is Default",
 
         "UPLOADS_LIB_HEADER": "Uploads Library",
         "UPLOADS_LIB_DOWNLOAD": "Download Upload",

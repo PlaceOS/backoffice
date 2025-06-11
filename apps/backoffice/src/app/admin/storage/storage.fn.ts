@@ -30,6 +30,8 @@ export class PlaceStorage {
     public readonly ext_filter: string[];
     /** File MIME type extensions to filter out */
     public readonly mime_filter: string[];
+    /** Whether the storage is the default */
+    public readonly is_default: boolean;
 
     constructor(item: Partial<PlaceStorage> = {}) {
         Object.assign(this, item);
