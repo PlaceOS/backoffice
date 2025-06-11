@@ -87,35 +87,8 @@ import { DriverStateService } from './driver-state.service';
                 [style.gridTemplateColumns]="'5.5rem auto'"
             >
                 <div class="flex items-center text-sm font-medium">
-                    {{ 'DRIVERS.COMPILED' | translate }}
+                    {{ 'COMMON.GIT_COMMIT' | translate }}
                 </div>
-                <div class="flex items-center space-x-2">
-                    @let is_compiled = compiled | async;
-                    <div
-                        class="rounded-2xl px-2 py-1 text-xs shadow"
-                        [class.bg-success]="is_compiled"
-                        [class.text-success-content]="is_compiled"
-                        [class.bg-error]="!is_compiled"
-                        [class.text-error-content]="!is_compiled"
-                    >
-                        {{
-                            (is_compiled ? 'COMMON.TRUE' : 'COMMON.FALSE')
-                                | translate
-                        }}
-                    </div>
-                    <mat-spinner
-                        diameter="24"
-                        *ngIf="!is_compiled"
-                    ></mat-spinner>
-                    <button
-                        btn
-                        *ngIf="compilation_error | async"
-                        (click)="viewErrors()"
-                    >
-                        {{ 'DRIVERS.VIEW_ERRORS' | translate }}
-                    </button>
-                </div>
-                <div class="flex items-center text-sm font-medium">Commit</div>
                 <div class="flex items-center overflow-hidden">
                     <code
                         class="inline-block max-w-full truncate text-xs"
@@ -210,9 +183,6 @@ import { DriverStateService } from './driver-state.service';
     standalone: false,
 })
 export class DriverAboutComponent {
-    public readonly compiled = this._service.is_compiled;
-    public readonly compilation_error = this._service.last_error;
-
     public readonly updateDriver = () => this._service.updateDriver();
     public readonly recompile = () => this._service.recompileDriver();
     public readonly reload = () => this._service.reloadDriver();

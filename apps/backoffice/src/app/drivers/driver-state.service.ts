@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
-    isDriverCompiled,
     PlaceDriver,
     PlaceModule,
     queryDrivers,
@@ -12,16 +11,7 @@ import {
     updateDriver,
 } from '@placeos/ts-client';
 import { BehaviorSubject, of } from 'rxjs';
-import {
-    catchError,
-    delay,
-    filter,
-    map,
-    retryWhen,
-    shareReplay,
-    switchMap,
-    tap,
-} from 'rxjs/operators';
+import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { openConfirmModal } from '../common/general';
 import { ActiveItemService } from '../common/item.service';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -41,8 +31,6 @@ export class DriverStateService {
 
     public readonly loading = this._loading.asObservable();
 
-    public readonly last_error = this._last_error.asObservable();
-
     public readonly updates_available = this._poll.pipe(
         switchMap(() =>
             queryDrivers({ update_available: true, limit: 1 }).pipe(
@@ -50,21 +38,6 @@ export class DriverStateService {
             ),
         ),
         map((d) => d.total > 1),
-        shareReplay(1),
-    );
-
-    public readonly is_compiled = this.item.pipe(
-        filter((d) => !!d && d instanceof PlaceDriver),
-        switchMap((driver) =>
-            isDriverCompiled(driver.id).pipe(catchError(() => of(false))),
-        ),
-        catchError(async (_: Response) => {
-            const err = await _?.json();
-            this._last_error.next(err?.compilation_output || _);
-            if (!err?.compilation_output) throw _;
-        }),
-        retryWhen(delay(5000)),
-        tap((_) => (_ ? this._last_error.next(null) : '')),
         shareReplay(1),
     );
 
