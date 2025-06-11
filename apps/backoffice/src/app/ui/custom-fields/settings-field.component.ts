@@ -23,7 +23,7 @@ let MODEL: HashMap<monaco.editor.ITextModel> = {};
     selector: 'settings-form-field,[settings-field]',
     template: `
         <div
-            class="border-gray-300 relative h-[32rem] w-full border"
+            class="relative h-[32rem] w-full border border-base-300"
             editor
             (window:resize)="resizeEditor()"
             #editor

@@ -55,6 +55,7 @@ function replaceDescTag(inputString, newContent) {
             @for (item of metadata; track item.name) {
                 <div
                     block
+                    [id]="'md-block-' + item.name"
                     class="rounded border border-base-300"
                     [class.shadow]="show_view === item.name"
                     [class.opacity-30]="item.match === false"
